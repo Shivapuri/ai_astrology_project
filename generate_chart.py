@@ -81,9 +81,18 @@ def get_whole_sign_aspects(points_dict: dict) -> list:
 
 def get_prenatal_syzygy(year: int, month: int, day: int, hour: int, minute: int, tz_str: str) -> dict:
     """Calculates the Prenatal Syzygy (New Moon or Full Moon immediately preceding birth)."""
-    tz = pytz.timezone(tz_str)
-    local_dt = tz.localize(datetime(year, month, day, hour, minute))
-    utc_dt = local_dt.astimezone(timezone.utc)
+    try:
+        if not tz_str or tz_str == "None":
+            tz_str = "UTC"
+        tz = pytz.timezone(tz_str)
+    except Exception:
+        tz = timezone.utc
+
+    try:
+        local_dt = tz.localize(datetime(year, month, day, hour, minute))
+        utc_dt = local_dt.astimezone(timezone.utc)
+    except Exception:
+        utc_dt = datetime(year, month, day, hour, minute, tzinfo=timezone.utc)
 
     jd_ut = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour + utc_dt.minute / 60.0)
 
