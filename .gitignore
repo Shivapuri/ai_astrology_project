@@ -8,3 +8,5 @@ cache/
 *.download*
 *.log
 
+code_export.txt
+rag/chroma_astrology_db/

@@ -19,20 +19,33 @@ def load_chart_json(file_path=CHART_JSON_PATH):
         return json.load(f)
 
 def retrieve_classical_context(vector_store, native_details, planet_name, planet_data):
-    """Construct a precise query and fetch relevant classical rules from RAG DB."""
+    """Perform a multi-query semantic search for high-accuracy RAG retrieval."""
     sign = planet_data.get("sign", "")
-    house = planet_data.get("whole_sign_house", "")
-    dignity = planet_data.get("essential_dignity", "")
+    house = planet_data.get("whole_sign_house", "").replace("_", " ") # Convert "House_2" to "House 2"
+    dignity = planet_data.get("essential_dignity", "").split(" ")[0] # Extract just "Detriment" or "Domicile"
     sect = native_details.get("sect", "")
     
-    query = (
-        f"What do Ptolemy, Vettius Valens, and classical Hellenistic astrology say about "
-        f"{planet_name} in {sign} in {house} with {dignity} dignity during a {sect}?"
-    )
+    # MULTI-QUERY STRATEGY: Vector DBs respond better to specific semantic questions
+    queries = [
+        f"What is the astrological meaning of {planet_name} in the sign of {sign}?",
+        f"How does {planet_name} behave in the {house}?",
+        f"What happens when {planet_name} is in {dignity} dignity in a {sect}?"
+    ]
     
-    results = vector_store.similarity_search(query, k=3)
-    retrieved_texts = [doc.page_content for doc in results]
-    return query, retrieved_texts
+    retrieved_texts = []
+    seen = set()
+    
+    # Query the DB for each semantic question
+    for q in queries:
+        results = vector_store.similarity_search(q, k=2) # Get top 2 for each specific question
+        for doc in results:
+            content = doc.page_content.strip()
+            if content not in seen:
+                seen.add(content)
+                retrieved_texts.append(content)
+                
+    # Return the combined context
+    return " | ".join(queries), retrieved_texts[:4]
 
 def interpret_chart_with_rag():
     print("--- Phase 3: Classical RAG Chart Interpreter ---")

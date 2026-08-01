@@ -2,7 +2,12 @@ import os
 import csv
 import json
 import requests
+import re
+import unicodedata
 from bs4 import BeautifulSoup
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "astrology_rag_data")
 
@@ -13,26 +18,45 @@ def ensure_data_dir():
         print(f"Created directory: {DATA_DIR}")
 
 def download_tetrabiblos():
-    """Download Ptolemy's Tetrabiblos from Project Gutenberg."""
-    url = "https://www.gutenberg.org/cache/epub/61142/pg61142.txt"
-    file_path = os.path.join(DATA_DIR, "tetrabiblos.txt")
-    print(f"Downloading Tetrabiblos from {url}...")
-    headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)'}
+    """Download and carefully parse Ptolemy's Tetrabiblos, avoiding footnote corruption."""
+    base_url = "https://penelope.uchicago.edu/Thayer/E/Roman/Texts/Ptolemy/Tetrabiblos/"
+    pages = ["1A*.html", "1B*.html", "2A*.html", "2B*.html", "2C*.html", "3A*.html", "3B*.html", "3C*.html", "3D*.html", "4A*.html", "4B*.html", "4C*.html"]
     
-    try:
-        response = requests.get(url, headers=headers, timeout=30)
-        response.raise_for_status()
-        
-        # Save raw text
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write(response.text)
-        print(f"Successfully saved Tetrabiblos to {file_path}")
-    except Exception as e:
-        print(f"Error downloading Tetrabiblos: {e}")
-        # Create a fallback text file if network is unavailable
-        with open(file_path, "w", encoding="utf-8") as f:
-            f.write("Ptolemy Tetrabiblos - Ancient Hellenistic Astrology Core Text\n"
-                    "Chapter 1: Essential Dignities, Sects, and Planetary Aspects.\n")
+    file_path = os.path.join(DATA_DIR, "tetrabiblos.txt")
+    print(f"Downloading and cleaning Ptolemy's Tetrabiblos...")
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    
+    full_text = ["=== PTOLEMY'S TETRABIBLOS ===\n"]
+
+    for page in pages:
+        try:
+            resp = requests.get(base_url + page, headers=headers, verify=False, timeout=30)
+            resp.encoding = 'utf-8'
+            soup = BeautifulSoup(resp.text, 'html.parser')
+            
+            # DESTROY NOISE: Remove footnotes, tables, and navigational elements
+            for noise in soup.find_all(['table', 'script', 'style', 'sup']):
+                noise.decompose()
+            for a_tag in soup.find_all('a'):
+                # Remove hyperlinks that point to footnotes
+                if a_tag.get('href', '').startswith('#note') or a_tag.get('onmouseover'):
+                    a_tag.decompose()
+
+            # EXTRACT ONLY PARAGRAPHS
+            paragraphs = soup.find_all('p')
+            for p in paragraphs:
+                text = p.get_text(strip=True)
+                # Normalize and remove weird unicode spacing
+                text = unicodedata.normalize('NFKC', text)
+                if len(text) > 50 and "LacusCurtius" not in text: # Skip tiny fragments
+                    full_text.append(text + "\n")
+                    
+            print(f"  [+] Cleaned and saved {page}")
+        except Exception as e:
+            print(f"  [-] Error on {page}: {e}")
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(full_text))
 
 def generate_sample_dataset():
     """Generate a structured CSV dataset of Hellenistic interpretations."""

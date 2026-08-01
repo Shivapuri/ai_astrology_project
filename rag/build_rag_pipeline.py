@@ -41,8 +41,9 @@ def build_vector_store(documents):
     """Split text into chunks and embed into local ChromaDB vector database."""
     print("Splitting documents into searchable text chunks...")
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=50
+        chunk_size=1500,     # INCREASED from 500 to 1500 characters
+        chunk_overlap=250,   # INCREASED to maintain context between chunks
+        separators=["\n\n", "\n", ".", " ", ""] # Forces it to split at paragraphs first
     )
     chunks = text_splitter.split_documents(documents)
     print(f"Created {len(chunks)} total text chunks.")
