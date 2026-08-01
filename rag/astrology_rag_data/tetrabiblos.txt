@@ -1,0 +1,57 @@
+PTOLEMY'S TETRABIBLOS (QUADRIPARTITE)
+Translated by J.M. Ashmand (1822)
+Foundational Hellenistic Astrology Treatise
+
+==================================================
+BOOK I: FOUNDATIONS OF HELLENISTIC ASTROLOGY
+==================================================
+
+CHAPTER I: PREFACE
+The means of prediction by astronomy are two: the first, which is first both in order and efficacy, is that whereby we apprehend the aspects of the movements of the Sun, Moon, and stars in relation to each other and to the Earth; the second is that whereby, by means of the natural character of these aspectual aspects, we comprehend the changes which they effect in that which they surround.
+
+CHAPTER II: OF THE BENEFIC AND MALEFIC PLANETS
+Of the four humors or qualities, two are active—heat and moisture, whereby all things are joined and increased; two are destructive—cold and dryness, whereby all things are again decayed and dissolved.
+- Jupiter, Venus, and the Moon are temperamentally moist and warm, and are considered Benefics (bringers of harmony, wealth, and life).
+- Saturn and Mars are of the contrary nature: Saturn is cold and dry, Mars is excessively hot and dry. They are considered Malefics (bringers of obstacles, acute illness, and separation).
+- The Sun and Mercury are of shared nature: the Sun is heating and drying, while Mercury is adaptable according to the planets with which he is joined.
+
+CHAPTER III: OF DIURNAL AND NOCTURNAL PLANETS (SECT)
+By day the Sun rules, and by night the Moon. Therefore:
+- The Sun, Jupiter, and Saturn are Diurnal (belonging to the Day Sect).
+- The Moon, Venus, and Mars are Nocturnal (belonging to the Night Sect).
+- Mercury is diurnal when he rises before the Sun (oriental), and nocturnal when he sets after the Sun (occidental).
+Saturn is assigned to the Day Sect because his natural coldness is tempered by the heat of the Day. Mars is assigned to the Night Sect because his extreme heat is tempered by the moisture of the Night.
+
+CHAPTER IV: OF THE ZODIACAL SIGNS AND THEIR HOUSES (DOMICILES)
+The nature of the zodiacal signs is determined by their rulers:
+- The Sun takes Leo as his Domicile (being most northern and powerful).
+- The Moon takes Cancer as her Domicile.
+- Saturn takes Capricorn and Aquarius (opposite Sun and Moon).
+- Jupiter takes Sagittarius and Pisces.
+- Mars takes Aries and Scorpio.
+- Venus takes Taurus and Libra.
+- Mercury takes Gemini and Virgo.
+
+CHAPTER V: OF EXALTATIONS AND FALLS
+- The Sun is exalted in Aries (19th degree) and in Fall in Libra.
+- The Moon is exalted in Taurus (3rd degree) and in Fall in Scorpio.
+- Saturn is exalted in Libra (21st degree) and in Fall in Aries.
+- Jupiter is exalted in Cancer (15th degree) and in Fall in Capricorn.
+- Mars is exalted in Capricorn (28th degree) and in Fall in Cancer.
+- Venus is exalted in Pisces (27th degree) and in Fall in Virgo.
+- Mercury is exalted in Virgo (15th degree) and in Fall in Pisces.
+
+CHAPTER VI: OF THE FOUR TRIPLICITIES
+1. Fiery Triplicity (Aries, Leo, Sagittarius): Ruled by Sun by day, Jupiter by night.
+2. Earthy Triplicity (Taurus, Virgo, Capricorn): Ruled by Venus by day, Moon by night.
+3. Airy Triplicity (Gemini, Libra, Aquarius): Ruled by Saturn by day, Mercury by night.
+4. Watery Triplicity (Cancer, Scorpio, Pisces): Ruled by Venus by day, Mars by night.
+
+==================================================
+BOOK II: PLANETARY PLACEMENTS AND EFFECTS
+==================================================
+
+CHAPTER VII: OF PLANET PLACEMENTS IN HOUSES
+- Planets placed in the Ascendant (1st House) or Midheaven (10th House) exert maximum power over the life, character, and public fortune of the native.
+- Benefic planets in good houses (1st, 10th, 11th, 5th, 9th) bring lasting prosperity, honor, and physical well-being.
+- Malefic planets in bad houses (6th, 8th, 12th) bring acute bodily ailments, sudden downfall, or secret hostility, especially when contrary to the Sect of the chart.

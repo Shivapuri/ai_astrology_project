@@ -3,3 +3,8 @@ __pycache__/
 *.json
 cache/
 *.sqlite
+.idea/
+*.dat
+*.download*
+*.log
+

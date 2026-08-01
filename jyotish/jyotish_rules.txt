@@ -1,0 +1,67 @@
+================================================================================
+PARASHARI JYOTISH KNOWLEDGE BASE: CORE VEDIC ASTROLOGY RULES (AI-OPTIMIZED)
+================================================================================
+
+1. THE 9 GRAHAS (PLANETARY FORCES) & KARAKAS (SIGNIFICATORS)
+--------------------------------------------------------------------------------
+- SURYA (Sun): Atmakaraka (Soul), Ego, Father, Authority, Vitality, Dharma, Royal power.
+- CHANDRA (Moon): Manas (Mind/Emotions), Mother, Memory, Public reception, Nurturing.
+- MANGALA (Mars): Bhratru (Siblings/Courage), Physical strength, Action, Logic, Land/Property, Conflict.
+- BUDHA (Mercury): Buddhi (Intellect/Speech), Trade, Communication, Analytical skill, Learning.
+- GURU (Jupiter): Jnana (Wisdom/Guru), Children, Wealth, Expansion, Higher learning, Virtue.
+- SHUKRA (Venus): Kalatra (Spouse/Relationships), Luxury, Arts, Comforts, Devotion, Semen/Vital fluids.
+- SHANI (Saturn): Ayush (Longevity/Sorrow), Karma, Discipline, Hard work, Delay, Service, Restraint.
+- RAHU (North Node): Maya (Illusion/Desire), Obsession, Foreign influences, Innovation, Material expansion.
+- KETU (South Node): Moksha (Liberation/Detachment), Intuition, Past-life karma, Asceticism, Sudden insight.
+
+*RULE:* Do NOT use Western outer planets (Uranus, Neptune, Pluto). Rashi ownership belongs strictly to the 7 visible Grahas + Rahu/Ketu shadow nodes.
+
+2. VEDIC DIGNITY SYSTEM (GRAHA BALA & STATES)
+--------------------------------------------------------------------------------
+- UCCHA (Exaltation - Peak strength/potency):
+  * Surya: Aries (10°) | Chandra: Taurus (3°) | Mangala: Capricorn (28°)
+  * Budha: Virgo (15°) | Guru: Cancer (5°) | Shukra: Pisces (27°) | Shani: Libra (20°)
+- NEECHA (Debilitation / Fall - Weakened/Challenged):
+  * Surya: Libra (10°) | Chandra: Scorpio (3°) | Mangala: Cancer (28°)
+  * Budha: Pisces (15°) | Guru: Capricorn (5°) | Shukra: Virgo (27°) | Shani: Aries (20°)
+- MOOLATRIKONA (Office/Primary operational sign):
+  * Surya: Leo (0-20°) | Chandra: Taurus (3-30°) | Mangala: Aries (0-12°)
+  * Budha: Virgo (15-20°) | Guru: Sagittarius (0-10°) | Shukra: Libra (0-15°) | Shani: Aquarius (0-20°)
+- SWA-RASHI (Own House / Domicile):
+  * Surya: Leo | Chandra: Cancer | Mangala: Aries, Scorpio | Budha: Gemini, Virgo
+  * Guru: Sagittarius, Pisces | Shukra: Taurus, Libra | Shani: Capricorn, Aquarius
+  * Rahu co-rules Aquarius (or Taurus/Gemini exalted) | Ketu co-rules Scorpio (or Sagittarius/Pisces exalted)
+
+3. GRAHA DRISHTI (PLANETARY ASPECTS)
+--------------------------------------------------------------------------------
+*GENERAL ASPECT:* All 9 Grahas aspect the 7th house (180°) counting inclusively from their current placement.
+*SPECIAL ASPECTS (VISHEESHA DRISHTI):*
+- MANGALA (Mars): Aspects the 4th, 7th, and 8th houses from its position.
+- GURU (Jupiter): Aspects the 5th, 7th, and 9th houses from its position (casts divine grace/protection).
+- SHANI (Saturn): Aspects the 3rd, 7th, and 10th houses from its position (casts delay/discipline/responsibility).
+- RAHU & KETU: Aspect the 5th, 7th, and 9th houses from their positions.
+
+*COUNTING RULE:* Always count the house containing the planet as House 1. (e.g. Jupiter in House 1 aspects House 5, House 7, and House 9).
+
+4. D1 (RASI) VS. D9 (NAVAMSA) DIVISIONAL CHARTS
+--------------------------------------------------------------------------------
+- D1 RASI CHART (Material World & Physical Manifestation):
+  * Represents tangible circumstances, physical body, external career, wealth, and day-to-day existence.
+  * Shows the birth seed of karma.
+- D9 NAVAMSA CHART (Soul Purpose, Internal Strength, & Marriage):
+  * Represents the fruit of the tree. Discloses whether a planet in D1 has underlying strength or weakness.
+  * Pushkara Navamsa & Vargottama: If a Graha occupies the SAME Rashi sign in both D1 and D9, it is 'Vargottama' and gains immense strength.
+  * A planet debilitated in D1 but exalted in D9 undergoes Neecha Bhanga (cancellation of debilitation) and matures into powerful positive karma.
+  * D9 specifically governs marital life, spouse's nature, and spiritual alignment (Dharma).
+
+5. VIMSHOTTARI DASHA TIMELINE SYSTEM (TIMING OF KARMA)
+--------------------------------------------------------------------------------
+- 120-Year Cycle: Ketu (7y), Shukra (20y), Surya (6y), Chandra (10y), Mangala (7y), Rahu (18y), Guru (16y), Shani (19y), Budha (17y).
+- MAHADASHA (Major Period): Sets the overarching climate, theme, and main actors of life for several years.
+- ANTARDASHA (Sub-Period): Focuses the Mahadasha into specific events, specific months, and immediate results.
+- EVENT TRIGGER RULES:
+  * An active Dasha lord triggers the houses it OWNS, the house it OCCUPIES, and the house it ASPECTS in D1 & D9.
+  * Benefic Dasha lords (Jupiter, Venus, unafflicted Mercury, bright Moon) in strong dignity produce expansion, prosperity, and peace.
+  * Malefic Dasha lords (Saturn, Mars, Rahu, Ketu, Sun) bring tests, transformation, hard work, and structural realignment according to house rulership.
+  * Kendras (Houses 1, 4, 7, 10) and Trikonas (Houses 1, 5, 9) bring auspicious growth. Dusthanas (Houses 6, 8, 12) bring challenges, disease, transformation, or foreign travel.
+================================================================================
