@@ -6,8 +6,8 @@ def generate_ai_json(
     year: int = 1983,
     month: int = 11,
     day: int = 10,
-    hour: int = 15,
-    minute: int = 30,
+    hour: int = 16,
+    minute: int = 0,
     city: str = "Georgsmarienhütte",
     country_code: str = "DE",
     output_filename: str = "chart_context.json"
