@@ -3,6 +3,12 @@ import json
 import swisseph as swe
 from datetime import datetime, timezone
 import pytz
+import logging
+import warnings
+
+# Suppress GeoNames warning popups/logs
+logging.disable(logging.WARNING)
+warnings.filterwarnings("ignore")
 
 # --- CONSTANTS & HELLENISTIC LOOKUPS ---
 ZODIAC_SIGNS = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"]

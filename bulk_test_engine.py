@@ -13,6 +13,12 @@ import urllib.request
 import traceback
 import sys
 from datetime import datetime
+import logging
+import warnings
+
+# Suppress GeoNames warning messages
+logging.disable(logging.WARNING)
+warnings.filterwarnings("ignore")
 
 # Import local Hellenistic astrology engine
 from generate_chart import generate_ai_json
