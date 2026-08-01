@@ -9,8 +9,8 @@ def generate_ai_json(
     day: int = 10,
     hour: int = 15,
     minute: int = 30,
-    city: str = "Budapest",
-    country_code: str = "HU",
+    city: str = "Georgsmarienhütte",
+    country_code: str = "DE",
     output_filename: str = "chart_context.json"
 ):
     # 1. Enter the birth data here (Name, Year, Month, Day, Hour, Minute, City, Country Code)
