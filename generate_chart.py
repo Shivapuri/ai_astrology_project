@@ -136,7 +136,13 @@ def generate_ai_json(
     name: str = "User", year: int = 1983, month: int = 11, day: int = 10, hour: int = 4, minute: int = 20,
     city: str = "Georgsmarienhütte", country_code: str = "DE", output_filename: str = "chart_context.json", silent: bool = False
 ):
-    subject = AstrologicalSubject(name, year, month, day, hour, minute, city, country_code)
+    try:
+        subject = AstrologicalSubject(
+            name, year, month, day, hour, minute, city, country_code,
+            geonames_username="shivapuri"
+        )
+    except Exception:
+        subject = AstrologicalSubject(name, year, month, day, hour, minute, city, country_code)
     
     asc_sign = subject.first_house.sign
     asc_abs = subject.first_house.abs_pos
