@@ -45,7 +45,7 @@ Step 4 (Synthesis - The Extended Reading):
   (Explain Ascendant, Sect, and House layout in simple terms).
   
   Part 2: The Dominant Placements & Psychological Reading
-  (Analyze the top 3 placements. Use bullet points for 'Mathematical Placement' and 'What It Means for You'. Address the native's "Pain Body" and emotional shadows here using their most difficult placement).
+  (First provide an educational overview of the general characteristics and archetypes of the dominant zodiac signs active in the chart—such as their element, ruling planets, and overall psychological themes. Then analyze the top 3 specific placements using bullet points for 'Mathematical Placement' and 'What It Means for You'. Address the native's "Pain Body" and emotional shadows here using their most difficult placement).
   
   Part 3: Behavioral Psychology (Socialization & Conflict)
   (NEW EXTENSION: Explicitly analyze how they make friends and experience intimacy based on Venus/11th House, and how they resolve conflict, fight, or protect boundaries based on Mars/Aspects).
