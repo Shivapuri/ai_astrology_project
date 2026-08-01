@@ -1,10 +1,21 @@
 from kerykeion import AstrologicalSubject
 import json
+import sys
 
-def generate_ai_json():
+def generate_ai_json(
+    name: str = "User",
+    year: int = 1983,
+    month: int = 11,
+    day: int = 10,
+    hour: int = 15,
+    minute: int = 30,
+    city: str = "Budapest",
+    country_code: str = "HU",
+    output_filename: str = "chart_context.json"
+):
     # 1. Enter the birth data here (Name, Year, Month, Day, Hour, Minute, City, Country Code)
-    # Note: Kerykeion automatically fetches the coordinates and timezone for the city!
-    subject = AstrologicalSubject("Steve", 1990, 7, 15, 10, 30, "London", "GB")
+    # Kerykeion automatically fetches coordinates and time zone for the city.
+    subject = AstrologicalSubject(name, year, month, day, hour, minute, city, country_code)
 
     planet_keys = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn", "uranus", "neptune", "pluto"]
     house_keys = [
@@ -18,7 +29,9 @@ def generate_ai_json():
             "name": subject.name,
             "sun_sign": subject.sun.sign,
             "moon_sign": subject.moon.sign,
-            "ascendant": subject.first_house.sign
+            "ascendant": subject.first_house.sign,
+            "birth_time": f"{hour:02d}:{minute:02d}",
+            "location": f"{city}, {country_code}"
         },
         # Loop through planets and grab their sign, house, and exact degree
         "planets": {
@@ -38,12 +51,12 @@ def generate_ai_json():
     }
 
     # 3. Save it to a JSON file
-    filename = "chart_context.json"
-    with open(filename, "w") as outfile:
+    with open(output_filename, "w") as outfile:
         json.dump(ai_payload, outfile, indent=4)
 
-    print(f"✅ Success! Chart data saved to {filename}")
+    print(f"✅ Success! Chart data saved to {output_filename}")
 
 if __name__ == "__main__":
     generate_ai_json()
+
 
