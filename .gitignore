@@ -10,3 +10,4 @@ cache/
 
 code_export.txt
 rag/chroma_astrology_db/
+rag/chroma_jyotish_db/

@@ -17,56 +17,90 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from western.generate_chart import generate_ai_json
+from jyotish.generate_jyotish import generate_vedic_chart
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 COT_SYSTEM_INSTRUCTIONS = """
-You are a Principal Modern Psychological Astrologer and AI Agent driven by a strict Chain of Thought (CoT) / ReAct reasoning protocol.
+You are a Principal AI Architect and Master Astrologer operating Astra's Dual-Engine Astrology System.
+You support both Western Psychological Astrology and Parashari Vedic Astrology (Jyotish) via strict Chain of Thought (CoT) protocols.
 
-Whenever a user requests a birth chart reading, you MUST autonomously execute this 4-step workflow:
+==============================================================================
+WESTERN / PSYCHOLOGICAL ASTROLOGY WORKFLOW
+==============================================================================
+When a user requests a Western chart reading, follow this 4-Step ReAct workflow:
 
 Step 1 (Action - Mathematical Calculation):
-  Call the `calculate_birth_chart` tool with the native's birth details to compute the exact planetary positions, dignities, sect, and lots.
+  Call `calculate_birth_chart` with native's birth details to compute exact tropical placements, Whole Sign houses, dignities, sect, and hermetic lots.
 
 Step 2 (Reasoning - Target Identification):
-  Analyze the JSON and isolate the planets that trigger the psychological framework:
-  - Identity: Ascendant, Chart Ruler, and Sect Light.
-  - Pain Body & Trauma: The Moon, planets in Detriment/Fall, or the out-of-sect Malefic.
-  - Social & Conflict: Venus (connection), Mars (boundaries/anger), and hard aspects (Squares/Oppositions).
-  - Flow State: Domicile planets, Jupiter, and the Lot of Fortune.
+  Analyze the JSON and isolate key psychological placements:
+  - Core Architecture: Ascendant, Chart Ruler, and Sect Light.
+  - Pain Body & Trauma: The Moon, planets in Detriment/Fall, or out-of-sect Malefic.
+  - Socialization & Conflict: Venus (connection/intimacy), Mars (boundaries/anger), and hard aspects.
+  - Flow State: Domicile planets, Jupiter, and Lot of Fortune.
 
-Step 3 (Action - Psychological Book Research):
-  Call `query_modern_astrology_books` 2 to 3 times to research these specific placements in the local vector database.
+Step 3 (Action - Western Book Research):
+  Call `query_modern_astrology_books` 1 to 3 times for target placements.
 
-Step 4 (Synthesis - The Extended Reading):
-  Output a highly empathetic, modern reading that strictly follows this 5-part structure:
-  
+Step 4 (Synthesis - Modern Psychological Reading):
+  Synthesize a 5-part empathetic reading:
   Part 1: The Core Architecture of the Chart
-  (Explain Ascendant, Sect, and House layout in simple terms).
-  
-  Part 2: The Dominant Placements & Psychological Reading
-  (First provide an educational overview of the general characteristics and archetypes of the dominant zodiac signs active in the chart—such as their element, ruling planets, and overall psychological themes. Then analyze the top 3 specific placements using bullet points for 'Mathematical Placement' and 'What It Means for You'. Address the native's "Pain Body" and emotional shadows here using their most difficult placement).
-  
-  Part 3: Behavioral Psychology (Socialization & Conflict)
-  (NEW EXTENSION: Explicitly analyze how they make friends and experience intimacy based on Venus/11th House, and how they resolve conflict, fight, or protect boundaries based on Mars/Aspects).
-  
+  Part 2: Dominant Placements & Psychological Reading (includes sign overview, top placements, and Pain Body)
+  Part 3: Behavioral Psychology (Socialization & Conflict Resolution)
   Part 4: Supporting Strengths & Fortune
-  (Analyze Jupiter, the Lot of Fortune, and where they naturally hit a "Flow State").
+  Summary Checklist of Your Chart Profile (Archetype, Superpower, Core Life Lesson)
+
+
+==============================================================================
+VEDIC / JYOTISH ASTROLOGY WORKFLOW
+==============================================================================
+When a user requests a Vedic / Jyotish reading, follow this 4-Step ReAct workflow:
+
+Step 1 (Action - Vedic Calculation):
+  Call `calculate_vedic_chart` with native's birth details (latitude, longitude, timezone offset) to compute True Chitra Paksha (Lahiri) Ayanamsa, Panchanga, D1 Rasi, D9 Navamsa, and Vimshottari Dasha timeline.
+
+Step 2 (Reasoning - Target Identification):
+  Analyze the JSON and isolate key Jyotish placements:
+  - Lagna & Moon Nakshatra: Ascendant sign/nakshatra, Moon sign/nakshatra/pada.
+  - D9 Navamsa: Soul purpose, hidden strengths, and planet dignities in D9.
+  - Dasha Timeline: Running Mahadasha, Antardasha, and Pratyantardasha periods.
+
+Step 3 (Action - Classical & VedAstro Book Research):
+  Call `query_vedic_astrology_books` 1 to 3 times to retrieve authentic classical shlokas (BPHS, Brihat Jataka) and VedAstro rules.
+
+Step 4 (Synthesis - Empowering 4-Part Vedic Reading):
+  Synthesize an empowering 4-part reading focusing on Karma, Dharma, and Timelines, translating ancient fatalistic language into modern constructive guidance:
   
-  Summary Checklist of Your Chart Profile
-  (Provide a quick bulleted list: Their Archetype, their Superpower, and their Core Life Lesson).
+  Part 1: Panchanga & Lagna Architecture
+  (Explain Lagna sign, Nakshatra, Moon Pada, Tithi, and core physical/mental temperament).
+  
+  Part 2: D1 Rasi & D9 Navamsa Placements
+  (Analyze dominant planets in D1 Rasi and their internal soul evolution in D9 Navamsa).
+  
+  Part 3: Vimshottari Dasha Timeline & Karmic Evolution
+  (Analyze current running Dasha period, timing of major life shifts, and active karmic lessons).
+  
+  Part 4: Practical Dharma & Remedies
+  (Offer constructive guidance for growth, ethical living, emotional resilience, and boundary management).
 """
 
-# 1. Instantiate MCP Server with Chain of Thought instructions
+# 1. Instantiate MCP Server with Dual-Engine Chain of Thought instructions
 try:
     mcp = FastMCP(
-        "Astra Modern Psychological Astrology RAG Engine",
+        "Astra Dual-Engine Astrology RAG Server",
         instructions=COT_SYSTEM_INSTRUCTIONS
     )
 except TypeError:
-    mcp = FastMCP("Astra Modern Psychological Astrology RAG Engine")
+    mcp = FastMCP("Astra Dual-Engine Astrology RAG Server")
 
-CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
+WESTERN_CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
+JYOTISH_CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_jyotish_db")
+
+
+# ------------------------------------------------------------------------------
+# WESTERN ASTROLOGY TOOLS
+# ------------------------------------------------------------------------------
 
 @mcp.tool()
 def calculate_birth_chart(
@@ -80,11 +114,11 @@ def calculate_birth_chart(
     country_code: str = "GB"
 ) -> str:
     """
-    Calculates a mathematically precise Western Astrology Chart.
-    Returns structured JSON containing the Ascendant, Sect (Day/Night), traditional and modern planetary placements 
+    Calculates a mathematically precise Western (Tropical) Astrology Chart.
+    Returns structured JSON containing the Ascendant, Sect (Day/Night), traditional and modern planetary placements
     (with Signs, Whole Sign Houses, and Dignities), and Hermetic Lots.
     
-    Chain of Thought Step 1: Execute this tool first when analyzing a user's chart.
+    Western CoT Step 1: Execute this tool first when analyzing a Western chart.
     """
     output_path = os.path.join(BASE_DIR, "western", "chart_context.json")
     try:
@@ -104,25 +138,26 @@ def calculate_birth_chart(
             chart_data = json.load(f)
         return json.dumps(chart_data, indent=2)
     except Exception as e:
-        return f"Error generating chart: {str(e)}"
+        return f"Error generating Western chart: {str(e)}"
+
 
 @mcp.tool()
 def query_modern_astrology_books(query: str) -> str:
     """
-    Queries the local Modern Psychological Astrology Vector Database (containing digitized modern books).
+    Queries the local Modern Psychological Astrology Vector Database (containing modern Western books).
     Pass targeted psychological queries such as 'Moon in Taurus in 2nd House' or 'Saturn transit square Sun'.
     
-    Chain of Thought Step 3: Call this tool 1 to 3 times for key chart placements identified in Step 2.
+    Western CoT Step 3: Call this tool 1 to 3 times for key chart placements.
     """
     try:
-        if not os.path.exists(CHROMA_DB_DIR):
-            return "Vector database not found. Please ensure build_rag_pipeline.py has completed building ChromaDB."
+        if not os.path.exists(WESTERN_CHROMA_DB_DIR):
+            return "Western Vector database not found. Please run build_rag_pipeline.py first."
             
         embedding_model = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
         vector_store = Chroma(
-            persist_directory=CHROMA_DB_DIR,
+            persist_directory=WESTERN_CHROMA_DB_DIR,
             embedding_function=embedding_model
         )
         results = vector_store.similarity_search(query, k=4)
@@ -134,7 +169,80 @@ def query_modern_astrology_books(query: str) -> str:
             output += f"--- Result {idx} [Source: {source}, Page: {page}] ---\n{doc.page_content}\n\n"
         return output
     except Exception as e:
-        return f"Error querying vector database: {str(e)}"
+        return f"Error querying Western vector database: {str(e)}"
+
+
+# ------------------------------------------------------------------------------
+# VEDIC / JYOTISH ASTROLOGY TOOLS
+# ------------------------------------------------------------------------------
+
+@mcp.tool()
+def calculate_vedic_chart(
+    name: str = "Subject",
+    year: int = 1995,
+    month: int = 5,
+    day: int = 15,
+    hour: int = 14,
+    minute: int = 30,
+    latitude: float = 51.5074,
+    longitude: float = -0.1278,
+    timezone_offset: float = 1.0
+) -> str:
+    """
+    Calculates a mathematically precise Parashari Vedic (Sidereal) Astrology Chart using jyotishganit.
+    Returns structured JSON containing True Chitra Paksha (Lahiri) Ayanamsa, Panchanga, D1 Rasi Chart, 
+    D9 Navamsa Chart, and Vimshottari Dasha timeline.
+    
+    Vedic CoT Step 1: Execute this tool first when analyzing a Vedic chart.
+    """
+    output_path = os.path.join(BASE_DIR, "jyotish", "vedic_context.json")
+    try:
+        chart_data = generate_vedic_chart(
+            name=name,
+            year=year,
+            month=month,
+            day=day,
+            hour=hour,
+            minute=minute,
+            latitude=latitude,
+            longitude=longitude,
+            timezone_offset=timezone_offset,
+            output_filepath=output_path
+        )
+        return json.dumps(chart_data, indent=2, ensure_ascii=False)
+    except Exception as e:
+        return f"Error generating Vedic chart: {str(e)}"
+
+
+@mcp.tool()
+def query_vedic_astrology_books(query: str) -> str:
+    """
+    Queries the local Jyotish Vector Database (containing WisdomLib BPHS texts and VedAstro rules).
+    Pass targeted Vedic queries such as 'Lagna in Aries Ashwini' or 'Vimshottari Dasha Saturn Mahadasha'.
+    
+    Vedic CoT Step 3: Call this tool 1 to 3 times for key Vedic chart placements and Dashas.
+    """
+    try:
+        if not os.path.exists(JYOTISH_CHROMA_DB_DIR):
+            return "Vedic Vector database not found. Please run fetch_jyotish_data.py and build_jyotish_rag.py first."
+            
+        embedding_model = HuggingFaceEmbeddings(
+            model_name="sentence-transformers/all-MiniLM-L6-v2"
+        )
+        vector_store = Chroma(
+            persist_directory=JYOTISH_CHROMA_DB_DIR,
+            embedding_function=embedding_model
+        )
+        results = vector_store.similarity_search(query, k=4)
+        
+        output = f"=== VEDIC / JYOTISH RAG SEARCH RESULTS FOR: '{query}' ===\n\n"
+        for idx, doc in enumerate(results, 1):
+            source = os.path.basename(doc.metadata.get("source", "jyotish_text"))
+            output += f"--- Result {idx} [Source: {source}] ---\n{doc.page_content}\n\n"
+        return output
+    except Exception as e:
+        return f"Error querying Vedic vector database: {str(e)}"
+
 
 if __name__ == "__main__":
     mcp.run()

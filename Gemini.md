@@ -54,6 +54,11 @@ When performing chart readings, follow the 4-step ReAct workflow embedded in the
   * *Example*: **Ascendant** *(the zodiac sign rising on the eastern horizon at birth, representing your core identity)*.
   * *Example*: **Domicile** *(when a planet is in the sign it naturally rules, acting like a king in their own castle)*.
   * *Example*: **Combust** *(when a planet is so close to the Sun that its visible rays are hidden)*.
+* **Dominant Zodiac Sign Overviews**: Before analyzing specific house placements or aspects, always provide a general overview of the characteristics, element, ruling planet, and archetypal theme of the chart's dominant zodiac signs (e.g., explaining Scorpio as an archetypal sign before interpreting Sun conjunct Saturn in Scorpio).
+* **The Extended Psychological Lens**: Keep your beautiful formatting (Core Architecture, Dominant Placements, Strengths, Summary Checklist), but ensure you always spotlight:
+  1. **The Pain Body**: Where they hold trauma or emotional armor (using debilitated planets or the Moon).
+  2. **Socialization**: How they make friends and open up (using Venus/11th House).
+  3. **Conflict Resolution**: How they fight or protect boundaries (using Mars and hard aspects).
 * **Grounding**: Base interpretations on modern psychological literature retrieved from `rag/chroma_astrology_db` and [`western/chart_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/western/chart_context.json).
 * **Verify Cache & Downloads**: Do not repeatedly download astronomical dataset files (`.dat`, `.bsp`). Use local cached files (`hip_main.dat`, `de421.bsp`).
 
