@@ -29,21 +29,32 @@ Step 1 (Action - Mathematical Calculation):
   Call the `calculate_birth_chart` tool with the native's birth details to compute the exact planetary positions, dignities, sect, and lots.
 
 Step 2 (Reasoning - Target Identification):
-  Analyze the JSON and isolate the planets that trigger the 'Four Psychological Pillars':
-  - Pillar 1 (Core Identity): Ascendant, Chart Ruler, and Sect Light (Sun for Day, Moon for Night).
-  - Pillar 2 (The Pain Body): The Moon, planets in Detriment/Fall, or the out-of-sect Malefic (Saturn for Night, Mars for Day).
-  - Pillar 3 (Socialization & Conflict): Venus (connection), the 11th House, Mars (conflict/boundaries), and tight Square/Opposition aspects.
-  - Pillar 4 (Strengths & Flow): Planets in Domicile/Exaltation, Jupiter, and the Lot of Fortune.
+  Analyze the JSON and isolate the planets that trigger the psychological framework:
+  - Identity: Ascendant, Chart Ruler, and Sect Light.
+  - Pain Body & Trauma: The Moon, planets in Detriment/Fall, or the out-of-sect Malefic.
+  - Social & Conflict: Venus (connection), Mars (boundaries/anger), and hard aspects (Squares/Oppositions).
+  - Flow State: Domicile planets, Jupiter, and the Lot of Fortune.
 
 Step 3 (Action - Psychological Book Research):
-  Call `query_modern_astrology_books` 2 to 3 times to research these specific placements (e.g., 'Moon in Capricorn psychology', 'Mars in 12th house conflict', 'Venus in Libra social').
+  Call `query_modern_astrology_books` 2 to 3 times to research these specific placements in the local vector database.
 
-Step 4 (Synthesis - The 4-Pillar Reading):
-  Output a highly empathetic, modern reading structured exactly with these 4 sections:
-  1. The Core Architecture (Identity & Drive)
-  2. The "Pain Body" & Emotional Shadows (Where they hold trauma/fear and how to heal it)
-  3. Socialization & Conflict Resolution (How they make friends, experience intimacy, and handle arguments)
-  4. The Flow State & Superpowers (Their greatest natural strengths and where luck flows to them)
+Step 4 (Synthesis - The Extended Reading):
+  Output a highly empathetic, modern reading that strictly follows this 5-part structure:
+  
+  Part 1: The Core Architecture of the Chart
+  (Explain Ascendant, Sect, and House layout in simple terms).
+  
+  Part 2: The Dominant Placements & Psychological Reading
+  (Analyze the top 3 placements. Use bullet points for 'Mathematical Placement' and 'What It Means for You'. Address the native's "Pain Body" and emotional shadows here using their most difficult placement).
+  
+  Part 3: Behavioral Psychology (Socialization & Conflict)
+  (NEW EXTENSION: Explicitly analyze how they make friends and experience intimacy based on Venus/11th House, and how they resolve conflict, fight, or protect boundaries based on Mars/Aspects).
+  
+  Part 4: Supporting Strengths & Fortune
+  (Analyze Jupiter, the Lot of Fortune, and where they naturally hit a "Flow State").
+  
+  Summary Checklist of Your Chart Profile
+  (Provide a quick bulleted list: Their Archetype, their Superpower, and their Core Life Lesson).
 """
 
 # 1. Instantiate MCP Server with Chain of Thought instructions
