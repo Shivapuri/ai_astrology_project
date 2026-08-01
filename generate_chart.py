@@ -4,11 +4,14 @@ import swisseph as swe
 from datetime import datetime, timezone
 import pytz
 
-# Sign names list (360° zodiac order)
+# --- CONSTANTS & HELLENISTIC LOOKUPS ---
 ZODIAC_SIGNS = ["Ari", "Tau", "Gem", "Can", "Leo", "Vir", "Lib", "Sco", "Sag", "Cap", "Aqu", "Pis"]
 
-# Egyptian Terms (Bounds) lookup table
-# Structure: Sign -> list of (max_degree, planet_ruler)
+DOMICILES = {"Ari": "Mars", "Tau": "Venus", "Gem": "Mercury", "Can": "Moon", "Leo": "Sun", "Vir": "Mercury", "Lib": "Venus", "Sco": "Mars", "Sag": "Jupiter", "Cap": "Saturn", "Aqu": "Saturn", "Pis": "Jupiter"}
+EXALTATIONS = {"Ari": "Sun", "Tau": "Moon", "Can": "Jupiter", "Vir": "Mercury", "Lib": "Saturn", "Cap": "Mars", "Pis": "Venus"}
+DETRIMENTS = {"Ari": "Venus", "Tau": "Mars", "Gem": "Jupiter", "Can": "Saturn", "Leo": "Saturn", "Vir": "Jupiter", "Lib": "Mars", "Sco": "Venus", "Sag": "Mercury", "Cap": "Moon", "Aqu": "Sun", "Pis": "Mercury"}
+FALLS = {"Ari": "Saturn", "Tau": "Unknown", "Gem": "Unknown", "Can": "Mars", "Leo": "Unknown", "Vir": "Venus", "Lib": "Sun", "Sco": "Moon", "Sag": "Unknown", "Cap": "Jupiter", "Aqu": "Unknown", "Pis": "Mercury"}
+
 EGYPTIAN_TERMS = {
     "Ari": [(6, "Jupiter"), (12, "Venus"), (20, "Mercury"), (25, "Mars"), (30, "Saturn")],
     "Tau": [(8, "Venus"), (14, "Mercury"), (22, "Jupiter"), (27, "Saturn"), (30, "Mars")],
@@ -24,8 +27,8 @@ EGYPTIAN_TERMS = {
     "Pis": [(12, "Venus"), (16, "Jupiter"), (19, "Mercury"), (28, "Mars"), (30, "Saturn")]
 }
 
+# --- HELPER FUNCTIONS ---
 def get_egyptian_term(sign: str, degree_in_sign: float) -> str:
-    """Returns the ruling planet of the Egyptian Term for a given degree within a sign."""
     terms = EGYPTIAN_TERMS.get(sign, [])
     for max_deg, ruler in terms:
         if degree_in_sign < max_deg:
@@ -33,7 +36,6 @@ def get_egyptian_term(sign: str, degree_in_sign: float) -> str:
     return terms[-1][1] if terms else "Unknown"
 
 def calculate_dodecatemorion(abs_degree: float):
-    """Calculates Dodecatemorion (12th part) sign and degrees."""
     deg_in_sign = abs_degree % 30
     dodec_abs = (abs_degree + (deg_in_sign * 11)) % 360
     sign_idx = int(dodec_abs // 30)
@@ -43,243 +45,160 @@ def calculate_dodecatemorion(abs_degree: float):
         "absolute_degree": round(dodec_abs, 2)
     }
 
-def get_whole_sign_aspects(points_dict: dict) -> list:
-    """Calculates Whole Sign Aspects between all 7 traditional planets."""
-    aspects = []
-    keys = list(points_dict.keys())
-    
-    aspect_map = {
-        0: "conjunction",
-        2: "sextile",
-        3: "square",
-        4: "trine",
-        6: "opposition"
+def get_essential_dignity(planet: str, sign: str) -> str:
+    if DOMICILES.get(sign) == planet: return "Domicile (Home)"
+    if EXALTATIONS.get(sign) == planet: return "Exaltation (Honored)"
+    if DETRIMENTS.get(sign) == planet: return "Detriment (Exiled)"
+    if FALLS.get(sign) == planet: return "Fall (Weakened)"
+    return "Peregrine (Wandering)"
+
+def get_dorothean_triplicity(sign: str, is_day_chart: bool) -> dict:
+    if sign in ["Ari", "Leo", "Sag"]: # Fire
+        return {"day": "Sun", "night": "Jupiter", "participating": "Saturn"}
+    elif sign in ["Tau", "Vir", "Cap"]: # Earth
+        return {"day": "Venus", "night": "Moon", "participating": "Mars"}
+    elif sign in ["Gem", "Lib", "Aqu"]: # Air
+        return {"day": "Saturn", "night": "Mercury", "participating": "Jupiter"}
+    else: # Water
+        return {"day": "Venus", "night": "Mars", "participating": "Moon"}
+
+def get_solar_phasis(planet: str, planet_abs: float, sun_abs: float) -> str:
+    if planet in ["Sun", "Moon", "Ascendant"]: return "N/A"
+    dist = min(abs(planet_abs - sun_abs), 360 - abs(planet_abs - sun_abs))
+    if dist <= (17 / 60): return "Cazimi (In the Heart of the Sun)"
+    elif dist <= 8.5: return "Combust (Burned)"
+    elif dist <= 15: return "Under the Beams (Hidden)"
+    return "Phasis Clear"
+
+def calculate_lot(asc_abs: float, p1_abs: float, p2_abs: float) -> dict:
+    lot_abs = (asc_abs + p1_abs - p2_abs) % 360
+    lot_sign = ZODIAC_SIGNS[int(lot_abs // 30)]
+    return {
+        "sign": lot_sign,
+        "degree_0_to_30": round(lot_abs % 30, 2),
+        "absolute_degree": round(lot_abs, 2)
     }
 
+def get_whole_sign_aspects(points_dict: dict) -> list:
+    aspects, aspect_map = [], {0: "conjunction", 2: "sextile", 3: "square", 4: "trine", 6: "opposition"}
+    keys = list(points_dict.keys())
     for i in range(len(keys)):
         for j in range(i + 1, len(keys)):
-            p1_name = keys[i]
-            p2_name = keys[j]
-            p1_sign = points_dict[p1_name]["sign"]
-            p2_sign = points_dict[p2_name]["sign"]
-
-            idx1 = ZODIAC_SIGNS.index(p1_sign)
-            idx2 = ZODIAC_SIGNS.index(p2_sign)
-
+            p1, p2 = keys[i], keys[j]
+            idx1, idx2 = ZODIAC_SIGNS.index(points_dict[p1]["sign"]), ZODIAC_SIGNS.index(points_dict[p2]["sign"])
             sign_dist = abs(idx1 - idx2)
-            if sign_dist > 6:
-                sign_dist = 12 - sign_dist
-
+            if sign_dist > 6: sign_dist = 12 - sign_dist
             if sign_dist in aspect_map:
-                aspects.append({
-                    "planet_1": p1_name,
-                    "planet_2": p2_name,
-                    "aspect_type": aspect_map[sign_dist],
-                    "sign_distance": sign_dist
-                })
+                aspects.append({"planet_1": p1, "planet_2": p2, "aspect_type": aspect_map[sign_dist], "sign_distance": sign_dist})
     return aspects
 
-def get_prenatal_syzygy(year: int, month: int, day: int, hour: int, minute: int, tz_str: str) -> dict:
-    """Calculates the Prenatal Syzygy (New Moon or Full Moon immediately preceding birth)."""
-    try:
-        if not tz_str or tz_str == "None":
-            tz_str = "UTC"
-        tz = pytz.timezone(tz_str)
-    except Exception:
-        tz = timezone.utc
-
-    try:
-        local_dt = tz.localize(datetime(year, month, day, hour, minute))
-        utc_dt = local_dt.astimezone(timezone.utc)
-    except Exception:
-        utc_dt = datetime(year, month, day, hour, minute, tzinfo=timezone.utc)
-
+def get_prenatal_syzygy(year, month, day, hour, minute, tz_str) -> dict:
+    # Safely calculate SAN
+    try: tz = pytz.timezone(tz_str) if tz_str and tz_str != "None" else timezone.utc
+    except: tz = timezone.utc
+    try: utc_dt = tz.localize(datetime(year, month, day, hour, minute)).astimezone(timezone.utc)
+    except: utc_dt = datetime(year, month, day, hour, minute, tzinfo=timezone.utc)
     jd_ut = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_dt.hour + utc_dt.minute / 60.0)
-
-    t = jd_ut
-    step = 0.1
+    
+    t, step, target_angle = jd_ut, 0.1, None
     prev_phase = (swe.calc_ut(t, swe.MOON)[0][0] - swe.calc_ut(t, swe.SUN)[0][0]) % 360
-    prev_t = t
-    target_angle = None
-
     while t > jd_ut - 32:
         t -= step
         phase = (swe.calc_ut(t, swe.MOON)[0][0] - swe.calc_ut(t, swe.SUN)[0][0]) % 360
-
-        if prev_phase >= 180 and phase < 180:
-            target_angle = 180.0
-            t_low, t_high = t, prev_t
-            break
-        if prev_phase < 90 and phase > 270:
-            target_angle = 0.0
-            t_low, t_high = t, prev_t
-            break
+        if prev_phase >= 180 and phase < 180: target_angle = 180.0; t_low, t_high = t, t+step; break
+        if prev_phase < 90 and phase > 270: target_angle = 0.0; t_low, t_high = t, t+step; break
         prev_phase = phase
-        prev_t = t
 
-    if target_angle is None:
-        return {"prenatal_syzygy": "Unknown"}
+    if target_angle is None: return {"prenatal_syzygy": "Unknown"}
 
     for _ in range(25):
         t_mid = (t_low + t_high) / 2.0
         phase_m = (swe.calc_ut(t_mid, swe.MOON)[0][0] - swe.calc_ut(t_mid, swe.SUN)[0][0]) % 360
         if target_angle == 180.0:
-            if phase_m >= 180.0:
-                t_high = t_mid
-            else:
-                t_low = t_mid
+            if phase_m >= 180.0: t_high = t_mid
+            else: t_low = t_mid
         else:
-            if phase_m > 180.0:
-                t_high = t_mid
-            else:
-                t_low = t_mid
+            if phase_m > 180.0: t_high = t_mid
+            else: t_low = t_mid
 
     exact_t = (t_low + t_high) / 2.0
-    syz_sun = swe.calc_ut(exact_t, swe.SUN)[0][0]
-    syz_moon = swe.calc_ut(exact_t, swe.MOON)[0][0]
-    syz_deg = syz_moon if target_angle == 180.0 else syz_sun
+    syz_deg = swe.calc_ut(exact_t, swe.MOON if target_angle == 180.0 else swe.SUN)[0][0]
+    return {"type": "Full Moon" if target_angle == 180.0 else "New Moon", "sign": ZODIAC_SIGNS[int(syz_deg // 30)], "degree_0_to_30": round(syz_deg % 30, 2)}
 
-    sign_idx = int(syz_deg // 30)
-    return {
-        "type": "Full Moon" if target_angle == 180.0 else "New Moon",
-        "sign": ZODIAC_SIGNS[sign_idx],
-        "degree_0_to_30": round(syz_deg % 30, 2),
-        "absolute_degree": round(syz_deg, 2)
-    }
-
+# --- MAIN GENERATOR ---
 def generate_ai_json(
-    name: str = "User",
-    year: int = 1983,
-    month: int = 11,
-    day: int = 10,
-    hour: int = 4,
-    minute: int = 20,
-    city: str = "Georgsmarienhütte",
-    country_code: str = "DE",
-    output_filename: str = "chart_context.json",
-    silent: bool = False
+    name: str = "User", year: int = 1983, month: int = 11, day: int = 10, hour: int = 4, minute: int = 20,
+    city: str = "Georgsmarienhütte", country_code: str = "DE", output_filename: str = "chart_context.json", silent: bool = False
 ):
-    # 1. Create AstrologicalSubject
     subject = AstrologicalSubject(name, year, month, day, hour, minute, city, country_code)
-
-    # 7 Traditional Planets only
-    traditional_planets = ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"]
-
-    # Ascendant Details
+    
     asc_sign = subject.first_house.sign
-    asc_abs_deg = subject.first_house.abs_pos
-    asc_sign_idx = ZODIAC_SIGNS.index(asc_sign)
+    asc_abs = subject.first_house.abs_pos
+    asc_idx = ZODIAC_SIGNS.index(asc_sign)
 
-    # 2. Whole Sign Houses (WSH) Calculation
-    wsh_houses = {}
-    for i in range(12):
-        house_num = i + 1
-        sign_idx = (asc_sign_idx + i) % 12
-        wsh_houses[f"House_{house_num}"] = {
-            "sign": ZODIAC_SIGNS[sign_idx],
-            "degree_range": f"0° - 30° {ZODIAC_SIGNS[sign_idx]}"
-        }
+    def get_wsh(planet_sign: str) -> str:
+        return f"House_{((ZODIAC_SIGNS.index(planet_sign) - asc_idx) % 12) + 1}"
 
-    # Helper function to compute Whole Sign House for a planet
-    def get_wsh_house(planet_sign: str) -> int:
-        p_sign_idx = ZODIAC_SIGNS.index(planet_sign)
-        return ((p_sign_idx - asc_sign_idx) % 12) + 1
-
-    # 3. Traditional Planets Data
-    planets_data = {}
-    for p in traditional_planets:
-        obj = getattr(subject, p)
-        abs_deg = obj.abs_pos
-        deg_30 = round(obj.position, 2)
-        sign = obj.sign
-        wsh_h = get_wsh_house(sign)
-
-        planets_data[obj.name] = {
-            "sign": sign,
-            "whole_sign_house": f"House_{wsh_h}",
-            "degree_0_to_30": deg_30,
-            "absolute_degree": round(abs_deg, 2),
-            "is_retrograde": obj.retrograde,
-            "egyptian_term_ruler": get_egyptian_term(sign, deg_30),
-            "dodecatemorion": calculate_dodecatemorion(abs_deg)
-        }
-
-    # 4. Chart Sect (Day vs Night using Whole Sign Houses)
-    sun_wsh = get_wsh_house(subject.sun.sign)
+    sun_wsh = int(get_wsh(subject.sun.sign).split("_")[1])
     is_day_chart = sun_wsh in [7, 8, 9, 10, 11, 12]
-    sect_str = "Day Chart" if is_day_chart else "Night Chart"
+    
+    planets_data = {}
+    for p in ["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"]:
+        obj = getattr(subject, p)
+        planets_data[obj.name] = {
+            "sign": obj.sign,
+            "whole_sign_house": get_wsh(obj.sign),
+            "degree_0_to_30": round(obj.position, 2),
+            "absolute_degree": round(obj.abs_pos, 2),
+            "is_retrograde": obj.retrograde,
+            "essential_dignity": get_essential_dignity(obj.name, obj.sign),
+            "dorothean_triplicity": get_dorothean_triplicity(obj.sign, is_day_chart),
+            "solar_phasis": get_solar_phasis(obj.name, obj.abs_pos, subject.sun.abs_pos),
+            "egyptian_term_ruler": get_egyptian_term(obj.sign, obj.position),
+            "dodecatemorion": calculate_dodecatemorion(obj.abs_pos)
+        }
 
-    # 5. Calculate Lots (Fortune & Spirit)
-    sun_abs = subject.sun.abs_pos
-    moon_abs = subject.moon.abs_pos
+    # Hermetic Lots Calculations
+    sun_abs, moon_abs = subject.sun.abs_pos, subject.moon.abs_pos
+    mer_abs, ven_abs, mars_abs = subject.mercury.abs_pos, subject.venus.abs_pos, subject.mars.abs_pos
+    jup_abs, sat_abs = subject.jupiter.abs_pos, subject.saturn.abs_pos
 
-    if is_day_chart:
-        fortune_abs = (asc_abs_deg + moon_abs - sun_abs) % 360
-        spirit_abs = (asc_abs_deg + sun_abs - moon_abs) % 360
-    else:
-        fortune_abs = (asc_abs_deg + sun_abs - moon_abs) % 360
-        spirit_abs = (asc_abs_deg + moon_abs - sun_abs) % 360
-
-    fortune_sign = ZODIAC_SIGNS[int(fortune_abs // 30)]
-    spirit_sign = ZODIAC_SIGNS[int(spirit_abs // 30)]
-
-    lot_of_fortune = {
-        "sign": fortune_sign,
-        "degree_0_to_30": round(fortune_abs % 30, 2),
-        "absolute_degree": round(fortune_abs, 2),
-        "whole_sign_house": f"House_{get_wsh_house(fortune_sign)}",
-        "dodecatemorion": calculate_dodecatemorion(fortune_abs)
+    lot_fortune = calculate_lot(asc_abs, moon_abs, sun_abs) if is_day_chart else calculate_lot(asc_abs, sun_abs, moon_abs)
+    lot_spirit = calculate_lot(asc_abs, sun_abs, moon_abs) if is_day_chart else calculate_lot(asc_abs, moon_abs, sun_abs)
+    
+    # Advanced Hermetic Lots
+    lots = {
+        "Lot_of_Fortune": lot_fortune,
+        "Lot_of_Spirit": lot_spirit,
+        "Lot_of_Necessity": calculate_lot(asc_abs, lot_fortune["absolute_degree"], mer_abs) if is_day_chart else calculate_lot(asc_abs, mer_abs, lot_fortune["absolute_degree"]),
+        "Lot_of_Eros": calculate_lot(asc_abs, ven_abs, lot_spirit["absolute_degree"]) if is_day_chart else calculate_lot(asc_abs, lot_spirit["absolute_degree"], ven_abs),
+        "Lot_of_Courage": calculate_lot(asc_abs, lot_fortune["absolute_degree"], mars_abs) if is_day_chart else calculate_lot(asc_abs, mars_abs, lot_fortune["absolute_degree"]),
+        "Lot_of_Victory": calculate_lot(asc_abs, jup_abs, lot_spirit["absolute_degree"]) if is_day_chart else calculate_lot(asc_abs, lot_spirit["absolute_degree"], jup_abs),
+        "Lot_of_Nemesis": calculate_lot(asc_abs, lot_fortune["absolute_degree"], sat_abs) if is_day_chart else calculate_lot(asc_abs, sat_abs, lot_fortune["absolute_degree"]),
     }
 
-    lot_of_spirit = {
-        "sign": spirit_sign,
-        "degree_0_to_30": round(spirit_abs % 30, 2),
-        "absolute_degree": round(spirit_abs, 2),
-        "whole_sign_house": f"House_{get_wsh_house(spirit_sign)}",
-        "dodecatemorion": calculate_dodecatemorion(spirit_abs)
-    }
+    # Add House logic to lots
+    for key, lot_data in lots.items():
+        lot_data["whole_sign_house"] = get_wsh(lot_data["sign"])
 
-    # Ascendant Dodecatemorion & Terms
-    ascendant_data = {
-        "sign": asc_sign,
-        "degree_0_to_30": round(subject.first_house.position, 2),
-        "absolute_degree": round(asc_abs_deg, 2),
-        "egyptian_term_ruler": get_egyptian_term(asc_sign, round(subject.first_house.position, 2)),
-        "dodecatemorion": calculate_dodecatemorion(asc_abs_deg)
-    }
-
-    # 6. Prenatal Syzygy (SAN)
-    prenatal_syzygy = get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str)
-
-    # 7. Build Hellenistic AI Payload
     ai_payload = {
         "native_details": {
             "name": subject.name,
-            "sun_sign": subject.sun.sign,
-            "moon_sign": subject.moon.sign,
             "ascendant": asc_sign,
-            "birth_time": f"{hour:02d}:{minute:02d}",
-            "location": f"{city}, {country_code}",
-            "sect": sect_str,
+            "sect": "Day Chart" if is_day_chart else "Night Chart",
             "house_system": "Whole Sign Houses (WSH)"
         },
-        "ascendant": ascendant_data,
         "traditional_planets": planets_data,
-        "lots": {
-            "lot_of_fortune": lot_of_fortune,
-            "lot_of_spirit": lot_of_spirit
-        },
-        "whole_sign_houses": wsh_houses,
+        "7_hermetic_lots": lots,
         "whole_sign_aspects": get_whole_sign_aspects(planets_data),
-        "prenatal_syzygy": prenatal_syzygy
+        "prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str)
     }
 
-    # 8. Output to JSON
     with open(output_filename, "w") as outfile:
         json.dump(ai_payload, outfile, indent=4)
 
     if not silent:
-        print(f"✅ Success! Hellenistic astrology JSON saved to {output_filename}")
+        print(f"✅ Success! Ultimate Hellenistic chart data saved to {output_filename}")
 
 if __name__ == "__main__":
     generate_ai_json()
