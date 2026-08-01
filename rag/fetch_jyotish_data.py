@@ -1,7 +1,7 @@
 """
 Jyotish Data Fetcher
 Autonomously fetches authentic classical Vedic astrology texts from WisdomLib
-and open-source Jyotish dataset interpretations from VedAstro into /rag/jyotish_rag_data/
+and comprehensive open-source Jyotish datasets & guidelines from VedAstro into /rag/jyotish_rag_data/
 with OCR noise cleaning, smart sentence line-wrap unwrapping, numerical sorting, and structured formatting.
 """
 
@@ -212,76 +212,89 @@ def fetch_wisdomlib_texts(output_filepath: str):
     print(f"Successfully saved {len(formatted_contents)} numerically sorted, line-unwrapped & cleaned sections to {output_filepath}", flush=True)
 
 
+def parse_xml_events(xml_content: bytes, tag_prefix: str) -> list:
+    """Parses XML event/horoscope/reference elements into clean text entries."""
+    entries = []
+    try:
+        root = ET.fromstring(xml_content)
+        items = root.findall("Event") + root.findall("Horoscope")
+        for item in items:
+            name = (item.findtext("Name") or item.findtext("Id") or "").strip()
+            nature = (item.findtext("Nature") or "").strip()
+            desc = (item.findtext("Description") or "").strip()
+            tag = (item.findtext("Tag") or "").strip()
+            
+            if name and desc:
+                nature_str = f" [Nature: {nature}]" if nature else ""
+                tag_str = f" [Tag: {tag}]" if tag else ""
+                entry_str = f"{tag_prefix}: {name}{nature_str}{tag_str}\nDescription: {desc}"
+                entries.append(clean_and_format_text(entry_str))
+    except Exception as err:
+        print(f"  -> Error parsing XML {tag_prefix}: {err}", flush=True)
+    return entries
+
+
 def fetch_vedastro_data(output_filepath: str):
     """
-    Fetches open-source Jyotish datasets from VedAstro GitHub repository.
-    Parses JSON and XML dataset files into clean, structured interpretation text.
+    Fetches expanded open-source Jyotish datasets & guidelines from VedAstro GitHub repository.
+    Parses JSON, XML (Events, Horoscopes, References, Predictions), and TXT guidelines into clean text.
     """
-    print("--- Starting VedAstro Open-Source Data Fetcher ---", flush=True)
+    print("--- Starting Expanded VedAstro Open-Source Data Fetcher ---", flush=True)
     
     urls = {
-        "bvraman_horoscope": "https://raw.githubusercontent.com/VedAstro/VedAstro/master/HuggingFace/alpaca_bvraman_horoscope_data.json",
-        "event_data": "https://raw.githubusercontent.com/VedAstro/VedAstro/master/Library/XMLData/EventDataList.xml",
-        "horoscope_data": "https://raw.githubusercontent.com/VedAstro/VedAstro/master/Library/XMLData/HoroscopeDataList.xml"
+        "bvraman_horoscope": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/HuggingFace/alpaca_bvraman_horoscope_data.json", "json"),
+        "event_data": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Library/XMLData/EventDataList.xml", "xml_event"),
+        "horoscope_data": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Library/XMLData/HoroscopeDataList.xml", "xml_horoscope"),
+        "reference_list": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Website/wwwroot/data/ReferenceList.xml", "xml_reference"),
+        "non_raman_horoscope": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Website_Mobile/data/HoroscopeDataList-non-raman.xml", "xml_non_raman"),
+        "prediction_data": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Others/ArchivedCode/Horoscope.Desktop/data/PredictionDataList.xml", "xml_prediction"),
+        "analysis_tips": ("https://raw.githubusercontent.com/VedAstro/VedAstro/master/Others/NotCode/HoroscopeAnalysisTips.txt", "txt_tips")
     }
     
     formatted_entries = []
     
-    # 1. Fetch Alpaca B.V. Raman Horoscope JSON Data
-    try:
-        print("Fetching B.V. Raman Horoscope Dataset...", flush=True)
-        r = requests.get(urls["bvraman_horoscope"], headers=HEADERS, timeout=10)
-        if r.status_code == 200:
-            json_data = r.json()
-            for item in json_data:
-                inst = item.get("instruction", "").strip()
-                inp = item.get("input", "").strip()
-                out = item.get("output", "").strip()
+    for dataset_key, (url, data_type) in urls.items():
+        print(f"Fetching VedAstro dataset: {dataset_key}...", flush=True)
+        try:
+            r = requests.get(url, headers=HEADERS, timeout=10)
+            if r.status_code != 200:
+                print(f"  -> Skipping {dataset_key} (Status: {r.status_code})", flush=True)
+                continue
                 
-                context_str = f"Rule/Placement: {inst}"
-                if inp:
-                    context_str += f" ({inp})"
-                
-                entry = f"VEDASTRO HOROSCOPE RULE: {context_str}\nInterpretation: {out}"
-                formatted_entries.append(clean_and_format_text(entry))
-            print(f"  -> Added {len(json_data)} B.V. Raman horoscope rules.", flush=True)
-    except Exception as e:
-        print(f"  -> Error fetching B.V. Raman JSON: {e}", flush=True)
-
-    # 2. Fetch Event Data List XML
-    try:
-        print("Fetching VedAstro Event Data XML...", flush=True)
-        r = requests.get(urls["event_data"], headers=HEADERS, timeout=10)
-        if r.status_code == 200:
-            root = ET.fromstring(r.content)
-            events = root.findall("Event")
-            for ev in events:
-                name = ev.findtext("Name", "").strip()
-                nature = ev.findtext("Nature", "").strip()
-                desc = ev.findtext("Description", "").strip()
-                if name and desc:
-                    entry = f"VEDASTRO ASTROLOGICAL EVENT: {name} [Nature: {nature}]\nDescription: {desc}"
+            if data_type == "json":
+                json_data = r.json()
+                for item in json_data:
+                    inst = item.get("instruction", "").strip()
+                    inp = item.get("input", "").strip()
+                    out = item.get("output", "").strip()
+                    context_str = f"Rule/Placement: {inst}"
+                    if inp:
+                        context_str += f" ({inp})"
+                    entry = f"VEDASTRO HOROSCOPE RULE: {context_str}\nInterpretation: {out}"
                     formatted_entries.append(clean_and_format_text(entry))
-            print(f"  -> Added {len(events)} VedAstro event rules.", flush=True)
-    except Exception as e:
-        print(f"  -> Error fetching Event Data XML: {e}", flush=True)
+                print(f"  -> Added {len(json_data)} entries from {dataset_key}.", flush=True)
 
-    # 3. Fetch Horoscope Data List XML
-    try:
-        print("Fetching VedAstro Horoscope Data XML...", flush=True)
-        r = requests.get(urls["horoscope_data"], headers=HEADERS, timeout=10)
-        if r.status_code == 200:
-            root = ET.fromstring(r.content)
-            horoscopes = root.findall("Horoscope")
-            for h in horoscopes:
-                name = h.findtext("Name", "").strip()
-                desc = h.findtext("Description", "").strip()
-                if name and desc:
-                    entry = f"VEDASTRO HOROSCOPE COMBINATION: {name}\nDescription: {desc}"
-                    formatted_entries.append(clean_and_format_text(entry))
-            print(f"  -> Added {len(horoscopes)} VedAstro horoscope combinations.", flush=True)
-    except Exception as e:
-        print(f"  -> Error fetching Horoscope Data XML: {e}", flush=True)
+            elif data_type.startswith("xml_"):
+                prefix_map = {
+                    "xml_event": "VEDASTRO ASTROLOGICAL EVENT",
+                    "xml_horoscope": "VEDASTRO HOROSCOPE COMBINATION",
+                    "xml_reference": "VEDASTRO REFERENCE FACT & PLANETARY INDICATION",
+                    "xml_non_raman": "VEDASTRO NON-RAMAN CLASSICAL RULE & UPAGRAHA",
+                    "xml_prediction": "VEDASTRO HOUSE LORD PREDICTION RULE"
+                }
+                prefix = prefix_map.get(data_type, "VEDASTRO RULE")
+                parsed_xml_entries = parse_xml_events(r.content, prefix)
+                formatted_entries.extend(parsed_xml_entries)
+                print(f"  -> Added {len(parsed_xml_entries)} entries from {dataset_key}.", flush=True)
+
+            elif data_type == "txt_tips":
+                tip_text = clean_and_format_text(r.text)
+                entry = f"VEDASTRO HOROSCOPE SYNTHESIS GUIDELINES & TIPS:\n{tip_text}"
+                formatted_entries.append(entry)
+                print(f"  -> Added analysis guidelines from {dataset_key}.", flush=True)
+
+        except Exception as e:
+            print(f"  -> Error processing {dataset_key}: {e}", flush=True)
 
     if not formatted_entries:
         print("Warning: No entries retrieved from VedAstro. Adding fallback data.", flush=True)
@@ -294,7 +307,7 @@ def fetch_vedastro_data(output_filepath: str):
     with open(output_filepath, "w", encoding="utf-8") as f:
         f.write(full_text)
         
-    print(f"Successfully saved {len(formatted_entries)} interpretation entries to {output_filepath}", flush=True)
+    print(f"Successfully saved {len(formatted_entries)} interpretation & reference entries to {output_filepath}", flush=True)
 
 
 def main():
