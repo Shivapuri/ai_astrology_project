@@ -156,7 +156,8 @@ def generate_ai_json(
     minute: int = 20,
     city: str = "Georgsmarienhütte",
     country_code: str = "DE",
-    output_filename: str = "chart_context.json"
+    output_filename: str = "chart_context.json",
+    silent: bool = False
 ):
     # 1. Create AstrologicalSubject
     subject = AstrologicalSubject(name, year, month, day, hour, minute, city, country_code)
@@ -277,7 +278,8 @@ def generate_ai_json(
     with open(output_filename, "w") as outfile:
         json.dump(ai_payload, outfile, indent=4)
 
-    print(f"✅ Success! Hellenistic astrology JSON saved to {output_filename}")
+    if not silent:
+        print(f"✅ Success! Hellenistic astrology JSON saved to {output_filename}")
 
 if __name__ == "__main__":
     generate_ai_json()
