@@ -20,8 +20,32 @@ from western.generate_chart import generate_ai_json
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# 1. Instantiate MCP Server
-mcp = FastMCP("Astra Hellenistic Astrology RAG Engine")
+COT_SYSTEM_INSTRUCTIONS = """
+You are a Principal Modern Psychological Astrologer and AI Agent driven by a strict Chain of Thought (CoT) / ReAct reasoning protocol.
+
+Whenever a user requests a birth chart reading or astrological interpretation, you MUST autonomously execute the following 4-step workflow:
+
+Step 1 (Action - Mathematical Calculation):
+  Call the `calculate_birth_chart` tool with the native's birth details to compute the exact planetary positions and chart placements.
+
+Step 2 (Reasoning - Placement Identification):
+  Analyze the resulting chart JSON and isolate the 3 key dominant placements (for example: Sun sign & house, Moon sign & house, or the Ascendant ruler).
+
+Step 3 (Action - Psychological Book Research):
+  Call the `query_modern_astrology_books` tool 1 to 3 separate times using targeted search queries for each key placement (e.g., 'Moon in Taurus', 'Sun in 10th House', 'Mars in Scorpio').
+
+Step 4 (Synthesis - Empathetic Reading):
+  Synthesize the exact astronomical calculation from Step 1 with the psychological literature excerpts retrieved in Step 3 to write an insightful, highly empathetic, modern, and professional astrological reading.
+"""
+
+# 1. Instantiate MCP Server with Chain of Thought instructions
+try:
+    mcp = FastMCP(
+        "Astra Modern Psychological Astrology RAG Engine",
+        instructions=COT_SYSTEM_INSTRUCTIONS
+    )
+except TypeError:
+    mcp = FastMCP("Astra Modern Psychological Astrology RAG Engine")
 
 CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
 
@@ -37,10 +61,11 @@ def calculate_birth_chart(
     country_code: str = "GB"
 ) -> str:
     """
-    Calculates a mathematically precise Hellenistic Western Astrology Chart.
-    Returns structured JSON with Ascendant, Sect (Day/Night), 7 Traditional Planets 
-    (with Signs, Whole Sign Houses, Essential Dignities, Egyptian Terms, Dodecatemoria), 
-    and 7 Hermetic Lots.
+    Calculates a mathematically precise Western Astrology Chart.
+    Returns structured JSON containing the Ascendant, Sect (Day/Night), traditional and modern planetary placements 
+    (with Signs, Whole Sign Houses, and Dignities), and Hermetic Lots.
+    
+    Chain of Thought Step 1: Execute this tool first when analyzing a user's chart.
     """
     output_path = os.path.join(BASE_DIR, "western", "chart_context.json")
     try:
@@ -63,13 +88,17 @@ def calculate_birth_chart(
         return f"Error generating chart: {str(e)}"
 
 @mcp.tool()
-def query_ancient_texts(query: str) -> str:
+def query_modern_astrology_books(query: str) -> str:
     """
-    Queries the local Hellenistic Vector RAG Database (containing Ptolemy's Tetrabiblos, 
-    Vettius Valens, and Dorotheus ground truth rules).
-    Pass a query like 'What does Mars in Fall in Cancer in 6th house mean in a Day Chart?'
+    Queries the local Modern Psychological Astrology Vector Database (containing digitized modern books).
+    Pass targeted psychological queries such as 'Moon in Taurus in 2nd House' or 'Saturn transit square Sun'.
+    
+    Chain of Thought Step 3: Call this tool 1 to 3 times for key chart placements identified in Step 2.
     """
     try:
+        if not os.path.exists(CHROMA_DB_DIR):
+            return "Vector database not found. Please ensure build_rag_pipeline.py has completed building ChromaDB."
+            
         embedding_model = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
@@ -79,9 +108,11 @@ def query_ancient_texts(query: str) -> str:
         )
         results = vector_store.similarity_search(query, k=4)
         
-        output = f"=== CLASSICAL RAG SEARCH RESULTS FOR: '{query}' ===\n\n"
+        output = f"=== MODERN PSYCHOLOGICAL ASTROLOGY RAG SEARCH RESULTS FOR: '{query}' ===\n\n"
         for idx, doc in enumerate(results, 1):
-            output += f"--- Result {idx} ---\n{doc.page_content}\n\n"
+            source = os.path.basename(doc.metadata.get("source", "modern_astrology_book"))
+            page = doc.metadata.get("page", "N/A")
+            output += f"--- Result {idx} [Source: {source}, Page: {page}] ---\n{doc.page_content}\n\n"
         return output
     except Exception as e:
         return f"Error querying vector database: {str(e)}"

@@ -34,19 +34,17 @@ To generate a Western horoscope and perform Retrieval-Augmented Generation (RAG)
 
 Alternatively, invoke the MCP server tools in [`rag/astrology_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/astrology_mcp_server.py):
 * `calculate_birth_chart(name, year, month, day, hour, minute, city, country_code)`
-* `query_ancient_texts(query)`
+* `query_modern_astrology_books(query)`
 
 ---
 
-### 2. Formulating Easy-to-Understand Interpretations
+### 2. Modern Psychological RAG & Chain of Thought (CoT) Workflow
 
-When presenting the generated Western chart and RAG insights to the user, follow these guidelines:
-
-1. **Sect Analysis**: Explain whether the chart is a **Day Chart** or **Night Chart** (based on whether the Sun is above or below the horizon) and which luminary (Sun or Moon) leads the chart.
-2. **Ascendant & Chart Ruler**: Explain the **Ascendant** (the rising sign) and its ruling planet, including its house position and **Essential Dignity** (Domicile, Exaltation, Detriment, Fall, or Peregrine).
-3. **Planetary Placements & Solar Phasis**: Detail all 7 traditional planets (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn) by sign, Whole Sign House, dignity, and solar phasis (e.g. Cazimi, Combust, Under the Beams).
-4. **Major Whole Sign Aspects**: Interpret planetary relationships (conjunctions, sextiles, squares, trines, oppositions) based on sign distance.
-5. **Hermetic Lots**: Interpret key mathematical points, specifically the **Lot of Fortune** (material well-being/body) and **Lot of Spirit** (intellect/purpose/career).
+When performing chart readings, follow the 4-step ReAct workflow embedded in the FastMCP server instructions:
+1. **Step 1 (Calculate Chart)**: Call `calculate_birth_chart` to get exact mathematical placements in JSON format.
+2. **Step 2 (Identify Placements)**: Isolate the top 3 dominant placements (e.g. Sun sign/house, Moon sign/house, Ascendant ruler).
+3. **Step 3 (Research Books)**: Call `query_modern_astrology_books` 1 to 3 times to retrieve psychological interpretations.
+4. **Step 4 (Synthesize)**: Blend mathematical JSON data with modern psychological literature for an empathetic, step-by-step reading.
 
 ---
 
@@ -56,7 +54,7 @@ When presenting the generated Western chart and RAG insights to the user, follow
   * *Example*: **Ascendant** *(the zodiac sign rising on the eastern horizon at birth, representing your core identity)*.
   * *Example*: **Domicile** *(when a planet is in the sign it naturally rules, acting like a king in their own castle)*.
   * *Example*: **Combust** *(when a planet is so close to the Sun that its visible rays are hidden)*.
-* **Grounding**: Base all interpretations strictly on the retrieved classical RAG context from ancient authorities (Ptolemy, Vettius Valens, Dorotheus of Sidon) and the generated [`western/chart_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/western/chart_context.json).
+* **Grounding**: Base interpretations on modern psychological literature retrieved from `rag/chroma_astrology_db` and [`western/chart_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/western/chart_context.json).
 * **Verify Cache & Downloads**: Do not repeatedly download astronomical dataset files (`.dat`, `.bsp`). Use local cached files (`hip_main.dat`, `de421.bsp`).
 
 ---
@@ -64,5 +62,6 @@ When presenting the generated Western chart and RAG insights to the user, follow
 ## Technical Details & Constraints
 * **Vedic Engine (`/jyotish/`)**: Uses `jyotishganit` and `skyfield`. Relies on cached NASA JPL DE421 ephemeris and Hipparcos catalog (`hip_main.dat`).
 * **Western Engine (`/western/`)**: Uses `kerykeion` and `swisseph` for tropical calculations and Whole Sign Houses.
-* **RAG Vector Base (`/rag/`)**: Uses Chroma DB in `rag/chroma_astrology_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval.
+* **RAG Vector Base (`/rag/`)**: Uses Chroma DB in `rag/chroma_astrology_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval of modern PDF books (`rag/cleanup_data.py` & `rag/build_rag_pipeline.py`).
+
 
