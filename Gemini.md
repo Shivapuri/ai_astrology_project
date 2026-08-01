@@ -64,9 +64,56 @@ When performing chart readings, follow the 4-step ReAct workflow embedded in the
 
 ---
 
-## Technical Details & Constraints
-* **Vedic Engine (`/jyotish/`)**: Uses `jyotishganit` and `skyfield`. Relies on cached NASA JPL DE421 ephemeris and Hipparcos catalog (`hip_main.dat`).
-* **Western Engine (`/western/`)**: Uses `kerykeion` and `swisseph` for tropical calculations and Whole Sign Houses.
-* **RAG Vector Base (`/rag/`)**: Uses Chroma DB in `rag/chroma_astrology_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval of modern PDF books (`rag/cleanup_data.py` & `rag/build_rag_pipeline.py`).
+## Vedic Horoscope RAG Execution & Interpretation Workflow
 
+### 1. Running Vedic Calculations & Vector Database Queries
+To generate a mathematically precise Parashari Vedic horoscope (using sidereal calculations and True Chitra Paksha / Lahiri ayanamsha) and perform Retrieval-Augmented Generation (RAG) against the local classical Vedic vector database (`rag/chroma_jyotish_db`), invoke the MCP server tools in [`rag/astrology_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/astrology_mcp_server.py):
+* `calculate_vedic_chart(name, year, month, day, hour, minute, latitude, longitude, timezone_offset)`
+* `query_vedic_astrology_books(query)`
+
+Alternatively, execute the Python calculation generator directly from [`jyotish/generate_jyotish.py`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/generate_jyotish.py) to populate [`jyotish/vedic_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/vedic_context.json).
+
+*Example parameters for Georgsmarienhütte, Lower Saxony, Germany (November 10, 1983 at 04:20 AM):*
+* `name="User"`, `year=1983`, `month=11`, `day=10`, `hour=4`, `minute=20`, `latitude=52.2045`, `longitude=8.0494`, `timezone_offset=1.0`
+
+---
+
+### 2. Parashari Jyotish RAG & Chain of Thought (CoT) Workflow
+
+When performing Vedic astrology chart readings, strictly adhere to the 4-step ReAct workflow embedded in the FastMCP server instructions and [`jyotish/vedic_agent_prompt.txt`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/vedic_agent_prompt.txt):
+1. **Step 1 (Calculate Vedic Chart)**: Call `calculate_vedic_chart` to compute exact sidereal planetary degrees, Panchanga, D1 Rasi Chart, D9 Navamsa Chart, and Vimshottari Dasha timeline in JSON format.
+2. **Step 2 (Internal Analysis & Target Identification)**: Perform a structured internal audit of:
+   * **Lagna & Lagna Pati**: Ascendant sign/nakshatra and the position/dignity of its ruling lord in D1 and D9.
+   * **Chandra (Moon) & Manas**: Sidereal sign, exact Nakshatra, Pada, Nakshatra Deity, and mental orientation.
+   * **Divisional Strength (D1 vs D9)**: Vargottama planets (same zodiac sign in D1 & D9) or Neecha Bhanga (cancellation of debilitation) that unlock hidden strength and soul evolution.
+   * **Vimshottari Dasha Timeline**: Identify the birth Dasha and the currently running Mahadasha, Antardasha, and Pratyantardasha periods.
+3. **Step 3 (Research Classical Vedic Books)**: Call `query_vedic_astrology_books` 1 to 3 times to retrieve authoritative classical shlokas (Brihat Parashara Hora Shastra, Brihat Jataka) and VedAstro rules from `rag/chroma_jyotish_db`.
+4. **Step 4 (Synthesize Empowering 4-Part Reading)**: Blend classical RAG retrievals with exact mathematical calculations to construct an intuitive, empowering 4-part reading focusing on Karma, Dharma, and Timelines, translating ancient fatalistic language into modern constructive self-knowledge.
+
+---
+
+### 3. Vedic Explanation Style & Communication Rules
+* **Explain simply and intuitively**: Avoid overwhelming technical or Sanskrit jargon without immediate clarification. Frame concepts using everyday analogies and plain English (similar to explaining to a friendly beginner).
+* **Introduce Sanskrit / Jyotish terms incrementally**: On first introduction of any technical Vedic term, immediately provide a brief, easy-to-understand definition in parentheses or a short sentence.
+  * *Example*: **Lagna** *(the zodiac sign rising on the eastern horizon at birth, representing your physical orientation in the world and core life path)*.
+  * *Example*: **Nakshatra** *(one of 27 lunar constellations along the zodiac that reveal emotional reflexes, inner mindsets, and subconscious memory)*.
+  * *Example*: **Vargottama** *(when a planet retains the exact same zodiac sign in both the birth chart and the spiritual D9 Navamsa chart, giving it tremendous steadfast strength)*.
+  * *Example*: **Vimshottari Dasha** *(the classic planetary period system that acts as an internal timer, unlocking major karmic chapters and life focus areas over a 120-year timeline)*.
+* **Dominant Sidereal Sign & Nakshatra Overviews**: Before analyzing houses or planetary aspects (*Graha Drishti*), always provide a foundational overview of the archetypal nature, element, symbol, and emotional themes of the native's Lagna and Moon Nakshatra.
+* **The Karmic & Dharmic Lens**: Translate classical texts into empowering guidance organized across 4 essential areas:
+  1. **Lagna & Physical Identity (D1 Rasi)**: Core vitality, motivation, health tendencies, and physical interactions with the real world.
+  2. **Chandra & Mental Conditioning (Mind & Emotions)**: Subconscious mental landscape, emotional nutrition, and maintaining internal peace (*Manas*).
+  3. **D9 Navamsa & Soul Purpose (Dharma & Destiny)**: Spiritual character maturation, relationship alignment, and inner alignment with personal duty (*Dharma*).
+  4. **Vimshottari Dasha Timeline & Karmic Evolution**: Timing of current life chapters, opportunities, challenges, and constructive remedies (*Upayas*) or ethical habits for navigating active cycles.
+* **Strict Engine Separation**: Never introduce Western outer planets (Uranus, Neptune, Pluto) or Tropical house rules into a Jyotish analysis. Rely solely on Parashari rules and Whole Sign Graha Drishti.
+* **Grounding**: Ensure interpretations are solidly grounded in authenticated classical rules retrieved from `rag/chroma_jyotish_db` and the data in [`jyotish/vedic_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/vedic_context.json).
+
+---
+
+## Technical Details & Constraints
+* **Vedic Engine (`/jyotish/`)**: Uses `jyotishganit` and `skyfield` for sidereal computations. Relies on cached NASA JPL DE421 ephemeris and Hipparcos catalog (`hip_main.dat`).
+* **Western Engine (`/western/`)**: Uses `kerykeion` and `swisseph` for tropical calculations and Whole Sign Houses.
+* **RAG Vector Bases (`/rag/`)**: 
+  * **Western DB**: Uses Chroma DB in `rag/chroma_astrology_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval of modern literature.
+  * **Vedic DB**: Uses Chroma DB in `rag/chroma_jyotish_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval of classical BPHS shlokas and VedAstro rules (`rag/fetch_jyotish_data.py` & `rag/build_jyotish_rag.py`).
 
