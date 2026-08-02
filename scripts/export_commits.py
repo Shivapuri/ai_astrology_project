@@ -15,19 +15,31 @@ def get_commit_hashes(count):
 
 
 def get_commit_details(commit_hash):
-    """Retrieves metadata and diff for a specific commit."""
+    """Retrieves metadata and code diff for a specific commit, excluding heavy assets & export files."""
     try:
-        # --stat adds a summary of files changed, --patch adds the diff
-        # --unified=3 ensures 3 lines of context around changes
-        # Exclude large raw text datasets and existing export files to keep file size reasonable
+        # --patch adds the diff, --unified=3 ensures standard context around changes
+        # Exclude self-referential export files, HTML dashboards, SVG graphics, and binary images
         cmd = [
-            "git", "show", "--stat", "--patch", "--unified=3", commit_hash,
-            "--", ":(exclude)rag/jyotish_rag_data/*", ":(exclude)commits_export.md"
+            "git", "show", "--patch", "--unified=3", commit_hash,
+            "--",
+            ":(exclude)commits_export.md",
+            ":(exclude)code_export.txt",
+            ":(exclude)*.html",
+            ":(exclude)*.svg",
+            ":(exclude)*.png",
+            ":(exclude)*.jpg",
+            ":(exclude)*.jpeg",
+            ":(exclude)*.dat",
+            ":(exclude)*.bsp",
+            ":(exclude)rag/jyotish_rag_data/*",
+            ":(exclude)rag/chroma_astrology_db/*",
+            ":(exclude)rag/chroma_jyotish_db/*"
         ]
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error fetching details for commit {commit_hash}: {e}"
+
 
 
 def export_commits(count, output_file="commits_export.md"):
@@ -38,12 +50,7 @@ def export_commits(count, output_file="commits_export.md"):
         return
 
     # Use the project root for the output file
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    if os.path.basename(script_dir) == "scripts":
-        project_root = os.path.dirname(script_dir)
-    else:
-        project_root = script_dir
-
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     output_path = os.path.join(project_root, output_file)
 
     with open(output_path, "w", encoding="utf-8") as f:

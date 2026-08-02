@@ -1,30 +1,16 @@
+#!/Users/hajnaljanos/.local/bin/tts_venv/bin/python3
 import os
 import re
-import ssl
+import sys
+import argparse
 import subprocess
-import torch
-import torchaudio as ta
-import nltk
-from nltk.tokenize import sent_tokenize
-
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
-else:
-    ssl._create_default_https_context = _create_unverified_https_context
-
-# Download NLTK tokenizers if needed
-nltk.download('punkt', quiet=True)
-nltk.download('punkt_tab', quiet=True)
-
-from chatterbox.tts import ChatterboxTTS
+import numpy as np
+import soundfile as sf
+import supertonic
 
 # Paths
 ASTRA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 REPORT_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_full_reading_report.md")
-TTS_VOICE_PATH = "/Users/hajnaljanos/PycharmProjects/Opensource_tts/voices/Artlist_Esteem.wav"
-OUTPUT_DIR = os.path.join(ASTRA_DIR, "western", "audio_temp_chunks")
 FINAL_WAV_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_reading_audio.wav")
 FINAL_MP3_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_reading_audio.mp3")
 
@@ -35,105 +21,116 @@ def clean_markdown_for_speech(text):
     for line in lines:
         line = line.strip()
         if line.startswith('#') or line == '---' or not line:
-            # Add pause between sections
             cleaned_lines.append("")
         else:
             cleaned_lines.append(line)
     
     text = " ".join(cleaned_lines)
     
-    # Replace degrees and astrological notation
-    # e.g., 0°42' -> 0 degrees and 42 minutes of
+    # Replace degrees and astrological notation (e.g., 0°42' -> 0 degrees and 42 minutes)
     text = re.sub(r'(\d+)°(\d+)\'?', r'\1 degrees and \2 minutes of', text)
     
-    # Strip out markdown bold, italics, bullets
-    text = re.sub(r'[\*\#\_\|]', ' ', text)
-    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text) # remove markdown links, preserve text
+    # Strip out markdown bold, italics, bullets, hashtags, backticks
+    text = re.sub(r'[\*\#\`\_\|]', ' ', text)
+    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)  # remove markdown links, preserve text
+    text = re.sub(r'^[ \t]*[-+]\s+', '', text, flags=re.MULTILINE)
+    text = re.sub(r'^[ \t]*\d+\.\s+', '', text, flags=re.MULTILINE)
     
     # Replace common abbreviations for clearer pronunciation
     text = text.replace("WSH", "Whole Sign Houses").replace("e.g.,", "for example,")
     
-    # Remove excess whitespace
+    # Normalize whitespace
     text = re.sub(r'\s+', ' ', text).strip()
     return text
 
 def main():
-    print("--- Astrological Reading Audio Generator ---")
-    if not os.path.exists(REPORT_PATH):
-        print(f"Error: Report file not found at {REPORT_PATH}")
+    parser = argparse.ArgumentParser(description="Astrological Reading Audio Generator using Supertonic TTS")
+    parser.add_argument("--report", default=REPORT_PATH, help="Path to input report markdown file")
+    parser.add_argument("--voice", default="F1", help="Voice style (e.g., F1, F2, M1, M2)")
+    parser.add_argument("--speed", type=float, default=1.1, help="Speech rate multiplier (default: 1.1)")
+    parser.add_argument("--output-wav", default=FINAL_WAV_PATH, help="Path for generated WAV file")
+    parser.add_argument("--output-mp3", default=FINAL_MP3_PATH, help="Path for generated MP3 file")
+    args = parser.parse_args()
+
+    print(f"--- Supertonic TTS Astrological Reading Audio Generator ---")
+    print(f"Voice style: {args.voice} | Speed multiplier: {args.speed}")
+    
+    if not os.path.exists(args.report):
+        print(f"Error: Report file not found at {args.report}")
         return
 
-    with open(REPORT_PATH, "r", encoding="utf-8") as f:
+    with open(args.report, "r", encoding="utf-8") as f:
         raw_text = f.read()
 
-    print("Cleaning text for speech synthesis...")
+    print("Cleaning markdown text for fluid vocal synthesis...")
     speech_text = clean_markdown_for_speech(raw_text)
 
-    # Detect device (MPS for Apple Silicon)
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    print(f"Initializing Chatterbox TTS engine on device: {device}...")
+    print(f"Initializing Supertonic TTS engine...")
+    tts = supertonic.TTS(auto_download=True)
+    voice_style = tts.get_voice_style(args.voice)
+
+    # Split into sentence chunks for smooth synthesis
+    sentences = re.split(r'(?<=[.!?])\s+', speech_text)
+    valid_sentences = []
     
-    map_location = torch.device(device)
-    torch_load_original = torch.load
-    def patched_torch_load(*args, **kwargs):
-        if 'map_location' not in kwargs:
-            kwargs['map_location'] = map_location
-        return torch_load_original(*args, **kwargs)
-    torch.load = patched_torch_load
-
-    model = ChatterboxTTS.from_pretrained(device=device)
-
-    # Group into readable sentence chunks (max ~450 characters each)
-    print("Tokenizing script into vocal narrative chunks...")
-    sentences = sent_tokenize(speech_text)
-    chunks = []
-    current_chunk = ""
-    for sentence in sentences:
-        if len(current_chunk) + len(sentence) + 1 <= 450:
-            current_chunk += f"{sentence} "
-        else:
-            chunks.append(current_chunk.strip())
-            current_chunk = f"{sentence} "
-    if current_chunk.strip():
-        chunks.append(current_chunk.strip())
-
-    print(f"Divided narrative into {len(chunks)} continuous audio segments.")
-
-    if not os.path.exists(OUTPUT_DIR):
-        os.makedirs(OUTPUT_DIR)
-
-    all_wavs = []
-    for idx, chunk in enumerate(chunks, start=1):
-        print(f"Synthesizing Segment [{idx}/{len(chunks)}] ({len(chunk)} chars)...")
-        wav = model.generate(
-            chunk,
-            audio_prompt_path=TTS_VOICE_PATH,
-            exaggeration=1.5,
-            cfg_weight=0.45
-        )
-        chunk_file = os.path.join(OUTPUT_DIR, f"chunk_{idx:03d}.wav")
-        ta.save(chunk_file, wav, model.sr)
-        all_wavs.append(wav)
-
-    print("\nConcatenating audio segments into final master recording...")
-    if all_wavs:
-        concatenated_wav = torch.cat(all_wavs, dim=-1)
-        ta.save(FINAL_WAV_PATH, concatenated_wav, model.sr)
-        print(f"[*] Successfully created Master Audio Recording: {FINAL_WAV_PATH}")
-
-        # Attempt mp3 conversion via ffmpeg
+    for s in sentences:
+        s = s.strip()
+        if not s:
+            continue
         try:
-            cmd = ['ffmpeg', '-i', FINAL_WAV_PATH, '-b:a', '192k', '-y', FINAL_MP3_PATH]
-            subprocess.run(cmd, check=True, capture_output=True)
-            print(f"[*] Successfully converted to MP3 format: {FINAL_MP3_PATH}")
-        except Exception as e:
-            print(f"Notice: MP3 conversion via ffmpeg skipped or unsuccessful ({e}). WAV file remains ready.")
+            is_valid, unsupported = tts.model.text_processor.validate_text(s)
+            if not is_valid:
+                for char in unsupported:
+                    s = s.replace(char, '')
+        except Exception:
+            pass
+        if s.strip():
+            valid_sentences.append(s.strip())
 
-        # Cleanup temporary audio chunks
-        for f in os.listdir(OUTPUT_DIR):
-            os.remove(os.path.join(OUTPUT_DIR, f))
-        os.rmdir(OUTPUT_DIR)
-        print("Cleaned up temporary vocal segments.")
+    print(f"Synthesizing {len(valid_sentences)} narrative sentences...")
+    
+    audio_chunks = []
+    total_duration = 0.0
+    
+    for idx, sentence in enumerate(valid_sentences, start=1):
+        print(f"Synthesizing [{idx}/{len(valid_sentences)}] ({len(sentence)} chars): \"{sentence[:40]}...\"")
+        try:
+            wav, duration = tts.synthesize(
+                text=sentence,
+                lang="na",
+                voice_style=voice_style,
+                total_steps=8,
+                speed=args.speed
+            )
+            # wav is shape (1, N), extract 1D samples
+            samples = wav.squeeze()
+            audio_chunks.append(samples)
+            if isinstance(duration, (int, float)):
+                total_duration += duration
+            else:
+                total_duration += float(np.sum(duration))
+        except Exception as err:
+            print(f"Warning: Failed to synthesize sentence {idx}: {err}")
+
+    if not audio_chunks:
+        print("Error: No audio segments were successfully generated.")
+        return
+
+    print("\nConcatenating audio segments into master recording...")
+    final_audio = np.concatenate(audio_chunks)
+
+    # Save WAV audio file
+    sf.write(args.output_wav, final_audio, tts.sample_rate)
+    print(f"[*] Successfully saved WAV audio recording: {args.output_wav}")
+    print(f"[*] Total Audio Duration: {total_duration:.2f} seconds")
+
+    # Convert to MP3 if ffmpeg is available
+    try:
+        cmd = ['ffmpeg', '-i', args.output_wav, '-b:a', '192k', '-y', args.output_mp3]
+        subprocess.run(cmd, check=True, capture_output=True)
+        print(f"[*] Successfully converted to MP3 format: {args.output_mp3}")
+    except Exception as e:
+        print(f"Notice: MP3 conversion via ffmpeg skipped or unsuccessful ({e}). WAV file remains ready.")
 
     print("--- Audio Generation Complete! ---")
 
