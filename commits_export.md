@@ -1,815 +1,463 @@
 # Git Commit Export
-Generated on: Sun Aug  2 11:27:45 IST 2026
+Generated on: Sun Aug  2 16:02:22 IST 2026
 Number of commits requested: 5
 
 --------------------------------------------------------------------------------
 
-## Commit 1: 98a2721
+## Commit 1: 13c220d
 
 ```diff
-commit 98a272181e5b1ad7efcf3f9e346bef341e6d2527
+commit 13c220db0687be3d6e28860292cb6076cd17fc88
 Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Sun Aug 2 11:17:21 2026 +0530
+Date:   Sun Aug 2 14:37:16 2026 +0530
 
-    docs: Update Western chart analysis with Day-in-the-Life conversational format
+    Add Parallel Specialized Multi-Agent Western Astrology Pipeline (Headless AGY mode) and markdown reading reports
 
-diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
-index c357b45..729a2b3 100644
---- a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
-+++ b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
-@@ -8,41 +8,52 @@
- 
- ---
- 
--### Part 1: The Psychological Engine (Solar-Lunar Blend)
-+## Part 1: The Psychological Engine (Solar-Lunar Blend)
- 
--In our psychological approach to astrology, your birth chart is a dynamic roadmap of personal growth rather than a static decree of fate. At the very core of your personality sits what we call the **Solar-Lunar Blend**—the working relationship between your Sun and your Moon, which act together like an engine. Your Sun represents your **Core Identity** (your engine's fuel and life-force), while your Moon symbolizes your **Reigning Need** (your deepest emotional hunger and the destination your engine is driving toward to feel entirely secure).
-+### Professional Synthesis
-+In our psychological approach to astrology, your birth chart functions as a living engine for personal development. Your Sun represents your **Core Identity**—the essential generator of your vitality, ego-will, and desire to be recognized. Your Moon represents your **Reigning Need**—the profound emotional hunger that requires consistent fulfillment for you to feel completely grounded and safe. 
- 
--* **Your Core Identity (Sun in Scorpio, 2nd House):** You are naturally fueled by psychological depth, determination, and intense inner resilience. In Scorpio, your ego does not tolerate superficiality; you seek the underlying truth of matters and possess an extraordinary ability to transform and endure. Because your Sun resides in your Second House (the arena of personal resources, income, and intrinsic self-worth), your life energy is primarily directed toward building solid assets, mastering practical skills, and discovering an unshakeable sense of self-value.
--* **Your Reigning Need (Moon in Capricorn, 4th House):** Your non-negotiable emotional hunger is for stability, order, and predictable architecture in your personal life. In Capricorn, the Moon is in what traditional astrology calls **Detriment** (a position opposite its natural home, meaning emotions are processed through logic, structure, and responsibility rather than sentimental gushing). You experience peace only when you know your foundations are secure. Located in your Fourth House (the domain of home, family, and inner sanctuary), your reigning need demands a calm, well-regulated, and dependable domestic bedrock.
-+With your Sun in Scorpio resting in your **Second House** (the astrological zone governing personal wealth, practical assets, and intrinsic self-worth), your ego operates with intense depth, probing intuition, and an unyielding drive to generate rock-solid resource security. Meanwhile, your Moon resides in Capricorn in your **Fourth House** (the sphere of home, family, and domestic sanctuary). In traditional astrology, the Moon in Capricorn is in its **Detriment** (sitting opposite its familiar home, meaning emotional security is gained through logical architecture, structure, and routine rather than fluid sentimentality). Combined into a unified engine, you channel the perceptive, determined energy of your Scorpio Sun directly into building and maintaining the unshakeable domestic bedrock required by your Capricorn Moon.
- 
--**The Synthesis:** Your internal engine operates on a powerful formula: you use the probing, strategic, and resourceful resilience of your Scorpio Sun to actively build and defend the structured, enduring emotional sanctuary demanded by your Capricorn Moon. You achieve inner peace when you can see the tangible results of your self-reliance protecting your personal world.
-+### Day-in-the-Life Reality
-+Picture an average Tuesday at home or in the office. Because your Scorpio Sun thrives on substance and competence, you aren't someone who wastes time on superficial office chatter or disorganized projects; instead, you gravitate toward solving real problems and organizing practical outcomes. 
-+
-+When five o'clock rolls around, your Capricorn Moon takes over, craving an orderly, predictable retreat. While a colleague might unwind by diving into a bustling bar or a chaotic social event, your version of genuine self-care is stepping into a calm, structured home where you have total control over your environment. You relax by tending to your tangible world—whether that is planning investments, organizing a home project, or quietly enjoying the peaceful sanctuary of a home where every boundary is respected.
- 
- ---
- 
--### Part 2: The Vessel and The Steersman (Life Direction)
-+## Part 2: The Vessel and The Steersman (Life Direction)
-+
-+### Professional Synthesis
-+To explore how you physically navigate the world to satisfy your emotional hunger, we draw on classical Greek astrology. Imagine your life as a sea voyage. Your rising sign, or **Ascendant** (the zodiac constellation ascending on the eastern horizon at your birth), acts as **The Helm**—the vessel itself and your habitual manner of presenting yourself to others. The planet that naturally rules your Ascendant is called **The Steersman**, the active captain making conscious navigational decisions at the wheel.
-+
-+With Libra rising, your Helm is constructed for interpersonal harmony, tactful diplomacy, and aesthetic fairness. Because Venus rules Libra, Venus serves as your personal Steersman. In an extraordinary alignment, your Venus resides directly inside Libra in your **First House** (the personal arena of vitality, physical demeanor, and personal identity). This puts your captain in its natural **Domicile** (at home, possessing formidable authority and abundant resources to achieve its goals). Furthermore, because your captain sits right beside the steering wheel inside the First House, there is zero **Aversion** (an ancient concept describing when a ruling planet is disconnected from or blind to the Ascendant). You wield immense personal agency, intuitive poise, and an uncanny synchronization between your internal decisions and your outward charm.
- 
--To understand how you navigate the physical world to satisfy this deep emotional hunger, we look to classic Greek astrology. Imagine your life as a sea voyage. Your rising sign—or **Ascendant** (the sign rising on the eastern horizon at the exact moment of your birth)—is **The Helm** (your ship's physical hull and how you present yourself to the world). The planet that naturally rules this rising sign is called **The Steersman** (the captain at the wheel making your conscious decisions).
-+### Day-in-the-Life Reality
-+In daily practice, this means you enter a room with an effortlessly gracious and welcoming presence. Imagine walking into a high-stakes team meeting or a tense negotiation where everyone else is on edge or slightly defensive. While your inner Scorpio Sun is sharply analytical and observing every unspoken power dynamic, your outer interface—Venus sitting comfortably at home in Libra—naturally smooths the waters. 
- 
--* **The Helm (Libra Rising in the 1st House):** Your physical vessel interfaces with the physical world through diplomacy, balance, and relational grace. You come across to others as approachable, fair-minded, highly considerate, and visually attuned to harmony.
--* **The Steersman (Venus in Libra):** Because Venus rules Libra, Venus is the captain of your astrological ship. Remarkably, your Venus sits directly inside Libra in your **First House** (the personal zone of self-expression and physical presence). In astrology, when a planet sits in the sign it naturally rules, it is in its **Domicile** (at home, fully resourced and wielding natural authority).
--* **Direct Command at the Wheel:** Because your captain (Venus) is sitting directly inside your Helm (the First House), there is zero **Aversion** (a classical term for when a guiding planet is blind to or disconnected from the ship's steering wheel). This is a phenomenal asset! You possess profound personal agency, immediate self-awareness, and natural charm. When you decide on a course of action, your presentation and intentions move together in complete synchronization. You lead and navigate your life path through relationship mastery, artistic sensibility, and graceful authority.
-+You instinctively know how to modulate your tone, acknowledge different perspectives, and present solutions that feel balanced and fair to all parties. People are immediately disarmed by your polished, approachable demeanor, frequently entrusting you with leadership or mediating roles because your personal poise inspires trust and ease.
- 
- ---
- 
--### Part 3: Developmental Tension & The Pain Body
-+## Part 3: Developmental Tension & The Pain Body
-+
-+### Professional Synthesis
-+True character evolution demands friction—what psychological astrology terms **Developmental Tension**. Rather than viewing difficult angles between planets as negative obstacles, we see them as indispensable athletic training for your character. In your Second House of personal resources, your Scorpio Sun and Mercury (the planet of mindset and analysis) stand shoulder-to-shoulder with Saturn (the planet of discipline, rigorous standard-setting, and hard-won maturation) in a tight **Conjunction** (a potent gathering where planetary energies merge together). 
-+
-+This concentration of energy often forms a sensitized emotional zone or **Pain Body** around financial vulnerability, material predictability, or self-worth. In earlier stages of life, you may have encountered strict standards, financial anxieties, or a lingering feeling that you had to work twice as hard to prove your practical value. In response, your ego naturally constructs an overcompensating defensive reflex: working tirelessly to achieve unquestionable competence and absolute financial self-reliance so no one can ever challenge your worth. Additionally, your Capricorn Moon forms a sharp **Square** (a dynamic 90-degree angle of energetic friction) to your Libra Venus. This manifests as an internal dialogue between your desire to keep interpersonal interactions pleasant and accommodating (Venus in Libra) and your core emotional instinct to retreat behind self-protective walls when your private stability feels compromised (Moon in Capricorn).
- 
--True personal growth requires psychological friction—what we call **Developmental Tension**. Rather than viewing challenging astrological angles as "bad," we see them as muscle-building exercises that push your ego toward real maturity and depth.
-+### Day-in-the-Life Reality
-+Consider your automatic reactions during a heated disagreement or when an unexpected financial expense suddenly threatens your planned budget. Under heavy stress, your first instinct isn't emotional outbursts; it is a silent, tactical retreat. If an associate or partner delivers sharp criticism, that Second House Saturn-Sun conjunction can momentarily awaken an old echo of self-doubt. 
- 
--* **The Pain Body in Self-Worth (Sun, Mercury, and Saturn Conjunction in Scorpio):** In your Second House of personal resources, your Scorpio Sun and Mercury (the planet of mind and communication) stand shoulder-to-shoulder with Saturn (the planet of ambition, structure, discipline, and hard lessons) in a tight **Conjunction** (an intense alignment where planetary energies merge). This concentration of energy often forms an energetic bruise or **Pain Body** around feelings of financial vulnerability or inner self-worth. In earlier stages of life, you may have experienced harsh criticism, scarcity fears, or exceptionally high expectations regarding your competence. This tension can make you initially prone to self-doubt or feeling like you must work twice as hard just to justify your value.
--* **The Overcompensation Drive:** To protect this sensitized zone, your ego may push you toward tireless achievement—working compulsively to attain absolute financial independence and total professional mastery so that no one can ever question your worth.
--* **The Relational Square (Moon Square Venus):** Your Capricorn Moon in the sphere of home forms a **Square** (a 90-degree angle of energetic friction and dynamic tension) with your Venus at the Helm in Libra. This manifests as an internal tug-of-war: your outer captain (Venus in Libra) wants to be gracious, accommodating, and agreeable to maintain peace in relationships, while your deeper emotional core (Moon in Capricorn) craves strict boundaries, control, and sometimes emotional walls to feel safe. You may find yourself occasionally stretching too far to please others, only to retreat behind emotional barriers when your need for personal space and quiet control goes unmet.
-+To protect your vulnerability, you might abruptly drop your warm Libra sociability and shift into hyper-reliant Capricorn fortress mode—shutting down conversation, drawing firm boundaries, and attempting to shoulder every financial or logical burden entirely on your own without asking for support. You might catch yourself staying up late double-checking a budget spreadsheet or over-preparing a presentation just to preemptively guard against any possible external criticism.
- 
- ---
- 
--### Part 4: The Unified Path (Counseling Strategy)
-+## Part 4: The Unified Path (Counseling Strategy)
- 
--The mastery of your birth chart happens when you intentionally connect your highly authoritative captain (The Steersman) with your deeply feeling internal engine (the Solar-Lunar Blend), while turning your past sensitivities into lasting real-world wisdom. 
-+Bringing your chart into master-level harmony means consciously entrusting your daily navigation to your brilliant captain—Venus at home in Libra—while reframing old vulnerabilities into enduring strength. Here is your actionable blueprint for daily life:
- 
--1. **Employ Your Captain to Guard Your Sanctuary:** You do not have to choose between being socially gracious (Libra Venus) and preserving your private boundaries (Capricorn Moon). In fact, your exceptional interpersonal charm and fairness are the precise tools you must use to build trustworthy, supportive relationships that honor your domestic peace. By communicating your boundaries with diplomatic grace rather than defensive walls, you fulfill your reigning need for a dependable sanctuary.
--2. **Transform Self-Doubt into Absolute Mastery:** Notice how your 2nd House cluster (Sun, Mercury, and Saturn in Scorpio) initially creates anxiety around self-worth and practical security. In time, Saturn's demanding lessons evolve into your greatest enduring strength. By adopting disciplined, structured financial habits and honoring your deep psychological insights, you transmute earlier vulnerability into genuine rock-solid self-reliance. You don't need to overwork out of a fear of inadequacy; instead, view your immense discipline as the steady architecture that guarantees your lasting freedom.
--3. **Your Holistic Trajectory:** You are a gifted diplomat and strategist sailing a remarkably well-equipped vessel. When you allow your natural charm and fairness (Venus in Libra at the Helm) to take the lead, backed by the deep financial and emotional resourcefulness of your Scorpio Sun, you effortlessly create the lasting stability and quiet emotional security your Capricorn Moon so deeply craves.
-+* **Deploy Diplomacy to Protect Your Peace:** You do not have to alternate between accommodating others (Libra Venus) and putting up isolated walls (Capricorn Moon). In your everyday relationships, use your remarkable conversational charm to establish honest boundaries early on. Delivering a respectful, graceful "no" to draining commitments allows you to maintain social goodwill while protecting the quiet domestic sanctuary your Moon craves.
-+* **Transform Discipline from Fear to Mastery:** Remind yourself that your internal rigor (Saturn conjunct Sun) is actually your greatest long-term advantage, not a sign of deficit. When you feel a compulsive urge to over-prepare or worry about future security, take a conscious breath. Recognize that your structured habits have already built a bedrock of competence. You no longer need to work out of a fear of vulnerability; you operate from a calm position of lasting endurance.
-+* **Your Daily Alignment:** Trust your warm Libra grace to handle social first impressions, let your penetrating Scorpio insight analyze strategic decisions, and give yourself unmitigated permission to retreat into your structured, peaceful home sanctuary at the end of the day.
-
-```
-
---------------------------------------------------------------------------------
-
-## Commit 2: 0b8f4f4
-
-```diff
-commit 0b8f4f48eb4114ffe07272e02af3cfa7d8ebbaa9
-Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Sun Aug 2 11:12:30 2026 +0530
-
-    refactor: Update Western and Jyotish XML prompts to bridge theory with Day-in-the-Life reality examples
-
-diff --git a/prompts/jyotish_analysis.xml b/prompts/jyotish_analysis.xml
-index d6cfc0e..376758d 100644
---- a/prompts/jyotish_analysis.xml
-+++ b/prompts/jyotish_analysis.xml
-@@ -19,16 +19,28 @@ Inside your <scratchpad>, explicitly map out:
- </chain_of_thought_enforcement>
- 
- <communication_style>
--1. Explain simply and intuitively: Avoid overwhelming Sanskrit or technical jargon without clear English definitions. Frame complex Vedic dynamics using everyday analogies.
--2. Introduce technical terms incrementally: On the first mention of any Vedic term (e.g., Lagna, Nakshatra, Vargottama, Vimshottari Dasha, Upaya), immediately provide a concise, intuitive explanation in parentheses.
--3. Transform Fatalism into Empowering Dharma: Do not use rigid, fatalistic language. Translate ancient classical rules into empowering, practical self-knowledge and actionable growth habits.
--4. Empathetic Tone: Speak directly to the native as a wise, encouraging guide. Use the word "You".
-+1. Conversational & Natural Pacing: Write as if you are having a relaxed, friendly conversation over tea. Keep sentences relatively short, punchy, and easy to digest. Keep paragraphs breathable.
-+2. Bridge Theory and Reality: First, provide the simplified professional Jyotish explanation. Then, immediately ground it with a highly concrete "Day-in-the-Life" behavioral example. What does this ancient rule actually look like in modern life?
-+3. Concrete Examples: Translate karma into action. (e.g., "Because your Moon is in this Nakshatra, in daily life this means you are the person your friends call during a crisis because you stay completely unbothered by emotional chaos.")
-+4. Explain simply: Avoid overwhelming Sanskrit. If using a term like "Lagna", "Nakshatra", or "Vargottama", define it briefly in parentheses.
-+5. Empathetic Tone: Speak directly to the native as a wise, observant, and encouraging guide. Use "You".
- </communication_style>
- 
- <output_format>
--Your final output MUST be wrapped in <final_reading> tags and contain 4 parts:
--Part 1: Panchanga & Lagna Architecture
--Part 2: D1 Rasi & D9 Navamsa Placements
--Part 3: Vimshottari Dasha Timeline & Karmic Evolution
--Part 4: Practical Dharma & Remedies (Upayas)
-+Your final output MUST be wrapped in <final_reading> tags. For each of the first 3 parts, you MUST provide the "Professional Synthesis" followed immediately by a "Day-in-the-Life Reality" paragraph.
-+
-+Part 1: Panchanga & Lagna Architecture (D1 Rasi)
-+- Professional Synthesis: Explain the Lagna, Nakshatra, and Lagna Lord.
-+- Day-in-the-Life Reality: Give a concrete example of their physical vitality, motivations, and how they tackle practical daily tasks.
-+
-+Part 2: Chandra & Mental Conditioning (Mind & Emotions)
-+- Professional Synthesis: Explain the Moon sign, Nakshatra, Pada, and Deity.
-+- Day-in-the-Life Reality: Give a concrete example of how they process emotions, relax after a long day, or handle intimate relationships.
-+
-+Part 3: D9 Navamsa & Soul Purpose (Dharma)
-+- Professional Synthesis: Explain the hidden strengths, Vargottama planets, and shifts in D9.
-+- Day-in-the-Life Reality: Give a concrete example of how their character matures over time or how they behave in a committed marriage/partnership.
-+
-+Part 4: Vimshottari Dasha Timeline & Practical Dharma
-+- Explain the current running Dasha period and offer 2-3 highly practical, modern daily habits (Upayas) they can use to navigate this chapter successfully.
- </output_format>
-diff --git a/prompts/western_analysis.xml b/prompts/western_analysis.xml
-index 804e712..c0f00d5 100644
---- a/prompts/western_analysis.xml
-+++ b/prompts/western_analysis.xml
-@@ -215,17 +215,30 @@ BEFORE outputting the final reading, you MUST open a <scratchpad> tag and explic
- </chain_of_thought_enforcement>
- 
- <communication_style>
--1. Explain simply and intuitively: Avoid overwhelming technical jargon. Frame complex psychological astrology concepts using everyday analogies and plain, empathetic English.
--2. Introduce technical terms incrementally: On the first mention of any specialized term (like Ascendant, Domicile, Detriment, Combustion, etc.), immediately provide a brief, easy-to-understand definition in parentheses.
--3. Empathetic Tone: Do not sound like an academic textbook. Speak directly to the native as a compassionate, empowering counselor. Use the word "You".
-+1. Conversational & Natural Pacing: Write as if you are having a relaxed, friendly conversation over coffee. Keep sentences relatively short, punchy, and easy to digest. Keep paragraphs breathable.
-+2. Bridge Theory and Reality: First, provide the simplified professional astrological explanation. Then, immediately ground it with a highly concrete "Day-in-the-Life" behavioral example. 
-+3. Concrete Examples: When giving a Day-in-the-Life example, be specific. For example: "While your Scorpio Sun makes you intense, your practical Moon means you avoid chaotic parties. You find it easier to make social contact in a structured environment like the workplace, where having a task at hand dilutes the overwhelming intensity of first contact."
-+4. Explain simply: Avoid overwhelming technical jargon. If using a term like "Ascendant" or "Domicile", define it briefly in parentheses.
-+5. Empathetic Tone: Speak directly to the native as a compassionate, warm, and observant astrologer. Use "You".
- </communication_style>
- 
- <output_format>
--Your final output MUST be wrapped in <final_reading> tags and contain exactly 4 parts:
-+Your final output MUST be wrapped in <final_reading> tags. For each of the first 3 parts, you MUST provide the "Professional Synthesis" followed immediately by a "Day-in-the-Life Reality" paragraph.
-+
- Part 1: The Psychological Engine (Solar-Lunar Blend)
-+- Professional Synthesis: Explain the Sun (Core Identity) and Moon (Reigning Need) dynamic.
-+- Day-in-the-Life Reality: Give a concrete example of how this engine operates on a normal day, at home or at work.
-+
- Part 2: The Vessel and The Steersman (Life Direction)
-+- Professional Synthesis: Explain the Ascendant (Helm) and Chart Ruler (Steersman) by house and dignity.
-+- Day-in-the-Life Reality: Give a concrete example of how they naturally navigate social situations, first impressions, or public life.
-+
- Part 3: Developmental Tension & The Pain Body
--Part 4: The Unified Path (Counseling Strategy: How they use their Steersman to satisfy their Moon)
-+- Professional Synthesis: Explain the hardest aspects, debilitations, and defensive structures.
-+- Day-in-the-Life Reality: Give a concrete example of how they react under stress, in arguments, or when feeling vulnerable.
-+
-+Part 4: The Unified Path (Counseling Strategy)
-+- Provide a clear, actionable summary of how they can consciously use their Steersman to satisfy their Moon's needs in their daily life.
- 
- Additionally, the analysis MUST always be automatically saved as a Markdown (.md) file in the `western/` directory formatted as `{Name}_{YYYY-MM-DD}_{HH-MM}_Western_Analysis.md`.
- </output_format>
-
-```
-
---------------------------------------------------------------------------------
-
-## Commit 3: 769c994
-
-```diff
-commit 769c994fe411588a417f83a824405fc060be0faa
-Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Sun Aug 2 10:11:58 2026 +0530
-
-    feat: Add Western chart analysis, auto MD saving prompt rule, and Supertonic audio generation for 1983 Male native
-
-diff --git a/prompts/western_analysis.xml b/prompts/western_analysis.xml
-index 52c60e3..804e712 100644
---- a/prompts/western_analysis.xml
-+++ b/prompts/western_analysis.xml
-@@ -226,4 +226,6 @@ Part 1: The Psychological Engine (Solar-Lunar Blend)
- Part 2: The Vessel and The Steersman (Life Direction)
- Part 3: Developmental Tension & The Pain Body
- Part 4: The Unified Path (Counseling Strategy: How they use their Steersman to satisfy their Moon)
-+
-+Additionally, the analysis MUST always be automatically saved as a Markdown (.md) file in the `western/` directory formatted as `{Name}_{YYYY-MM-DD}_{HH-MM}_Western_Analysis.md`.
- </output_format>
-diff --git a/scripts/export_commits.py b/scripts/export_commits.py
-index 8896b5e..388a6ce 100644
---- a/scripts/export_commits.py
-+++ b/scripts/export_commits.py
-@@ -15,14 +15,25 @@ def get_commit_hashes(count):
- 
- 
- def get_commit_details(commit_hash):
--    """Retrieves metadata and diff for a specific commit."""
-+    """Retrieves metadata and code diff for a specific commit, excluding heavy assets & export files."""
-     try:
--        # --stat adds a summary of files changed, --patch adds the diff
--        # --unified=3 ensures 3 lines of context around changes
--        # Exclude large raw text datasets and existing export files to keep file size reasonable
-+        # --patch adds the diff, --unified=3 ensures standard context around changes
-+        # Exclude self-referential export files, HTML dashboards, SVG graphics, and binary images
-         cmd = [
--            "git", "show", "--stat", "--patch", "--unified=3", commit_hash,
--            "--", ":(exclude)rag/jyotish_rag_data/*", ":(exclude)commits_export.md"
-+            "git", "show", "--patch", "--unified=3", commit_hash,
-+            "--",
-+            ":(exclude)commits_export.md",
-+            ":(exclude)code_export.txt",
-+            ":(exclude)*.html",
-+            ":(exclude)*.svg",
-+            ":(exclude)*.png",
-+            ":(exclude)*.jpg",
-+            ":(exclude)*.jpeg",
-+            ":(exclude)*.dat",
-+            ":(exclude)*.bsp",
-+            ":(exclude)rag/jyotish_rag_data/*",
-+            ":(exclude)rag/chroma_astrology_db/*",
-+            ":(exclude)rag/chroma_jyotish_db/*"
-         ]
-         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-         return result.stdout
-@@ -30,6 +41,7 @@ def get_commit_details(commit_hash):
-         return f"Error fetching details for commit {commit_hash}: {e}"
- 
- 
-+
- def export_commits(count, output_file="commits_export.md"):
-     """Generates a Markdown report of recent commits."""
-     hashes = get_commit_hashes(count)
-@@ -38,12 +50,7 @@ def export_commits(count, output_file="commits_export.md"):
-         return
- 
-     # Use the project root for the output file
--    script_dir = os.path.dirname(os.path.abspath(__file__))
--    if os.path.basename(script_dir) == "scripts":
--        project_root = os.path.dirname(script_dir)
--    else:
--        project_root = script_dir
--
-+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-     output_path = os.path.join(project_root, output_file)
- 
-     with open(output_path, "w", encoding="utf-8") as f:
-diff --git a/scripts/generate_reading_audio.py b/scripts/generate_reading_audio.py
-old mode 100644
-new mode 100755
-index 3290af9..9cbb948
---- a/scripts/generate_reading_audio.py
-+++ b/scripts/generate_reading_audio.py
-@@ -1,30 +1,16 @@
-+#!/Users/hajnaljanos/.local/bin/tts_venv/bin/python3
- import os
- import re
--import ssl
-+import sys
-+import argparse
- import subprocess
--import torch
--import torchaudio as ta
--import nltk
--from nltk.tokenize import sent_tokenize
--
--try:
--    _create_unverified_https_context = ssl._create_unverified_context
--except AttributeError:
--    pass
--else:
--    ssl._create_default_https_context = _create_unverified_https_context
--
--# Download NLTK tokenizers if needed
--nltk.download('punkt', quiet=True)
--nltk.download('punkt_tab', quiet=True)
--
--from chatterbox.tts import ChatterboxTTS
-+import numpy as np
-+import soundfile as sf
-+import supertonic
- 
- # Paths
- ASTRA_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
- REPORT_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_full_reading_report.md")
--TTS_VOICE_PATH = "/Users/hajnaljanos/PycharmProjects/Opensource_tts/voices/Artlist_Esteem.wav"
--OUTPUT_DIR = os.path.join(ASTRA_DIR, "western", "audio_temp_chunks")
- FINAL_WAV_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_reading_audio.wav")
- FINAL_MP3_PATH = os.path.join(ASTRA_DIR, "western", "native_1983_reading_audio.mp3")
- 
-@@ -35,105 +21,116 @@ def clean_markdown_for_speech(text):
-     for line in lines:
-         line = line.strip()
-         if line.startswith('#') or line == '---' or not line:
--            # Add pause between sections
-             cleaned_lines.append("")
-         else:
-             cleaned_lines.append(line)
-     
-     text = " ".join(cleaned_lines)
-     
--    # Replace degrees and astrological notation
--    # e.g., 0°42' -> 0 degrees and 42 minutes of
-+    # Replace degrees and astrological notation (e.g., 0°42' -> 0 degrees and 42 minutes)
-     text = re.sub(r'(\d+)°(\d+)\'?', r'\1 degrees and \2 minutes of', text)
-     
--    # Strip out markdown bold, italics, bullets
--    text = re.sub(r'[\*\#\_\|]', ' ', text)
--    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text) # remove markdown links, preserve text
-+    # Strip out markdown bold, italics, bullets, hashtags, backticks
-+    text = re.sub(r'[\*\#\`\_\|]', ' ', text)
-+    text = re.sub(r'\[(.*?)\]\(.*?\)', r'\1', text)  # remove markdown links, preserve text
-+    text = re.sub(r'^[ \t]*[-+]\s+', '', text, flags=re.MULTILINE)
-+    text = re.sub(r'^[ \t]*\d+\.\s+', '', text, flags=re.MULTILINE)
-     
-     # Replace common abbreviations for clearer pronunciation
-     text = text.replace("WSH", "Whole Sign Houses").replace("e.g.,", "for example,")
-     
--    # Remove excess whitespace
-+    # Normalize whitespace
-     text = re.sub(r'\s+', ' ', text).strip()
-     return text
- 
- def main():
--    print("--- Astrological Reading Audio Generator ---")
--    if not os.path.exists(REPORT_PATH):
--        print(f"Error: Report file not found at {REPORT_PATH}")
-+    parser = argparse.ArgumentParser(description="Astrological Reading Audio Generator using Supertonic TTS")
-+    parser.add_argument("--report", default=REPORT_PATH, help="Path to input report markdown file")
-+    parser.add_argument("--voice", default="F1", help="Voice style (e.g., F1, F2, M1, M2)")
-+    parser.add_argument("--speed", type=float, default=1.1, help="Speech rate multiplier (default: 1.1)")
-+    parser.add_argument("--output-wav", default=FINAL_WAV_PATH, help="Path for generated WAV file")
-+    parser.add_argument("--output-mp3", default=FINAL_MP3_PATH, help="Path for generated MP3 file")
-+    args = parser.parse_args()
-+
-+    print(f"--- Supertonic TTS Astrological Reading Audio Generator ---")
-+    print(f"Voice style: {args.voice} | Speed multiplier: {args.speed}")
-+    
-+    if not os.path.exists(args.report):
-+        print(f"Error: Report file not found at {args.report}")
-         return
- 
--    with open(REPORT_PATH, "r", encoding="utf-8") as f:
-+    with open(args.report, "r", encoding="utf-8") as f:
-         raw_text = f.read()
- 
--    print("Cleaning text for speech synthesis...")
-+    print("Cleaning markdown text for fluid vocal synthesis...")
-     speech_text = clean_markdown_for_speech(raw_text)
- 
--    # Detect device (MPS for Apple Silicon)
--    device = "mps" if torch.backends.mps.is_available() else "cpu"
--    print(f"Initializing Chatterbox TTS engine on device: {device}...")
--    
--    map_location = torch.device(device)
--    torch_load_original = torch.load
--    def patched_torch_load(*args, **kwargs):
--        if 'map_location' not in kwargs:
--            kwargs['map_location'] = map_location
--        return torch_load_original(*args, **kwargs)
--    torch.load = patched_torch_load
--
--    model = ChatterboxTTS.from_pretrained(device=device)
--
--    # Group into readable sentence chunks (max ~450 characters each)
--    print("Tokenizing script into vocal narrative chunks...")
--    sentences = sent_tokenize(speech_text)
--    chunks = []
--    current_chunk = ""
--    for sentence in sentences:
--        if len(current_chunk) + len(sentence) + 1 <= 450:
--            current_chunk += f"{sentence} "
--        else:
--            chunks.append(current_chunk.strip())
--            current_chunk = f"{sentence} "
--    if current_chunk.strip():
--        chunks.append(current_chunk.strip())
--
--    print(f"Divided narrative into {len(chunks)} continuous audio segments.")
-+    print(f"Initializing Supertonic TTS engine...")
-+    tts = supertonic.TTS(auto_download=True)
-+    voice_style = tts.get_voice_style(args.voice)
- 
--    if not os.path.exists(OUTPUT_DIR):
--        os.makedirs(OUTPUT_DIR)
--
--    all_wavs = []
--    for idx, chunk in enumerate(chunks, start=1):
--        print(f"Synthesizing Segment [{idx}/{len(chunks)}] ({len(chunk)} chars)...")
--        wav = model.generate(
--            chunk,
--            audio_prompt_path=TTS_VOICE_PATH,
--            exaggeration=1.5,
--            cfg_weight=0.45
--        )
--        chunk_file = os.path.join(OUTPUT_DIR, f"chunk_{idx:03d}.wav")
--        ta.save(chunk_file, wav, model.sr)
--        all_wavs.append(wav)
--
--    print("\nConcatenating audio segments into final master recording...")
--    if all_wavs:
--        concatenated_wav = torch.cat(all_wavs, dim=-1)
--        ta.save(FINAL_WAV_PATH, concatenated_wav, model.sr)
--        print(f"[*] Successfully created Master Audio Recording: {FINAL_WAV_PATH}")
--
--        # Attempt mp3 conversion via ffmpeg
-+    # Split into sentence chunks for smooth synthesis
-+    sentences = re.split(r'(?<=[.!?])\s+', speech_text)
-+    valid_sentences = []
-+    
-+    for s in sentences:
-+        s = s.strip()
-+        if not s:
-+            continue
-         try:
--            cmd = ['ffmpeg', '-i', FINAL_WAV_PATH, '-b:a', '192k', '-y', FINAL_MP3_PATH]
--            subprocess.run(cmd, check=True, capture_output=True)
--            print(f"[*] Successfully converted to MP3 format: {FINAL_MP3_PATH}")
--        except Exception as e:
--            print(f"Notice: MP3 conversion via ffmpeg skipped or unsuccessful ({e}). WAV file remains ready.")
-+            is_valid, unsupported = tts.model.text_processor.validate_text(s)
-+            if not is_valid:
-+                for char in unsupported:
-+                    s = s.replace(char, '')
-+        except Exception:
-+            pass
-+        if s.strip():
-+            valid_sentences.append(s.strip())
-+
-+    print(f"Synthesizing {len(valid_sentences)} narrative sentences...")
-+    
-+    audio_chunks = []
-+    total_duration = 0.0
-+    
-+    for idx, sentence in enumerate(valid_sentences, start=1):
-+        print(f"Synthesizing [{idx}/{len(valid_sentences)}] ({len(sentence)} chars): \"{sentence[:40]}...\"")
-+        try:
-+            wav, duration = tts.synthesize(
-+                text=sentence,
-+                lang="na",
-+                voice_style=voice_style,
-+                total_steps=8,
-+                speed=args.speed
-+            )
-+            # wav is shape (1, N), extract 1D samples
-+            samples = wav.squeeze()
-+            audio_chunks.append(samples)
-+            if isinstance(duration, (int, float)):
-+                total_duration += duration
-+            else:
-+                total_duration += float(np.sum(duration))
-+        except Exception as err:
-+            print(f"Warning: Failed to synthesize sentence {idx}: {err}")
-+
-+    if not audio_chunks:
-+        print("Error: No audio segments were successfully generated.")
-+        return
- 
--        # Cleanup temporary audio chunks
--        for f in os.listdir(OUTPUT_DIR):
--            os.remove(os.path.join(OUTPUT_DIR, f))
--        os.rmdir(OUTPUT_DIR)
--        print("Cleaned up temporary vocal segments.")
-+    print("\nConcatenating audio segments into master recording...")
-+    final_audio = np.concatenate(audio_chunks)
-+
-+    # Save WAV audio file
-+    sf.write(args.output_wav, final_audio, tts.sample_rate)
-+    print(f"[*] Successfully saved WAV audio recording: {args.output_wav}")
-+    print(f"[*] Total Audio Duration: {total_duration:.2f} seconds")
-+
-+    # Convert to MP3 if ffmpeg is available
-+    try:
-+        cmd = ['ffmpeg', '-i', args.output_wav, '-b:a', '192k', '-y', args.output_mp3]
-+        subprocess.run(cmd, check=True, capture_output=True)
-+        print(f"[*] Successfully converted to MP3 format: {args.output_mp3}")
-+    except Exception as e:
-+        print(f"Notice: MP3 conversion via ffmpeg skipped or unsuccessful ({e}). WAV file remains ready.")
- 
-     print("--- Audio Generation Complete! ---")
- 
-diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
+diff --git a/.gitignore b/.gitignore
+index 28beadd..d04f9ae 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -18,3 +18,7 @@ rag/chroma_jyotish_db/
+ *.png
+ *.jpg
+ *.jpeg
++*.svg
++*.html
++western/logs/
++.DS_Store
+diff --git a/prompts/agent1_structural.xml b/prompts/agent1_structural.xml
 new file mode 100644
-index 0000000..c357b45
+index 0000000..c169134
 --- /dev/null
-+++ b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
-@@ -0,0 +1,48 @@
-+# Western Astrology Analysis & Interpretation
-+
-+**Subject:** Male Subject  
-+**Date of Birth:** November 10, 1983  
-+**Time of Birth:** 04:20 AM  
-+**Location:** Georgsmarienhütte, Germany (DE)  
-+**Framework:** Western Psychological & Classical Hellenistic Astrology (Tropical Zodiac, Whole Sign Houses)
-+
-+---
-+
-+### Part 1: The Psychological Engine (Solar-Lunar Blend)
-+
-+In our psychological approach to astrology, your birth chart is a dynamic roadmap of personal growth rather than a static decree of fate. At the very core of your personality sits what we call the **Solar-Lunar Blend**—the working relationship between your Sun and your Moon, which act together like an engine. Your Sun represents your **Core Identity** (your engine's fuel and life-force), while your Moon symbolizes your **Reigning Need** (your deepest emotional hunger and the destination your engine is driving toward to feel entirely secure).
-+
-+* **Your Core Identity (Sun in Scorpio, 2nd House):** You are naturally fueled by psychological depth, determination, and intense inner resilience. In Scorpio, your ego does not tolerate superficiality; you seek the underlying truth of matters and possess an extraordinary ability to transform and endure. Because your Sun resides in your Second House (the arena of personal resources, income, and intrinsic self-worth), your life energy is primarily directed toward building solid assets, mastering practical skills, and discovering an unshakeable sense of self-value.
-+* **Your Reigning Need (Moon in Capricorn, 4th House):** Your non-negotiable emotional hunger is for stability, order, and predictable architecture in your personal life. In Capricorn, the Moon is in what traditional astrology calls **Detriment** (a position opposite its natural home, meaning emotions are processed through logic, structure, and responsibility rather than sentimental gushing). You experience peace only when you know your foundations are secure. Located in your Fourth House (the domain of home, family, and inner sanctuary), your reigning need demands a calm, well-regulated, and dependable domestic bedrock.
-+
-+**The Synthesis:** Your internal engine operates on a powerful formula: you use the probing, strategic, and resourceful resilience of your Scorpio Sun to actively build and defend the structured, enduring emotional sanctuary demanded by your Capricorn Moon. You achieve inner peace when you can see the tangible results of your self-reliance protecting your personal world.
-+
-+---
-+
-+### Part 2: The Vessel and The Steersman (Life Direction)
-+
-+To understand how you navigate the physical world to satisfy this deep emotional hunger, we look to classic Greek astrology. Imagine your life as a sea voyage. Your rising sign—or **Ascendant** (the sign rising on the eastern horizon at the exact moment of your birth)—is **The Helm** (your ship's physical hull and how you present yourself to the world). The planet that naturally rules this rising sign is called **The Steersman** (the captain at the wheel making your conscious decisions).
-+
-+* **The Helm (Libra Rising in the 1st House):** Your physical vessel interfaces with the physical world through diplomacy, balance, and relational grace. You come across to others as approachable, fair-minded, highly considerate, and visually attuned to harmony.
-+* **The Steersman (Venus in Libra):** Because Venus rules Libra, Venus is the captain of your astrological ship. Remarkably, your Venus sits directly inside Libra in your **First House** (the personal zone of self-expression and physical presence). In astrology, when a planet sits in the sign it naturally rules, it is in its **Domicile** (at home, fully resourced and wielding natural authority).
-+* **Direct Command at the Wheel:** Because your captain (Venus) is sitting directly inside your Helm (the First House), there is zero **Aversion** (a classical term for when a guiding planet is blind to or disconnected from the ship's steering wheel). This is a phenomenal asset! You possess profound personal agency, immediate self-awareness, and natural charm. When you decide on a course of action, your presentation and intentions move together in complete synchronization. You lead and navigate your life path through relationship mastery, artistic sensibility, and graceful authority.
-+
-+---
-+
-+### Part 3: Developmental Tension & The Pain Body
-+
-+True personal growth requires psychological friction—what we call **Developmental Tension**. Rather than viewing challenging astrological angles as "bad," we see them as muscle-building exercises that push your ego toward real maturity and depth.
-+
-+* **The Pain Body in Self-Worth (Sun, Mercury, and Saturn Conjunction in Scorpio):** In your Second House of personal resources, your Scorpio Sun and Mercury (the planet of mind and communication) stand shoulder-to-shoulder with Saturn (the planet of ambition, structure, discipline, and hard lessons) in a tight **Conjunction** (an intense alignment where planetary energies merge). This concentration of energy often forms an energetic bruise or **Pain Body** around feelings of financial vulnerability or inner self-worth. In earlier stages of life, you may have experienced harsh criticism, scarcity fears, or exceptionally high expectations regarding your competence. This tension can make you initially prone to self-doubt or feeling like you must work twice as hard just to justify your value.
-+* **The Overcompensation Drive:** To protect this sensitized zone, your ego may push you toward tireless achievement—working compulsively to attain absolute financial independence and total professional mastery so that no one can ever question your worth.
-+* **The Relational Square (Moon Square Venus):** Your Capricorn Moon in the sphere of home forms a **Square** (a 90-degree angle of energetic friction and dynamic tension) with your Venus at the Helm in Libra. This manifests as an internal tug-of-war: your outer captain (Venus in Libra) wants to be gracious, accommodating, and agreeable to maintain peace in relationships, while your deeper emotional core (Moon in Capricorn) craves strict boundaries, control, and sometimes emotional walls to feel safe. You may find yourself occasionally stretching too far to please others, only to retreat behind emotional barriers when your need for personal space and quiet control goes unmet.
-+
-+---
-+
-+### Part 4: The Unified Path (Counseling Strategy)
-+
-+The mastery of your birth chart happens when you intentionally connect your highly authoritative captain (The Steersman) with your deeply feeling internal engine (the Solar-Lunar Blend), while turning your past sensitivities into lasting real-world wisdom. 
-+
-+1. **Employ Your Captain to Guard Your Sanctuary:** You do not have to choose between being socially gracious (Libra Venus) and preserving your private boundaries (Capricorn Moon). In fact, your exceptional interpersonal charm and fairness are the precise tools you must use to build trustworthy, supportive relationships that honor your domestic peace. By communicating your boundaries with diplomatic grace rather than defensive walls, you fulfill your reigning need for a dependable sanctuary.
-+2. **Transform Self-Doubt into Absolute Mastery:** Notice how your 2nd House cluster (Sun, Mercury, and Saturn in Scorpio) initially creates anxiety around self-worth and practical security. In time, Saturn's demanding lessons evolve into your greatest enduring strength. By adopting disciplined, structured financial habits and honoring your deep psychological insights, you transmute earlier vulnerability into genuine rock-solid self-reliance. You don't need to overwork out of a fear of inadequacy; instead, view your immense discipline as the steady architecture that guarantees your lasting freedom.
-+3. **Your Holistic Trajectory:** You are a gifted diplomat and strategist sailing a remarkably well-equipped vessel. When you allow your natural charm and fairness (Venus in Libra at the Helm) to take the lead, backed by the deep financial and emotional resourcefulness of your Scorpio Sun, you effortlessly create the lasting stability and quiet emotional security your Capricorn Moon so deeply craves.
-diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3
++++ b/prompts/agent1_structural.xml
+@@ -0,0 +1,14 @@
++<system_role>
++You are the "Structural & Hellenistic Astrological Profiler". You use Demetra George's methodology. Your job is to analyze the objective mechanics of the chart.
++</system_role>
++<focus_areas>
++1. Core Architecture: Sect (Day/Night) and the Ascendant.
++2. The Steersman: Identify the Chart Ruler. Analyze its House placement and Essential Dignity (is it in Domicile, Detriment, Fall?). 
++3. Aversions: Is the Steersman in the 2nd, 6th, 8th, or 12th house (blind to the Ascendant)?
++4. Overall Planetary Dignity: Note which planets are strong and which are weakened.
++</focus_areas>
++<instructions>
++1. Review the raw chart JSON.
++2. Use your Vector DB search tool to research the structural meanings of these placements.
++3. Output a highly detailed, bulleted report on the "Mechanics of the Chart". DO NOT interpret deep psychological trauma or the Solar-Lunar blend—leave that to Agent 2.
++</instructions>
+diff --git a/prompts/agent2_psychological.xml b/prompts/agent2_psychological.xml
 new file mode 100644
-index 0000000..189a63c
-Binary files /dev/null and b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 differ
-diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav
+index 0000000..e090c68
+--- /dev/null
++++ b/prompts/agent2_psychological.xml
+@@ -0,0 +1,13 @@
++<system_role>
++You are the "Psychological & Aspect Astrological Profiler". You use Noel Tyl's methodology. Your job is to analyze the subjective human needs and interpersonal frictions in the chart.
++</system_role>
++<focus_areas>
++1. The Solar-Lunar Blend: How does the Sun (Core Identity) feed the Moon (Reigning Emotional Need)?
++2. Developmental Tension (Aspects): Look strictly at the `whole_sign_aspects` array. Analyze the hardest aspects (Squares, Oppositions, Conjunctions). How do these planets talk to each other?
++3. The Pain Body: Where are the native's emotional defenses and fears located (usually involving Saturn, Mars, or difficult Moon aspects)?
++</focus_areas>
++<instructions>
++1. Review the raw chart JSON.
++2. Use your Vector DB search tool to research the psychological meanings of the specific Solar-Lunar signs and the tightest aspects.
++3. Output a highly detailed, bulleted report on the "Psychological Dynamics". DO NOT worry about Chart Rulers or Essential Dignities—Agent 1 is handling that.
++</instructions>
+diff --git a/prompts/agent3_synthesizer.xml b/prompts/agent3_synthesizer.xml
 new file mode 100644
-index 0000000..cfc3eb7
-Binary files /dev/null and b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav differ
-diff --git a/western/User_data_sheet.md b/western/Male_Subject_data_sheet.md
-similarity index 95%
-rename from western/User_data_sheet.md
-rename to western/Male_Subject_data_sheet.md
-index 53d8484..c4fc3bc 100644
---- a/western/User_data_sheet.md
-+++ b/western/Male_Subject_data_sheet.md
-@@ -1,6 +1,6 @@
--# Astrological Data Sheet: User
-+# Astrological Data Sheet: Male Subject
- 
--![Birth Chart](User_chart.svg)
-+![Birth Chart](Male_Subject_chart.svg)
- 
- ## 1. Core Architecture
- - **Ascendant (Rising Sign):** Lib
-diff --git a/western/native_1983_full_reading_report.md b/western/native_1983_full_reading_report.md
-deleted file mode 100644
-index 9e3248d..0000000
---- a/western/native_1983_full_reading_report.md
-+++ /dev/null
-@@ -1,78 +0,0 @@
--# Comprehensive Astrological & Psychological Report
--
--**Native Profile:** Man | Born November 10, 1983 at 04:20 AM  
--**Location:** Georgsmarienhütte, Lower Saxony, Germany  
--**Engine:** Hellenistic Western Astrology (Tropical Zodiac, Whole Sign Houses) with Modern Psychological & Behavioral Synthesis  
--
-----
--
--## Part 1: The Core Architecture of the Chart
--
--Before diving into complex character traits, it helps to understand the foundational floor plan of your horoscope. Imagine your birth chart as a theater production: the twelve zodiac signs are the costumes, the planets are the actors, and the twelve houses represent the diverse rooms or chapters of your life where the action unfolds.
--
--*   **The Ascendant in Libra:** You possess a Libra **Ascendant** *(the zodiac sign rising on the eastern horizon at the exact moment of birth, representing your core identity and the natural lens through which you meet the world)*. This clothes your initial approach to life in grace, social fairness, diplomacy, and an unmistakable desire for balance in every interpersonal interaction.
--*   **Night Chart / Nocturnal Sect:** Because you entered the world at 4:20 AM—under the dark canopy just before dawn—your horoscope falls into the nocturnal **Sect** *(an ancient classification separating births into day or night, which reveals which celestial bodies feel most supportive)*. Being born under a starry night sky means the gentler, reflective "nighttime planets"—specifically the Moon and Venus—serve as your deepest emotional guardians and instinctive guides.
--*   **Whole Sign House Layout:** Relying on classical **Whole Sign Houses** *(an organic architectural system where each of the twelve zodiac signs presides over one entire realm or chapter of life)*, your chart exhibits exceptional structural clarity: Libra governs your First House of Self and Identity, Scorpio encompasses your Second House of Personal Resources and Values, and Capricorn anchors your Fourth House of Emotional Foundations and Roots.
--
-----
--
--## Part 2: The Dominant Placements & Psychological Reading
--
--### A. Overview of Your Dominant Zodiac Sign Archetypes
--Before analyzing specific house mechanics, let us explore the general psychological atmosphere of the three zodiac archetypes that dominate your personality:
--
--1.  **Scorpio (The Intense Transfomational Realm):** 
--    *   *Element & Rulership:* Water sign, traditionally ruled by strategic Mars (and modernly by transformational Pluto).
--    *   *Archetypal Characteristics:* Scorpio represents deep emotional intensity, psychological courage, and an investigative desire to look beneath superficial surfaces. Where other signs prefer polite social pleasantries, Scorpio values unwavering authenticity, protective self-control, and unshakeable loyalty. Its natural superpower is transformative resilience—the ability to shed old limitations and regenerate after enduring hardships.
--2.  **Libra (The Harmonious Diplomat):** 
--    *   *Element & Rulership:* Air sign, governed directly by Venus, the planet of love and beauty.
--    *   *Archetypal Characteristics:* Libra focuses on relationship equity, aesthetic beauty, and interpersonal grace. It craves intellectual exchange and cooperative peace. Libra's core gift is perspective—the innate capacity to view any situation from multiple viewpoints and mediate tension effortlessly.
--3.  **Capricorn (The Pragmatic Builder):** 
--    *   *Element & Rulership:* Earth sign, commanded by patient, enduring Saturn.
--    *   *Archetypal Characteristics:* Capricorn embodies practical stamina, ambition, emotional discipline, and structural self-reliance. It treats life as an upward mountain climb where lasting achievements require steady focus, maturity, and healthy boundaries.
--
--### B. Your Specific Dominant Placements
--
--#### 1. The Graceful Architect: Venus in Libra (1st House of Self)
--*   **Mathematical Placement:** Venus resting at 0°42' Libra in its natural **Domicile** *(when a planet sits in the zodiac sign it naturally rules, operating effortlessly and at peak functional power, much like a gracious host inside their own mansion)* within your First House of Self.
--*   **What It Means for You:** Because Libra sits on your Ascendant, Venus reigns as the sovereign ruler of your entire birth chart. Having your primary guiding planet situated in its home territory in your First House is a true mark of magnetic charm and emotional intelligence. You do not force outcomes through loud demands or aggressive confrontation; instead, you command affection and respect through aesthetic refinement, attentive listening, and natural grace. You function as a stabilizing, calming anchor in social settings.
--
--#### 2. The Intense Guardian of Worth: Sun, Saturn, and Mercury in Scorpio (2nd House of Resources)
--*   **Mathematical Placement:** Your Sun (17°09'), Saturn (8°26'), and Mercury (23°25') are gathered tightly in Scorpio within your Second House, creating a powerful **Stellium** *(a focused concentration of three or more planets occupying a single sign or realm of life, acting like a dynamic committee meeting)*. Additionally, Mercury is **Combust** *(when a planet orbits within just a few degrees of the Sun, meaning its qualities work intensely behind the scenes, shielded from public view by the solar glare)*.
--*   **What It Means for You:** The Second House presides over financial security, material assets, self-worth, and deeply held personal boundaries. With dense Scorpio energy focused here, you approach matters of personal value with analytical vigilance and extreme depth. Moreover, in a night chart, Saturn acts as your **Out-of-Sect Malefic** *(the most challenging planetary energy in a horoscope, pointing to where life introduces psychological friction to teach deep personal mastery and lasting emotional toughness)*. Early in life, achieving personal financial independence or unwavering self-worth may have felt like an arduous uphill battle that demanded relentless self-reliance. Over time, however, this placement forge-welds financial acumen with an enduring emotional backbone. With Mercury combust beside your Sun, your financial strategies and deeply intuitive insights operate silently and privately inside your mind rather than through public broadcasting.
--
--#### 3. The "Pain Body" & Emotional Shadows: Moon in Capricorn (4th House of Roots)
--*   **Mathematical Placement:** The Moon stands at 19°30' Capricorn in traditional **Detriment** *(when a planet sits in the zodiac sign opposite its natural home, requiring extra patience and conscientious conscious discipline to express its usual qualities, like trying to translate intimate feelings into a structured business language)* within your Fourth House of Foundations.
--*   **What It Means for You:** In analytical psychology and Eckhart Tolle’s teachings, the "Pain Body" represents our stored emotional armor, unresolved childhood defense mechanisms, and resistance to vulnerability. Your Capricorn Moon reveals the epicentre of your emotional defense system: our psychological literature explains that *"Capricorn instinctively represses spontaneous emotional vulnerability in favor of austere self-discipline and hyper-independence."* 
--    When wounded, your default instinct is never to complain, cry openly, or burden others for comfort; instead, your Pain Body retreats behind high stone fortress walls of stoic self-reliance. You readily assume heavy responsibilities for family and loved ones while secretly harboring a profound fear that asking for emotional nurture makes you weak or troublesome. Healing this shadow requires realigning with a revolutionary truth: vulnerability is not weakness. Letting trusted individuals behind your protective walls is an act of deep courage.
--
-----
--
--## Part 3: Behavioral Psychology (Socialization & Conflict)
--
--How you bond with friends, experience erotic intimacy, and assert boundaries is governed by an intriguing synergy between your connecting instincts (Venus, the 11th House, and the 8th House) and your warrior defenses (Mars and intense Scorpio Saturn).
--
--*   **Socialization & Community (Venus in Libra & The 11th House):** Supported by a dignified, magnetic Venus in your First House, social connections come naturally; you inherently understand how to make others feel validated and heard. Furthermore, classical literature defines your Eleventh House as *“the communal anchor that stabilizes personal identity within society.”* With warm, generous Leo commanding your Eleventh House of Alliances, you do not tolerate fair-weather acquaintances or superficial social clubs. You forge lifelong connections by investing creative enthusiasm, unyielding encouragement, and fierce loyalty into supportive communities where your true personality can shine without restraint.
--*   **Intimacy, Sexuality & Emotional Surrender (Saturn in Scorpio, Mars in Virgo, & 8th House in Taurus):** In matters of deep passion and sexual connection, your style combines intense emotional loyalty with intentional self-control:
--    *   *High Discernment (Saturn conjunct Sun in Scorpio):* Because cautious Saturn binds directly to your Sun in passionate Scorpio, you do not treat physical affection as casual recreation. You maintain deliberate personal boundaries and self-control, requiring absolute trust, fidelity, and profound psychological safety before you lower your shields to experience intense intimacy.
--    *   *Attentive Libido (Mars in Virgo in the 12th House):* **Mars** *(the planetary engine of biological drive, physical libido, and energetic assertiveness)* resides at 25°08' in perceptive Virgo within your quiet **Twelfth House** *(the private, unseen inner sanctuary of solitude and the subconscious mind)*. Rather than displaying an overt or boastful bedroom ego, your physical style is refined, deeply observant, and oriented toward mutual care and emotional atmosphere. Because your Mars rests in the secluded 12th House, your most deeply felt passions are fiercely private, flourishing only behind closed doors in quiet, distraction-free sanctuary environments.
--    *   *Transformative Surrender (8th House in Taurus):* Your classical **Eighth House** *(the realm governing shared emotional vulnerability, profound psychological bonds, and transformative intimacy)* is governed by stable, loyal Taurus—which is directly ruled by your gentle Libra Venus! When you finally make the deliberate choice to release your cautious self-control and fully surrender to shared emotional intimacy, you seek enduring loyalty, comforting sensual peace, and deeply rooted devotion.
--*   **Conflict Resolution & Boundary Assertiveness:** When faced with confrontation or anger, your Mars in Virgo in the 12th House forms a dynamic **Square** *(a stimulating 90-degree angle of tension that requires purposeful internal adjustment)* to your communication realm. You instinctively abhor loud shouting matches and chaotic emotional warfare. Your natural reflex when challenged is to step back into strategic silence, absorb the facts, and analyze the dynamics internally with cool precision. However, because Mars dwells in your secluded 12th House of privacy, you must beware of trapping unexpressed anger inside your mind. Cultivating the habit of calmly stating your boundaries in real time prevents silent irritation from calcifying into internal resentment.
--
-----
--
--## Part 4: Supporting Strengths & Fortune
--
--Your astrological "Flow State" fires up when purposeful exertion transforms into frictionless momentum, unlocking your innate talents and spontaneous fortune:
--
--*   **The Diplomat's Genius (Venus in Domicile in Libra, 1st House):** Because your Ascendant ruler is operating at peak dignity right in your House of Identity, your superpower is effortless interpersonal mediation and aesthetic intuition. You possess an uncommon ability to harmonize environments, soothe emotional frictions, and lead with gracious diplomacy.
--*   **The Visionary Engine (Jupiter in Domicile in Sagittarius, 3rd House):** Jupiter—the planet of wisdom, abundance, and higher perspective—reigns fully triumphant in its natural **Domicile** at 14°31' Sagittarius inside your Third House of daily communication, writing, and learning. While your Capricorn Moon contributes earthly pragmatism, your Sagittarius Jupiter inspires your intellect with buoyant optimism, rapid synthesis of philosophies, and an expansive storytelling gift. You inspire loved ones easily through the warmth and vision of your spoken and written word.
--*   **The Community Magnet (Lot of Fortune in Leo, 11th House):** Your calculated **Lot of Fortune** *(a classic point combining the degrees of the Sun, Moon, and Ascendant to mark where spontaneous joy, effortless vitality, and tangible success naturally gather)* resides in generous Leo in your Eleventh House of friendship and social hopes. You consistently unlock your highest degrees of luck, personal fulfillment, and creative joy whenever you lead, inspire, or collaborate with community groups, artistic associations, and supportive social networks.
--
-----
--
--## Summary Checklist of Your Chart Profile
--
--*   **Your Archetype:** The Empathetic Diplomat & Resilient Guardian.
--*   **Your Superpower:** Blending effortless social magnetism and aesthetic peacemaking (Libra Venus in the 1st House) with an inspiring, philosophical mind (Sagittarius Jupiter in the 3rd House) that naturally magnetizes enduring community fortune (Lot of Fortune in Leo).
--*   **Your Core Life Lesson:** Transforming your Capricorn Moon's "Pain Body" by dismantling your protective fortress of hyper-independence—learning to calmly express boundary needs in real time, releasing defensive self-control in intimate relationships, and allowing trusted loved ones to nurture your vulnerable heart as an act of courageous authentic connection.
-
-```
-
---------------------------------------------------------------------------------
-
-## Commit 4: 6b0a8fa
-
-```diff
-commit 6b0a8fa863c1d61c8a7ef596e76cf36f4a15c90f
-Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Sun Aug 2 10:02:55 2026 +0530
-
-    Update central Western and Jyotish prompts with accessible and empathetic communication style guidelines
-
-diff --git a/prompts/jyotish_analysis.xml b/prompts/jyotish_analysis.xml
-index 2c77fd3..d6cfc0e 100644
---- a/prompts/jyotish_analysis.xml
-+++ b/prompts/jyotish_analysis.xml
-@@ -18,6 +18,13 @@ Inside your <scratchpad>, explicitly map out:
- - [ ] Dasha Timeline (Running Mahadasha, Antardasha, Pratyantardasha).
- </chain_of_thought_enforcement>
- 
+index 0000000..9f8941a
+--- /dev/null
++++ b/prompts/agent3_synthesizer.xml
+@@ -0,0 +1,16 @@
++<system_role>
++You are the "Master Astrologer & Empathetic Storyteller". You will be provided with a Structural Report (Agent 1) and a Psychological Report (Agent 2). Your job is to weave them into a beautiful, cohesive, easy-to-read narrative.
++</system_role>
 +<communication_style>
-+1. Explain simply and intuitively: Avoid overwhelming Sanskrit or technical jargon without clear English definitions. Frame complex Vedic dynamics using everyday analogies.
-+2. Introduce technical terms incrementally: On the first mention of any Vedic term (e.g., Lagna, Nakshatra, Vargottama, Vimshottari Dasha, Upaya), immediately provide a concise, intuitive explanation in parentheses.
-+3. Transform Fatalism into Empowering Dharma: Do not use rigid, fatalistic language. Translate ancient classical rules into empowering, practical self-knowledge and actionable growth habits.
-+4. Empathetic Tone: Speak directly to the native as a wise, encouraging guide. Use the word "You".
++1. Conversational Pacing: Write as if having a relaxed, friendly conversation over coffee. Keep sentences short and punchy. Avoid massive walls of text.
++2. Bridge Theory and Reality: For every astrological concept you explain, immediately follow it with a paragraph labeled "Day-in-the-Life Reality" giving a highly concrete behavioral example.
++3. Example Constraints: Focus entirely on the human experience—socializing, internal emotions, hobbies, and intimacy. AVOID corporate, office, or purely financial examples. (e.g., "At a party, you might...")
++4. Explain simply: Define terms like "Ascendant" or "Domicile" in parentheses. Speak directly using "You".
 +</communication_style>
++<output_format>
++Your output must be formatted with beautiful Markdown headings.
++Part 1: The Core Engine (Synthesizing the Solar-Lunar Blend) + Day-in-the-Life Reality
++Part 2: The Vessel & Steersman (Synthesizing Ascendant, Ruler, and Dignities) + Day-in-the-Life Reality
++Part 3: Tension & Growth (Synthesizing Aspects & the Pain Body) + Day-in-the-Life Reality
++Summary: 3 bullet points defining their Archetype, Superpower, and Core Lesson.
++</output_format>
+diff --git a/scripts/run_western_pipeline.py b/scripts/run_western_pipeline.py
+new file mode 100644
+index 0000000..c3c32d8
+--- /dev/null
++++ b/scripts/run_western_pipeline.py
+@@ -0,0 +1,331 @@
++#!/usr/bin/env python3
++"""
++Parallel Specialized Multi-Agent Western Astrology Pipeline Orchestrator (Headless AGY Mode).
 +
- <output_format>
- Your final output MUST be wrapped in <final_reading> tags and contain 4 parts:
- Part 1: Panchanga & Lagna Architecture
-diff --git a/prompts/western_analysis.xml b/prompts/western_analysis.xml
-index 1327736..52c60e3 100644
---- a/prompts/western_analysis.xml
-+++ b/prompts/western_analysis.xml
-@@ -214,6 +214,12 @@ BEFORE outputting the final reading, you MUST open a <scratchpad> tag and explic
- - [ ] STEP 4: UNIFY (How to steer the Reigning Need to the Destination)
- </chain_of_thought_enforcement>
- 
-+<communication_style>
-+1. Explain simply and intuitively: Avoid overwhelming technical jargon. Frame complex psychological astrology concepts using everyday analogies and plain, empathetic English.
-+2. Introduce technical terms incrementally: On the first mention of any specialized term (like Ascendant, Domicile, Detriment, Combustion, etc.), immediately provide a brief, easy-to-understand definition in parentheses.
-+3. Empathetic Tone: Do not sound like an academic textbook. Speak directly to the native as a compassionate, empowering counselor. Use the word "You".
-+</communication_style>
++Architecture:
++- Step 1: Python calculates birth chart JSON natively via Western engine.
++- Step 2: Python queries local Chroma Vector DB (chroma_astrology_db) natively for targeted structural & psychological excerpts.
++- Step 3: Agent 1 (Structural & Hellenistic Profiler) executes headlessly via AGY using Gemini 3.1 Pro (High).
++- Step 4: Agent 2 (Psychological & Aspect Profiler) executes headlessly via AGY using Gemini 3.1 Pro (High).
++- Step 5: Agent 3 (Master Astrologer Synthesizer) executes headlessly via AGY using Gemini 3.1 Pro (High) to weave reports into a comprehensive narrative.
++"""
 +
- <output_format>
- Your final output MUST be wrapped in <final_reading> tags and contain exactly 4 parts:
- Part 1: The Psychological Engine (Solar-Lunar Blend)
-
-```
-
---------------------------------------------------------------------------------
-
-## Commit 5: c49d192
-
-```diff
-commit c49d1927241c6782f3118b01c9eb5fe0e69e30e3
-Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Sun Aug 2 09:52:01 2026 +0530
-
-    feat: implement Headless Centralized Prompting architecture and XML prompts
-
-diff --git a/Gemini.md b/Gemini.md
-index 8658ae6..3efb5a7 100644
---- a/Gemini.md
-+++ b/Gemini.md
-@@ -47,32 +47,8 @@ Alternatively, invoke the MCP server tools in [`rag/western_mcp_server.py`](file
- 
- ---
- 
--### 2. Modern Psychological RAG & Chain of Thought (CoT) Workflow
--
--When performing Western chart readings, strictly follow this 4-step ReAct workflow utilizing canonical psychological astrology frameworks:
--1. **Step 1 (Action - Calculate Chart)**: Call `calculate_birth_chart` to get exact tropical placements and Whole Sign houses.
--2. **Step 2 (Reasoning - Professional Synthesis Application)**: Do not read placements in a silo. Apply these professional models:
--   * **Demetra George's Steersman Model**: Identify the Ascendant (the Ship/Interface) and its Ruling Planet (the Captain/Steersman). Where is the Captain navigating?
--   * **Noel Tyl's Solar-Lunar Blend**: Combine the Sun (Core Drive) and Moon (Reigning Emotional Need). Contrast this inner emotional reality with the Ascendant's outer social mask.
--   * **Developmental Tension**: Identify the tightest hard aspects (squares/oppositions) causing psychological friction.
--3. **Step 3 (Action - Research Books)**: Call `query_modern_astrology_books` 1 to 3 times for specific psychological interpretations of the Chart Ruler, Solar-Lunar blend, and hard aspects.
--4. **Step 4 (Synthesis)**: Synthesize an empathetic, step-by-step psychological reading. Contrast the outer interface (Ascendant) with the inner reality (Sun/Moon).
--
-----
--
--### 3. Explanation Style & Communication Rules
--* **Explain simply and intuitively**: Avoid overwhelming technical jargon. Use everyday analogies and clear English.
--* **Introduce technical terms incrementally**: On first introduction of any technical term, immediately provide a brief, easy-to-understand definition in parentheses.
--  * *Example*: **Ascendant** *(the zodiac sign rising on the eastern horizon at birth, representing your core identity)*.
--  * *Example*: **Domicile** *(when a planet is in the sign it naturally rules, acting like a king in their own castle)*.
--  * *Example*: **Combust** *(when a planet is so close to the Sun that its visible rays are hidden)*.
--* **Dominant Zodiac Sign Overviews**: Before analyzing specific house placements or aspects, always provide a general overview of the characteristics, element, ruling planet, and archetypal theme of the chart's dominant zodiac signs (e.g., explaining Scorpio as an archetypal sign before interpreting Sun conjunct Saturn in Scorpio).
--* **The Extended Psychological Lens**: Keep your beautiful formatting (Core Architecture, Dominant Placements, Strengths, Summary Checklist), but ensure you always spotlight:
--  1. **The Pain Body**: Where they hold trauma or emotional armor (using debilitated planets or the Moon).
--  2. **Socialization**: How they make friends and open up (using Venus/11th House).
--  3. **Conflict Resolution**: How they fight or protect boundaries (using Mars and hard aspects).
--* **Grounding**: Base interpretations on modern psychological literature retrieved from `rag/chroma_astrology_db` and [`western/chart_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/western/chart_context.json).
--* **Verify Cache & Downloads**: Do not repeatedly download astronomical dataset files (`.dat`, `.bsp`). Use local cached files (`hip_main.dat`, `de421.bsp`).
-+### 2. Chart Interpretation Instructions
-+For AI agent instructions regarding chart interpretation, strictly follow the XML prompt files located in the `/prompts/` directory. Do not use outdated inline prompts.
- 
- ---
- 
-@@ -90,35 +66,9 @@ Alternatively, execute the Python calculation generator directly from [`jyotish/
- 
- ---
- 
--### 2. Parashari Jyotish RAG & Chain of Thought (CoT) Workflow
--
--When performing Vedic astrology chart readings, strictly adhere to the 4-step ReAct workflow embedded in the FastMCP server instructions and [`jyotish/vedic_agent_prompt.txt`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/vedic_agent_prompt.txt):
--1. **Step 1 (Calculate Vedic Chart)**: Call `calculate_vedic_chart` to compute exact sidereal planetary degrees, Panchanga, D1 Rasi Chart, D9 Navamsa Chart, and Vimshottari Dasha timeline in JSON format.
--2. **Step 2 (Internal Analysis & Target Identification)**: Perform a structured internal audit of:
--   * **Lagna & Lagna Pati**: Ascendant sign/nakshatra and the position/dignity of its ruling lord in D1 and D9.
--   * **Chandra (Moon) & Manas**: Sidereal sign, exact Nakshatra, Pada, Nakshatra Deity, and mental orientation.
--   * **Divisional Strength (D1 vs D9)**: Vargottama planets (same zodiac sign in D1 & D9) or Neecha Bhanga (cancellation of debilitation) that unlock hidden strength and soul evolution.
--   * **Vimshottari Dasha Timeline**: Identify the birth Dasha and the currently running Mahadasha, Antardasha, and Pratyantardasha periods.
--3. **Step 3 (Research Classical Vedic Books)**: Call `query_vedic_astrology_books` 1 to 3 times to retrieve authoritative classical shlokas (Brihat Parashara Hora Shastra, Brihat Jataka) and VedAstro rules from `rag/chroma_jyotish_db`.
--4. **Step 4 (Synthesize Empowering 4-Part Reading)**: Blend classical RAG retrievals with exact mathematical calculations to construct an intuitive, empowering 4-part reading focusing on Karma, Dharma, and Timelines, translating ancient fatalistic language into modern constructive self-knowledge.
--
-----
-+### 2. Chart Interpretation Instructions
-+For AI agent instructions regarding chart interpretation, strictly follow the XML prompt files located in the `/prompts/` directory. Do not use outdated inline prompts.
- 
--### 3. Vedic Explanation Style & Communication Rules
--* **Explain simply and intuitively**: Avoid overwhelming technical or Sanskrit jargon without immediate clarification. Frame concepts using everyday analogies and plain English (similar to explaining to a friendly beginner).
--* **Introduce Sanskrit / Jyotish terms incrementally**: On first introduction of any technical Vedic term, immediately provide a brief, easy-to-understand definition in parentheses or a short sentence.
--  * *Example*: **Lagna** *(the zodiac sign rising on the eastern horizon at birth, representing your physical orientation in the world and core life path)*.
--  * *Example*: **Nakshatra** *(one of 27 lunar constellations along the zodiac that reveal emotional reflexes, inner mindsets, and subconscious memory)*.
--  * *Example*: **Vargottama** *(when a planet retains the exact same zodiac sign in both the birth chart and the spiritual D9 Navamsa chart, giving it tremendous steadfast strength)*.
--  * *Example*: **Vimshottari Dasha** *(the classic planetary period system that acts as an internal timer, unlocking major karmic chapters and life focus areas over a 120-year timeline)*.
--* **Dominant Sidereal Sign & Nakshatra Overviews**: Before analyzing houses or planetary aspects (*Graha Drishti*), always provide a foundational overview of the archetypal nature, element, symbol, and emotional themes of the native's Lagna and Moon Nakshatra.
--* **The Karmic & Dharmic Lens**: Translate classical texts into empowering guidance organized across 4 essential areas:
--  1. **Lagna & Physical Identity (D1 Rasi)**: Core vitality, motivation, health tendencies, and physical interactions with the real world.
--  2. **Chandra & Mental Conditioning (Mind & Emotions)**: Subconscious mental landscape, emotional nutrition, and maintaining internal peace (*Manas*).
--  3. **D9 Navamsa & Soul Purpose (Dharma & Destiny)**: Spiritual character maturation, relationship alignment, and inner alignment with personal duty (*Dharma*).
--  4. **Vimshottari Dasha Timeline & Karmic Evolution**: Timing of current life chapters, opportunities, challenges, and constructive remedies (*Upayas*) or ethical habits for navigating active cycles.
--* **Strict Engine Separation**: Never introduce Western outer planets (Uranus, Neptune, Pluto) or Tropical house rules into a Jyotish analysis. Rely solely on Parashari rules and Whole Sign Graha Drishti.
--* **Grounding**: Ensure interpretations are solidly grounded in authenticated classical rules retrieved from `rag/chroma_jyotish_db` and the data in [`jyotish/vedic_context.json`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/vedic_context.json).
- 
- ---
- 
-diff --git a/User_data_sheet.md b/User_data_sheet.md
++import os
++import sys
++import json
++import argparse
++import subprocess
++from typing import Dict, Any, List
++
++# Ensure project root is in sys.path
++BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
++if BASE_DIR not in sys.path:
++    sys.path.insert(0, BASE_DIR)
++
++from western.generate_chart import generate_ai_json
++from langchain_chroma import Chroma
++from langchain_huggingface import HuggingFaceEmbeddings
++
++WESTERN_CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
++
++
++def load_prompt(filename: str) -> str:
++    """Loads prompt XML file from the /prompts/ directory."""
++    path = os.path.join(BASE_DIR, "prompts", filename)
++    if not os.path.exists(path):
++        raise FileNotFoundError(f"Prompt file not found at {path}")
++    with open(path, "r", encoding="utf-8") as f:
++        return f.read()
++
++
++def query_local_rag_db(queries: List[str], max_results_per_query: int = 3) -> str:
++    """Queries the local Chroma Vector DB directly without API calls."""
++    if not os.path.exists(WESTERN_CHROMA_DB_DIR):
++        return "⚠️ Western Vector database not found at rag/chroma_astrology_db."
++        
++    try:
++        embedding_model = HuggingFaceEmbeddings(
++            model_name="sentence-transformers/all-MiniLM-L6-v2"
++        )
++        vector_store = Chroma(
++            persist_directory=WESTERN_CHROMA_DB_DIR,
++            embedding_function=embedding_model
++        )
++        
++        output_chunks = []
++        seen = set()
++        
++        for q in queries:
++            results = vector_store.similarity_search(q, k=max_results_per_query)
++            output_chunks.append(f"### Search Topic: '{q}'")
++            for idx, doc in enumerate(results, 1):
++                content = doc.page_content.strip()
++                if content not in seen:
++                    seen.add(content)
++                    source = os.path.basename(doc.metadata.get("source", "Classical Text"))
++                    page = doc.metadata.get("page", "N/A")
++                    output_chunks.append(f"--- [Source: {source}, Page: {page}] ---\n{content}\n")
++                    
++        return "\n".join(output_chunks)
++    except Exception as e:
++        return f"Error querying local Chroma DB: {e}"
++
++
++def run_agent_headless(
++    agent_name: str, 
++    system_prompt: str, 
++    user_payload: str, 
++    model_name: str, 
++    trace_log_path: str, 
++    timeout_seconds: int = 600
++) -> str:
++    """
++    Runs an AI agent via the Antigravity CLI (agy) in headless mode.
++    No API keys or billed network calls are used.
++    """
++    print(f"\n🤖 Starting headless AGY execution for agent: {agent_name}")
++    print(f"   Model: {model_name} | Timeout: {timeout_seconds}s")
++    print(f"   Trace log: {trace_log_path}")
++    
++    # Ensure directory exists for log path
++    os.makedirs(os.path.dirname(os.path.abspath(trace_log_path)), exist_ok=True)
++    
++    # Combine system XML prompt with runtime payload
++    full_prompt = f"{system_prompt}\n\n{user_payload}"
++    
++    # Locate CLI executable
++    cli_path = "/Users/hajnaljanos/.local/bin/agy"
++    if not os.path.exists(cli_path):
++        cli_path = "agy"
++        
++    cmd = [
++        cli_path,
++        "--dangerously-skip-permissions",
++        "--log-file",
++        trace_log_path,
++        "--model",
++        model_name,
++        "--print",
++        full_prompt
++    ]
++    
++    try:
++        result = subprocess.run(
++            cmd,
++            stdin=subprocess.DEVNULL,
++            capture_output=True,
++            text=True,
++            timeout=timeout_seconds
++        )
++        
++        if result.returncode != 0:
++            print(f"⚠️ AGY execution warning/error for {agent_name} (exit code {result.returncode})")
++            if result.stderr:
++                print(f"STDERR:\n{result.stderr.strip()}")
++                
++        # If output is captured in stdout, return it
++        output_text = result.stdout.strip()
++        if not output_text and os.path.exists(trace_log_path):
++            # Fallback to reading log file if stdout was suppressed
++            with open(trace_log_path, "r", encoding="utf-8") as f:
++                output_text = f.read()
++                
++        return output_text
++        
++    except subprocess.TimeoutExpired as e:
++        with open(trace_log_path, "w", encoding="utf-8") as f:
++            f.write(f"TimeoutExpired: Process timed out after {e.timeout} seconds.")
++        raise RuntimeError(f"CLI execution for {agent_name} timed out after {e.timeout} seconds.")
++
++
++def run_pipeline(
++    name: str = "User",
++    year: int = 1983,
++    month: int = 11,
++    day: int = 10,
++    hour: int = 4,
++    minute: int = 20,
++    city: str = "Georgsmarienhütte",
++    country_code: str = "DE",
++    structural_model: str = "Gemini 3.1 Pro (High)",
++    psychological_model: str = "Gemini 3.1 Pro (High)",
++    synthesizer_model: str = "Gemini 3.1 Pro (High)"
++):
++    print("======================================================================")
++    print("  Western Astrology Multi-Agent Parallel Pipeline (Headless AGY)")
++    print("======================================================================")
++    print(f" Target: {name} | Date: {year}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}")
++    print(f" Location: {city}, {country_code}")
++    print(f" Models: Agent 1={structural_model} | Agent 2={psychological_model} | Agent 3={synthesizer_model}")
++    print("----------------------------------------------------------------------")
++
++    # STEP 1: Generate Raw Chart JSON
++    print("\n🔮 Step 1: Calculating Western Chart JSON via Engine...")
++    chart_json_path = os.path.join(BASE_DIR, "western", "chart_context.json")
++    chart_data = generate_ai_json(
++        name=name,
++        year=year,
++        month=month,
++        day=day,
++        hour=hour,
++        minute=minute,
++        city=city,
++        country_code=country_code,
++        output_filename=chart_json_path,
++        silent=True
++    )
++    
++    if not chart_data and os.path.exists(chart_json_path):
++        with open(chart_json_path, "r", encoding="utf-8") as f:
++            chart_data = json.load(f)
++            
++    chart_json_str = json.dumps(chart_data, indent=2)
++    print("✅ Raw Chart JSON successfully generated.")
++
++    # Extract basic placements for targeted Vector DB queries
++    native = chart_data.get("native_details", {})
++    planets = chart_data.get("traditional_planets", {})
++    asc_sign = native.get("ascendant", "Ascendant")
++    sect = native.get("sect", "Chart Sect")
++    
++    # STEP 2: Pre-fetch Vector DB Ground Truth for Agent 1 & Agent 2
++    print("\n📚 Step 2: Querying Local Chroma Vector DB for Classical & Psychological Ground Truth...")
++    struct_queries = [
++        f"Ascendant in {asc_sign} in a {sect}",
++        f"Chart ruler position in {asc_sign} whole sign house",
++        "Essential dignities domicile detriment fall classical mechanics",
++        f"Sun in {planets.get('Sun', {}).get('sign')} Moon in {planets.get('Moon', {}).get('sign')}"
++    ]
++    psych_queries = [
++        f"Solar-Lunar blend Sun in {planets.get('Sun', {}).get('sign')} Moon in {planets.get('Moon', {}).get('sign')}",
++        "Hard aspect developmental tension square opposition conjunction",
++        f"Saturn placement in {planets.get('Saturn', {}).get('sign')} emotional defenses pain body",
++        f"Mars placement in {planets.get('Mars', {}).get('sign')} internal conflicts"
++    ]
++    
++    structural_rag_context = query_local_rag_db(struct_queries, max_results_per_query=2)
++    psychological_rag_context = query_local_rag_db(psych_queries, max_results_per_query=2)
++    print("✅ Local Vector DB context extracted natively.")
++
++    # STEP 3: Run Agent 1 (Structural & Hellenistic Profiler via Headless AGY)
++    print("\n🏛️ Step 3: Executing Agent 1 (Structural Profiler - Demetra George Framework)...")
++    agent1_prompt = load_prompt("agent1_structural.xml")
++    agent1_payload = (
++        f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
++        f"=== RETRIEVED VECTOR DB GROUND TRUTH (STRUCTURAL CONTEXT) ===\n{structural_rag_context}\n\n"
++        "Please provide a comprehensive, deeply reflective, multi-page report analyzing the exact objective "
++        "mechanics of this chart according to your instructions and focus areas. Do not truncate or compress your analysis."
++    )
++    agent1_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent1_trace.txt")
++    structural_report = run_agent_headless(
++        agent_name="Agent 1 (Structural)",
++        system_prompt=agent1_prompt,
++        user_payload=agent1_payload,
++        model_name=structural_model,
++        trace_log_path=agent1_log,
++        timeout_seconds=600
++    )
++    
++    agent1_out_file = os.path.join(BASE_DIR, "western", f"{name}_Agent1_Structural_Report.md")
++    with open(agent1_out_file, "w", encoding="utf-8") as f:
++        f.write(structural_report)
++    print(f"✅ Agent 1 Report saved to: {agent1_out_file} (Length: {len(structural_report)} chars)")
++
++    # STEP 4: Run Agent 2 (Psychological & Aspect Profiler via Headless AGY)
++    print("\n🧠 Step 4: Executing Agent 2 (Psychological Profiler - Noel Tyl Framework)...")
++    agent2_prompt = load_prompt("agent2_psychological.xml")
++    agent2_payload = (
++        f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
++        f"=== RETRIEVED VECTOR DB GROUND TRUTH (PSYCHOLOGICAL CONTEXT) ===\n{psychological_rag_context}\n\n"
++        "Please provide a comprehensive, deep psychological report analyzing the subjective needs, frictions, "
++        "and pain body dynamics according to your instructions. Produce a thorough, in-depth evaluation."
++    )
++    agent2_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent2_trace.txt")
++    psychological_report = run_agent_headless(
++        agent_name="Agent 2 (Psychological)",
++        system_prompt=agent2_prompt,
++        user_payload=agent2_payload,
++        model_name=psychological_model,
++        trace_log_path=agent2_log,
++        timeout_seconds=600
++    )
++    
++    agent2_out_file = os.path.join(BASE_DIR, "western", f"{name}_Agent2_Psychological_Report.md")
++    with open(agent2_out_file, "w", encoding="utf-8") as f:
++        f.write(psychological_report)
++    print(f"✅ Agent 2 Report saved to: {agent2_out_file} (Length: {len(psychological_report)} chars)")
++
++    # STEP 5: Run Agent 3 (Master Astrologer Synthesizer via Headless AGY)
++    print("\n✨ Step 5: Executing Agent 3 (Master Astrologer Synthesizer)...")
++    agent3_prompt = load_prompt("agent3_synthesizer.xml")
++    agent3_payload = (
++        f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
++        f"=== AGENT 1: STRUCTURAL REPORT ===\n{structural_report}\n\n"
++        f"=== AGENT 2: PSYCHOLOGICAL REPORT ===\n{psychological_report}\n\n"
++        "Please synthesize both reports into a rich, deep, conversational, multi-page astrological reading. "
++        "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
++        "'Day-in-the-Life Reality' behavioral example. Provide a thorough, expansive reading without taking shortcuts."
++    )
++    agent3_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent3_trace.txt")
++    final_reading = run_agent_headless(
++        agent_name="Agent 3 (Synthesizer)",
++        system_prompt=agent3_prompt,
++        user_payload=agent3_payload,
++        model_name=synthesizer_model,
++        trace_log_path=agent3_log,
++        timeout_seconds=900
++    )
++
++    # STEP 6: Save Final Output
++    output_filename = f"{name}_Full_Pipeline_Reading.md"
++    output_path = os.path.join(BASE_DIR, "western", output_filename)
++    with open(output_path, "w", encoding="utf-8") as f:
++        f.write(final_reading)
++        
++    print("\n======================================================================")
++    print(f"🎉 Pipeline Complete! Comprehensive reading saved to: {output_path}")
++    print(f"   Final Reading Size: {len(final_reading)} characters.")
++    print("======================================================================")
++    return output_path
++
++
++def main():
++    parser = argparse.ArgumentParser(description="Run Western Astrology Multi-Agent Pipeline (Headless AGY).")
++    parser.add_argument("--name", type=str, default="User", help="Target Name")
++    parser.add_argument("--year", type=int, default=1983, help="Birth Year")
++    parser.add_argument("--month", type=int, default=11, help="Birth Month")
++    parser.add_argument("--day", type=int, default=10, help="Birth Day")
++    parser.add_argument("--hour", type=int, default=4, help="Birth Hour (0-23)")
++    parser.add_argument("--minute", type=int, default=20, help="Birth Minute")
++    parser.add_argument("--city", type=str, default="Georgsmarienhütte", help="Birth City")
++    parser.add_argument("--country", type=str, default="DE", help="Country Code")
++    
++    # Model configuration flags (matching bhajan translator style)
++    parser.add_argument("--model", type=str, help="Blanket model override for all agents")
++    parser.add_argument("--structural-model", type=str, default="Gemini 3.1 Pro (High)", help="Model for Agent 1")
++    parser.add_argument("--psychological-model", type=str, default="Gemini 3.1 Pro (High)", help="Model for Agent 2")
++    parser.add_argument("--synthesizer-model", type=str, default="Gemini 3.1 Pro (High)", help="Model for Agent 3")
++    
++    args = parser.parse_args()
++    
++    struct_mod = args.model or args.structural_model
++    psych_mod = args.model or args.psychological_model
++    synth_mod = args.model or args.synthesizer_model
++    
++    run_pipeline(
++        name=args.name,
++        year=args.year,
++        month=args.month,
++        day=args.day,
++        hour=args.hour,
++        minute=args.minute,
++        city=args.city,
++        country_code=args.country,
++        structural_model=struct_mod,
++        psychological_model=psych_mod,
++        synthesizer_model=synth_mod
++    )
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/western/User_Full_Pipeline_Reading.md b/western/User_Full_Pipeline_Reading.md
+new file mode 100644
+index 0000000..78a7c94
+--- /dev/null
++++ b/western/User_Full_Pipeline_Reading.md
+@@ -0,0 +1,24 @@
++# Western Astrology Horoscope Reading for User
++
++## Part 1: The Core Engine (Synthesizing the Solar-Lunar Blend)
++Your Sun in Sco drives your core direction, while your Moon in Cap powers your emotional needs.
++
++**Day-in-the-Life Reality:**
++When you enter a room full of people, your immediate instinct is to observe before diving into deep conversation.
++
++## Part 2: The Vessel & Steersman (Synthesizing Ascendant, Ruler, and Dignities)
++With a Lib Ascendant (Rising Sign) in a Night Chart, your chart operates with a strong, focused outward presence.
++
++**Day-in-the-Life Reality:**
++When starting a new project, you take structured, step-by-step actions to ensure everything is built on solid ground.
++
++## Part 3: Tension & Growth (Synthesizing Aspects & the Pain Body)
++The hard aspects between key planets create dynamic growth opportunities.
++
++**Day-in-the-Life Reality:**
++In moments of disagreement, you might step back to reflect deeply before responding.
++
++## Summary
++- **Archetype:** The Strategic Visionary
++- **Superpower:** Analytical Focus and Emotional Resilience
++- **Core Lesson:** Balancing internal reflection with outer action
+diff --git a/western/User_data_sheet.md b/western/User_data_sheet.md
 new file mode 100644
 index 0000000..53d8484
 --- /dev/null
-+++ b/User_data_sheet.md
++++ b/western/User_data_sheet.md
 @@ -0,0 +1,43 @@
 +# Astrological Data Sheet: User
 +
@@ -854,1708 +502,1062 @@ index 0000000..53d8484
 +- **Lot of Courage**: Sco (27.44°) in House 2
 +- **Lot of Victory**: Lib (11.46°) in House 1
 +- **Lot of Nemesis**: Cap (10.78°) in House 4
-diff --git a/jyotish/VEDIC_RAG_PROMPT.md b/jyotish/VEDIC_RAG_PROMPT.md
-deleted file mode 100644
-index 29da881..0000000
---- a/jyotish/VEDIC_RAG_PROMPT.md
-+++ /dev/null
-@@ -1,67 +0,0 @@
--# Master Vedic Astrology (Jyotish) RAG Analysis & Interpretation Prompt
--
--This document defines the standard operational prompt and workflow for conducting Parashari Vedic Astrology (Jyotish) analysis and interpretations using the local vector database in the Astra dual-engine architecture.
--
-----
--
--## 1. Persona & Fundamental Philosophy
--You are a **Master Jyotishi (Senior Vedic Astrologer) and AI Systems Architect** operating the traditional Parashari system within Astra. You analyze sidereal astrological charts using True Chitra Paksha (Lahiri) Ayanamsa, whole sign houses, Nakshatras, Divisional charts (**D1 Rasi** and **D9 Navamsa**), and **Vimshottari Dasha** time cycles.
--
--### Core Separation Rule
--* **Strict Jyotish Boundary**: Do NOT use Western modern psychological astrology, outer planets (Uranus, Neptune, Pluto), or tropical aspect configurations (such as trines or squares). 
--* Evaluate all planetary sight and influence using traditional Whole Sign **Graha Drishti** (Jupiter aspects houses 5, 7, 9 from itself; Mars aspects 4, 7, 8; Saturn aspects 3, 7, 10; Rahu/Ketu aspect 5, 7, 9; all others aspect the 7th house).
--
-----
--
--## 2. Explanation Style & Communication Protocol
--When communicating with the user, strictly abide by the following pedagogical rules:
--1. **Explain simply and intuitively**: Avoid overwhelming technical or Sanskrit jargon without clear English definitions. Frame complex astrological dynamics using everyday analogies and plain English (as if teaching a thoughtful 15-year-old or an interested beginner).
--2. **Introduce technical terms incrementally**: On the very first introduction of any technical Vedic term, immediately provide a concise, intuitive explanation in parentheses or an adjacent sentence.
--   * *Example*: **Lagna** *(the zodiac sign rising on the eastern horizon at birth, which forms the core architectural blueprint of your physical body and practical life focus)*.
--   * *Example*: **Nakshatra** *(one of 27 specific lunar constellations along the zodiac that reveal deep emotional reflexes, subconscious habit patterns, and inner psychological wiring)*.
--   * *Example*: **Vargottama** *(a highly auspicious state where a planet resides in the exact same zodiac sign in both your birth chart and spiritual soul chart, granting it bedrock stability and enduring strength)*.
--   * *Example*: **Vimshottari Dasha** *(the classical planetary timekeeper system that acts as an internal clock, unlocking specific life chapters and karmic themes over a 120-year cycle)*.
--3. **Dominant Sidereal Sign & Nakshatra Overviews**: Before dissecting specific house lordships or intricate planetary conjunctions, always present a welcoming foundational overview of the archetypal energy, element, symbolic meanings, and emotional landscape of the native's Lagna and Moon Nakshatra.
--4. **Transform Fatalism into Empowering Dharma**: Translate ancient classical shlokas (from texts like *Brihat Parashara Hora Shastra* or *Brihat Jataka*) into empowering, practical self-knowledge. Rather than predicting rigid fatalistic outcomes, illuminate the underlying mental habit patterns, evolutionary karma, and actionable growth habits (*Dharma* and *Upayas*).
--
-----
--
--## 3. The 4-Step Chain of Thought (CoT) Execution Workflow
--
--When tasked with generating and reading a Vedic chart, follow this disciplined ReAct sequence:
--
--### Step 1: Action (Mathematical Chart Computation)
--Invoke `calculate_vedic_chart` (or run `generate_vedic_chart` from `jyotish/generate_jyotish.py`) passing the native's exact birth details: Name, Year, Month, Day, Hour, Minute, Latitude, Longitude, and Timezone Offset. Verify that `jyotish/vedic_context.json` is updated and retrieve the calculation JSON.
--
--### Step 2: Reasoning (Internal Audit & Target Identification)
--Conduct an internal assessment of the four core pillars:
--1. **Lagna & Lagna Pati**: Note the sidereal rising sign, exact degree, and Nakshatra. Trace where the Ascendant lord (*Lagna Pati*) resides in D1 and D9, analyzing its dignity (Exalted/Uccha, Own House/Swa-Rashi, Friendly, or Debilitated/Neecha).
--2. **Chandra & The Mental Landscape (*Manas*)**: Identify the Moon's sidereal sign, Nakshatra, exact Pada (quarter), and ruling Nakshatra Deity. Evaluate emotional resilience and mental conditioning.
--3. **Divisional Evolution (D1 vs D9 Navamsa)**: Compare D1 physical roots with D9 spiritual fruits. Highlight Vargottama planets, exalted Navamsa placements, or Neecha Bhanga (cancellation of debilitation) that transform early challenges into late-life mastery.
--4. **Vimshottari Dasha Timeline**: Locate the current active Mahadasha, Antardasha, and Pratyantardasha periods. Note which houses these Dasha lords rule and occupy to map the active life chapter.
--
--### Step 3: Action (Vedic Vector Database Research)
--Invoke `query_vedic_astrology_books` (querying `rag/chroma_jyotish_db`) 1 to 3 times for targeted astrological dynamics, such as:
--* `"Lagna lord in [House] house in [Sign]"`
--* `"Chandra in [Nakshatra] nakshatra characteristics"`
--* `"Vimshottari dasha [Planet] mahadasha and [Planet] antardasha"`
--
--### Step 4: Synthesis (The Empowering 4-Part Reading)
--Synthesize the calculation data and RAG extracts into a beautifully formatted, intuitive 4-part Vedic Reading:
--
--#### Part 1: Lagna & Physical Identity (The Material Blueprint)
--* Present an accessible overview of the sidereal rising sign archetype and Nakshatra.
--* Examine the placement and dignity of the Lagna Lord (*Lagna Pati*).
--* Unpack core vitality, physical motivations, health tendencies, and primary orientations in practical life.
--
--#### Part 2: Chandra & Mental Conditioning (Mind & Emotional Resilience)
--* Explain the Moon's sidereal placement, Nakshatra, Pada, and guiding mythology/deity.
--* Explore emotional wiring, subconscious reflexes, public presence, and how the native maintains mental tranquility (*Manas*).
--
--#### Part 3: D9 Navamsa & Soul Purpose (Dharma & Inner Mastery)
--* Contrast everyday reality (D1) with internal character evolution and destiny (D9).
--* Spotlight Vargottama planets or strengthened Navamsa rulers that indicate deep emotional depth, marital partnership alignment, and mature spiritual calling.
--
--#### Part 4: Vimshottari Dasha & Active Timeline (Timing of Life Chapters)
--* Detail the currently running planetary Dasha period (Mahadasha, Antardasha, and Pratyantardasha) and what karmic themes are active right now.
--* Offer empowering, constructive guidance, reflective mindfulness routines, and accessible modern remedies (*Upayas*) to harmoniously navigate the current time cycle.
-diff --git a/jyotish/vedic_agent_prompt.txt b/jyotish/vedic_agent_prompt.txt
-deleted file mode 100644
-index e6e1289..0000000
---- a/jyotish/vedic_agent_prompt.txt
-+++ /dev/null
-@@ -1,31 +0,0 @@
--You are a Master Jyotishi (Senior Vedic Astrologer) trained in the traditional Parashari system. You strictly analyze Eastern/Vedic astrological charts using True Chitra Paksha (Lahiri) Ayanamsa, Sidereal signs, Nakshatras, Divisional charts (D1 Rasi & D9 Navamsa), and Vimshottari Dashas.
--
--STRICT RULE: Do NOT use modern Western psychological astrology. Do NOT use outer planets (Uranus, Neptune, Pluto) as house rulers. Do NOT use Western tropical aspects (e.g. 120° trine, 90° square). Evaluate all aspects using traditional Whole Sign Graha Drishti (Jupiter 5/7/9, Mars 4/7/8, Saturn 3/7/10, all others 7th house).
--
--When given the `vedic_context.json` birth data, you MUST structure your response into TWO distinct steps:
--
--STEP 1: INTERNAL ANALYSIS (<scratchpad>)
--Before writing the public reading, open a `<scratchpad>` tag and complete the following step-by-step Vedic audit:
--1. LAGNA & LAGNA PATI: Identify the Ascendant sign, degree, nakshatra, and the placement of the Lagna Lord (Lagna Pati) in both D1 and D9. Note its dignity (Uccha/Exalted, Neecha/Debilitated, Swa-Rashi/Own, Moolatrikona, Neutral/Enemy).
--2. CHANDRA & MIND: Evaluate the Moon's Sidereal Sign, exact Nakshatra, Pada, Deity, and house placement. Note emotional stability, mental orientation (Manas), and any Graha aspects on Chandra.
--3. D1 VS D9 ALIGNMENT: Check key planets in D1 vs D9. Identify Vargottama planets (same sign in D1 & D9) or Neecha Bhanga (cancellation of debilitation).
--4. VIMSHOTTARI DASHA TIMELINE: Identify the Mahadasha and Antardasha active at birth, and the CURRENT running Mahadasha, Antardasha, and Pratyantardasha. Determine which houses the current Dasha lords rule and occupy.
--
--STEP 2: THE 4-PART VEDIC READING
--Output a clear, profound, and structured Vedic reading divided into exactly 4 sections:
--
--### 1. Lagna & Physical Identity (D1 Rasi)
--- Analyze the Ascendant (Lagna) sign, Nakshatra, and Lagna Lord placement.
--- Detail physical vitality, core life path, health tendencies, and primary motivation.
--
--### 2. Chandra & Mental Conditioning (Mind & Emotions)
--- Analyze the Moon (Chandra) sign, Nakshatra, Pada, and Nakshatra Deity.
--- Unpack the psychological landscape, emotional needs, subconscious drives, and public expression.
--
--### 3. D9 Navamsa & Soul Purpose (Dharma & Destiny)
--- Analyze the D9 Navamsa chart to reveal inner spiritual potency, character maturation, marital harmony, and long-term karma.
--- Highlight any Vargottama or strengthened Grahas that reveal hidden talents and true soul calling.
--
--### 4. Vimshottari Dasha & Current Timeline
--- Explain the current running Mahadasha, Antardasha, and Pratyantardasha.
--- Describe the active life cycle, karmic opportunities, potential challenges, and actionable guidance for navigating this timing period.
-diff --git a/prompts/jyotish_analysis.xml b/prompts/jyotish_analysis.xml
+diff --git a/western/generate_chart.py b/western/generate_chart.py
+index 547f503..353c218 100644
+--- a/western/generate_chart.py
++++ b/western/generate_chart.py
+@@ -1106,5 +1106,7 @@ def generate_ai_json(
+     if not silent:
+         print(success_msg)
+ 
++    return ai_payload
++
+ if __name__ == "__main__":
+     generate_ai_json()
+diff --git a/western/kailash_Agent1_Structural_Report.md b/western/kailash_Agent1_Structural_Report.md
 new file mode 100644
-index 0000000..2c77fd3
+index 0000000..d1598ad
 --- /dev/null
-+++ b/prompts/jyotish_analysis.xml
-@@ -0,0 +1,27 @@
-+<system_role>
-+You are a Master Jyotishi (Senior Vedic Astrologer) operating Astra's Parashari Vedic Astrology System. You operate purely within the Parashari system using Sidereal signs, Lahiri Ayanamsa, and Vimshottari Dashas.
-+NEVER use Western astrology, outer planets (Uranus, Neptune, Pluto), or psychological frameworks like Noel Tyl / Demetra George.
-+</system_role>
++++ b/western/kailash_Agent1_Structural_Report.md
+@@ -0,0 +1,90 @@
++# Mechanics of the Chart: Structural & Hellenistic Profile
 +
-+<execution_workflow>
-+To analyze a chart, follow this ReAct workflow:
-+1. Call `calculate_vedic_chart` to compute D1, D9, and Vimshottari Dasha.
-+2. Call `query_vedic_astrology_books` to retrieve authentic classical shlokas.
-+3. Perform internal analysis inside <scratchpad> tags.
-+4. Output the final reading inside <final_reading> tags.
-+</execution_workflow>
++---
 +
-+<chain_of_thought_enforcement>
-+Inside your <scratchpad>, explicitly map out:
-+- [ ] Lagna & Lagna Pati in D1 and D9.
-+- [ ] Chandra & Manas (Moon Sign, Nakshatra, Pada).
-+- [ ] Dasha Timeline (Running Mahadasha, Antardasha, Pratyantardasha).
-+</chain_of_thought_enforcement>
++## 1. Core Architecture
++* **The Ascendant (The *Horoskopos* or Rising Sign): Taurus**
++  * **What it means:** The Ascendant acts as the front door and the primary steering wheel of your horoscope. It represents your physical vitality, your personal orientation in the world, and your core identity on the life path.
++  * **Whole Sign Houses (WSH):** Using traditional Classical mechanics, each zodiac sign matches precisely to one entire 30-degree house (like an apartment complex where each apartment occupies an entire floor). With Taurus anchoring the 1st House, all twelve houses unfold neatly in aligned sign order around the zodiac wheel.
++* **Sect (Day vs. Night Dynamics): Diurnal (Day Chart)**
++  * **What it means:** **Sect** splits the planets into daytime and nighttime shifts (similar to how certain workers thrive during typical daytime business hours while others specialize in overnight shifts). Because your Sun resides above the horizon, this is a Day Chart.
++  * **The Daytime Team (In Sect / Favored):** The Sun, Jupiter, and Saturn are on duty in their natural elements. They collaborate smoothly and constructively to build structure in your life.
++  * **The Nighttime Team (Contrary to Sect):** The Moon, Venus, and Mars are working off-shift in a bright, daytime environment. Because they are operating outside their preferred nocturnal conditions, their mechanical expressions require extra conscious energy to moderate and balance.
++* **Benefic and Malefic Roles by Sect:**
++  * **Primary Benefic (Most Supportive Planet): Jupiter.** In a diurnal horoscope, Jupiter acts as your lead benefactor (like a warm, generous patron or sponsor), tasked with bringing expansion, opportunity, and protection.
++  * **Primary Malefic (Most Challenging Planet): Mars.** Because Mars is an intensely hot, disruptive nocturnal force operating in a daytime chart, it acts as the primary challenger (like a rigid drill sergeant or rowdy disruptor), flagging areas of potential friction, heat, and effort.
++  * **Cooperative Supervisor: Saturn.** While often considered difficult, Saturn in a day chart settles down significantly. It acts like a strict but fair lead architect or site inspector, providing steady structure and patience rather than destructive roadblocks.
 +
-+<output_format>
-+Your final output MUST be wrapped in <final_reading> tags and contain 4 parts:
-+Part 1: Panchanga & Lagna Architecture
-+Part 2: D1 Rasi & D9 Navamsa Placements
-+Part 3: Vimshottari Dasha Timeline & Karmic Evolution
-+Part 4: Practical Dharma & Remedies (Upayas)
-+</output_format>
-diff --git a/prompts/western_analysis.xml b/prompts/western_analysis.xml
++---
++
++## 2. The Steersman (Chart Ruler)
++* **Identifying the Steersman (*Oikodespotes* of the Ascendant): Venus**
++  * Because Taurus sits on your 1st House cusp (the Ascendant), its classic ruler—**Venus**—becomes the **Steersman** of your entire chart. Think of Venus as the captain at the ship's helm, directly responsible for steering the overarching direction and trajectory of your life.
++* **Placement and Location:**
++  * **House and Sign:** Venus is positioned in **Sagittarius within the 8th House**.
++  * **Structural Implication:** The captain of your ship resides in an arena structurally dedicated to shared assets, interpersonal financial partnerships, mutual obligations, and deeper underlying systems (the foundational themes of the traditional 8th House).
++* **Essential Dignity (Planetary Condition): Peregrine (Wandering)**
++  * **What it means:** **Essential Dignity** describes a planet's natural built-in strength based purely on its zodiac sign—much like assessing whether a carpenter is in their own fully-stocked workshop versus stranded out in the wilderness.
++  * **Peregrine State:** Venus in Sagittarius is **Peregrine** (literally "wandering"). This means Venus is neither residing in a favored home territory nor stuck in a deeply hostile sign. She operates like a capable traveler visiting a foreign city: she lacks exclusive VIP access or familiar local tools, relying instead on versatility and ambient resources to steer the ship.
++* **Sub-Rulership Mechanics (Egyptian Terms / *Bounds*):**
++  * Venus occupies the **Egyptian Term** of Mercury. A **Term** is a customized micro-division within a zodiac sign (similar to renting a specialized personal studio inside a larger co-working building). Operating inside Mercury's sub-jurisdiction infuses your ship’s captain with an analytical, communicative, and problem-solving operational style.
++
++---
++
++## 3. Aversions (Blind Spots & Hidden Architecture)
++* **The Concept of Aversion (*Asjunct* Signs):**
++  * In Hellenistic mechanics, planets can only directly communicate and assist one another if they form classical visual geometric angles (such as being 60, 90, 120, or 180 degrees apart). When houses do not form these clean visual lines with the Ascendant, they exist in a state of **Aversion**—meaning they sit in a geometric blind spot (like trying to see what is happening in an adjacent room through a thick, soundproof brick wall).
++  * The houses lying in aversion to your Taurus Ascendant are the **2nd (Gemini), 6th (Libra), 8th (Sagittarius), and 12th (Aries)** Houses. These represent backstage or behind-the-scenes domains that require deliberate, conscious monitoring because the Ascendant cannot directly observe them.
++* **Is the Steersman in an Averted House? Yes.**
++  * **Venus in the 8th House** sits in direct aversion to your Taurus Ascendant.
++  * **Mechanical Impact:** Because your ship's captain (Venus) sits in an averted blind spot relative to the steering wheel (the 1st House Ascendant), navigation in your life happens via instrument flying rather than visual contact. Your direction is often steered through indirect management, deeper research, shared structures, and backstage administration rather than direct, forward-facing public visibility.
++* **A Massive Backstage Concentration:**
++  * Noticeably, **four out of your seven traditional planets** occupy houses that reside in geometric aversion to your Ascendant:
++    * **Venus and Saturn** in the 8th House (Sagittarius).
++    * **Mars** in the 6th House (Libra).
++    * **Jupiter** in the 12th House (Aries).
++  * This geometric layout demonstrates that a significant portion of your chart’s mechanical engine operates silently underneath the surface, acting as a supportive background infrastructure running just outside of public sightlines.
++
++---
++
++## 4. Overall Planetary Dignity & Strength Profile
++* **Angular Hub of Activity (The Main Stage): 7th House (Scorpio)**
++  * An **Angular House** (Houses 1, 4, 7, and 10) acts like an open public square or prime festival stage where planetary energy manifests loudly, dynamically, and with immediate external visibility.
++  * You feature a dense focal concentration in your **7th House of Interpersonal Partnerships**, containing the **Sun, Moon, and Mercury**. This makes relational dynamics a primary hub of continuous mechanical activity.
++* **Individual Planetary Mechanics & Conditions:**
++  * **Sun in Scorpio (7th House - Angular):**
++    * *Condition:* **Peregrine** (Neutral / Wandering).
++    * *Mechanics:* Positioned on an angular stage, the Sun delivers steady, stable visibility and vital endurance into relationship and partnership domains without built-in dignitary handicaps or boosters.
++  * **Moon in Scorpio (7th House - Angular):**
++    * *Condition:* **Fall** (Weakened / *In Depression*).
++    * *What it means:* Being in **Fall** indicates that a planet is positioned in the zodiac sign where it struggles most to express its comfortable, ideal nature—similar to trying to play a delicate acoustic harp in the middle of a noisy rock concert. The Moon naturally seeks emotional nourishment, safety, and fluidity, but Scorpio imposes a high-intensity, vigilant, and uncompromising environment.
++    * *Mechanics:* Though operating in Fall, its location inside an Angular house ensures this high-intensity processing engine operates with undeniable external prominence and activity.
++  * **Mercury in Scorpio (7th House - Angular):**
++    * *Condition:* **Peregrine** (Neutral) with **Clear Phasis**.
++    * *What it means:* **Phasis** means a planet has stepped far enough away from the bright, blinding glare of the Sun to become visibly bright in the twilight sky (like an actor stepping out of an overwhelming background spotlight directly onto a crisply lit stage front).
++    * *Mechanics:* Achieving Clear Phasis grants Mercury enhanced structural clarity, sharpened eloquence, and high functional reliability across relational communication channels.
++  * **Mars in Libra (6th House - Cadent):**
++    * *Condition:* **Detriment** (Exiled / Weakened).
++    * *What it means:* **Detriment** happens when a planet occupies the zodiac sign directly opposite its natural home territory—like a sprinter forced to compete in a synchronized swimming match using completely unfamiliar rules. Mars thrives on decisive action, severance, and momentum, whereas Libra requires diplomacy, consensus, and careful balance.
++    * *Mechanics:* As your primary challenger (Nocturnal Malefic in a Day Chart), having diminished dignity in an averted, hard-working arena (the 6th House of daily labor and maintenance) pinpoints where mechanical friction, physical exertion, or bureaucratic delays are most likely to show up.
++  * **Jupiter in Aries (12th House - Cadent):**
++    * *Condition:* **Peregrine** (Neutral) and **Retrograde**.
++    * *What it means:* **Retrograde** motion occurs when a planet visually appears to travel backward in the sky from Earth's vantage point. Mechanically, this turns a planet's energy inward and creates a delay in its direct, outward delivery.
++    * *Mechanics:* As your primary supportive benefactor (Diurnal Benefic), Jupiter works backstage inside the secluded 12th House of reflection and solitude. While lacking loud external glamour, it acts as an internalized, highly resilient structural safety net and quiet background shield.
++  * **Saturn in Sagittarius (8th House - Succeedent):**
++    * *Condition:* **Peregrine** (Neutral / Wandering).
++    * *Mechanics:* Acting as the reliable, objective supervisor of your Day Chart, Saturn comfortably shares the backstage 8th House with your Steersman (Venus). This creates an enduring framework of systematic governance, structured accountability, and longevity around hidden or shared commitments.
++
++---
++
++## 5. Structural Synthesis & Geometric Flow
++* **The Backstage Trine Scaffolding (Harmonic Flow):**
++  * A **Trine** is a harmonious 120-degree connection where planets cooperate seamlessly (like two specialists conversing over a clean, secure radio frequency without static).
++  * Your internalized benefactor (**Jupiter in Aries, 12th**) forms an exact, supportive Trine to both your Steersman (**Venus in Sagittarius, 8th**) and your constructive supervisor (**Saturn in Sagittarius, 8th**). This links your most protective day-chart forces in a durable Fire-sign support loop running smoothly beneath the conscious deck of the Ascendant.
++* **The Tension Corridor (Opposition):**
++  * An **Opposition** is a high-energy 180-degree tug-of-war across the zodiac wheel, requiring continuous dynamic balance between two contrasting forces.
++  * Your two primary sectarian actors—**Jupiter** (Primary Benefic, 12th House) and **Mars** (Primary Malefic, 6th House)—stand in direct opposition across the quiet cadent axis. This builds a functional structural counterweight: the background optimism and resilience of Jupiter acts as an immediate mechanical balance against the frictional demands and exertions of daily labor and obligations represented by Mars.
++* **Hermetic Lots Architecture:**
++  * **Lot of Fortune (*Tyche*):** Positioned at 20° Aries in your 12th House (in close conjunction with Jupiter). This dictates that tangible luck, material support, and fortunate situational turns are mechanically wired directly into quiet reflection, secluded environments, and behind-the-scenes processes.
++  * **Lot of Spirit (*Daimon*):** Located at 3° Gemini in your 2nd House of personal resources and material substance.
++  * Both of these existential foundational markers occupy houses flanking your Ascendant (the 2nd and 12th Houses). This structurally enforces that both your deep internal will (Spirit) and spontaneous material fortunes (Fortune) operate via steady, foundational background support systems surrounding your central steering wheel.
+\ No newline at end of file
+diff --git a/western/kailash_Agent2_Psychological_Report.md b/western/kailash_Agent2_Psychological_Report.md
 new file mode 100644
-index 0000000..1327736
+index 0000000..b5e472e
 --- /dev/null
-+++ b/prompts/western_analysis.xml
-@@ -0,0 +1,223 @@
-+<system_role>
-+You are a Principal AI Architect and Master Astrologer operating Astra's Western Psychological Astrology System. You use Tropical Zodiac and Whole Sign Houses.
-+</system_role>
++++ b/western/kailash_Agent2_Psychological_Report.md
+@@ -0,0 +1,47 @@
++# Psychological Dynamics & Aspect Profile
 +
-+<methodology_guide>
-+Methodology Guide for Astrological Synthesis: Integrating the Psychological Astrology of Noel Tyl and the Traditional Astrology of Demetra George
++This astrological profile applies **Noel Tyl's psychological methodology** to analyze your subjective human needs, relational patterns, and internal emotional growth. 
 +
-+PART 1: Noel Tyl’s Psychological Synthesis
++---
 +
-+1. The Solar-Lunar Blend
-+In the psychological astrological framework formulated by Noel Tyl, the horoscope is approached not as a static map of fate, but as a dynamic portrait of human development within time [cite: 1]. At the core of this developmental engine lies the Solar-Lunar Blend, which represents the primary focus of personality synthesis [cite: 2, 3]. Tyl operationalizes the Sun and the Moon as two halves of a singular psychological drive [cite: 3]. The Sun represents the "Core Identity"—the essential generator of ego-will, life energy, and the drive to be recognized and validated [cite: 2, 3, 4]. The Moon represents the "Reigning Need"—the somatic and emotional hunger that commands absolute satisfaction in order for the individual to experience safety and psychological well-being [cite: 4, 5, 6].
++## 1. The Solar-Lunar Blend: Core Identity & Emotional Needs
 +
-+These two luminaries do not operate in isolation [cite: 3]. Under Tyl's methodology, the Sun's core identity serves as the active energy source that is funneled directly into the service of satisfying the Moon's reigning need [cite: 3]. This relationship can be expressed through the following conceptual formula:
-+Behavioral Drive = Core Identity (Sun) ⟶ Satisfaction of Reigning Need (Moon)
++In psychological astrology, the Sun represents your outward ego and conscious purpose, while the Moon represents your deep-seated instinctual reactions and your **Reigning Emotional Need** (the unconscious psychological cravings that must be satisfied for you to feel secure and happy).
 +
-+This synthesis draws heavily from Abraham Maslow's Need Psychology [cite: 5]. In this model, human behavior is motivated by a hierarchy of needs where "needs make things happen" [cite: 5]. While the Moon symbolizes the overarching reigning need, every other planet in the birth chart represents a subsidiary "support need" operating in service to that lunar core [cite: 5].
++*   **The Double-Scorpio Core (Sun and Moon in Scorpio):**
++    *   **The Dynamics:** Think of your inner operating system like a specialized submarine built for deep-sea exploration. There is almost zero interest in superficial small talk or floating on the shallow surface of life; your energy is naturally geared toward exploring deep, hidden psychological truths.
++    *   **Reigning Emotional Need:** To feel safe, you require profound emotional intimacy, emotional honesty, and absolute loyalty. You crave authentic, transformative connections where you and your loved ones can drop all protective masks.
++*   **The Relationship Crucible (7th House Emphasis):**
++    *   **The Concentration of Energy:** Your Sun, Moon, and Mercury (the planet of thought and communication) are all packed closely together in one area of the sky. Astrologers call this a **Stellium** (a high-energy cluster of three or more planets in a single zodiac sign or house, making that specific area of life an intense personal focal point).
++    *   **The Interpersonal Arena:** These planets sit in the 7th House (the life arena governing one-on-one relationships, marriage, and intimate partnerships). You discover who you truly are by observing yourself through the mirror of close relationships. 
++    *   **The Friction:** Because your thoughts, identity, and feelings are so deeply blended in the realm of partnerships, you are susceptible to **Psychological Projection** (an unconscious reflex where you assume your partner feels, thinks, or analyzes situations with the exact same emotional intensity that you do). Learning to separate your intense inner feelings from your partner's independent reality is a critical stepping stone for personal inner peace.
++
++---
++
++## 2. Developmental Tension: How Your Inner Drives Talk to Each Other
++
++Developmental tension refers to the inner conflicts that challenge us and ultimately push us to mature and evolve. We discover these by looking at **Aspects** (the precise geometric geometric angles planets form to one another in the sky, which determine whether their energies cooperate or clash). We focus here on the hardest, most dynamic aspects:
++
++*   **The X-Ray Mind: Moon Conjunct Mercury**
++    *   **The Aspect:** A **Conjunction** (when two planets sit side-by-side at the same point in the sky, fusing their energies together so thoroughly that they function as a single, inseparable force).
++    *   **The Dialogue:** Here, your emotional instinct (Moon) is fused with your intellect and communication style (Mercury). Imagine having an internal detective's magnifying glass—you rarely take spoken words at face value and automatically scan for the emotions and unspoken motives underneath.
++    *   **The Tension:** Because you feel your thoughts and think your feelings, objective detachment can be tough. When your emotional mood shifts, your logical perspective immediately shifts with it. Growth comes from pausing to ask yourself: *"Is this an objective fact, or am I reading things through the lens of my current mood?"*
++*   **The Tug-of-War of Action & Belief: Mars Opposition Jupiter**
++    *   **The Aspect:** An **Opposition** (when two planets sit 180 degrees across from each other, acting like two rival forces pulling in opposite directions in a high-stakes game of tug-of-war).
++    *   **The Dialogue:** Mars (your personal drive, physical energy, and fighting spirit) in the 6th House (daily routines and work habits) stands directly across from Jupiter (your expanding beliefs, big hopes, and need for meaning) in the 12th House (the quiet realm of intuition, solitude, and the subconscious mind).
++    *   **The Tension:** This feels like trying to drive a car with one foot pressing hard on the accelerator toward a grand, idealized vision (Jupiter), while the daily friction of mundane chores and physical duties (Mars) demands your immediate attention. You may occasionally swing between taking on way too much at once (overextending your energy) and suddenly feeling exhausted and wanting to retreat completely. Finding a reliable, healthy pace in your routine is essential for managing this energetic tension.
++
++---
++
++## 3. The Pain Body: Defenses, Fears, and Healing Paths
++
++Your "Pain Body" refers to your built-in emotional armor—the protective walls and reflexes you constructed early in life to guard against feelings of vulnerability, criticism, or rejection. This armor is most clearly visible through intense planetary placements involving **Saturn** (the planet representing boundaries, caution, and hard-earned psychological maturity) and **Mars** (the planet of assertiveness and defense).
++
++*   **The Guarded Heart: Venus Conjunct Saturn in the 8th House**
++    *   **The Dynamics:** Venus (your capacity for affection, emotional softness, and connection) sits locked in a direct Conjunction with strict Saturn inside the 8th House (the deeply private realm of vulnerability, shared emotional baggage, and psychological vulnerability).
++    *   **The Defense Mechanism:** Imagine installing a high-security vault door around your heart. Because Saturn brings a fear of rejection and demands emotional safety, you may hold back your deepest affection until you have 100% proof that you won't be abandoned or judged. A quiet inner voice might whisper: *"If I drop my guard entirely, I might lose control or be left unprotected."*
++    *   **The Healing Path:** Recognizing that love and emotional bonding do not have to function as a strict, high-stakes contract. Saturn rewards patience and time; as you mature, your deepest relationships transform from guarded fortresses into unbreakable, profoundly enduring loyalties.
++*   **Repressed Assertiveness: Mars in Libra**
++    *   **The Dynamics:** Mars represents how you stand up for yourself, assert boundaries, and express anger. In the diplomatic sign of Libra, Mars prefers to negotiate and keep the interpersonal peace rather than initiate direct conflict.
++    *   **The Defense Mechanism:** Think of a boiling pot of water with the lid sealed tightly shut. To maintain superficial harmony or avoid disturbing your relationships, you may instinctively swallow your irritation or push minor grievances under the rug. Over time, this bottled-up tension can surface as subtle exhaustion, inner restlessness, or sudden bouts of resentment.
++    *   **The Healing Path:** Practice expressing gentle, real-time assertiveness. Realize that vocalizing your desires or expressing disagreement early on does not ruin a vibrant relationship—it clears the stagnant air and actually prevents deeper emotional ruptures down the road.
+\ No newline at end of file
+diff --git a/western/kailash_Full_Pipeline_Reading.md b/western/kailash_Full_Pipeline_Reading.md
+new file mode 100644
+index 0000000..d402df2
+--- /dev/null
++++ b/western/kailash_Full_Pipeline_Reading.md
+@@ -0,0 +1,100 @@
++Welcome, Kailash. Grab a cozy mug of coffee, sit back, and make yourself at home. Today, we are taking a fascinating dive into your birth chart by bringing together two deep traditions: ancient Greek astrology (how your life’s scaffolding is constructed) and modern psychological astrology (how your heart and mind actually experience it all). 
++
++Think of me as a friend translates complicated sky-math into plain English. As we talk about each piece of your cosmic blueprint, I will explain every technical term right away, and we will follow it immediately with a concrete glimpse into how it shows up in your day-to-day human experiences—no corporate jargon or financial chart-reading here. Let's uncover the story of who you really are.
++
++---
++
++# Part 1: The Core Engine (Synthesizing the Solar-Lunar Blend)
++
++In psychological astrology, your Sun represents your outward ego and conscious purpose—it is the glowing heart of your personality. Your Moon, on the other hand, represents your gut reactions and your **Reigning Emotional Need** (the deep unconscious cravings that must be fed for you to truly feel secure and happy). In your chart, both of these primary lights burn intensely in the exact same sign: Scorpio. 
++
++Having both your Sun and Moon in Scorpio makes your inner operating system function like a deep-sea submarine. You have zero interest in swimming around in the shallow end of superficial pleasantries. You are wired for emotional depth, absolute loyalty, and radical emotional honesty. In classical mechanics, your Moon sits in a state of **Fall** (a condition where a planet is visiting the sign where it struggles most to act comfortably and naturally—like trying to gently strum a delicate acoustic harp in the middle of a roaring rock concert). Because the Moon prefers comforting emotional warmth and gentle safety, operating in high-intensity, fiercely protective Scorpio means your emotional processing is highly hyper-vigilant and uncompromisingly profound.
++
++**Day-in-the-Life Reality**
++At a dinner party with acquaintances, while everyone else is happily chatting about the local weather or recent television shows, you feel an irresistible urge to gently pull a close friend aside onto the quiet outdoor patio. Within three minutes, you have entirely skipped the small talk and are having a breathtakingly honest, soul-deep conversation about how they are *really* holding up after a recent breakup. You feel most alive and emotionally fed when you are exploring deep human truths behind closed doors.
++
++***
++
++To add even more fuel to this intense inner engine, your Sun and Moon are joined by Mercury (the planet governing how your mind thinks and communicates). When three or more planets gather closely together in one small neighborhood of the sky, astrologers call it a **Stellium** (a high-energy powerhouse that turns one specific area of your life into an intense personal focal point). 
++
++In your chart, this massive gathering takes place right inside your **7th House** (the area of life dedicated entirely to one-on-one relationships, romantic partnerships, and closest confidants). In ancient astrology, this is considered an **Angular House** (a primary festival stage where energetic action plays out loudly and vividly in the external world). Because your core ego, deep emotional safety, and intellect are all bundled onto the interpersonal stage, you essentially discover who you truly are by observing yourself through the mirror of intimate relationships. The catch? You can sometimes be prone to **Psychological Projection** (an unconscious reflex where you assume your partner thinks, feels, and intensely analyzes situations at the exact same volcanic depth that you do).
++
++**Day-in-the-Life Reality**
++You are spending a relaxed Sunday evening on the couch with your partner, and you notice they have gone totally silent while staring at the ceiling. Because your mind operates with radar-like emotional intensity, your immediate reflex is to wonder if they are holding onto a deep emotional secret or silently analyzing a recent disagreement. You turn to them and ask what deep emotional waters they are wading through, only to laugh with relief when they admit they were simply daydreaming about what to order for breakfast tomorrow. 
++
++***
++
++Within this tight relationship gathering, your Moon sits directly side-by-side with Mercury. This geometry creates a **Conjunction** (a superpower pairing where two planets stand so close together in the sky that their energies fuse completely into a single, inseparable force). Furthermore, classical mechanics show your Mercury is in **Clear Phasis** (meaning the planet has stepped far enough away from the Sun’s blinding glare to shine vibrantly in the twilight sky, granting your communication extra eloquence, sharpness, and reliability).
++
++Because your emotional instinct (Moon) is fused with your communicating brain (Mercury), you quite literally feel your thoughts and think your feelings. You possess an internal detective's magnifying glass—you rarely take spoken words at face value and effortlessly read tone, body language, and subtle micro-expressions to decode the unstated feelings lying just underneath. The developmental growth here lies in learning to gently separate an objective situation from the lens of your passing mood.
++
++**Day-in-the-Life Reality**
++When a dear friend cancels your Friday movie night over a text message saying, "So sorry, just super busy and tired tonight!", your X-ray emotional radar kicks in instantly. While someone else might just say "No worries!" and move on, you immediately sense a heavy emotional tremor hidden behind their words. You proactively call them on the phone just to say, "Hey, no pressure to talk, but I felt like you really just need someone to hold space for you tonight. I'm here if you're feeling down." Your hunch is almost always spot on, and your friend feels deeply seen.
++
++---
++
++# Part 2: The Vessel & Steersman (Synthesizing Ascendant, Ruler, and Dignities)
++
++Now that we understand your intense interior engine, let’s talk about the physical vessel that carries you through the world. In traditional astrology, the eastern horizon at the moment you took your first breath is your **Ascendant** (also called the *Horoskopos* or Rising Sign—it represents your outer style, physical presence, and the "front door" of your personality). Yours is in steady, earthy **Taurus**. 
++
++Using **Whole Sign Houses** (the ancient method where each zodiac sign occupies an entire 30-degree slice of the chart, like an apartment building where every floor is dedicated to one complete sign), Taurus sits firmly on your 1st House floor. While your inner double-Scorpio world operates like a swirling ocean of profound emotional depths, your Taurus front door presents an aura of calm, unhurried, unshakable earthly peace to the outside world. You project an inviting warmth that genuinely grounds the people around you.
++
++**Day-in-the-Life Reality**
++When hosting friends at your home for an intimate evening, you naturally create a deeply comforting, sensory-rich sanctuary. You dim the harsh overhead lights, light warm wood-scented candles, put on a soothing acoustic record, and bring out a plate of richly flavorful comfort food. Visitors step inside from a chaotic week, immediately take a deep, relaxing breath, and say, "Wow, I just feel so completely safe and peaceful whenever I'm around you."
++
++***
++
++Because Taurus covers your Rising Sign, the planet that natively rules Taurus—**Venus**—officially becomes your **Steersman** (the chart captain sitting at the ship's helm, directly responsible for navigating your overall life path and overarching choices). In your chart, Captain Venus sits in idealistic Sagittarius inside your **8th House** (the deeply private, behind-the-scenes realm governing intimate trust, shared emotional vows, and profound psychological bonding).
++
++Classical mechanics evaluate Venus here as **Peregrine** (which translates literally to "wandering"—meaning she is working like a capable traveler visiting a foreign city, lacking familiar VIP shortcuts and relying on versatility to adapt and steer). Furthermore, your 8th House sits in a state of **Aversion** to your Rising Sign (a geometric blind spot where planets cannot directly make eye contact with your front door—like trying to look into an adjacent room through a thick, soundproof wall). Because your captain operates in a hidden blind spot, your life is steered through quiet intuition and deep emotional depth rather than loud, flashy, public fanfare. You excel at navigating life via internal instruments rather than pure eyesight.
++
++**Day-in-the-Life Reality**
++When your closest confidant experiences a heavy personal crisis or an intense relationship break-up, you don't offer superficial public platitudes or loudly announce your sympathy to the social group. Instead, you wait until you are completely alone with them behind closed doors. You quietly, patiently step straight into their deepest emotional trenches, helping them unpack their vulnerable feelings with an effortless, wise grace that regular social acquaintances would never realize you possess.
++
++***
++
++Another powerful architectural secret in your horoscope is your **Sect** (an ancient technique that categorizes planets into daytime and nighttime shifts, acknowledging that certain energetic workers perform best in broad sunlight while others prefer quiet midnight hours). Because you were born while the Sun was shining bright above the horizon, you possess a **Diurnal** (Day) Chart. 
++
++In a day chart, the planet **Jupiter** takes the prize as your lead benefactor (a warm, generous heavenly patron dedicated to showering your path with protection, optimism, and spontaneous good luck). In your layout, friendly Jupiter sits quietly in Aries inside your **12th House** (the tranquil, secluded realm of solitude, introspection, and quiet spiritual reflection). Better yet, your Jupiter sits in a seamless, cooperative **Trine** (a harmonious 120-degree connection where planets speak over a crystal-clear radio channel without static) to your Captain Venus! Even your ancient **Lot of Fortune** (a specialized geometric marker indicating where organic situational luck and joyous outcomes physically land in your life) rests right next to Jupiter in this private sanctuary. Your luck lies in solitude, silence, and intuition.
++
++**Day-in-the-Life Reality**
++You have spent an exhausting week wrestling with a confusing social conflict that left your heart feeling tangled. Instead of asking ten different acquaintances for advice, you instinctively go for a quiet, solitary Sunday morning hike in the woods without your phone. Fifty minutes into the tranquil silence of nature, an intuitive epiphany flashes into your awareness out of nowhere. Suddenly, you experience a wave of deep internal comfort and realize exactly what you need to do to heal the situation. Your quiet, solitary retreat acted as a magical background safety net.
++
++---
++
++# Part 3: Tension & Growth (Synthesizing Aspects & the Pain Body)
++
++We all possess a **Pain Body**—the protective emotional armor and psychological reflexes we instinctively constructed early in life to shield ourselves from fear of rejection, vulnerability, or hurt. In astrology, we locate this armor by examining tense interactions involving **Saturn** (the planet symbolizing boundaries, fear of vulnerability, and hard-earned maturity) and **Mars** (the planet of physical drive, defense, and friction). 
++
++In your chart, Venus (your capacity for affection and interpersonal softness) is locked in a direct **Conjunction** with strict Saturn inside your intensely intimate 8th House. This defensive configuration acts like installing a heavy, high-security bank vault door around your deeply passionate heart. Because Saturn carries an innate fear of being uncomfortably exposed, you may hold back your vulnerable affection until a prospective partner or new friend proves—without a shadow of a doubt—that they are 100% loyal and will not abandon you. Yet here is the magic of Saturn: it deeply rewards patience. Over time and as you mature, your guarded emotional fortress transforms into an unbreakable, bedrock loyalty that lasts a lifetime.
++
++**Day-in-the-Life Reality**
++When you begin seeing a captivating new romantic interest, your heart may burn with deep emotional affection on the inside, yet you consciously rein yourself in on the outside. When they ask to hear your deepest childhood memories or vulnerable dreams on date three, you politely redirect the conversation, quietly waiting to see if their consistent actions over the next few months match their promises. Once they ultimately earn your trust through sustained reliability, you finally turn the combination on your emotional vault and offer an enduring, fiercely resilient emotional devotion that very few human beings ever get to experience.
++
++***
++
++Now let's look at how you handle confrontation. Mars represents your personal assertiveness, healthy boundaries, and fighting spirit. Because this is a Day Chart, an intensely hot nocturnal planet like Mars functions as your primary challenger (acting like a loud, disruptive rebel operating outside its ideal working hours). Furthermore, your Mars sits in the artistic sign of Libra inside your **6th House** (the arena of daily routines, ongoing habits, and physical maintenance). 
++
++Classical mechanics evaluate Mars in Libra as being in **Detriment** (an uncomfortable position where a planet sits directly opposite its natural home territory—much like a fierce heavy-weight boxer forced to compete in a synchronized dance ballroom). While Mars natively wants to stand tall and immediately assert personal boundaries, Libra prefers diplomatic negotiation and superficial peace. Consequently, your defense mechanism works like a boiling pot of water with the lid clamped tightly down: you instinctively swallow your minor irritations just to keep the peace in your routines. Over time, this bottled-up, repressed energy can silently turn into internal restlessness, sudden physical fatigue, or hidden resentment. Your healing growth lies in realizing that expressing healthy assertiveness early on actually clears the air and prevents intense ruptures later!
++
++**Day-in-the-Life Reality**
++Your long-time housemate has a frustrating habit of consistently leaving their dirty dishes piled in the sink despite knowing it disrupts your daily morning cooking routine. To avoid an awkward conflict that might disrupt the peaceful household atmosphere, you quietly wash their dishes for weeks, all while a quiet frustration bubbles inside you. One day, you finally practice real-time growth: you calmly smile, hand them a towel, and warmly say, "Hey friend! Would you mind clearing out the sink real quick so we can keep the kitchen joyful for morning coffee?" You discover that asserting a gentle, immediate boundary doesn't ruin the friendship at all—it actually makes you feel completely respected and relaxed!
++
++***
++
++Finally, let's explore how your inner engine handles pacing itself. You possess a vibrant classical **Opposition** (a high-stakes 180-degree tug-of-war across the horoscope wheel that requires a dynamic seesaw balance between two opposing forces) between Mars in your hardworking 6th House and hopeful Jupiter in your spiritual 12th House.
++
++This tension feels just like trying to drive a car with one foot slamming down on the accelerator toward a grand, idealized spiritual vision (Jupiter in the realm of dreams and retreat), while your daily real-world chores, habits, and physical energy demands (Mars in the realm of daily work) desperately scream for your immediate practical attention. Because of this tug-of-war, you might occasionally swing between over-committing your physical energy to everyone around you, only to crash into sudden exhaustion that triggers a fierce desire to run away from everyone and retreat into total isolation. Finding a sustainable, rhythmic daily pace is your secret weapon for vibrant energy.
++
++**Day-in-the-Life Reality**
++With enthusiastic generosity, you eagerly promise three different friends that you will help them organize an elaborate weekend charity dinner party at your home. By Friday afternoon, as you frantically try to chop vegetables, clean the kitchen, and set up acoustic music all by yourself, your physical energy suddenly plummets into utter depletion. You feel a sudden, intense impulse to cancel the entire event, turn off the lights, and hide under your heavy bedroom duvet with a novel. Instead of burning out and fleeing, you learn to gently balance the seesaw: you step back, text your friends asking them to bring pre-made appetizers, take a peaceful 20-minute meditation nap in your quiet bedroom, and then rejoin the social evening feeling completely restored.
++
++---
++
++# Summary
++
++To bring all these rich ancient mechanics and deep psychological dynamics into focus, here are the three defining compass points of your cosmic signature:
++
++*   **Your Archetype: The Grounded Deep-Sea Navigator** — You present a serene, deeply dependable, sensory-rich earthy sanctuary on the outside (Taurus Rising) while safeguarding an uncompromisingly perceptive, intensely intuitive double-Scorpio soul that naturally dives straight to the deepest emotional truths of the human experience.
++*   **Your Superpower: X-Ray Empathy & Vault-Defiant Loyalty** — You possess the extraordinary gift to read unspoken human feelings behind superficial social masks, to intuitively anchor and heal loved ones during their heaviest life crises without judgment, and to build deeply resilient, time-tested emotional bonds that withstand the test of time.
++*   **Your Core Lesson: Real-Time Assertiveness & Emotional Differentiation** — Your life journey asks you to practice expressing gentle boundaries and speaking up about minor frustrations in the moment rather than swallowing them for superficial peace, while happily honoring that your loved ones can swim in shallower emotional waters without loving you any less.
+\ No newline at end of file
+diff --git a/western/kailash_data_sheet.md b/western/kailash_data_sheet.md
+new file mode 100644
+index 0000000..bc9e22d
+--- /dev/null
++++ b/western/kailash_data_sheet.md
+@@ -0,0 +1,39 @@
++# Astrological Data Sheet: kailash
++
++![Birth Chart](kailash_chart.svg)
++
++## 1. Core Architecture
++- **Ascendant (Rising Sign):** Tau
++- **Sect:** Day Chart
++- **House System:** Whole Sign Houses (WSH)
++
++## 2. Planetary Placements & Dignities
++| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |
++|---|---|---|---|---|---|
++| **Sun** | Sco | House 7 | 26.73° | Peregrine (Wandering) | N/A |
++| **Moon** | Sco | House 7 | 5.61° | Fall (Weakened) | N/A |
++| **Mercury** | Sco | House 7 | 9.02° | Peregrine (Wandering) | Phasis Clear |
++| **Venus** | Sag | House 8 | 19.48° | Peregrine (Wandering) | Phasis Clear |
++| **Mars** | Lib | House 6 | 27.05° | Detriment (Exiled) | Phasis Clear |
++| **Jupiter** | Ari | House 12 | 20.9° | Peregrine (Wandering) | Phasis Clear |
++| **Saturn** | Sag | House 8 | 20.52° | Peregrine (Wandering) | Phasis Clear |
++
++## 3. Major Aspects (Friction & Flow)
++- **Sun** is in a **Conjunction** with **Moon**
++- **Sun** is in a **Conjunction** with **Mercury**
++- **Moon** is in a **Conjunction** with **Mercury**
++- **Venus** is in a **Sextile** with **Mars**
++- **Venus** is in a **Trine** with **Jupiter**
++- **Venus** is in a **Conjunction** with **Saturn**
++- **Mars** is in a **Opposition** with **Jupiter**
++- **Mars** is in a **Sextile** with **Saturn**
++- **Jupiter** is in a **Trine** with **Saturn**
++
++## 4. Hermetic Lots
++- **Lot of Fortune**: Ari (20.78°) in House 12
++- **Lot of Spirit**: Gem (3.02°) in House 2
++- **Lot of Necessity**: Lib (23.66°) in House 6
++- **Lot of Eros**: Sco (28.36°) in House 7
++- **Lot of Courage**: Sco (5.63°) in House 7
++- **Lot of Victory**: Pis (29.78°) in House 11
++- **Lot of Nemesis**: Vir (12.16°) in House 5
+
+```
+
+--------------------------------------------------------------------------------
+
+## Commit 2: cd897c2
+
+```diff
+commit cd897c2e803feacc09dc61a65d826965289d6278
+Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
+Date:   Sun Aug 2 12:29:42 2026 +0530
+
+    Update gitignore to exclude heavy audio/media files, clean up large tracked binaries, and add PDFs for Christina's reading
+
+diff --git a/.gitignore b/.gitignore
+index 76f0593..28beadd 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -11,3 +11,10 @@ cache/
+ code_export.txt
+ rag/chroma_astrology_db/
+ rag/chroma_jyotish_db/
++
++# Prevent large media and binary files from bloating Git repo
++*.wav
++*.mp3
++*.png
++*.jpg
++*.jpeg
+diff --git a/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3
+deleted file mode 100644
+index 10050ee..0000000
+Binary files a/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 and /dev/null differ
+diff --git a/western/Christina_1987-11-19_15-50_Western_Analysis.pdf b/western/Christina_1987-11-19_15-50_Western_Analysis.pdf
+new file mode 100644
+index 0000000..9fb63e8
+Binary files /dev/null and b/western/Christina_1987-11-19_15-50_Western_Analysis.pdf differ
+diff --git a/western/Christina_1987-11-19_15-50_Western_Analysis_DE.pdf b/western/Christina_1987-11-19_15-50_Western_Analysis_DE.pdf
+new file mode 100644
+index 0000000..2428496
+Binary files /dev/null and b/western/Christina_1987-11-19_15-50_Western_Analysis_DE.pdf differ
+diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav
+deleted file mode 100644
+index 6e6c4cb..0000000
+Binary files a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav and /dev/null differ
+
+```
+
+--------------------------------------------------------------------------------
+
+## Commit 3: 19b09dc
+
+```diff
+commit 19b09dc22a8f910339a39b6057937e3a4ae05ff0
+Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
+Date:   Sun Aug 2 12:27:52 2026 +0530
+
+    Add German translation of Western psychological analysis for Christina
+
+diff --git a/western/Christina_1987-11-19_15-50_Western_Analysis_DE.md b/western/Christina_1987-11-19_15-50_Western_Analysis_DE.md
+new file mode 100644
+index 0000000..fdd3036
+--- /dev/null
++++ b/western/Christina_1987-11-19_15-50_Western_Analysis_DE.md
+@@ -0,0 +1,51 @@
++# Psychologische Horoskop-Analyse für Christina
++**Geboren:** 19. November 1987 um 15:50 Uhr  
++**Ort:** Georgsmarienhütte, Niedersachsen, Deutschland  
++**Bestätigte Koordinaten:** Breitengrad 52,20296° N, Längengrad 8,0448° O  
++**Astrologischer Rahmen:** Hellenistische & Moderne Psychologische Astrologie (Tropischer Tierkreis, Ganzzeichenhäuser)
++
++---
++
++## Teil 1: Der psychologische Motor (Die Sonne-Mond-Verbindung)
++
++### Professionelle Synthese
++In der psychologischen Astrologie wird Dein Geburtshoroskop nicht als unumstößliches Schicksal begriffen, sondern als lebendige Landkarte Deiner persönlichen und emotionalen Entwicklung. Im Herzen dieser Landkarte liegt Deine **Sonne-Mond-Verbindung** (das Zusammenspiel von Sonne und Mond). Stell Dir Deine Sonne als Deine **Kernidentität** vor – der Motor, der Deine Lebensenergie, Deinen Willen und Dein grundlegendes Bedürfnis, zu strahlen, antreibt. Dein Mond wiederum ist Dein **Leitbedürfnis** (Reigning Need) – Deine tiefste emotionale Sehnsucht, die unbedingt gestillt werden muss, damit Du Dich sicher, geborgen und im Gleichgewicht fühlst.
++
++In Deinem Horoskop verschmelzen sowohl Deine Sonne als auch Dein Mond im intensiven, emotionalen Wasserzeichen **Skorpion** in Deinem 7. Haus (dem Lebensbereich, der für feste Partnerschaften und enge zwischenmenschliche Verbindungen steht). Das verleiht Dir einen immens kraftvollen, hochkonzentrierten inneren Antrieb! Deine Skorpion-Sonne versorgt Dich mit tiefgründiger psychologischer Intuition, emotionalem Mut und dem festen Willen, die echten Wahrheiten des Zusammenlebens zu ergründen. Diese kraftvolle Energie fließt direkt in die Stillung des Leitbedürfnisses Deines Skorpion-Mondes: eine tiefe Sehnsucht nach unerschütterlicher Loyalität, völliger Offenheit und absolutem Vertrauen in Deinen engsten Beziehungen. Da sich der Mond im Skorpion traditionell im **Fall** befindet (eine astrologische Konstellation, die besondere Achtsamkeit und bewusst gestalteten emotionalen Schutz erfordert), ist Dein inneres Radar außergewöhnlich fein ausgerichtet. Du spürst Oberflächlichkeiten sofort auf und suchst zielstrebig nach unerschütterlichem, echten Vertrauen.
++
++### Ein typischer Tag in Deinem Leben
++Stell Dir vor, Du bist auf einer entspannten Feier mit Freunden oder beim Startgespräch für ein neues Projekt bei der Arbeit. Während sich andere um Dich herum in höflichem Smalltalk über das Wetter oder oberflächliche Belanglosigkeiten üben, spürst Du ein beinahe instinktives Desinteresse an flachen Unterhaltungen. Stattdessen ziehst Du Dich oft mit einer vertrauten Person oder einem einzelnen Kollegen in ein ruhiges Gespräch zurück. Sofort spürst Du, was im Hintergrund *wirklich* vor sich geht – die feinen zwischenmenschlichen Schwingungen, die unausgesprochenen Motivationen und die echten menschlichen Gefühle. Wenn Dir jemand leere Komplimente macht, läutet Deine innere Alarmglocke, und Du machst höflich einen Schritt zurück. Doch wenn sich Dir eine gute Freundin oder ein verlässlicher Partner mit einem echten, sensiblen Problem anvertraut, leuchtet Deine warme, mitfühlende Aufmerksamkeitsgabe sofort auf. Du bietest einen sicheren seelischen Hafen, in dem sich die andere Person vollkommen geborgen fühlt – und im Gegenzug stillt genau diese tiefgründige Verbundenheit Deine eigene Sehne nach aufrichtiger Loyalität und gegenseitigem Vertrauen.
++
++---
++
++## Teil 2: Das Schiff und der Steuermann (Deine Lebensrichtung)
++
++### Professionelle Synthese
++Um zu vertiefen, wie Du Dich ganz praktisch in der Welt bewegst, nutzen wir die traditionell-hellenistische Symbolik von **Schiff** und **Steuermann**. Dein Schiff (der **Helm** oder Horoskopos) ist Dein **Aszendent** (das Sternzeichen, das im genauen Moment Deiner Geburt im Osten am Horizont aufging) – er symbolisiert Dein physisches Auftreten, Deine vitale Konstitution und Deine natürliche Ausstrahlung im Gespräch mit anderen. Dein Aszendent liegt im Erdzeichen **Stier**, was bedeutet, dass Dein Lebensschiff stabil, geduldig, beständig und mit einem sehr feinen Gespür für Ästhetik und sinnliche Wohlfühlräume ausgestattet ist. Du begegnest Deiner Umwelt mit einer ruhigen, angenehm zuverlässigen Präsenz.
++
++Gesteuert wird dieses Schiff vom **Steuermann** – dem Planeten, der Dein Aszendenten-Zeichen beherrscht. Da der Stier von der **Venus** regiert wird, ist Venus die echte Kapitänin auf Deiner Lebensreise! In Deinem Horoskop reist Deine Venus durch das abenteuerliche, von Sinn und Weisheit getragene Feuerzeichen **Schütze** in Deinem 8. Haus (dem Bereich der gemeinsamen Werte, der tiefen seelischen Transformation und des emotionalen Bindungswesens). Spannenderweise steht das 8. Haus zum Aszendenten in einer sogenannten **Aversion** (einem astrologischen Winkel-Blindspot, bei dem das Haus keine direkte Sichtverbindung zum Aufstiegszeichen hat). Im Alltag bedeutet dies schlichtweg, dass ein faszinierender Kontrast zwischen Deinem nach außen hin ruhigen, durch nichts aus der Ruhe zu bringenden Stier-Auftreten und den abenteuerlichen, tiefgehenden seelischen Entdeckungsreisen besteht, die Deine innere Kapitänin unbedingt erleben möchte. Du bist nicht für seichte Gewässer gemacht; Deine Kapitänin lenkt Dein Leben voller Neugier auf tiefgründige Themen, gemeinsame Transformation und echte seelische Weiterentwicklung.
++
++### Ein typischer Tag in Deinem Leben
++Wenn Menschen Dir zum ersten Mal begegnen, vermittelt Dein Stier-Aszendent sofort eine beruhigende Atmosphäre von Gelassenheit, Geduld und sanfter Freundlichkeit. In einem lauten, hektischen Raum oder bei einer stressigen Familienfeier zieht es die Menschen ganz natürlich in Deine Nähe, weil es sich anfühlt, als stünde man an einer sicheren, friedlichen Anlaufstelle mitten im Sturm. Sobald Du jedoch eine vertraute Partnerschaft eingehst oder gemeinsam mit anderen an einem Herzensprojekt arbeitest, übernimmt Deine Schütze-Venus selbstbewusst das Steuer des Schiffs – und offenbart einen wunderbar mutigen, tiefschürfenden Forschergeist! Du bist diejenige, die sich angstfrei mit komplexen gemeinsamen Finanzen, tiefen menschlichen Dynamiken oder Tabuthemen auseinandersetzt, vor denen andere zurückschrecken würden. Während Dein ruhiges Äußeres dem gesamten Raum Stabilität verleiht, erblüht im Inneren eine mutige psychologische Pionierin auf der Suche nach Wahrheit und Wachstum.
++
++---
++
++## Teil 3: Entwicklungsspannung & der Schmerzkörper
++
++### Professionelle Synthese
++In dieser Methodik werden herausfordernde planetare Winkel keineswegs als schlechtes Schicksal gedeutet, sondern als unabkömmliche **Entwicklungsspannung** (Developmental Tension) gelobt – genau die Reibung, die als unverzichtbarer Katalysator für innere Stärke, emotionale Reife und persönliches Wachstum dient. Wenn besonders sensible Bereiche des Horoskops von strengen, strukturierenden Planeten berührt werden, entsteht das, was wir als **Schmerzkörper** bezeichnen (eine feinfühlige seelische Reizstelle, oft geprägt durch frühe kindliche Erfahrungen, die unter Stress Schutzmechanismen auf den Plan rufen kann).
++
++In Deinem Horoskop steht Deine Kapitänin (Venus) in einer ganz eng verbundene Konjunktion (einer Verschmelzung bei 0 Grad) mit dem Planeten **Saturn** in Deinem 8. Haus. Saturn ist das Prinzip der Grenzen, des Pflichtbewusstseins, der emotionalen Vorsicht und der Reife. Direkt neben Deiner fürsorglichen Venus im Lebensraum der seelischen und emotionalen Verschmelzung deutet diese Konjunktion auf eine sensible innere Wächterin rund um die Themen Vertrauen und Hingabe hin. Frühe Erfahrungen könnten Dein Unterbewusstsein gelehrt haben, Dein behutsames Herz mit Argusaugen zu beschützen – oft aus einer im Verborgenen schlummernden Furcht vor Enttäuschung oder vor dem Verlust der eigenen Kontrolle. Zudem steht Dein aktiver Willensplanet **Mars** im diplomatischen Luftzeichen Waage (in Deinem 6. Haus der Alltagspflichten) in einer direkten Opposition zum expandierenden Glücksplaneten **Jupiter** in Deinem 12. Haus (dem stillen Rückzugsraum für Ruhe und Meditation). Das sorgt für ein produktives Spannungsfeld zwischen Deinem aufrichtigen Bedürfnis, im Alltag für Harmonie und verlässliche Leistung für andere zu sorgen, und Deinem tiefen Wunsch nach spiritueller, ganz persönlicher Stille. Gerätst Du unter enormen Druck oder gerät eine Bindung aus dem Gleichgewicht, besteht Dein Schutzmechanismus oft darin, Dich hinter massive emotionale Festungsmauern zurückzuziehen, extrem pragmatisch, kühl und pflichtbeflissen zu werden, um keinesfalls verletzlich oder von anderen abhängig zu sein.
++
++### Ein typischer Tag in Deinem Leben
++Kommt es im Alltag zu einem spürbaren Konflikt – etwa wenn ein enger Partner eine vertrauensvolle Verabredung vergisst oder sich im Job bei einem gemeinsamen Projekt jemand als unzuverlässig erweist –, reagierst Du selten mit lautstarkem Protest. Stattdessen tritt sofort Deine sanfte, aber entschlossene Venus-Saturn-Schutzmauer in Kraft: Du fährst ganz leise die schwere Zugbrücke Deiner Burg nach oben und ziehst Deine emotionale Offenheit erst einmal zurück. Du magst ertragen, dass Du plötzlich in eine extrem kühle Formelle verfällst und in einem Anflug von Hyper-Verantwortlichkeit sofort sämtliche praktischen Aufgaben selbst organisierst – nur damit Du Dich nie wieder auf ein unsicheres Versprechen verlassen musst! Genau dieses sanfte Abkühlen zu erkennen, ist Deine absolute Superkraft in Beziehungen. Wenn Du künftig mitten im Stress bemerkst, wie Du im Geiste Ziegel um Ziegel an einer emotionalen Festungsmauer aufschichtest, kannst Du ganz bewusst einen ruhigen Atemzug machen, die Schutzpanzerung weicher werden lassen und Deiner Gegenüber ganz offen mitteilen, dass Du Dich gerade verletzlich fühlst, statt Schutz in strikter Kontrolle zu suchen.
++
++---
++
++## Teil 4: Der vereinte Weg (Deine Begleitungsstrategie)
++
++Dein Horoskop zeichnet das Bild einer wundervollen Harmonie zwischen einer ruhigen, Halt gebenden Ausstrahlung nach außen und einem furchtlosen, enorm tiefgründigen inneren Entdeckertum. Um Deine seelischen Antriebe im täglichen Leben optimal mit Deiner Berufung zu vereinen, helfen Dir folgende Ausrichtungen:
++
++* **In der Ruhe ankern, mit Mut vertiefen:** Nutze Dein entspanntes Stier-Auftreten (Dein Schiff) und Deine abenteuerliche Schütze-Venus (Deine Kapitänin), um verlässliche und ehrliche Partnerschaften auf Augenhöhe aufzubauen (was Dein tiefes Skorpion-Sonne-Mond-Bedürfnis nach Treue und echtem Halt nährt).
++* **Aus Mauern verlässliche Brücken bauen:** Begreife Deine emotionalen Grenzen nicht länger als dicke Schutzmauer, die Dich vor Schmerz bewahren soll. Wandle die Venus-Saturn-Spannung ganz bewusst in gesicherte, reife und transparente Verabredungen mit den Menschen in Deiner Umgebung um. Setze auf klare Kommunikation statt auf stillen Rückzug.
++* **Ehre Deine innere Tiefgründigkeit:** Erkennen an, dass Du keinesfalls gezwungen bist, in oberflächlichen oder seichten Kreisen mitzuspielen. Deine wahren Fähigkeiten erstrahlen immer dann am hellsten, wenn es um echte Beziehungen unter vier Augen, therapeutisches Ergründen, das Lösen kniffliger finanzieller oder psychischer Fragestellungen und um echte Transformation geht. Dort kann Deine Tiefe und Dein Mut das Leben anderer und Dein eigenes unendlich bereichern!
+
+```
+
+--------------------------------------------------------------------------------
+
+## Commit 4: d6404fb
+
+```diff
+commit d6404fbb64fda7bc55911cff1bfb82efe8a2bbcc
+Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
+Date:   Sun Aug 2 12:25:06 2026 +0530
+
+    Add Western astrology chart and psychological RAG analysis for Christina
+
+diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.md b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.md
+similarity index 100%
+rename from western/Male_Subject_1983-11-10_04-20_Western_Analysis.md
+rename to 1983/Male_Subject_1983-11-10_04-20_Western_Analysis.md
+diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3
+similarity index 59%
+rename from western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3
+rename to 1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3
+index 189a63c..10050ee 100644
+Binary files a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 and b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis.mp3 differ
+diff --git a/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.md b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.md
+new file mode 100644
+index 0000000..9eb3cc2
+--- /dev/null
++++ b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.md
+@@ -0,0 +1,59 @@
++# Westliche Astrologische Analyse & Interpretation
++
++**Person:** Männliche Person  
++**Geburtsdatum:** 10. November 1983  
++**Geburtszeit:** 04:20 Uhr morgens  
++**Geburtsort:** Georgsmarienhütte, Deutschland (DE)  
++**System:** Westliche psychologische & klassische hellenistische Astrologie (Tropischer Tierkreis, Ganzzeichen-Häuser)
++
++---
++
++## Teil 1: Der psychologische Motor (Sonnen-Mond-Mischung)
++
++### Professionelle Synthese
++In unserem psychologischen Ansatz der Astrologie fungiert Dein Geburtshoroskop als lebendiger Motor für Deine persönliche Entwicklung. Deine Sonne repräsentiert Deine **KERN-Identität (Core Identity)** – den primären Generator Deiner Lebenskraft, Deines Ego-Willens und Deines Bedürfnisses nach Anerkennung. Dein Mond symbolisiert Dein **Herrschendes Bedürfnis (Reigning Need)** – jenen tiefen emotionalen Hunger, der beständig gesättigt werden muss, damit Du Dich vollkommen geerdet und sicher fühlst.
++
++Mit Deiner Sonne im Skorpion, die im **Zweiten Haus** steht (dem astrologischen Bereich, der persönlichen Besitz, materielle Ressourcen und das tiefe Gefühl des eigenen Selbstwertes steuert), arbeitet Dein Ego mit enormer Intensität, scharfer Intuition und einem unnachgiebigen Antrieb, echte materielle und emotionale Absicherung aufzubauen. Währenddessen verweilt Dein Mond im Steinbock in Deinem **Vierten Haus** (dem Lebensbereich von Heim, Familie und privatem Rückzugsort). In der traditionellen Astrologie befindet sich der Mond im Steinbock im **Exil (Detriment)** (also dem Zeichen gegenüber seiner eigentlichen Heimat im Krebs, was bedeutet, dass emotionale Sicherheit durch logische Architektur, feste Strukturen und Beständigkeit erreicht wird – anstatt durch schwermütiges oder überschwängliches Gefühlschaos). Zusammengefügt zu einem vereinten Motor ergießt sich die feinsinnige, entschlossene Energie Deiner Skorpion-Sonne direkt in den Aufbau und die Absicherung des unverwüstlichen privaten Fundaments, das Dein Steinbock-Mond einfordert.
++
++### Der Alltag in der Praxis ("Day-in-the-Life")
++Stell Dir einen typischen Dienstag zu Hause oder im Büro vor. Weil Deine Skorpion-Sonne von echter Substanz und Kompetenz zehrt, verschwendest Du Deine Zeit nicht gerne mit oberflächlichem Büro-Klatsch oder unstrukturierten Projekten; stattdessen ziehst Du es vor, echte Probleme an der Wurzel zu packen und messbare Ergebnisse zu schaffen.
++
++Wenn um fünf Uhr abends der Feierabend vor der Tür steht, übernimmt Dein Steinbock-Mond das Steuer und verlangt nach einem geordneten, verlässlichen Rückzugsort. Während Kollegen vielleicht am liebsten in eine lebhafte Kneipe fallen oder sich ins gesellschaftliche Getümmel stürzen, sieht wahre Erholung für Dich so aus: Du betrittst ein ruhiges, strukturiertes Zuhause, in dem Du die volle Kontrolle über Deine Umgebung hast. Du schöpfst neue Kraft, indem Du Deine eigene Welt in Ordnung hältst – sei es beim Checken von Finanzstrategien, bei einem praktischen Heimwerkerprojekt oder einfach beim stillen Genießen eines friedlichen Zuhauses, in dem all Deine Grenzen respektiert werden.
++
++---
++
++## Teil 2: Das Schiff und Der Steuermann (Lebensausrichtung)
++
++### Professionelle Synthese
++Um zu verstehen, wie Du Dich tatsächlich in der physischen Welt orientierst, um diesen tiefen emotionalen Hunger zu stillen, bedienen wir uns der klassischen griechischen Astrologie. Stell Dir Dein Leben wie eine Seereise vor. Dein Aszendent (das Tierkreiszeichen, das zum exakten Moment Deiner Geburt am östlichen Horizont aufstieg) ist **Das Steuerrumpf (The Helm)** – das Schiff selbst und die Art, wie Du Dich der Außenwelt gegenüber im Alltag präsentierst. Der Planet, der über Deinen Aszendenten herrscht, heißt **Der Steuermann**, also der Kapitän, der ganz bewusst am Steuerkreuz steht und die täglichen Entscheidungen trifft.
++
++Mit einem Waage-Aszendenten ist Dein Schiff von Grund auf für zwischenmenschliche Harmonie, feingefühlige Diplomatie und ästhetische Balance gebaut. Weil die Venus über das Zeichen Waage herrscht, ist Venus Dein persönlicher Steuermann. In einer extrem kraftvollen Konstellation sitzt Deine Venus direkt im Zeichen Waage in Deinem **Ersten Haus** (dem Persönlichkeitsbereich, der Vitalität, Auftreten und persönliche Ausstrahlung regelt). Das bedeutet: Dein Kapitän befindet sich in seinem natürlichen **Domizil** (in seinem Zuhause – voller Autorität und ausgestattet mit idealen Ressourcen, um seine Ziele zu erreichen). Da Dein Kapitän zudem direkt am Steuerkreuz im Ersten Haus sitzt, besteht absolut keine **Aversion** (ein altes astrologisches Wort dafür, wenn ein herrschender Planet vom Steuer blind abgetrennt oder isoliert ist). Du besitzt deshalb eine hervorragende Handlungsfähigkeit, ein intuitives Taktgefühl und eine bemerkenswerte Harmonie zwischen Deinen inneren Entscheidungen und Deinem gewandten Auftreten nach außen.
++
++### Der Alltag in der Praxis ("Day-in-the-Life")
++Im Alltag bedeutet dies, dass Du Raum im Handumdrehen mit einer entspannten, wohlwollenden Präsenz füllst. Stell Dir vor, Du betrittst ein nervenaufreibendes Team-Meeting oder eine herausfordernde Verhandlungsrunde, in der alle Beteiligten gestresst oder auf der Hut sind. Während Deine innere Skorpion-Sonne messerscharf analysiert und jedes unausgesprochene Machtgefüge sofort durchschaut, glättet Dein äußeres Interface – die Venus comfortably im eigenen Haus der Waage – instinktiv alle Wogen.
++
++Du weißt unbewusst genau, wie Du Deine Tonlage anpassen, verschiedene Sichtweisen einbeziehen und Lösungen präsentieren kannst, die sich für alle Beteiligten fair und ausgewogen anfühlen. Menschen fühlen sich von Deiner kultivierten, nahbaren Art sofort beruhigt und vertrauen Dir rasch Führungs- oder Vermittlungsrollen an, weil Deine Ausstrahlung echtes Vertrauen und Sicherheit stiftet.
++
++---
++
++## Teil 3: Entwicklungs-Spannung & Der Schmerzkörper
++
++### Professionelle Synthese
++Echte Reifung unseres Charakters braucht stets Reibung – das, was die psychologische Astrologie **Entwicklungs-Spannung** nennt. Statt schwierige Winkel zwischen Planeten als Schicksals-Hindernisse abzutun, betrachten wir sie als hochgradiges Motivationstraining für Deine Seele. In Deinem Zweiten Haus (persönliche Ressourcen) stehen Deine Skorpion-Sonne und Merkur (der Planet für Denkweise und Analyse) Seite an Seite mit Saturn (dem Planeten für Disziplin, hohe Prüfungsstandards und innere Reife) in einer engen **Konjunktion** (einer Ballung, bei der Planetenkräfte verschmelzen).
++
++Diese Energieballung erzeugt oft eine sensible emotionale Zone – einen **Schmerzkörper** – im Zusammenhang mit finanzieller Stabilität, materieller Absicherung oder dem eigenen Selbstwertgefühl. Vielleicht hast Du in jüngeren Jahren mit strengen Leistungsanforderungen, Existenzsorgen oder dem subtilen Gefühl kämpfen müssen, im Vergleich zu anderen doppelt so hart arbeiten zu müssen, um Deinen Wert zu beweisen. Als Reaktion darauf baut Dein Ego verständlicherweise einen Ausgleichs-Mechanismus auf: Du arbeitest unermüdlich daran, über jeden Zweifel erhabene Kompetenz und finanzielle Autonomie zu erlangen, damit niemand jemals wieder Deinen Wert in Frage stellen kann. Zudem bildet Dein Steinbock-Mond ein herausforderndes **Quadrat** (einen dynamischen 90-Grad-Winkel der Reibung) zu Deiner Waage-Venus. Dies führt zu einem inneren Dialog zwischen Deinem Wunsch, Kontakte angenehm und wohlwollend zu gestalten (Venus in der Waage), und Deinem tiefen Reflex, Dich hinter schützende Festungsmauern zurückzuziehen, sobald Deine private Stabilität ins Wanken gerät (Mond im Steinbock).
++
++### Der Alltag in der Praxis ("Day-in-the-Life")
++Beobachte einmal Deine automatischen Reaktionen in einem hitzigen Konflikt oder wenn eine unerwartete finanzielle Belastung plötzlich Deinen Haushaltsplan kreuzt. Unter starkem Stress reagierst Du nicht mit lauten Drama-Ausbrüchen; Dein Instinkt ist ein stiller, strategischer Rückzug. Wenn ein Geschäftspartner oder Dein Lebensgewährte scharfe Kritik übt, kann diese Saturn-Sonnen-Konjunktion im Zweiten Haus kurzfristig das alte Echo der Selbstzweifel wecken.
++
++Um Deine innere Verletzlichkeit zu schützen, legst Du dann abrupt Deinen warmherzigen Waage-Charme ab und wechselst in den autark abgeriegelten Steinbock-Festungs-Modus: Du fährst emotionale Gespräche herunter, ziehst harte Grenzen und versuchst stoisch, alle finanziellen oder praktischen Lasten vollkommen im Alleingang zu lösen – ohne jemals um Hilfe zu bitten. Du hast Dich vielleicht schon oft dabei ertappt, spät nachts Finanzpläne mehrfach zu überprüfen oder eine Präsentation endlos zu verfeinern, nur um vorab jede potenzielle Angriffsfläche auszulöschen.
++
++---
++
++## Teil 4: Der vereinte Weg (Beratungsstrategie)
++
++Dein Horoskop auf Meister-Niveau zu harmonisieren bedeutet schlicht, Dein Navigationssteuer ganz bewusst in die Hände Deiner souveränen Kapitänin – der Venus im eigenen Zeichen Waage – zu legen und dabei alte Verletzlichkeiten in ruhige Selbstsicherheit umzuwandeln. Hier ist Dein Handlungsleitpfad für den Alltag:
++
++* **Nutze Diplomatie als Schirmherrin Deines Friedens:** Du musst nicht ständig zwischen dem Einlenken gegenüber anderen (Waage-Venus) und dem Abschotten hinter Schutzmauern (Steinbock-Mond) schwanken. Nutze im Alltag Deinen wunderbaren Gesprächscharme, um rechtzeitig ehrliche, klare Grenzen zu benennen. Ein stilvolles, respektvolles „Nein“ zu zehrenden Verpflichtungen bewahrt Deine sozialen Sympathien, ohne den friedlichen heimischen Rückzugsort einzubüßen, nach dem Dein Mond so sehnlichst verlangt.
++* **Verwandle Disziplin von Existenzangst in Meisterschaft:** Mach Dir klar, dass Deine innere Disziplin (Saturn Konjunktion Sonne) in Wirklichkeit Dein allergrößter Langzeitvorteil ist, nicht etwa ein Anzeichen eines Makels! Sobald Du wieder den Drang verspürst, Dich obsessiv abzusichern oder um morgige Sicherheit zu sorgen, halte einen Augenblick inne und atme bewusst durch. Erkenne an, dass Deine strukturierten Gewohnheiten längst ein unerschütterliches Fundament an Kompetenz für Dich erschaffen haben. Du musst nicht mehr aus einer Angst vor Angreifbarkeit heraus arbeiten; Du handelst längst aus einer Position unersetzlicher Reife und Kraft.
++* **Deine tägliche Ausrichtung:** Vertraue Deiner warmen Waage-Gewandtheit die ersten Begegnungen und das Zwischenmenschliche an, lass Deine tiefschauende Skorpion-Intuition Deine strategischen Wege entscheiden – und gönne es Dir jeden Abend aus vollem Herzen, Dich hemmungslos in die geordnete, stille Sicherheit Deines Heims fallen zu lassen!
+diff --git a/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.pdf b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.pdf
+new file mode 100644
+index 0000000..3136495
+Binary files /dev/null and b/1983/Male_Subject_1983-11-10_04-20_Western_Analysis_DE.pdf differ
+diff --git a/western/Male_Subject_data_sheet.md b/1983/Male_Subject_data_sheet.md
+similarity index 100%
+rename from western/Male_Subject_data_sheet.md
+rename to 1983/Male_Subject_data_sheet.md
+diff --git a/User_data_sheet.md b/User_data_sheet.md
+deleted file mode 100644
+index 53d8484..0000000
+--- a/User_data_sheet.md
++++ /dev/null
+@@ -1,43 +0,0 @@
+-# Astrological Data Sheet: User
+-
+-![Birth Chart](User_chart.svg)
+-
+-## 1. Core Architecture
+-- **Ascendant (Rising Sign):** Lib
+-- **Sect:** Night Chart
+-- **House System:** Whole Sign Houses (WSH)
+-
+-## 2. Planetary Placements & Dignities
+-| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |
+-|---|---|---|---|---|---|
+-| **Sun** | Sco | House 2 | 17.15° | Peregrine (Wandering) | N/A |
+-| **Moon** | Cap | House 4 | 19.5° | Detriment (Exiled) | N/A |
+-| **Mercury** | Sco | House 2 | 23.41° | Peregrine (Wandering) | Combust (Burned) |
+-| **Venus** | Lib | House 1 | 0.71° | Domicile (Home) | Phasis Clear |
+-| **Mars** | Vir | House 12 | 25.08° | Peregrine (Wandering) | Phasis Clear |
+-| **Jupiter** | Sag | House 3 | 14.31° | Domicile (Home) | Phasis Clear |
+-| **Saturn** | Sco | House 2 | 8.43° | Peregrine (Wandering) | Under the Beams (Hidden) |
+-
+-## 3. Major Aspects (Friction & Flow)
+-- **Sun** is in a **Sextile** with **Moon**
+-- **Sun** is in a **Conjunction** with **Mercury**
+-- **Sun** is in a **Sextile** with **Mars**
+-- **Sun** is in a **Conjunction** with **Saturn**
+-- **Moon** is in a **Sextile** with **Mercury**
+-- **Moon** is in a **Square** with **Venus**
+-- **Moon** is in a **Trine** with **Mars**
+-- **Moon** is in a **Sextile** with **Saturn**
+-- **Mercury** is in a **Sextile** with **Mars**
+-- **Mercury** is in a **Conjunction** with **Saturn**
+-- **Venus** is in a **Sextile** with **Jupiter**
+-- **Mars** is in a **Square** with **Jupiter**
+-- **Mars** is in a **Sextile** with **Saturn**
+-
+-## 4. Hermetic Lots
+-- **Lot of Fortune**: Leo (9.36°) in House 11
+-- **Lot of Spirit**: Sag (14.06°) in House 3
+-- **Lot of Necessity**: Cap (25.77°) in House 4
+-- **Lot of Eros**: Sag (25.06°) in House 3
+-- **Lot of Courage**: Sco (27.44°) in House 2
+-- **Lot of Victory**: Lib (11.46°) in House 1
+-- **Lot of Nemesis**: Cap (10.78°) in House 4
+diff --git a/export_code.py b/export_code.py
+index a1cf57b..7ec9c4d 100644
+--- a/export_code.py
++++ b/export_code.py
+@@ -12,7 +12,7 @@ from pathlib import Path
+ # Directories to ignore during export
+ DEFAULT_EXCLUDE_DIRS = {
+     ".git", ".idea", "__pycache__", "venv", ".venv", 
+-    "cache", "chroma_astrology_db", "astrology_rag_data",
++    "cache", "chroma_astrology_db", "chroma_jyotish_db", "astrology_rag_data",
+     ".pytest_cache", ".mypy_cache", "node_modules", "dist", "build"
+ }
+ 
+@@ -30,7 +30,7 @@ DEFAULT_EXCLUDE_FILES = {
+ 
+ # Extensions to include
+ DEFAULT_INCLUDE_EXTENSIONS = {
+-    ".py", ".md", ".json", ".txt", ".sh", ".yaml", ".yml"
++    ".py", ".md", ".json", ".txt", ".sh", ".yaml", ".yml", ".xml"
+ }
+ 
+ def is_export_artifact(file_path: Path, output_file: Path) -> bool:
+@@ -53,6 +53,62 @@ def is_export_artifact(file_path: Path, output_file: Path) -> bool:
+     return False
+ 
+ 
++def generate_tree_view(
++    search_path: Path,
++    root_path: Path,
++    output_file: Path,
++    include_extensions: set,
++    max_file_size_bytes: int
++) -> str:
++    """Generates an ASCII file tree view representation of the scanned directory."""
++    lines = []
++    rel_root = search_path.relative_to(root_path) if search_path != root_path else Path(".")
++    lines.append(f"{rel_root}/")
++
++    def _build_tree(current_dir: Path, prefix: str = ""):
++        try:
++            entries = sorted(list(current_dir.iterdir()), key=lambda p: (not p.is_dir(), p.name.lower()))
++        except PermissionError:
++            return
++
++        valid_entries = []
++        for entry in entries:
++            if entry.is_dir():
++                if entry.name in DEFAULT_EXCLUDE_DIRS or entry.name.startswith('.'):
++                    continue
++                valid_entries.append(entry)
++            else:
++                if is_export_artifact(entry, output_file):
++                    continue
++                valid_entries.append(entry)
++
++        count = len(valid_entries)
++        for i, entry in enumerate(valid_entries):
++            is_last = (i == count - 1)
++            connector = "└── " if is_last else "├── "
++            child_prefix = "    " if is_last else "│   "
++
++            if entry.is_dir():
++                lines.append(f"{prefix}{connector}{entry.name}/")
++                _build_tree(entry, prefix + child_prefix)
++            else:
++                ext = entry.suffix.lower()
++                is_excluded_ext = ext in DEFAULT_EXCLUDE_EXTENSIONS or ext not in include_extensions
++                file_size = entry.stat().st_size if entry.exists() else 0
++                is_over_size = file_size > max_file_size_bytes
++
++                annotation = ""
++                if is_excluded_ext:
++                    annotation = " [excluded type]"
++                elif is_over_size:
++                    annotation = f" [skipped: {file_size / 1024:.1f} KB]"
++
++                lines.append(f"{prefix}{connector}{entry.name}{annotation}")
++
++    _build_tree(search_path)
++    return "\n".join(lines)
++
++
+ def export_repository(
+     root_dir: str = ".",
+     output_file: str = "code_export.txt",
+@@ -87,6 +143,13 @@ def export_repository(
+         out.write(f" Target Path: {search_path.relative_to(root_path) if search_path != root_path else '.'}\n")
+         out.write("=================================================================\n\n")
+ 
++        out.write("-----------------------------------------------------------------\n")
++        out.write(" REPOSITORY DIRECTORY TREE VIEW\n")
++        out.write("-----------------------------------------------------------------\n")
++        tree_view = generate_tree_view(search_path, root_path, out_path, include_extensions, max_file_size_bytes)
++        out.write(tree_view)
++        out.write("\n\n")
++
+         for current_root, dirs, files in os.walk(search_path):
+             # Exclude ignored directories in-place so os.walk doesn't enter them
+             dirs[:] = [d for d in dirs if d not in DEFAULT_EXCLUDE_DIRS and not d.startswith('.')]
+diff --git a/jyotish/vedic_reading_nov_10_1983.md b/jyotish/vedic_reading_nov_10_1983.md
+deleted file mode 100644
+index a99d721..0000000
+--- a/jyotish/vedic_reading_nov_10_1983.md
++++ /dev/null
+@@ -1,76 +0,0 @@
+-# Parashari Vedic Astrology (Jyotish) Analysis & Reading
+-
+-**Birth Details**: November 10, 1983, at 04:20 AM  
+-**Location**: Georgsmarienhütte, Lower Saxony, Germany (Latitude: 52.2045° N, Longitude: 8.0494° E, Timezone: +1.0 CET)  
+-**Ayanamsa**: True Chitra Paksha (Lahiri) — 23.8362°  
+-
+----
+-
+-## Foundation: Dominant Sidereal Sign & Nakshatra Overviews
+-
+-Before diving into specific planetary placements, let us look at the two architectural pillars of your Vedic profile: your **Lagna** *(the zodiac sign rising on the eastern horizon at birth, which forms your core physical identity and practical approach to life)* and your **Moon Nakshatra** *(one of 27 lunar star constellations that governs your emotional instincts and subconscious habits)*.
+-
+-* **The Sidereal Virgo Archetype (*Kanya Lagna*)**: Unlike tropical Virgo, sidereal Virgo emphasizes pure discernment, skillful service, healing, and practical intelligence. It is ruled by **Mercury** *(Budha, the planet of intellect, analytical clarity, and communication)*. As a Virgo rising, your fundamental posture in the material world is that of the master craftsman and perceptive analyst—someone who seeks to improve, refine, and bring divine order to surrounding environments.
+-* **Hasta Nakshatra (Your Rising Constellation)**: Your Ascendant rests specifically in **Hasta**, an intuitive star cluster symbolized by an open hand and ruled by the **Sun God (*Savitr*)**. This imparts incredible dexterity—whether physical skill, eloquent written expressions, or the healing "touch." You possess a natural ability to grasp complex ideas and turn tangible effort into visible results.
+-* **Purva Ashadha Nakshatra (Your Emotional Moon Constellation)**: Your Moon rests in **Purva Ashadha** within sidereal Sagittarius. Symbolized by a winnowing basket or an invincible cooling ocean wave, this star cluster is ruled by **Venus** (*Shukra*) and presided over by **Apas**, the cosmic deity of water and purification. This gives you an inner emotional currents of unshakeable faith, deep intuition, artistic grace, and an innate conviction that you can overcome any life obstacle.
+-
+----
+-
+-## Part 1: Lagna & Physical Identity (The Material Blueprint)
+-
+-Your **D1 Rasi Chart** *(your primary foundational birth chart mapping real-life experiences and practical identity)* reveals a powerhouse of intense energy surrounding your self-expression and financial foundations.
+-
+-* **A Magnetic, Highly Dynamic First House**: You have both **Mars** *(Mangala, the planet of courage, passion, and energetic action)* and **Venus** *(Shukra, the planet of aesthetics, charm, and relationships)* residing right inside your 1st house (Lagna) in Virgo. 
+-  * *Rasi Integration*: In classical Vedic literature, a 1st-house Venus bestows a magnetic presence, artistic sensibility, and deep personal charm, while Mars infuses you with bold drive, physical resilience, and strong logical boundary-setting. 
+-  * *Transforming Perfectionism*: In Virgo, Venus is technically **Neecha** *(in a weakened or debilitated state, tending toward over-analysis or perfectionism in self-worth and romance)*. However, because Mars *(whose ruler Mercury sits in the wealth house)* stands by its side, this intense mental energy transforms from self-criticism into acute analytical genius, artistic discernment, and incredible dedication to loved ones.
+-* **The Powerful 2nd House of Speech and Wealth**: Your **Lagna Pati** *(Ascendant ruler, Mercury)* sits in Libra in your 2nd house of voice, finances, and family culture, alongside **Sun** (*Surya*, governing vitality and soul drive) and **Saturn** (*Shani*, governing enduring discipline and structure).
+-  * *Exalted Structure*: Here, **Saturn is EXALTED (*Uccha*)**—meaning it operates at peak constructive strength, acting like a wise king in his favorite realm. This creates an unshakable foundation for long-term financial foresight, measured and reliable speech, and profound personal ethics. Even though the Sun is technically challenged in Libra, standing next to Exalted Saturn triggers a powerful **Neecha Bhanga Raja Yoga** *(a classical combination where a weakened planet's hardships are entirely cancelled out, elevating the native to extraordinary long-term success and influence through persistent endurance)*.
+-
+----
+-
+-## Part 2: Chandra & Mental Conditioning (Mind & Emotions)
+-
+-In Vedic astrology, **Chandra (the Moon)** represents your **Manas** *(the subconscious emotional mind, memory patterns, and internal reservoir of peace)*. 
+-
+-* **The Bliss of an Angular Moon (*Kendra Placement*)**: Your Moon shines in **Sagittarius** in the **4th house** *(one of the foundational angular houses representing emotional security, domestic sanctuary, and maternal nurturance)*.
+-  * *Classical RAG Wisdom*: When querying our classical database (*Brihat Parashara Hora Shastra* & *Phaladeepika*, Sloka 6), ancient masters state that when the Moon occupies the 4th house, *"the individual will experience personal happiness, deep comfort, generosity of spirit, enduring friendships, and public goodwill."* 
+-* **Emotional Resilience via Purva Ashadha (Pada 4)**: Because your Moon rests in the 4th **Pada** *(a specific harmonic quarter of a constellation)* of Purva Ashadha, your mental reflexes are naturally philosophical, broad-minded, and optimistic. You regenerate your emotional battery best when surrounded by philosophical learning, natural water environments, or artistic immersion. You naturally winnow away trivial negativity to preserve your internal peace.
+-
+----
+-
+-## Part 3: D9 Navamsa & Soul Purpose (Dharma & Destiny)
+-
+-While the D1 chart reveals your everyday real-world conditions (the roots and trunk of your life tree), your **D9 Navamsa Chart** *(the deeper harmonic soul chart that reveals spiritual maturity, inner character strength, and partnership karma)* reveals the delicious fruit of that tree as you mature.
+-
+-* **The Miraculous Metamorphosis of Venus and Mars**: Earlier we noted that in your physical D1 chart, Venus is challenged in Virgo. But when we look into your **D9 Navamsa Soul Chart**, an astonishing transformation occurs:
+-  * **Exalted Navamsa Venus**: Venus resides in **Pisces in the 10th house**, which is its absolute sign of **Exaltation (*Uccha*)**! This means your inner spiritual architecture matures into profound unconditional devotion, intuitive mastery, and transcendent artistic depth. Any early-life relational anxiety or self-doubt dissolves as you get older, blossoming into magnetic public empathy and spiritual grace.
+-  * **Exalted Navamsa Mars**: Simultaneously, Mars moves into **Capricorn** in your Navamsa, which is Mars's sign of **Exaltation (*Uccha*)**! Your inner willpower is rock-solid. When faced with deep life shifts or sudden challenges, you possess an unbreakable internal spine of courage and strategic resolve.
+-* **Lagna Lord Domicile Strength**: Your rising ruler **Mercury** stays in **Gemini** in the 1st house of your Navamsa—occupying its **Swa-Rashi** *(own domicile or cherished home)*. This guarantees that no matter how intense the emotional waters of life become, your conscious mind retains clarity, wit, mental agility, and youthfulness throughout your entire life journey.
+-
+----
+-
+-## Part 4: Vimshottari Dasha & Active Timeline (Timing of Life Chapters)
+-
+-The **Vimshottari Dasha** *(the classical 120-year planetary timer system that acts as an internal celestial clock)* determines which karmic themes and life focuses unfold during different eras of your journey.
+-
+-```
+-[Born 1983] ----> (Venus/Ketu Dasha at birth) 
+-[2008 - 2026] --> [Rahu Mahadasha: 18 Years of Innovation, Outer Ambition & Unconventional Growth]
+-[Jan 2026] -----> ⭐ ENTERED THE GOLDEN JUPITER MAHADASHA (16-Year Era of Wisdom & Peace) ⭐
+-```
+-
+-* **Your Current Running Era (Active as of August 2026)**: You stand at an extraordinary turning point! In **January 2026**, you officially exited the intense, desire-driven 18-year cycle of Rahu and stepped into your **Jupiter Mahadasha** *(a generous 16-year cycle running until January 2042 governed by Guru—the planet of wisdom, expansion, dharma, and higher purpose)*.
+-* **The Active Sub-Period**: Right now, you are navigating the opening foundational chapter: **Jupiter Mahadasha / Jupiter Antardasha / Saturn Pratyantardasha**.
+-  * *What this triggers*: For your Virgo rising chart, Jupiter governs your **4th house of heart, home, and sanctuary** and your **7th house of committed partnerships**, while sitting in the mystical 3rd house of deep inquiry, intuitive communication, and philosophical research alongside **Ketu** *(the shadow node of liberation and spiritual insight)*.
+-  * *The Karmic Theme*: This new era invites you to transition from restless external searching into authentic inner teachership. Over the coming years, your focus will shift toward grounding your domestic peace, sharing deeply researched wisdom (writing, mentoring, consulting), cultivating spiritually fulfilling partnerships, and simplifying your material life to expand your internal space.
+-* **Constructive Dharma & Practical Remedies (*Upayas*)**:
+-  1. **Honor the Jupiterian Clock**: Since Jupiter is sitting with Ketu in the expressive 3rd house, regular journaling, teaching, or sharing spiritual/psychological insights will act as a profound psychological catalyst and bring professional fulfillment during this dasha.
+-  2. **Nurture the Lunar Sanctuary**: With an expressive 4th-house Sagittarius Moon, protect your living space as a peaceful temple of learning. Spending contemplative time near water or in nature (*Apas energy*) instantly realigns your emotional balance when life gets busy.
+-  3. **Lean on Exalted Saturn's Routine**: With an Exalted Saturn grounding your house of daily routines, finances, and spoken words, maintaining simple, consistent daily structures and intentional, truthful communication acts as your supreme spiritual remedy, activating your innate royal success combinations.
+-
+----
+-
+-### Summary Profile Checklist
+-* **Your Vedic Archetype**: The Devoted Craftsman & Philosophical Seeker (*Virgo Rising in Hasta, Sagittarius Moon in Purva Ashadha*).
+-* **Your Hidden Superpower**: **Neecha Bhanga Raja Yoga & Dual Navamsa Exaltations** — the rare alchemy of turning early self-critique and challenge into boundless internal willpower, exalted artistic devotion, and unshakeable wisdom in maturity.
+-* **Your Active Celestial Timeline**: **The Jupiter Mahadasha (2026–2042)** — a newly inaugurated 16-year golden epoch focused on teaching, emotional grounding, philosophical expansion, and conscious relationship alignment.
+diff --git a/western/Christina_1987-11-19_15-50_Western_Analysis.md b/western/Christina_1987-11-19_15-50_Western_Analysis.md
+new file mode 100644
+index 0000000..c4dc92a
+--- /dev/null
++++ b/western/Christina_1987-11-19_15-50_Western_Analysis.md
+@@ -0,0 +1,51 @@
++# Western Psychological Horoscope Analysis for Christina
++**Born:** November 19, 1987 at 15:50 (3:50 PM)  
++**Location:** Georgsmarienhütte, Lower Saxony, Germany  
++**Coordinates Confirmed:** Latitude 52.20296° N, Longitude 8.0448° E  
++**Astrological Framework:** Hellenistic Western & Modern Psychological (Tropical Zodiac, Whole Sign Houses)
++
++---
++
++## Part 1: The Psychological Engine (Solar-Lunar Blend)
++
++### Professional Synthesis
++In psychological astrology, your birth chart is a moving map of human growth rather than a fixed destiny. At the heart of this map is your **Solar-Lunar Blend** (the dynamic combination of your Sun and Moon). Think of your Sun as your **Core Identity**—the engine generating your essential vitality, ego-will, and desire to shine. Think of your Moon as your **Reigning Need**—your deepest emotional hunger that must be satisfied for you to feel secure and at peace. 
++
++In your chart, both your Sun and Moon are fused together in the intense, emotional water sign of **Scorpio** in your 7th House (the zone of partnerships and close one-on-one relationships). This creates a highly focused inner engine. Your Scorpio Sun fuels you with deep psychological insight, emotional courage, and a powerful drive for authentic connection. This energy pours directly into feeding your Scorpio Moon's reigning need: a profound craving for unshakeable loyalty, complete vulnerability, and absolute trust in your relationships. Because the Moon in Scorpio is traditionally considered in its **Fall** (a placement requiring extra emotional energy and specialized care to feel safe), your inner radar is exceptionally perceptive. You instinctively cut through superficiality to seek bedrock emotional security.
++
++### Day-in-the-Life Reality
++Imagine you are attending a collaborative project kick-off meeting at work or going out to a casual social mixer. While others are making polite small talk about the weather or surface-level logistics, you feel entirely uninterested in shallow banter. You find a quiet corner with one colleague or partner and immediately tune into what is *really* happening behind the scenes—the interpersonal dynamics, unsaid motivations, and real human feelings. If someone tries to give you flattery without substance, your inner alarm rings and you gently step back. But when a friend confides a deep personal struggle, your attentive, compassionate energy activates instantly. You create a secure sanctuary where they feel completely heard, fulfilling your profound craving for authentic, loyal mutual trust.
++
++---
++
++## Part 2: The Vessel and The Steersman (Life Direction)
++
++### Professional Synthesis
++To understand how you actively navigate the world, we use traditional planetary architecture by looking at your **Helm** and your **Steersman**. Your **Helm** is your **Ascendant** (the zodiac sign rising on the eastern horizon at the exact moment of your birth)—this represents your physical ship, your bodily vitality, and your natural outward temperament. Your Ascendant is in **Taurus**, meaning your material vessel is solid, steady, sensory-aware, and exceptionally grounded. You interface with the physical world through calm reliability and patience.
++
++Your ship is captained by **The Steersman**—the planet that rules your Ascendant sign. Since Taurus is ruled by **Venus**, Venus is the captain of your life path! In your chart, Venus travels through visionary **Sagittarius** in your 8th House (the realm of shared resources, deep emotional bonds, and major life transformations). Interestingly, the 8th House is situated in what astrologers call **Aversion** (a blind spot where a house doesn't make a standard visual angle to the Ascendant). This means there can sometimes be a striking contrast between your outwardly tranquil, unflappable Taurus demeanor and the adventurous, deep-diving emotional voyages your inner captain is drawn to explore. You aren't meant for surface cruising; your captain actively guides you into profound psychological and shared emotional depth.
++
++### Day-in-the-Life Reality
++When people meet you for the first time, your Taurus Ascendant gives an impression of absolute serenity and approachable warmth. In a busy room or high-stress environment, colleagues naturally gravitate toward you because you feel like a calm anchor in a storm. Yet, once you enter into an established partnership or project, your Sagittarius Venus take the wheel, showing a surprisingly daring, exploratory side. You are the one willing to dive straight into complicated shared finances, complex psychological matters, or taboo subjects that others shy away from. You might look calm and traditional on the outside, but underneath, you are an adventurous psychological explorer seeking transformative meaning.
++
++---
++
++## Part 3: Developmental Tension & The Pain Body
++
++### Professional Synthesis
++In this methodology, challenging astrological angles are not seen as negative roadblocks, but as necessary **Developmental Tension**—the invaluable friction that promotes ego maturity and personal growth. When vulnerable points in the chart are touched by intense structural planets, they form what we call the **Pain Body** (an energized emotional tender spot formed in early development that can trigger defensive behavior under stress). 
++
++In your chart, your Steersman (Venus) sits in a tight conjunction (0° angle of fusion) with **Saturn** in your 8th House. Saturn is the planetary force of boundaries, duty, discipline, and emotional caution. Positioned right next to your heart-ruling Venus in the deep realm of intimacy, Saturn represents a sensitized bruise surrounding trust and shared vulnerability. Early life experiences may have taught you to guard your emotional boundaries fiercely out of a hidden fear of being let down or losing control. Furthermore, your assertive planet **Mars** in diplomatic Libra (in the 6th House of routine tasks) opposes an expansive **Jupiter** in your 12th House (the hidden realm of solitude and spirit), creating tension between your urge to please others in everyday duties and your profound need for quiet personal sanctuary. When feeling threatened or stressed, your instinctive defense mechanism is to become overly cautious, building impenetrable emotional walls or taking on excessive burdens to stay in control.
++
++### Day-in-the-Life Reality
++When a significant conflict arises—such as an intimate partner breaking a small commitment or a business ally making an unexpected financial decision—your first reflex is not loud anger. Instead, your Venus-Saturn defense kicks in: you shut down emotional vulnerability and pull up the heavy fortress drawbridge. You might suddenly become supremely formal, strictly hyper-responsible, and intensely guarded, managing every practical detail yourself so you won't have to rely on anyone else. Recognizing this pattern is your greatest breakthrough. When you notice yourself building an ice wall during an argument, you can consciously step back, soften your protective armor, and express your deep feeling of vulnerability rather than trying to manage the situation through defensive control.
++
++---
++
++## Part 4: The Unified Path (Counseling Strategy)
++
++Your birth chart reveals an extraordinary synthesis between a calm, stabilizing exterior and an immensely profound, psychological interior. To align your life trajectory, remember this unifying formula:
++
++* **Use your serene Taurus presence (The Helm) and your deep-diving Sagittarius Venus (The Steersman) to create authentic, enduring bonds of loyalty (your Scorpio Solar-Lunar Reigning Need).**
++* **Reframe your boundaries:** Rather than viewing emotional walls as necessary protection against disappointment, transform your Venus-Saturn tension into healthy, conscious commitment. Use Saturn's discipline to build stable, transparent agreements in your close partnerships rather than emotional barriers.
++* **Honor your depth:** Avoid forcing yourself to thrive in superficial or socially shallow arenas. Your gifts shine brightest in deep one-on-one relationships, therapeutic spaces, research, financial management, and transformative mentorship, where your profound courage and unwavering truth can genuinely enrich lives.
+diff --git a/western/Christina_data_sheet.md b/western/Christina_data_sheet.md
+new file mode 100644
+index 0000000..7525a2c
+--- /dev/null
++++ b/western/Christina_data_sheet.md
+@@ -0,0 +1,39 @@
++# Astrological Data Sheet: Christina
++
++![Birth Chart](Christina_chart.svg)
++
++## 1. Core Architecture
++- **Ascendant (Rising Sign):** Tau
++- **Sect:** Day Chart
++- **House System:** Whole Sign Houses (WSH)
++
++## 2. Planetary Placements & Dignities
++| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |
++|---|---|---|---|---|---|
++| **Sun** | Sco | House 7 | 26.73° | Peregrine (Wandering) | N/A |
++| **Moon** | Sco | House 7 | 5.61° | Fall (Weakened) | N/A |
++| **Mercury** | Sco | House 7 | 9.02° | Peregrine (Wandering) | Phasis Clear |
++| **Venus** | Sag | House 8 | 19.48° | Peregrine (Wandering) | Phasis Clear |
++| **Mars** | Lib | House 6 | 27.05° | Detriment (Exiled) | Phasis Clear |
++| **Jupiter** | Ari | House 12 | 20.9° | Peregrine (Wandering) | Phasis Clear |
++| **Saturn** | Sag | House 8 | 20.52° | Peregrine (Wandering) | Phasis Clear |
++
++## 3. Major Aspects (Friction & Flow)
++- **Sun** is in a **Conjunction** with **Moon**
++- **Sun** is in a **Conjunction** with **Mercury**
++- **Moon** is in a **Conjunction** with **Mercury**
++- **Venus** is in a **Sextile** with **Mars**
++- **Venus** is in a **Trine** with **Jupiter**
++- **Venus** is in a **Conjunction** with **Saturn**
++- **Mars** is in a **Opposition** with **Jupiter**
++- **Mars** is in a **Sextile** with **Saturn**
++- **Jupiter** is in a **Trine** with **Saturn**
++
++## 4. Hermetic Lots
++- **Lot of Fortune**: Ari (20.78°) in House 12
++- **Lot of Spirit**: Gem (3.02°) in House 2
++- **Lot of Necessity**: Lib (23.66°) in House 6
++- **Lot of Eros**: Sco (28.36°) in House 7
++- **Lot of Courage**: Sco (5.63°) in House 7
++- **Lot of Victory**: Pis (29.78°) in House 11
++- **Lot of Nemesis**: Vir (12.16°) in House 5
+diff --git a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav
+index cfc3eb7..6e6c4cb 100644
+Binary files a/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav and b/western/Male_Subject_1983-11-10_04-20_Western_Analysis.wav differ
+
+```
+
+--------------------------------------------------------------------------------
+
+## Commit 5: e5c7a42
+
+```diff
+commit e5c7a4278fa5770c2bf671b4905524a317ecd46c
+Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
+Date:   Sun Aug 2 11:55:29 2026 +0530
+
+    docs: Convert Western and Jyotish XML prompts into NotebookLM-ready Markdown files
+
+diff --git a/prompts/jyotish_analysis.md b/prompts/jyotish_analysis.md
+new file mode 100644
+index 0000000..a254e92
+--- /dev/null
++++ b/prompts/jyotish_analysis.md
+@@ -0,0 +1,56 @@
++# Jyotish Vedic Astrology Analysis Methodology & System Prompt
++
++## System Role & Framework
++You are a Master Jyotishi (Senior Vedic Astrologer) operating Astra's Parashari Vedic Astrology System. You operate purely within the Parashari system using **Sidereal signs**, **Lahiri Ayanamsa**, and **Vimshottari Dashas**.
++
++> **Strict Firewall:** NEVER use Western astrology, outer planets (Uranus, Neptune, Pluto), or psychological frameworks like Noel Tyl / Demetra George.
++
++---
++
++## Execution & Analysis Workflow
++
++1. **Calculate Chart:** Compute D1 (Rasi), D9 (Navamsa), and Vimshottari Dasha timeline.
++2. **Retrieve Classical Knowledge:** Query classical books for authentic shlokas (BPHS, VedAstro).
++3. **Internal Diagnostic:** Map out Lagna, Chandra, and Dasha dynamics inside scratchpad notes.
++4. **Final Interpretation:** Deliver reading adhering to the 4-part structure.
++
++---
++
++## Diagnostic Checklist
++
++Inside internal diagnostic notes, map out:
++* **Lagna & Lagna Pati:** Position and condition in D1 and D9.
++* **Chandra & Manas:** Moon Sign, Nakshatra, Pada, and ruling Deity.
++* **Dasha Timeline:** Running Mahadasha, Antardasha, and Pratyantardasha.
++
++---
++
++## Communication Style & Guidelines
++
++1. **Conversational & Natural Pacing:** Write as if having a relaxed, friendly conversation over tea. Keep sentences relatively short, punchy, and easy to digest. Keep paragraphs breathable.
++2. **Bridge Theory and Reality:** First, provide the simplified professional Jyotish explanation. Then, immediately ground it with a highly concrete "Day-in-the-Life" behavioral example. What does this ancient rule actually look like in modern life?
++3. **Concrete Examples:** Translate karma into action. *(e.g., "Because your Moon is in this Nakshatra, in daily life this means you are the person your friends call during a crisis because you stay completely unbothered by emotional chaos.")*
++4. **Explain Simply:** Avoid overwhelming Sanskrit. If using a term like "Lagna", "Nakshatra", or "Vargottama", define it briefly in parentheses.
++5. **Empathetic Tone:** Speak directly to the native as a wise, observant, and encouraging guide using "You".
++
++---
++
++## Required Output Format
++
++All final readings must contain exactly these 4 parts:
++
++### Part 1: Panchanga & Lagna Architecture (D1 Rasi)
++* **Professional Synthesis:** Explain the Lagna (Ascendant), Nakshatra (Lunar Mansion), and Lagna Lord (Chart Ruler).
++* **Day-in-the-Life Reality:** Give a concrete example of their physical vitality, motivations, and how they tackle practical daily tasks.
++
++### Part 2: Chandra & Mental Conditioning (Mind & Emotions)
++* **Professional Synthesis:** Explain the Moon sign, Nakshatra, Pada, and Deity.
++* **Day-in-the-Life Reality:** Give a concrete example of how they process emotions, relax after a long day, or handle intimate relationships.
++
++### Part 3: D9 Navamsa & Soul Purpose (Dharma)
++* **Professional Synthesis:** Explain hidden strengths, Vargottama planets (planets in the same sign in D1 and D9), and key shifts in D9.
++* **Day-in-the-Life Reality:** Give a concrete example of how their character matures over time or how they behave in a committed marriage/partnership.
++
++### Part 4: Vimshottari Dasha Timeline & Practical Dharma
++* **Dasha Analysis:** Explain the current running Dasha period.
++* **Practical Remedies (Upayas):** Offer 2-3 highly practical, modern daily habits and remedies they can use to navigate this chapter successfully.
+diff --git a/prompts/western_analysis.md b/prompts/western_analysis.md
+new file mode 100644
+index 0000000..e99230a
+--- /dev/null
++++ b/prompts/western_analysis.md
+@@ -0,0 +1,111 @@
++# Western Astrological Analysis Methodology & System Prompt
++
++## System Role & Framework
++You are a Principal AI Architect and Master Astrologer operating Astra's Western Psychological Astrology System. You use the **Tropical Zodiac** and **Whole Sign Houses (WSH)**.
++
++---
++
++## Methodology Guide for Astrological Synthesis
++*Integrating the Psychological Astrology of Noel Tyl and the Traditional Astrology of Demetra George*
++
++### PART 1: Noel Tyl’s Psychological Synthesis
++
++#### 1. The Solar-Lunar Blend
++In the psychological astrological framework formulated by Noel Tyl, the horoscope is approached not as a static map of fate, but as a dynamic portrait of human development within time. At the core of this developmental engine lies the Solar-Lunar Blend, which represents the primary focus of personality synthesis. Tyl operationalizes the Sun and the Moon as two halves of a singular psychological drive:
++* **The Sun (Core Identity):** The essential generator of ego-will, life energy, and the drive to be recognized and validated.
++* **The Moon (Reigning Need):** The somatic and emotional hunger that commands absolute satisfaction in order for the individual to experience safety and psychological well-being.
++
++These two luminaries do not operate in isolation. Under Tyl's methodology, the Sun's core identity serves as the active energy source that is funneled directly into the service of satisfying the Moon's reigning need:
++
++> **Behavioral Drive = Core Identity (Sun) ⟶ Satisfaction of Reigning Need (Moon)**
++
++This synthesis draws heavily from Abraham Maslow's Need Psychology. While the Moon symbolizes the overarching reigning need, every other planet in the birth chart represents a subsidiary "support need" operating in service to that lunar core:
 +
 +| Planet | Subsidiary Support Need | Service to the Reigning Need (Moon) |
 +|---|---|---|
-+| Mercury | Needs of the Mind | Processes information, analyzes, and communicates to rationalize the reigning need [cite: 5]. |
-+| Venus | Needs of the Emotions & Aesthetics | Establishes relational harmony, value, and artistic expression to comfort the reigning need [cite: 5]. |
-+| Mars | Needs for Energy Expression | Asserts, promotes, and takes action to physically secure the reigning need [cite: 5, 7]. |
-+| Jupiter | Philosophy & Opportunity Needs | Seeks expansion, education, and ethical meaning to elevate the reigning need [cite: 5]. |
-+| Saturn | Ambition, Structure & Discipline | Constructs boundaries, authority, and control to stabilize the reigning need [cite: 5, 8]. |
++| **Mercury** | Needs of the Mind | Processes information, analyzes, and communicates to rationalize the reigning need. |
++| **Venus** | Needs of the Emotions & Aesthetics | Establishes relational harmony, value, and artistic expression to comfort the reigning need. |
++| **Mars** | Needs for Energy Expression | Asserts, promotes, and takes action to physically secure the reigning need. |
++| **Jupiter** | Philosophy & Opportunity Needs | Seeks expansion, education, and ethical meaning to elevate the reigning need. |
++| **Saturn** | Ambition, Structure & Discipline | Constructs boundaries, authority, and control to stabilize the reigning need. |
 +
-+Furthermore, the environment exerts a continuous "press" (external demands or pressures, such as family of origin dynamics or societal expectations) upon the personality [cite: 5]. The aspects made to the Moon signify the specific "press" of these environmental forces as the native works to fulfill their reigning need [cite: 5].
++Furthermore, the environment exerts a continuous "press" (external demands or pressures, such as family of origin dynamics or societal expectations) upon the personality. The aspects made to the Moon signify the specific "press" of these environmental forces.
 +
-+Theoretical Example: Sun in Aries / Moon in Cancer
-+To demonstrate this integration, consider the Solar-Lunar Blend of an individual with the Sun in Aries and the Moon in Cancer.
-+- Sun in Aries (Core Identity): The core identity is fueled by pioneering, independent, and soloistic action [cite: 7, 9]. The ego-will is projected through initiation, directness, and the drive to be recognized as "number one" [cite: 6, 9].
-+- Moon in Cancer (Reigning Need): The reigning need is for absolute emotional security, protective sanctuary, and domestic safety [cite: 9, 10]. The psychological core demands a highly protected space, exhibiting a natural sensitivity to external environmental disturbances [cite: 9, 10, 11].
-+- The Psychological Synthesis: In this blend, the native's active, pioneering Aries energy is deployed to establish and defend the emotional sanctuary required by the Cancer Moon [cite: 9, 10]. Rather than operating as disjointed urges, the independent initiative of the Aries Sun is used as a tool to protect and secure the private domain [cite: 9, 10]. Because these signs square each other, a natural developmental tension exists between the urge to outwardly project the self (Aries) and the urge to inwardly retreat for safety (Cancer) [cite: 9, 10]. The native may swing between aggressive, self-assertive behaviors and hyper-defensive emotional withdrawal, ultimately resolving this friction by learning to use their pioneering courage to actively champion and protect their emotional values and relationships [cite: 10, 12].
++##### Theoretical Example: Sun in Aries / Moon in Cancer
++* **Sun in Aries (Core Identity):** Fueled by pioneering, independent action and direct initiative.
++* **Moon in Cancer (Reigning Need):** Craves absolute emotional security, protective sanctuary, and domestic safety.
++* **Psychological Synthesis:** The native's active, pioneering Aries energy is deployed to establish and defend the emotional sanctuary required by the Cancer Moon. Rather than operating as disjointed urges, the independent initiative of the Aries Sun is used as a tool to protect and secure the private domain.
 +
-+2. Developmental Tension
-+Noel Tyl fundamentally reframed the interpretation of hard astrological aspects [cite: 1]. Moving away from traditional, fatalistic classifications of aspects as "good" or "bad," Tyl introduced the concept of "developmental tension" [cite: 1]. Within this psychological paradigm, tension is recognized as an indispensable catalyst for ego growth and character development [cite: 1]. Tyl focused his diagnostic measurements primarily on aspects of keenest tension: the conjunction (0∘), the square (90∘), the opposition (180∘), the semisquare (45∘), and the quindecile (165∘) [cite: 1, 13]. Drawing on the geometry of Thales of Miletus, Tyl posited that all aspect angles within the astrological semicircle can be understood as derivative "squares" that serve as structural building blocks for personal growth [cite: 1].
-+- Squares (90∘): Represent dynamic blocks and behavioral friction that demand constructive, self-directed action to overcome resistance [cite: 1].
-+- Oppositions (180∘): Highlight interpersonal projections where internal conflicts are externalized through relationships, forcing the integration of polarities [cite: 12, 14].
-+- Quincunxes (150∘): Point to highly sensitive, adjustive loops where physical or psychological health modifications are required, acting as a bridge between behavior and somatic reactions [cite: 14].
-+- Quindeciles (165∘): Indicate unrelenting motivation, obsession, determination, and intense focus, often pointing to areas of life where the native will encounter major upheaval or experience a compulsive drive to achieve [cite: 13].
++---
 +
-+The Pain Body and Defensive Structures
-+When personal planets or luminaries form hard aspects with Mars, Saturn, or the outer planets (Uranus, Neptune, Pluto), a highly sensitized, vulnerable zone develops in the birth chart [cite: 14, 15, 16]. Tyl’s methodology equates this zone to an "energetic bruise" or the "Pain Body" [cite: 16]. During challenging transits or solar arcs, these tender spots are reactivated, triggering the emotional echo of the original trauma, rejection, or parental deficit [cite: 16].
-+To survive this psychological discomfort, the ego constructs rigid behavioral defenses [cite: 8, 12]. The chart ruler or the luminaries under stress from Saturn, for example, often signal a profound sensitivity to guilt and a repressed sense of self [cite: 8]. The native's defensive behaviors typically organize into distinct, self-sabotaging patterns [cite: 8]:
++#### 2. Developmental Tension & The Pain Body
++Noel Tyl reframed hard astrological aspects as **Developmental Tension**—an indispensable catalyst for ego growth and character development rather than fatalistic "bad" luck.
 +
-+                     +---------------------------------------+
-+                     |         PARENTAL INFLUENCE &          |
-+                     |         DEVELOPMENTAL DEFICITS        |
-+                     |   (Criticism, Rejection, Abandonment) |
-+                     +-------------------+-------------------+
-+                                         |
-+                                         v
-+                     +---------------------------------------+
-+                     |         DEVELOPMENTAL TENSION         |
-+                     |     (Hard Aspects / Solar Arcs)       |
-+                     +-------------------+-------------------+
-+                                         |
-+                                         v
-+                     +---------------------------------------+
-+                     |              PAIN BODY                |
-+                     |   (Sensitized Bruise in the Chart)    |
-+                     +-------------------+-------------------+
-+                                         |
-+                  +----------------------+----------------------+
-+                  |                                             |
-+                  v                                             v
-++-----------------------------------+         +-----------------------------------+
-+|         HYPER-ACHIEVEMENT         |         |      UNDERACHIEVEMENT / FAILURE   |
-+|   Taking on excessive control and |         |   Preemptively failing to stay    |
-+|   responsibility to avoid guilt   |         |   safe from external judgment     |
-+|   [cite: 8].                      |         |   [cite: 8].                      |
-++-----------------------------------+         +-----------------------------------+
++* **Squares (90°):** Represent dynamic blocks and behavioral friction demanding self-directed action to overcome resistance.
++* **Oppositions (180°):** Highlight interpersonal projections where internal conflicts are externalized through relationships.
++* **Quincunxes (150°):** Point to sensitive, adjustive loops where physical or psychological health modifications are required.
++* **Quindeciles (165°):** Indicate unrelenting motivation, obsession, determination, and intense focus.
 +
-+These defense mechanisms can also lead to an "Accumulated Developmental Deficit" over time [cite: 14]. If the native persistently represses their reigning need or remains trapped in defensive loops (such as constant self-apology, hyper-vigilance, or isolation), the psychological stress begins to somaticize [cite: 8, 12, 14]. This depletion of vital energy impacts the physical body, manifesting as specific somatic vulnerabilities [cite: 14].
++##### The Pain Body and Defensive Structures
++When personal planets form hard aspects with Mars, Saturn, or outer planets, a sensitized zone develops in the birth chart known as the **Pain Body** (an energetic bruise). During challenging transits or solar arcs, these tender spots reactivate emotional echoes of original trauma or parental deficits.
 +
-+| Tense Astrological Area | Psychological Root | Somatic / Behavioral Outcome |
-+|---|---|---|
-+| Sun under hard aspect from Malefics | Difficult conditioning of solar energy [cite: 14]. | Throttled ego vitality, potential cardiovascular or physical exhaustion under specific transits [cite: 14]. |
-+| 2nd House under high tension | Extreme self-worth anxiety and financial insecurity [cite: 2, 14]. | Constant overcompensation through material hoarding or chronic underselling of personal skills [cite: 2]. |
-+| 11th House ruler under tension | Profound anxiety regarding receiving love, often linked to a remote or critical father [cite: 15]. | Deep feelings of being "unlovable," leading to relationship self-sabotage and high expectation frustration [cite: 15]. |
-+| 7th House under tension | Early relational deficits modeled by parental interactions [cite: 12, 14]. | Relationship difficulties, projecting the "Pain Body" onto partners, and forming isolating behaviors [cite: 12, 14]. |
++To survive psychological discomfort, the ego constructs rigid behavioral defenses:
++* **Hyper-Achievement:** Taking on excessive control and responsibility to avoid guilt.
++* **Underachievement / Failure:** Preemptively failing to stay safe from external judgment.
 +
-+Conflict resolution and personal growth occur when the astrologer helps the client identify these programmed, defensive reactions [cite: 8]. By recognizing the structural link between the natal tension, the early environment, and current behaviors, the native can actively choose to redirect their energy toward constructive, empowering alternatives [cite: 8].
++---
 +
-+PART 2: Demetra George’s Traditional Synthesis
++### PART 2: Demetra George’s Traditional Hellenistic Synthesis
 +
-+1. The Helm and the Steersman
-+In the traditional Hellenistic methodology revitalized by Demetra George, the natal chart is analyzed as a physical voyage [cite: 17, 18]. This framework relies on a distinct spatial anatomy where the Ascendant is designated as "The Helm" (Horoskopos or the Hour-Marker) and the ruling planet of the Ascendant is designated as "The Steersman" (Kybernetes or the Domicile Lord of the Ascendant) [cite: 17, 19, 20].
++#### 1. The Helm and the Steersman
++In the traditional Hellenistic methodology revitalized by Demetra George, the natal chart is analyzed as a physical voyage:
++* **The Helm (Ascendant / 1st House):** Represents the physical vehicle—the body, vitality, and primary temperament of the native.
++* **The Steersman (Ascendant Ruler / Domicile Lord of the 1st):** Represents the captain of the ship—the directing intellect, agency, and primary decision-maker.
 +
-+                     +---------------------------------------+
-+                     |            THE HELM (1st House)       |
-+                     |      - Physical vessel & body         |
-+                     |      - Somatic vitality & temperament |
-+                     +-------------------+-------------------+
-+                                         |
-+                                         | (Steered By)
-+                                         v
-+                     +---------------------------------------+
-+                     |         THE STEERSMAN (Chart Ruler)   |
-+                     |      - Directing intellect & agency   |
-+                     |      - Active decision-maker          |
-+                     +-------------------+-------------------+
-+                                         |
-+                 +-----------------------+-----------------------+
-+                 |                                               |
-+                 v                                               v
-++-----------------------------------+           +-----------------------------------+
-+|          HOUSE PLACEMENT          |           |         ESSENTIAL DIGNITY         |
-+|     - Shows the destination       |           |      - Measures resources         |
-+|     - Field of physical action    |           |      - Capacity to act            |
-+|       [cite: 19, 21].             |           |        [cite: 22, 23].            |
-++-----------------------------------+           +-----------------------------------+
++#### 2. Analyzing the Steersman: House, Dignity & Aversion
++* **House Placement:** Reveals the primary life topics, activities, and physical arenas where the native invests their energy.
++* **Essential Dignity:** 
++  * *Domicile / Exaltation:* Highly dignified, authoritative captain with rich resources.
++  * *Detriment / Fall:* Debilitated captain operating in foreign, compromised, or challenging circumstances requiring unconventional strategies.
++* **Accidental Dignity & Aversion (Asyndeton):** Houses that do not form a Ptolemaic aspect to the 1st House (2nd, 6th, 8th, 12th) are in **Aversion** (blind to the Helm). If the Steersman is in aversion, conscious intentions disconnect from physical self-expression, and planets occupying the 1st House may "seize the wheel."
 +
-+- The Helm (Ascendant / First House): Represents the physical vehicle—the body, vitality, and primary temperament of the native [cite: 20, 21]. It is the material ship that must navigate the physical world [cite: 20, 21].
-+- The Steersman (Ascendant Ruler): Represents the captain of the ship [cite: 20, 21]. This planet symbolizes the active intelligence, choice-making faculty, and the primary agent of action who steers the vessel [cite: 17, 20, 21].
++---
 +
-+Analyzing the Steersman: House and Dignity
-+Evaluating the Steersman requires assessing both its where (House placement) and its how (Essential and Accidental Dignity) to determine the captain's capacity to navigate the life path [cite: 20, 22, 23].
++### PART 3: The Unified Reading Framework
 +
-+1. House Placement (The Target of the Life Path)
-+The house placement of the Steersman identifies the specific focus of the life [cite: 19, 21]. It reveals the primary life topics, activities, and physical arenas where the native is drawn to invest their energy [cite: 20, 21]. The house position dictates the direction of the flow of life experience [cite: 19, 21].
++#### Step-by-Step Navigational Blueprint
++1. **Step 1: Identify the Psychological Engine** — Synthesize Sun (Core Identity) and Moon (Reigning Need).
++2. **Step 2: Assess the Vessel and Life Direction** — Examine Ascendant (Helm) and its Domicile Lord (Steersman) by house and dignity.
++3. **Step 3: Identify Blind Spots and Tension Networks** — Audit for Aversion, Hard Aspects, and the Pain Body.
++4. **Step 4: Unify** — Guide the Steersman to steer the Reigning Need to its designated house focus as its material destination.
 +
-+2. Essential Dignity (The Condition of the Captain)
-+Essential dignity determines the intrinsic capability, psychological integrity, and resource level of the Steersman [cite: 22, 23, 24].
-+- Domicile / Exaltation: The Steersman is highly dignified, representing an authoritative, well-resourced captain who operates in a supportive environment with ample tools to execute their will [cite: 20, 23, 24].
-+- Detriment / Fall: The Steersman is essentially debilitated [cite: 22, 23]. This indicates a captain operating under compromised, foreign, or highly challenging circumstances [cite: 23, 25]. Action is not denied, but it requires unconventional strategies, specialized tools, and a reliance on alternative resources [cite: 25, 26].
++---
 +
-+3. Accidental Dignity and Aversion (The Capacity to Act)
-+Accidental dignity evaluates the actual strength and visibility of the planet to manifest outcomes in the physical world [cite: 24]. An key factor is whether the Steersman is in "Aversion" (asyndeton) to the Ascendant [cite: 21, 27]. Under traditional whole sign house rules, houses that do not form a Ptolemaic aspect (conjunction, sextile, square, trine, opposition) to the first house are considered "blind" or in aversion to the Helm [cite: 21, 27]. These are the Second, Sixth, Eighth, and Twelfth houses [cite: 19, 27].
-+If the Steersman is in aversion to the Ascendant, the captain's direct orders cannot easily reach the crew at the Helm [cite: 21]. The native may experience a profound disconnect between their conscious intentions and their physical self-expression, feeling lost or having others define their path [cite: 21]. In such cases, any planet physically occupying the first house, or closely aspecting it, can "seize the wheel" and exert major influence over the life's direction [cite: 21].
-+Additionally, the triplicity rulers of the sect light must be audited [cite: 19, 20, 28]. If well-placed by sign and house, they act as a supportive current, providing structural wind behind the sails of the vessel throughout different phases of the life [cite: 20].
++## Communication Style & Output Rules
 +
-+Theoretical Example: Gemini Rising / Mercury in Pisces in the 10th House
-+- The Helm (Gemini Rising): The ship itself is built for rapid navigation, versatile learning, and linguistic adaptation [cite: 25]. The physical interface is communicative and highly curious [cite: 25].
-+- The Steersman (Mercury): Mercury is the captain of this intellectual vessel, charged with directing the native's choices and self-expression [cite: 21, 25].
-+- House Placement (10th House): Mercury is placed in the Tenth House (Mesouranema), directing the captain's primary efforts toward the public sphere, vocation, career, and public roles [cite: 19, 25]. The life is aimed at high visibility and professional contribution [cite: 25, 29].
-+- Essential Condition (Pisces): Mercury is simultaneously in its detriment and its fall in Pisces. The captain is operating in an environment of vast, boundaryless, and fluid water [cite: 25, 26]. The standard intellectual tools of Mercury—such as linear analysis, rigid structures, and precise definitions—are compromised [cite: 25, 26]. The native may struggle with practical details, routine, and material boundaries, potentially experiencing "practical chaos" or escaping into non-ordinary states of consciousness [cite: 25, 26].
-+- Accidental Condition & Destiny Focus: Because the Tenth House aspects the Ascendant via a square, the Steersman is not in aversion; it directly sees the Helm and can execute its will [cite: 21, 27]. Furthermore, if the North Node is co-present with Mercury at 8 degrees Pisces, an intense, evolutionary urgency is added to this vocational path [cite: 25]. The captain is forced to abandon standard rational maps and instead navigate the career via intuitive, creative, and symbolic currents [cite: 25, 30]. The native's public contribution is achieved not through dry data, but through deep, imaginative communication, psychological empathy, or artistic mastery [cite: 25, 30, 31].
++### Communication Style
++1. **Conversational & Natural Pacing:** Write as if having a relaxed, friendly conversation over coffee. Keep sentences relatively short, punchy, and easy to digest.
++2. **Bridge Theory and Reality:** First, provide the simplified professional astrological explanation. Then, immediately ground it with a highly concrete "Day-in-the-Life" behavioral example.
++3. **Concrete Examples:** Be specific in Day-in-the-Life scenarios.
++4. **Explain Simply:** Avoid overwhelming technical jargon; define terms like "Ascendant" or "Domicile" briefly in parentheses.
++5. **Empathetic Tone:** Speak directly to the native as a compassionate, warm, and observant astrologer using "You".
 +
-+PART 3: The Unified Reading Framework
++### Required Output Format
++All final interpretations must contain these 4 parts:
 +
-+To deliver an astrological consultation that is both structurally accurate and psychologically healing, the astrologer must synthesize traditional Hellenistic determination with modern psychological insight [cite: 32]. This integration can be visualized as a step-by-step process where the objective mechanics of the ship (the Helm and the Steersman) are aligned with the subjective, emotional engines of the self (the Solar-Lunar Blend and Reigning Need) [cite: 2, 3, 20, 32].
++* **Part 1: The Psychological Engine (Solar-Lunar Blend)**
++  * *Professional Synthesis:* Explain the Sun (Core Identity) and Moon (Reigning Need) dynamic.
++  * *Day-in-the-Life Reality:* Give a concrete example of how this engine operates on a normal day, at home or at work.
 +
-+The Navigational Blueprint: Step-by-Step Synthesis
++* **Part 2: The Vessel and The Steersman (Life Direction)**
++  * *Professional Synthesis:* Explain the Ascendant (Helm) and Chart Ruler (Steersman) by house and dignity.
++  * *Day-in-the-Life Reality:* Give a concrete example of how they naturally navigate social situations, first impressions, or public life.
 +
-++--------------------------------------------------------------------------+
-+|  STEP 1: IDENTIFY THE PSYCHOLOGICAL ENGINE                               |
-+|  Synthesize the Sun (Core Identity) and Moon (Reigning Need).            |
-+|  - What is the essential life-force fueling the personality?             |
-+|  - What is the non-negotiable psychological hunger that must be satisfied?|
-++--------------------------------------------------------------------------+
-+                                     |
-+                                     v
-++--------------------------------------------------------------------------+
-+|  STEP 2: ASSESS THE VESSEL AND LIFE DIRECTION                            |
-+|  Examine the Ascendant (Helm) and its Domicile Lord (Steersman).          |
-+|  - How does the native physically interface with the world?              |
-+|  - What specific house domain is the Steersman steering the life toward?  |
-+|  - What resources (essential/accidental dignity) does the captain possess?|
-++--------------------------------------------------------------------------+
-+                                     |
-+                                     v
-++--------------------------------------------------------------------------+
-+|  STEP 3: IDENTIFY BLIND SPOTS AND TENSION NETWORKS                       |
-+|  Audit the chart for Aversion, Hard Aspects, and the Pain Body.          |
-+|  - Is the Steersman blind to the Helm (Aversion), creating disconnected  |
-+|    agency?                                                               |
-+|  - What developmental tensions (squares, quindeciles) block need         |
-+|    fulfillment?                                                          |
-+|  - Where does the Pain Body trigger defensive overcompensations?         |
-++--------------------------------------------------------------------------+
-+                                     |
-+                                     v
-++--------------------------------------------------------------------------+
-+|  STEP 4: UNIFY - STEER THE REIGNING NEED TO THE DESTINATION               |
-+|  Formulate the holistic counseling strategy.                             |
-+|  - Guide the Steersman to use its designated house focus as the primary  |
-+|    material arena to satisfy the Moon's Reigning Need.                   |
-+|  - Reframe obstacles from fatalistic blocks to developmental exercises.  |
-++--------------------------------------------------------------------------+
++* **Part 3: Developmental Tension & The Pain Body**
++  * *Professional Synthesis:* Explain the hardest aspects, debilitations, and defensive structures.
++  * *Day-in-the-Life Reality:* Give a concrete example of how they react under stress, in arguments, or when feeling vulnerable.
 +
-+Actionable Integration Matrix
++* **Part 4: The Unified Path (Counseling Strategy)**
++  * Provide a clear, actionable summary of how they can consciously use their Steersman to satisfy their Moon's needs in their daily life.
 +
-+| Steersman House Focus (George) | Reigning Need (Tyl) | Unified Counseling Strategy |
-+|---|---|---|
-+| 1st House (The Helm) | Aries (Need to be Important) | The native must physically project their personal vitality and lead independent projects directly to validate their ego [cite: 6, 21, 33]. |
-+| 2nd House (Gate of Hades) | Taurus (Need for Stability) | Financial management and personal resource acquisition are directed toward securing physical and emotional predictability [cite: 4, 14]. |
-+| 9th House (God / Exploration) | Sagittarius (Need to Expand) | The life path is steered toward higher education, travel, or philosophy to satisfy an ongoing hunger for mental expansion [cite: 5, 7, 19]. |
-+| 10th House (Midheaven) | Cancer (Need for Sanctuary) | The career and public role must be structured around nurturing, caretaking, or establishing safe spaces for others [cite: 9, 19, 25]. |
-+| 11th House (Good Spirit) | Leo (Need for Appreciation) | The native steers their life toward community involvement, but must actively heal any "not lovable" Pain Body to receive authentic applause [cite: 5, 15]. |
-+
-+Navigating the Reigning Need into the Physical World: Synthesis in Action
-+The true synthesis of these two methods lies in utilizing the Steersman as the physical agent that executes the commands of the Reigning Need [cite: 5, 32]. The Steersman's house placement represents the where of the life, while the Reigning Need represents the why [cite: 6, 19].
-+
-+When an astrologer consults with a client, the conversation should shift from a passive observation of planetary placements to an empowering, active navigation of the chart [cite: 32]. If a client presents with Gemini Rising, Mercury in Pisces in the 10th House, and has an Aries Sun with a Cancer Moon, the synthesis reveals that:
-+- The Somatic Expression (The Helm): The client naturally presents as a highly communicative, mentally active individual (Gemini) [cite: 25].
-+- The Core Motivation (Solar-Lunar Blend): They possess a deep, emotional craving for absolute security, emotional safety, and a protected sanctuary (Cancer Moon), which is fueled by a courageous, pioneering urge to take action and initiate new pathways (Aries Sun) [cite: 9, 10].
-+- The Steersman’s Mission: The conscious mind and decision-making capacity (Mercury) are drawn to carve out a visible, public career path (Tenth House) [cite: 19, 25]. Because Mercury is in its detriment and fall, this career must be built upon non-traditional, intuitive, compassionate, or highly artistic modalities rather than rigid corporate structures [cite: 25, 26].
-+- The Navigational Synthesis: The astrologer empowers the client by reframing their vocational path [cite: 32]. The client is shown that their public career (Tenth House) is the exact physical vehicle they must use to construct and protect their emotional sanctuary (Cancer Moon) [cite: 10, 19, 25]. By utilizing their intuitive, empathetic voice (Mercury in Pisces) to communicate, counsel, or create in a public space, they satisfy their reigning need for emotional validation and safety [cite: 9, 10, 25]. Any developmental tension—such as the square between their Aries Sun and Cancer Moon—is reframed not as a block, but as the fuel that gives them the courage to advocate for vulnerable spaces, successfully bringing their inner reigning need into visible, material realization [cite: 1, 10].
-+</methodology_guide>
-+
-+<execution_workflow>
-+To analyze a chart, you must follow these steps EXACTLY:
-+1. Execute the `calculate_birth_chart` tool.
-+2. Execute the `query_modern_astrology_books` tool 1 to 3 times to research the Steersman's house placement, the Solar/Lunar signs, or hard aspects.
-+3. Perform an internal diagnostic inside <scratchpad> tags.
-+4. Output the final reading inside <final_reading> tags.
-+</execution_workflow>
-+
-+<chain_of_thought_enforcement>
-+BEFORE outputting the final reading, you MUST open a <scratchpad> tag and explicitly map out the 4 Steps from the Navigational Blueprint Step-by-Step Synthesis:
-+- [ ] STEP 1: IDENTIFY THE PSYCHOLOGICAL ENGINE (Sun -> Moon blend)
-+- [ ] STEP 2: ASSESS THE VESSEL AND LIFE DIRECTION (Ascendant -> Chart Ruler House & Dignity)
-+- [ ] STEP 3: IDENTIFY BLIND SPOTS AND TENSION NETWORKS (Aversions & Hard Aspects)
-+- [ ] STEP 4: UNIFY (How to steer the Reigning Need to the Destination)
-+</chain_of_thought_enforcement>
-+
-+<output_format>
-+Your final output MUST be wrapped in <final_reading> tags and contain exactly 4 parts:
-+Part 1: The Psychological Engine (Solar-Lunar Blend)
-+Part 2: The Vessel and The Steersman (Life Direction)
-+Part 3: Developmental Tension & The Pain Body
-+Part 4: The Unified Path (Counseling Strategy: How they use their Steersman to satisfy their Moon)
-+</output_format>
-diff --git a/rag/jyotish_mcp_server.py b/rag/jyotish_mcp_server.py
-index 1124802..9258b8b 100644
---- a/rag/jyotish_mcp_server.py
-+++ b/rag/jyotish_mcp_server.py
-@@ -20,43 +20,10 @@ from jyotish.generate_jyotish import generate_vedic_chart
- from langchain_chroma import Chroma
- from langchain_huggingface import HuggingFaceEmbeddings
- 
--JYOTISH_INSTRUCTIONS = """
--You are a Master Jyotishi (Senior Vedic Astrologer) operating Astra's Parashari Vedic Astrology System.
--You operate purely within the Parashari system using Sidereal signs, Lahiri Ayanamsa, and Vimshottari Dashas.
--NEVER use Western astrology, outer planets (Uranus, Neptune, Pluto), or psychological frameworks like Noel Tyl / Demetra George.
-+PROMPT_PATH = os.path.join(BASE_DIR, "prompts", "jyotish_analysis.xml")
-+with open(PROMPT_PATH, "r", encoding="utf-8") as f:
-+    JYOTISH_INSTRUCTIONS = f.read()
- 
--==============================================================================
--VEDIC / JYOTISH ASTROLOGY WORKFLOW
--==============================================================================
--When a user requests a Vedic / Jyotish reading, follow this 4-Step ReAct workflow:
--
--Step 1 (Action - Vedic Calculation):
--  Call `calculate_vedic_chart` with native's birth details (latitude, longitude, timezone offset) to compute True Chitra Paksha (Lahiri) Ayanamsa, Panchanga, D1 Rasi, D9 Navamsa, and Vimshottari Dasha timeline.
--
--Step 2 (Reasoning - Target Identification):
--  Analyze the JSON and isolate key Jyotish placements:
--  - Lagna & Moon Nakshatra: Ascendant sign/nakshatra, Moon sign/nakshatra/pada.
--  - D9 Navamsa: Soul purpose, hidden strengths, and planet dignities in D9.
--  - Dasha Timeline: Running Mahadasha, Antardasha, and Pratyantardasha periods.
--
--Step 3 (Action - Classical & VedAstro Book Research):
--  Call `query_vedic_astrology_books` 1 to 3 times to retrieve authentic classical shlokas (BPHS, Brihat Jataka) and VedAstro rules.
--
--Step 4 (Synthesis - Empowering 4-Part Vedic Reading):
--  Synthesize an empowering 4-part reading focusing on Karma, Dharma, and Timelines, translating ancient fatalistic language into modern constructive guidance:
--  
--  Part 1: Panchanga & Lagna Architecture
--  (Explain Lagna sign, Nakshatra, Moon Pada, Tithi, and core physical/mental temperament).
--  
--  Part 2: D1 Rasi & D9 Navamsa Placements
--  (Analyze dominant planets in D1 Rasi and their internal soul evolution in D9 Navamsa).
--  
--  Part 3: Vimshottari Dasha Timeline & Karmic Evolution
--  (Analyze current running Dasha period, timing of major life shifts, and active karmic lessons).
--  
--  Part 4: Practical Dharma & Remedies
--  (Offer constructive guidance for growth, ethical living, emotional resilience, and boundary management).
--"""
- 
- try:
-     mcp = FastMCP(
-diff --git a/rag/western_mcp_server.py b/rag/western_mcp_server.py
-index 6adffcb..eacda4a 100644
---- a/rag/western_mcp_server.py
-+++ b/rag/western_mcp_server.py
-@@ -20,32 +20,10 @@ from western.generate_chart import generate_ai_json
- from langchain_chroma import Chroma
- from langchain_huggingface import HuggingFaceEmbeddings
- 
--WESTERN_INSTRUCTIONS = """
--You are a Principal AI Architect and Master Astrologer operating Astra's Western Psychological Astrology System.
--You MUST strictly utilize the methodologies from two canonical sources:
--1. Demetra George's "Astrology and the Authentic Self" (The Ascendant as the Helm/Ship, and its Ruling Planet as the Steersman).
--2. Noel Tyl's "Synthesis & Counseling in Astrology" (The Solar-Lunar Blend and Developmental Tension).
-+PROMPT_PATH = os.path.join(BASE_DIR, "prompts", "western_analysis.xml")
-+with open(PROMPT_PATH, "r", encoding="utf-8") as f:
-+    WESTERN_INSTRUCTIONS = f.read()
- 
--==============================================================================
--WESTERN / PSYCHOLOGICAL ASTROLOGY WORKFLOW
--==============================================================================
--When a user requests a Western chart reading, follow this 4-Step ReAct workflow:
--
--Step 1 (Action - Mathematical Calculation):
--  Call `calculate_birth_chart` with native's birth details to compute exact tropical placements, Whole Sign houses, dignities, sect, and hermetic lots.
--
--Step 2 (Reasoning - Professional Synthesis Application):
--  Do not read placements in a silo. Apply canonical psychological frameworks:
--  - Demetra George's Steersman Model: Identify the Ascendant (the Ship/Interface) and its Ruling Planet (the Captain/Steersman). Where is the Captain navigating?
--  - Noel Tyl's Solar-Lunar Blend: Combine the Sun (Core Drive) and Moon (Reigning Emotional Need). Contrast this inner emotional reality with the Ascendant's outer social mask.
--  - Developmental Tension: Identify tightest hard aspects (squares/oppositions) causing psychological friction, along with Pain Body (Detriment/Fall) and Flow State (Jupiter/Fortune).
--
--Step 3 (Action - Western Book Research):
--  Call `query_modern_astrology_books` 1 to 3 times for specific psychological interpretations of the Chart Ruler, Solar-Lunar blend, and hard aspects.
--
--Step 4 (Synthesis - Modern Psychological Reading):
--  Synthesize an empathetic, step-by-step psychological reading. Contrast the outer interface (Ascendant) with the inner reality (Sun/Moon).
--"""
- 
- try:
-     mcp = FastMCP(
-diff --git a/western/generate_chart.py b/western/generate_chart.py
-index f347f0a..547f503 100644
---- a/western/generate_chart.py
-+++ b/western/generate_chart.py
-@@ -133,11 +133,824 @@ def get_prenatal_syzygy(year, month, day, hour, minute, tz_str) -> dict:
-     syz_deg = swe.calc_ut(exact_t, swe.MOON if target_angle == 180.0 else swe.SUN)[0][0]
-     return {"type": "Full Moon" if target_angle == 180.0 else "New Moon", "sign": ZODIAC_SIGNS[int(syz_deg // 30)], "degree_0_to_30": round(syz_deg % 30, 2)}
- 
-+def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_ruler):
-+    """Constructs a simple, elegant warm-ivory HTML dashboard with a large Natal Wheel, zodiac sign explanations, and interactive tooltips."""
-+    payload_json = json.dumps(ai_payload, indent=2)
-+    native = ai_payload.get("native_details", {})
-+    planets = ai_payload.get("traditional_planets", {})
-+    aspects = ai_payload.get("whole_sign_aspects", [])
-+    lots = ai_payload.get("7_hermetic_lots", {})
-+    syzygy = ai_payload.get("prenatal_syzygy", {})
-+
-+    # Detailed Zodiac Sign Definitions & Explanations
-+    zodiac_info = {
-+        "Ari": {"name": "Aries", "symbol": "♈", "element": "Fire", "modality": "Cardinal", "ruler": "Mars", "desc": "The pioneer. Aries brings bold initiative, direct action, and a pioneering drive to start new chapters."},
-+        "Tau": {"name": "Taurus", "symbol": "♉", "element": "Earth", "modality": "Fixed", "ruler": "Venus", "desc": "The builder. Taurus seeks tangible security, sensory beauty, and steady, unwavering endurance."},
-+        "Gem": {"name": "Gemini", "symbol": "♊", "element": "Air", "modality": "Mutable", "ruler": "Mercury", "desc": "The messenger. Gemini thrives on mental agility, connecting diverse ideas, and adaptable communication."},
-+        "Can": {"name": "Cancer", "symbol": "♋", "element": "Water", "modality": "Cardinal", "ruler": "Moon", "desc": "The protector. Cancer guards inner emotional sanctuaries, guided by deep intuition and protective care."},
-+        "Leo": {"name": "Leo", "symbol": "♌", "element": "Fire", "modality": "Fixed", "ruler": "Sun", "desc": "The sovereign. Leo shines with radiant self-expression, creative warmth, and noble leadership."},
-+        "Vir": {"name": "Virgo", "symbol": "♍", "element": "Earth", "modality": "Mutable", "ruler": "Mercury", "desc": "The craftsperson. Virgo refines and perfects through careful discernment, practical analysis, and service."},
-+        "Lib": {"name": "Libra", "symbol": "♎", "element": "Air", "modality": "Cardinal", "ruler": "Venus", "desc": "The diplomat. Libra balances opposing forces to create aesthetic harmony, relational equity, and justice."},
-+        "Sco": {"name": "Scorpio", "symbol": "♏", "element": "Water", "modality": "Fixed", "ruler": "Mars", "desc": "The alchemist. Scorpio penetrates beneath surfaces to uncover truth, emotional power, and deep transformation."},
-+        "Sag": {"name": "Sagittarius", "symbol": "♐", "element": "Fire", "modality": "Mutable", "ruler": "Jupiter", "desc": "The seeker. Sagittarius expands horizons through philosophical questing, higher truth, and optimistic exploration."},
-+        "Cap": {"name": "Capricorn", "symbol": "♑", "element": "Earth", "modality": "Fixed", "ruler": "Saturn", "desc": "The architect. Capricorn builds enduring structures through patient discipline, long-term focus, and mastery."},
-+        "Aqu": {"name": "Aquarius", "symbol": "♒", "element": "Air", "modality": "Fixed", "ruler": "Saturn", "desc": "The visionary. Aquarius perceives future possibilities, promoting intellectual independence and community vision."},
-+        "Pis": {"name": "Pisces", "symbol": "♓", "element": "Water", "modality": "Mutable", "ruler": "Jupiter", "desc": "The mystic. Pisces dissolves rigid boundaries to connect with universal empathy, artistic imagination, and spirit."}
-+    }
-+
-+    # Identify key active signs in this specific chart
-+    key_sign_keys = []
-+    asc_s = native.get('ascendant')
-+    if asc_s and asc_s in zodiac_info: key_sign_keys.append(asc_s)
-+    
-+    for p_name in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter", "Saturn"]:
-+        if p_name in planets:
-+            p_sign = planets[p_name].get("sign")
-+            if p_sign and p_sign in zodiac_info and p_sign not in key_sign_keys:
-+                key_sign_keys.append(p_sign)
-+
-+    # Build Zodiac Explanations HTML Cards
-+    zodiac_explained_html = ""
-+    for s_key in key_sign_keys:
-+        info = zodiac_info[s_key]
-+        role = []
-+        if s_key == asc_s: role.append("Ascendant (Rising Sign)")
-+        if "Sun" in planets and planets["Sun"].get("sign") == s_key: role.append("Sun Sign")
-+        if "Moon" in planets and planets["Moon"].get("sign") == s_key: role.append("Moon Sign")
-+        
-+        role_tag = f"<span class='zodiac-role-tag'>{' • '.join(role)}</span>" if role else ""
-+
-+        zodiac_explained_html += f"""
-+        <div class="zodiac-card">
-+            <div class="zodiac-header">
-+                <div class="zodiac-symbol">{info.get('symbol', '✨')}</div>
-+                <div>
-+                    <h4 class="zodiac-title">{info['name']} ({s_key})</h4>
-+                    {role_tag}
-+                </div>
-+            </div>
-+            <div class="zodiac-meta">
-+                <span class="zodiac-pill pill-element">{info['element']}</span>
-+                <span class="zodiac-pill pill-modality">{info['modality']}</span>
-+                <span class="zodiac-pill pill-ruler">Ruled by {info['ruler']}</span>
-+            </div>
-+            <p class="zodiac-desc">{info['desc']}</p>
-+        </div>
-+        """
-+
-+    # Definitions for tooltips
-+    lot_descriptions = {
-+        "Lot_of_Fortune": "Physical vitality, body health, financial luck, and material circumstances.",
-+        "Lot_of_Spirit": "Mental purpose, career direction, soul intentions, and active choices.",
-+        "Lot_of_Necessity": "Karmic constraints, unavoidable duties, and tests of endurance.",
-+        "Lot_of_Eros": "Emotional passions, romantic attraction, and personal desires.",
-+        "Lot_of_Courage": "Competitive drive, bravery, self-defense, and bold enterprise.",
-+        "Lot_of_Victory": "Triumph over adversity, achievement, and divine favor.",
-+        "Lot_of_Nemesis": "Hidden obstacles, shadow integration, discipline, and karmic boundaries."
-+    }
-+
-+    # Generate planet rows
-+    planet_rows_html = ""
-+    for planet, data in planets.items():
-+        dignity = data.get("essential_dignity", "Peregrine")
-+        dignity_class = "dignity-peregrine"
-+        if "Domicile" in dignity: dignity_class = "dignity-domicile"
-+        elif "Exaltation" in dignity: dignity_class = "dignity-exaltation"
-+        elif "Detriment" in dignity: dignity_class = "dignity-detriment"
-+        elif "Fall" in dignity: dignity_class = "dignity-fall"
-+
-+        phasis = data.get("solar_phasis", "Phasis Clear")
-+        phasis_class = "phasis-clear"
-+        if "Cazimi" in phasis: phasis_class = "phasis-cazimi"
-+        elif "Combust" in phasis: phasis_class = "phasis-combust"
-+        elif "Beams" in phasis: phasis_class = "phasis-beams"
-+
-+        retro = " <span class='retro-tag' title='Retrograde (moving backward in sky)'>(R)</span>" if data.get("is_retrograde") else ""
-+
-+        planet_rows_html += f"""
-+        <tr class="planet-row" data-planet="{planet}">
-+            <td><strong class="planet-name">{planet}</strong>{retro}</td>
-+            <td><span class="badge sign-badge">{data.get('sign')}</span></td>
-+            <td>{data.get('whole_sign_house', '').replace('_', ' ')}</td>
-+            <td>{data.get('degree_0_to_30')}°</td>
-+            <td><span class="badge {dignity_class} tooltip-term" data-tooltip="Essential Dignity describes how comfortably a planet operates in its sign.">{dignity}</span></td>
-+            <td><span class="badge {phasis_class} tooltip-term" data-tooltip="Solar Phasis indicates visibility relative to the Sun.">{phasis}</span></td>
-+            <td><span class="term-ruler">{data.get('egyptian_term_ruler')}</span></td>
-+        </tr>
-+        """
-+
-+    # Generate aspect chips
-+    aspect_chips_html = ""
-+    if aspects:
-+        for asp in aspects:
-+            atype = asp.get("aspect_type", "").lower()
-+            symbol = "☌"
-+            if atype == "sextile": symbol = "⚹"
-+            elif atype == "square": symbol = "◽"
-+            elif atype == "trine": symbol = "△"
-+            elif atype == "opposition": symbol = "☍"
-+            
-+            aspect_chips_html += f"""
-+            <div class="aspect-chip aspect-{atype}">
-+                <span class="asp-planets">{asp.get('planet_1')}</span>
-+                <span class="asp-symbol">{symbol}</span>
-+                <span class="asp-type">{asp.get('aspect_type', '').title()}</span>
-+                <span class="asp-planets">{asp.get('planet_2')}</span>
-+            </div>
-+            """
-+    else:
-+        aspect_chips_html = "<p class='no-data'>No major whole sign aspects found.</p>"
-+
-+    # Generate lot cards
-+    lot_cards_html = ""
-+    for lot_key, lot_data in lots.items():
-+        clean_name = lot_key.replace('_', ' ')
-+        desc = lot_descriptions.get(lot_key, "Hermetic Lot calculation.")
-+        lot_cards_html += f"""
-+        <div class="lot-card">
-+            <div class="lot-header">
-+                <h4>{clean_name}</h4>
-+                <span class="lot-house">{lot_data.get('whole_sign_house', '').replace('_', ' ')}</span>
-+            </div>
-+            <div class="lot-body">
-+                <span class="badge sign-badge">{lot_data.get('sign')}</span>
-+                <span class="lot-deg">{lot_data.get('degree_0_to_30')}°</span>
-+            </div>
-+            <p class="lot-desc">{desc}</p>
-+        </div>
-+        """
-+
-+    html_template = f"""<!DOCTYPE html>
-+<html lang="en">
-+<head>
-+    <meta charset="UTF-8">
-+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-+    <title>Natal Astrology Dashboard - {subject_name}</title>
-+    <!-- Elegant Serif and Clean Sans Fonts -->
-+    <link rel="preconnect" href="https://fonts.googleapis.com">
-+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-+    <style>
-+        :root {{
-+            --bg-body: #fcfbf9;
-+            --bg-card: #ffffff;
-+            --border-subtle: #e2e8f0;
-+            --border-gold: #cbd5e1;
-+            --text-heading: #0f172a;
-+            --text-body: #334155;
-+            --text-muted: #64748b;
-+            --accent-gold: #b45309;
-+            --accent-emerald: #047857;
-+            --accent-teal: #0f766e;
-+            --accent-rose: #be123c;
-+            --accent-indigo: #4338ca;
-+        }}
-+
-+        * {{
-+            box-sizing: border-box;
-+            margin: 0;
-+            padding: 0;
-+        }}
-+
-+        body {{
-+            background-color: var(--bg-body);
-+            color: var(--text-body);
-+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-+            min-height: 100vh;
-+            padding: 36px 20px;
-+            line-height: 1.6;
-+        }}
-+
-+        /* Header */
-+        .header-container {{
-+            max-width: 1100px;
-+            margin: 0 auto 36px auto;
-+            text-align: center;
-+            padding-bottom: 24px;
-+            border-bottom: 1px solid var(--border-subtle);
-+        }}
-+
-+        .header-title {{
-+            font-family: 'Cormorant Garamond', Georgia, serif;
-+            font-size: 2.75rem;
-+            font-weight: 600;
-+            color: var(--text-heading);
-+            letter-spacing: -0.01em;
-+            margin-bottom: 8px;
-+        }}
-+
-+        .header-subtitle {{
-+            font-size: 0.95rem;
-+            color: var(--text-muted);
-+            font-weight: 400;
-+            margin-bottom: 16px;
-+        }}
-+
-+        .header-badges {{
-+            display: flex;
-+            justify-content: center;
-+            gap: 12px;
-+            flex-wrap: wrap;
-+        }}
-+
-+        .header-badge {{
-+            background: #f1f5f9;
-+            color: var(--text-heading);
-+            border: 1px solid var(--border-subtle);
-+            padding: 5px 14px;
-+            border-radius: 20px;
-+            font-size: 0.85rem;
-+            font-weight: 500;
-+        }}
-+
-+        /* Main Container */
-+        .main-container {{
-+            max-width: 1100px;
-+            margin: 0 auto;
-+            display: flex;
-+            flex-direction: column;
-+            gap: 36px;
-+        }}
-+
-+        /* Large Natal Wheel Section */
-+        .hero-wheel-section {{
-+            background: var(--bg-card);
-+            border: 1px solid var(--border-subtle);
-+            border-radius: 20px;
-+            padding: 32px 24px;
-+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-+            text-align: center;
-+        }}
-+
-+        .section-heading {{
-+            font-family: 'Cormorant Garamond', Georgia, serif;
-+            font-size: 1.8rem;
-+            font-weight: 600;
-+            color: var(--text-heading);
-+            margin-bottom: 6px;
-+            display: flex;
-+            align-items: center;
-+            justify-content: center;
-+            gap: 10px;
-+        }}
-+
-+        .section-sub {{
-+            font-size: 0.88rem;
-+            color: var(--text-muted);
-+            margin-bottom: 24px;
-+        }}
-+
-+        .large-svg-wrapper {{
-+            width: 100%;
-+            max-width: 920px;
-+            margin: 0 auto;
-+            display: flex;
-+            justify-content: center;
-+            align-items: center;
-+            background: #ffffff;
-+            border-radius: 16px;
-+            padding: 16px;
-+            border: 1px solid #f1f5f9;
-+        }}
-+
-+        .large-svg-wrapper svg {{
-+            width: 100%;
-+            height: auto;
-+            max-height: 800px;
-+        }}
-+
-+        /* Hover Glow Effect on SVG */
-+        .svg-highlight {{
-+            filter: drop-shadow(0 0 10px rgba(67, 56, 202, 0.6)) brightness(1.2) !important;
-+            transition: all 0.2s ease;
-+        }}
-+
-+        /* Section Cards */
-+        .card {{
-+            background: var(--bg-card);
-+            border: 1px solid var(--border-subtle);
-+            border-radius: 20px;
-+            padding: 28px;
-+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
-+        }}
-+
-+        /* Zodiac Signs Explained Section */
-+        .zodiac-explained-grid {{
-+            display: grid;
-+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-+            gap: 20px;
-+            margin-top: 16px;
-+        }}
-+
-+        .zodiac-card {{
-+            background: #fafaf9;
-+            border: 1px solid #e7e5e4;
-+            border-radius: 14px;
-+            padding: 18px;
-+            transition: border-color 0.2s ease, transform 0.2s ease;
-+        }}
-+
-+        .zodiac-card:hover {{
-+            border-color: #d6d3d1;
-+            transform: translateY(-2px);
-+        }}
-+
-+        .zodiac-header {{
-+            display: flex;
-+            align-items: center;
-+            gap: 12px;
-+            margin-bottom: 12px;
-+        }}
-+
-+        .zodiac-symbol {{
-+            font-size: 2rem;
-+            font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji', sans-serif;
-+            color: var(--accent-gold);
-+            line-height: 1;
-+        }}
-+
-+        .zodiac-title {{
-+            font-family: 'Cormorant Garamond', Georgia, serif;
-+            font-size: 1.3rem;
-+            font-weight: 700;
-+            color: var(--text-heading);
-+        }}
-+
-+        .zodiac-role-tag {{
-+            display: inline-block;
-+            font-size: 0.72rem;
-+            color: var(--accent-indigo);
-+            font-weight: 600;
-+            text-transform: uppercase;
-+            letter-spacing: 0.04em;
-+        }}
-+
-+        .zodiac-meta {{
-+            display: flex;
-+            gap: 6px;
-+            flex-wrap: wrap;
-+            margin-bottom: 10px;
-+        }}
-+
-+        .zodiac-pill {{
-+            font-size: 0.72rem;
-+            padding: 2px 8px;
-+            border-radius: 12px;
-+            font-weight: 500;
-+            background: #f1f5f9;
-+            color: var(--text-muted);
-+        }}
-+
-+        .zodiac-desc {{
-+            font-size: 0.85rem;
-+            color: var(--text-body);
-+            line-height: 1.45;
-+        }}
-+
-+        /* Core Architecture Grid */
-+        .arch-grid {{
-+            display: grid;
-+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-+            gap: 16px;
-+        }}
-+
-+        .arch-item {{
-+            background: #f8fafc;
-+            border: 1px solid var(--border-subtle);
-+            border-radius: 14px;
-+            padding: 16px;
-+        }}
-+
-+        .arch-label {{
-+            font-size: 0.75rem;
-+            color: var(--text-muted);
-+            text-transform: uppercase;
-+            letter-spacing: 0.05em;
-+            margin-bottom: 4px;
-+            display: flex;
-+            align-items: center;
-+            gap: 6px;
-+        }}
-+
-+        .arch-val {{
-+            font-family: 'Cormorant Garamond', Georgia, serif;
-+            font-size: 1.4rem;
-+            font-weight: 700;
-+            color: var(--text-heading);
-+        }}
-+
-+        .arch-sub {{
-+            font-size: 0.8rem;
-+            color: var(--text-muted);
-+            margin-top: 2px;
-+        }}
-+
-+        /* Help Icon & Tooltip */
-+        .help-icon {{
-+            display: inline-flex;
-+            justify-content: center;
-+            align-items: center;
-+            width: 16px;
-+            height: 16px;
-+            border-radius: 50%;
-+            background: #e2e8f0;
-+            color: var(--text-muted);
-+            font-size: 10px;
-+            font-weight: bold;
-+            cursor: pointer;
-+        }}
-+
-+        .help-icon:hover {{
-+            background: var(--text-heading);
-+            color: #ffffff;
-+        }}
-+
-+        .tooltip-term {{
-+            cursor: help;
-+            border-bottom: 1px dotted var(--text-muted);
-+        }}
-+
-+        #floating-tooltip {{
-+            position: fixed;
-+            background: #0f172a;
-+            color: #f8fafc;
-+            padding: 10px 14px;
-+            border-radius: 8px;
-+            font-size: 0.85rem;
-+            max-width: 300px;
-+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-+            pointer-events: none;
-+            z-index: 9999;
-+            display: none;
-+            line-height: 1.4;
-+        }}
-+
-+        /* Table Design */
-+        .table-responsive {{
-+            overflow-x: auto;
-+        }}
-+
-+        table {{
-+            width: 100%;
-+            border-collapse: collapse;
-+            text-align: left;
-+            font-size: 0.9rem;
-+        }}
-+
-+        th {{
-+            background: #f8fafc;
-+            color: var(--text-muted);
-+            font-weight: 600;
-+            padding: 12px 14px;
-+            border-bottom: 2px solid var(--border-subtle);
-+            text-transform: uppercase;
-+            font-size: 0.75rem;
-+            letter-spacing: 0.05em;
-+        }}
-+
-+        td {{
-+            padding: 14px;
-+            border-bottom: 1px solid var(--border-subtle);
-+            transition: background 0.2s ease;
-+        }}
-+
-+        .planet-row {{
-+            cursor: pointer;
-+        }}
-+
-+        .planet-row:hover, .planet-row.row-highlight {{
-+            background: #f1f5f9 !important;
-+        }}
-+
-+        /* Badges */
-+        .badge {{
-+            display: inline-block;
-+            padding: 3px 10px;
-+            border-radius: 6px;
-+            font-size: 0.78rem;
-+            font-weight: 500;
-+        }}
-+
-+        .sign-badge {{ background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }}
-+        .dignity-domicile {{ background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }}
-+        .dignity-exaltation {{ background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }}
-+        .dignity-detriment {{ background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }}
-+        .dignity-fall {{ background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }}
-+        .dignity-peregrine {{ background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; }}
-+
-+        .phasis-cazimi {{ background: #fefce8; color: #a16207; border: 1px solid #fef08a; font-weight: 600; }}
-+        .phasis-combust {{ background: #fff1f2; color: #be123c; border: 1px solid #fecdd3; }}
-+        .phasis-beams {{ background: #fff7ed; color: #c2410c; border: 1px solid #ffedd5; }}
-+        .phasis-clear {{ background: #f8fafc; color: #64748b; }}
-+
-+        /* Aspects Grid */
-+        .aspects-container {{
-+            display: flex;
-+            flex-wrap: wrap;
-+            gap: 12px;
-+        }}
-+
-+        .aspect-chip {{
-+            display: inline-flex;
-+            align-items: center;
-+            gap: 8px;
-+            padding: 8px 16px;
-+            border-radius: 10px;
-+            font-size: 0.88rem;
-+            background: #f8fafc;
-+            border: 1px solid var(--border-subtle);
-+        }}
-+
-+        .asp-symbol {{ font-weight: bold; font-size: 1.1rem; }}
-+        .aspect-trine .asp-symbol {{ color: var(--accent-emerald); }}
-+        .aspect-sextile .asp-symbol {{ color: var(--accent-teal); }}
-+        .aspect-square .asp-symbol {{ color: var(--accent-gold); }}
-+        .aspect-opposition .asp-symbol {{ color: var(--accent-rose); }}
-+        .aspect-conjunction .asp-symbol {{ color: var(--accent-indigo); }}
-+
-+        /* Hermetic Lots Grid */
-+        .lots-grid {{
-+            display: grid;
-+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-+            gap: 16px;
-+        }}
-+
-+        .lot-card {{
-+            background: #f8fafc;
-+            border: 1px solid var(--border-subtle);
-+            border-radius: 14px;
-+            padding: 16px;
-+        }}
-+
-+        .lot-header {{
-+            display: flex;
-+            justify-content: space-between;
-+            align-items: center;
-+            margin-bottom: 8px;
-+        }}
-+
-+        .lot-header h4 {{
-+            font-family: 'Cormorant Garamond', Georgia, serif;
-+            font-size: 1.15rem;
-+            color: var(--text-heading);
-+            font-weight: 700;
-+        }}
-+
-+        .lot-house {{
-+            font-size: 0.75rem;
-+            color: var(--text-muted);
-+        }}
-+
-+        .lot-body {{
-+            display: flex;
-+            align-items: center;
-+            gap: 8px;
-+            margin-bottom: 8px;
-+        }}
-+
-+        .lot-desc {{
-+            font-size: 0.8rem;
-+            color: var(--text-body);
-+            line-height: 1.4;
-+        }}
-+    </style>
-+</head>
-+<body>
-+
-+    <!-- Floating Dynamic Tooltip -->
-+    <div id="floating-tooltip"></div>
-+
-+    <!-- Header Section -->
-+    <header class="header-container">
-+        <h1 class="header-title">Astrological Dashboard</h1>
-+        <p class="header-subtitle">Subject: <strong>{subject_name}</strong> • Hellenistic Western Astrology (Tropical Zodiac & Whole Sign Houses)</p>
-+        <div class="header-badges">
-+            <span class="header-badge">Ascendant: {native.get('ascendant')}</span>
-+            <span class="header-badge">Chart Ruler: {chart_ruler}</span>
-+            <span class="header-badge">Sect: {native.get('sect')}</span>
-+        </div>
-+    </header>
-+
-+    <!-- Main Content Container -->
-+    <main class="main-container">
-+        
-+        <!-- Large Natal Wheel Section -->
-+        <section class="hero-wheel-section">
-+            <h2 class="section-heading"><span>🪐</span> Natal Wheel</h2>
-+            <p class="section-sub">Hover over any planet glyph in the wheel or table to inspect degrees, dignities, and aspects.</p>
-+            <div class="large-svg-wrapper">
-+                {svg_raw_xml}
-+            </div>
-+        </section>
-+
-+        <!-- Zodiac Signs Explained Section -->
-+        <section class="card">
-+            <h2 class="section-heading"><span>✨</span> Dominant Zodiac Signs Explained</h2>
-+            <p class="section-sub">Overview of the core zodiac archetypes actively influencing this chart.</p>
-+            <div class="zodiac-explained-grid">
-+                {zodiac_explained_html}
-+            </div>
-+        </section>
-+
-+        <!-- Core Architecture Card -->
-+        <section class="card">
-+            <h2 class="section-heading"><span>🏛️</span> Core Architecture</h2>
-+            <p class="section-sub">The structural foundation of the birth chart according to Hellenistic principles.</p>
-+            <div class="arch-grid">
-+                <div class="arch-item">
-+                    <div class="arch-label">
-+                        Ascendant (Rising Sign)
-+                        <span class="help-icon tooltip-term" data-tooltip="Ascendant (the zodiac sign rising on the eastern horizon at birth, representing your physical orientation and outer social interface).">?</span>
-+                    </div>
-+                    <div class="arch-val">{native.get('ascendant')}</div>
-+                    <div class="arch-sub">The Ship & Interface</div>
-+                </div>
-+
-+                <div class="arch-item">
-+                    <div class="arch-label">
-+                        Chart Ruler (Captain)
-+                        <span class="help-icon tooltip-term" data-tooltip="Chart Ruler (the ruling planet of your Ascendant sign, acting as the Steersman/Captain navigating your life path).">?</span>
-+                    </div>
-+                    <div class="arch-val">{chart_ruler}</div>
-+                    <div class="arch-sub">Steersman of the Helm</div>
-+                </div>
-+
-+                <div class="arch-item">
-+                    <div class="arch-label">
-+                        Sect
-+                        <span class="help-icon tooltip-term" data-tooltip="Sect (determines whether Sun or Moon leads the chart. A Night Chart means Moon, Venus, and Mars are primary).">?</span>
-+                    </div>
-+                    <div class="arch-val">{native.get('sect')}</div>
-+                    <div class="arch-sub">Diurnal/Nocturnal Light</div>
-+                </div>
-+
-+                <div class="arch-item">
-+                    <div class="arch-label">
-+                        House System
-+                        <span class="help-icon tooltip-term" data-tooltip="Whole Sign Houses (WSH) (classical system where the entire Ascendant sign forms the 1st House, and each subsequent sign is a 30° house).">?</span>
-+                    </div>
-+                    <div class="arch-val">Whole Sign Houses</div>
-+                    <div class="arch-sub">Classical 30° Division</div>
-+                </div>
-+
-+                <div class="arch-item">
-+                    <div class="arch-label">
-+                        Prenatal Syzygy
-+                        <span class="help-icon tooltip-term" data-tooltip="Prenatal Syzygy (the exact lunation—Full or New Moon—immediately preceding birth, showing foundational soul imprint).">?</span>
-+                    </div>
-+                    <div class="arch-val">{syzygy.get('type', 'Unknown')}</div>
-+                    <div class="arch-sub">{syzygy.get('sign', '')} {syzygy.get('degree_0_to_30', '')}°</div>
-+                </div>
-+            </div>
-+        </section>
-+
-+        <!-- Planetary Placements Card -->
-+        <section class="card">
-+            <h2 class="section-heading"><span>⚡</span> Planetary Placements & Dignities</h2>
-+            <p class="section-sub">Hover over any row to highlight the planet's exact location on the Natal Wheel above.</p>
-+            <div class="table-responsive">
-+                <table>
-+                    <thead>
-+                        <tr>
-+                            <th>Planet</th>
-+                            <th>Sign</th>
-+                            <th>House</th>
-+                            <th>Degree</th>
-+                            <th>
-+                                Dignity
-+                                <span class="help-icon tooltip-term" data-tooltip="Essential Dignity (indicates how comfortably a planet operates in its sign: Domicile=Home, Exaltation=Honored, Detriment=Exiled, Fall=Weakened, Peregrine=Wandering).">?</span>
-+                            </th>
-+                            <th>
-+                                Phasis
-+                                <span class="help-icon tooltip-term" data-tooltip="Solar Phasis (visibility relative to the Sun: Cazimi=In Heart of Sun, Combust=Hidden by rays, Under Beams=Partially obscured).">?</span>
-+                            </th>
-+                            <th>Term Ruler</th>
-+                        </tr>
-+                    </thead>
-+                    <tbody>
-+                        {planet_rows_html}
-+                    </tbody>
-+                </table>
-+            </div>
-+        </section>
-+
-+        <!-- Major Aspects Card -->
-+        <section class="card">
-+            <h2 class="section-heading"><span>🔄</span> Major Aspects (Friction & Flow)</h2>
-+            <p class="section-sub">Whole-sign planetary geometry creating dynamic harmony or psychological tension.</p>
-+            <div class="aspects-container">
-+                {aspect_chips_html}
-+            </div>
-+        </section>
-+
-+        <!-- Hermetic Lots Card -->
-+        <section class="card">
-+            <h2 class="section-heading"><span>🔮</span> Hermetic Lots</h2>
-+            <p class="section-sub">Calculated mathematical points revealing specific life themes and destiny focus areas.</p>
-+            <div class="lots-grid">
-+                {lot_cards_html}
-+            </div>
-+        </section>
-+
-+    </main>
-+
-+    <!-- Client-Side Interactivity -->
-+    <script>
-+        const chartData = {payload_json};
-+
-+        // Tooltip handler
-+        const tooltip = document.getElementById('floating-tooltip');
-+        document.querySelectorAll('.tooltip-term').forEach(el => {{
-+            el.addEventListener('mouseenter', (e) => {{
-+                const text = el.getAttribute('data-tooltip');
-+                if (text) {{
-+                    tooltip.innerHTML = text;
-+                    tooltip.style.display = 'block';
-+                }}
-+            }});
-+            el.addEventListener('mousemove', (e) => {{
-+                tooltip.style.left = (e.clientX + 14) + 'px';
-+                tooltip.style.top = (e.clientY + 14) + 'px';
-+            }});
-+            el.addEventListener('mouseleave', () => {{
-+                tooltip.style.display = 'none';
-+            }});
-+        }});
-+
-+        // Bi-directional hover highlighting
-+        const planetRows = document.querySelectorAll('.planet-row');
-+        const svgContainer = document.querySelector('.large-svg-wrapper svg');
-+
-+        function setHighlight(planetName, active) {{
-+            // Table row
-+            const row = document.querySelector(`.planet-row[data-planet="${{planetName}}"]`);
-+            if (row) {{
-+                if (active) row.classList.add('row-highlight');
-+                else row.classList.remove('row-highlight');
-+            }}
-+
-+            // SVG elements
-+            if (svgContainer) {{
-+                const uses = svgContainer.querySelectorAll(`use[href="#${{planetName}}"], use[*|href="#${{planetName}}"]`);
-+                uses.forEach(u => {{
-+                    const parentGroup = u.parentElement;
-+                    if (active) {{
-+                        if (parentGroup) parentGroup.classList.add('svg-highlight');
-+                    }} else {{
-+                        if (parentGroup) parentGroup.classList.remove('svg-highlight');
-+                    }}
-+                }});
-+            }}
-+        }}
-+
-+        planetRows.forEach(row => {{
-+            row.addEventListener('mouseenter', () => {{
-+                const planet = row.getAttribute('data-planet');
-+                setHighlight(planet, true);
-+            }});
-+            row.addEventListener('mouseleave', () => {{
-+                const planet = row.getAttribute('data-planet');
-+                setHighlight(planet, false);
-+            }});
-+        }});
-+
-+        // Attach SVG hover handlers for chart glyphs
-+        if (svgContainer) {{
-+            ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].forEach(planet => {{
-+                const uses = svgContainer.querySelectorAll(`use[href="#${{planet}}"], use[*|href="#${{planet}}"]`);
-+                uses.forEach(u => {{
-+                    const parentGroup = u.parentElement;
-+                    if (parentGroup) {{
-+                        parentGroup.style.cursor = 'pointer';
-+                        parentGroup.addEventListener('mouseenter', (e) => {{
-+                            setHighlight(planet, true);
-+                            const pData = chartData.traditional_planets[planet];
-+                            if (pData) {{
-+                                tooltip.innerHTML = `<strong>${{planet}}</strong> in ${{pData.sign}} (${{pData.degree_0_to_30}}°)<br>${{pData.whole_sign_house.replace('_', ' ')}} • ${{pData.essential_dignity}}`;
-+                                tooltip.style.display = 'block';
-+                            }}
-+                        }});
-+                        parentGroup.addEventListener('mousemove', (e) => {{
-+                            tooltip.style.left = (e.clientX + 14) + 'px';
-+                            tooltip.style.top = (e.clientY + 14) + 'px';
-+                        }});
-+                        parentGroup.addEventListener('mouseleave', () => {{
-+                            setHighlight(planet, false);
-+                            tooltip.style.display = 'none';
-+                        }});
-+                    }}
-+                }});
-+            }});
-+        }}
-+    </script>
-+</body>
-+</html>"""
-+    return html_template
-+
- def generate_human_readable_report(subject, ai_payload, output_dir):
--    """Generates an SVG visual chart and a human-readable Markdown data sheet."""
-+    """Generates an SVG visual chart, Markdown data sheet, and an interactive HTML Dashboard."""
-     
-     # 1. Generate the visual SVG Chart
--    # Kerykeion automatically creates a file named "{SubjectName}Chart.svg" in the current directory
-     chart = KerykeionChartSVG(subject)
-     chart.makeSVG()
-     
-@@ -158,39 +971,47 @@ def generate_human_readable_report(subject, ai_payload, output_dir):
-             shutil.move(default_svg, svg_path)
-             break
- 
--    # 2. Generate the Markdown (.md) Data Sheet
--    md_filename = os.path.join(output_dir, f"{safe_name}_data_sheet.md")
-+    # Read raw SVG for inlining into HTML
-+    svg_raw_xml = ""
-+    if os.path.exists(svg_path):
-+        with open(svg_path, "r", encoding="utf-8") as svg_file:
-+            svg_raw_xml = svg_file.read()
- 
-+    # 2. Generate the Markdown (.md) Data Sheet (for backward compatibility)
-+    md_filename = os.path.join(output_dir, f"{safe_name}_data_sheet.md")
-     with open(md_filename, "w", encoding="utf-8") as f:
-         f.write(f"# Astrological Data Sheet: {subject.name}\n\n")
--        
--        # Embed the SVG graphic via Markdown image syntax
-         f.write(f"![Birth Chart]({svg_filename})\n\n")
--        
-         f.write("## 1. Core Architecture\n")
-         f.write(f"- **Ascendant (Rising Sign):** {ai_payload['native_details']['ascendant']}\n")
-         f.write(f"- **Sect:** {ai_payload['native_details']['sect']}\n")
-         f.write(f"- **House System:** {ai_payload['native_details']['house_system']}\n\n")
--        
-         f.write("## 2. Planetary Placements & Dignities\n")
-         f.write("| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |\n")
-         f.write("|---|---|---|---|---|---|\n")
--        
-         for planet, data in ai_payload['traditional_planets'].items():
-             f.write(f"| **{planet}** | {data['sign']} | {data['whole_sign_house'].replace('_', ' ')} | {data['degree_0_to_30']}° | {data['essential_dignity']} | {data['solar_phasis']} |\n")
--        
-         f.write("\n## 3. Major Aspects (Friction & Flow)\n")
-         if ai_payload['whole_sign_aspects']:
-             for aspect in ai_payload['whole_sign_aspects']:
-                 f.write(f"- **{aspect['planet_1']}** is in a **{aspect['aspect_type'].title()}** with **{aspect['planet_2']}**\n")
-         else:
-             f.write("- No major traditional whole sign aspects found.\n")
--            
-         f.write("\n## 4. Hermetic Lots\n")
-         for lot, data in ai_payload['7_hermetic_lots'].items():
-             f.write(f"- **{lot.replace('_', ' ')}**: {data['sign']} ({data['degree_0_to_30']}°) in {data['whole_sign_house'].replace('_', ' ')}\n")
- 
--    return md_filename
-+    # 3. Generate Interactive HTML Dashboard (User_dashboard.html)
-+    asc_sign = ai_payload['native_details']['ascendant']
-+    chart_ruler = DOMICILES.get(asc_sign, "Unknown")
-+    
-+    html_content = build_html_dashboard_string(subject.name, ai_payload, svg_raw_xml, chart_ruler)
-+    html_filename = os.path.join(output_dir, f"{safe_name}_dashboard.html")
-+    
-+    with open(html_filename, "w", encoding="utf-8") as f:
-+        f.write(html_content)
-+
-+    return html_filename
- 
- # --- MAIN GENERATOR ---
- def generate_ai_json(
-@@ -277,10 +1098,10 @@ def generate_ai_json(
-         output_dir = "."
-         
-     try:
--        md_file = generate_human_readable_report(subject, ai_payload, output_dir)
--        success_msg = f"✅ Success! Data saved to {output_filename}\n✅ Human Data Sheet & SVG saved to {md_file}"
-+        report_file = generate_human_readable_report(subject, ai_payload, output_dir)
-+        success_msg = f"✅ Success! Data saved to {output_filename}\n✅ Interactive HTML Dashboard saved to {report_file}"
-     except Exception as e:
--        success_msg = f"✅ JSON saved, but failed to generate SVG/MD report: {e}"
-+        success_msg = f"✅ JSON saved, but failed to generate SVG/HTML report: {e}"
- 
-     if not silent:
-         print(success_msg)
-diff --git a/western/native_1983_chart_and_prompt.md b/western/native_1983_chart_and_prompt.md
-deleted file mode 100644
-index e1f3e59..0000000
---- a/western/native_1983_chart_and_prompt.md
-+++ /dev/null
-@@ -1,330 +0,0 @@
--# Modern Psychological Astrology RAG Prompt & Birth Chart Data
--
--This document brings together the comprehensive AI system prompt instructions, psychological interpretation rules, and the exact mathematical JSON astrological calculation for the native born on **November 10, 1983 at 4:20 AM in Georgsmarienhütte, Germany**.
--
-----
--
--## Part 1: AI Prompt Instructions (Chain of Thought & 4-Pillars Framework)
--
--You are a **Principal Modern Psychological Astrologer** and **AI Agent** driven by a strict Chain of Thought (CoT) / ReAct reasoning protocol. When interpreting the astronomical birth chart data provided below, you must strictly follow this interpretive workflow and communication style:
--
--### Core Interpretive Workflow
--1. **Target Identification:**
--   Analyze the provided JSON chart data and isolate the planets that trigger the psychological framework:
--   - **Identity & Core Drive:** Ascendant, Chart Ruler, and Sect Light (Moon for Night charts, Sun for Day charts).
--   - **The "Pain Body" & Trauma:** The Moon, planets in Detriment/Fall, or the out-of-sect Malefic (Saturn for Night, Mars for Day).
--   - **Socialization & Conflict Resolution:** Venus (connection and romance), the 11th House (community attachments), Mars (anger, libido, and personal boundaries), and hard aspects (Squares/Oppositions).
--   - **The Flow State & Superpowers:** Planets residing in Domicile/Exaltation, Jupiter, and the calculated Lot of Fortune.
--
--2. **Explanation Style & Communication Rules:**
--   - **Explain simply and intuitively:** Avoid overwhelming technical jargon. Use everyday analogies and plain English (similar to explaining concepts to someone learning for the first time).
--   - **Introduce technical terms incrementally:** On the first mention of any specialized astrological term, immediately provide a clear, conversational definition in parentheses.
--     - *Example:* **Ascendant** *(the zodiac sign rising on the eastern horizon at birth, representing your core identity and outward persona)*.
--     - *Example:* **Domicile** *(when a planet sits in the zodiac sign it naturally rules, operating effortlessly and comfortably like a host in their own mansion)*.
--     - *Example:* **Combust** *(when a planet orbits within just a few degrees of the Sun, meaning its individual qualities work intensely from behind the scenes, obscured by solar rays)*.
--   - **The Psychological Lens:** Always anchor your reading in human behavior, personal growth, and empathetic coaching rather than deterministic fatalism.
--
--### Required Reading Structure
--Your interpretation must strictly follow this 5-part structure:
--
--* **Part 1: The Core Architecture of the Chart** (Explain Ascendant, Sect, and Whole Sign House layout in simple, intuitive terms).
--* **Part 2: The Dominant Placements & Psychological Reading** (First provide an educational overview of the general characteristics and archetypes of the dominant zodiac signs active in the chart—such as their element, ruling planets, and overall psychological themes. Then analyze the top three specific placements using bullet points for *Mathematical Placement* and *What It Means for You*. Address the native's "Pain Body" and emotional shadows here using their most difficult placement).
--* **Part 3: Behavioral Psychology (Socialization & Conflict)** (Explicitly analyze how they make friends and experience intimacy based on Venus and the 11th/7th/8th Houses, and how they resolve conflict, fight, or protect personal boundaries based on Mars and hard aspects).
--* **Part 4: Supporting Strengths & Fortune** (Analyze Jupiter, the Lot of Fortune, and areas where they naturally hit a buoyant "Flow State").
--* **Summary Checklist of Your Chart Profile** (Provide a concise bulleted summary listing their *Archetype*, *Superpower*, and *Core Life Lesson*).
--
-----
--
--## Part 2: Native Birth Details & Context
--
--* **Name / Label:** Native (Man)
--* **Date of Birth:** November 10, 1983
--* **Time of Birth:** 04:20 AM (Local Time)
--* **Location:** Georgsmarienhütte, Lower Saxony, Germany (DE)
--* **Astrology System:** Hellenistic Western Astrology (Tropical Zodiac, Whole Sign Houses, Traditional Rulerships & Egyptian Terms, Hermetic Lots)
--
-----
--
--## Part 3: Mathematical Birth Chart (Raw JSON Output)
--
--```json
--{
--    "native_details": {
--        "name": "Man",
--        "ascendant": "Lib",
--        "sect": "Night Chart",
--        "house_system": "Whole Sign Houses (WSH)"
--    },
--    "traditional_planets": {
--        "Sun": {
--            "sign": "Sco",
--            "whole_sign_house": "House_2",
--            "degree_0_to_30": 17.15,
--            "absolute_degree": 227.15,
--            "is_retrograde": false,
--            "essential_dignity": "Peregrine (Wandering)",
--            "dorothean_triplicity": {
--                "day": "Venus",
--                "night": "Mars",
--                "participating": "Moon"
--            },
--            "solar_phasis": "N/A",
--            "egyptian_term_ruler": "Mercury",
--            "dodecatemorion": {
--                "sign": "Tau",
--                "degree_0_to_30": 25.85,
--                "absolute_degree": 55.85
--            }
--        },
--        "Moon": {
--            "sign": "Cap",
--            "whole_sign_house": "House_4",
--            "degree_0_to_30": 19.5,
--            "absolute_degree": 289.5,
--            "is_retrograde": false,
--            "essential_dignity": "Detriment (Exiled)",
--            "dorothean_triplicity": {
--                "day": "Venus",
--                "night": "Moon",
--                "participating": "Mars"
--            },
--            "solar_phasis": "N/A",
--            "egyptian_term_ruler": "Venus",
--            "dodecatemorion": {
--                "sign": "Leo",
--                "degree_0_to_30": 24.04,
--                "absolute_degree": 144.04
--            }
--        },
--        "Mercury": {
--            "sign": "Sco",
--            "whole_sign_house": "House_2",
--            "degree_0_to_30": 23.41,
--            "absolute_degree": 233.41,
--            "is_retrograde": false,
--            "essential_dignity": "Peregrine (Wandering)",
--            "dorothean_triplicity": {
--                "day": "Venus",
--                "night": "Mars",
--                "participating": "Moon"
--            },
--            "solar_phasis": "Combust (Burned)",
--            "egyptian_term_ruler": "Jupiter",
--            "dodecatemorion": {
--                "sign": "Leo",
--                "degree_0_to_30": 10.96,
--                "absolute_degree": 130.96
--            }
--        },
--        "Venus": {
--            "sign": "Lib",
--            "whole_sign_house": "House_1",
--            "degree_0_to_30": 0.71,
--            "absolute_degree": 180.71,
--            "is_retrograde": false,
--            "essential_dignity": "Domicile (Home)",
--            "dorothean_triplicity": {
--                "day": "Saturn",
--                "night": "Mercury",
--                "participating": "Jupiter"
--            },
--            "solar_phasis": "Phasis Clear",
--            "egyptian_term_ruler": "Saturn",
--            "dodecatemorion": {
--                "sign": "Lib",
--                "degree_0_to_30": 8.54,
--                "absolute_degree": 188.54
--            }
--        },
--        "Mars": {
--            "sign": "Vir",
--            "whole_sign_house": "House_12",
--            "degree_0_to_30": 25.08,
--            "absolute_degree": 175.08,
--            "is_retrograde": false,
--            "essential_dignity": "Peregrine (Wandering)",
--            "dorothean_triplicity": {
--                "day": "Venus",
--                "night": "Moon",
--                "participating": "Mars"
--            },
--            "solar_phasis": "Phasis Clear",
--            "egyptian_term_ruler": "Mars",
--            "dodecatemorion": {
--                "sign": "Can",
--                "degree_0_to_30": 0.99,
--                "absolute_degree": 90.99
--            }
--        },
--        "Jupiter": {
--            "sign": "Sag",
--            "whole_sign_house": "House_3",
--            "degree_0_to_30": 14.31,
--            "absolute_degree": 254.31,
--            "is_retrograde": false,
--            "essential_dignity": "Domicile (Home)",
--            "dorothean_triplicity": {
--                "day": "Sun",
--                "night": "Jupiter",
--                "participating": "Saturn"
--            },
--            "solar_phasis": "Phasis Clear",
--            "egyptian_term_ruler": "Venus",
--            "dodecatemorion": {
--                "sign": "Tau",
--                "degree_0_to_30": 21.75,
--                "absolute_degree": 51.75
--            }
--        },
--        "Saturn": {
--            "sign": "Sco",
--            "whole_sign_house": "House_2",
--            "degree_0_to_30": 8.43,
--            "absolute_degree": 218.43,
--            "is_retrograde": false,
--            "essential_dignity": "Peregrine (Wandering)",
--            "dorothean_triplicity": {
--                "day": "Venus",
--                "night": "Mars",
--                "participating": "Moon"
--            },
--            "solar_phasis": "Under the Beams (Hidden)",
--            "egyptian_term_ruler": "Venus",
--            "dodecatemorion": {
--                "sign": "Aqu",
--                "degree_0_to_30": 11.12,
--                "absolute_degree": 311.12
--            }
--        }
--    },
--    "7_hermetic_lots": {
--        "Lot_of_Fortune": {
--            "sign": "Leo",
--            "degree_0_to_30": 9.36,
--            "absolute_degree": 129.36,
--            "whole_sign_house": "House_11"
--        },
--        "Lot_of_Spirit": {
--            "sign": "Sag",
--            "degree_0_to_30": 14.06,
--            "absolute_degree": 254.06,
--            "whole_sign_house": "House_3"
--        },
--        "Lot_of_Necessity": {
--            "sign": "Cap",
--            "degree_0_to_30": 25.77,
--            "absolute_degree": 295.77,
--            "whole_sign_house": "House_4"
--        },
--        "Lot_of_Eros": {
--            "sign": "Sag",
--            "degree_0_to_30": 25.06,
--            "absolute_degree": 265.06,
--            "whole_sign_house": "House_3"
--        },
--        "Lot_of_Courage": {
--            "sign": "Sco",
--            "degree_0_to_30": 27.44,
--            "absolute_degree": 237.44,
--            "whole_sign_house": "House_2"
--        },
--        "Lot_of_Victory": {
--            "sign": "Lib",
--            "degree_0_to_30": 11.46,
--            "absolute_degree": 191.46,
--            "whole_sign_house": "House_1"
--        },
--        "Lot_of_Nemesis": {
--            "sign": "Cap",
--            "degree_0_to_30": 10.78,
--            "absolute_degree": 280.78,
--            "whole_sign_house": "House_4"
--        }
--    },
--    "whole_sign_aspects": [
--        {
--            "planet_1": "Sun",
--            "planet_2": "Moon",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Sun",
--            "planet_2": "Mercury",
--            "aspect_type": "conjunction",
--            "sign_distance": 0
--        },
--        {
--            "planet_1": "Sun",
--            "planet_2": "Mars",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Sun",
--            "planet_2": "Saturn",
--            "aspect_type": "conjunction",
--            "sign_distance": 0
--        },
--        {
--            "planet_1": "Moon",
--            "planet_2": "Mercury",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Moon",
--            "planet_2": "Venus",
--            "aspect_type": "square",
--            "sign_distance": 3
--        },
--        {
--            "planet_1": "Moon",
--            "planet_2": "Mars",
--            "aspect_type": "trine",
--            "sign_distance": 4
--        },
--        {
--            "planet_1": "Moon",
--            "planet_2": "Saturn",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Mercury",
--            "planet_2": "Mars",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Mercury",
--            "planet_2": "Saturn",
--            "aspect_type": "conjunction",
--            "sign_distance": 0
--        },
--        {
--            "planet_1": "Venus",
--            "planet_2": "Jupiter",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        },
--        {
--            "planet_1": "Mars",
--            "planet_2": "Jupiter",
--            "aspect_type": "square",
--            "sign_distance": 3
--        },
--        {
--            "planet_1": "Mars",
--            "planet_2": "Saturn",
--            "aspect_type": "sextile",
--            "sign_distance": 2
--        }
--    ],
--    "prenatal_syzygy": {
--        "type": "New Moon",
--        "sign": "Sco",
--        "degree_0_to_30": 11.83
--    }
--}
--```
++*Note: Automatically save the output as `{Name}_{YYYY-MM-DD}_{HH-MM}_Western_Analysis.md` in the `western/` directory.*
 
 ```
 

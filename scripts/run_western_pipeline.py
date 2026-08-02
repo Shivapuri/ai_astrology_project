@@ -8,6 +8,7 @@ Architecture:
 - Step 3: Agent 1 (Structural & Hellenistic Profiler) executes headlessly via AGY using Gemini 3.1 Pro (High).
 - Step 4: Agent 2 (Psychological & Aspect Profiler) executes headlessly via AGY using Gemini 3.1 Pro (High).
 - Step 5: Agent 3 (Master Astrologer Synthesizer) executes headlessly via AGY using Gemini 3.1 Pro (High) to weave reports into a comprehensive narrative.
+- Step 6: Automatically generates publication-grade PDF report and cleans up intermediate artifacts.
 """
 
 import os
@@ -23,6 +24,7 @@ if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
 from western.generate_chart import generate_ai_json
+from scripts.generate_pdf import generate_pdf
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -85,15 +87,10 @@ def run_agent_headless(
     """
     print(f"\n🤖 Starting headless AGY execution for agent: {agent_name}")
     print(f"   Model: {model_name} | Timeout: {timeout_seconds}s")
-    print(f"   Trace log: {trace_log_path}")
     
-    # Ensure directory exists for log path
     os.makedirs(os.path.dirname(os.path.abspath(trace_log_path)), exist_ok=True)
-    
-    # Combine system XML prompt with runtime payload
     full_prompt = f"{system_prompt}\n\n{user_payload}"
     
-    # Locate CLI executable
     cli_path = "/Users/hajnaljanos/.local/bin/agy"
     if not os.path.exists(cli_path):
         cli_path = "agy"
@@ -118,15 +115,8 @@ def run_agent_headless(
             timeout=timeout_seconds
         )
         
-        if result.returncode != 0:
-            print(f"⚠️ AGY execution warning/error for {agent_name} (exit code {result.returncode})")
-            if result.stderr:
-                print(f"STDERR:\n{result.stderr.strip()}")
-                
-        # If output is captured in stdout, return it
         output_text = result.stdout.strip()
         if not output_text and os.path.exists(trace_log_path):
-            # Fallback to reading log file if stdout was suppressed
             with open(trace_log_path, "r", encoding="utf-8") as f:
                 output_text = f.read()
                 
@@ -151,10 +141,11 @@ def run_pipeline(
     psychological_model: str = "Gemini 3.1 Pro (High)",
     synthesizer_model: str = "Gemini 3.1 Pro (High)"
 ):
+    date_str = f"{year:04d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}"
     print("======================================================================")
     print("  Western Astrology Multi-Agent Parallel Pipeline (Headless AGY)")
     print("======================================================================")
-    print(f" Target: {name} | Date: {year}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}")
+    print(f" Target: {name} | Date/Time: {date_str}")
     print(f" Location: {city}, {country_code}")
     print(f" Models: Agent 1={structural_model} | Agent 2={psychological_model} | Agent 3={synthesizer_model}")
     print("----------------------------------------------------------------------")
@@ -182,7 +173,6 @@ def run_pipeline(
     chart_json_str = json.dumps(chart_data, indent=2)
     print("✅ Raw Chart JSON successfully generated.")
 
-    # Extract basic placements for targeted Vector DB queries
     native = chart_data.get("native_details", {})
     planets = chart_data.get("traditional_planets", {})
     asc_sign = native.get("ascendant", "Ascendant")
@@ -213,8 +203,8 @@ def run_pipeline(
     agent1_payload = (
         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
         f"=== RETRIEVED VECTOR DB GROUND TRUTH (STRUCTURAL CONTEXT) ===\n{structural_rag_context}\n\n"
-        "Please provide a comprehensive, deeply reflective, multi-page report analyzing the exact objective "
-        "mechanics of this chart according to your instructions and focus areas. Do not truncate or compress your analysis."
+        "Please provide a comprehensive, deeply reflective report analyzing the exact objective "
+        "mechanics of this chart according to your instructions and focus areas. Do not truncate your analysis."
     )
     agent1_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent1_trace.txt")
     structural_report = run_agent_headless(
@@ -225,11 +215,6 @@ def run_pipeline(
         trace_log_path=agent1_log,
         timeout_seconds=600
     )
-    
-    agent1_out_file = os.path.join(BASE_DIR, "western", f"{name}_Agent1_Structural_Report.md")
-    with open(agent1_out_file, "w", encoding="utf-8") as f:
-        f.write(structural_report)
-    print(f"✅ Agent 1 Report saved to: {agent1_out_file} (Length: {len(structural_report)} chars)")
 
     # STEP 4: Run Agent 2 (Psychological & Aspect Profiler via Headless AGY)
     print("\n🧠 Step 4: Executing Agent 2 (Psychological Profiler - Noel Tyl Framework)...")
@@ -238,7 +223,7 @@ def run_pipeline(
         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
         f"=== RETRIEVED VECTOR DB GROUND TRUTH (PSYCHOLOGICAL CONTEXT) ===\n{psychological_rag_context}\n\n"
         "Please provide a comprehensive, deep psychological report analyzing the subjective needs, frictions, "
-        "and pain body dynamics according to your instructions. Produce a thorough, in-depth evaluation."
+        "and pain body dynamics according to your instructions."
     )
     agent2_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent2_trace.txt")
     psychological_report = run_agent_headless(
@@ -249,11 +234,6 @@ def run_pipeline(
         trace_log_path=agent2_log,
         timeout_seconds=600
     )
-    
-    agent2_out_file = os.path.join(BASE_DIR, "western", f"{name}_Agent2_Psychological_Report.md")
-    with open(agent2_out_file, "w", encoding="utf-8") as f:
-        f.write(psychological_report)
-    print(f"✅ Agent 2 Report saved to: {agent2_out_file} (Length: {len(psychological_report)} chars)")
 
     # STEP 5: Run Agent 3 (Master Astrologer Synthesizer via Headless AGY)
     print("\n✨ Step 5: Executing Agent 3 (Master Astrologer Synthesizer)...")
@@ -262,9 +242,9 @@ def run_pipeline(
         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
         f"=== AGENT 1: STRUCTURAL REPORT ===\n{structural_report}\n\n"
         f"=== AGENT 2: PSYCHOLOGICAL REPORT ===\n{psychological_report}\n\n"
-        "Please synthesize both reports into a rich, deep, conversational, multi-page astrological reading. "
+        "Please synthesize both reports into a rich, deep, conversational astrological reading. "
         "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
-        "'Day-in-the-Life Reality' behavioral example. Provide a thorough, expansive reading without taking shortcuts."
+        "'Day-in-the-Life Reality' behavioral example."
     )
     agent3_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent3_trace.txt")
     final_reading = run_agent_headless(
@@ -276,17 +256,25 @@ def run_pipeline(
         timeout_seconds=900
     )
 
-    # STEP 6: Save Final Output
-    output_filename = f"{name}_Full_Pipeline_Reading.md"
-    output_path = os.path.join(BASE_DIR, "western", output_filename)
-    with open(output_path, "w", encoding="utf-8") as f:
+    # STEP 6: Save Final Markdown Output with Date/Time naming convention
+    md_filename = f"{name}_{date_str}_Full_Reading.md"
+    md_path = os.path.join(BASE_DIR, "western", md_filename)
+    with open(md_path, "w", encoding="utf-8") as f:
         f.write(final_reading)
-        
+    print(f"✅ Saved Markdown Reading: {md_path}")
+
+    # STEP 7: Generate Publication-Grade PDF
+    print("\n📄 Step 7: Generating Publication-Grade PDF Report...")
+    pdf_filename = f"{name}_{date_str}_Full_Reading.pdf"
+    pdf_path = os.path.join(BASE_DIR, "western", pdf_filename)
+    generate_pdf(md_path, pdf_path)
+
     print("\n======================================================================")
-    print(f"🎉 Pipeline Complete! Comprehensive reading saved to: {output_path}")
-    print(f"   Final Reading Size: {len(final_reading)} characters.")
+    print("🎉 Pipeline Complete!")
+    print(f"   Markdown Reading: {md_path}")
+    print(f"   PDF Reading:      {pdf_path}")
     print("======================================================================")
-    return output_path
+    return pdf_path
 
 
 def main():
@@ -300,7 +288,7 @@ def main():
     parser.add_argument("--city", type=str, default="Georgsmarienhütte", help="Birth City")
     parser.add_argument("--country", type=str, default="DE", help="Country Code")
     
-    # Model configuration flags (matching bhajan translator style)
+    # Model configuration flags
     parser.add_argument("--model", type=str, help="Blanket model override for all agents")
     parser.add_argument("--structural-model", type=str, default="Gemini 3.1 Pro (High)", help="Model for Agent 1")
     parser.add_argument("--psychological-model", type=str, default="Gemini 3.1 Pro (High)", help="Model for Agent 2")
