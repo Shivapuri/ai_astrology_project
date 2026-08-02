@@ -1084,8 +1084,27 @@ def generate_ai_json(
             return {"is_active": True, "aspect": aspect, "orb_degrees": round(orb, 2), "intensity": intensity}
         return {"is_active": False, "aspect": "None", "orb_degrees": 0, "intensity": "None"}
 
+    def calculate_dampening_to_deg(deg_a, planet_b, p_data):
+        deg_b = p_data.get(planet_b, {}).get("absolute_degree", 0)
+        dist = abs(deg_a - deg_b)
+        dist = min(dist, 360 - dist)
+        aspect = None
+        orb = 999
+        if dist <= 10:
+            aspect, orb = "Conjunction", dist
+        elif 80 <= dist <= 100:
+            aspect, orb = "Square", abs(dist - 90)
+        elif 170 <= dist <= 190:
+            aspect, orb = "Opposition", abs(dist - 180)
+            
+        if aspect:
+            intensity = "Extreme" if orb <= 3 else "Moderate" if orb <= 6 else "Mild"
+            return {"is_active": True, "aspect": aspect, "orb_degrees": round(orb, 2), "intensity": intensity}
+        return {"is_active": False, "aspect": "None", "orb_degrees": 0, "intensity": "None"}
+
     steersman_dampening = calculate_dampening(chart_ruler, "Saturn", planets_data)
     moon_dampening = calculate_dampening("Moon", "Saturn", planets_data)
+    asc_dampening = calculate_dampening_to_deg(subject.ascendant.abs_pos, "Saturn", planets_data)
 
     is_private_house = ruler_wsh_num in [4, 6, 8, 12]
     is_aversion = ruler_wsh_num in [2, 6, 8, 12]
@@ -1094,6 +1113,7 @@ def generate_ai_json(
 
     net_vector_analysis = {
         "chart_ruler_planet": chart_ruler,
+        "ascendant_body_dampened_by_saturn": asc_dampening,
         "steersman_dampened_by_saturn": steersman_dampening,
         "moon_dampened_by_saturn": moon_dampening,
         "steersman_in_private_house": is_private_house,
