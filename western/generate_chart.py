@@ -1106,5 +1106,7 @@ def generate_ai_json(
     if not silent:
         print(success_msg)
 
+    return ai_payload
+
 if __name__ == "__main__":
     generate_ai_json()
