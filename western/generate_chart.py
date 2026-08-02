@@ -994,8 +994,12 @@ def generate_human_readable_report(subject, ai_payload, output_dir):
 # --- MAIN GENERATOR ---
 def generate_ai_json(
     name: str = "User", year: int = 1983, month: int = 11, day: int = 10, hour: int = 4, minute: int = 20,
-    city: str = "Georgsmarienhütte", country_code: str = "DE", output_filename: str = "chart_context.json", silent: bool = False
+    city: str = "Georgsmarienhütte", country_code: str = "DE", output_filename: str = None, silent: bool = False
 ):
+    if not output_filename or output_filename == "chart_context.json":
+        safe_name = name.replace(" ", "_")
+        output_filename = f"{safe_name}_{year:04d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}_chart_context.json"
+
     try:
         subject = AstrologicalSubject(
             name, year, month, day, hour, minute, city, country_code,

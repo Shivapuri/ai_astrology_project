@@ -152,7 +152,8 @@ def run_pipeline(
 
     # STEP 1: Generate Raw Chart JSON
     print("\n🔮 Step 1: Calculating Western Chart JSON via Engine...")
-    chart_json_path = os.path.join(BASE_DIR, "western", "chart_context.json")
+    chart_json_filename = f"{name}_{date_str}_chart_context.json"
+    chart_json_path = os.path.join(BASE_DIR, "western", chart_json_filename)
     chart_data = generate_ai_json(
         name=name,
         year=year,
