@@ -1100,6 +1100,24 @@ def generate_ai_json(
         "steersman_in_aversion_to_ascendant": is_aversion
     }
 
+    systematic_12_point_chart_audit = {
+        "1_sect_leader": "Day Chart" if is_day_chart else "Night Chart",
+        "2_ascendant_sign_and_degree": f"{asc_sign} ({subject.ascendant.position:.2f}°)",
+        "3_steersman_chart_ruler": f"{chart_ruler} in {planets_data.get(chart_ruler, {}).get('sign')} (House {ruler_wsh_num})",
+        "4_essential_dignity": planets_data.get(chart_ruler, {}).get("essential_dignity"),
+        "5_dispositor_host": planets_data.get(chart_ruler, {}).get("dorothean_triplicity"),
+        "6_triplicity_rulers": get_dorothean_triplicity(asc_sign, is_day_chart),
+        "7_terms_and_dodecatemoria": {
+            "term_ruler": planets_data.get(chart_ruler, {}).get("egyptian_term_ruler"),
+            "dodecatemorion": planets_data.get(chart_ruler, {}).get("dodecatemorion")
+        },
+        "8_solar_phasis": planets_data.get(chart_ruler, {}).get("solar_phasis"),
+        "9_hermetic_lots": lots,
+        "10_whole_sign_aspects": aspects_list,
+        "11_prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str),
+        "12_net_vector_orbs_and_intensity": net_vector_analysis
+    }
+
     ai_payload = {
         "native_details": {
             "name": subject.name,
@@ -1107,6 +1125,7 @@ def generate_ai_json(
             "sect": "Day Chart" if is_day_chart else "Night Chart",
             "house_system": "Whole Sign Houses (WSH)"
         },
+        "systematic_12_point_chart_audit": systematic_12_point_chart_audit,
         "traditional_planets": planets_data,
         "7_hermetic_lots": lots,
         "whole_sign_aspects": aspects_list,
