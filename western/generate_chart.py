@@ -1057,6 +1057,49 @@ def generate_ai_json(
     for key, lot_data in lots.items():
         lot_data["whole_sign_house"] = get_wsh(lot_data["sign"])
 
+    # --- NET VECTOR ANALYSIS (Pre-calculated Architectural Flags) ---
+    chart_ruler = DOMICILES.get(asc_sign, "Sun")
+    ruler_house_str = planets_data.get(chart_ruler, {}).get("whole_sign_house", "House_1")
+    ruler_wsh_num = int(ruler_house_str.split("_")[1]) if "_" in ruler_house_str else 1
+    
+    def calculate_dampening(planet_a, planet_b, p_data):
+        deg_a = p_data.get(planet_a, {}).get("absolute_degree", 0)
+        deg_b = p_data.get(planet_b, {}).get("absolute_degree", 0)
+        
+        # Shortest distance on a 360-degree wheel
+        dist = abs(deg_a - deg_b)
+        dist = min(dist, 360 - dist)
+        
+        aspect = None
+        orb = 999
+        if dist <= 10:
+            aspect, orb = "Conjunction", dist
+        elif 80 <= dist <= 100:
+            aspect, orb = "Square", abs(dist - 90)
+        elif 170 <= dist <= 190:
+            aspect, orb = "Opposition", abs(dist - 180)
+            
+        if aspect:
+            intensity = "Extreme" if orb <= 3 else "Moderate" if orb <= 6 else "Mild"
+            return {"is_active": True, "aspect": aspect, "orb_degrees": round(orb, 2), "intensity": intensity}
+        return {"is_active": False, "aspect": "None", "orb_degrees": 0, "intensity": "None"}
+
+    steersman_dampening = calculate_dampening(chart_ruler, "Saturn", planets_data)
+    moon_dampening = calculate_dampening("Moon", "Saturn", planets_data)
+
+    is_private_house = ruler_wsh_num in [4, 6, 8, 12]
+    is_aversion = ruler_wsh_num in [2, 6, 8, 12]
+
+    aspects_list = get_whole_sign_aspects(planets_data)
+
+    net_vector_analysis = {
+        "chart_ruler_planet": chart_ruler,
+        "steersman_dampened_by_saturn": steersman_dampening,
+        "moon_dampened_by_saturn": moon_dampening,
+        "steersman_in_private_house": is_private_house,
+        "steersman_in_aversion_to_ascendant": is_aversion
+    }
+
     ai_payload = {
         "native_details": {
             "name": subject.name,
@@ -1066,8 +1109,9 @@ def generate_ai_json(
         },
         "traditional_planets": planets_data,
         "7_hermetic_lots": lots,
-        "whole_sign_aspects": get_whole_sign_aspects(planets_data),
-        "prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str)
+        "whole_sign_aspects": aspects_list,
+        "prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str),
+        "net_vector_analysis": net_vector_analysis
     }
 
     with open(output_filename, "w") as outfile:

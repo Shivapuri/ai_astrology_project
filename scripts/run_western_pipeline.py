@@ -195,6 +195,13 @@ def run_pipeline(
     mars_sign = planets.get("Mars", {}).get("sign", "")
     venus_sign = planets.get("Venus", {}).get("sign", "")
 
+    # Dynamically extract aspects touching the Steersman (Chart Ruler)
+    ruler_aspects = [asp for asp in aspects if asp.get("planet_1") == chart_ruler or asp.get("planet_2") == chart_ruler]
+    ruler_aspect_queries = []
+    for asp in ruler_aspects:
+        other_planet = asp['planet_1'] if asp['planet_2'] == chart_ruler else asp['planet_2']
+        ruler_aspect_queries.append(f"{chart_ruler} {asp['aspect_type']} {other_planet}")
+
     # Dynamically extract the tightest hard aspects for the Pain Body
     hard_aspects = [asp for asp in aspects if asp.get("aspect_type") in ["square", "opposition", "conjunction"]]
     aspect_queries = []
@@ -211,7 +218,7 @@ def run_pipeline(
         f"Planet in {ruler_sign} essential dignity",
         f"{chart_ruler} in aversion to Ascendant meaning",
         f"{sect} planetary strength and malefic behavior"
-    ]
+    ] + ruler_aspect_queries
     
     # Highly targeted Psychological Queries (for Noel Tyl / Robert Hand framework)
     psych_queries = [
