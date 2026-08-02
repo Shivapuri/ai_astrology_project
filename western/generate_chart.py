@@ -959,7 +959,7 @@ def generate_human_readable_report(subject, ai_payload, output_dir):
     svg_filename = f"{safe_name}_chart.svg"
     svg_path = os.path.join(output_dir, svg_filename)
     
-    # Move the generated SVG to our target output directory
+    # Move and read the generated SVG
     possible_default_svgs = [
         f"{subject.name}Chart.svg",
         f"{subject.name} - Natal Chart.svg",
@@ -971,47 +971,25 @@ def generate_human_readable_report(subject, ai_payload, output_dir):
             shutil.move(default_svg, svg_path)
             break
 
-    # Read raw SVG for inlining into HTML
+    # Read raw SVG for inlining if needed
     svg_raw_xml = ""
     if os.path.exists(svg_path):
         with open(svg_path, "r", encoding="utf-8") as svg_file:
             svg_raw_xml = svg_file.read()
+        try:
+            os.remove(svg_path)
+        except Exception:
+            pass
 
-    # 2. Generate the Markdown (.md) Data Sheet (for backward compatibility)
-    md_filename = os.path.join(output_dir, f"{safe_name}_data_sheet.md")
-    with open(md_filename, "w", encoding="utf-8") as f:
-        f.write(f"# Astrological Data Sheet: {subject.name}\n\n")
-        f.write(f"![Birth Chart]({svg_filename})\n\n")
-        f.write("## 1. Core Architecture\n")
-        f.write(f"- **Ascendant (Rising Sign):** {ai_payload['native_details']['ascendant']}\n")
-        f.write(f"- **Sect:** {ai_payload['native_details']['sect']}\n")
-        f.write(f"- **House System:** {ai_payload['native_details']['house_system']}\n\n")
-        f.write("## 2. Planetary Placements & Dignities\n")
-        f.write("| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |\n")
-        f.write("|---|---|---|---|---|---|\n")
-        for planet, data in ai_payload['traditional_planets'].items():
-            f.write(f"| **{planet}** | {data['sign']} | {data['whole_sign_house'].replace('_', ' ')} | {data['degree_0_to_30']}° | {data['essential_dignity']} | {data['solar_phasis']} |\n")
-        f.write("\n## 3. Major Aspects (Friction & Flow)\n")
-        if ai_payload['whole_sign_aspects']:
-            for aspect in ai_payload['whole_sign_aspects']:
-                f.write(f"- **{aspect['planet_1']}** is in a **{aspect['aspect_type'].title()}** with **{aspect['planet_2']}**\n")
-        else:
-            f.write("- No major traditional whole sign aspects found.\n")
-        f.write("\n## 4. Hermetic Lots\n")
-        for lot, data in ai_payload['7_hermetic_lots'].items():
-            f.write(f"- **{lot.replace('_', ' ')}**: {data['sign']} ({data['degree_0_to_30']}°) in {data['whole_sign_house'].replace('_', ' ')}\n")
+    # Clean up any leftover SVG files from Kerykeion in home or current directory
+    for default_svg in possible_default_svgs:
+        if os.path.exists(default_svg):
+            try:
+                os.remove(default_svg)
+            except Exception:
+                pass
 
-    # 3. Generate Interactive HTML Dashboard (User_dashboard.html)
-    asc_sign = ai_payload['native_details']['ascendant']
-    chart_ruler = DOMICILES.get(asc_sign, "Unknown")
-    
-    html_content = build_html_dashboard_string(subject.name, ai_payload, svg_raw_xml, chart_ruler)
-    html_filename = os.path.join(output_dir, f"{safe_name}_dashboard.html")
-    
-    with open(html_filename, "w", encoding="utf-8") as f:
-        f.write(html_content)
-
-    return html_filename
+    return ""
 
 # --- MAIN GENERATOR ---
 def generate_ai_json(
