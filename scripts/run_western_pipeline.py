@@ -28,7 +28,8 @@ from scripts.generate_pdf import generate_pdf
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-WESTERN_CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
+CHROMA_STRUCTURAL_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_structural_db")
+CHROMA_MODERN_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_modern_db")
 
 
 def load_prompt(filename: str) -> str:
@@ -40,17 +41,17 @@ def load_prompt(filename: str) -> str:
         return f.read()
 
 
-def query_local_rag_db(queries: List[str], max_results_per_query: int = 3) -> str:
-    """Queries the local Chroma Vector DB directly without API calls."""
-    if not os.path.exists(WESTERN_CHROMA_DB_DIR):
-        return "⚠️ Western Vector database not found at rag/chroma_astrology_db."
+def query_local_rag_db(db_dir: str, queries: List[str], max_results_per_query: int = 3) -> str:
+    """Queries a specific local Chroma Vector DB directly without API calls."""
+    if not os.path.exists(db_dir):
+        return f"⚠️ Vector database not found at {db_dir}."
         
     try:
         embedding_model = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
         vector_store = Chroma(
-            persist_directory=WESTERN_CHROMA_DB_DIR,
+            persist_directory=db_dir,
             embedding_function=embedding_model
         )
         
@@ -70,7 +71,7 @@ def query_local_rag_db(queries: List[str], max_results_per_query: int = 3) -> st
                     
         return "\n".join(output_chunks)
     except Exception as e:
-        return f"Error querying local Chroma DB: {e}"
+        return f"Error querying local Chroma DB at {db_dir}: {e}"
 
 
 def run_agent_headless(
@@ -179,8 +180,8 @@ def run_pipeline(
     asc_sign = native.get("ascendant", "Ascendant")
     sect = native.get("sect", "Chart Sect")
     
-    # STEP 2: Pre-fetch Vector DB Ground Truth for Agent 1 & Agent 2
-    print("\n📚 Step 2: Querying Local Chroma Vector DB for Classical & Psychological Ground Truth...")
+    # STEP 2: Pre-fetch Domain-Isolated Vector DB Context for Agent 1 & Agent 2
+    print("\n📚 Step 2: Querying Domain-Isolated Chroma DBs (Structural & Modern Psychological)...")
     struct_queries = [
         f"Ascendant in {asc_sign} in a {sect}",
         f"Chart ruler position in {asc_sign} whole sign house",
@@ -194,9 +195,9 @@ def run_pipeline(
         f"Mars placement in {planets.get('Mars', {}).get('sign')} internal conflicts"
     ]
     
-    structural_rag_context = query_local_rag_db(struct_queries, max_results_per_query=2)
-    psychological_rag_context = query_local_rag_db(psych_queries, max_results_per_query=2)
-    print("✅ Local Vector DB context extracted natively.")
+    structural_rag_context = query_local_rag_db(CHROMA_STRUCTURAL_DB_DIR, struct_queries, max_results_per_query=2)
+    psychological_rag_context = query_local_rag_db(CHROMA_MODERN_DB_DIR, psych_queries, max_results_per_query=2)
+    print("✅ Domain-isolated Vector DB contexts extracted natively.")
 
     # STEP 3: Run Agent 1 (Structural & Hellenistic Profiler via Headless AGY)
     print("\n🏛️ Step 3: Executing Agent 1 (Structural Profiler - Demetra George Framework)...")

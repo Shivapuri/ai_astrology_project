@@ -11,8 +11,12 @@ cache/
 code_export.txt
 rag/chroma_astrology_db/
 rag/chroma_jyotish_db/
+rag/chroma_structural_db/
+rag/chroma_modern_db/
+
 
 # Prevent large media and binary files from bloating Git repo
+*.pdf
 *.wav
 *.mp3
 *.png
@@ -22,3 +26,4 @@ rag/chroma_jyotish_db/
 *.html
 western/logs/
 .DS_Store
+
