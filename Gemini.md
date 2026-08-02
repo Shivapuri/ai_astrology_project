@@ -9,12 +9,21 @@ Astra is a dual-engine astrology computation project. It houses two entirely ind
 
 ---
 
-## Core Directive: Strict Separation
-**DO NOT CONFLATE THE TWO ENGINES.** 
-When working on one engine, you must ignore the rules, calculations, and terminologies of the other.
+## Core Directive: Strict Engine & Database Firewall
+**DO NOT CONFLATE THE TWO ENGINES. YOU MUST MAINTAIN ABSOLUTE PARADIGM ISOLATION.** 
+Astra houses two entirely independent astrological frameworks. When working on a chart, you must pick ONE system and strictly isolate your tools, prompts, and terminology.
 
-*   When the user asks for "Western" or "Hellenistic" calculations, you must only work within the `/western/` and `/rag/` directories.
-*   When the user asks for "Jyotish", "Vedic", or "Parashari" calculations, you must only work within the `/jyotish/` directory and use the `jyotishganit` library.
+**1. The Western Framework (Tropical, Modern Psychological)**
+* **Domain:** `/western/` and `/rag/astrology_rag_data/`
+* **Calculations Tool:** You MUST ONLY use `calculate_birth_chart`.
+* **Vector Database Tool:** You MUST ONLY use `query_modern_astrology_books` (queries `chroma_astrology_db`).
+* **Rule:** NEVER mention Vimshottari Dashas, Nakshatras, or Jyotish dignities.
+
+**2. The Vedic / Jyotish Framework (Sidereal, Parashari)**
+* **Domain:** `/jyotish/` and `/rag/jyotish_rag_data/`
+* **Calculations Tool:** You MUST ONLY use `calculate_vedic_chart`.
+* **Vector Database Tool:** You MUST ONLY use `query_vedic_astrology_books` (queries `chroma_jyotish_db`).
+* **Rule:** NEVER mention outer planets (Uranus, Neptune, Pluto), Tropical house rules, or psychological frameworks like Noel Tyl/Demetra George.
 
 ---
 
@@ -32,7 +41,7 @@ To generate a Western horoscope and perform Retrieval-Augmented Generation (RAG)
 ./run_western_rag.sh "User" 1983 11 10 4 20 "Georgsmarienhütte" "DE"
 ```
 
-Alternatively, invoke the MCP server tools in [`rag/astrology_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/astrology_mcp_server.py):
+Alternatively, invoke the MCP server tools in [`rag/western_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/western_mcp_server.py):
 * `calculate_birth_chart(name, year, month, day, hour, minute, city, country_code)`
 * `query_modern_astrology_books(query)`
 
@@ -40,11 +49,14 @@ Alternatively, invoke the MCP server tools in [`rag/astrology_mcp_server.py`](fi
 
 ### 2. Modern Psychological RAG & Chain of Thought (CoT) Workflow
 
-When performing chart readings, follow the 4-step ReAct workflow embedded in the FastMCP server instructions:
-1. **Step 1 (Calculate Chart)**: Call `calculate_birth_chart` to get exact mathematical placements in JSON format.
-2. **Step 2 (Identify Placements)**: Isolate the top 3 dominant placements (e.g. Sun sign/house, Moon sign/house, Ascendant ruler).
-3. **Step 3 (Research Books)**: Call `query_modern_astrology_books` 1 to 3 times to retrieve psychological interpretations.
-4. **Step 4 (Synthesize)**: Blend mathematical JSON data with modern psychological literature for an empathetic, step-by-step reading.
+When performing Western chart readings, strictly follow this 4-step ReAct workflow utilizing canonical psychological astrology frameworks:
+1. **Step 1 (Action - Calculate Chart)**: Call `calculate_birth_chart` to get exact tropical placements and Whole Sign houses.
+2. **Step 2 (Reasoning - Professional Synthesis Application)**: Do not read placements in a silo. Apply these professional models:
+   * **Demetra George's Steersman Model**: Identify the Ascendant (the Ship/Interface) and its Ruling Planet (the Captain/Steersman). Where is the Captain navigating?
+   * **Noel Tyl's Solar-Lunar Blend**: Combine the Sun (Core Drive) and Moon (Reigning Emotional Need). Contrast this inner emotional reality with the Ascendant's outer social mask.
+   * **Developmental Tension**: Identify the tightest hard aspects (squares/oppositions) causing psychological friction.
+3. **Step 3 (Action - Research Books)**: Call `query_modern_astrology_books` 1 to 3 times for specific psychological interpretations of the Chart Ruler, Solar-Lunar blend, and hard aspects.
+4. **Step 4 (Synthesis)**: Synthesize an empathetic, step-by-step psychological reading. Contrast the outer interface (Ascendant) with the inner reality (Sun/Moon).
 
 ---
 
@@ -67,7 +79,7 @@ When performing chart readings, follow the 4-step ReAct workflow embedded in the
 ## Vedic Horoscope RAG Execution & Interpretation Workflow
 
 ### 1. Running Vedic Calculations & Vector Database Queries
-To generate a mathematically precise Parashari Vedic horoscope (using sidereal calculations and True Chitra Paksha / Lahiri ayanamsha) and perform Retrieval-Augmented Generation (RAG) against the local classical Vedic vector database (`rag/chroma_jyotish_db`), invoke the MCP server tools in [`rag/astrology_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/astrology_mcp_server.py):
+To generate a mathematically precise Parashari Vedic horoscope (using sidereal calculations and True Chitra Paksha / Lahiri ayanamsha) and perform Retrieval-Augmented Generation (RAG) against the local classical Vedic vector database (`rag/chroma_jyotish_db`), invoke the MCP server tools in [`rag/jyotish_mcp_server.py`](file:///Users/hajnaljanos/PycharmProjects/astra/rag/jyotish_mcp_server.py):
 * `calculate_vedic_chart(name, year, month, day, hour, minute, latitude, longitude, timezone_offset)`
 * `query_vedic_astrology_books(query)`
 
