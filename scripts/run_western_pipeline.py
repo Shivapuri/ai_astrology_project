@@ -23,7 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if BASE_DIR not in sys.path:
     sys.path.insert(0, BASE_DIR)
 
-from western.generate_chart import generate_ai_json
+from western.generate_chart import generate_ai_json, DOMICILES
 from scripts.generate_pdf import generate_pdf
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -177,27 +177,55 @@ def run_pipeline(
 
     native = chart_data.get("native_details", {})
     planets = chart_data.get("traditional_planets", {})
-    asc_sign = native.get("ascendant", "Ascendant")
-    sect = native.get("sect", "Chart Sect")
+    aspects = chart_data.get("whole_sign_aspects", [])
     
+    asc_sign = native.get("ascendant", "Ascendant")
+    sect = native.get("sect", "Day Chart")
+    
+    # Dynamically find the Chart Ruler (Steersman)
+    chart_ruler = DOMICILES.get(asc_sign, "Sun")
+    ruler_data = planets.get(chart_ruler, {})
+    ruler_sign = ruler_data.get("sign", "")
+    ruler_house = ruler_data.get("whole_sign_house", "").replace("_", " ")
+
+    # Extract specific planetary signs
+    sun_sign = planets.get("Sun", {}).get("sign", "")
+    moon_sign = planets.get("Moon", {}).get("sign", "")
+    saturn_sign = planets.get("Saturn", {}).get("sign", "")
+    mars_sign = planets.get("Mars", {}).get("sign", "")
+    venus_sign = planets.get("Venus", {}).get("sign", "")
+
+    # Dynamically extract the tightest hard aspects for the Pain Body
+    hard_aspects = [asp for asp in aspects if asp.get("aspect_type") in ["square", "opposition", "conjunction"]]
+    aspect_queries = []
+    for asp in hard_aspects[:2]:  # Take the top 2 hardest aspects to avoid query bloat
+        aspect_queries.append(f"Psychological tension {asp['planet_1']} {asp['aspect_type']} {asp['planet_2']}")
+
     # STEP 2: Pre-fetch Domain-Isolated Vector DB Context for Agent 1 & Agent 2
     print("\n📚 Step 2: Querying Domain-Isolated Chroma DBs (Structural & Modern Psychological)...")
+    
+    # Highly targeted Structural Queries (for Demetra George framework)
     struct_queries = [
-        f"Ascendant in {asc_sign} in a {sect}",
-        f"Chart ruler position in {asc_sign} whole sign house",
-        "Essential dignities domicile detriment fall classical mechanics",
-        f"Sun in {planets.get('Sun', {}).get('sign')} Moon in {planets.get('Moon', {}).get('sign')}"
-    ]
-    psych_queries = [
-        f"Solar-Lunar blend Sun in {planets.get('Sun', {}).get('sign')} Moon in {planets.get('Moon', {}).get('sign')}",
-        "Hard aspect developmental tension square opposition conjunction",
-        f"Saturn placement in {planets.get('Saturn', {}).get('sign')} emotional defenses pain body",
-        f"Mars placement in {planets.get('Mars', {}).get('sign')} internal conflicts"
+        f"Ascendant in {asc_sign} physical temperament",
+        f"Chart ruler {chart_ruler} in the {ruler_house}",
+        f"Planet in {ruler_sign} essential dignity",
+        f"{chart_ruler} in aversion to Ascendant meaning",
+        f"{sect} planetary strength and malefic behavior"
     ]
     
-    structural_rag_context = query_local_rag_db(CHROMA_STRUCTURAL_DB_DIR, struct_queries, max_results_per_query=2)
-    psychological_rag_context = query_local_rag_db(CHROMA_MODERN_DB_DIR, psych_queries, max_results_per_query=2)
-    print("✅ Domain-isolated Vector DB contexts extracted natively.")
+    # Highly targeted Psychological Queries (for Noel Tyl / Robert Hand framework)
+    psych_queries = [
+        f"Sun in {sun_sign} core identity",
+        f"Moon in {moon_sign} reigning emotional need",
+        f"Saturn in {saturn_sign} emotional defenses and pain body",
+        f"Mars in {mars_sign} conflict resolution and anger",
+        f"Venus in {venus_sign} intimate relationships and love"
+    ] + aspect_queries
+
+    # STEP 3: Increase Context Volume (max_results_per_query=4)
+    structural_rag_context = query_local_rag_db(CHROMA_STRUCTURAL_DB_DIR, struct_queries, max_results_per_query=4)
+    psychological_rag_context = query_local_rag_db(CHROMA_MODERN_DB_DIR, psych_queries, max_results_per_query=4)
+    print("✅ Domain-isolated Vector DB contexts extracted natively (Optimized Volume).")
 
     # STEP 3: Run Agent 1 (Structural & Hellenistic Profiler via Headless AGY)
     print("\n🏛️ Step 3: Executing Agent 1 (Structural Profiler - Demetra George Framework)...")
