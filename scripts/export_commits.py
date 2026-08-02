@@ -18,8 +18,12 @@ def get_commit_details(commit_hash):
     """Retrieves metadata and diff for a specific commit."""
     try:
         # --stat adds a summary of files changed, --patch adds the diff
-        # --unified=3 ensures 3 lines of context around changes (default git behavior)
-        cmd = ["git", "show", "--stat", "--patch", "--unified=3", commit_hash]
+        # --unified=3 ensures 3 lines of context around changes
+        # Exclude large raw text datasets and existing export files to keep file size reasonable
+        cmd = [
+            "git", "show", "--stat", "--patch", "--unified=3", commit_hash,
+            "--", ":(exclude)rag/jyotish_rag_data/*", ":(exclude)commits_export.md"
+        ]
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:

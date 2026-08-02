@@ -1,4 +1,6 @@
-from kerykeion import AstrologicalSubject
+import os
+import shutil
+from kerykeion import AstrologicalSubject, KerykeionChartSVG
 import json
 import swisseph as swe
 from datetime import datetime, timezone
@@ -131,6 +133,65 @@ def get_prenatal_syzygy(year, month, day, hour, minute, tz_str) -> dict:
     syz_deg = swe.calc_ut(exact_t, swe.MOON if target_angle == 180.0 else swe.SUN)[0][0]
     return {"type": "Full Moon" if target_angle == 180.0 else "New Moon", "sign": ZODIAC_SIGNS[int(syz_deg // 30)], "degree_0_to_30": round(syz_deg % 30, 2)}
 
+def generate_human_readable_report(subject, ai_payload, output_dir):
+    """Generates an SVG visual chart and a human-readable Markdown data sheet."""
+    
+    # 1. Generate the visual SVG Chart
+    # Kerykeion automatically creates a file named "{SubjectName}Chart.svg" in the current directory
+    chart = KerykeionChartSVG(subject)
+    chart.makeSVG()
+    
+    # Define clean filenames
+    safe_name = subject.name.replace(" ", "_")
+    svg_filename = f"{safe_name}_chart.svg"
+    svg_path = os.path.join(output_dir, svg_filename)
+    
+    # Move the generated SVG to our target output directory
+    possible_default_svgs = [
+        f"{subject.name}Chart.svg",
+        f"{subject.name} - Natal Chart.svg",
+        os.path.expanduser(f"~/{subject.name} - Natal Chart.svg"),
+        os.path.expanduser(f"~/{subject.name}Chart.svg"),
+    ]
+    for default_svg in possible_default_svgs:
+        if os.path.exists(default_svg):
+            shutil.move(default_svg, svg_path)
+            break
+
+    # 2. Generate the Markdown (.md) Data Sheet
+    md_filename = os.path.join(output_dir, f"{safe_name}_data_sheet.md")
+
+    with open(md_filename, "w", encoding="utf-8") as f:
+        f.write(f"# Astrological Data Sheet: {subject.name}\n\n")
+        
+        # Embed the SVG graphic via Markdown image syntax
+        f.write(f"![Birth Chart]({svg_filename})\n\n")
+        
+        f.write("## 1. Core Architecture\n")
+        f.write(f"- **Ascendant (Rising Sign):** {ai_payload['native_details']['ascendant']}\n")
+        f.write(f"- **Sect:** {ai_payload['native_details']['sect']}\n")
+        f.write(f"- **House System:** {ai_payload['native_details']['house_system']}\n\n")
+        
+        f.write("## 2. Planetary Placements & Dignities\n")
+        f.write("| Planet | Sign | House | Degree | Dignity | Phasis (Visibility) |\n")
+        f.write("|---|---|---|---|---|---|\n")
+        
+        for planet, data in ai_payload['traditional_planets'].items():
+            f.write(f"| **{planet}** | {data['sign']} | {data['whole_sign_house'].replace('_', ' ')} | {data['degree_0_to_30']}° | {data['essential_dignity']} | {data['solar_phasis']} |\n")
+        
+        f.write("\n## 3. Major Aspects (Friction & Flow)\n")
+        if ai_payload['whole_sign_aspects']:
+            for aspect in ai_payload['whole_sign_aspects']:
+                f.write(f"- **{aspect['planet_1']}** is in a **{aspect['aspect_type'].title()}** with **{aspect['planet_2']}**\n")
+        else:
+            f.write("- No major traditional whole sign aspects found.\n")
+            
+        f.write("\n## 4. Hermetic Lots\n")
+        for lot, data in ai_payload['7_hermetic_lots'].items():
+            f.write(f"- **{lot.replace('_', ' ')}**: {data['sign']} ({data['degree_0_to_30']}°) in {data['whole_sign_house'].replace('_', ' ')}\n")
+
+    return md_filename
+
 # --- MAIN GENERATOR ---
 def generate_ai_json(
     name: str = "User", year: int = 1983, month: int = 11, day: int = 10, hour: int = 4, minute: int = 20,
@@ -209,8 +270,20 @@ def generate_ai_json(
     with open(output_filename, "w") as outfile:
         json.dump(ai_payload, outfile, indent=4)
 
+    # --- NEW: Generate Human-Readable Markdown and SVG ---
+    # Figure out where we are saving the JSON, so we can save the MD and SVG in the same place
+    output_dir = os.path.dirname(os.path.abspath(output_filename))
+    if not output_dir:
+        output_dir = "."
+        
+    try:
+        md_file = generate_human_readable_report(subject, ai_payload, output_dir)
+        success_msg = f"✅ Success! Data saved to {output_filename}\n✅ Human Data Sheet & SVG saved to {md_file}"
+    except Exception as e:
+        success_msg = f"✅ JSON saved, but failed to generate SVG/MD report: {e}"
+
     if not silent:
-        print(f"✅ Success! Ultimate Hellenistic chart data saved to {output_filename}")
+        print(success_msg)
 
 if __name__ == "__main__":
     generate_ai_json()
