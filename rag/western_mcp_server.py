@@ -33,7 +33,8 @@ try:
 except TypeError:
     mcp = FastMCP("Astra Western Astrology Server")
 
-WESTERN_CHROMA_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_astrology_db")
+WESTERN_CHROMA_MODERN_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_modern_db")
+WESTERN_CHROMA_STRUCTURAL_DB_DIR = os.path.join(BASE_DIR, "rag", "chroma_structural_db")
 
 
 @mcp.tool()
@@ -80,33 +81,35 @@ def calculate_birth_chart(
 def query_modern_astrology_books(query: str) -> str:
     """
     [WESTERN ENGINE ONLY - DO NOT USE FOR JYOTISH]
-    Queries the local Modern Psychological Astrology Vector Database (containing modern Western books).
-    Use this to look up Noel Tyl, Demetra George, and modern psychological interpretations.
-    Pass targeted psychological queries such as 'Moon in Taurus in 2nd House' or 'Saturn transit square Sun'.
+    Queries the local Modern Psychological & Structural Astrology Vector Databases.
+    Use this to look up Demetra George, Robert Hand, Stephen Arroyo, and Tracy Marks.
+    Pass targeted queries such as 'Moon in Taurus in 2nd House' or 'Saturn transit square Sun'.
     
     Western CoT Step 3: Call this tool 1 to 3 times for key chart placements.
     """
     try:
-        if not os.path.exists(WESTERN_CHROMA_DB_DIR):
+        target_db = WESTERN_CHROMA_MODERN_DB_DIR if os.path.exists(WESTERN_CHROMA_MODERN_DB_DIR) else WESTERN_CHROMA_STRUCTURAL_DB_DIR
+        if not os.path.exists(target_db):
             return "Western Vector database not found. Please run build_rag_pipeline.py first."
             
         embedding_model = HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2"
         )
         vector_store = Chroma(
-            persist_directory=WESTERN_CHROMA_DB_DIR,
+            persist_directory=target_db,
             embedding_function=embedding_model
         )
         results = vector_store.similarity_search(query, k=4)
         
-        output = f"=== MODERN PSYCHOLOGICAL ASTROLOGY RAG SEARCH RESULTS FOR: '{query}' ===\n\n"
+        output = f"=== WESTERN ASTROLOGY RAG SEARCH RESULTS FOR: '{query}' ===\n\n"
         for idx, doc in enumerate(results, 1):
-            source = os.path.basename(doc.metadata.get("source", "modern_astrology_book"))
+            source = os.path.basename(doc.metadata.get("source", "astrology_book"))
             page = doc.metadata.get("page", "N/A")
             output += f"--- Result {idx} [Source: {source}, Page: {page}] ---\n{doc.page_content}\n\n"
         return output
     except Exception as e:
         return f"Error querying Western vector database: {str(e)}"
+
 
 
 if __name__ == "__main__":
