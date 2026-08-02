@@ -12,7 +12,7 @@ from pathlib import Path
 # Directories to ignore during export
 DEFAULT_EXCLUDE_DIRS = {
     ".git", ".idea", "__pycache__", "venv", ".venv", 
-    "cache", "chroma_astrology_db", "astrology_rag_data",
+    "cache", "chroma_astrology_db", "chroma_jyotish_db", "astrology_rag_data",
     ".pytest_cache", ".mypy_cache", "node_modules", "dist", "build"
 }
 
@@ -30,7 +30,7 @@ DEFAULT_EXCLUDE_FILES = {
 
 # Extensions to include
 DEFAULT_INCLUDE_EXTENSIONS = {
-    ".py", ".md", ".json", ".txt", ".sh", ".yaml", ".yml"
+    ".py", ".md", ".json", ".txt", ".sh", ".yaml", ".yml", ".xml"
 }
 
 def is_export_artifact(file_path: Path, output_file: Path) -> bool:
@@ -51,6 +51,62 @@ def is_export_artifact(file_path: Path, output_file: Path) -> bool:
         return True
 
     return False
+
+
+def generate_tree_view(
+    search_path: Path,
+    root_path: Path,
+    output_file: Path,
+    include_extensions: set,
+    max_file_size_bytes: int
+) -> str:
+    """Generates an ASCII file tree view representation of the scanned directory."""
+    lines = []
+    rel_root = search_path.relative_to(root_path) if search_path != root_path else Path(".")
+    lines.append(f"{rel_root}/")
+
+    def _build_tree(current_dir: Path, prefix: str = ""):
+        try:
+            entries = sorted(list(current_dir.iterdir()), key=lambda p: (not p.is_dir(), p.name.lower()))
+        except PermissionError:
+            return
+
+        valid_entries = []
+        for entry in entries:
+            if entry.is_dir():
+                if entry.name in DEFAULT_EXCLUDE_DIRS or entry.name.startswith('.'):
+                    continue
+                valid_entries.append(entry)
+            else:
+                if is_export_artifact(entry, output_file):
+                    continue
+                valid_entries.append(entry)
+
+        count = len(valid_entries)
+        for i, entry in enumerate(valid_entries):
+            is_last = (i == count - 1)
+            connector = "└── " if is_last else "├── "
+            child_prefix = "    " if is_last else "│   "
+
+            if entry.is_dir():
+                lines.append(f"{prefix}{connector}{entry.name}/")
+                _build_tree(entry, prefix + child_prefix)
+            else:
+                ext = entry.suffix.lower()
+                is_excluded_ext = ext in DEFAULT_EXCLUDE_EXTENSIONS or ext not in include_extensions
+                file_size = entry.stat().st_size if entry.exists() else 0
+                is_over_size = file_size > max_file_size_bytes
+
+                annotation = ""
+                if is_excluded_ext:
+                    annotation = " [excluded type]"
+                elif is_over_size:
+                    annotation = f" [skipped: {file_size / 1024:.1f} KB]"
+
+                lines.append(f"{prefix}{connector}{entry.name}{annotation}")
+
+    _build_tree(search_path)
+    return "\n".join(lines)
 
 
 def export_repository(
@@ -86,6 +142,13 @@ def export_repository(
         out.write(f" ASTRA REPOSITORY CODE EXPORT\n")
         out.write(f" Target Path: {search_path.relative_to(root_path) if search_path != root_path else '.'}\n")
         out.write("=================================================================\n\n")
+
+        out.write("-----------------------------------------------------------------\n")
+        out.write(" REPOSITORY DIRECTORY TREE VIEW\n")
+        out.write("-----------------------------------------------------------------\n")
+        tree_view = generate_tree_view(search_path, root_path, out_path, include_extensions, max_file_size_bytes)
+        out.write(tree_view)
+        out.write("\n\n")
 
         for current_root, dirs, files in os.walk(search_path):
             # Exclude ignored directories in-place so os.walk doesn't enter them
