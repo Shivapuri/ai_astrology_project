@@ -1062,49 +1062,86 @@ def generate_ai_json(
     ruler_house_str = planets_data.get(chart_ruler, {}).get("whole_sign_house", "House_1")
     ruler_wsh_num = int(ruler_house_str.split("_")[1]) if "_" in ruler_house_str else 1
     
-    def calculate_dampening(planet_a, planet_b, p_data):
-        deg_a = p_data.get(planet_a, {}).get("absolute_degree", 0)
-        deg_b = p_data.get(planet_b, {}).get("absolute_degree", 0)
+    def calculate_dampening(planet_a, planet_b, p_data, asc_deg=None):
+        """Calculates aspect strength, intensity, and trajectory using Robert Hand's mathematical rules."""
+        deg_a = asc_deg if planet_a == "Ascendant" else p_data.get(planet_a, {}).get("absolute_degree", 0)
+        deg_b = asc_deg if planet_b == "Ascendant" else p_data.get(planet_b, {}).get("absolute_degree", 0)
         
-        # Shortest distance on a 360-degree wheel
+        retro_a = False if planet_a == "Ascendant" else p_data.get(planet_a, {}).get("is_retrograde", False)
+        retro_b = False if planet_b == "Ascendant" else p_data.get(planet_b, {}).get("is_retrograde", False)
+        
+        # 1. Base daily motions in degrees (Ascendant treated as fixed point 0.0 for natal aspecting)
+        base_speeds = {
+            "Moon": 13.18, "Mercury": 1.38, "Venus": 1.20, "Sun": 0.98,
+            "Mars": 0.52, "Jupiter": 0.08, "Saturn": 0.03, "Ascendant": 0.0
+        }
+        
+        speed_a = base_speeds.get(planet_a, 0) * (-1 if retro_a else 1)
+        speed_b = base_speeds.get(planet_b, 0) * (-1 if retro_b else 1)
+        
         dist = abs(deg_a - deg_b)
         dist = min(dist, 360 - dist)
         
         aspect = None
-        orb = 999
-        if dist <= 10:
-            aspect, orb = "Conjunction", dist
-        elif 80 <= dist <= 100:
-            aspect, orb = "Square", abs(dist - 90)
-        elif 170 <= dist <= 190:
-            aspect, orb = "Opposition", abs(dist - 180)
+        exact_orb = 999
+        target_angle = 0
+        
+        # 2. Hand's Aspect Angle Identification
+        if dist <= 12:
+            aspect, exact_orb, target_angle = "Conjunction", dist, 0
+        elif 48 <= dist <= 72:
+            aspect, exact_orb, target_angle = "Sextile", abs(dist - 60), 60
+        elif 78 <= dist <= 102:
+            aspect, exact_orb, target_angle = "Square", abs(dist - 90), 90
+        elif 108 <= dist <= 132:
+            aspect, exact_orb, target_angle = "Trine", abs(dist - 120), 120
+        elif 168 <= dist <= 192:
+            aspect, exact_orb, target_angle = "Opposition", abs(dist - 180), 180
             
         if aspect:
-            intensity = "Extreme" if orb <= 3 else "Moderate" if orb <= 6 else "Mild"
-            return {"is_active": True, "aspect": aspect, "orb_degrees": round(orb, 2), "intensity": intensity}
-        return {"is_active": False, "aspect": "None", "orb_degrees": 0, "intensity": "None"}
-
-    def calculate_dampening_to_deg(deg_a, planet_b, p_data):
-        deg_b = p_data.get(planet_b, {}).get("absolute_degree", 0)
-        dist = abs(deg_a - deg_b)
-        dist = min(dist, 360 - dist)
-        aspect = None
-        orb = 999
-        if dist <= 10:
-            aspect, orb = "Conjunction", dist
-        elif 80 <= dist <= 100:
-            aspect, orb = "Square", abs(dist - 90)
-        elif 170 <= dist <= 190:
-            aspect, orb = "Opposition", abs(dist - 180)
+            # 3. Robert Hand's Aspect-Specific Orbs
+            max_orb = 8.0 if aspect in ["Conjunction", "Opposition"] else (6.0 if aspect in ["Square", "Trine"] else 4.0)
             
-        if aspect:
-            intensity = "Extreme" if orb <= 3 else "Moderate" if orb <= 6 else "Mild"
-            return {"is_active": True, "aspect": aspect, "orb_degrees": round(orb, 2), "intensity": intensity}
-        return {"is_active": False, "aspect": "None", "orb_degrees": 0, "intensity": "None"}
+            # 4. Luminary & Ascendant Bonus Orbs (+2°)
+            luminaries = ["Sun", "Moon", "Ascendant"]
+            if planet_a in luminaries or planet_b in luminaries:
+                max_orb += 2.0
+                
+            if exact_orb <= max_orb:
+                # 5. Applying vs Separating (Micro-step projection to prevent leapfrogging)
+                next_deg_a = (deg_a + speed_a * 0.01) % 360
+                next_deg_b = (deg_b + speed_b * 0.01) % 360
+                next_dist = abs(next_deg_a - next_deg_b)
+                next_dist = min(next_dist, 360 - next_dist)
+                next_exact_orb = abs(next_dist - target_angle)
+                
+                app_sep = "Applying" if next_exact_orb < exact_orb else "Separating"
+                
+                # 6. Intensity Scaling based on precise orb tightness
+                if exact_orb <= 3.0:
+                    intensity = "Extreme"
+                elif exact_orb <= max_orb - 2.0:
+                    intensity = "Moderate"
+                else:
+                    intensity = "Mild"
+                    
+                return {
+                    "is_active": True, 
+                    "aspect": aspect, 
+                    "orb_degrees": round(exact_orb, 2), 
+                    "max_allowed_orb": max_orb,
+                    "intensity": intensity,
+                    "applying_or_separating": app_sep
+                }
+                
+        return {
+            "is_active": False, "aspect": "None", "orb_degrees": 0, 
+            "max_allowed_orb": 0, "intensity": "None", "applying_or_separating": "None"
+        }
 
-    steersman_dampening = calculate_dampening(chart_ruler, "Saturn", planets_data)
-    moon_dampening = calculate_dampening("Moon", "Saturn", planets_data)
-    asc_dampening = calculate_dampening_to_deg(subject.ascendant.abs_pos, "Saturn", planets_data)
+    steersman_dampening = calculate_dampening(chart_ruler, "Saturn", planets_data, asc_abs)
+    moon_dampening = calculate_dampening("Moon", "Saturn", planets_data, asc_abs)
+    ascendant_dampening = calculate_dampening("Ascendant", "Saturn", planets_data, asc_abs)
 
     is_private_house = ruler_wsh_num in [4, 6, 8, 12]
     is_aversion = ruler_wsh_num in [2, 6, 8, 12]
@@ -1113,9 +1150,9 @@ def generate_ai_json(
 
     net_vector_analysis = {
         "chart_ruler_planet": chart_ruler,
-        "ascendant_body_dampened_by_saturn": asc_dampening,
         "steersman_dampened_by_saturn": steersman_dampening,
         "moon_dampened_by_saturn": moon_dampening,
+        "ascendant_dampened_by_saturn": ascendant_dampening,
         "steersman_in_private_house": is_private_house,
         "steersman_in_aversion_to_ascendant": is_aversion
     }
