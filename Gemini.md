@@ -67,11 +67,20 @@ For AI agent instructions regarding chart interpretation, strictly follow the XM
 
 ---
 
+## Core Directive: QA & Testing Standards
+Every substantial new feature, architectural change, or data ingestion pipeline added to this repository MUST be accompanied by an automated test script. 
+1. Mathematical Engine updates must be verified against Swiss Ephemeris / Jyotishganit baseline scripts (e.g., `bulk_test_engine.py`).
+2. Vector Database (RAG) updates must be verified for both functionality (does it return text?) and RELEVANCE (does the text contain the correct astrological concepts?) using the RAG Quality Evaluation suite. 
+Do not commit major logic changes without providing a way to programmatically test them.
+
+---
+
 ## Technical Details & Constraints
 * **Vedic Engine (`/jyotish/`)**: Uses `jyotishganit` and `skyfield` for sidereal computations. Relies on cached NASA JPL DE421 ephemeris and Hipparcos catalog (`hip_main.dat`).
 * **Western Engine (`/western/`)**: Uses `kerykeion` and `swisseph` for tropical calculations and Whole Sign Houses.
 * **RAG Vector Bases (`/rag/`)**: 
   * **Western DBs**: Uses dual-camp Chroma DBs (`rag/chroma_structural_db/` for Demetra George's Hellenistic mechanics and `rag/chroma_modern_db/` for Hand, Arroyo, and Marks) with HuggingFace embeddings (`all-MiniLM-L6-v2`).
   * **Vedic DB**: Uses Chroma DB in `rag/chroma_jyotish_db/` with HuggingFace embeddings (`all-MiniLM-L6-v2`) for local retrieval of classical BPHS shlokas and VedAstro rules (`rag/fetch_jyotish_data.py` & `rag/build_jyotish_rag.py`).
+
 
 

@@ -35,6 +35,11 @@ Both engines feature robust, automated QA pipelines capable of stress-testing th
 python scripts/run_western_pipeline.py --name "User" --year 1983 --month 11 --day 10 --hour 4 --minute 20 --city "Georgsmarienhütte" --country "DE"
 ```
 
+**Test Vector Database Retrieval Quality:**
+```bash
+python tests/test_rag_quality.py
+```
+
 **Bulk Stress Test the Western Engine (10,000 Charts):**
 ```bash
 python western/bulk_test_engine.py
@@ -44,4 +49,5 @@ python western/bulk_test_engine.py
 ```bash
 python jyotish/bulk_test_jyotish.py
 ```
+
 
