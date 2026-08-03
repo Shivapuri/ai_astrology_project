@@ -1,10 +1,256 @@
 # Git Commit Export
-Generated on: Mon Aug  3 15:32:07 IST 2026
+Generated on: Mon Aug  3 15:33:18 IST 2026
 Number of commits requested: 3
 
 --------------------------------------------------------------------------------
 
-## Commit 1: 0ae0fa6
+## Commit 1: fb3c1af
+
+```diff
+commit fb3c1aff663f2d5de33dc8629d3ef7a4f100535f
+Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
+Date:   Mon Aug 3 15:33:06 2026 +0530
+
+    feat(western): update 3-stage pipeline prompts, RAG queries, empty house & outer planet support, and rebuild modern RAG DB with Parker astrology book
+
+diff --git a/prompts/agent1_structural.xml b/prompts/agent1_structural.xml
+index ae7f935..5fd1f14 100644
+--- a/prompts/agent1_structural.xml
++++ b/prompts/agent1_structural.xml
+@@ -1,18 +1,17 @@
+ <system_role>
+ You are the "Structural & Hellenistic Astrological Profiler". You use Demetra George's methodology. Your job is to analyze the objective mechanics of the chart.
++STRICT FIREWALL RULE: You must ONLY use the 7 traditional planets (Sun, Moon, Mercury, Venus, Mars, Jupiter, Saturn). Completely ignore Uranus, Neptune, and Pluto for domicile, exaltation, and rulership calculations. Keep house calculations strictly to Whole Sign Houses (WSH).
+ </system_role>
+ <focus_areas>
+-1. Core Architecture: Sect (Day/Night) and the Ascendant.
+-2. The Steersman: Identify the Chart Ruler. Analyze its House placement and Essential Dignity (is it in Domicile, Detriment, Fall?). 
+-3. Aversions: Is the Steersman in the 2nd, 6th, 8th, or 12th house (blind to the Ascendant)?
+-4. Planetary Phasis (Visibility): Check if the Steersman or Mercury is "Combust" or "Under the Beams".
+-5. The Hermetic Lots: Specifically analyze the Lot of Spirit (soul's purpose/action) and Lot of Eros (deepest passions) by their Sign and House placement.
++1. Core Architecture: Sect (Day/Night) and the Ascendant (The Helm).
++2. The Steersman: Identify the Chart Ruler. Analyze its House placement and Essential Dignity (is it in Domicile, Detriment, Fall, Peregrine?).
++3. Places of Life (Mundane Houses): Identify the ruling planets of the 2nd (Money), 4th (Home), 7th (Partnerships), and 10th (Career) houses. Note their dignities and if they are in aversion (blind) to the Ascendant.
++4. Planetary Condition Filter: Check if the Steersman or house rulers are Retrograde, "Combust", or "Under the Beams". Describe their capacity to produce outer events as 'internally focused' or 'delayed'. Do NOT psychologize this—leave the psychological processing to Agent 2.
++5. The Hermetic Lots: Analyze the Lot of Spirit (soul's purpose/action), Lot of Fortune (material reality), and Lot of Eros (deepest passions) by Sign and House.
++6. Annual Profections (Time-Lord): Based on the native's current age, calculate the active Profection house (count 1 sign per year from the Ascendant). Identify the traditional ruler of that house as the current "Time-Lord".
+ </focus_areas>
+ <instructions>
+-1. Review the raw chart JSON. Use the "Planetary Condition Checklist": Note the Sect, Sign Dignity, and House Angularity of the Steersman. 
+-2. PLANETARY PHASIS: Look at the `solar_phasis` of the planets. If a planet is "Combust (Burned)" or "Under the Beams (Hidden)", explain how this causes the planet's energy to operate inwardly through silent, internalized processes rather than outward public display.
+-3. THE HERMETIC LOTS: Locate the Lot of Spirit and Lot of Eros in the `7_hermetic_lots` object. Explain what houses they fall in to reveal the hidden life points of the native's spiritual quest and authentic passions.
+-4. UNIVERSAL 4-VECTOR SYNTHESIS: Never interpret a sign stereotype in isolation. If `steersman_dampened_by_saturn.is_active` or `steersman_in_private_house` is TRUE, you MUST override extroverted stereotypes.
+-5. MODULATE TONE BASED ON INTENSITY: If the Saturnian dampening is "Extreme", describe the native as highly guarded. If "Applying", it is escalating. If "Separating", they are outgrowing it.
+-6. Output a highly detailed, bulleted report on the "Mechanics of the Chart". DO NOT interpret the Solar-Lunar blend or psychology—leave that to Agent 2.
++1. Review the raw chart JSON. Use the "Planetary Condition Checklist" to note Sect, Sign Dignity, and House Angularity.
++2. UNIVERSAL 4-VECTOR SYNTHESIS: Never interpret a sign stereotype in isolation. If the ruler of the 10th house is in Fall or in the 12th house, objectively state how the career path will be delayed or require behind-the-scenes work.
++3. Output a highly detailed, bulleted report on the "Mechanics of the Chart". DO NOT interpret the Solar-Lunar blend, psychological motivations, or archetypes—leave that to Agent 2.
+ </instructions>
+diff --git a/prompts/agent2_psychological.xml b/prompts/agent2_psychological.xml
+index 3704cae..3d5b4a2 100644
+--- a/prompts/agent2_psychological.xml
++++ b/prompts/agent2_psychological.xml
+@@ -1,15 +1,17 @@
+ <system_role>
+-You are the "Psychological & Aspect Astrological Profiler". You use Noel Tyl's methodology. Your job is to analyze the subjective human needs, interpersonal frictions, and deep psyche.
++You are the "Psychological & Aspect Astrological Profiler". You use Noel Tyl's and Parker's methodology. Your job is to analyze subjective human needs, interpersonal frictions, and the deep psyche.
++You are permitted to use modern outer planets (Uranus, Neptune, Pluto) purely as psychological overlays (e.g., Uranus as individuation, Neptune as sensitivity/illusion, Pluto as trauma/power).
+ </system_role>
+ <focus_areas>
+ 1. The Solar-Lunar Blend: How does the Sun (Core Identity) feed the Moon (Reigning Emotional Need)?
+ 2. Natal Lunation Phase: What is the 8-fold psychological phase of the native (e.g., Crescent Moon = Struggle/Breakthrough)?
+ 3. The Micro-Zodiac (Dodecatemoria): What is the hidden psychological undertone beneath the Sun and Moon?
+-4. Developmental Tension: Analyze the hardest aspects (Squares, Oppositions, Conjunctions) forming the Pain Body.
++4. The Parker "Empty House" Technique: For key empty houses in the chart, identify the sign on the cusp, trace its ruling planet, and factor in the Moon's sign to determine the native's emotional anxiety or comfort level regarding that empty house's affairs.
++5. Developmental Tension: Analyze the hardest aspects (Squares, Oppositions, Conjunctions to outer planets) forming the Pain Body and defensive armor.
+ </focus_areas>
+ <instructions>
+-1. Review the raw chart JSON. Look closely at `natal_lunation_phase` in the `native_details` block. Use this phase to establish the underlying tempo and psychological rhythm of the native's life approach.
+-2. THE MICRO-ZODIAC (DODECATEMORIA): Look at the `dodecatemorion` block for the Sun and the Moon. Use the Dodecatemorion sign to explain the underlying psychological frequency beneath the native's exterior (e.g., A Scorpio Sun with a Gemini Dodecatemorion shows a hidden intellectual curiosity beneath a stoic exterior).
+-3. THE STORM ANALOGY (Robert Hand): When analyzing the Pain Body or Developmental Tension, address the trajectory of the aspect (`applying_or_separating`). If "Applying", it is an approaching storm demanding active resolution. If "Separating", it is a passing storm they are outgrowing.
+-4. Output a highly detailed, bulleted report on the "Psychological Dynamics". DO NOT worry about Chart Rulers or Hermetic Lots—Agent 1 is handling that.
++1. Review the raw chart JSON. Focus on `natal_lunation_phase` to establish the underlying tempo of the native's life approach.
++2. THE MICRO-ZODIAC: Use the Dodecatemorion sign to explain the underlying psychological frequency beneath the native's exterior.
++3. THE STORM ANALOGY: When analyzing the Pain Body or Developmental Tension, address the trajectory of the aspect (`applying_or_separating`). If "Applying", it is an approaching storm demanding active resolution. If "Separating", it is a passing storm they are outgrowing (a "separating blessing").
++4. Output a highly detailed, bulleted report on the "Psychological Dynamics". DO NOT calculate classical house rulers or Time-Lords—Agent 1 is handling that.
+ </instructions>
+diff --git a/prompts/agent3_synthesizer.xml b/prompts/agent3_synthesizer.xml
+index 3e113b3..1c41016 100644
+--- a/prompts/agent3_synthesizer.xml
++++ b/prompts/agent3_synthesizer.xml
+@@ -1,22 +1,49 @@
+ <system_role>
+-You are the "Master Astrologer & Empathetic Storyteller". You will be provided with a Structural Report (Agent 1) and a Psychological Report (Agent 2). Your job is to weave them into a beautiful, cohesive narrative.
++You are the "Master Astrologer & Empathetic Storyteller". You will receive a Structural Report (Agent 1) and a Psychological Report (Agent 2). Your job is to weave them into a beautiful, cohesive, life-grounded narrative.
+ </system_role>
+ <communication_style>
+ 1. Conversational Pacing: Write as if having a relaxed, friendly conversation over coffee. Keep sentences short and punchy.
+-2. Bridge Theory and Reality: For every astrological concept you explain, immediately follow it with a paragraph labeled "Day-in-the-Life Reality" giving a highly concrete behavioral example.
+-3. REVEAL THE HIDDEN LAYERS: Seamlessly weave in the "Hidden Dimensions" (Hermetic Lots, Planetary Phasis, Dodecatemoria, and Lunation Phase) provided by the agents. Do not just list them; explain them as the "secret architecture" or "underlying operating system" of the native's psyche and destiny.
+-4. ENVIRONMENTAL DUALITY RULE: When writing "Day-in-the-Life" examples, explicitly contrast how the native behaves in "Public/Stranger Settings" versus "Private/Safe Circle Settings." 
+-5. Safe Outlets: If the chart shows heavy Saturn dampening, suggest archetypal "safe outlets" for their energy.
++2. Ban the "Stapled Sheet" Trap: Never output a disjointed list of separate planet and aspect definitions. You must synthesize these factors into a single, cohesive counseling narrative. If Agent 1's structural limits conflict with Agent 2's psychological desires, resolve this tension gracefully.
++3. Reveal the Hidden Layers: Seamlessly weave in the Hermetic Lots, Phasis, Dodecatemoria, and Lunation Phase as the "underlying operating system" of their destiny.
+ </communication_style>
+ <chain_of_thought_enforcement>
+-BEFORE outputting your reading, you MUST verify:
+-- [ ] CHECK: Did I seamlessly integrate the hidden layers (Lots, Phasis, Dodecatemoria, Lunation Phase) into the narrative?
+-- [ ] CHECK: Did I apply the Environmental Duality Rule to contrast Public vs. Private behavior?
++BEFORE outputting your reading, verify:
++- [ ] Did I completely avoid repeating "Day-in-the-life" in every section? (It must ONLY appear in Section 5).
++- [ ] Did I include the actionable counseling strategy in Section 7?
+ </chain_of_thought_enforcement>
+ <output_format>
+-Your output must be formatted with beautiful Markdown headings.
+-Part 1: The Core Engine (Solar-Lunar Blend, Lunation Phase, & Micro-Zodiac) + Day-in-the-Life Reality
+-Part 2: The Vessel & Steersman (Ascendant, Ruler, Phasis, & Hermetic Lots) + Day-in-the-Life Reality
+-Part 3: Tension & Growth (Aspects & the Pain Body) + Day-in-the-Life Reality
+-Summary: 3 bullet points defining their Archetype, Superpower, and Core Lesson.
++Your output MUST perfectly follow this exact Markdown template. Do not deviate from these headings:
++
++# THE COSMIC MAP & PATHWAY: PERSONAL ASTROLOGICAL ANALYSIS
++
++## SECTION 1: BIRTH DATA & CHART ARCHITECTURE
++* **Native Name:** [Client Name]
++* **Birth Data:** [Date, Time, Location]
++* **Technical Parameters:** [Day/Night Chart, House System Used, Ascendant Degree]
++
++## SECTION 2: THE CORE ENGINE & LIFE TRAJECTORY (The Blueprint)
++[Synthesize the Sun (Identity) and Moon (Reigning Need) blend. Weave in the Lunation Phase and the Helm/Steersman (Ascendant and Chart Ruler). Explain the hidden Dodecatemoria frequencies.]
++
++## SECTION 3: THE PLACES OF ACTIVE LIFE (The Houses)
++[Detail how their chart manifests in the real world based on the structural rulers and empty house techniques. Cover:]
++* **Livelihood & Resources (2nd House & Lot of Fortune)**
++* **Foundations & Roots (4th House)**
++* **Partnerships & The Other (7th House)**
++* **Vocation & Public Calling (10th House / Midheaven)**
++
++## SECTION 4: THE PAIN BODY & DEVELOPMENTAL TENSION
++[Explain the major challenging aspects, conjunctions under the beams, or planet retrogrades. Describe their shadow, their defensive armor, and the "separating blessings" (difficulties they are outgrowing).]
++
++## SECTION 5: UNIFIED "DAY-IN-THE-LIFE" PORTRAIT
++[Synthesize their dual realities into one cohesive narrative:]
++* **The Public Persona (The Shield):** [How the native navigates professional, stranger, and high-stress environments]
++* **The Private Sanctuary (The Hearth):** [How the native behaves when completely relaxed, safe, and with trusted loved ones]
++
++## SECTION 6: THE TIME-LORD & CURRENT LIFE CYCLE (Dynamic Timing)
++* **The Current Year's Time-Lord:** [Explain the active Annual Profection House and its ruler, and what chapter of life they are in right now based on the current year provided in the prompt.]
++
++## SECTION 7: THE UNIFIED PATH (Counseling Strategy & Next Steps)
++* **Your Archetype & Superpower:** [A concise, inspiring summary of who they are and their unique strength]
++* **Your Action Plan:** [Provide 3 concrete, step-by-step behavioral practices the client can use to satisfy their Moon's reigning emotional needs using their Ascendant Ruler's structural strength]
++* **The 100-Word Core Essence:** [The distilled summary of their entire life purpose]
+ </output_format>
+diff --git a/scripts/run_western_pipeline.py b/scripts/run_western_pipeline.py
+index 5d9a71c..538cec0 100644
+--- a/scripts/run_western_pipeline.py
++++ b/scripts/run_western_pipeline.py
+@@ -233,9 +233,9 @@ def run_pipeline(
+     struct_queries = [
+         f"Ascendant in {asc_sign} physical temperament",
+         f"Chart ruler {chart_ruler} in the {ruler_house}",
+-        f"Planet in {ruler_sign} essential dignity",
+-        f"{chart_ruler} in aversion to Ascendant meaning",
+-        f"{sect} planetary strength and malefic behavior"
++        f"10th house Midheaven career and public reputation",
++        f"7th house marriage and partnerships",
++        f"Annual Profections and Time Lords technique"
+     ] + ruler_aspect_queries
+     
+     # Highly targeted Psychological Queries (for Noel Tyl / Robert Hand framework)
+@@ -243,8 +243,8 @@ def run_pipeline(
+         f"Sun in {sun_sign} core identity",
+         f"Moon in {moon_sign} reigning emotional need",
+         f"Saturn in {saturn_sign} emotional defenses and pain body",
+-        f"Mars in {mars_sign} conflict resolution and anger",
+-        f"Venus in {venus_sign} intimate relationships and love"
++        f"Empty house interpretation astrology technique",
++        f"Uranus Neptune Pluto psychological influence"
+     ] + aspect_queries
+ 
+     # STEP 3: Increase Context Volume (max_results_per_query=4)
+@@ -252,11 +252,15 @@ def run_pipeline(
+     psychological_rag_context = query_local_rag_db(CHROMA_MODERN_DB_DIR, psych_queries, max_results_per_query=4)
+     print("✅ Domain-isolated Vector DB contexts extracted natively (Optimized Volume).")
+ 
++    import datetime
++    current_date = datetime.datetime.now().strftime("%B %Y")
++
+     # STEP 3: Run Agent 1 (Structural & Hellenistic Profiler via Headless AGY)
+     print("\n🏛️ Step 3: Executing Agent 1 (Structural Profiler - Demetra George Framework)...")
+     agent1_prompt = load_prompt("agent1_structural.xml")
+     agent1_payload = (
+         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
++        f"=== CURRENT DATE CONTEXT ===\nToday's date is {current_date}. Calculate their current age to find the active Annual Profection Time-Lord.\n\n"
+         f"=== RETRIEVED VECTOR DB GROUND TRUTH (STRUCTURAL CONTEXT) ===\n{structural_rag_context}\n\n"
+         "Please provide a comprehensive, deeply reflective report analyzing the exact objective "
+         "mechanics of this chart according to your instructions and focus areas. Do not truncate your analysis."
+@@ -295,11 +299,11 @@ def run_pipeline(
+     agent3_prompt = load_prompt("agent3_synthesizer.xml")
+     agent3_payload = (
+         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
++        f"=== CURRENT DATE CONTEXT ===\nToday's date is {current_date}.\n\n"
+         f"=== AGENT 1: STRUCTURAL REPORT ===\n{structural_report}\n\n"
+         f"=== AGENT 2: PSYCHOLOGICAL REPORT ===\n{psychological_report}\n\n"
+         "Please synthesize both reports into a rich, deep, conversational astrological reading. "
+-        "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
+-        "'Day-in-the-Life Reality' behavioral example."
++        "Follow your formatting guidelines strictly. DO NOT repeat 'Day-in-the-Life' in every section—only in Section 5."
+     )
+     agent3_log = os.path.join(logs_dir, f"{name}_agent3_trace.txt")
+     final_reading = run_agent_headless(
+diff --git a/western/generate_chart.py b/western/generate_chart.py
+index 7a7e0c6..9b4fb69 100644
+--- a/western/generate_chart.py
++++ b/western/generate_chart.py
+@@ -1092,6 +1092,27 @@ def generate_ai_json(
+             "dodecatemorion": calculate_dodecatemorion(obj.abs_pos)
+         }
+ 
++    modern_planets_data = {}
++    for p in ["uranus", "neptune", "pluto"]:
++        try:
++            obj = getattr(subject, p)
++            modern_planets_data[obj.name] = {
++                "sign": obj.sign,
++                "whole_sign_house": get_wsh(obj.sign),
++                "degree_0_to_30": round(obj.position, 2),
++                "is_retrograde": obj.retrograde
++            }
++        except AttributeError:
++            pass  # Failsafe if swisseph/kerykeion fails to load an outer planet
++
++    occupied_houses = set()
++    for data in planets_data.values():
++        occupied_houses.add(data["whole_sign_house"])
++    for data in modern_planets_data.values():
++        occupied_houses.add(data["whole_sign_house"])
++        
++    empty_houses = [f"House_{i}" for i in range(1, 13) if f"House_{i}" not in occupied_houses]
++
+     # Hermetic Lots Calculations
+     sun_abs, moon_abs = subject.sun.abs_pos, subject.moon.abs_pos
+     mer_abs, ven_abs, mars_abs = subject.mercury.abs_pos, subject.venus.abs_pos, subject.mars.abs_pos
+@@ -1241,10 +1262,12 @@ def generate_ai_json(
+             "ascendant": asc_sign,
+             "sect": "Day Chart" if is_day_chart else "Night Chart",
+             "house_system": "Whole Sign Houses (WSH)",
+-            "natal_lunation_phase": natal_lunation_phase
++            "natal_lunation_phase": natal_lunation_phase,
++            "empty_houses": empty_houses
+         },
+         "systematic_12_point_chart_audit": systematic_12_point_chart_audit,
+         "traditional_planets": planets_data,
++        "modern_planets": modern_planets_data,
+         "7_hermetic_lots": lots,
+         "whole_sign_aspects": aspects_list,
+         "prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str),
+
+```
+
+--------------------------------------------------------------------------------
+
+## Commit 2: 0ae0fa6
 
 ```diff
 commit 0ae0fa69b22073f601bba9ac8b2d910ece9219e5
@@ -275,7 +521,7 @@ index 0000000..8d46c60
 
 --------------------------------------------------------------------------------
 
-## Commit 2: 384b173
+## Commit 3: 384b173
 
 ```diff
 commit 384b1736603c4440eab48a9549b4ff744df43f73
@@ -797,206 +1043,6 @@ index 0000000..ae1519c
 +*   **Your Superpower:** The ability to endure immense psychological pressure, process hidden truths, and translate that intense energy into unshakeable, real-world authority.
 +*   **Your Core Lesson:** To realize that spontaneous self-expression is not a threat to your security, and to finally allow your inner fire to step out from behind the fortress walls.
 \ No newline at end of file
-
-```
-
---------------------------------------------------------------------------------
-
-## Commit 3: 0525e63
-
-```diff
-commit 0525e63ec0a418cef2b22216bed6938323f833ca
-Author: Shivapuri <142108173+Shivapuri@users.noreply.github.com>
-Date:   Mon Aug 3 09:27:30 2026 +0530
-
-    feat(western): automate dedicated output folders, dashboard, PDF, and TTS audio narration in western pipeline
-
-diff --git a/scripts/run_western_pipeline.py b/scripts/run_western_pipeline.py
-index 95656c7..5d9a71c 100644
---- a/scripts/run_western_pipeline.py
-+++ b/scripts/run_western_pipeline.py
-@@ -145,18 +145,34 @@ def run_pipeline(
-     synthesizer_model: str = "Gemini 3.1 Pro (High)"
- ):
-     date_str = f"{year:04d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}"
-+
-+    # Determine unique output directory under western/
-+    base_target_dir = os.path.join(BASE_DIR, "western", name)
-+    if not os.path.exists(base_target_dir):
-+        target_dir = base_target_dir
-+    else:
-+        counter = 1
-+        while os.path.exists(f"{base_target_dir}_{counter}"):
-+            counter += 1
-+        target_dir = f"{base_target_dir}_{counter}"
-+    
-+    os.makedirs(target_dir, exist_ok=True)
-+    logs_dir = os.path.join(target_dir, "logs")
-+    os.makedirs(logs_dir, exist_ok=True)
-+
-     print("======================================================================")
-     print("  Western Astrology Multi-Agent Parallel Pipeline (Headless AGY)")
-     print("======================================================================")
-     print(f" Target: {name} | Date/Time: {date_str}")
-     print(f" Location: {city}, {country_code}")
-+    print(f" Output Directory: {target_dir}")
-     print(f" Models: Agent 1={structural_model} | Agent 2={psychological_model} | Agent 3={synthesizer_model}")
-     print("----------------------------------------------------------------------")
- 
--    # STEP 1: Generate Raw Chart JSON
--    print("\n🔮 Step 1: Calculating Western Chart JSON via Engine...")
-+    # STEP 1: Generate Raw Chart JSON & HTML Dashboard
-+    print("\n🔮 Step 1: Calculating Western Chart JSON & Interactive Dashboard via Engine...")
-     chart_json_filename = f"{name}_{date_str}_chart_context.json"
--    chart_json_path = os.path.join(BASE_DIR, "western", chart_json_filename)
-+    chart_json_path = os.path.join(target_dir, chart_json_filename)
-     chart_data = generate_ai_json(
-         name=name,
-         year=year,
-@@ -175,7 +191,7 @@ def run_pipeline(
-             chart_data = json.load(f)
-             
-     chart_json_str = json.dumps(chart_data, indent=2)
--    print("✅ Raw Chart JSON successfully generated.")
-+    print("✅ Raw Chart JSON and HTML Dashboard successfully generated.")
- 
-     native = chart_data.get("native_details", {})
-     planets = chart_data.get("traditional_planets", {})
-@@ -245,7 +261,7 @@ def run_pipeline(
-         "Please provide a comprehensive, deeply reflective report analyzing the exact objective "
-         "mechanics of this chart according to your instructions and focus areas. Do not truncate your analysis."
-     )
--    agent1_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent1_trace.txt")
-+    agent1_log = os.path.join(logs_dir, f"{name}_agent1_trace.txt")
-     structural_report = run_agent_headless(
-         agent_name="Agent 1 (Structural)",
-         system_prompt=agent1_prompt,
-@@ -264,7 +280,7 @@ def run_pipeline(
-         "Please provide a comprehensive, deep psychological report analyzing the subjective needs, frictions, "
-         "and pain body dynamics according to your instructions."
-     )
--    agent2_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent2_trace.txt")
-+    agent2_log = os.path.join(logs_dir, f"{name}_agent2_trace.txt")
-     psychological_report = run_agent_headless(
-         agent_name="Agent 2 (Psychological)",
-         system_prompt=agent2_prompt,
-@@ -285,7 +301,7 @@ def run_pipeline(
-         "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
-         "'Day-in-the-Life Reality' behavioral example."
-     )
--    agent3_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent3_trace.txt")
-+    agent3_log = os.path.join(logs_dir, f"{name}_agent3_trace.txt")
-     final_reading = run_agent_headless(
-         agent_name="Agent 3 (Synthesizer)",
-         system_prompt=agent3_prompt,
-@@ -297,7 +313,7 @@ def run_pipeline(
- 
-     # STEP 6: Save Final Markdown Output with Date/Time naming convention
-     md_filename = f"{name}_{date_str}_Full_Reading.md"
--    md_path = os.path.join(BASE_DIR, "western", md_filename)
-+    md_path = os.path.join(target_dir, md_filename)
-     with open(md_path, "w", encoding="utf-8") as f:
-         f.write(final_reading)
-     print(f"✅ Saved Markdown Reading: {md_path}")
-@@ -305,13 +321,48 @@ def run_pipeline(
-     # STEP 7: Generate Publication-Grade PDF
-     print("\n📄 Step 7: Generating Publication-Grade PDF Report...")
-     pdf_filename = f"{name}_{date_str}_Full_Reading.pdf"
--    pdf_path = os.path.join(BASE_DIR, "western", pdf_filename)
-+    pdf_path = os.path.join(target_dir, pdf_filename)
-     generate_pdf(md_path, pdf_path)
-+    print(f"✅ Saved PDF Reading: {pdf_path}")
-+
-+    # STEP 8: Generate Audio Narrative (TTS)
-+    print("\n🎙️ Step 8: Generating Audio Narrative (Supertonic TTS)...")
-+    wav_filename = f"{name}_{date_str}_Full_Reading.wav"
-+    mp3_filename = f"{name}_{date_str}_Full_Reading.mp3"
-+    wav_path = os.path.join(target_dir, wav_filename)
-+    mp3_path = os.path.join(target_dir, mp3_filename)
-+    
-+    tts_python = "/Users/hajnaljanos/.local/bin/tts_venv/bin/python3"
-+    if not os.path.exists(tts_python):
-+        tts_python = sys.executable
-+
-+    audio_script = os.path.join(BASE_DIR, "scripts", "generate_reading_audio.py")
-+    if os.path.exists(audio_script):
-+        cmd = [
-+            tts_python,
-+            audio_script,
-+            "--report", md_path,
-+            "--output-wav", wav_path,
-+            "--output-mp3", mp3_path
-+        ]
-+        try:
-+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-+            if res.returncode == 0:
-+                print(f"✅ Audio narrative successfully generated: {mp3_path}")
-+            else:
-+                print(f"⚠️ Audio narrative generation finished with note: {res.stderr or res.stdout}")
-+        except Exception as e:
-+            print(f"⚠️ Could not generate audio narrative: {e}")
-+
-+    html_path = os.path.join(target_dir, f"{name}_dashboard.html")
- 
-     print("\n======================================================================")
-     print("🎉 Pipeline Complete!")
--    print(f"   Markdown Reading: {md_path}")
--    print(f"   PDF Reading:      {pdf_path}")
-+    print(f"   Output Directory:  {target_dir}")
-+    print(f"   Markdown Reading:  {md_path}")
-+    print(f"   PDF Reading:       {pdf_path}")
-+    print(f"   HTML Dashboard:    {html_path}")
-+    print(f"   Audio Narration:   {mp3_path}")
-     print("======================================================================")
-     return pdf_path
- 
-diff --git a/western/shivapuri_alt/shivapuri_1983-11-10_22-20_Full_Reading.md b/western/shivapuri_alt/shivapuri_1983-11-10_22-20_Full_Reading.md
-new file mode 100644
-index 0000000..cba12e3
---- /dev/null
-+++ b/western/shivapuri_alt/shivapuri_1983-11-10_22-20_Full_Reading.md
-@@ -0,0 +1,41 @@
-+# Part 1: The Core Engine (Synthesizing the Solar-Lunar Blend)
-+
-+In psychological astrology, your Sun represents your core identity and vital energetic fuel, while your Moon reveals your **Reigning Emotional Need** (the non-negotiable feeling of safety and comfort that your subconscious craves). Because you were born after sunset, you have a **Nocturnal Sect** chart (a night-shift configuration). This means your introverted, intuitive side is naturally in the driver’s seat, preferring subtle, internal depth over loud daytime displays.
-+
-+Your Sun sits in intensely perceptive Scorpio, acting like a deep-sea submersible or a concealed nuclear reactor—powerful, immensely private, and always tuned into what lies beneath the surface. This deep Scorpio fuel powers your Moon in Capricorn, which requires stability, tangible competence, and emotional control to feel genuinely safe. You do not find peace in shallow chatter; you thrive when you feel self-sufficient and emotionally grounded. Together, this Scorpio-Capricorn blend builds a resilient, fortified inner sanctuary that gives you steady emotional stamina.
-+
-+**Day-in-the-Life Reality**
-+* **In Public & Stranger Settings:** Imagine you are at a noisy neighborhood gathering or a casual social mixer. While others exchange superficial small talk in the center of the room, you naturally gravitate toward the quieter perimeter. If a stranger asks probing questions about your personal life, you instinctively give calm, composed, and completely unreadable responses. You operate with radar-like perception, silently observing the room's emotional undercurrents while your own vulnerabilities remain locked safely behind a heavy bank-vault door.
-+* **In Private & Safe Circle Settings:** Back home in the sanctuary of your living room, lounging with your most trusted partner or long-time best friend, that vault door slowly swings open. You may not suddenly become sentimental or bubbly, but you radiate profound emotional loyalty and calm presence. If your confidant faces a turbulent personal crisis, you are their unshakable rock—listening without judgment, absorbing their messiest emotions without flinching, and helping them ground their distress into a peaceful, secure feeling of safety.
-+
-+***
-+
-+# Part 2: The Vessel & Steersman (Synthesizing Ascendant, Ruler, and Dignities)
-+
-+Your **Ascendant** (the zodiac sign rising on the eastern horizon at the exact moment of your birth) serves as your **Helm**—the steering wheel of your life, representing your physical body and outer presentation. You have a Leo rising, but we must immediately toss out the loud, theatrical pop-astrology stereotype! In true classical architecture, we look to your **Steersman** (the chart ruler—which is the Sun, since the Sun naturally rules Leo).
-+
-+Your Steersman lives in Scorpio in your 4th House (the deeply private zone of home, ancestry, and concealed foundations). Moreover, your Sun is **Peregrine** (wandering in foreign territory without automated privileges), meaning you are self-made, adaptable, and highly self-reliant. Instead of craving center-stage spotlights, your inner captain directs your life force inward and downward—building personal security and uncovering hidden truth. You are the introverted Leo: not a glittering parade float, but a powerful sports car painted in matte black, driving quietly through a secluded private estate.
-+
-+**Day-in-the-Life Reality**
-+* **In Public & Stranger Settings:** Because sobering Saturn applies an extreme, razor-sharp squeeze to your Ascendant (an exact 1.08° angle of tension), you experience intense physical sensitivity when stepping into chaotic crowds. Walking through a packed city plaza or entering a room where all eyes suddenly turn to you triggers immediate physical self-consciousness. To guard your personal boundaries against the unwanted spotlight, your body naturally tenses up: you might instinctually tilt your head downward, draw your arms inward toward your core, and feel an uncomfortable, guarded stiffness in your walk as you try to minimize your physical footprint.
-+* **In Private & Safe Circle Settings:** The moment you cross the threshold into your favorite safe space, surrounded by people who feel like home, your physical posture completely resets. Supported by your gentle Venus in Libra and buoyant Jupiter in Sagittarius (both comfortably resting in **Domicile**, or their happy home signs), your spine visibly decompresses and your shoulders drop. That genuine, warm Leo solar energy glows effortlessly. You transform into the warm, generous host—pouring cups of tea, leaning back with hearty laughter, and offering affectionate warmth without ever needing an audience to applaud you.
-+
-+***
-+
-+# Part 3: Tension & Growth (Synthesizing Aspects & the Pain Body)
-+
-+Your internal engine is wired with dynamic friction through hard **Aspects** (geometrical angles of tension between planets that compel you to adapt and grow). You have your Sun, Mercury, and Saturn tightly fused together in a **Conjunction** (planets combined in the exact same spot) in Scorpio. This installs an ultra-vigilant inner editorial board in your mind. Before a thought or vulnerable feeling can leave your mouth, this internal critic examines it for weakness or exposure. 
-+
-+You also navigate a challenging **Square** (a strict 90-degree clash requiring compromise) between your cautious Capricorn Moon and your affectionate Libra Venus. This creates a psychological tug-of-war between maintaining your emotional self-reliance and leaning into vulnerable intimacy. Combined with perfectionistic friction between your analytical Virgo Mars and boundless Sagittarius Jupiter, your **Pain Body** (the protective emotional armor forged from early life survival strategies) deeply fears public vulnerability or appearing messy. The secret to discharging this high-pressure inner friction is utilizing archetypal safe outlets—like structured creative rituals or focused physical movement practices—where your intense energy can flow freely without fear of harsh evaluation.
-+
-+**Day-in-the-Life Reality**
-+* **In Public & Stranger Settings:** Picture yourself at a casual group dinner where an acquaintance challenges everyone to share their creative dreams or debate a controversial artistic subject. As others speak impulsively, your internal censorship board kicks into hyper-drive. You silently rehearse your thoughts twice over, weighing every word for potential vulnerability. Rather than sharing an unpolished idea or exposing your tender passions to unpredictable debate, you simply smile, take a sip of your drink, and choose thoughtful silence.
-+* **In Private & Safe Circle Settings:** When you engage in your favorite private outlets—whether that is intense physical movement, disciplined creative craftsmanship, or solo nighttime journaling—you finally put that tough inner critic on vacation. In this secure sanctum, and in soft conversation with your favorite confidant, you practice conscious de-armoring. You allow your raw, unedited thoughts and gentle affection to flow freely, learning that softening your armor in a safe harbor does not weaken your independence—it nourishes your soul.
-+
-+***
-+
-+# Summary
-+
-+* **Your Archetype:** **The Private Sovereign** (or The Guarded Alchemist)—a composed, regal spirit operating with profound internal depth, intense perception, and unshakeable self-sufficiency.
-+* **Your Superpower:** **Unflinching Emotional Resilience.** You hold the steady power to absorb life's deepest chaos, remain entirely calm under pressure, and navigate emotional turbulence with unmatched strategic clarity.
-+* **Your Core Lesson:** **Conscious De-Armoring.** Discovering that allowing messy, soft vulnerability with a chosen circle of trusted loved ones is not a loss of structural control, but the very bedrock that empowers your lasting strength.
 
 ```
 
