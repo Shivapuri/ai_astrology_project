@@ -1092,6 +1092,27 @@ def generate_ai_json(
             "dodecatemorion": calculate_dodecatemorion(obj.abs_pos)
         }
 
+    modern_planets_data = {}
+    for p in ["uranus", "neptune", "pluto"]:
+        try:
+            obj = getattr(subject, p)
+            modern_planets_data[obj.name] = {
+                "sign": obj.sign,
+                "whole_sign_house": get_wsh(obj.sign),
+                "degree_0_to_30": round(obj.position, 2),
+                "is_retrograde": obj.retrograde
+            }
+        except AttributeError:
+            pass  # Failsafe if swisseph/kerykeion fails to load an outer planet
+
+    occupied_houses = set()
+    for data in planets_data.values():
+        occupied_houses.add(data["whole_sign_house"])
+    for data in modern_planets_data.values():
+        occupied_houses.add(data["whole_sign_house"])
+        
+    empty_houses = [f"House_{i}" for i in range(1, 13) if f"House_{i}" not in occupied_houses]
+
     # Hermetic Lots Calculations
     sun_abs, moon_abs = subject.sun.abs_pos, subject.moon.abs_pos
     mer_abs, ven_abs, mars_abs = subject.mercury.abs_pos, subject.venus.abs_pos, subject.mars.abs_pos
@@ -1241,10 +1262,12 @@ def generate_ai_json(
             "ascendant": asc_sign,
             "sect": "Day Chart" if is_day_chart else "Night Chart",
             "house_system": "Whole Sign Houses (WSH)",
-            "natal_lunation_phase": natal_lunation_phase
+            "natal_lunation_phase": natal_lunation_phase,
+            "empty_houses": empty_houses
         },
         "systematic_12_point_chart_audit": systematic_12_point_chart_audit,
         "traditional_planets": planets_data,
+        "modern_planets": modern_planets_data,
         "7_hermetic_lots": lots,
         "whole_sign_aspects": aspects_list,
         "prenatal_syzygy": get_prenatal_syzygy(year, month, day, hour, minute, subject.tz_str),

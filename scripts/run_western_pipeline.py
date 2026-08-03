@@ -233,9 +233,9 @@ def run_pipeline(
     struct_queries = [
         f"Ascendant in {asc_sign} physical temperament",
         f"Chart ruler {chart_ruler} in the {ruler_house}",
-        f"Planet in {ruler_sign} essential dignity",
-        f"{chart_ruler} in aversion to Ascendant meaning",
-        f"{sect} planetary strength and malefic behavior"
+        f"10th house Midheaven career and public reputation",
+        f"7th house marriage and partnerships",
+        f"Annual Profections and Time Lords technique"
     ] + ruler_aspect_queries
     
     # Highly targeted Psychological Queries (for Noel Tyl / Robert Hand framework)
@@ -243,8 +243,8 @@ def run_pipeline(
         f"Sun in {sun_sign} core identity",
         f"Moon in {moon_sign} reigning emotional need",
         f"Saturn in {saturn_sign} emotional defenses and pain body",
-        f"Mars in {mars_sign} conflict resolution and anger",
-        f"Venus in {venus_sign} intimate relationships and love"
+        f"Empty house interpretation astrology technique",
+        f"Uranus Neptune Pluto psychological influence"
     ] + aspect_queries
 
     # STEP 3: Increase Context Volume (max_results_per_query=4)
@@ -252,11 +252,15 @@ def run_pipeline(
     psychological_rag_context = query_local_rag_db(CHROMA_MODERN_DB_DIR, psych_queries, max_results_per_query=4)
     print("✅ Domain-isolated Vector DB contexts extracted natively (Optimized Volume).")
 
+    import datetime
+    current_date = datetime.datetime.now().strftime("%B %Y")
+
     # STEP 3: Run Agent 1 (Structural & Hellenistic Profiler via Headless AGY)
     print("\n🏛️ Step 3: Executing Agent 1 (Structural Profiler - Demetra George Framework)...")
     agent1_prompt = load_prompt("agent1_structural.xml")
     agent1_payload = (
         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
+        f"=== CURRENT DATE CONTEXT ===\nToday's date is {current_date}. Calculate their current age to find the active Annual Profection Time-Lord.\n\n"
         f"=== RETRIEVED VECTOR DB GROUND TRUTH (STRUCTURAL CONTEXT) ===\n{structural_rag_context}\n\n"
         "Please provide a comprehensive, deeply reflective report analyzing the exact objective "
         "mechanics of this chart according to your instructions and focus areas. Do not truncate your analysis."
@@ -295,11 +299,11 @@ def run_pipeline(
     agent3_prompt = load_prompt("agent3_synthesizer.xml")
     agent3_payload = (
         f"=== RAW CHART JSON ===\n{chart_json_str}\n\n"
+        f"=== CURRENT DATE CONTEXT ===\nToday's date is {current_date}.\n\n"
         f"=== AGENT 1: STRUCTURAL REPORT ===\n{structural_report}\n\n"
         f"=== AGENT 2: PSYCHOLOGICAL REPORT ===\n{psychological_report}\n\n"
         "Please synthesize both reports into a rich, deep, conversational astrological reading. "
-        "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
-        "'Day-in-the-Life Reality' behavioral example."
+        "Follow your formatting guidelines strictly. DO NOT repeat 'Day-in-the-Life' in every section—only in Section 5."
     )
     agent3_log = os.path.join(logs_dir, f"{name}_agent3_trace.txt")
     final_reading = run_agent_headless(
