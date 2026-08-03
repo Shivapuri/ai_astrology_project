@@ -145,18 +145,34 @@ def run_pipeline(
     synthesizer_model: str = "Gemini 3.1 Pro (High)"
 ):
     date_str = f"{year:04d}-{month:02d}-{day:02d}_{hour:02d}-{minute:02d}"
+
+    # Determine unique output directory under western/
+    base_target_dir = os.path.join(BASE_DIR, "western", name)
+    if not os.path.exists(base_target_dir):
+        target_dir = base_target_dir
+    else:
+        counter = 1
+        while os.path.exists(f"{base_target_dir}_{counter}"):
+            counter += 1
+        target_dir = f"{base_target_dir}_{counter}"
+    
+    os.makedirs(target_dir, exist_ok=True)
+    logs_dir = os.path.join(target_dir, "logs")
+    os.makedirs(logs_dir, exist_ok=True)
+
     print("======================================================================")
     print("  Western Astrology Multi-Agent Parallel Pipeline (Headless AGY)")
     print("======================================================================")
     print(f" Target: {name} | Date/Time: {date_str}")
     print(f" Location: {city}, {country_code}")
+    print(f" Output Directory: {target_dir}")
     print(f" Models: Agent 1={structural_model} | Agent 2={psychological_model} | Agent 3={synthesizer_model}")
     print("----------------------------------------------------------------------")
 
-    # STEP 1: Generate Raw Chart JSON
-    print("\n🔮 Step 1: Calculating Western Chart JSON via Engine...")
+    # STEP 1: Generate Raw Chart JSON & HTML Dashboard
+    print("\n🔮 Step 1: Calculating Western Chart JSON & Interactive Dashboard via Engine...")
     chart_json_filename = f"{name}_{date_str}_chart_context.json"
-    chart_json_path = os.path.join(BASE_DIR, "western", chart_json_filename)
+    chart_json_path = os.path.join(target_dir, chart_json_filename)
     chart_data = generate_ai_json(
         name=name,
         year=year,
@@ -175,7 +191,7 @@ def run_pipeline(
             chart_data = json.load(f)
             
     chart_json_str = json.dumps(chart_data, indent=2)
-    print("✅ Raw Chart JSON successfully generated.")
+    print("✅ Raw Chart JSON and HTML Dashboard successfully generated.")
 
     native = chart_data.get("native_details", {})
     planets = chart_data.get("traditional_planets", {})
@@ -245,7 +261,7 @@ def run_pipeline(
         "Please provide a comprehensive, deeply reflective report analyzing the exact objective "
         "mechanics of this chart according to your instructions and focus areas. Do not truncate your analysis."
     )
-    agent1_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent1_trace.txt")
+    agent1_log = os.path.join(logs_dir, f"{name}_agent1_trace.txt")
     structural_report = run_agent_headless(
         agent_name="Agent 1 (Structural)",
         system_prompt=agent1_prompt,
@@ -264,7 +280,7 @@ def run_pipeline(
         "Please provide a comprehensive, deep psychological report analyzing the subjective needs, frictions, "
         "and pain body dynamics according to your instructions."
     )
-    agent2_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent2_trace.txt")
+    agent2_log = os.path.join(logs_dir, f"{name}_agent2_trace.txt")
     psychological_report = run_agent_headless(
         agent_name="Agent 2 (Psychological)",
         system_prompt=agent2_prompt,
@@ -285,7 +301,7 @@ def run_pipeline(
         "Follow your formatting guidelines strictly, ensuring every concept is followed by a concrete "
         "'Day-in-the-Life Reality' behavioral example."
     )
-    agent3_log = os.path.join(BASE_DIR, "western", "logs", f"{name}_agent3_trace.txt")
+    agent3_log = os.path.join(logs_dir, f"{name}_agent3_trace.txt")
     final_reading = run_agent_headless(
         agent_name="Agent 3 (Synthesizer)",
         system_prompt=agent3_prompt,
@@ -297,7 +313,7 @@ def run_pipeline(
 
     # STEP 6: Save Final Markdown Output with Date/Time naming convention
     md_filename = f"{name}_{date_str}_Full_Reading.md"
-    md_path = os.path.join(BASE_DIR, "western", md_filename)
+    md_path = os.path.join(target_dir, md_filename)
     with open(md_path, "w", encoding="utf-8") as f:
         f.write(final_reading)
     print(f"✅ Saved Markdown Reading: {md_path}")
@@ -305,13 +321,48 @@ def run_pipeline(
     # STEP 7: Generate Publication-Grade PDF
     print("\n📄 Step 7: Generating Publication-Grade PDF Report...")
     pdf_filename = f"{name}_{date_str}_Full_Reading.pdf"
-    pdf_path = os.path.join(BASE_DIR, "western", pdf_filename)
+    pdf_path = os.path.join(target_dir, pdf_filename)
     generate_pdf(md_path, pdf_path)
+    print(f"✅ Saved PDF Reading: {pdf_path}")
+
+    # STEP 8: Generate Audio Narrative (TTS)
+    print("\n🎙️ Step 8: Generating Audio Narrative (Supertonic TTS)...")
+    wav_filename = f"{name}_{date_str}_Full_Reading.wav"
+    mp3_filename = f"{name}_{date_str}_Full_Reading.mp3"
+    wav_path = os.path.join(target_dir, wav_filename)
+    mp3_path = os.path.join(target_dir, mp3_filename)
+    
+    tts_python = "/Users/hajnaljanos/.local/bin/tts_venv/bin/python3"
+    if not os.path.exists(tts_python):
+        tts_python = sys.executable
+
+    audio_script = os.path.join(BASE_DIR, "scripts", "generate_reading_audio.py")
+    if os.path.exists(audio_script):
+        cmd = [
+            tts_python,
+            audio_script,
+            "--report", md_path,
+            "--output-wav", wav_path,
+            "--output-mp3", mp3_path
+        ]
+        try:
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+            if res.returncode == 0:
+                print(f"✅ Audio narrative successfully generated: {mp3_path}")
+            else:
+                print(f"⚠️ Audio narrative generation finished with note: {res.stderr or res.stdout}")
+        except Exception as e:
+            print(f"⚠️ Could not generate audio narrative: {e}")
+
+    html_path = os.path.join(target_dir, f"{name}_dashboard.html")
 
     print("\n======================================================================")
     print("🎉 Pipeline Complete!")
-    print(f"   Markdown Reading: {md_path}")
-    print(f"   PDF Reading:      {pdf_path}")
+    print(f"   Output Directory:  {target_dir}")
+    print(f"   Markdown Reading:  {md_path}")
+    print(f"   PDF Reading:       {pdf_path}")
+    print(f"   HTML Dashboard:    {html_path}")
+    print(f"   Audio Narration:   {mp3_path}")
     print("======================================================================")
     return pdf_path
 
