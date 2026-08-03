@@ -894,6 +894,20 @@ def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_rul
                 "House_10": "Midheaven: Career, reputation, public honor, and life calling.",
                 "House_11": "Good Spirit: Friends, alliances, hopes, and community.",
                 "House_12": "Bad Spirit: Hidden enemies, isolation, the subconscious, and undoing."
+            }},
+            signs: {{
+                "Ari": "Aries (Cardinal Fire): The pioneer. Bold initiative, direct action, and courage.",
+                "Tau": "Taurus (Fixed Earth): The builder. Tangible security, endurance, and sensory beauty.",
+                "Gem": "Gemini (Mutable Air): The messenger. Mental agility, adaptability, and connection.",
+                "Can": "Cancer (Cardinal Water): The protector. Emotional sanctuary, intuition, and care.",
+                "Leo": "Leo (Fixed Fire): The sovereign. Radiant self-expression, warmth, and leadership.",
+                "Vir": "Virgo (Mutable Earth): The craftsperson. Refinement, practical analysis, and service.",
+                "Lib": "Libra (Cardinal Air): The diplomat. Aesthetic harmony, relational equity, and balance.",
+                "Sco": "Scorpio (Fixed Water): The alchemist. Deep transformation, emotional power, and truth.",
+                "Sag": "Sagittarius (Mutable Fire): The seeker. Philosophical questing, expansion, and optimism.",
+                "Cap": "Capricorn (Cardinal Earth): The architect. Patient discipline, long-term focus, and mastery.",
+                "Aqu": "Aquarius (Fixed Air): The visionary. Intellectual independence, future possibilities, and community.",
+                "Pis": "Pisces (Mutable Water): The mystic. Universal empathy, artistic imagination, and spiritual dissolution."
             }}
         }};
 
@@ -934,6 +948,13 @@ def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_rul
             houseCell.addEventListener('mouseenter', (e) => showTooltip(e, houseKey.replace('_', ' '), "Area of Life", astroMeanings.houses[houseKey] || "Astrological House"));
             houseCell.addEventListener('mousemove', moveTooltip);
             houseCell.addEventListener('mouseleave', hideTooltip);
+
+            // 3. Zodiac Sign Hover
+            const signCell = row.cells[1];
+            const signKey = pData.sign;
+            signCell.addEventListener('mouseenter', (e) => showTooltip(e, signKey, "Zodiac Archetype", astroMeanings.signs[signKey] || "Astrological Sign"));
+            signCell.addEventListener('mousemove', moveTooltip);
+            signCell.addEventListener('mouseleave', hideTooltip);
         }});
 
         // SVG Bi-Directional Hover
