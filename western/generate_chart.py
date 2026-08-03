@@ -133,6 +133,18 @@ def get_prenatal_syzygy(year, month, day, hour, minute, tz_str) -> dict:
     syz_deg = swe.calc_ut(exact_t, swe.MOON if target_angle == 180.0 else swe.SUN)[0][0]
     return {"type": "Full Moon" if target_angle == 180.0 else "New Moon", "sign": ZODIAC_SIGNS[int(syz_deg // 30)], "degree_0_to_30": round(syz_deg % 30, 2)}
 
+def get_lunation_phase(sun_abs: float, moon_abs: float) -> str:
+    """Calculates the 8-fold natal psychological lunation phase."""
+    angle = (moon_abs - sun_abs) % 360
+    if angle <= 45.0: return "New Moon (Emerge / Seed Vision)"
+    elif angle <= 90.0: return "Crescent Moon (Struggle / Breakthrough)"
+    elif angle <= 135.0: return "First Quarter Moon (Action / Building Structures)"
+    elif angle <= 180.0: return "Gibbous Moon (Perfecting / Mastering Skills)"
+    elif angle <= 225.0: return "Full Moon (Illumine / Flowering of Vision)"
+    elif angle <= 270.0: return "Disseminating Moon (Distribute / Sharing Wisdom)"
+    elif angle <= 315.0: return "Last-Quarter Moon (Reorient / Revising Thinking)"
+    else: return "Balsamic Moon (Release / Completing the Past)"
+
 def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_ruler):
     """Constructs a simple, elegant warm-ivory HTML dashboard with a large Natal Wheel, zodiac sign explanations, and interactive tooltips."""
     payload_json = json.dumps(ai_payload, indent=2)
@@ -574,15 +586,15 @@ def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_rul
             position: fixed;
             background: #0f172a;
             color: #f8fafc;
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-radius: 8px;
-            font-size: 0.85rem;
-            max-width: 300px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            max-width: 350px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
             pointer-events: none;
             z-index: 9999;
             display: none;
-            line-height: 1.4;
+            line-height: 1.5;
         }}
 
         /* Table Design */
@@ -858,63 +870,88 @@ def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_rul
     <script>
         const chartData = {payload_json};
 
-        // Tooltip handler
+        // Rich Astrological Dictionaries
+        const astroMeanings = {{
+            planets: {{
+                "Sun": "Core Identity, ego-will, vitality, and the drive to be recognized.",
+                "Moon": "Reigning Emotional Need, safety, nurturing, and somatic habits.",
+                "Mercury": "Needs of the Mind, communication, analysis, and rationalization.",
+                "Venus": "Needs of the Emotions, aesthetic harmony, value, and relationships.",
+                "Mars": "Energy Expression, assertion, courage, and conflict resolution.",
+                "Jupiter": "Philosophy, opportunity, expansion, and higher learning.",
+                "Saturn": "Ambition, structure, discipline, restriction, and authority."
+            }},
+            houses: {{
+                "House_1": "The Helm: Self, physical body, vitality, and primary direction.",
+                "House_2": "Gate of Hades: Material assets, self-worth, and livelihood.",
+                "House_3": "Goddess: Communication, siblings, daily rituals, and short journeys.",
+                "House_4": "Subterranean: Home, family, ancestors, and private sanctuary.",
+                "House_5": "Good Fortune: Creativity, pleasure, romance, and children.",
+                "House_6": "Bad Fortune: Hard labor, illness, daily routines, and service.",
+                "House_7": "Setting: Marriage, open partnerships, and public contracts.",
+                "House_8": "Idle: Shared resources, inheritance, debt, and psychological depth.",
+                "House_9": "God: Higher wisdom, philosophy, long travels, and religion.",
+                "House_10": "Midheaven: Career, reputation, public honor, and life calling.",
+                "House_11": "Good Spirit: Friends, alliances, hopes, and community.",
+                "House_12": "Bad Spirit: Hidden enemies, isolation, the subconscious, and undoing."
+            }}
+        }};
+
         const tooltip = document.getElementById('floating-tooltip');
-        document.querySelectorAll('.tooltip-term').forEach(el => {{
-            el.addEventListener('mouseenter', (e) => {{
-                const text = el.getAttribute('data-tooltip');
-                if (text) {{
-                    tooltip.innerHTML = text;
-                    tooltip.style.display = 'block';
-                }}
-            }});
-            el.addEventListener('mousemove', (e) => {{
-                tooltip.style.left = (e.clientX + 14) + 'px';
-                tooltip.style.top = (e.clientY + 14) + 'px';
-            }});
-            el.addEventListener('mouseleave', () => {{
-                tooltip.style.display = 'none';
-            }});
+
+        // Dynamic Tooltip Renderer
+        function showTooltip(e, title, subtitle, description) {{
+            tooltip.innerHTML = `<strong style="color: #60a5fa; font-size: 1.1em;">${{title}}</strong><br>
+                                 <span style="color: #94a3b8; font-size: 0.85em;">${{subtitle}}</span><hr style="border-color: #334155; margin: 6px 0;">
+                                 <span>${{description}}</span>`;
+            tooltip.style.display = 'block';
+        }}
+
+        function moveTooltip(e) {{
+            tooltip.style.left = (e.clientX + 15) + 'px';
+            tooltip.style.top = (e.clientY + 15) + 'px';
+        }}
+
+        function hideTooltip() {{
+            tooltip.style.display = 'none';
+        }}
+
+        // Table Hover Interactions
+        document.querySelectorAll('.planet-row').forEach(row => {{
+            const planetName = row.getAttribute('data-planet');
+            const pData = chartData.traditional_planets[planetName];
+            if(!pData) return;
+
+            // 1. Planet Hover
+            const nameCell = row.cells[0];
+            nameCell.addEventListener('mouseenter', (e) => showTooltip(e, planetName, "Planetary Archetype", astroMeanings.planets[planetName] || "Astrological Planet"));
+            nameCell.addEventListener('mousemove', moveTooltip);
+            nameCell.addEventListener('mouseleave', hideTooltip);
+
+            // 2. House Hover
+            const houseCell = row.cells[2];
+            const houseKey = pData.whole_sign_house;
+            houseCell.addEventListener('mouseenter', (e) => showTooltip(e, houseKey.replace('_', ' '), "Area of Life", astroMeanings.houses[houseKey] || "Astrological House"));
+            houseCell.addEventListener('mousemove', moveTooltip);
+            houseCell.addEventListener('mouseleave', hideTooltip);
         }});
 
-        // Bi-directional hover highlighting
-        const planetRows = document.querySelectorAll('.planet-row');
+        // SVG Bi-Directional Hover
         const svgContainer = document.querySelector('.large-svg-wrapper svg');
 
         function setHighlight(planetName, active) {{
-            // Table row
             const row = document.querySelector(`.planet-row[data-planet="${{planetName}}"]`);
-            if (row) {{
-                if (active) row.classList.add('row-highlight');
-                else row.classList.remove('row-highlight');
-            }}
+            if (row) active ? row.classList.add('row-highlight') : row.classList.remove('row-highlight');
 
-            // SVG elements
             if (svgContainer) {{
                 const uses = svgContainer.querySelectorAll(`use[href="#${{planetName}}"], use[*|href="#${{planetName}}"]`);
                 uses.forEach(u => {{
                     const parentGroup = u.parentElement;
-                    if (active) {{
-                        if (parentGroup) parentGroup.classList.add('svg-highlight');
-                    }} else {{
-                        if (parentGroup) parentGroup.classList.remove('svg-highlight');
-                    }}
+                    if (parentGroup) active ? parentGroup.classList.add('svg-highlight') : parentGroup.classList.remove('svg-highlight');
                 }});
             }}
         }}
 
-        planetRows.forEach(row => {{
-            row.addEventListener('mouseenter', () => {{
-                const planet = row.getAttribute('data-planet');
-                setHighlight(planet, true);
-            }});
-            row.addEventListener('mouseleave', () => {{
-                const planet = row.getAttribute('data-planet');
-                setHighlight(planet, false);
-            }});
-        }});
-
-        // Attach SVG hover handlers for chart glyphs
         if (svgContainer) {{
             ['Sun', 'Moon', 'Mercury', 'Venus', 'Mars', 'Jupiter', 'Saturn'].forEach(planet => {{
                 const uses = svgContainer.querySelectorAll(`use[href="#${{planet}}"], use[*|href="#${{planet}}"]`);
@@ -926,17 +963,18 @@ def build_html_dashboard_string(subject_name, ai_payload, svg_raw_xml, chart_rul
                             setHighlight(planet, true);
                             const pData = chartData.traditional_planets[planet];
                             if (pData) {{
-                                tooltip.innerHTML = `<strong>${{planet}}</strong> in ${{pData.sign}} (${{pData.degree_0_to_30}}°)<br>${{pData.whole_sign_house.replace('_', ' ')}} • ${{pData.essential_dignity}}`;
-                                tooltip.style.display = 'block';
+                                let desc = `<strong>Sign:</strong> ${{pData.sign}} (${{pData.degree_0_to_30}}°)<br>
+                                            <strong>House:</strong> ${{pData.whole_sign_house.replace('_', ' ')}}<br>
+                                            <strong>Dignity:</strong> ${{pData.essential_dignity}}<br>
+                                            <strong>Phasis (Visibility):</strong> ${{pData.solar_phasis}}<br>
+                                            <strong>Micro-Zodiac (Dodecatemorion):</strong> ${{pData.dodecatemorion.sign}}`;
+                                showTooltip(e, planet, astroMeanings.planets[planet], desc);
                             }}
                         }});
-                        parentGroup.addEventListener('mousemove', (e) => {{
-                            tooltip.style.left = (e.clientX + 14) + 'px';
-                            tooltip.style.top = (e.clientY + 14) + 'px';
-                        }});
+                        parentGroup.addEventListener('mousemove', moveTooltip);
                         parentGroup.addEventListener('mouseleave', () => {{
                             setHighlight(planet, false);
-                            tooltip.style.display = 'none';
+                            hideTooltip();
                         }});
                     }}
                 }});
@@ -981,15 +1019,14 @@ def generate_human_readable_report(subject, ai_payload, output_dir):
         except Exception:
             pass
 
-    # Clean up any leftover SVG files from Kerykeion in home or current directory
-    for default_svg in possible_default_svgs:
-        if os.path.exists(default_svg):
-            try:
-                os.remove(default_svg)
-            except Exception:
-                pass
+    chart_ruler = ai_payload.get("net_vector_analysis", {}).get("chart_ruler_planet", "Sun")
+    html_content = build_html_dashboard_string(subject.name, ai_payload, svg_raw_xml, chart_ruler)
+    html_filename = f"{safe_name}_dashboard.html"
+    html_path = os.path.join(output_dir, html_filename)
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
 
-    return ""
+    return html_path
 
 # --- MAIN GENERATOR ---
 def generate_ai_json(
@@ -1175,12 +1212,15 @@ def generate_ai_json(
         "12_net_vector_orbs_and_intensity": net_vector_analysis
     }
 
+    natal_lunation_phase = get_lunation_phase(sun_abs, moon_abs)
+
     ai_payload = {
         "native_details": {
             "name": subject.name,
             "ascendant": asc_sign,
             "sect": "Day Chart" if is_day_chart else "Night Chart",
-            "house_system": "Whole Sign Houses (WSH)"
+            "house_system": "Whole Sign Houses (WSH)",
+            "natal_lunation_phase": natal_lunation_phase
         },
         "systematic_12_point_chart_audit": systematic_12_point_chart_audit,
         "traditional_planets": planets_data,

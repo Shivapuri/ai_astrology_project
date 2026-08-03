@@ -99,6 +99,8 @@ def run_agent_headless(
     cmd = [
         cli_path,
         "--dangerously-skip-permissions",
+        "--print-timeout",
+        "15m",
         "--log-file",
         trace_log_path,
         "--model",
