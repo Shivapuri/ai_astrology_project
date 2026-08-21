@@ -1,15 +1,98 @@
-planet_symbols = {
-    "Lagna": ("Asc", "#a93226"),
-    "Sun": ("☉\uFE0E", "#d35400"),  
-    "Moon": ("☽\uFE0E", "#4a5568"),  
-    "Mars": ("♂\uFE0E", "#c0392b"),  
-    "Mercury": ("☿\uFE0E", "#1e824c"),  
-    "Jupiter": ("♃\uFE0E", "#b7791f"),  
-    "Venus": ("♀\uFE0E", "#8d6e63"),  
-    "Saturn": ("♄\uFE0E", "#2c3e50"),  
-    "Rahu": ("☊\uFE0E", "#5d6d7e"),  
-    "Ketu": ("☋\uFE0E", "#34495e")
+planet_notations = {
+    "Lagna": {
+        "symbol": "Asc",
+        "english": "Asc",
+        "devanagari": "ल",
+        "translit": "Lag",
+        "full_en": "Ascendant",
+        "full_sa": "Lagna",
+        "color": "#a93226"
+    },
+    "Sun": {
+        "symbol": "☉\uFE0E",
+        "english": "Su",
+        "devanagari": "सू",
+        "translit": "Sū",
+        "full_en": "Sun",
+        "full_sa": "Sūrya",
+        "color": "#d35400"
+    },
+    "Moon": {
+        "symbol": "☽\uFE0E",
+        "english": "Mo",
+        "devanagari": "चं",
+        "translit": "Ca",
+        "full_en": "Moon",
+        "full_sa": "Chandra",
+        "color": "#4a5568"
+    },
+    "Mars": {
+        "symbol": "♂\uFE0E",
+        "english": "Ma",
+        "devanagari": "मं",
+        "translit": "Ma",
+        "full_en": "Mars",
+        "full_sa": "Mangala",
+        "color": "#c0392b"
+    },
+    "Mercury": {
+        "symbol": "☿\uFE0E",
+        "english": "Me",
+        "devanagari": "बु",
+        "translit": "Bu",
+        "full_en": "Mercury",
+        "full_sa": "Budha",
+        "color": "#1e824c"
+    },
+    "Jupiter": {
+        "symbol": "♃\uFE0E",
+        "english": "Ju",
+        "devanagari": "गु",
+        "translit": "Gu",
+        "full_en": "Jupiter",
+        "full_sa": "Guru",
+        "color": "#b7791f"
+    },
+    "Venus": {
+        "symbol": "♀\uFE0E",
+        "english": "Ve",
+        "devanagari": "शु",
+        "translit": "Śu",
+        "full_en": "Venus",
+        "full_sa": "Śukra",
+        "color": "#8d6e63"
+    },
+    "Saturn": {
+        "symbol": "♄\uFE0E",
+        "english": "Sa",
+        "devanagari": "श",
+        "translit": "Śa",
+        "full_en": "Saturn",
+        "full_sa": "Śani",
+        "color": "#2c3e50"
+    },
+    "Rahu": {
+        "symbol": "☊\uFE0E",
+        "english": "Ra",
+        "devanagari": "रा",
+        "translit": "Rā",
+        "full_en": "North Node",
+        "full_sa": "Rāhu",
+        "color": "#5d6d7e"
+    },
+    "Ketu": {
+        "symbol": "☋\uFE0E",
+        "english": "Ke",
+        "devanagari": "के",
+        "translit": "Ke",
+        "full_en": "South Node",
+        "full_sa": "Ketu",
+        "color": "#34495e"
+    }
 }
+
+# Compatibility mapping
+planet_symbols = {k: (v["symbol"], v["color"]) for k, v in planet_notations.items()}
 
 # Soft antique parchment tone for Rashi signs so they blend elegantly into the background
 RASHI_SIGN_COLOR = "#b59472"
@@ -69,7 +152,7 @@ def parse_varga_data(varga_data):
         
     return items
 
-def generate_south_indian(items):
+def generate_south_indian(items, mode="symbol"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
@@ -98,12 +181,10 @@ def generate_south_indian(items):
         if item.get("type") == "cusp":
             items_by_sign[item["sign"]].append(item)
         else:
-            sym, color = planet_symbols.get(item["name"], (item["name"], "#000"))
             items_by_sign[item["sign"]].append({
                 "type": "planet",
                 "name": item["name"],
-                "sym": sym,
-                "color": color,
+                "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'"
             })
 
@@ -124,24 +205,43 @@ def generate_south_indian(items):
         curr_y = start_y
         
         for p in planets:
+            info = planet_notations.get(p["name"], {
+                "symbol": p["name"][:2],
+                "english": p["name"][:2],
+                "devanagari": p["name"][:2],
+                "translit": p["name"][:2],
+                "full_en": p["name"],
+                "full_sa": p["name"],
+                "color": "#000"
+            })
+            label = info.get(mode, info["symbol"])
+            tooltip = f"{info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            
             if p["name"] == "Lagna":
+                svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
                 svg += f'<text x="{x+6}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
-                svg += f'  <tspan font-size="15" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
+                svg += f'  <tspan font-size="14" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
                 svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
-                svg += f'</text>\n'
+                svg += f'</text></g>\n'
             else:
-                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="24" font-weight="bold" fill="{p["color"]}" text-anchor="middle" dominant-baseline="central">{p["sym"]}</text>\n'
+                svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+                font_sz = "24" if mode == "symbol" else ("16" if mode == "devanagari" else "14")
+                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
                 svg += f'<text x="{x+27}" y="{curr_y}" font-family="sans-serif" font-size="12" font-weight="normal" fill="#4A3B32" dominant-baseline="central">{p["deg"]}</text>\n'
+                svg += '</g>\n'
             curr_y += line_height
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
+            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
             svg += f'<text x="{x+8}" y="{curr_y + 1}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += '</g>\n'
 
     svg += '</svg>\n'
     return svg
 
-def generate_north_indian(items):
+def generate_north_indian(items, mode="symbol"):
     svg = '<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -176,12 +276,10 @@ def generate_north_indian(items):
         if item.get("type") == "cusp":
             items_by_house[h_idx].append(item)
         else:
-            sym, color = planet_symbols.get(item["name"], (item["name"], "#000"))
             items_by_house[h_idx].append({
                 "type": "planet",
                 "name": item["name"],
-                "sym": sym,
-                "color": color,
+                "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'"
             })
 
@@ -205,26 +303,37 @@ def generate_north_indian(items):
         curr_y = start_y
         
         for p in planets:
-            if p["name"] == "Lagna":
-                svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="15" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
-                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
-                svg += f'</text>\n'
-            else:
-                svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="24" font-weight="bold" fill="{p["color"]}">{p["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="5">{p["deg"]}</tspan>\n'
-                svg += f'</text>\n'
+            info = planet_notations.get(p["name"], {
+                "symbol": p["name"][:2],
+                "english": p["name"][:2],
+                "devanagari": p["name"][:2],
+                "translit": p["name"][:2],
+                "full_en": p["name"],
+                "full_sa": p["name"],
+                "color": "#000"
+            })
+            label = info.get(mode, info["symbol"])
+            font_sz = "24" if (mode == "symbol" and p["name"] != "Lagna") else ("16" if mode == "devanagari" else "14")
+            tooltip = f"{info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            
+            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
+            svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
+            svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="5">{p["deg"]}</tspan>\n'
+            svg += f'</text></g>\n'
             curr_y += item_height
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
+            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{curr_y}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += '</g>\n'
 
     svg += '</svg>\n'
     return svg
 
-def generate_bhava_chalita_north(bhavas):
+def generate_bhava_chalita_north(bhavas, mode="symbol"):
     svg = '<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -265,11 +374,23 @@ def generate_bhava_chalita_north(bhavas):
         
         curr_y = start_y
         for p_name in items_in_house:
-            sym, color = planet_symbols.get(p_name, (p_name, "#000"))
-            sym_size = "24" if sym != "Asc" else "15"
+            info = planet_notations.get(p_name, {
+                "symbol": p_name[:2],
+                "english": p_name[:2],
+                "devanagari": p_name[:2],
+                "translit": p_name[:2],
+                "full_en": p_name,
+                "full_sa": p_name,
+                "color": "#000"
+            })
+            label = info.get(mode, info["symbol"])
+            font_sz = "24" if (mode == "symbol" and p_name != "Lagna") else ("16" if mode == "devanagari" else "14")
+            tooltip = f"{info['full_sa']} ({info['full_en']})"
+            
+            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-            svg += f'  <tspan font-size="{sym_size}" font-weight="bold" fill="{color}">{sym}</tspan>\n'
-            svg += f'</text>\n'
+            svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
+            svg += f'</text></g>\n'
             curr_y += item_height
 
     svg += "</svg>\n"

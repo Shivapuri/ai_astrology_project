@@ -45,14 +45,20 @@ def get_chart(native_id):
         output_filepath="cache/current_chart.json"
     )
     
-    # Generate SVGs for all vargas
+    # Generate SVGs for all vargas and all notation modes
     svgs = {}
+    modes = ["symbol", "english", "devanagari", "translit"]
     for v_name, v_data in chart_data["vargas"].items():
         parsed_items = draw_chart.parse_varga_data(v_data)
-        svgs[v_name] = {
-            "south": draw_chart.generate_south_indian(parsed_items),
-            "north": draw_chart.generate_north_indian(parsed_items)
-        }
+        svgs[v_name] = {}
+        for m in modes:
+            svgs[v_name][m] = {
+                "south": draw_chart.generate_south_indian(parsed_items, mode=m),
+                "north": draw_chart.generate_north_indian(parsed_items, mode=m)
+            }
+        # Default top-level shortcuts for backward compatibility
+        svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
+        svgs[v_name]["north"] = svgs[v_name]["symbol"]["north"]
         
     return jsonify({
         "data": chart_data,
