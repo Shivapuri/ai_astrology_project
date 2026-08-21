@@ -1,42 +1,26 @@
-# Astra: Astrological Calculations Core
+# Astra Astrological Engine
 
-Astra is a precision astrology calculation repository containing two independent horoscope engines:
+Astra is a precision astrological computation project dedicated to Ernst Wilhelm's "Kala" methodology.
 
-1. **Vedic Astrology (Jyotish)**: Sidereal calculations powered by `jyotishganit` and NASA JPL ephemeris (`skyfield`).
-2. **Western Astrology (Hellenistic)**: Tropical zodiac calculations and whole sign house mechanics powered by Swiss Ephemeris (`swisseph` / `kerykeion`).
+## Core Methodology
+- **Tropical Rasis (Signs)** for all basic placements and 16 Divisional Charts (Vargas).
+- **Sidereal Equatorial Nakshatras** anchored to the Dhruva Galactic Center (Middle of Mula).
+- **Campanus House System** used for all Bhava Chalita calculations, properly supporting high-latitude intercepted signs.
+- Powered exclusively by the Swiss Ephemeris (`swisseph`).
 
----
+## Architecture
+- **`/jyotish/`**: Contains the unified calculation engine.
+  - `generate_jyotish.py`: Core math, Julian day conversion, Varga harmonic multiplication, and Bhava bounds.
+  - `calc_utils.py`: Interpolated node and Ayanamsa utilities.
+  - `draw_chart.py`: SVG generation for South Indian, North Indian, and Bhava Chalita visual charts.
+  - `native_manager.py`: JSONL database management for charts.
+- **`app.py`**: Flask web server providing the API and frontend UI.
+- **`documentations/adr/`**: Architecture Decision Records detailing edge cases, trade-offs, and design choices.
 
-## Repository Structure
+## Running the Application
+1. Activate your virtual environment: `source venv/bin/activate`
+2. Start the Flask server: `python app.py`
+3. Open your browser to `http://localhost:5000`
 
-* [`jyotish/`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish) - Vedic calculation engine:
-  * [`jyotish/generate_jyotish.py`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/generate_jyotish.py) - Generates full Parashari chart data (Panchanga, D1 Rasi, D9 Navamsha, Vimshottari Dasha).
-  * [`jyotish/bulk_test_jyotish.py`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/bulk_test_jyotish.py) - Automated 100-chart stress tester across global coordinates.
-  * [`jyotish/jyotish_rules.txt`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/jyotish_rules.txt) - Core rules reference for dignities, aspects, and dashas.
-* [`western/`](file:///Users/hajnaljanos/PycharmProjects/astra/western) - Western calculation engine:
-  * [`western/generate_chart.py`](file:///Users/hajnaljanos/PycharmProjects/astra/western/generate_chart.py) - Western tropical chart generator.
-  * [`western/test_accuracy.py`](file:///Users/hajnaljanos/PycharmProjects/astra/western/test_accuracy.py) - Accuracy test suite for degrees, lots, and dignities.
-  * [`western/bulk_test_engine.py`](file:///Users/hajnaljanos/PycharmProjects/astra/western/bulk_test_engine.py) - Western engine stress test pipeline.
-* [`source-material/`](file:///Users/hajnaljanos/PycharmProjects/astra/source-material) - Astrological diagrams, reference audio, and study resources.
-* [`cache/`](file:///Users/hajnaljanos/PycharmProjects/astra/cache) - Astronomical ephemeris files (NASA DE421 ephemeris & Hipparcos star catalog `hip_main.dat`).
-
----
-
-## Setup & Running
-
-This project uses Python 3.12.
-
-1. Activate virtual environment:
-   ```bash
-   source venv/bin/activate
-   ```
-
-2. Run Vedic chart calculation:
-   ```bash
-   python jyotish/generate_jyotish.py
-   ```
-
-3. Run Western chart accuracy test:
-   ```bash
-   python western/test_accuracy.py
-   ```
+## Documentation
+Please review the `documentations/adr/` directory for detailed explanations of our architectural choices, specifically regarding House Systems and Nakshatra calculations.
