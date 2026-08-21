@@ -1,23 +1,45 @@
-"""
-Vedic Jyotish Chart Generator (jyotishganit Engine)
-Generates high-precision Vedic astrological context (vedic_context.json) using True Chitra Paksha Ayanamsa,
-Panchanga, D1 Rasi Chart, D9 Navamsa Chart, and Vimshottari Dasha timeline.
-"""
-
 import json
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 
 try:
-    from jyotishganit import calculate_birth_chart
+    import swisseph as swe
 except ImportError:
-    print("Error: 'jyotishganit' package is not installed. Please run 'pip install jyotishganit skyfield'.")
+    print("Error: 'pyswisseph' package is not installed. Please run 'pip install pyswisseph'.")
     sys.exit(1)
 
+# Signs
+ZODIAC_SIGNS = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
 
-def generate_vedic_chart(
+# Nakshatras
+NAKSHATRAS = [
+    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
+    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
+    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
+    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha", "Shatabhisha",
+    "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
+]
+
+DASHA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
+DASHA_YEARS = [7, 20, 6, 10, 7, 18, 16, 19, 17]
+
+# Ernst Wilhelm Saura Year length in days
+SAURA_YEAR_DAYS = 359.0016
+
+def get_sign(longitude: float) -> tuple[str, float]:
+    sign_idx = int(longitude // 30)
+    deg_in_sign = longitude % 30
+    return ZODIAC_SIGNS[sign_idx], round(deg_in_sign, 2)
+
+def calculate_divisional_longitude(longitude: float, harmonic: int) -> float:
+    return (longitude * harmonic) % 360.0
+
+def generate_kala_chart(
     name: str = "Subject",
     year: int = 1995,
     month: int = 5,
@@ -29,154 +51,224 @@ def generate_vedic_chart(
     timezone_offset: float = 1.0,
     output_filepath: str = "vedic_context.json"
 ) -> Dict[str, Any]:
-    """
-    Calculates complete Vedic astrology chart using jyotishganit library and exports JSON.
-
-    :param name: Person's name
-    :param year: Birth year
-    :param month: Birth month (1-12)
-    :param day: Birth day (1-31)
-    :param hour: Birth hour (0-23)
-    :param minute: Birth minute (0-59)
-    :param latitude: Latitude in decimal degrees (+ North, - South)
-    :param longitude: Longitude in decimal degrees (+ East, - West)
-    :param timezone_offset: Timezone offset from UTC in hours (e.g. +5.5 for IST)
-    :param output_filepath: Path to save the resulting JSON file
-    :return: Dictionary of structured Vedic context data
-    """
+    
+    # 1. Date and Time to Julian Day
     birth_dt = datetime(year, month, day, hour, minute)
     
-    # 1. Calculate complete birth chart using jyotishganit
-    chart = calculate_birth_chart(
-        birth_date=birth_dt,
-        latitude=latitude,
-        longitude=longitude,
-        timezone_offset=timezone_offset,
-        name=name
-    )
+    # Calculate UTC time
+    # offset is in hours
+    utc_dt = birth_dt - timedelta(hours=timezone_offset)
+    
+    # swe.julday expects year, month, day, hour (fractional)
+    utc_hour_fraction = utc_dt.hour + utc_dt.minute / 60.0 + utc_dt.second / 3600.0
+    jd = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_hour_fraction)
 
-    # 2. Extract Panchanga
-    pancha_obj = chart.panchanga
-    panchanga = {
-        "tithi": getattr(pancha_obj, "tithi", None),
-        "karana": getattr(pancha_obj, "karana", None),
-        "yoga": getattr(pancha_obj, "yoga", None),
-        "vara": getattr(pancha_obj, "vaara", getattr(pancha_obj, "vara", None)),
-        "moon_nakshatra": getattr(pancha_obj, "nakshatra", getattr(pancha_obj, "moon_nakshatra", None))
+    # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
+    flags_ecliptic = swe.FLG_SWIEPH
+    
+    # Houses (Campanus - standard Ernst Wilhelm Kala default)
+    cusps, ascmc = swe.houses(jd, latitude, longitude, b'C')
+    asc_lon = ascmc[0]
+    mc_lon = ascmc[1]
+    
+    asc_sign, asc_deg = get_sign(asc_lon)
+    
+    vargas_harmonics = {
+        "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D7": 7, "D9": 9, 
+        "D10": 10, "D12": 12, "D16": 16, "D20": 20, "D24": 24, 
+        "D27": 27, "D30": 30, "D40": 40, "D45": 45, "D60": 60
+    }
+    
+    # Pre-calculate base D1 longitudes for lagna and planets
+    d1_longitudes = {"Lagna": asc_lon}
+    
+    planet_ids = {
+        "Sun": swe.SUN,
+        "Moon": swe.MOON,
+        "Mars": swe.MARS,
+        "Mercury": swe.MERCURY,
+        "Jupiter": swe.JUPITER,
+        "Venus": swe.VENUS,
+        "Saturn": swe.SATURN,
+        "Rahu": swe.TRUE_NODE
+    }
+    
+    for p_name, p_id in planet_ids.items():
+        if p_name == "Rahu":
+            import jyotish.calc_utils as calc_utils
+            r_lon = calc_utils.calculate_interpolated_node(jd)
+            d1_longitudes["Rahu"] = r_lon
+            d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
+        else:
+            res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
+            d1_longitudes[p_name] = res[0]
+            
+    # Calculate Vargas
+    vargas_data = {}
+    for v_name, harmonic in vargas_harmonics.items():
+        vargas_data[v_name] = {
+            "lagna": {},
+            "grahas": {},
+            "cusps": []
+        }
+        
+        # Lagna
+        l_lon = calculate_divisional_longitude(d1_longitudes["Lagna"], harmonic)
+        l_sign, l_deg = get_sign(l_lon)
+        vargas_data[v_name]["lagna"] = {
+            "longitude": round(l_lon, 4),
+            "sign": l_sign,
+            "degree_0_to_30": l_deg
+        }
+        
+        # Planets
+        for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+            p_lon = calculate_divisional_longitude(d1_longitudes[p_name], harmonic)
+            p_sign, p_deg = get_sign(p_lon)
+            vargas_data[v_name]["grahas"][p_name] = {
+                "longitude": round(p_lon, 4),
+                "sign": p_sign,
+                "degree_0_to_30": p_deg
+            }
+            
+        # Cusps (Bhava Chalita)
+        v_cusps = []
+        for c in cusps:
+            c_lon = calculate_divisional_longitude(c, harmonic)
+            v_cusps.append(c_lon)
+            
+        bhavas = []
+        for i in range(12):
+            prev_cusp = v_cusps[(i - 1) % 12]
+            curr_cusp = v_cusps[i]
+            next_cusp = v_cusps[(i + 1) % 12]
+            
+            diff_prev = (curr_cusp - prev_cusp) % 360
+            start = (prev_cusp + diff_prev / 2.0) % 360
+            
+            diff_next = (next_cusp - curr_cusp) % 360
+            end = (curr_cusp + diff_next / 2.0) % 360
+            
+            bhavas.append({
+                "house": i + 1,
+                "start": round(start, 4),
+                "cusp": round(curr_cusp, 4),
+                "end": round(end, 4),
+                "planets": []
+            })
+            
+        # Assign planets to bhavas
+        for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+            if p_name == "Lagna":
+                p_lon = vargas_data[v_name]["lagna"]["longitude"]
+            else:
+                p_lon = vargas_data[v_name]["grahas"][p_name]["longitude"]
+                
+            for bhava in bhavas:
+                s = bhava["start"]
+                e = bhava["end"]
+                in_house = False
+                if s <= e:
+                    if s <= p_lon < e:
+                        in_house = True
+                else:
+                    if p_lon >= s or p_lon < e:
+                        in_house = True
+                if in_house:
+                    bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
+                    
+        vargas_data[v_name]["bhavas"] = bhavas
+        
+        # We also keep the cusps list for drawing
+        for c_lon in v_cusps:
+            c_sign, c_deg = get_sign(c_lon)
+            vargas_data[v_name]["cusps"].append({
+                "longitude": round(c_lon, 4),
+                "sign": c_sign,
+                "degree_0_to_30": c_deg
+            })
+
+    # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
+    flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
+    
+    # Galactic Center RA
+    try:
+        res_gc, name_gc, _ = swe.fixstar2_ut("Galactic Center", jd, flags_equatorial)
+        ra_gc = res_gc[0]
+    except Exception:
+        # Fallback approximation for ~1995 if fixstar fails
+        ra_gc = 266.0
+        
+    # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees
+    ayanamsa_eq = ra_gc - 246.6667
+    
+    # Get Equatorial positions of planets
+    nakshatras_sidereal = {}
+    
+    # Calculate Ascendant Nakshatra
+    eps = swe.calc_ut(jd, swe.ECL_NUT, 0)[0][0]
+    asc_eq = swe.cotrans([asc_lon, 0.0, 1.0], -eps)
+    asc_ra = asc_eq[0]
+    sid_ra_asc = (asc_ra - ayanamsa_eq) % 360.0
+    a_idx = int(sid_ra_asc / 13.3333333)
+    a_pada = int((sid_ra_asc % 13.3333333) / 3.3333333) + 1
+    nakshatras_sidereal["Lagna"] = {
+        "nakshatra": NAKSHATRAS[a_idx],
+        "pada": a_pada,
+        "sidereal_ra": round(sid_ra_asc, 4)
     }
 
-    # Find Moon pada from D1 planets
-    moon_pada = None
-    for p in chart.d1_chart.planets:
-        if p.celestial_body == "Moon":
-            moon_pada = getattr(p, "pada", None)
-            break
-    panchanga["pada"] = moon_pada
-
-    # 3. Extract D1 Rasi Chart
-    h1 = chart.d1_chart.houses[0] if chart.d1_chart.houses else None
-    lagna_d1 = {}
-    if h1:
-        lagna_d1 = {
-            "sign": getattr(h1, "sign", None),
-            "degree_0_to_30": round(float(getattr(h1, "sign_degrees", 0.0)), 2),
-            "nakshatra": getattr(h1, "nakshatra", None),
-            "pada": getattr(h1, "pada", None)
-        }
-
-    grahas_d1 = {}
-    for p in chart.d1_chart.planets:
-        p_name = p.celestial_body
-        dignity_obj = getattr(p, "dignities", None)
-        dignity_val = getattr(dignity_obj, "dignity", str(dignity_obj)) if dignity_obj else "none"
-
-        grahas_d1[p_name] = {
-            "sign": p.sign,
-            "degree_0_to_30": round(float(p.sign_degrees), 2),
-            "house": p.house,
-            "nakshatra": p.nakshatra,
-            "pada": p.pada,
-            "motion_type": getattr(p, "motion_type", "direct"),
-            "dignity": dignity_val
-        }
-
-    # 4. Extract D9 Navamsa Chart
-    d9_chart = chart.divisional_charts.get("d9")
-    lagna_d9 = {}
-    grahas_d9 = {}
-
-    if d9_chart:
-        asc_obj = getattr(d9_chart, "ascendant", None)
-        if asc_obj:
-            lagna_d9 = {
-                "sign": getattr(asc_obj, "sign", None),
-                "house": 1
+    for p_name, p_id in planet_ids.items():
+        if p_name == "Rahu":
+            import jyotish.calc_utils as calc_utils
+            r_lon = calc_utils.calculate_interpolated_node(jd)
+            r_eq = swe.cotrans([r_lon, 0.0, 1.0], -eps)
+            ra_planet = r_eq[0]
+        else:
+            res_eq, _ = swe.calc_ut(jd, p_id, flags_equatorial)
+            ra_planet = res_eq[0]
+        
+        sidereal_ra = (ra_planet - ayanamsa_eq) % 360.0
+        
+        if p_name == "Rahu":
+            ra_ketu = (ra_planet + 180.0) % 360.0
+            sid_ra_ketu = (ra_ketu - ayanamsa_eq) % 360.0
+            k_idx = int(sid_ra_ketu / 13.3333333)
+            k_pada = int((sid_ra_ketu % 13.3333333) / 3.3333333) + 1
+            nakshatras_sidereal["Ketu"] = {
+                "nakshatra": NAKSHATRAS[k_idx],
+                "pada": k_pada,
+                "sidereal_ra": round(sid_ra_ketu, 4)
             }
-
-        # Map occupants from D9 houses
-        for h in d9_chart.houses:
-            h_sign = h.sign
-            h_num = h.number
-            for occ in h.occupants:
-                grahas_d9[occ.celestial_body] = {
-                    "sign": h_sign,
-                    "house": h_num
-                }
-
-    # 5. Extract Vimshottari Dasha (At Birth & Current Running)
-    dashas_dict = chart.dashas.to_dict()
-    all_mds = dashas_dict.get("all", {}).get("mahadashas", {})
-
-    # At Birth Dasha
-    birth_md = None
-    birth_ad = None
-    birth_md_span = None
-    birth_ad_span = None
-    birth_str = birth_dt.strftime("%Y-%m-%d")
-
-    for md_lord, md_data in all_mds.items():
-        md_start = str(md_data.get("start"))[:10]
-        md_end = str(md_data.get("end"))[:10]
-
-        if md_start <= birth_str <= md_end:
-            birth_md = md_lord
-            birth_md_span = f"{md_start} to {md_end}"
-            ads = md_data.get("antardashas", {})
-            for ad_lord, ad_data in ads.items():
-                ad_start = str(ad_data.get("start"))[:10]
-                ad_end = str(ad_data.get("end"))[:10]
-                if ad_start <= birth_str <= ad_end:
-                    birth_ad = ad_lord
-                    birth_ad_span = f"{ad_start} to {ad_end}"
-                    break
-            break
-
-    # Current Running Dasha
-    curr_dict = dashas_dict.get("current", {}).get("mahadashas", {})
-    curr_md = None
-    curr_ad = None
-    curr_pd = None
-    curr_md_end = None
-    curr_ad_end = None
-    curr_pd_end = None
-
-    if curr_dict:
-        for md_lord, md_data in curr_dict.items():
-            curr_md = md_lord
-            curr_md_end = str(md_data.get("end"))[:10]
-            ads = md_data.get("antardashas", {})
-            for ad_lord, ad_data in ads.items():
-                curr_ad = ad_lord
-                curr_ad_end = str(ad_data.get("end"))[:10]
-                pds = ad_data.get("pratyantardashas", {})
-                for pd_lord, pd_data in pds.items():
-                    curr_pd = pd_lord
-                    curr_pd_end = str(pd_data.get("end"))[:10]
-                    break
-                break
-            break
-
-    # 6. Assemble Final Clean JSON Context Structure
+            
+        n_idx = int(sidereal_ra / 13.3333333)
+        n_pada = int((sidereal_ra % 13.3333333) / 3.3333333) + 1
+        
+        nakshatras_sidereal[p_name] = {
+            "nakshatra": NAKSHATRAS[n_idx],
+            "pada": n_pada,
+            "sidereal_ra": round(sidereal_ra, 4)
+        }
+        
+    # 4. Vimshottari Dasha (Basic calculation based on Equatorial Moon)
+    moon_sid_ra = nakshatras_sidereal["Moon"]["sidereal_ra"]
+    moon_n_idx = int(moon_sid_ra / 13.3333333)
+    
+    lord_idx = moon_n_idx % 9
+    birth_md_lord = DASHA_LORDS[lord_idx]
+    
+    fraction_passed = (moon_sid_ra % 13.3333333) / 13.3333333
+    fraction_left = 1.0 - fraction_passed
+    
+    total_md_years = DASHA_YEARS[lord_idx]
+    balance_years = fraction_left * total_md_years
+    
+    # Calculate MD start and end based on Saura Years
+    balance_days = balance_years * SAURA_YEAR_DAYS
+    md_end_dt = birth_dt + timedelta(days=balance_days)
+    md_start_dt = md_end_dt - timedelta(days=(total_md_years * SAURA_YEAR_DAYS))
+    
+    # 5. Assemble JSON Context
     vedic_context = {
         "subject_info": {
             "name": name,
@@ -185,55 +277,43 @@ def generate_vedic_chart(
             "longitude": longitude,
             "timezone_offset": timezone_offset
         },
-        "ayanamsa": {
-            "name": getattr(chart.ayanamsa, "name", "True Chitra Paksha (Lahiri)"),
-            "value_degrees": round(float(getattr(chart.ayanamsa, "value", 0.0)), 4)
+        "astronomy": {
+            "ayanamsa_name": "Dhruva Galactic Center (Middle of Mula)",
+            "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
+            "galactic_center_ra": round(ra_gc, 4),
+            "house_system": "Campanus (with Whole Sign overlay)",
+            "dasha_year_length_days": SAURA_YEAR_DAYS
         },
-        "panchanga": panchanga,
-        "d1_rasi_chart": {
-            "lagna": lagna_d1,
-            "grahas": grahas_d1
+        "nakshatras": {
+            "zodiac": "Sidereal Equatorial",
+            "grahas": nakshatras_sidereal
         },
-        "d9_navamsa_chart": {
-            "lagna": lagna_d9,
-            "grahas": grahas_d9
-        },
+        "vargas": vargas_data,
         "vimshottari_dasha": {
             "at_birth": {
-                "mahadasha": birth_md,
-                "antardasha": birth_ad,
-                "mahadasha_period": birth_md_span,
-                "antardasha_period": birth_ad_span
-            },
-            "current_running": {
-                "calculated_date": datetime.now().strftime("%Y-%m-%d"),
-                "mahadasha": curr_md,
-                "antardasha": curr_ad,
-                "pratyantardasha": curr_pd,
-                "mahadasha_ends": curr_md_end,
-                "antardasha_ends": curr_ad_end,
-                "pratyantardasha_ends": curr_pd_end
+                "mahadasha": birth_md_lord,
+                "mahadasha_balance_years": round(balance_years, 4),
+                "mahadasha_period": f"{md_start_dt.strftime('%Y-%m-%d')} to {md_end_dt.strftime('%Y-%m-%d')}"
             }
         }
     }
-
-    # 7. Write to file
+    
+    # 6. Write to file
     with open(output_filepath, "w", encoding="utf-8") as f:
         json.dump(vedic_context, f, indent=2, ensure_ascii=False)
 
-    print(f"Successfully generated Vedic astrology context: {output_filepath}")
+    print(f"Successfully generated Ernst Wilhelm Kala astrology context: {output_filepath}")
     return vedic_context
 
-
 if __name__ == "__main__":
-    generate_vedic_chart(
+    generate_kala_chart(
         name="Arjuna",
         year=1995,
         month=5,
         day=15,
         hour=14,
         minute=30,
-        latitude=28.6139,   # New Delhi
+        latitude=28.6139,
         longitude=77.2090,
         timezone_offset=5.5,
         output_filepath="vedic_context.json"
