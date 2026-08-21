@@ -24,6 +24,7 @@ rag/chroma_modern_db/
 *.jpeg
 *.svg
 *.html
+!templates/*.html
 western/logs/
 .DS_Store
 

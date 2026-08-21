@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ernst Wilhelm Kala Chart Software</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f7f3eb;
+            color: #3d312a;
+            margin: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #4a3325;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .header-controls {
+            background: #fffdfa;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .select-section, .add-section {
+            padding: 10px;
+        }
+        .add-section {
+            border-left: 2px solid #eee5d3;
+            padding-left: 24px;
+        }
+        select, input, button {
+            padding: 9px 14px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #d5c8b2;
+            font-size: 14px;
+            background-color: #fff;
+            color: #3d312a;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #d35400;
+        }
+        button {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.15s ease;
+        }
+        button:hover {
+            background-color: #b84500;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+        .chart-box {
+            background: #fffdfa;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .chart-box h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #4a3325;
+        }
+        .info-panel {
+            background: #fffdfa;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            margin-top: 40px;
+            width: 90%;
+            max-width: 1200px;
+        }
+        .info-panel h2 {
+            color: #4a3325;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 11px 14px;
+            text-align: left;
+            border-bottom: 1px solid #ece4d4;
+        }
+        th {
+            background-color: #f5ede0;
+            color: #4a3325;
+            font-weight: 600;
+        }
+        .varga-selector {
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #4a3325;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kala Vedic Astrology</h1>
+    
+    <div class="header-controls">
+        <div class="select-section">
+            <h3>Select Saved Chart</h3>
+            <select id="nativeSelect">
+                <option value="">-- Select Person --</option>
+                {% for n in natives %}
+                <option value="{{ n.id }}">{{ n.name }} ({{ n.date }})</option>
+                {% endfor %}
+            </select>
+            <button onclick="loadChart()">Load Chart</button>
+            <div id="loading" style="display:none; color: #3498db; margin-top:10px;">Calculating...</div>
+        </div>
+        
+        <div class="add-section">
+            <h3>Add New Person</h3>
+            <input type="text" id="newName" placeholder="Name" required>
+            <input type="date" id="newDate" required>
+            <input type="time" id="newTime" step="1" required>
+            <br>
+            <input type="number" id="newLat" placeholder="Latitude (e.g. 52.2)" step="0.0001" required>
+            <input type="number" id="newLon" placeholder="Longitude (e.g. 8.04)" step="0.0001" required>
+            <input type="text" id="newTz" placeholder="TZ Offset (e.g. +01:00)" value="+00:00" required>
+            <br>
+            <button onclick="addNewChart()">Save & Load</button>
+        </div>
+    </div>
+    
+    <h2 id="chartTitle" style="color: #2c3e50;">No Chart Loaded</h2>
+    <p id="chartSubtitle"></p>
+    
+    
+    <div style="width: 90%; max-width: 1200px; display: none; justify-content: flex-end; margin-bottom: 10px;" id="globalControlsContainer">
+        <label style="cursor: pointer; font-weight: bold;">
+            <input type="checkbox" id="toggleSigns" onchange="toggleSiSigns(this.checked)" checked> 
+            Show Signs in South Indian Charts
+        </label>
+    </div>
+
+    <div class="charts-comparison" id="chartsComparison" style="display:none; width:90%; max-width:1200px; display:flex; gap:40px;">
+        <!-- Left Slot -->
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px;">
+            <div class="varga-selector">
+                <label for="vargaSelect1">Left Chart: </label>
+                <select id="vargaSelect1" onchange="updateSlot(1)">
+                    
+        <option value="D1">D1 - Rasi</option>
+        <option value="D2">D2 - Hora</option>
+        <option value="D3">D3 - Drekkana</option>
+        <option value="D4">D4 - Chaturthamsha</option>
+        <option value="D7">D7 - Saptamsha</option>
+        <option value="D9">D9 - Navamsa</option>
+        <option value="D10">D10 - Dashamsha</option>
+        <option value="D12">D12 - Dwadashamsha</option>
+        <option value="D16">D16 - Shodashamsha</option>
+        <option value="D20">D20 - Vimshamsha</option>
+        <option value="D24">D24 - Chaturvimshamsha</option>
+        <option value="D27">D27 - Saptavimshamsha</option>
+        <option value="D30">D30 - Trimshamsha</option>
+        <option value="D40">D40 - Khavedamsha</option>
+        <option value="D45">D45 - Akshavedamsha</option>
+        <option value="D60">D60 - Shashtiamsha</option>
+
+                </select>
+            </div>
+            <div class="chart-box" style="width: 100%;">
+                <h2 id="titleSouth1">Tropical South Indian (D1)</h2>
+                <div id="southChart1"></div>
+            </div>
+            <div class="chart-box" style="width: 100%;">
+                <h2 id="titleNorth1">Tropical North Indian (D1)</h2>
+                <div id="northChart1"></div>
+            </div>
+        </div>
+        
+        <!-- Right Slot -->
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 40px;">
+            <div class="varga-selector">
+                <label for="vargaSelect2">Right Chart: </label>
+                <select id="vargaSelect2" onchange="updateSlot(2)">
+                    
+        <option value="D1">D1 - Rasi</option>
+        <option value="D2">D2 - Hora</option>
+        <option value="D3">D3 - Drekkana</option>
+        <option value="D4">D4 - Chaturthamsha</option>
+        <option value="D7">D7 - Saptamsha</option>
+        <option value="D9">D9 - Navamsa</option>
+        <option value="D10">D10 - Dashamsha</option>
+        <option value="D12">D12 - Dwadashamsha</option>
+        <option value="D16">D16 - Shodashamsha</option>
+        <option value="D20">D20 - Vimshamsha</option>
+        <option value="D24">D24 - Chaturvimshamsha</option>
+        <option value="D27">D27 - Saptavimshamsha</option>
+        <option value="D30">D30 - Trimshamsha</option>
+        <option value="D40">D40 - Khavedamsha</option>
+        <option value="D45">D45 - Akshavedamsha</option>
+        <option value="D60">D60 - Shashtiamsha</option>
+
+                </select>
+            </div>
+            <div class="chart-box" style="width: 100%;">
+                <h2 id="titleSouth2">Tropical South Indian (D9)</h2>
+                <div id="southChart2"></div>
+            </div>
+            <div class="chart-box" style="width: 100%;">
+                <h2 id="titleNorth2">Tropical North Indian (D9)</h2>
+                <div id="northChart2"></div>
+            </div>
+        </div>
+    </div>
+    
+<div class="info-panel" id="infoPanel" style="display:none;">
+        <h2>Equatorial Sidereal Nakshatras</h2>
+        <p><strong id="ayanamsaName"></strong></p>
+        <table id="nakshatraTable">
+            <thead>
+                <tr>
+                    <th>Graha</th>
+                    <th>Deg</th>
+                    <th>Sign</th>
+                    <th>Nakshatra</th>
+                    <th>Pada</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        
+        <h2 style="margin-top: 30px;">Bhava Chalita (Proper House Cusps)</h2>
+        <table id="bhavaTable">
+            <thead>
+                <tr>
+                    <th>House</th>
+                    <th>Start</th>
+                    <th>Cusp (Middle)</th>
+                    <th>End</th>
+                    <th>Planets In It</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        let currentChartData = null;
+        let currentSvgs = null;
+
+        async function loadChart(nativeId = null) {
+            const id = nativeId || document.getElementById('nativeSelect').value;
+            if (!id) return;
+            
+            document.getElementById('loading').style.display = 'block';
+            const cc = document.getElementById('chartsComparison');
+            if(cc) cc.style.display = 'none';
+            const gc = document.getElementById('globalControlsContainer');
+            if(gc) gc.style.display = 'none';
+            document.getElementById('infoPanel').style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/chart/${id}`);
+                const result = await response.json();
+                
+                if (result.error) {
+                    alert(result.error);
+                    return;
+                }
+                
+                currentChartData = result.data;
+                currentSvgs = result.svgs;
+                
+                // Update Titles
+                document.getElementById('chartTitle').innerText = `${currentChartData.subject_info.name} - Birth Chart`;
+                document.getElementById('chartSubtitle').innerText = `${currentChartData.subject_info.birth_datetime} | ${currentChartData.subject_info.latitude} N, ${currentChartData.subject_info.longitude} E`;
+                
+                // Update Nakshatra Table
+                updateNakshatraTable();
+                
+                // Show UI
+                document.getElementById('globalControlsContainer').style.display = 'flex';
+                document.getElementById('chartsComparison').style.display = 'flex';
+                document.getElementById('infoPanel').style.display = 'block';
+                
+                // Default to D1 on left, D9 on right
+                document.getElementById('vargaSelect1').value = "D1";
+                document.getElementById('vargaSelect2').value = "D9";
+                updateSlot(1);
+                updateSlot(2);
+                
+            } catch (e) {
+                console.error(e);
+                alert("Failed to load chart.");
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+        
+        
+        function updateSlot(slot) {
+            if (!currentSvgs) return;
+            const varga = document.getElementById(`vargaSelect${slot}`).value;
+            
+            document.getElementById(`titleSouth${slot}`).innerText = `Tropical South Indian (${varga})`;
+            document.getElementById(`titleNorth${slot}`).innerText = `Tropical North Indian (${varga})`;
+            
+            document.getElementById(`southChart${slot}`).innerHTML = currentSvgs[varga].south;
+            document.getElementById(`northChart${slot}`).innerHTML = currentSvgs[varga].north;
+            
+            toggleSiSigns(document.getElementById('toggleSigns').checked);
+            
+            // We update the Bhava table using slot 1 (Left chart) as the primary reference
+            if (slot === 1) {
+                updateBhavaTable(varga);
+            }
+        }
+        
+        function toggleSiSigns(show) {
+            const els = document.querySelectorAll('#si-signs');
+            els.forEach(el => {
+                el.style.display = show ? 'block' : 'none';
+            });
+        }
+        
+        function updateBhavaTable(varga) {
+            const tbody = document.querySelector('#bhavaTable tbody');
+            tbody.innerHTML = '';
+            
+            if (!currentChartData || !currentChartData.vargas[varga]) return;
+            
+            // Add title context
+            const tableTitle = document.querySelector('#infoPanel h2:nth-of-type(2)');
+            if (tableTitle) {
+                tableTitle.innerText = `Bhava Chalita (Proper House Cusps) - ${varga}`;
+            }
+            
+            const bhavas = currentChartData.vargas[varga].bhavas;
+            
+            function formatDegSign(lon) {
+                const signs = ["Ar", "Ta", "Ge", "Cn", "Le", "Vi", "Li", "Sc", "Sg", "Cp", "Aq", "Pi"];
+                const sign_idx = Math.floor(lon / 30);
+                const deg = lon % 30;
+                let d = Math.floor(deg);
+                let m = Math.round((deg - d) * 60);
+                if (m === 60) { d += 1; m = 0; }
+                return `${d.toString().padStart(2, '0')} ${signs[sign_idx]} ${m.toString().padStart(2, '0')}'`;
+            }
+            
+            bhavas.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${b.house}</td>
+                                <td>${formatDegSign(b.start)}</td>
+                                <td>${formatDegSign(b.cusp)}</td>
+                                <td>${formatDegSign(b.end)}</td>
+                                <td>${b.planets.join(', ')}</td>`;
+                tbody.appendChild(tr);
+            });
+        }
+function updateNakshatraTable() {
+            const info = currentChartData.astronomy;
+            document.getElementById('ayanamsaName').innerText = `Ayanamsa: ${info.ayanamsa_name} (${info.equatorial_ayanamsa_value}°)`;
+            
+            const tbody = document.querySelector('#nakshatraTable tbody');
+            tbody.innerHTML = '';
+            
+            const naks = currentChartData.nakshatras.grahas;
+            const d1_grahas = currentChartData.vargas.D1.grahas;
+            const d1_lagna = currentChartData.vargas.D1.lagna;
+            
+            function formatDeg(deg_float) {
+                let d = Math.floor(deg_float);
+                let m = Math.round((deg_float - d) * 60);
+                if (m === 60) { d += 1; m = 0; }
+                return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            }
+            
+            // Lagna
+            if (naks["Lagna"]) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>Asc</strong></td><td>${formatDeg(d1_lagna.degree_0_to_30)}</td><td>${d1_lagna.sign}</td><td>${naks["Lagna"].nakshatra}</td><td>${naks["Lagna"].pada}</td>`;
+                tbody.appendChild(tr);
+            }
+            
+            for (const [graha, data] of Object.entries(naks)) {
+                if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td>`;
+                tbody.appendChild(tr);
+            }
+        }
+        
+        async function addNewChart() {
+            const payload = {
+                name: document.getElementById('newName').value,
+                date: document.getElementById('newDate').value,
+                time: document.getElementById('newTime').value,
+                lat: document.getElementById('newLat').value,
+                lon: document.getElementById('newLon').value,
+                tz: document.getElementById('newTz').value
+            };
+            
+            if (!payload.name || !payload.date || !payload.time || !payload.lat || !payload.lon || !payload.tz) {
+                alert("Please fill all fields");
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/add_native', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                
+                const newNative = await response.json();
+                
+                // Add to select
+                const select = document.getElementById('nativeSelect');
+                const opt = document.createElement('option');
+                opt.value = newNative.id;
+                opt.text = `${newNative.name} (${newNative.date})`;
+                select.add(opt);
+                
+                // Select and load
+                select.value = newNative.id;
+                loadChart(newNative.id);
+                
+            } catch (e) {
+                console.error(e);
+                alert("Failed to add native");
+            }
+        }
+    </script>
+</body>
+</html>
