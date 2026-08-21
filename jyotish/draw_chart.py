@@ -166,36 +166,36 @@ def parse_varga_data(varga_data):
 def get_south_indian_positions(num_planets, cell_x, cell_y, has_cusps=False):
     positions = []
     if num_planets == 1:
-        py = cell_y + (38 if has_cusps else 43)
+        py = cell_y + (36 if has_cusps else 42)
         positions.append((cell_x + 50, py))
     elif num_planets == 2:
-        py = cell_y + (38 if has_cusps else 43)
+        py = cell_y + (36 if has_cusps else 42)
         positions.append((cell_x + 28, py))
         positions.append((cell_x + 72, py))
     elif num_planets == 3:
-        r1_y = cell_y + 26
-        r2_y = cell_y + (56 if has_cusps else 62)
+        r1_y = cell_y + 24
+        r2_y = cell_y + (58 if has_cusps else 64)
         positions.append((cell_x + 28, r1_y))
         positions.append((cell_x + 72, r1_y))
         positions.append((cell_x + 50, r2_y))
     elif num_planets == 4:
-        r1_y = cell_y + 26
-        r2_y = cell_y + (56 if has_cusps else 62)
+        r1_y = cell_y + 24
+        r2_y = cell_y + (58 if has_cusps else 64)
         positions.append((cell_x + 28, r1_y))
         positions.append((cell_x + 72, r1_y))
         positions.append((cell_x + 28, r2_y))
         positions.append((cell_x + 72, r2_y))
     elif num_planets == 5:
-        r1_y = cell_y + 26
-        r2_y = cell_y + (56 if has_cusps else 62)
+        r1_y = cell_y + 24
+        r2_y = cell_y + (58 if has_cusps else 64)
         positions.append((cell_x + 20, r1_y))
         positions.append((cell_x + 50, r1_y))
         positions.append((cell_x + 80, r1_y))
         positions.append((cell_x + 32, r2_y))
         positions.append((cell_x + 68, r2_y))
     else:
-        r1_y = cell_y + 26
-        r2_y = cell_y + (56 if has_cusps else 62)
+        r1_y = cell_y + 24
+        r2_y = cell_y + (58 if has_cusps else 64)
         positions.append((cell_x + 20, r1_y))
         positions.append((cell_x + 50, r1_y))
         positions.append((cell_x + 80, r1_y))
@@ -207,36 +207,36 @@ def get_south_indian_positions(num_planets, cell_x, cell_y, has_cusps=False):
 def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
     positions = []
     if num_planets == 1:
-        py = cy - (10 if has_cusps else 6)
+        py = cy - (12 if has_cusps else 8)
         positions.append((cx, py))
     elif num_planets == 2:
-        py = cy - (10 if has_cusps else 6)
+        py = cy - (12 if has_cusps else 8)
         positions.append((cx - 24, py))
         positions.append((cx + 24, py))
     elif num_planets == 3:
-        r1_y = cy - (20 if has_cusps else 16)
-        r2_y = cy + (10 if has_cusps else 14)
+        r1_y = cy - (22 if has_cusps else 18)
+        r2_y = cy + (12 if has_cusps else 16)
         positions.append((cx - 24, r1_y))
         positions.append((cx + 24, r1_y))
         positions.append((cx, r2_y))
     elif num_planets == 4:
-        r1_y = cy - (20 if has_cusps else 16)
-        r2_y = cy + (10 if has_cusps else 14)
+        r1_y = cy - (22 if has_cusps else 18)
+        r2_y = cy + (12 if has_cusps else 16)
         positions.append((cx - 24, r1_y))
         positions.append((cx + 24, r1_y))
         positions.append((cx - 24, r2_y))
         positions.append((cx + 24, r2_y))
     elif num_planets == 5:
-        r1_y = cy - (20 if has_cusps else 16)
-        r2_y = cy + (10 if has_cusps else 14)
+        r1_y = cy - (22 if has_cusps else 18)
+        r2_y = cy + (12 if has_cusps else 16)
         positions.append((cx - 28, r1_y))
         positions.append((cx, r1_y))
         positions.append((cx + 28, r1_y))
         positions.append((cx - 18, r2_y))
         positions.append((cx + 18, r2_y))
     else:
-        r1_y = cy - (20 if has_cusps else 16)
-        r2_y = cy + (10 if has_cusps else 14)
+        r1_y = cy - (22 if has_cusps else 18)
+        r2_y = cy + (12 if has_cusps else 16)
         positions.append((cx - 28, r1_y))
         positions.append((cx, r1_y))
         positions.append((cx + 28, r1_y))
@@ -319,8 +319,8 @@ def generate_south_indian(items, mode="symbol"):
             font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
             
             svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 13}" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
+            svg += f'<text x="{px}" y="{py - 2}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 15}" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
@@ -415,8 +415,8 @@ def generate_north_indian(items, mode="symbol"):
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 13}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433">'
+            svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 15}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
