@@ -6,6 +6,7 @@ planet_notations = {
         "translit": "Lag",
         "full_en": "Ascendant",
         "full_sa": "Lagna",
+        "dev_full": "लग्न",
         "color": "#a93226"
     },
     "Sun": {
@@ -15,6 +16,7 @@ planet_notations = {
         "translit": "Sū",
         "full_en": "Sun",
         "full_sa": "Sūrya",
+        "dev_full": "सूर्य",
         "color": "#d35400"
     },
     "Moon": {
@@ -24,6 +26,7 @@ planet_notations = {
         "translit": "Ca",
         "full_en": "Moon",
         "full_sa": "Chandra",
+        "dev_full": "चन्द्र",
         "color": "#4a5568"
     },
     "Mars": {
@@ -33,6 +36,7 @@ planet_notations = {
         "translit": "Ma",
         "full_en": "Mars",
         "full_sa": "Mangala",
+        "dev_full": "मङ्गल",
         "color": "#c0392b"
     },
     "Mercury": {
@@ -42,6 +46,7 @@ planet_notations = {
         "translit": "Bu",
         "full_en": "Mercury",
         "full_sa": "Budha",
+        "dev_full": "बुध",
         "color": "#1e824c"
     },
     "Jupiter": {
@@ -51,6 +56,7 @@ planet_notations = {
         "translit": "Gu",
         "full_en": "Jupiter",
         "full_sa": "Guru",
+        "dev_full": "गुरु",
         "color": "#b7791f"
     },
     "Venus": {
@@ -60,6 +66,7 @@ planet_notations = {
         "translit": "Śu",
         "full_en": "Venus",
         "full_sa": "Śukra",
+        "dev_full": "शुक्र",
         "color": "#8d6e63"
     },
     "Saturn": {
@@ -69,6 +76,7 @@ planet_notations = {
         "translit": "Śa",
         "full_en": "Saturn",
         "full_sa": "Śani",
+        "dev_full": "शनि",
         "color": "#2c3e50"
     },
     "Rahu": {
@@ -78,6 +86,7 @@ planet_notations = {
         "translit": "Rā",
         "full_en": "North Node",
         "full_sa": "Rāhu",
+        "dev_full": "राहु",
         "color": "#5d6d7e"
     },
     "Ketu": {
@@ -87,6 +96,7 @@ planet_notations = {
         "translit": "Ke",
         "full_en": "South Node",
         "full_sa": "Ketu",
+        "dev_full": "केतु",
         "color": "#34495e"
     }
 }
@@ -215,7 +225,8 @@ def generate_south_indian(items, mode="symbol"):
                 "color": "#000"
             })
             label = info.get(mode, info["symbol"])
-            tooltip = f"{info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            dev_name = info.get('dev_full', '')
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
             
             if p["name"] == "Lagna":
                 svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
@@ -314,7 +325,8 @@ def generate_north_indian(items, mode="symbol"):
             })
             label = info.get(mode, info["symbol"])
             font_sz = "24" if (mode == "symbol" and p["name"] != "Lagna") else ("16" if mode == "devanagari" else "14")
-            tooltip = f"{info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            dev_name = info.get('dev_full', '')
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
             
             svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
