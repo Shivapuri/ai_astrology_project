@@ -163,6 +163,88 @@ def parse_varga_data(varga_data):
         
     return items
 
+def get_south_indian_positions(num_planets, cell_x, cell_y, has_cusps=False):
+    positions = []
+    if num_planets == 1:
+        py = cell_y + (38 if has_cusps else 43)
+        positions.append((cell_x + 50, py))
+    elif num_planets == 2:
+        py = cell_y + (38 if has_cusps else 43)
+        positions.append((cell_x + 28, py))
+        positions.append((cell_x + 72, py))
+    elif num_planets == 3:
+        r1_y = cell_y + 26
+        r2_y = cell_y + (56 if has_cusps else 62)
+        positions.append((cell_x + 28, r1_y))
+        positions.append((cell_x + 72, r1_y))
+        positions.append((cell_x + 50, r2_y))
+    elif num_planets == 4:
+        r1_y = cell_y + 26
+        r2_y = cell_y + (56 if has_cusps else 62)
+        positions.append((cell_x + 28, r1_y))
+        positions.append((cell_x + 72, r1_y))
+        positions.append((cell_x + 28, r2_y))
+        positions.append((cell_x + 72, r2_y))
+    elif num_planets == 5:
+        r1_y = cell_y + 26
+        r2_y = cell_y + (56 if has_cusps else 62)
+        positions.append((cell_x + 20, r1_y))
+        positions.append((cell_x + 50, r1_y))
+        positions.append((cell_x + 80, r1_y))
+        positions.append((cell_x + 32, r2_y))
+        positions.append((cell_x + 68, r2_y))
+    else:
+        r1_y = cell_y + 26
+        r2_y = cell_y + (56 if has_cusps else 62)
+        positions.append((cell_x + 20, r1_y))
+        positions.append((cell_x + 50, r1_y))
+        positions.append((cell_x + 80, r1_y))
+        positions.append((cell_x + 20, r2_y))
+        positions.append((cell_x + 50, r2_y))
+        positions.append((cell_x + 80, r2_y))
+    return positions
+
+def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
+    positions = []
+    if num_planets == 1:
+        py = cy - (10 if has_cusps else 6)
+        positions.append((cx, py))
+    elif num_planets == 2:
+        py = cy - (10 if has_cusps else 6)
+        positions.append((cx - 24, py))
+        positions.append((cx + 24, py))
+    elif num_planets == 3:
+        r1_y = cy - (20 if has_cusps else 16)
+        r2_y = cy + (10 if has_cusps else 14)
+        positions.append((cx - 24, r1_y))
+        positions.append((cx + 24, r1_y))
+        positions.append((cx, r2_y))
+    elif num_planets == 4:
+        r1_y = cy - (20 if has_cusps else 16)
+        r2_y = cy + (10 if has_cusps else 14)
+        positions.append((cx - 24, r1_y))
+        positions.append((cx + 24, r1_y))
+        positions.append((cx - 24, r2_y))
+        positions.append((cx + 24, r2_y))
+    elif num_planets == 5:
+        r1_y = cy - (20 if has_cusps else 16)
+        r2_y = cy + (10 if has_cusps else 14)
+        positions.append((cx - 28, r1_y))
+        positions.append((cx, r1_y))
+        positions.append((cx + 28, r1_y))
+        positions.append((cx - 18, r2_y))
+        positions.append((cx + 18, r2_y))
+    else:
+        r1_y = cy - (20 if has_cusps else 16)
+        r2_y = cy + (10 if has_cusps else 14)
+        positions.append((cx - 28, r1_y))
+        positions.append((cx, r1_y))
+        positions.append((cx + 28, r1_y))
+        positions.append((cx - 28, r2_y))
+        positions.append((cx, r2_y))
+        positions.append((cx + 28, r2_y))
+    return positions
+
 def generate_south_indian(items, mode="symbol"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
@@ -171,7 +253,7 @@ def generate_south_indian(items, mode="symbol"):
         "Sagittarius": (0, 300), "Scorpio": (100, 300), "Libra": (200, 300), "Virgo": (300, 300)
     }
 
-    svg = '<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<rect x="100" y="100" width="200" height="200" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="100" y1="0" x2="100" y2="100" stroke="#5C4433" stroke-width="2"/>\n'
@@ -212,11 +294,12 @@ def generate_south_indian(items, mode="symbol"):
         planets = [it for it in cell_items if it["type"] == "planet"]
         cusps = [it for it in cell_items if it["type"] == "cusp"]
         
-        start_y = y + 17
-        line_height = 21
-        curr_y = start_y
+        positions = get_south_indian_positions(len(planets), x, y, has_cusps=bool(cusps))
         
-        for p in planets:
+        for idx, p in enumerate(planets):
+            if idx >= len(positions):
+                break
+            px, py = positions[idx]
             info = planet_notations.get(p["name"], {
                 "symbol": p["name"][:2],
                 "english": p["name"][:2],
@@ -233,36 +316,29 @@ def generate_south_indian(items, mode="symbol"):
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
-            if p["name"] == "Lagna":
-                svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-                svg += f'<text x="{x+6}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
-                svg += f'  <tspan font-size="14" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
-                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
-                svg += f'</text></g>\n'
-            else:
-                svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-                font_sz = "24" if mode == "symbol" else ("16" if mode == "devanagari" else "14")
-                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
-                svg += f'<text x="{x+27}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
-                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32">{p["deg"]}</tspan>\n'
-                if is_retro:
-                    svg += f'  <tspan font-size="11" font-weight="bold" fill="#C0392B"> R</tspan>\n'
-                svg += f'</text>\n'
-                svg += '</g>\n'
-            curr_y += line_height
+            font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+            
+            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text x="{px}" y="{py}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 13}" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
+            svg += f'<tspan>{p["deg"]}</tspan>'
+            if is_retro:
+                svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
+            svg += '</text>\n'
+            svg += '</g>\n'
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
             cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
             svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
-            svg += f'<text x="{x+8}" y="{curr_y + 1}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += f'<text x="{x + 50}" y="{y + 86}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
             svg += '</g>\n'
 
     svg += '</svg>\n'
     return svg
 
 def generate_north_indian(items, mode="symbol"):
-    svg = '<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -276,7 +352,6 @@ def generate_north_indian(items, mode="symbol"):
         (48, 300),  (100, 355), (200, 300), (300, 355),
         (352, 300), (300, 200), (352, 100), (300, 45)
     ]
-    
     sign_pos = [
         (200, 180), (100, 85),  (180, 100), (115, 180),
         (180, 300), (100, 315), (200, 220), (300, 315),
@@ -316,13 +391,12 @@ def generate_north_indian(items, mode="symbol"):
         planets = [it for it in house_items if it["type"] == "planet"]
         cusps = [it for it in house_items if it["type"] == "cusp"]
         
-        num_lines = len(planets) + (1 if cusps else 0)
-        item_height = 21
-        total_h = num_lines * item_height
-        start_y = cy - (total_h / 2) + (item_height / 2)
-        curr_y = start_y
+        positions = get_north_indian_positions(len(planets), cx, cy, has_cusps=bool(cusps))
         
-        for p in planets:
+        for idx, p in enumerate(planets):
+            if idx >= len(positions):
+                break
+            px, py = positions[idx]
             info = planet_notations.get(p["name"], {
                 "symbol": p["name"][:2],
                 "english": p["name"][:2],
@@ -333,7 +407,7 @@ def generate_north_indian(items, mode="symbol"):
                 "color": "#000"
             })
             label = info.get(mode, info["symbol"])
-            font_sz = "24" if (mode == "symbol" and p["name"] != "Lagna") else ("16" if mode == "devanagari" else "14")
+            font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
             dev_name = info.get('dev_full', '')
             is_retro = p.get("is_retrograde", False)
             retro_badge = " R" if is_retro else ""
@@ -341,19 +415,19 @@ def generate_north_indian(items, mode="symbol"):
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-            svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
-            svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="5">{p["deg"]}</tspan>\n'
+            svg += f'<text x="{px}" y="{py}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 13}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433">'
+            svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
-                svg += f'  <tspan font-size="11" font-weight="bold" fill="#C0392B"> R</tspan>\n'
-            svg += f'</text></g>\n'
-            curr_y += item_height
+                svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
+            svg += '</text></g>\n'
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
             cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+            cusp_y = cy + 28 if planets else cy
             svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
-            svg += f'<text x="{cx}" y="{curr_y}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += f'<text x="{cx}" y="{cusp_y}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
             svg += '</g>\n'
 
     svg += '</svg>\n'
