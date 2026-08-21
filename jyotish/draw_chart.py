@@ -1,29 +1,32 @@
 planet_symbols = {
-    "Lagna": ("Asc", "#b03a2e"),
+    "Lagna": ("Asc", "#a93226"),
     "Sun": ("☉\uFE0E", "#d35400"),  
     "Moon": ("☽\uFE0E", "#4a5568"),  
     "Mars": ("♂\uFE0E", "#c0392b"),  
     "Mercury": ("☿\uFE0E", "#1e824c"),  
-    "Jupiter": ("♃\uFE0E", "#d68910"),  
-    "Venus": ("♀\uFE0E", "#996515"),  
+    "Jupiter": ("♃\uFE0E", "#b7791f"),  
+    "Venus": ("♀\uFE0E", "#8d6e63"),  
     "Saturn": ("♄\uFE0E", "#2c3e50"),  
     "Rahu": ("☊\uFE0E", "#5d6d7e"),  
     "Ketu": ("☋\uFE0E", "#34495e")
 }
 
+# Soft antique parchment tone for Rashi signs so they blend elegantly into the background
+RASHI_SIGN_COLOR = "#b59472"
+
 sign_symbols = {
-    "Aries": ("♈\uFE0E", "#d35400", "Ar"), 
-    "Taurus": ("♉\uFE0E", "#d35400", "Ta"), 
-    "Gemini": ("♊\uFE0E", "#d35400", "Ge"), 
-    "Cancer": ("♋\uFE0E", "#d35400", "Cn"), 
-    "Leo": ("♌\uFE0E", "#d35400", "Le"), 
-    "Virgo": ("♍\uFE0E", "#d35400", "Vi"), 
-    "Libra": ("♎\uFE0E", "#d35400", "Li"), 
-    "Scorpio": ("♏\uFE0E", "#d35400", "Sc"), 
-    "Sagittarius": ("♐\uFE0E", "#d35400", "Sg"), 
-    "Capricorn": ("♑\uFE0E", "#d35400", "Cp"), 
-    "Aquarius": ("♒\uFE0E", "#d35400", "Aq"), 
-    "Pisces": ("♓\uFE0E", "#d35400", "Pi")  
+    "Aries": ("♈\uFE0E", RASHI_SIGN_COLOR, "Ar"), 
+    "Taurus": ("♉\uFE0E", RASHI_SIGN_COLOR, "Ta"), 
+    "Gemini": ("♊\uFE0E", RASHI_SIGN_COLOR, "Ge"), 
+    "Cancer": ("♋\uFE0E", RASHI_SIGN_COLOR, "Cn"), 
+    "Leo": ("♌\uFE0E", RASHI_SIGN_COLOR, "Le"), 
+    "Virgo": ("♍\uFE0E", RASHI_SIGN_COLOR, "Vi"), 
+    "Libra": ("♎\uFE0E", RASHI_SIGN_COLOR, "Li"), 
+    "Scorpio": ("♏\uFE0E", RASHI_SIGN_COLOR, "Sc"), 
+    "Sagittarius": ("♐\uFE0E", RASHI_SIGN_COLOR, "Sg"), 
+    "Capricorn": ("♑\uFE0E", RASHI_SIGN_COLOR, "Cp"), 
+    "Aquarius": ("♒\uFE0E", RASHI_SIGN_COLOR, "Aq"), 
+    "Pisces": ("♓\uFE0E", RASHI_SIGN_COLOR, "Pi")  
 }
 
 signs_list = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
@@ -61,7 +64,7 @@ def parse_varga_data(varga_data):
             "type": "cusp",
             "text": str(i + 1),
             "sign": cusp["sign"],
-            "color": "#8e44ad"
+            "color": "#7d3c98"
         })
         
     return items
@@ -98,33 +101,42 @@ def generate_south_indian(items):
             sym, color = planet_symbols.get(item["name"], (item["name"], "#000"))
             items_by_sign[item["sign"]].append({
                 "type": "planet",
+                "name": item["name"],
                 "sym": sym,
                 "color": color,
                 "deg": f"{item['degree']}°{item['minute']:02d}'"
             })
 
-    # Corner sign badge in top-right of each cell
+    # Subtle corner sign indicator
     svg += '<g id="si-signs" style="display: block;">\n'
     for sign, (x, y) in cell_coords.items():
-        s_sym, _, _ = sign_symbols[sign]
-        svg += f'<text x="{x+84}" y="{y+16}" font-size="14" font-family="sans-serif" font-weight="bold" fill="#D35400" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        s_sym, s_col, _ = sign_symbols[sign]
+        svg += f'<text x="{x+86}" y="{y+15}" font-size="13" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
     svg += '</g>\n'
 
     for sign, (x, y) in cell_coords.items():
-        items = items_by_sign[sign]
+        cell_items = items_by_sign[sign]
+        planets = [it for it in cell_items if it["type"] == "planet"]
+        cusps = [it for it in cell_items if it["type"] == "cusp"]
         
-        cx = x + 6
-        cy = y + 17
-        for item in items:
-            if item["type"] == "cusp":
-                svg += f'<text x="{cx}" y="{cy}" font-size="13" font-weight="bold" font-family="sans-serif" fill="{item["color"]}">{item["text"]}</text>\n'
-            else:
-                sym_size = "24" if item["sym"] != "Asc" else "14"
-                svg += f'<text x="{cx}" y="{cy}" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="{sym_size}" font-weight="bold" fill="{item["color"]}">{item["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32"> {item["deg"]}</tspan>\n'
+        start_y = y + 16
+        line_height = 20
+        curr_y = start_y
+        
+        for p in planets:
+            if p["name"] == "Lagna":
+                svg += f'<text x="{x+6}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
+                svg += f'  <tspan font-size="13" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
+                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
                 svg += f'</text>\n'
-            cy += 20
+            else:
+                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="19" font-weight="bold" fill="{p["color"]}" text-anchor="middle" dominant-baseline="central">{p["sym"]}</text>\n'
+                svg += f'<text x="{x+25}" y="{curr_y}" font-family="sans-serif" font-size="11" font-weight="normal" fill="#4A3B32" dominant-baseline="central">{p["deg"]}</text>\n'
+            curr_y += line_height
+            
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            svg += f'<text x="{x+8}" y="{curr_y + 1}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
 
     svg += '</svg>\n'
     return svg
@@ -139,16 +151,17 @@ def generate_north_indian(items):
     svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
 
+    # Precise geometric centers ensuring zero diagonal line collision
     ni_centers = [
-        (200, 100), (100, 50), (50, 100), (100, 200),
-        (50, 300), (100, 350), (200, 300), (300, 350),
-        (350, 300), (300, 200), (350, 100), (300, 50)
+        (200, 100), (100, 45),  (48, 100),  (100, 200),
+        (48, 300),  (100, 355), (200, 300), (300, 355),
+        (352, 300), (300, 200), (352, 100), (300, 45)
     ]
     
     sign_pos = [
-        (200, 180), (150, 20),  (20, 150),  (180, 200),
-        (20, 250),  (150, 380), (200, 220), (250, 380),
-        (380, 250), (220, 200), (380, 150), (250, 20)
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
     ]
 
     asc = next((p for p in items if p.get("name") == "Lagna"), None)
@@ -166,6 +179,7 @@ def generate_north_indian(items):
             sym, color = planet_symbols.get(item["name"], (item["name"], "#000"))
             items_by_house[h_idx].append({
                 "type": "planet",
+                "name": item["name"],
                 "sym": sym,
                 "color": color,
                 "deg": f"{item['degree']}°{item['minute']:02d}'"
@@ -174,29 +188,38 @@ def generate_north_indian(items):
     for h in range(12):
         s_idx = (asc_index + h) % 12
         sign = signs_list[s_idx]
-        s_sym, _, _ = sign_symbols[sign]
+        s_sym, s_col, _ = sign_symbols[sign]
         
         sx, sy = sign_pos[h]
-        svg += f'<text x="{sx}" y="{sy}" font-size="16" font-family="sans-serif" fill="#D35400" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
 
         cx, cy = ni_centers[h]
-        items_in_house = items_by_house[h]
+        house_items = items_by_house[h]
+        planets = [it for it in house_items if it["type"] == "planet"]
+        cusps = [it for it in house_items if it["type"] == "cusp"]
         
-        item_height = 21
-        total_h = len(items_in_house) * item_height
+        num_lines = len(planets) + (1 if cusps else 0)
+        item_height = 20
+        total_h = num_lines * item_height
         start_y = cy - (total_h / 2) + (item_height / 2)
-        
         curr_y = start_y
-        for item in items_in_house:
-            if item["type"] == "cusp":
-                svg += f'<text x="{cx}" y="{curr_y}" font-size="13" font-weight="bold" font-family="sans-serif" fill="{item["color"]}" text-anchor="middle" dominant-baseline="central">{item["text"]}</text>\n'
-            else:
-                sym_size = "24" if item["sym"] != "Asc" else "14"
+        
+        for p in planets:
+            if p["name"] == "Lagna":
                 svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="{sym_size}" font-weight="bold" fill="{item["color"]}">{item["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32"> {item["deg"]}</tspan>\n'
+                svg += f'  <tspan font-size="13" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
+                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
+                svg += f'</text>\n'
+            else:
+                svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
+                svg += f'  <tspan font-size="19" font-weight="bold" fill="{p["color"]}">{p["sym"]}</tspan>\n'
+                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
                 svg += f'</text>\n'
             curr_y += item_height
+            
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            svg += f'<text x="{cx}" y="{curr_y}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
 
     svg += '</svg>\n'
     return svg
@@ -212,9 +235,15 @@ def generate_bhava_chalita_north(bhavas):
     svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
 
     ni_centers = [
-        (200, 100), (100, 50), (50, 100), (100, 200),
-        (50, 300), (100, 350), (200, 300), (300, 350),
-        (350, 300), (300, 200), (350, 100), (300, 50)
+        (200, 100), (100, 45),  (48, 100),  (100, 200),
+        (48, 300),  (100, 355), (200, 300), (300, 355),
+        (352, 300), (300, 200), (352, 100), (300, 45)
+    ]
+    
+    sign_pos = [
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
     ]
     
     for h_idx in range(12):
@@ -223,26 +252,21 @@ def generate_bhava_chalita_north(bhavas):
         
         cusp_lon = bhava["cusp"]
         sign_idx = int(cusp_lon // 30)
-        s_sym = sign_symbols[signs_list[sign_idx]][0]
+        s_sym, s_col, _ = sign_symbols[signs_list[sign_idx]]
         
-        sign_pos = [
-            (200, 180), (150, 20),  (20, 150),  (180, 200),
-            (20, 250),  (150, 380), (200, 220), (250, 380),
-            (380, 250), (220, 200), (380, 150), (250, 20)
-        ]
         sx, sy = sign_pos[h_idx]
-        svg += f'<text x="{sx}" y="{sy}" font-size="16" font-family="sans-serif" fill="#D35400" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
 
         items_in_house = bhava["planets"]
         
-        item_height = 21
+        item_height = 20
         total_h = len(items_in_house) * item_height
         start_y = cy - (total_h / 2) + (item_height / 2)
         
         curr_y = start_y
         for p_name in items_in_house:
             sym, color = planet_symbols.get(p_name, (p_name, "#000"))
-            sym_size = "24" if sym != "Asc" else "14"
+            sym_size = "19" if sym != "Asc" else "13"
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
             svg += f'  <tspan font-size="{sym_size}" font-weight="bold" fill="{color}">{sym}</tspan>\n'
             svg += f'</text>\n'
