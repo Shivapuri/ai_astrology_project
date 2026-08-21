@@ -51,8 +51,7 @@ def get_chart(native_id):
         parsed_items = draw_chart.parse_varga_data(v_data)
         svgs[v_name] = {
             "south": draw_chart.generate_south_indian(parsed_items),
-            "north": draw_chart.generate_north_indian(parsed_items),
-            "bhava_north": draw_chart.generate_bhava_chalita_north(v_data["bhavas"])
+            "north": draw_chart.generate_north_indian(parsed_items)
         }
         
     return jsonify({

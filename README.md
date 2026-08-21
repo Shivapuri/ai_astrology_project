@@ -23,4 +23,6 @@ Astra is a precision astrological computation project dedicated to Ernst Wilhelm
 3. Open your browser to `http://localhost:5000`
 
 ## Documentation
-Please review the `documentations/adr/` directory for detailed explanations of our architectural choices, specifically regarding House Systems and Nakshatra calculations.
+- **[Vargas Functioning & Calculation Guide](documentations/vargas_functioning.md)**: Detailed technical reference on algorithms, rules, degree scaling, and cusp projection for all 16 Shodashavarga charts.
+- **[Architecture Decision Records (ADRs)](documentations/adr/)**: Architectural rationale covering House Systems (ADR 001), Nakshatras (ADR 002), Intercepted Signs (ADR 003), Engine Unification (ADR 004), and Vargas Functioning (ADR 005).
+

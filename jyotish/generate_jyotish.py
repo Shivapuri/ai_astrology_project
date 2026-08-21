@@ -36,8 +36,107 @@ def get_sign(longitude: float) -> tuple[str, float]:
     deg_in_sign = longitude % 30
     return ZODIAC_SIGNS[sign_idx], round(deg_in_sign, 2)
 
-def calculate_divisional_longitude(longitude: float, harmonic: int) -> float:
-    return (longitude * harmonic) % 360.0
+def calculate_varga_longitude(longitude: float, varga: str) -> float:
+    sign_idx = int(longitude // 30)
+    deg = longitude % 30
+    is_odd = (sign_idx % 2 == 0) # 0=Aries (odd), 1=Taurus (even)
+    
+    def uniform_varga(harmonic: int, start_sign: int) -> float:
+        div_size = 30.0 / harmonic
+        div_index = int(deg // div_size)
+        varga_sign = (start_sign + div_index) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
+
+    if varga == "D1":
+        return longitude
+        
+    elif varga == "D2":
+        div_size = 15.0
+        div_index = int(deg // div_size)
+        # Kala Distributed Hora: 1st half = same sign, 2nd half = opposite sign (7th)
+        varga_sign = (sign_idx + div_index * 6) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
+        
+    elif varga == "D3":
+        div_size = 10.0
+        div_index = int(deg // div_size)
+        varga_sign = (sign_idx + div_index * 4) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
+        
+    elif varga == "D4":
+        div_size = 7.5
+        div_index = int(deg // div_size)
+        varga_sign = (sign_idx + div_index * 3) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
+        
+    elif varga == "D7":
+        start = sign_idx if is_odd else (sign_idx + 6) % 12
+        return uniform_varga(7, start)
+        
+    elif varga == "D9":
+        element = sign_idx % 4
+        start = (element * 9) % 12
+        return uniform_varga(9, start)
+        
+    elif varga == "D10":
+        start = sign_idx if is_odd else (sign_idx + 8) % 12
+        return uniform_varga(10, start)
+        
+    elif varga == "D12":
+        return uniform_varga(12, sign_idx)
+        
+    elif varga == "D16":
+        modality = sign_idx % 3
+        start = (modality * 4) % 12
+        return uniform_varga(16, start)
+        
+    elif varga == "D20":
+        modality = sign_idx % 3
+        if modality == 0: start = 0
+        elif modality == 1: start = 8
+        else: start = 4
+        return uniform_varga(20, start)
+        
+    elif varga == "D24":
+        start = 4 if is_odd else 3
+        return uniform_varga(24, start)
+        
+    elif varga == "D27":
+        element = sign_idx % 4
+        start = (element * 3) % 12
+        return uniform_varga(27, start)
+        
+    elif varga == "D30":
+        if is_odd:
+            bounds = [(0, 5, 0), (5, 10, 10), (10, 18, 8), (18, 25, 2), (25, 30, 6)]
+        else:
+            bounds = [(0, 5, 1), (5, 12, 5), (12, 20, 11), (20, 25, 9), (25, 30, 7)]
+            
+        for (b_start, b_end, varga_sign) in bounds:
+            if b_start <= deg < b_end or (b_end == 30 and deg == 30.0):
+                fraction = (deg - b_start) / (b_end - b_start)
+                return (varga_sign * 30.0) + (fraction * 30.0)
+        return 0.0
+        
+    elif varga == "D40":
+        start = 0 if is_odd else 6
+        return uniform_varga(40, start)
+        
+    elif varga == "D45":
+        modality = sign_idx % 3
+        start = (modality * 4) % 12
+        return uniform_varga(45, start)
+        
+    elif varga == "D60":
+        return uniform_varga(60, sign_idx)
+        
+    else:
+        harmonic = int(varga.replace("D", ""))
+        return (longitude * harmonic) % 360.0
 
 def generate_kala_chart(
     name: str = "Subject",
@@ -113,7 +212,7 @@ def generate_kala_chart(
         }
         
         # Lagna
-        l_lon = calculate_divisional_longitude(d1_longitudes["Lagna"], harmonic)
+        l_lon = calculate_varga_longitude(d1_longitudes["Lagna"], v_name)
         l_sign, l_deg = get_sign(l_lon)
         vargas_data[v_name]["lagna"] = {
             "longitude": round(l_lon, 4),
@@ -123,7 +222,7 @@ def generate_kala_chart(
         
         # Planets
         for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
-            p_lon = calculate_divisional_longitude(d1_longitudes[p_name], harmonic)
+            p_lon = calculate_varga_longitude(d1_longitudes[p_name], v_name)
             p_sign, p_deg = get_sign(p_lon)
             vargas_data[v_name]["grahas"][p_name] = {
                 "longitude": round(p_lon, 4),
@@ -134,7 +233,7 @@ def generate_kala_chart(
         # Cusps (Bhava Chalita)
         v_cusps = []
         for c in cusps:
-            c_lon = calculate_divisional_longitude(c, harmonic)
+            c_lon = calculate_varga_longitude(c, v_name)
             v_cusps.append(c_lon)
             
         bhavas = []
