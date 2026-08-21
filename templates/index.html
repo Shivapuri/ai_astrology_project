@@ -73,21 +73,90 @@
             justify-content: center;
             width: 100%;
         }
+        .charts-comparison {
+            width: 95%;
+            max-width: 1440px;
+            display: flex;
+            gap: 36px;
+        }
         .chart-box {
             background: #fffdfa;
-            padding: 20px;
+            padding: 22px;
             border-radius: 12px;
             border: 1px solid #e5dccb;
             box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .chart-box h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-size: 18px;
+        .chart-box svg {
+            width: 100%;
+            max-width: 540px;
+            height: auto;
+            display: block;
+        }
+        .chart-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 540px;
+            margin-bottom: 12px;
+        }
+        .chart-header-row h2 {
+            margin: 0;
+            font-size: 17px;
             color: #4a3325;
+        }
+        .btn-maximize {
+            background: #f5ede0;
+            color: #4a3325;
+            border: 1px solid #d5c8b2;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .btn-maximize:hover {
+            background: #d35400;
+            color: #ffffff;
+            border-color: #d35400;
+        }
+        .maximize-modal-card {
+            background: #FAF5EB;
+            border: 1px solid #D0C5B4;
+            border-radius: 14px;
+            padding: 24px;
+            width: 95%;
+            max-width: 820px;
+            max-height: 94vh;
+            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+            color: #3d312a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        .maximize-chart-container {
+            width: 100%;
+            max-width: 720px;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .maximize-chart-container svg {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         .info-panel {
             background: #fffdfa;
@@ -96,8 +165,8 @@
             border: 1px solid #e5dccb;
             box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
             margin-top: 40px;
-            width: 90%;
-            max-width: 1200px;
+            width: 95%;
+            max-width: 1440px;
         }
         .info-panel h2 {
             color: #4a3325;
@@ -349,7 +418,21 @@
         </div>
     </div>
 
-    <div class="charts-comparison" id="chartsComparison" style="display:none; width:90%; max-width:1200px; display:flex; gap:40px;">
+    <!-- Maximize / Zoom Modal Window -->
+    <div class="modal-overlay" id="maximizeModal" onclick="closeMaximizeModal(event)">
+        <div class="maximize-modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header" style="width: 100%;">
+                <h2 id="maximizeModalTitle">Tropical Chart</h2>
+                <button type="button" class="modal-close-btn" onclick="closeMaximizeModal()">×</button>
+            </div>
+            <div id="maximizeChartContainer" class="maximize-chart-container"></div>
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end; width: 100%;">
+                <button type="button" onclick="closeMaximizeModal()" style="background-color: #d35400; color: white; padding: 8px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Close (Esc)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="charts-comparison" id="chartsComparison" style="display:none; width:95%; max-width:1440px; display:flex; gap:36px;">
         <!-- Left Slot -->
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px;">
             <div class="varga-selector">
@@ -375,18 +458,24 @@
 
                 </select>
             </div>
-            <div class="chart-box" style="width: 100%;">
-                <h2 id="titleSouth1">Tropical South Indian (D1)</h2>
-                <div id="southChart1"></div>
+            <div class="chart-box">
+                <div class="chart-header-row">
+                    <h2 id="titleSouth1">Tropical South Indian (D1)</h2>
+                    <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
+                </div>
+                <div id="southChart1" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
-            <div class="chart-box" style="width: 100%;">
-                <h2 id="titleNorth1">Tropical North Indian (D1)</h2>
-                <div id="northChart1"></div>
+            <div class="chart-box">
+                <div class="chart-header-row">
+                    <h2 id="titleNorth1">Tropical North Indian (D1)</h2>
+                    <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
+                </div>
+                <div id="northChart1" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
         </div>
         
         <!-- Right Slot -->
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 40px;">
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
             <div class="varga-selector">
                 <label for="vargaSelect2">Right Chart: </label>
                 <select id="vargaSelect2" onchange="updateSlot(2)">
@@ -410,13 +499,19 @@
 
                 </select>
             </div>
-            <div class="chart-box" style="width: 100%;">
-                <h2 id="titleSouth2">Tropical South Indian (D9)</h2>
-                <div id="southChart2"></div>
+            <div class="chart-box">
+                <div class="chart-header-row">
+                    <h2 id="titleSouth2">Tropical South Indian (D9)</h2>
+                    <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
+                </div>
+                <div id="southChart2" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
-            <div class="chart-box" style="width: 100%;">
-                <h2 id="titleNorth2">Tropical North Indian (D9)</h2>
-                <div id="northChart2"></div>
+            <div class="chart-box">
+                <div class="chart-header-row">
+                    <h2 id="titleNorth2">Tropical North Indian (D9)</h2>
+                    <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
+                </div>
+                <div id="northChart2" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
         </div>
     </div>
@@ -653,6 +748,46 @@ function updateNakshatraTable() {
             }
         }
         
+        let currentMaximized = null; // { slot, type }
+
+        function maximizeChart(slot, type) {
+            if (!currentSvgs) return;
+            currentMaximized = { slot, type };
+            const varga = document.getElementById(`vargaSelect${slot}`).value;
+            const selectEl = document.getElementById(`vargaSelect${slot}`);
+            const vargaLabel = selectEl.options[selectEl.selectedIndex].text;
+            const typeLabel = (type === 'south') ? 'Tropical South Indian' : 'Tropical North Indian';
+            
+            document.getElementById('maximizeModalTitle').innerText = `${currentChartData.subject_info.name} — ${typeLabel} (${vargaLabel})`;
+            
+            const vData = currentSvgs[varga];
+            const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+            
+            if (vSvg) {
+                const markup = (type === 'south') ? vSvg.south : vSvg.north;
+                document.getElementById('maximizeChartContainer').innerHTML = markup;
+            }
+            
+            toggleSiSigns(showSiSigns);
+            document.getElementById('maximizeModal').style.display = 'flex';
+        }
+
+        function closeMaximizeModal(e) {
+            if (!e || e.target === document.getElementById('maximizeModal') || e.target.classList.contains('modal-close-btn') || e.target.tagName === 'BUTTON') {
+                document.getElementById('maximizeModal').style.display = 'none';
+                currentMaximized = null;
+            }
+        }
+
+        function switchNotation(mode) {
+            currentNotation = mode;
+            updateSlot(1);
+            updateSlot(2);
+            if (currentMaximized) {
+                maximizeChart(currentMaximized.slot, currentMaximized.type);
+            }
+        }
+
         function openSettingsModal() {
             // Synchronize modal state with current settings
             const radio = document.getElementById(`radio-${currentNotation}`);
@@ -675,6 +810,15 @@ function updateNakshatraTable() {
         function onModalSignToggle(show) {
             toggleSiSigns(show);
         }
+
+        // Close any modal with Escape key
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('settingsModal').style.display = 'none';
+                document.getElementById('maximizeModal').style.display = 'none';
+                currentMaximized = null;
+            }
+        });
 
         // Auto-load first chart on initial load if available
         window.addEventListener('DOMContentLoaded', () => {
