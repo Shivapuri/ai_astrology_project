@@ -148,7 +148,8 @@ def parse_varga_data(varga_data):
             "name": p_name,
             "sign": p_data["sign"],
             "degree": int(deg),
-            "minute": minutes
+            "minute": minutes,
+            "is_retrograde": p_data.get("is_retrograde", False)
         })
         
     # House Cusps
@@ -195,7 +196,8 @@ def generate_south_indian(items, mode="symbol"):
                 "type": "planet",
                 "name": item["name"],
                 "sign": item["sign"],
-                "deg": f"{item['degree']}°{item['minute']:02d}'"
+                "deg": f"{item['degree']}°{item['minute']:02d}'",
+                "is_retrograde": item.get("is_retrograde", False)
             })
 
     # Subtle corner sign indicator
@@ -226,7 +228,10 @@ def generate_south_indian(items, mode="symbol"):
             })
             label = info.get(mode, info["symbol"])
             dev_name = info.get('dev_full', '')
-            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            is_retro = p.get("is_retrograde", False)
+            retro_badge = " R" if is_retro else ""
+            retro_label = " [Retrograde (R)]" if is_retro else ""
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             if p["name"] == "Lagna":
                 svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
@@ -238,7 +243,11 @@ def generate_south_indian(items, mode="symbol"):
                 svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
                 font_sz = "24" if mode == "symbol" else ("16" if mode == "devanagari" else "14")
                 svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
-                svg += f'<text x="{x+27}" y="{curr_y}" font-family="sans-serif" font-size="12" font-weight="normal" fill="#4A3B32" dominant-baseline="central">{p["deg"]}</text>\n'
+                svg += f'<text x="{x+27}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
+                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32">{p["deg"]}</tspan>\n'
+                if is_retro:
+                    svg += f'  <tspan font-size="11" font-weight="bold" fill="#C0392B"> R</tspan>\n'
+                svg += f'</text>\n'
                 svg += '</g>\n'
             curr_y += line_height
             
@@ -262,7 +271,6 @@ def generate_north_indian(items, mode="symbol"):
     svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
 
-    # Precise geometric centers ensuring zero diagonal line collision
     ni_centers = [
         (200, 100), (100, 45),  (48, 100),  (100, 200),
         (48, 300),  (100, 355), (200, 300), (300, 355),
@@ -270,13 +278,13 @@ def generate_north_indian(items, mode="symbol"):
     ]
     
     sign_pos = [
-        (200, 175), (145, 25),  (25, 145),  (175, 200),
-        (25, 255),  (145, 375), (200, 225), (255, 375),
-        (375, 255), (225, 200), (375, 145), (255, 25)
+        (200, 180), (100, 85),  (180, 100), (115, 180),
+        (180, 300), (100, 315), (200, 220), (300, 315),
+        (220, 300), (285, 180), (220, 100), (300, 85)
     ]
 
-    asc = next((p for p in items if p.get("name") == "Lagna"), None)
-    asc_sign = asc["sign"] if asc else "Aries"
+    asc_item = next(it for it in items if it["name"] == "Lagna")
+    asc_sign = asc_item["sign"]
     asc_index = signs_list.index(asc_sign)
 
     items_by_house = [[] for _ in range(12)]
@@ -291,7 +299,8 @@ def generate_north_indian(items, mode="symbol"):
                 "type": "planet",
                 "name": item["name"],
                 "sign": item["sign"],
-                "deg": f"{item['degree']}°{item['minute']:02d}'"
+                "deg": f"{item['degree']}°{item['minute']:02d}'",
+                "is_retrograde": item.get("is_retrograde", False)
             })
 
     for h in range(12):
@@ -326,12 +335,17 @@ def generate_north_indian(items, mode="symbol"):
             label = info.get(mode, info["symbol"])
             font_sz = "24" if (mode == "symbol" and p["name"] != "Lagna") else ("16" if mode == "devanagari" else "14")
             dev_name = info.get('dev_full', '')
-            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}) — {p['deg']} {p['sign']}"
+            is_retro = p.get("is_retrograde", False)
+            retro_badge = " R" if is_retro else ""
+            retro_label = " [Retrograde (R)]" if is_retro else ""
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
             svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
             svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="5">{p["deg"]}</tspan>\n'
+            if is_retro:
+                svg += f'  <tspan font-size="11" font-weight="bold" fill="#C0392B"> R</tspan>\n'
             svg += f'</text></g>\n'
             curr_y += item_height
             

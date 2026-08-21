@@ -163,7 +163,7 @@ def generate_kala_chart(
     jd = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_hour_fraction)
 
     # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
-    flags_ecliptic = swe.FLG_SWIEPH
+    flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED
     
     # Houses (Campanus - standard Ernst Wilhelm Kala default)
     cusps, ascmc = swe.houses(jd, latitude, longitude, b'C')
@@ -178,8 +178,9 @@ def generate_kala_chart(
         "D27": 27, "D30": 30, "D40": 40, "D45": 45, "D60": 60
     }
     
-    # Pre-calculate base D1 longitudes for lagna and planets
+    # Pre-calculate base D1 longitudes and retrograde status for lagna and planets
     d1_longitudes = {"Lagna": asc_lon}
+    d1_retrogrades = {"Lagna": False}
     
     planet_ids = {
         "Sun": swe.SUN,
@@ -198,9 +199,14 @@ def generate_kala_chart(
             r_lon = calc_utils.calculate_interpolated_node(jd)
             d1_longitudes["Rahu"] = r_lon
             d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
+            d1_retrogrades["Rahu"] = False
+            d1_retrogrades["Ketu"] = False
         else:
             res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
             d1_longitudes[p_name] = res[0]
+            # Speed is res[3]. Negative speed indicates Retrograde (Vakri) motion
+            speed = res[3]
+            d1_retrogrades[p_name] = bool(speed < 0 and p_name not in ["Sun", "Moon"])
             
     # Calculate Vargas
     vargas_data = {}
@@ -227,7 +233,8 @@ def generate_kala_chart(
             vargas_data[v_name]["grahas"][p_name] = {
                 "longitude": round(p_lon, 4),
                 "sign": p_sign,
-                "degree_0_to_30": p_deg
+                "degree_0_to_30": p_deg,
+                "is_retrograde": d1_retrogrades.get(p_name, False)
             }
             
         # Cusps (Bhava Chalita)

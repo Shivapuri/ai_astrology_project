@@ -630,8 +630,10 @@ function updateNakshatraTable() {
             
             for (const [graha, data] of Object.entries(naks)) {
                 if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
+                const isRetro = d1_grahas[graha].is_retrograde;
+                const retroBadge = isRetro ? ' <span style="color:#c0392b; font-weight:bold;">(R)</span>' : '';
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td>`;
+                tr.innerHTML = `<td><strong>${graha}</strong>${retroBadge}</td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td>`;
                 tbody.appendChild(tr);
             }
         }
