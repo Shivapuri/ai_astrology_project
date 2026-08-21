@@ -151,10 +151,113 @@
             color: #ffffff;
             box-shadow: 0 2px 6px rgba(211, 84, 0, 0.25);
         }
+        
+        /* Settings Modal Styling */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(44, 30, 20, 0.55);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            backdrop-filter: blur(3px);
+        }
+        .modal-card {
+            background: #FAF5EB;
+            border: 1px solid #D0C5B4;
+            border-radius: 14px;
+            padding: 26px;
+            width: 90%;
+            max-width: 520px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.25);
+            color: #3d312a;
+            animation: modalFadeIn 0.2s ease-out;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-15px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #E5DCCB;
+            padding-bottom: 12px;
+            margin-bottom: 18px;
+        }
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+            color: #4a3325;
+        }
+        .modal-close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #8C7B64;
+            cursor: pointer;
+            padding: 0 6px;
+            line-height: 1;
+        }
+        .modal-close-btn:hover {
+            color: #d35400;
+            background: none;
+        }
+        .setting-section {
+            margin-bottom: 20px;
+        }
+        .setting-section h4 {
+            margin: 0 0 10px 0;
+            color: #4a3325;
+            font-size: 15px;
+        }
+        .setting-option-card {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border: 1px solid #D5C8B2;
+            background: #FFF;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .setting-option-card:hover {
+            border-color: #d35400;
+            background: #FFFDF9;
+        }
+        .setting-option-card input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #d35400;
+        }
+        .setting-option-card label {
+            cursor: pointer;
+            font-weight: 500;
+            flex: 1;
+        }
+        .setting-chip {
+            display: inline-block;
+            background: #F5EDE0;
+            color: #4a3325;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 8px;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
-    <h1>Kala Vedic Astrology</h1>
+    <div style="width: 90%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h1 style="margin: 0;">Kala Vedic Astrology</h1>
+        <button type="button" onclick="openSettingsModal()" style="background-color: #5C4433; color: white; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+            <span>⚙️</span> Display Settings
+        </button>
+    </div>
     
     <div class="header-controls">
         <div class="select-section">
@@ -197,11 +300,72 @@
                 <button type="button" class="btn-toggle" id="btn-notation-translit" onclick="switchNotation('translit')">IAST Translit (Sū, Ca...)</button>
             </div>
         </div>
-        <div>
+        <div style="display: flex; align-items: center; gap: 15px;">
             <label style="cursor: pointer; font-weight: bold; color: #4a3325; font-size: 14px;">
                 <input type="checkbox" id="toggleSigns" onchange="toggleSiSigns(this.checked)" checked> 
                 Show Signs in South Indian Charts
             </label>
+            <button type="button" onclick="openSettingsModal()" style="background: none; border: 1px solid #d5c8b2; color: #4a3325; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer;">⚙️ More</button>
+        </div>
+    </div>
+    
+    <!-- Settings Modal Window -->
+    <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>⚙️ Chart Display Settings</h2>
+                <button type="button" class="modal-close-btn" onclick="closeSettingsModal()">×</button>
+            </div>
+            
+            <div class="setting-section">
+                <h4>Planet Notation Mode</h4>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-symbol').click()">
+                    <input type="radio" id="radio-symbol" name="modalNotation" value="symbol" onchange="onModalNotationChange('symbol')">
+                    <label for="radio-symbol">
+                        <strong>Astronomical Symbols</strong>
+                        <span class="setting-chip">☉ ☽ ♂ ☿ ♃ ♀ ♄ ☊ ☋ Asc</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-english').click()">
+                    <input type="radio" id="radio-english" name="modalNotation" value="english" onchange="onModalNotationChange('english')">
+                    <label for="radio-english">
+                        <strong>English Abbreviations</strong>
+                        <span class="setting-chip">Su Mo Ma Me Ju Ve Sa Ra Ke Asc</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-devanagari').click()">
+                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" onchange="onModalNotationChange('devanagari')">
+                    <label for="radio-devanagari">
+                        <strong>Devanagari Script</strong>
+                        <span class="setting-chip">सू चं मं बु गु शु श रा के ल</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-translit').click()">
+                    <input type="radio" id="radio-translit" name="modalNotation" value="translit" onchange="onModalNotationChange('translit')">
+                    <label for="radio-translit">
+                        <strong>IAST Sanskrit Transliteration</strong>
+                        <span class="setting-chip">Sū Ca Ma Bu Gu Śu Śa Rā Ke Lag</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-section">
+                <h4>South Indian Chart Layout</h4>
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleSigns" onchange="onModalSignToggle(this.checked)">
+                    <label for="modalToggleSigns" style="margin-left: 10px;">
+                        <strong>Show Zodiac Signs</strong> in the corner of South Indian cells
+                    </label>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" onclick="closeSettingsModal()" style="background-color: #d35400; color: white; padding: 9px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Done</button>
+            </div>
         </div>
     </div>
 
@@ -501,8 +665,6 @@ function updateNakshatraTable() {
                 const opt = document.createElement('option');
                 opt.value = newNative.id;
                 opt.text = `${newNative.name} (${newNative.date})`;
-                select.add(opt);
-                
                 // Select and load
                 select.value = newNative.id;
                 loadChart(newNative.id);
@@ -512,6 +674,44 @@ function updateNakshatraTable() {
                 alert("Failed to add native");
             }
         }
+        
+        function openSettingsModal() {
+            // Synchronize modal state with current settings
+            const radio = document.getElementById(`radio-${currentNotation}`);
+            if (radio) radio.checked = true;
+            const signCheck = document.getElementById('toggleSigns');
+            if (signCheck) {
+                document.getElementById('modalToggleSigns').checked = signCheck.checked;
+            }
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+
+        function closeSettingsModal(e) {
+            if (!e || e.target === document.getElementById('settingsModal') || e.target.classList.contains('modal-close-btn') || e.target.innerText === 'Done' || e.target.innerText === '×') {
+                document.getElementById('settingsModal').style.display = 'none';
+            }
+        }
+
+        function onModalNotationChange(mode) {
+            switchNotation(mode);
+        }
+
+        function onModalSignToggle(show) {
+            const toggle = document.getElementById('toggleSigns');
+            if (toggle) {
+                toggle.checked = show;
+                toggleSiSigns(show);
+            }
+        }
+
+        // Auto-load first chart on initial load if available
+        window.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('nativeSelect');
+            if (select && select.options.length > 1) {
+                select.selectedIndex = 1;
+                loadChart();
+            }
+        });
     </script>
 </body>
 </html>
