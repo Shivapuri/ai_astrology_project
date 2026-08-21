@@ -81,4 +81,6 @@ def add_native():
 
 if __name__ == '__main__':
     os.makedirs("cache", exist_ok=True)
-    app.run(debug=True, port=5000)
+    port = int(os.environ.get("PORT", 5001))
+    print(f"\n✨ Astra Kala Astrology Server running at: http://127.0.0.1:{port}\n")
+    app.run(debug=True, host="127.0.0.1", port=port)

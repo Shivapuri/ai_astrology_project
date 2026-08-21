@@ -289,26 +289,6 @@
     <h2 id="chartTitle" style="color: #2c3e50;">No Chart Loaded</h2>
     <p id="chartSubtitle"></p>
     
-    
-    <div style="width: 90%; max-width: 1200px; display: none; justify-content: space-between; align-items: center; margin-bottom: 20px; background: #fffdfa; padding: 12px 20px; border-radius: 10px; border: 1px solid #e5dccb; box-shadow: 0 4px 12px rgba(74, 51, 37, 0.05);" id="globalControlsContainer">
-        <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
-            <span style="font-weight: bold; color: #4a3325; font-size: 14px;">Planet Notation:</span>
-            <div class="btn-group">
-                <button type="button" class="btn-toggle active" id="btn-notation-symbol" onclick="switchNotation('symbol')">☉ Symbols</button>
-                <button type="button" class="btn-toggle" id="btn-notation-english" onclick="switchNotation('english')">En English (Su, Mo...)</button>
-                <button type="button" class="btn-toggle" id="btn-notation-devanagari" onclick="switchNotation('devanagari')">देव Devanagari (सू, चं...)</button>
-                <button type="button" class="btn-toggle" id="btn-notation-translit" onclick="switchNotation('translit')">IAST Translit (Sū, Ca...)</button>
-            </div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 15px;">
-            <label style="cursor: pointer; font-weight: bold; color: #4a3325; font-size: 14px;">
-                <input type="checkbox" id="toggleSigns" onchange="toggleSiSigns(this.checked)" checked> 
-                Show Signs in South Indian Charts
-            </label>
-            <button type="button" onclick="openSettingsModal()" style="background: none; border: 1px solid #d5c8b2; color: #4a3325; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer;">⚙️ More</button>
-        </div>
-    </div>
-    
     <!-- Settings Modal Window -->
     <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
         <div class="modal-card" onclick="event.stopPropagation()">
@@ -485,8 +465,6 @@
             document.getElementById('loading').style.display = 'block';
             const cc = document.getElementById('chartsComparison');
             if(cc) cc.style.display = 'none';
-            const gc = document.getElementById('globalControlsContainer');
-            if(gc) gc.style.display = 'none';
             document.getElementById('infoPanel').style.display = 'none';
             
             try {
@@ -509,7 +487,6 @@
                 updateNakshatraTable();
                 
                 // Show UI
-                document.getElementById('globalControlsContainer').style.display = 'flex';
                 document.getElementById('chartsComparison').style.display = 'flex';
                 document.getElementById('infoPanel').style.display = 'block';
                 
@@ -529,12 +506,10 @@
         
         
         let currentNotation = "symbol";
+        let showSiSigns = true;
 
         function switchNotation(mode) {
             currentNotation = mode;
-            document.querySelectorAll('.btn-toggle').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(`btn-notation-${mode}`);
-            if (activeBtn) activeBtn.classList.add('active');
             updateSlot(1);
             updateSlot(2);
         }
@@ -554,7 +529,7 @@
                 document.getElementById(`northChart${slot}`).innerHTML = vSvg.north;
             }
             
-            toggleSiSigns(document.getElementById('toggleSigns').checked);
+            toggleSiSigns(showSiSigns);
             
             // We update the Bhava table using slot 1 (Left chart) as the primary reference
             if (slot === 1) {
@@ -563,6 +538,7 @@
         }
         
         function toggleSiSigns(show) {
+            showSiSigns = show;
             const els = document.querySelectorAll('#si-signs');
             els.forEach(el => {
                 el.style.display = show ? 'block' : 'none';
@@ -681,10 +657,8 @@ function updateNakshatraTable() {
             // Synchronize modal state with current settings
             const radio = document.getElementById(`radio-${currentNotation}`);
             if (radio) radio.checked = true;
-            const signCheck = document.getElementById('toggleSigns');
-            if (signCheck) {
-                document.getElementById('modalToggleSigns').checked = signCheck.checked;
-            }
+            const signCheck = document.getElementById('modalToggleSigns');
+            if (signCheck) signCheck.checked = showSiSigns;
             document.getElementById('settingsModal').style.display = 'flex';
         }
 
@@ -699,11 +673,7 @@ function updateNakshatraTable() {
         }
 
         function onModalSignToggle(show) {
-            const toggle = document.getElementById('toggleSigns');
-            if (toggle) {
-                toggle.checked = show;
-                toggleSiSigns(show);
-            }
+            toggleSiSigns(show);
         }
 
         // Auto-load first chart on initial load if available
