@@ -119,24 +119,24 @@ def generate_south_indian(items):
         planets = [it for it in cell_items if it["type"] == "planet"]
         cusps = [it for it in cell_items if it["type"] == "cusp"]
         
-        start_y = y + 16
-        line_height = 20
+        start_y = y + 17
+        line_height = 21
         curr_y = start_y
         
         for p in planets:
             if p["name"] == "Lagna":
                 svg += f'<text x="{x+6}" y="{curr_y}" font-family="sans-serif" dominant-baseline="central">\n'
-                svg += f'  <tspan font-size="13" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
-                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
+                svg += f'  <tspan font-size="15" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
+                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
                 svg += f'</text>\n'
             else:
-                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="19" font-weight="bold" fill="{p["color"]}" text-anchor="middle" dominant-baseline="central">{p["sym"]}</text>\n'
-                svg += f'<text x="{x+25}" y="{curr_y}" font-family="sans-serif" font-size="11" font-weight="normal" fill="#4A3B32" dominant-baseline="central">{p["deg"]}</text>\n'
+                svg += f'<text x="{x+13}" y="{curr_y}" font-family="sans-serif" font-size="24" font-weight="bold" fill="{p["color"]}" text-anchor="middle" dominant-baseline="central">{p["sym"]}</text>\n'
+                svg += f'<text x="{x+27}" y="{curr_y}" font-family="sans-serif" font-size="12" font-weight="normal" fill="#4A3B32" dominant-baseline="central">{p["deg"]}</text>\n'
             curr_y += line_height
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
-            svg += f'<text x="{x+8}" y="{curr_y + 1}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += f'<text x="{x+8}" y="{curr_y + 1}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
 
     svg += '</svg>\n'
     return svg
@@ -199,7 +199,7 @@ def generate_north_indian(items):
         cusps = [it for it in house_items if it["type"] == "cusp"]
         
         num_lines = len(planets) + (1 if cusps else 0)
-        item_height = 20
+        item_height = 21
         total_h = num_lines * item_height
         start_y = cy - (total_h / 2) + (item_height / 2)
         curr_y = start_y
@@ -207,19 +207,19 @@ def generate_north_indian(items):
         for p in planets:
             if p["name"] == "Lagna":
                 svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="13" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
-                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
+                svg += f'  <tspan font-size="15" font-weight="bold" fill="{p["color"]}">Asc</tspan>\n'
+                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
                 svg += f'</text>\n'
             else:
                 svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="19" font-weight="bold" fill="{p["color"]}">{p["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="11" font-weight="normal" fill="#4A3B32" dx="4">{p["deg"]}</tspan>\n'
+                svg += f'  <tspan font-size="24" font-weight="bold" fill="{p["color"]}">{p["sym"]}</tspan>\n'
+                svg += f'  <tspan font-size="12" font-weight="normal" fill="#4A3B32" dx="5">{p["deg"]}</tspan>\n'
                 svg += f'</text>\n'
             curr_y += item_height
             
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
-            svg += f'<text x="{cx}" y="{curr_y}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += f'<text x="{cx}" y="{curr_y}" font-family="sans-serif" font-size="13" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
 
     svg += '</svg>\n'
     return svg
@@ -259,14 +259,14 @@ def generate_bhava_chalita_north(bhavas):
 
         items_in_house = bhava["planets"]
         
-        item_height = 20
+        item_height = 21
         total_h = len(items_in_house) * item_height
         start_y = cy - (total_h / 2) + (item_height / 2)
         
         curr_y = start_y
         for p_name in items_in_house:
             sym, color = planet_symbols.get(p_name, (p_name, "#000"))
-            sym_size = "19" if sym != "Asc" else "13"
+            sym_size = "24" if sym != "Asc" else "15"
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
             svg += f'  <tspan font-size="{sym_size}" font-weight="bold" fill="{color}">{sym}</tspan>\n'
             svg += f'</text>\n'
