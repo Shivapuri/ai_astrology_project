@@ -103,26 +103,8 @@ def add_native():
 @app.route('/api/update_native/<native_id>', methods=['POST'])
 def update_native(native_id):
     data = request.json
-    natives = native_manager.load_natives(CHARTS_FILE)
-    updated = None
-    for i, n in enumerate(natives):
-        if n.get("id") == native_id:
-            n['name'] = data['name']
-            n['date'] = data['date']
-            n['time'] = data['time']
-            n['lat'] = float(data['lat'])
-            n['lon'] = float(data['lon'])
-            n['tz'] = data['tz']
-            n['place'] = data.get('place', 'Custom')
-            n['country'] = data.get('country', '')
-            natives[i] = n
-            updated = n
-            break
-            
+    updated = native_manager.update_native(CHARTS_FILE, native_id, data)
     if updated:
-        with open(CHARTS_FILE, 'w', encoding='utf-8') as f:
-            for n in natives:
-                f.write(json.dumps(n) + "\n")
         return jsonify(updated)
     else:
         return jsonify({"error": "Native not found"}), 404
