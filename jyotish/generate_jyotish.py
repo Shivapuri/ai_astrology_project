@@ -6,6 +6,9 @@ from typing import Dict, Any, Optional
 
 try:
     import swisseph as swe
+    # Set ephemeris path to absolute path of 'ephe' directory in project root
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    swe.set_ephe_path(os.path.join(base_dir, 'ephe'))
 except ImportError:
     print("Error: 'pyswisseph' package is not installed. Please run 'pip install pyswisseph'.")
     sys.exit(1)
@@ -152,15 +155,22 @@ def generate_kala_chart(
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
-    birth_dt = datetime(year, month, day, hour, minute)
+    local_hour_fraction = hour + minute / 60.0
     
-    # Calculate UTC time
-    # offset is in hours
-    utc_dt = birth_dt - timedelta(hours=timezone_offset)
+    # Determine calendar flag
+    # Use Julian calendar for dates before Oct 15, 1582
+    if year < 1582 or (year == 1582 and month < 10) or (year == 1582 and month == 10 and day < 15):
+        cal_flag = swe.JUL_CAL
+    else:
+        cal_flag = swe.GREG_CAL
+        
+    jd_local = swe.julday(year, month, day, local_hour_fraction, cal_flag)
     
-    # swe.julday expects year, month, day, hour (fractional)
-    utc_hour_fraction = utc_dt.hour + utc_dt.minute / 60.0 + utc_dt.second / 3600.0
-    jd = swe.julday(utc_dt.year, utc_dt.month, utc_dt.day, utc_hour_fraction)
+    # Calculate UTC JD by subtracting timezone offset (offset is in hours)
+    jd = jd_local - (timezone_offset / 24.0)
+    
+    # Format a date string for the output
+    birth_dt_str = f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00"
 
     # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
     flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED
@@ -294,8 +304,10 @@ def generate_kala_chart(
                 "degree_0_to_30": c_deg
             })
 
-    # 2.5 Calculate Planetary Friendships & Dignity (Sambandha & Avasthas)
+    # 2.5 Calculate Planetary Friendships, Dignity & Avasthas
     import jyotish.relationships as rel
+    import jyotish.avasthas as avasthas
+    
     # Get D1 sign indexes for Temporary Friendship (Tatkalika) calculation
     d1_signs_idx = {}
     for p_name, p_data in vargas_data["D1"]["grahas"].items():
@@ -323,35 +335,38 @@ def generate_kala_chart(
                     "compound_relationship": cmp,
                     "final_dignity": dig
                 }
-                continue
-
-            sign = p_data["sign"]
-            sign_lord = rel.SIGN_LORDS[sign]
-            # Own sign exception (sign lord is the planet itself)
-            if sign_lord == p_name:
+            else:
+                sign = p_data["sign"]
+                sign_lord = rel.SIGN_LORDS[sign]
+                
+                if sign_lord == p_name:
+                    nat, tmp, cmp = "Self", "Self", "Self"
+                    dig = rel.get_dignity(p_name, sign, "Self")
+                else:
+                    sign_lord_d1_idx = d1_signs_idx[sign_lord]
+                    p_d1_idx = d1_signs_idx[p_name]
+                    
+                    nat = rel.get_natural_relationship(p_name, sign_lord)
+                    tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
+                    cmp = rel.get_compound_relationship(nat, tmp)
+                    dig = rel.get_dignity(p_name, sign, cmp)
+                    
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
-                    "natural_relationship": "Self",
-                    "temporary_relationship": "Self",
-                    "compound_relationship": "Self",
-                    "final_dignity": rel.get_dignity(p_name, sign, "Self")
+                    "natural_relationship": nat,
+                    "temporary_relationship": tmp,
+                    "compound_relationship": cmp,
+                    "final_dignity": dig
                 }
-                continue
-
-            sign_lord_d1_idx = d1_signs_idx[sign_lord]
-            p_d1_idx = d1_signs_idx[p_name]
             
-            nat = rel.get_natural_relationship(p_name, sign_lord)
-            tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
-            cmp = rel.get_compound_relationship(nat, tmp)
-            dig = rel.get_dignity(p_name, sign, cmp)
+            # Calculate Avasthas
+            p_deg = p_data["degree_0_to_30"]
+            bala_avastha = avasthas.get_bala_avastha(p_deg, p_data["sign"])
+            jagrat_avastha = avasthas.get_jagrat_avastha(p_data["dignity_breakdown"]["final_dignity"])
             
-            p_data["dignity_breakdown"] = {
-                "sign_lord": sign_lord,
-                "natural_relationship": nat,
-                "temporary_relationship": tmp,
-                "compound_relationship": cmp,
-                "final_dignity": dig
+            p_data["avasthas"] = {
+                "bala": bala_avastha,
+                "jagrat": jagrat_avastha
             }
 
     # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
@@ -431,14 +446,18 @@ def generate_kala_chart(
     
     # Calculate MD start and end based on Saura Years
     balance_days = balance_years * SAURA_YEAR_DAYS
-    md_end_dt = birth_dt + timedelta(days=balance_days)
-    md_start_dt = md_end_dt - timedelta(days=(total_md_years * SAURA_YEAR_DAYS))
+    md_end_jd = jd_local + balance_days
+    md_start_jd = md_end_jd - (total_md_years * SAURA_YEAR_DAYS)
+    
+    # swe.revjul returns (year, month, day, hour_fraction)
+    md_end_y, md_end_m, md_end_d, _ = swe.revjul(md_end_jd, cal_flag)
+    md_start_y, md_start_m, md_start_d, _ = swe.revjul(md_start_jd, cal_flag)
     
     # 5. Assemble JSON Context
     vedic_context = {
         "subject_info": {
             "name": name,
-            "birth_datetime": birth_dt.isoformat(),
+            "birth_datetime": birth_dt_str,
             "latitude": latitude,
             "longitude": longitude,
             "timezone_offset": timezone_offset
@@ -459,7 +478,7 @@ def generate_kala_chart(
             "at_birth": {
                 "mahadasha": birth_md_lord,
                 "mahadasha_balance_years": round(balance_years, 4),
-                "mahadasha_period": f"{md_start_dt.strftime('%Y-%m-%d')} to {md_end_dt.strftime('%Y-%m-%d')}"
+                "mahadasha_period": f"{md_start_y:04d}-{md_start_m:02d}-{md_start_d:02d} to {md_end_y:04d}-{md_end_m:02d}-{md_end_d:02d}"
             }
         }
     }

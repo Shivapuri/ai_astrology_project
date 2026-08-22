@@ -22,7 +22,7 @@ def get_native_by_id(filepath, native_id):
             return n
     return None
 
-def save_native(filepath, name, date, time, lat, lon, tz):
+def save_native(filepath, name, date, time, lat, lon, tz, place="Custom", country=""):
     new_native = {
         "v": 1,
         "id": str(uuid.uuid4()),
@@ -39,8 +39,8 @@ def save_native(filepath, name, date, time, lat, lon, tz):
         "zt": "zone",
         "bc": False,
         "dst": False,
-        "place": "Custom",
-        "country": "",
+        "place": place,
+        "country": country,
         "lat": float(lat),
         "lon": float(lon),
         "alt": 0.0,

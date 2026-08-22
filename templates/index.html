@@ -342,16 +342,24 @@
         </div>
         
         <div class="add-section">
-            <h3>Add New Person</h3>
+            <h3>Add / Edit Person</h3>
+            <input type="hidden" id="editNativeId" value="">
             <input type="text" id="newName" placeholder="Name" required>
-            <input type="date" id="newDate" required>
+            <input type="text" id="newDate" placeholder="YYYY-MM-DD (e.g. -3102-02-18)" required style="width: 200px;">
             <input type="time" id="newTime" step="1" required>
             <br>
-            <input type="number" id="newLat" placeholder="Latitude (e.g. 52.2)" step="0.0001" required>
-            <input type="number" id="newLon" placeholder="Longitude (e.g. 8.04)" step="0.0001" required>
-            <input type="text" id="newTz" placeholder="TZ Offset (e.g. +01:00)" value="+00:00" required>
+            <select id="countrySelect" onchange="loadCities()" style="width: 150px; padding: 4px;">
+                <option value="">-- Country --</option>
+            </select>
+            <select id="citySelect" onchange="fetchTimezone()" style="width: 150px; padding: 4px;" disabled>
+                <option value="">-- City --</option>
+            </select>
+            <input type="number" id="newLat" placeholder="Lat" step="0.0001" required style="width: 80px;">
+            <input type="number" id="newLon" placeholder="Lon" step="0.0001" required style="width: 80px;">
+            <input type="text" id="newTz" placeholder="TZ (e.g. +05:30)" value="+00:00" required style="width: 100px;">
             <br>
-            <button onclick="addNewChart()">Save & Load</button>
+            <button onclick="saveNative(false)">Save as New</button>
+            <button onclick="saveNative(true)" id="updateBtn" style="display:none; background-color: #27ae60;">Update Selected</button>
         </div>
     </div>
     
@@ -559,6 +567,8 @@
                             <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
                             <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
                             <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
+                            <th title="Age/Vitality based on degrees">Bala Avastha</th>
+                            <th title="Alertness/Consciousness based on dignity">Jagrat Avastha</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -595,6 +605,8 @@
                     <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
                     <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
                     <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
+                    <th title="Age/Vitality based on degrees">Bala Avastha</th>
+                    <th title="Alertness/Consciousness based on dignity">Jagrat Avastha</th>
                 </tr>
             </thead>
             <tbody>
@@ -641,6 +653,41 @@
                 
                 currentChartData = result.data;
                 currentSvgs = result.svgs;
+                
+                if (result.native) {
+                    document.getElementById('editNativeId').value = result.native.id;
+                    document.getElementById('newName').value = result.native.name;
+                    document.getElementById('newDate').value = result.native.date;
+                    
+                    // HTML time inputs often require HH:MM or HH:MM:SS format
+                    // Ensure the loaded time fits, e.g. padding or slicing if needed
+                    let tStr = result.native.time;
+                    if (tStr.length === 5) tStr += ":00"; // append seconds if missing
+                    document.getElementById('newTime').value = tStr;
+                    
+                    document.getElementById('newLat').value = result.native.lat;
+                    document.getElementById('newLon').value = result.native.lon;
+                    document.getElementById('newTz').value = result.native.tz;
+                    document.getElementById('updateBtn').style.display = 'inline-block';
+                    
+                    if (result.native.country) {
+                        document.getElementById('countrySelect').value = result.native.country;
+                        await loadCities();
+                        if (result.native.place && result.native.place !== "Custom") {
+                            const citySelect = document.getElementById('citySelect');
+                            for (let i = 0; i < citySelect.options.length; i++) {
+                                if (citySelect.options[i].text === result.native.place) {
+                                    citySelect.selectedIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        document.getElementById('countrySelect').value = "";
+                        document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
+                        document.getElementById('citySelect').disabled = true;
+                    }
+                }
                 
                 // Update Titles
                 document.getElementById('chartTitle').innerText = `${currentChartData.subject_info.name} - Birth Chart`;
@@ -766,12 +813,23 @@
             planetsOrder.forEach(p => {
                 if (!grahas[p] || !grahas[p].dignity_breakdown) return;
                 const d = grahas[p].dignity_breakdown;
+                const av = grahas[p].avasthas;
+                
+                let balaHtml = "N/A";
+                let jagratHtml = "N/A";
+                if (av) {
+                    balaHtml = `${av.bala.state} (${av.bala.strength * 100}%)`;
+                    jagratHtml = `${av.jagrat.state} (${av.jagrat.alertness * 100}%)`;
+                }
+
                 const rowHtml = `<td><strong>${p}</strong></td>
                                 <td>${d.sign_lord}</td>
                                 <td>${d.natural_relationship}</td>
                                 <td>${d.temporary_relationship}</td>
                                 <td>${d.compound_relationship}</td>
-                                <td><strong>${d.final_dignity}</strong></td>`;
+                                <td><strong>${d.final_dignity}</strong></td>
+                                <td>${balaHtml}</td>
+                                <td>${jagratHtml}</td>`;
                 
                 if (tbody) {
                     const tr = document.createElement('tr');
@@ -822,14 +880,19 @@
             }
         }
         
-        async function addNewChart() {
+        async function saveNative(isUpdate) {
+            const cityEl = document.getElementById('citySelect');
+            const placeName = cityEl.selectedIndex > 0 ? cityEl.options[cityEl.selectedIndex].text : "Custom";
+            
             const payload = {
                 name: document.getElementById('newName').value,
                 date: document.getElementById('newDate').value,
                 time: document.getElementById('newTime').value,
                 lat: document.getElementById('newLat').value,
                 lon: document.getElementById('newLon').value,
-                tz: document.getElementById('newTz').value
+                tz: document.getElementById('newTz').value,
+                country: document.getElementById('countrySelect').value || "",
+                place: placeName
             };
             
             if (!payload.name || !payload.date || !payload.time || !payload.lat || !payload.lon || !payload.tz) {
@@ -838,7 +901,14 @@
             }
             
             try {
-                const response = await fetch('/api/add_native', {
+                let url = '/api/add_native';
+                if (isUpdate) {
+                    const id = document.getElementById('editNativeId').value;
+                    if (!id) { alert("No chart selected to update"); return; }
+                    url = `/api/update_native/${id}`;
+                }
+                
+                const response = await fetch(url, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify(payload)
@@ -846,18 +916,105 @@
                 
                 const newNative = await response.json();
                 
-                // Add to select
+                if (newNative.error) {
+                    alert(newNative.error);
+                    return;
+                }
+                
                 const select = document.getElementById('nativeSelect');
-                const opt = document.createElement('option');
-                opt.value = newNative.id;
-                opt.text = `${newNative.name} (${newNative.date})`;
+                if (isUpdate) {
+                    // Update option text
+                    for (let i = 0; i < select.options.length; i++) {
+                        if (select.options[i].value === newNative.id) {
+                            select.options[i].text = `${newNative.name} (${newNative.date})`;
+                            break;
+                        }
+                    }
+                } else {
+                    // Add to select
+                    const opt = document.createElement('option');
+                    opt.value = newNative.id;
+                    opt.text = `${newNative.name} (${newNative.date})`;
+                    select.appendChild(opt);
+                }
+                
                 // Select and load
                 select.value = newNative.id;
                 loadChart(newNative.id);
                 
             } catch (e) {
                 console.error(e);
-                alert("Failed to add native");
+                alert("Failed to save native");
+            }
+        }
+        
+        async function loadCountries() {
+            try {
+                const response = await fetch('/api/countries');
+                const countries = await response.json();
+                const select = document.getElementById('countrySelect');
+                countries.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.code;
+                    opt.text = c.name;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                console.error("Failed to load countries", e);
+            }
+        }
+        
+        async function loadCities() {
+            const countryCode = document.getElementById('countrySelect').value;
+            const citySelect = document.getElementById('citySelect');
+            citySelect.innerHTML = '<option value="">-- City --</option>';
+            if (!countryCode) {
+                citySelect.disabled = true;
+                return;
+            }
+            citySelect.disabled = true;
+            try {
+                const response = await fetch(`/api/cities/${countryCode}`);
+                const cities = await response.json();
+                cities.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.text = c.name;
+                    opt.dataset.lat = c.lat;
+                    opt.dataset.lon = c.lon;
+                    citySelect.appendChild(opt);
+                });
+                citySelect.disabled = false;
+            } catch (e) {
+                console.error("Failed to load cities", e);
+            }
+        }
+        
+        async function fetchTimezone() {
+            const citySelect = document.getElementById('citySelect');
+            const opt = citySelect.options[citySelect.selectedIndex];
+            if (!opt.value) return;
+            
+            const lat = opt.dataset.lat;
+            const lon = opt.dataset.lon;
+            document.getElementById('newLat').value = lat;
+            document.getElementById('newLon').value = lon;
+            
+            const dateStr = document.getElementById('newDate').value || '2000-01-01';
+            const timeStr = document.getElementById('newTime').value || '12:00:00';
+            
+            try {
+                const response = await fetch('/api/timezone', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ lat, lon, date: dateStr, time: timeStr })
+                });
+                const res = await response.json();
+                if (res.offset) {
+                    document.getElementById('newTz').value = res.offset;
+                }
+            } catch (e) {
+                console.error("Failed to fetch timezone", e);
             }
         }
         
@@ -963,7 +1120,8 @@
         });
 
         // Auto-load first chart on initial load if available
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
+            await loadCountries();
             const select = document.getElementById('nativeSelect');
             if (select && select.options.length > 1) {
                 select.selectedIndex = 1;
