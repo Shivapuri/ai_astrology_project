@@ -25,6 +25,9 @@ rag/chroma_modern_db/
 *.svg
 *.html
 !templates/*.html
+!source-material/sanskrit_texts/**
+!source-material/sanskrit_texts/bphs/**
+!source-material/sanskrit_texts/*.json
 western/logs/
 .DS_Store
 
