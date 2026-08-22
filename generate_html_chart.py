@@ -111,26 +111,47 @@ def generate_south_indian(items):
                 "deg": f"{item['degree']}°{item['minute']:02d}'"
             })
 
-    svg += '<g id="si-signs" style="display: none;">\n'
-    for sign, (x, y) in cell_coords.items():
-        s_sym, _, _ = sign_symbols[sign]
-        svg += f'<text x="{x+50}" y="{y+65}" font-size="50" font-family="sans-serif" fill="#bdc3c7" opacity="0.2" text-anchor="middle">{s_sym}</text>\n'
-    svg += '</g>\n'
+    # Quadrant Map: (cusp_dx, cusp_dy, sign_dx, sign_dy)
+    quadrant_map = {
+        "Pisces": (14, 14, 86, 86),
+        "Aries": (14, 14, 86, 86),
+        "Aquarius": (14, 14, 86, 86),
+        "Taurus": (86, 14, 14, 86),
+        "Gemini": (86, 14, 14, 86),
+        "Cancer": (86, 14, 14, 86),
+        "Leo": (86, 86, 14, 14),
+        "Virgo": (86, 86, 14, 14),
+        "Libra": (86, 86, 14, 14),
+        "Scorpio": (14, 86, 86, 14),
+        "Sagittarius": (14, 86, 86, 14),
+        "Capricorn": (14, 86, 86, 14),
+    }
 
     for sign, (x, y) in cell_coords.items():
         items = items_by_sign[sign]
         
-        cx = x + 5
-        cy = y + 18
-        for item in items:
-            if item["type"] == "cusp":
-                svg += f'<text x="{cx}" y="{cy}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{item["color"]}">{item["text"]}</text>\n'
-            else:
-                sym_size = "18" if item["sym"] != "Asc" else "14"
-                svg += f'<text x="{cx}" y="{cy}" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="{sym_size}" fill="{item["color"]}">{item["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="11" fill="#7f8c8d"> {item["deg"]}</tspan>\n'
-                svg += f'</text>\n'
+        c_dx, c_dy, s_dx, s_dy = quadrant_map[sign]
+        
+        s_sym, _, _ = sign_symbols[sign]
+        svg += f'<text x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="#bdc3c7" opacity="0.6" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        planets = [it for it in items if it["type"] != "cusp"]
+        cusps = [it for it in items if it["type"] == "cusp"]
+        
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+
+        # Basic linear layout for planets in generate_html_chart.py for now
+        # Centering planets in the middle zone
+        cy = y + 25
+        for item in planets:
+            cx = x + 50
+            sym_size = "18" if item["sym"] != "Asc" else "14"
+            svg += f'<text x="{cx}" y="{cy}" font-family="sans-serif" text-anchor="middle" dominant-baseline="central">\n'
+            svg += f'  <tspan font-size="{sym_size}" fill="{item["color"]}">{item["sym"]}</tspan>\n'
+            svg += f'  <tspan font-size="11" fill="#7f8c8d"> {item["deg"]}</tspan>\n'
+            svg += f'</text>\n'
             cy += 18
 
     svg += '</svg>\n'
@@ -153,9 +174,9 @@ def generate_north_indian(items):
     ]
     
     sign_pos = [
-        (200, 180), (150, 20),  (20, 150),  (180, 200),
-        (20, 250),  (150, 380), (200, 220), (250, 380),
-        (380, 250), (220, 200), (380, 150), (250, 20)
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
     ]
 
     asc = next((p for p in items if p.get("name") == "Lagna"), None)
@@ -315,13 +336,6 @@ def create_html(south_svg, north_svg, json_file, output_file):
 <body>
     <h1>{subject['name']} - Birth Chart</h1>
     <p>{subject['birth_datetime']} | {subject['latitude']} N, {subject['longitude']} E</p>
-    
-    <div class="controls">
-        <label style="cursor: pointer; background: #fff; padding: 10px 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-            <input type="checkbox" id="toggleSigns" onchange="document.getElementById('si-signs').style.display = this.checked ? 'block' : 'none';"> 
-            Show Zodiac Signs in South Indian Chart
-        </label>
-    </div>
     
     <div class="charts-container">
         <div class="chart-box">

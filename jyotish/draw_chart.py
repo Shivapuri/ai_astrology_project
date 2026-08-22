@@ -166,42 +166,49 @@ def parse_varga_data(varga_data):
 def get_south_indian_positions(num_planets, cell_x, cell_y, has_cusps=False):
     positions = []
     if num_planets == 1:
-        py = cell_y + (36 if has_cusps else 42)
-        positions.append((cell_x + 50, py))
+        positions.append((cell_x + 50, cell_y + 44))
     elif num_planets == 2:
-        py = cell_y + (36 if has_cusps else 42)
-        positions.append((cell_x + 28, py))
-        positions.append((cell_x + 72, py))
+        positions.append((cell_x + 30, cell_y + 44))
+        positions.append((cell_x + 70, cell_y + 44))
     elif num_planets == 3:
-        r1_y = cell_y + 24
-        r2_y = cell_y + (58 if has_cusps else 64)
-        positions.append((cell_x + 28, r1_y))
-        positions.append((cell_x + 72, r1_y))
-        positions.append((cell_x + 50, r2_y))
+        positions.append((cell_x + 30, cell_y + 35))
+        positions.append((cell_x + 70, cell_y + 35))
+        positions.append((cell_x + 50, cell_y + 65))
     elif num_planets == 4:
-        r1_y = cell_y + 24
-        r2_y = cell_y + (58 if has_cusps else 64)
-        positions.append((cell_x + 28, r1_y))
-        positions.append((cell_x + 72, r1_y))
-        positions.append((cell_x + 28, r2_y))
-        positions.append((cell_x + 72, r2_y))
+        positions.append((cell_x + 30, cell_y + 35))
+        positions.append((cell_x + 70, cell_y + 35))
+        positions.append((cell_x + 30, cell_y + 65))
+        positions.append((cell_x + 70, cell_y + 65))
     elif num_planets == 5:
-        r1_y = cell_y + 24
-        r2_y = cell_y + (58 if has_cusps else 64)
-        positions.append((cell_x + 20, r1_y))
-        positions.append((cell_x + 50, r1_y))
-        positions.append((cell_x + 80, r1_y))
-        positions.append((cell_x + 32, r2_y))
-        positions.append((cell_x + 68, r2_y))
+        positions.append((cell_x + 20, cell_y + 35))
+        positions.append((cell_x + 50, cell_y + 35))
+        positions.append((cell_x + 80, cell_y + 35))
+        positions.append((cell_x + 35, cell_y + 65))
+        positions.append((cell_x + 65, cell_y + 65))
+    elif num_planets == 6:
+        positions.append((cell_x + 20, cell_y + 35))
+        positions.append((cell_x + 50, cell_y + 35))
+        positions.append((cell_x + 80, cell_y + 35))
+        positions.append((cell_x + 20, cell_y + 65))
+        positions.append((cell_x + 50, cell_y + 65))
+        positions.append((cell_x + 80, cell_y + 65))
+    elif num_planets == 7:
+        positions.append((cell_x + 20, cell_y + 25))
+        positions.append((cell_x + 50, cell_y + 25))
+        positions.append((cell_x + 80, cell_y + 25))
+        positions.append((cell_x + 35, cell_y + 50))
+        positions.append((cell_x + 65, cell_y + 50))
+        positions.append((cell_x + 30, cell_y + 75))
+        positions.append((cell_x + 70, cell_y + 75))
     else:
-        r1_y = cell_y + 24
-        r2_y = cell_y + (58 if has_cusps else 64)
-        positions.append((cell_x + 20, r1_y))
-        positions.append((cell_x + 50, r1_y))
-        positions.append((cell_x + 80, r1_y))
-        positions.append((cell_x + 20, r2_y))
-        positions.append((cell_x + 50, r2_y))
-        positions.append((cell_x + 80, r2_y))
+        positions.append((cell_x + 20, cell_y + 25))
+        positions.append((cell_x + 50, cell_y + 25))
+        positions.append((cell_x + 80, cell_y + 25))
+        positions.append((cell_x + 20, cell_y + 50))
+        positions.append((cell_x + 50, cell_y + 50))
+        positions.append((cell_x + 80, cell_y + 50))
+        positions.append((cell_x + 35, cell_y + 75))
+        positions.append((cell_x + 65, cell_y + 75))
     return positions
 
 def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
@@ -282,18 +289,41 @@ def generate_south_indian(items, mode="symbol"):
                 "is_retrograde": item.get("is_retrograde", False)
             })
 
-    # Subtle corner sign indicator
-    svg += '<g id="si-signs" style="display: block;">\n'
-    for sign, (x, y) in cell_coords.items():
-        s_sym, s_col, _ = sign_symbols[sign]
-        svg += f'<text x="{x+86}" y="{y+15}" font-size="13" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
-    svg += '</g>\n'
+    # Quadrant Map: (cusp_dx, cusp_dy, sign_dx, sign_dy)
+    quadrant_map = {
+        "Pisces": (14, 14, 86, 86),
+        "Aries": (14, 14, 86, 86),
+        "Aquarius": (14, 14, 86, 86),
+        "Taurus": (86, 14, 14, 86),
+        "Gemini": (86, 14, 14, 86),
+        "Cancer": (86, 14, 14, 86),
+        "Leo": (86, 86, 14, 14),
+        "Virgo": (86, 86, 14, 14),
+        "Libra": (86, 86, 14, 14),
+        "Scorpio": (14, 86, 86, 14),
+        "Sagittarius": (14, 86, 86, 14),
+        "Capricorn": (14, 86, 86, 14),
+    }
 
     for sign, (x, y) in cell_coords.items():
         cell_items = items_by_sign[sign]
         planets = [it for it in cell_items if it["type"] == "planet"]
         cusps = [it for it in cell_items if it["type"] == "cusp"]
         
+        c_dx, c_dy, s_dx, s_dy = quadrant_map[sign]
+        
+        # Draw Rasi Sign (Inner Corner)
+        s_sym, s_col, _ = sign_symbols[sign]
+        svg += f'<text x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        # Draw House Cusps (Outer Corner)
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
+            svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += '</g>\n'
+
         positions = get_south_indian_positions(len(planets), x, y, has_cusps=bool(cusps))
         
         for idx, p in enumerate(planets):
@@ -327,12 +357,7 @@ def generate_south_indian(items, mode="symbol"):
             svg += '</text>\n'
             svg += '</g>\n'
             
-        if cusps:
-            cusp_texts = [c["text"] for c in cusps]
-            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
-            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
-            svg += f'<text x="{x + 50}" y="{y + 86}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
-            svg += '</g>\n'
+        # (Cusps are now drawn at the beginning of the cell block in the outer corner)
 
     svg += '</svg>\n'
     return svg
@@ -353,9 +378,9 @@ def generate_north_indian(items, mode="symbol"):
         (352, 300), (300, 200), (352, 100), (300, 45)
     ]
     sign_pos = [
-        (200, 180), (100, 85),  (180, 100), (115, 180),
-        (180, 300), (100, 315), (200, 220), (300, 315),
-        (220, 300), (285, 180), (220, 100), (300, 85)
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
     ]
 
     asc_item = next(it for it in items if it["name"] == "Lagna")
