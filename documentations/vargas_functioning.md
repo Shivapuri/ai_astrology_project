@@ -89,4 +89,29 @@ Below is the complete mathematical definition for all 16 harmonic divisions impl
 * **Dual Comparison UI ([`templates/index.html`](file:///Users/hajnaljanos/PycharmProjects/astra/templates/index.html))**:
   * Provides independent **Left Chart** and **Right Chart** dropdown selectors.
   * Allows simultaneous side-by-side inspection of any two Vargas (e.g., D1 Rasi next to D9 Navamsa or D2 Hora).
-  * Dynamically updates the corresponding **Equatorial Sidereal Nakshatra** table and **Bhava Chalita House Cusp** breakdown.
+  * Dynamically updates the corresponding **Equatorial Sidereal Nakshatra** table, **Planetary Dignity & Sambandha** matrix, and **Bhava Chalita House Cusp** breakdown.
+
+---
+
+## 6. Planetary Relationships & Dignity (Sambandha)
+
+Astra incorporates Ernst Wilhelm's exact calculation engine for Planetary Friendships (Sambandha), forming the bedrock for evaluating Avasthas, Shadbala, and Yogas.
+
+### A. Naisargika Sambandha (Natural Relationships)
+Calculated based on classical Moolatrikona rulerships (from *Graha Sutras*). A planet is a natural friend to the lords of the 2nd, 4th, 5th, 8th, 9th, and 12th houses from its Moolatrikona sign, as well as the lord of its exaltation sign. All other house lords are enemies. Dual rulerships resulting in one friend and one enemy average out to **Neutral**.
+
+### B. Tatkalika Sambandha (Temporary Relationships)
+Calculated based on real-time spatial positioning within the Rasi (D1) chart. 
+* **Rule**: Planets located 3 houses in front or 3 houses behind (i.e., the 2nd, 3rd, 4th, 10th, 11th, and 12th houses from each other) are **Temporary Friends** ($+1$).
+* **Rule**: Planets conjunct or located in the 5th, 6th, 7th, 8th, or 9th houses from each other are **Temporary Enemies** ($-1$).
+* *Note: Following Kala software standards, Temporary Friendships are calculated exclusively in the D1 Rasi chart and inherited by all divisional Varga charts.*
+
+### C. Panchadha Sambandha (Compound Relationships)
+The mathematical sum of Natural and Temporary relationships:
+* Friend + Friend = **Great Friend**
+* Friend + Neutral = **Friend**
+* Neutral + Enemy = **Enemy**
+* Enemy + Enemy = **Great Enemy**
+
+### D. Final Dignity (Sthana Bala / Avastha Foundation)
+The system checks against fixed dignities first (**Exaltation, Moolatrikona, Own Sign, Debilitation**). If none apply, it falls back to the compound relationship of the planet to its current Sign Lord. This resulting dignity (e.g., "Great Friend's Sign") is directly output in the UI to evaluate the strength and emotional disposition (Avastha) of the planet.

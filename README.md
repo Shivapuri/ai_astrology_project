@@ -20,7 +20,7 @@ Astra is a precision astrological computation project dedicated to Ernst Wilhelm
 ## Running the Application
 1. Activate your virtual environment: `source venv/bin/activate`
 2. Start the Flask server: `python app.py`
-3. Open your browser to `http://localhost:5000`
+3. Open your browser to `http://localhost:5001`
 
 ## Documentation
 - **[Vargas Functioning & Calculation Guide](documentations/vargas_functioning.md)**: Detailed technical reference on algorithms, rules, degree scaling, and cusp projection for all 16 Shodashavarga charts.

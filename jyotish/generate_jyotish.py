@@ -294,6 +294,66 @@ def generate_kala_chart(
                 "degree_0_to_30": c_deg
             })
 
+    # 2.5 Calculate Planetary Friendships & Dignity (Sambandha & Avasthas)
+    import jyotish.relationships as rel
+    # Get D1 sign indexes for Temporary Friendship (Tatkalika) calculation
+    d1_signs_idx = {}
+    for p_name, p_data in vargas_data["D1"]["grahas"].items():
+        d1_signs_idx[p_name] = ZODIAC_SIGNS.index(p_data["sign"])
+
+    for v_name, v_data in vargas_data.items():
+        for p_name, p_data in v_data["grahas"].items():
+            if p_name in ["Rahu", "Ketu"]:
+                # Nodes use specific fixed dignities or their own special rules, but often follow Saturn/Mars
+                proxy = "Saturn" if p_name == "Rahu" else "Mars"
+                sign = p_data["sign"]
+                sign_lord = rel.SIGN_LORDS[sign]
+                sign_lord_d1_idx = d1_signs_idx[sign_lord]
+                p_d1_idx = d1_signs_idx[p_name]
+                
+                nat = rel.get_natural_relationship(p_name, sign_lord)
+                tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
+                cmp = rel.get_compound_relationship(nat, tmp)
+                dig = rel.get_dignity(p_name, sign, cmp)
+                
+                p_data["dignity_breakdown"] = {
+                    "sign_lord": sign_lord,
+                    "natural_relationship": nat,
+                    "temporary_relationship": tmp,
+                    "compound_relationship": cmp,
+                    "final_dignity": dig
+                }
+                continue
+
+            sign = p_data["sign"]
+            sign_lord = rel.SIGN_LORDS[sign]
+            # Own sign exception (sign lord is the planet itself)
+            if sign_lord == p_name:
+                p_data["dignity_breakdown"] = {
+                    "sign_lord": sign_lord,
+                    "natural_relationship": "Self",
+                    "temporary_relationship": "Self",
+                    "compound_relationship": "Self",
+                    "final_dignity": rel.get_dignity(p_name, sign, "Self")
+                }
+                continue
+
+            sign_lord_d1_idx = d1_signs_idx[sign_lord]
+            p_d1_idx = d1_signs_idx[p_name]
+            
+            nat = rel.get_natural_relationship(p_name, sign_lord)
+            tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
+            cmp = rel.get_compound_relationship(nat, tmp)
+            dig = rel.get_dignity(p_name, sign, cmp)
+            
+            p_data["dignity_breakdown"] = {
+                "sign_lord": sign_lord,
+                "natural_relationship": nat,
+                "temporary_relationship": tmp,
+                "compound_relationship": cmp,
+                "final_dignity": dig
+            }
+
     # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
     flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
     

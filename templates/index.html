@@ -403,9 +403,41 @@
             </div>
             
             <div class="setting-section">
+                <h4>Chart Visibility</h4>
+                
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleSouth" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleSouth" style="margin-left: 10px;">
+                        <strong>Show South Indian Charts</strong>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleNorth" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleNorth" style="margin-left: 10px;">
+                        <strong>Show North Indian Charts</strong>
+                    </label>
+                </div>
+
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleRightSlot" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleRightSlot" style="margin-left: 10px;">
+                        <strong>Show Right Chart Slot (Comparison)</strong>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleDignity" onchange="onModalLayoutChange()">
+                    <label for="modalToggleDignity" style="margin-left: 10px;">
+                        <strong>Show Dignity & Friendship Table in Top Panel</strong>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-section">
                 <h4>South Indian Chart Layout</h4>
                 <div class="setting-option-card">
-                    <input type="checkbox" id="modalToggleSigns" onchange="onModalSignToggle(this.checked)">
+                    <input type="checkbox" id="modalToggleSigns" checked onchange="onModalSignToggle(this.checked)">
                     <label for="modalToggleSigns" style="margin-left: 10px;">
                         <strong>Show Zodiac Signs</strong> in the corner of South Indian cells
                     </label>
@@ -433,8 +465,8 @@
     </div>
 
     <div class="charts-comparison" id="chartsComparison" style="display:none; width:95%; max-width:1440px; display:flex; gap:36px;">
-        <!-- Left Slot -->
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px;">
+        <div id="leftSlot" style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px;">
+        
             <div class="varga-selector">
                 <label for="vargaSelect1">Left Chart: </label>
                 <select id="vargaSelect1" onchange="updateSlot(1)">
@@ -458,14 +490,14 @@
 
                 </select>
             </div>
-            <div class="chart-box">
+            <div class="chart-box" id="southBox1">
                 <div class="chart-header-row">
                     <h2 id="titleSouth1">Tropical South Indian (D1)</h2>
                     <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
                 </div>
                 <div id="southChart1" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
-            <div class="chart-box">
+            <div class="chart-box" id="northBox1">
                 <div class="chart-header-row">
                     <h2 id="titleNorth1">Tropical North Indian (D1)</h2>
                     <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
@@ -474,8 +506,8 @@
             </div>
         </div>
         
-        <!-- Right Slot -->
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
+        <div id="rightSlot" style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
+        
             <div class="varga-selector">
                 <label for="vargaSelect2">Right Chart: </label>
                 <select id="vargaSelect2" onchange="updateSlot(2)">
@@ -499,19 +531,39 @@
 
                 </select>
             </div>
-            <div class="chart-box">
+            <div class="chart-box" id="southBox2">
                 <div class="chart-header-row">
                     <h2 id="titleSouth2">Tropical South Indian (D9)</h2>
                     <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
                 </div>
                 <div id="southChart2" style="width: 100%; display: flex; justify-content: center;"></div>
             </div>
-            <div class="chart-box">
+            <div class="chart-box" id="northBox2">
                 <div class="chart-header-row">
                     <h2 id="titleNorth2">Tropical North Indian (D9)</h2>
                     <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
                 </div>
                 <div id="northChart2" style="width: 100%; display: flex; justify-content: center;"></div>
+            </div>
+        </div>
+
+        <div id="dignitySidePanel" style="flex:1; display:none; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
+            <div class="chart-box" style="width: 100%; padding: 20px; box-sizing: border-box;">
+                <h2 id="dignitySideTitle" style="color: #4a3325; font-size: 17px; margin-bottom: 12px; margin-top: 0;">Planetary Dignity & Sambandha</h2>
+                <table id="dignitySideTable" style="width: 100%; font-size: 13px;">
+                    <thead>
+                        <tr>
+                            <th>Graha</th>
+                            <th title="The planet that rules the sign this graha is placed in">Sign Lord</th>
+                            <th title="Fixed natural relationship based on Moolatrikona rulerships">Natural</th>
+                            <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
+                            <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
+                            <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -533,6 +585,22 @@
             </tbody>
         </table>
         
+        <h2 style="margin-top: 30px;" id="dignityTitle">Planetary Dignity & Sambandha (Panchadha)</h2>
+        <table id="dignityTable">
+            <thead>
+                <tr>
+                    <th>Graha</th>
+                    <th title="The planet that rules the sign this graha is placed in">Sign Lord</th>
+                    <th title="Fixed natural relationship based on Moolatrikona rulerships">Natural</th>
+                    <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
+                    <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
+                    <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
         <h2 style="margin-top: 30px;">Bhava Chalita (Proper House Cusps)</h2>
         <table id="bhavaTable">
             <thead>
@@ -629,6 +697,7 @@
             // We update the Bhava table using slot 1 (Left chart) as the primary reference
             if (slot === 1) {
                 updateBhavaTable(varga);
+                updateDignityTable(varga);
             }
         }
         
@@ -674,7 +743,51 @@
                 tbody.appendChild(tr);
             });
         }
-function updateNakshatraTable() {
+        function updateDignityTable(varga) {
+            const tbody = document.querySelector('#dignityTable tbody');
+            const sideTbody = document.querySelector('#dignitySideTable tbody');
+            if(tbody) tbody.innerHTML = '';
+            if(sideTbody) sideTbody.innerHTML = '';
+            
+            if (!currentChartData || !currentChartData.vargas[varga]) return;
+
+            const title = document.getElementById('dignityTitle');
+            if (title) {
+                title.innerText = `Planetary Dignity & Sambandha (Panchadha) - ${varga}`;
+            }
+            const sideTitle = document.getElementById('dignitySideTitle');
+            if (sideTitle) {
+                sideTitle.innerText = `Planetary Dignity & Sambandha - ${varga}`;
+            }
+
+            const grahas = currentChartData.vargas[varga].grahas;
+            const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            
+            planetsOrder.forEach(p => {
+                if (!grahas[p] || !grahas[p].dignity_breakdown) return;
+                const d = grahas[p].dignity_breakdown;
+                const rowHtml = `<td><strong>${p}</strong></td>
+                                <td>${d.sign_lord}</td>
+                                <td>${d.natural_relationship}</td>
+                                <td>${d.temporary_relationship}</td>
+                                <td>${d.compound_relationship}</td>
+                                <td><strong>${d.final_dignity}</strong></td>`;
+                
+                if (tbody) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = rowHtml;
+                    tbody.appendChild(tr);
+                }
+                
+                if (sideTbody) {
+                    const trSide = document.createElement('tr');
+                    trSide.innerHTML = rowHtml;
+                    sideTbody.appendChild(trSide);
+                }
+            });
+        }
+
+        function updateNakshatraTable() {
             const info = currentChartData.astronomy;
             document.getElementById('ayanamsaName').innerText = `Ayanamsa: ${info.ayanamsa_name} (${info.equatorial_ayanamsa_value}°)`;
             
@@ -807,7 +920,36 @@ function updateNakshatraTable() {
             switchNotation(mode);
         }
 
+
+        function onModalLayoutChange() {
+            const showSouth = document.getElementById('modalToggleSouth').checked;
+            const showNorth = document.getElementById('modalToggleNorth').checked;
+            const showRightSlot = document.getElementById('modalToggleRightSlot').checked;
+            const showDignityPanel = document.getElementById('modalToggleDignity').checked;
+
+            // Handle Left Slot
+            const sb1 = document.getElementById('southBox1');
+            const nb1 = document.getElementById('northBox1');
+            if(sb1) sb1.style.display = showSouth ? 'flex' : 'none';
+            if(nb1) nb1.style.display = showNorth ? 'flex' : 'none';
+
+            // Handle Right Slot
+            const rs = document.getElementById('rightSlot');
+            if(rs) {
+                rs.style.display = showRightSlot ? 'flex' : 'none';
+                const sb2 = document.getElementById('southBox2');
+                const nb2 = document.getElementById('northBox2');
+                if(sb2) sb2.style.display = showSouth ? 'flex' : 'none';
+                if(nb2) nb2.style.display = showNorth ? 'flex' : 'none';
+            }
+            
+            // Handle Dignity Side Panel
+            const dp = document.getElementById('dignitySidePanel');
+            if(dp) dp.style.display = showDignityPanel ? 'flex' : 'none';
+        }
+
         function onModalSignToggle(show) {
+
             toggleSiSigns(show);
         }
 
