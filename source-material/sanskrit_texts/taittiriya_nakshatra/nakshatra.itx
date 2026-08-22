@@ -1,0 +1,194 @@
+% Text title            : nakshatrasuuktaM
+% File name             : nakshatra.itx
+% Category              : sUkta, veda, svara
+% Location              : doc\_veda
+% Author                : Vedic Tradition
+% Transliterated by     : Rajagopal Iyer
+% Proofread by          : Rajagopal Iyer
+% Latest update         : June 14, 2000
+% Send corrections to   : sanskrit at cheerful dot c om
+%
+% This text is prepared by volunteers and is to be used for personal study 
+% and research. The file is not to be copied or reposted for promotion of 
+% any website or individuals or for commercial purpose without permission. 
+% Please help to maintain respect for volunteer spirit.
+%
+\documentstyle[11pt,multicol,itrans]{article}
+#include=ijag.inc
+#endwordvowel=.h
+\portraitwide
+\parindent=100pt                
+\let\usedvng=\Largedvng      % for 1 column     
+\pagenumbering{itrans} 
+\def\engtitle#1{\hrule\medskip\centerline{\LARGE #1}}
+\def\itxtitle#1{\medskip\centerline{\LARGEdvng #1}\medskip\hrule}
+\def\endtitles{\medskip\obeyspaceslines}
+%%
+\begin{document}
+\engtitle{.. NakShatrasukta ..}##
+\itxtitle{.. nakShatrasUktam ..}##\endtitles ##
+taittirIya brAhmaNam . aShTakam \- 3  prashnaH 1
+taittirIya saMhitA | kANDa 3 prapAThakaH \- 5 anuvAka \-1
+
+OM .. a\`gnirna\'H pAtu\` kR^itti\'kAH. nakSha\'traM de\`vami\'ndri\`yam.
+i\`damA\'sAM vicakSha\`Nam. ha\`virA\`saM ju\'hotana.
+yasya\` bhAnti\' ra\`shmayo\` yasya\' ke\`tava\'H. yasye\`mA vishvA\` bhuva\'nAni\` sarvA\".
+sa kR^itti\'kAbhira\`bhisa\`MvasA\'naH. a\`gnirno\' de\`vassu\'vi\`te da\'dhAtu .. 1..
+
+pra\`jApa\'te rohi\`NIve\'tu\` patnI\". vi\`shvarU\'pA bR^iha\`tI ci\`trabhA\'nuH.
+sA no\' ya\`j~nasya\' suvi\`te da\'dhAtu. yathA\` jIve\'ma sha\`rada\`ssavIrA\'H.
+ro\`hi\`NI de\`vyuda\'gAtpu\`rastA\"t. vishvA\' rU\`paNi\' prati\`moda\'mAnA.
+pra\`jApa\'ti{\m+} ha\`viShA\' va\`rdhaya\'ntI. pri\`yA de\`vAnA\`mupa\'yAtu ya\`j~nam .. 2..
+
+somo\` rAjA\' mR^igashI\`r\`SheNa\` Agann\'. shi\`vaM nakSha\'traM pri\`yama\'sya\` dhAma\'.
+A\`pyAya\'mAno bahu\`dhA jane\'Shu. reta\'H pra\`jAM yaja\'mAne dadhAtu.
+yatte\` nakSha\'traM mR^igashI\`r\`Shamasti\'. pri\`ya{\m+} rA\'jan pri\`yata\'maM pri\`yANA\"m.
+tasmai\' te soma ha\`viShA\' vidhema. shanna\' edhi dvi\`pade\` shaM catu\'Shpade .. 3..
+
+A\`rdrayA\' ru\`draH pratha\'mA na eti. shreShTho\' de\`vAnA\`M pati\'raghni\`yAnA\"m.
+nakSha\'tramasya ha\`viShA\' vidhema. mA na\'H pra\`jA{\m+} rI\'riSha\`nmota vI\`rAn.
+he\`ti ru\`drasya\` pari\'No vR^iNaktu. A\`rdrA nakSha\'traM juShatA{\m+} ha\`virna\'H.
+pra\`mu\`~ncamA\'nau duri\`tAni\` vishvA\". apA\`ghasha{\m+}sannudatA\`marA\'tim. .. 4..
+
+puna\'rno de\`vyadi\'tispR^iNotu. puna\'rvasUna\`H puna\`retA\"M ya\`j~nam.
+puna\'rno de\`vA a\`bhiya\'ntu\` sarve\". puna\'H punarvo ha\`viShA\' yajAmaH.
+e\`vA na de\`vyadi\'tirana\`rvA. vishva\'sya bha\`rtrI jaga\'taH prati\`ShThA.
+puna\'rvasU ha\`viShA\' va\`rdhaya\'ntI. pri\`yam de\`vAnA\`mapye\'tu\` pAtha\'H .. 5..
+
+bR^iha\`spati\'H pratha\`maM jAya\'mAnaH. ti\`Shya\'M nakSha\'trama\`bhi saMba\'bhUva.
+shreShTho\' de\`vAnA\`M pR^ita\'nAsuji\`ShNuH. di\`sho.anu\` sarvA\` abha\'yanno astu.
+ti\`Shya\'H pu\`rastA\'du\`ta ma\'dhya\`to na\'H. bR^iha\`spati\'rna\`H pari\'pAtu pa\`shcAt.
+bAdhe\'tA\`ndveSho\` abha\'yaM kR^iNutAm. su\`vIrya\'sya\` pata\'yasyAma .. 6 ..
+
+i\`da{\m+} sa\`rpebhyo\' ha\`vira\'stu\` juShTam\". A\`shre\`ShA yeShA\'manu\`yanti\` ceta\'H.
+ye a\`ntari\'kShaM pR^ithi\`vIM kShi\`yanti\'. te na\'ssa\`rpAso\` hava\`mAga\'miShThAH.
+ye ro\'ca\`ne sUrya\`syApi\' sa\`rpAH. ye diva\'M de\`vImanu\'sa\`~ncara\'nti.
+yeSha\'mashre\`ShA a\'nu\`yanti\` kAmam\". tebhya\'ssa\`rpebhyo\` madhu\'majjuhomi .. 7 ..
+
+upa\'hUtAH pi\`taro\` ye ma\`ghAsu\'. mano\'javasassu\`kR^ita\'ssukR^i\`tyAH.
+te no\` nakSha\'tre\` hava\`mAga\'miShThAH. sva\`dhAbhi\'rya\`j~naM praya\'taM juShantAm.
+ye a\'gnida\`gdhA ye.ana\'gnidagdhAH. ye\'.amullo\`kaM pi\`tara\'H kShi\`yanti\'.
+yA{\m+}shca\' vi\`dmayA{\m+} u\' ca\` na pra\'vi\`dma. ma\`ghAsu\' ya\`j~na{\m+} sukR^i\'tam juShantAm .. 8..
+
+gavA\`M pati\`H phalgu\'nInAmasi\` tvam. tada\'ryaman varuNamitra\` cAru\'.
+taM tvA\' va\`ya{\m+} sa\'ni\`tAra{\m+}\' sanI\`nAm. jI\`vA jIva\'nta\`mupa\` saMvi\'shema.
+yene\`mA vishvA\` bhuva\'nAni\` sa~nji\'tA. yasya\' de\`vA a\'nusa\`Myanti\` ceta\'H.
+a\`rya\`mA rAjA\`.ajara\'stu vi\'ShmAn. phalgu\'nInAmR^iSha\`bho ro\'ravIti .. 9 ..
+
+shreShTho\' de\`vAnA\"M bhagavo bhagAsi. tattvA\' vidu\`H phalgu\'nI\`stasya\` vittAt.
+a\`smabhya\'M kSha\`trama\`jara{\m+}\' su\`vIryam\". goma\`dashva\'va\`dupa\`sannu\'de\`ha.
+bhago\'ha dA\`tA bhaga itpra\'dA\`tA. bhago\' de\`vIH phalgu\'nI\`rAvi\'vesha.
+bhaga\`syettaM pra\'sa\`vaM ga\'mema. yatra\' de\`vaissa\'dha\`mAda\'M madema. .. 10 ..
+
+AyA\`tu de\`vassa\'vi\`topa\'yAtu. hi\`ra\`Nyaye\'na su\`vR^itA\` rathe\'na.
+vaha\`n\` hasta{\m+}\' subhagaM\' vidma\`nApa\'sam. prayacCha\'nta\`M papu\'ri\`M puNya\`macCha\'.
+hasta\`H praya\'cCha tva\`mR^ita\`M vasI\'yaH. dakShi\'Nena\` prati\'gR^ibhNIma enat.
+dA\`tAra\'ma\`dya sa\'vi\'tA vi\'deya. yo no\` hastA\'ya prasu\`vAti\' ya\`j~nam ..11 ..
+
+tvaShTA\` nakSha\'trama\`bhye\'ti ci\`trAm. su\`bha{\m+} sa\'saMyuva\`ti{\m+} roca\'mAnAm.
+ni\`ve\`shaya\'nna\`mR^itA\`nmartyA{\m+}\'shca. rU\`pANi\' pi\`{\m+}\`shan bhuva\'nAni\` vishvA\".
+tanna\`stvaShTA\` tadu\' ci\`trA vica\'ShTAm. tannakSha\'traM bhUri\`dA a\'stu\` mahyam\".
+tanna\'H pra\`jAM vI\`rava\'tI{\m+} sanotu. gobhi\'rno\` ashvai\`ssama\'naktu yaj~nam .. 12 ..
+
+vA\`yurnakSha\'trama\`bhye\'ti\` niShTyA\"m. ti\`gmashR^i\'Mgo vR^iSha\`bho roru\'vANaH.
+sa\`mI\`raya\`n bhuva\'nA mAta\`rishvA\". apa\` dveShA{\m+}\'si nudatA\`marA\'tIH.
+tanno\' vA\`yastadu\` niShTyA\' shR^iNotu. tannakSha\'traM bhUri\`dA a\'stu\` mahyam\".
+tanno\' de\`vAso\` anu\'jAnantu\` kAmam\". yathA\` tare\'ma duri\`tAni\` vishvA\" .. 13 ..
+
+dU\`rama\`smacChatra\'vo yantu bhI\`tAH. tadi\'ndrA\`gnI kR^i\'NutA\`M tadvishA\'khe.
+tanno\' de\`vA anu\'madantu ya\`j~nam. pa\`shcAt pu\`rastA\`dabha\'yanno astu.
+nakSha\'trANA\`madhi\'patnI\` vishA\'khe. shreShThA\'vindrA\`gnI bhuva\'nasya go\`pau.
+viShU\'ca\`shshatrU\'napa\`bAdha\'mAnau. apa\`kShudha\'nnudatA\`marA\'tim. .. 14 ..
+
+pU\`rNA pa\`shcAdu\`ta pU\`rNA pu\`rastA\"t. unma\'dhya\`taH pau\"rNamA\`sI ji\'gAya.
+tasyA\"M de\`vA adhi\'sa\`Mvasa\'ntaH. u\`tta\`me nAka\' i\`ha mA\'dayantAm.
+pR^i\`thvI su\`varcA\' yuva\`tiH sa\`joShA\"H.pau\`rNa\`mA\`syuda\'gA\`cChobha\'mAnA.
+A\`pyA\`yaya\'ntI duri\`tAni\` vishvA\". u\`ruM duhA\`M yaja\'mAnAya ya\`j~nam.
+
+R^i\`ddhyAsma\' ha\`vyairnama\'so\`pasadya\'. mi\`traM de\`vaM mi\'tra\`dheya\'M no astu.
+a\`nU\`rA\`dhAn ha\`viShA\' va\`rdhaya\'ntaH. sha\`taM jI\'vema\` sha\`rada\`H savI\'rAH.
+ci\`traM nakSha\'tra\`muda\'gAtpu\`rastA\"t. a\`nU\`rA\`dhA sa\` iti\` yadvada\'nti.
+tanmi\`tra e\'ti pa\`thibhi\'rdeva\`yAnai\"H. hi\`ra\`Nyayai\`rvita\'taira\`ntari\'kShe .. 16 ..
+
+indro\" jye\`ShThAmanu\` nakSha\'trameti. yasmi\'n vR^i\`traM vR^i\'tra\` tUryo\' ta\`tAra\'.
+tasmi\'nva\`yama\`mR^ita\`M duhA\'nAH. kShudha\'ntarema\` duri\'ti\`M duri\'ShTim.
+pu\`ra\`nda\`rAya\' vR^iSha\`bhAya\' dhR^i\`ShNave\". aShA\'DhAya\` saha\'mAnAya mI\`DhuShe\".
+indrA\'ya jye\`ShThA madhu\'ma\`dduhA\'nA.u\`ruM kR^i\'Notu\` yaja\'mAnAya lo\`kam. .. 17 ..
+
+mUla\'M pra\`jAM vI\`rava\'tIM videya. parA\"cyetu\` nirR^i\'tiH parA\`chA.
+gobhi\`rnakSha\'traM pa\`shubhi\`ssama\'ktam. aha\'rbhUyA\`dyaja\'mAnAya\` mahyam\".
+aha\'rno a\`dya su\'vi\`te da\'dAtu. mUla\`M nakSha\'tra\`miti\` yadvada\'nti.
+parA\'cIM vA\`cA nirR^i\'tiM nudAmi. shi\`vaM pra\`jayai\' shi\`vama\'stu\` mahyam\" .. 18 ..
+
+yA di\`vyA Apa\`H paya\'sA sambabhU\`vuH. yA a\`ntari\'kSha u\`ta pArthi\'vI\`ryAH.
+yAsA\'maShA\`DhA a\'nu\`yanti\` kAmam\". tA na\` Apa\`H sha{\m+} syo\`nA bha\'vantu.
+yAshca\` kUpyA\` yAshca\' nA\`dyA\"ssamu\`driyA\"H. yAshca\' vaisha\`ntIruta prA\'sa\`cIryAH.
+yAsA\'maShA\`DhA madhu\' bha\`kShaya\'nti. tA na\` Apa\`H sha{\m+} syo\`nA bha\'vantu ..19 ..
+
+tanno\` vishve\` upa\' shR^iNvantu de\`vAH. tada\'ShA\`DhA a\`bhisaMya\'ntu ya\`j~nam.
+tannakSha\'traM prathatAM pa\`shubhya\'H. kR^i\`ShirvR^i\`ShTiryaja\'mAnAya kalpatAm.
+shu\`bhrAH ka\`nyA\' yuva\`taya\'ssu\`pesha\'saH. ka\`rma\`kR^ita\'ssu\`kR^ito\' vI\`ryA\'vatIH.
+vishvA\"n de\`vAn ha\`viShA\' va\`rdhaya\'ntIH. a\`ShA\`DhAH kAma\`mupA\'yantu ya\`j~nam .. 20 ..
+
+yasmi\`n brahmA\`bhyaja\'ya\`tsarva\'me\`tat. a\`mu~nca\' lo\`kami\`damU\'ca\` sarvam\".
+tanno\` nakSha\'tramabhi\`jidvi\`jitya\'. shriya\'M dadhA\`tvahR^i\'NIyamAnam.
+u\`bhau lo\`kau brahma\'NA\` sa~nji\'te\`mau. tanno\` nakSha\'tramabhi\`jidvica\'ShTAm.
+tasmi\'nva\`yaM pR^ita\'nA\`ssa~nja\'yema. tanno\' de\`vAso\` anu\'jAnantu\` kAmam\" .. 21 ..
+
+shR^i\`Nvanti\' shro\`NAma\`mR^ita\'sya go\`pAm. puNyA\'masyA\` upa\'shR^iNomi\` vAcam\".
+ma\`hIM de\`vIM viShNu\'patnImajU\`ryAm. pra\`tIcI\' menA{\m+} ha\`viShA\' yajAmaH.
+tre\`dhA viShNu\'rurugA\`yo vica\'krame. ma\`hIM diva\'M pR^ithi\`vIma\`ntari\'kSham.
+tacChro\`Naiti\`shrava\' i\`cChamA\'nA. puNya\`{\m+}\` shloka\`M yaja\'mAnAya kR^iNva\`tI .. 22 ..
+
+a\`ShTau de\`vA vasa\'vasso\`myAsa\'H. cata\'sro de\`vIra\`jarA\`H shravi\'ShThAH.
+te ya\`j~naM pA\"ntu\` raja\'saH pu\`rastA\"t. sa\`Mva\`tsa\`rINa\'ma\`mR^ita{\m+}\' sva\`sti.
+ya\`j~naM na\'H pAntu\` vasa\'vaH pu\`rastA\"t. da\`kShi\`Na\`to\'.abhiya\'ntu\` shravi\'ShThAH.
+puNya\`nnakSha\'trama\`bhi saMvi\'shAma. mA no\` arA\'tira\`ghasha\`{\m+}\`sA.agann\' .. 23 ..
+
+kSha\`trasya\` rAjA\` varu\'No.adhirA\`jaH. nakSha\'trANA{\m+} sha\`tabhi\'Sha\`gvasi\'ShThaH.
+tau de\`vebhya\'H kR^iNuti dI\`rghamAyu\'H. sha\`ta{\m+} sa\`hasrA\' bheSha\`jAni\' dhattaH.
+ya\`j~nanno\` rAjA\` varu\'Na\` upa\'yAtu. tanno\` vishve\' a\`bhi saMya\'ntu de\`vAH.
+tanno\` nakSha\'tra{\m+} sha\`tabhi\'ShagjuShA\`Nam. dI\`rghamAyu\`H prati\'radbheSha\`jAni\' .. 24 ..
+
+a\`ja eka\'pA\`duda\'gAtpu\`rastA\"t. vishvA\' bhU\`tAni\' prati\` moda\'mAnaH.
+tasya\' de\`vAH pra\'sa\`vaM ya\'nti\` sarve\". pro\`ShTha\`pa\`dAso\' a\`mR^ita\'sya go\`pAH.
+vi\`bhrAja\'mAnassamidhA\` na u\`graH. A.antari\'kShamaruha\`daga\`ndyAm.
+ta{\m+} sUrya\'M de\`vama\`jameka\'pAdam. pro\`ShTha\`pa\`dAso\` anu\'yanti\` sarve\" .. 25 ..
+
+ahi\'rbu\`dhniya\`H pratha\'mA na eti. shreShTho\' de\`vAnA\'mu\`ta mAnu\'ShANAm.
+taM brA\"hma\`NAsso\'ma\`pAsso\`myAsa\'H. pro\`ShTha\`pa\`dAso\' a\`bhira\'kShanti\` sarve\".
+ca\`tvAra\` eka\'ma\`bhi karma\' de\`vAH. pro\`ShTha\`pa\`dA sa\` iti\` yAn vada\'nti.
+te bu\`dhniya\'M pari\`Shadya{\m+}\' stu\`vanta\'H. ahi{\m+}\' rakShanti\` nama\'sopa\`sadya\' .. 26 ..
+
+pU\`ShA re\`vatyanve\'ti\` panthA\"m. pu\`ShTi\`patI\' pashu\`pA vAja\'bastyau.
+i\`mAni\' ha\`vyA praya\'tA juShA\`NA. su\`gairno\` yAnai\`rupa\'yAtAM ya\`j~nam.
+kShu\`drAn pa\`shUn ra\'kShatu re\`vatI\' naH. gAvo\' no\` ashvA\`{\m+}\` anve\'tu pU\`ShA.
+anna\`{\m+}\` rakSha\'ntau bahu\`dA virU\'pam. vAja{\m+}\' sanutA\`M yaja\'mAnAya ya\`j~nam .. 27 ..
+
+tada\`shvinA\'vashva\`yujopa\'yAtAm. shubha\`~Ngami\'ShThau su\`yame\'bhi\`rashvai\"H.
+svaM nakSha\'tra{\m+} ha\`viShA\` yaja\'ntau. madhvA\`sampR^i\'ktau\` yaju\'ShA\` sama\'ktau.
+yau de\`vAnA\"M bhi\`Shajau\" havyavA\`hau. vishva\'sya dU\`tava\`mR^ita\'sya go\`pau.
+tau nakSha\`traM jujuShA\`Nopa\'yAtAm. namo\`.ashvibhyA\"M kR^iNumo.ashva\`yugbhyA\"m .. 28 ..
+
+apa\' pA\`pmAna\`M bhara\'NIrbharantu. tadya\`mo rAjA\` bhaga\'vA\`n\` vica\'ShTAm.
+lo\`kasya\` rAjA\' maha\`to ma\`hAn hi. su\`gaM na\`H panthA\`mabha\'yaM kR^iNotu.
+yasmi\`nnakSha\'tre ya\`ma eti\` rAjA\". yasmi\'nnenama\`bhyaShi\'Mcanta de\`vAH.
+tada\'sya ci\`tra{\m+} ha\`viShA\' yajAma. apa\' pA\`pmAna\`M bhara\'NIrbharantu .. 29 ..
+
+ni\`vesha\'nI sa\`~Ngama\'nI\` vasU\'nA\`M vishvA\' rU\`pANi\` vasU\"nyAve\`shaya\'ntI.
+sa\`ha\`sra\`po\`Sha{\m+} su\`bhagA\` rarA\'NA\` sA na\` Aga\`nvarca\'sA saMvidA\`nA..
+yatte\' de\`vA ada\'dhurbhAga\`dheya\`mamA\'vAsye sa\`Mvasa\'nto mahi\`tvA.
+sA no\' ya\`j~naM pi\'pR^ihi vishvavAre ra\`yinno\' dhehi subhage su\`vIram\".
+
+OM shAnti\`H shAnti\`H shAnti\'H | ##
+
+
+Encoded with Accents by Rajagopal Iyer
+
+\medskip\hrule\obeylines
+
+Please send corrections to sanskrit@cheerful.com
+Last updated \today
+https://sanskritdocuments.org
+
+\end{document}

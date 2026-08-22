@@ -15,7 +15,7 @@ rag/chroma_structural_db/
 rag/chroma_modern_db/
 
 
-# Prevent large media and binary files from bloating Git repo
+# Prevent large media, binary files, and generated databases from bloating Git repo
 *.pdf
 *.wav
 *.mp3
@@ -24,10 +24,16 @@ rag/chroma_modern_db/
 *.jpeg
 *.svg
 *.html
+*.db
+*.jsonl
+database/backups/
 !templates/*.html
 !source-material/sanskrit_texts/**
-!source-material/sanskrit_texts/bphs/**
-!source-material/sanskrit_texts/*.json
+*.db
+*_database.json
+source-material/sanskrit_texts/bphs_database.json
+source-material/sanskrit_texts/*/*.db
+source-material/sanskrit_texts/*/*_database.json
 western/logs/
 .DS_Store
 
