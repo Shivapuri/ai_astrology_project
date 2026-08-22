@@ -140,7 +140,14 @@ def generate_south_indian(items):
         
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
-            svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            if len(cusp_texts) > 3:
+                mid = len(cusp_texts) // 2
+                l1 = " ".join(cusp_texts[:mid])
+                l2 = " ".join(cusp_texts[mid:])
+                svg += f'<text x="{x + c_dx}" y="{y + c_dy - 6}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{l1}</text>\n'
+                svg += f'<text x="{x + c_dx}" y="{y + c_dy + 6}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{l2}</text>\n'
+            else:
+                svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
 
         # Basic linear layout for planets in generate_html_chart.py for now
         # Centering planets in the middle zone
@@ -209,22 +216,41 @@ def generate_north_indian(items):
 
         cx, cy = ni_centers[h]
         items = items_by_house[h]
+        planets = [it for it in items if it["type"] != "cusp"]
+        cusps = [it for it in items if it["type"] == "cusp"]
         
         item_height = 18
         total_h = len(items) * item_height
         start_y = cy - (total_h / 2) + (item_height / 2)
         
         curr_y = start_y
-        for item in items:
-            if item["type"] == "cusp":
-                svg += f'<text x="{cx}" y="{curr_y}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{item["color"]}" text-anchor="middle" dominant-baseline="central">{item["text"]}</text>\n'
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            if len(cusp_texts) > 3:
+                mid = len(cusp_texts) // 2
+                l1 = " ".join(cusp_texts[:mid])
+                l2 = " ".join(cusp_texts[mid:])
+                svg += f'<text x="{cx}" y="{curr_y - 6}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{l1}</text>\n'
+                svg += f'<text x="{cx}" y="{curr_y + 6}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{l2}</text>\n'
+            else:
+                svg += f'<text x="{cx}" y="{curr_y}" font-size="14" font-weight="bold" font-family="sans-serif" fill="{cusps[0]["color"]}" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            curr_y += item_height
+        
+        for item in planets:
+            if len(planets) > 4:
+                sym_size = "16" if item["sym"] != "Asc" else "12"
+                deg_sz = "9"
+                y_offset = 12
             else:
                 sym_size = "20" if item["sym"] != "Asc" else "14"
-                svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-                svg += f'  <tspan font-size="{sym_size}" fill="{item["color"]}">{item["sym"]}</tspan>\n'
-                svg += f'  <tspan font-size="11" fill="#7f8c8d"> {item["deg"]}</tspan>\n'
-                svg += f'</text>\n'
-            curr_y += item_height
+                deg_sz = "11"
+                y_offset = 18
+
+            svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
+            svg += f'  <tspan font-size="{sym_size}" fill="{item["color"]}">{item["sym"]}</tspan>\n'
+            svg += f'  <tspan font-size="{deg_sz}" fill="#7f8c8d"> {item["deg"]}</tspan>\n'
+            svg += f'</text>\n'
+            curr_y += y_offset
 
     svg += '</svg>\n'
     return svg
