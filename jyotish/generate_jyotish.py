@@ -326,14 +326,16 @@ def generate_kala_chart(
                 nat = rel.get_natural_relationship(p_name, sign_lord)
                 tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                 cmp = rel.get_compound_relationship(nat, tmp)
-                dig = rel.get_dignity(p_name, sign, cmp)
+                nat_dig = rel.get_dignity(p_name, sign, nat)
+                cmp_dig = rel.get_dignity(p_name, sign, cmp)
                 
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
                     "natural_relationship": nat,
                     "temporary_relationship": tmp,
                     "compound_relationship": cmp,
-                    "final_dignity": dig
+                    "natural_dignity": nat_dig,
+                    "final_dignity": cmp_dig
                 }
             else:
                 sign = p_data["sign"]
@@ -341,7 +343,8 @@ def generate_kala_chart(
                 
                 if sign_lord == p_name:
                     nat, tmp, cmp = "Self", "Self", "Self"
-                    dig = rel.get_dignity(p_name, sign, "Self")
+                    nat_dig = rel.get_dignity(p_name, sign, "Self")
+                    cmp_dig = nat_dig
                 else:
                     sign_lord_d1_idx = d1_signs_idx[sign_lord]
                     p_d1_idx = d1_signs_idx[p_name]
@@ -349,20 +352,22 @@ def generate_kala_chart(
                     nat = rel.get_natural_relationship(p_name, sign_lord)
                     tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                     cmp = rel.get_compound_relationship(nat, tmp)
-                    dig = rel.get_dignity(p_name, sign, cmp)
+                    nat_dig = rel.get_dignity(p_name, sign, nat)
+                    cmp_dig = rel.get_dignity(p_name, sign, cmp)
                     
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
                     "natural_relationship": nat,
                     "temporary_relationship": tmp,
                     "compound_relationship": cmp,
-                    "final_dignity": dig
+                    "natural_dignity": nat_dig,
+                    "final_dignity": cmp_dig
                 }
             
-            # Calculate Avasthas
+            # Calculate Avasthas (Jagradadi uses Natural Dignity per Parashara & Ernst Wilhelm)
             p_deg = p_data["degree_0_to_30"]
             bala_avastha = avasthas.get_bala_avastha(p_deg, p_data["sign"])
-            jagrat_avastha = avasthas.get_jagrat_avastha(p_data["dignity_breakdown"]["final_dignity"])
+            jagrat_avastha = avasthas.get_jagrat_avastha(p_data["dignity_breakdown"]["natural_dignity"])
             
             p_data["avasthas"] = {
                 "bala": bala_avastha,
