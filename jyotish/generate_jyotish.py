@@ -504,12 +504,12 @@ def generate_kala_chart(
     import math
     
     # Calculate Sunrise (Center of Disk)
-    res_rise = swe.rise_trans(jd, swe.SUN, "", swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
+    res_rise = swe.rise_trans(jd, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
     sunrise_jd = res_rise[1][0]
     
     # If birth was before today's sunrise, use yesterday's sunrise
     if sunrise_jd > jd:
-        res_rise = swe.rise_trans(jd - 1.0, swe.SUN, "", swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
+        res_rise = swe.rise_trans(jd - 1.0, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
         sunrise_jd = res_rise[1][0]
         
     minutes_elapsed = (jd - sunrise_jd) * 24.0 * 60.0
@@ -526,7 +526,7 @@ def generate_kala_chart(
         
         shayanadi = avasthas.get_shayanadi_avastha(
             p_name, p_nak_no, p_pada, lagna_rasi_no, 
-            moon_nakshatra_no, ishta_ghati, varnamashka
+            moon_nakshatra_no, ishta_ghati, name_sound_value=varnamashka
         )
         
         # Add to D1 (and other vargas if they share the same dictionary ref, but let's safely add to all)
