@@ -556,20 +556,25 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
     
     r_nak_outer = 200
     r_nak_inner = 175
-    r_rasi_inner = 155  # Narrower Rasi ring
-    r_house_inner = 45  # Center circle for houses
+    r_rasi_inner = 155
+    r_bhava_outer = 60
+    r_bhava_inner = 45
     
-    svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="1.5"/>\n'
-    svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="1"/>\n'
-    svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="1.5"/>\n'
-    svg += f'<circle cx="0" cy="0" r="{r_house_inner}" fill="none" stroke="#5C4433" stroke-width="1"/>\n'
+    # Outer house circuits a little bit thinner
+    circle_stroke = "0.7"
+    svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_outer}" fill="none" stroke="#27AE60" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_inner}" fill="none" stroke="#000000" stroke-width="{circle_stroke}"/>\n'
     
-    asc_lon = 0
-    for item in items:
-        if item["name"] == "Lagna":
-            s_idx = signs_list.index(item["sign"])
-            asc_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
-            break
+    asc_item = next((it for it in items if it["name"] == "Lagna"), None)
+    if asc_item:
+        asc_s_idx = signs_list.index(asc_item["sign"])
+        asc_lon = asc_s_idx * 30 + asc_item["degree"] + asc_item["minute"] / 60.0
+    else:
+        asc_s_idx = 0
+        asc_lon = 0
             
     def lon_to_angle(lon):
         return 180 + asc_lon - lon
@@ -598,22 +603,39 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
         svg += f'<text x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})">{nak_names[i][:4]}.</text>\n'
 
-    # 2. Tropical Rasis
+    # 2 & 3. Tropical Rasis and Bhavas (Whole Signs)
     for i in range(12):
         start_lon = i * 30.0
         angle_start = lon_to_angle(start_lon)
         angle_mid = lon_to_angle(start_lon + 15.0)
         
+        # Draw Rasi separator line
         x1, y1 = polar_coords(r_rasi_inner, angle_start)
         x2, y2 = polar_coords(r_nak_inner, angle_start)
         svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="1"/>\n'
         
+        # Whole House boundaries (Bhavas) - Green dense dashed line
+        x3, y3 = polar_coords(r_bhava_outer, angle_start)
+        x4, y4 = polar_coords(r_rasi_inner, angle_start)
+        svg += f'<line x1="{x3}" y1="{y3}" x2="{x4}" y2="{y4}" stroke="#27AE60" stroke-width="0.8" stroke-dasharray="3,2"/>\n'
+        
+        # Bhava inner circle separator
+        x5, y5 = polar_coords(r_bhava_inner, angle_start)
+        x6, y6 = polar_coords(r_bhava_outer, angle_start)
+        svg += f'<line x1="{x5}" y1="{y5}" x2="{x6}" y2="{y6}" stroke="#000000" stroke-width="1"/>\n'
+        
+        # Rasi symbol label
         lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
         sign_name = signs_list[i]
         s_sym, s_col, _ = sign_symbols[sign_name]
         svg += f'<text x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        
+        # Bhava number label (Whole Sign)
+        bhava_num = (i - asc_s_idx + 12) % 12 + 1
+        bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
+        svg += f'<text x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central">{bhava_num}</text>\n'
 
-    # 3. Houses (Using Cusps if available, else Equal)
+    # 4. House Cusps (Campanus lines) - Violet spread dash, Red for solar stations
     cusps = [it for it in items if it.get("type") == "cusp"]
     if cusps and len(cusps) >= 12:
         for i in range(12):
@@ -626,57 +648,68 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
                 
             angle_start = lon_to_angle(lon)
             
-            x1, y1 = polar_coords(r_house_inner, angle_start)
+            x1, y1 = polar_coords(r_bhava_outer, angle_start)
             x2, y2 = polar_coords(r_rasi_inner, angle_start)
             
             is_angle = house_num in [1, 4, 7, 10]
-            color = "#C0392B" if is_angle else "#5C4433"
-            thickness = "1.5" if is_angle else "0.5"
-            dash = "" if is_angle else 'stroke-dasharray="2,2"'
+            if is_angle:
+                # Red for solar stations, not so thick
+                color = "#C0392B"
+                thickness = "1.0"
+                dash = ""
+            else:
+                # Violet, thin, spreaded dash
+                color = "#8E44AD"
+                thickness = "0.5"
+                dash = 'stroke-dasharray="2,6"'
             
-            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} />\n'
             
-            # House number near center
-            # Place number slightly inside the house (add ~5-10 degrees to angle)
-            # wait, if house increases in longitude, angle decreases. So angle_start - 7
-            lbl_angle = angle_start - 7
-            lx, ly = polar_coords(r_house_inner + 8, lbl_angle)
-            svg += f'<text x="{lx}" y="{ly}" font-size="8" fill="#5C4433" font-weight="bold" text-anchor="middle" dominant-baseline="central">{house_num}</text>\n'
-    else:
-        for i in range(12):
-            house_lon = asc_lon + i * 30.0
-            angle_start = lon_to_angle(house_lon)
-            
-            x1, y1 = polar_coords(r_house_inner, angle_start)
-            x2, y2 = polar_coords(r_rasi_inner, angle_start)
-            
-            house_num = i + 1
-            is_angle = house_num in [1, 4, 7, 10]
-            color = "#C0392B" if is_angle else "#5C4433"
-            thickness = "1.5" if is_angle else "0.5"
-            dash = "" if is_angle else 'stroke-dasharray="2,2"'
-            
-            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash}/>\n'
-            
-            lbl_angle = angle_start - 10
-            lx, ly = polar_coords(r_house_inner + 10, lbl_angle)
-            svg += f'<text x="{lx}" y="{ly}" font-size="9" fill="#5C4433" text-anchor="middle" dominant-baseline="central">{house_num}</text>\n'
+            if is_angle:
+                marker = 'marker-end="url(#arrowRed)"'
+            else:
+                marker = ""
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} {marker} />\n'
 
-    # 4. Planets
+
+    # 5. Planets (radially stacked)
     planets_to_draw = []
     for item in items:
         if item.get("type") == "planet":
             s_idx = signs_list.index(item["sign"])
             pl_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
-            planets_to_draw.append((item, pl_lon))
+            planets_to_draw.append({"item": item, "lon": pl_lon, "draw_angle": lon_to_angle(pl_lon)})
             
-    planets_to_draw.sort(key=lambda x: x[1])
-    for idx, (item, pl_lon) in enumerate(planets_to_draw):
-        angle = lon_to_angle(pl_lon)
-        # distribute planet radii between r_house_inner+20 and r_rasi_inner-15
-        r_pl = r_rasi_inner - 20 - (idx % 3) * 18
+    # Relaxation for overlap (MIN_SEP degrees)
+    MIN_SEP = 4.5
+    for _ in range(30):
+        planets_to_draw.sort(key=lambda p: (p["draw_angle"] % 360))
+        for i in range(len(planets_to_draw)):
+            p1 = planets_to_draw[i]
+            p2 = planets_to_draw[(i+1) % len(planets_to_draw)]
+            
+            a1 = p1["draw_angle"] % 360
+            a2 = p2["draw_angle"] % 360
+            
+            diff = (a2 - a1) % 360
+            if diff < MIN_SEP:
+                push = (MIN_SEP - diff) / 2.0
+                p1["draw_angle"] -= push
+                p2["draw_angle"] += push
+
+    r_pl_base = r_rasi_inner - 10
+    r_deg_base = r_rasi_inner - 22
+    r_sign_base = r_rasi_inner - 33
+    r_min_base = r_rasi_inner - 43
+
+    for p in planets_to_draw:
+        item = p["item"]
+        angle = p["draw_angle"]
         
-        px, py = polar_coords(r_pl, angle)
+        # Offset Lagna text so it doesn't cover the red arrow line
+        if item["name"] == "Lagna":
+            angle = (angle - 6) % 360 # move it underneath (angle decreases -> moves counter-clockwise in long, but svg angle decreasing means moving upwards... wait, svg angle 180 is left. 180-6 = 174. 174 is above the line. So +6 to move below)
+            angle = (p["draw_angle"] + 6) % 360
+
         
         p_name = item["name"]
         info = planet_notations.get(p_name, {})
@@ -685,21 +718,32 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         
         is_retro = item.get("is_retrograde", False)
         retro_badge = "R" if is_retro else ""
-        s_sym, _, _ = sign_symbols[item["sign"]]
-        deg_str = f"{item['degree']}° {s_sym} {item['minute']:02d}'"
-        tooltip = f"{info.get('full_sa', p_name)} — {deg_str}{retro_badge} {item['sign']}"
+        s_sym, s_col, _ = sign_symbols[item["sign"]]
+        deg_str = f"{item['degree']}°"
+        min_str = f"{item['minute']:02d}'"
+        
+        tooltip = f"{info.get('full_sa', p_name)} — {deg_str} {s_sym} {min_str}{retro_badge} {item['sign']}"
         
         svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
-        font_sz = 14 if p_name == "Lagna" else 18
-        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         
-        # Draw degree and minute next to it (like Aries chart)
-        # Position slightly to the bottom right
-        svg += f'<text x="{px + 10}" y="{py + 8}" font-size="7" fill="{color}" text-anchor="start" dominant-baseline="central">{deg_str} {retro_badge}</text>\n'
+        # Planet Glyph
+        px, py = polar_coords(r_pl_base, p["draw_angle"])
+        font_sz = 12 if p_name == "Lagna" else 16
+        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        
+        # Combined horizontal text: Degree Sign Minute
+        # e.g., 28° ♉ 55'
+        ty = py + 10
+        svg += f'<text x="{px}" y="{ty}" font-size="7" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}° <tspan fill="{s_col}">{s_sym}</tspan> {item["minute"]:02d}\'{retro_badge}</text>\n'
+        
         svg += f'</g>\n'
         
-        cx, cy = polar_coords(r_rasi_inner, angle)
-        svg += f'<line x1="{px}" y1="{py}" x2="{cx}" y2="{cy}" stroke="{color}" stroke-width="0.5" opacity="0.3"/>\n'
+        # Draw a very faint connecting line from the planet to its true longitude spot (in case of nudging)
+        true_angle = lon_to_angle(p["lon"])
+        if abs((p["draw_angle"] - true_angle) % 360) > 0.5 and abs((p["draw_angle"] - true_angle) % 360) < 359.5:
+            # only draw line if nudged
+            cx, cy = polar_coords(r_rasi_inner, true_angle)
+            svg += f'<line x1="{px}" y1="{py}" x2="{cx}" y2="{cy}" stroke="{color}" stroke-width="0.5" opacity="0.3"/>\n'
 
     svg += '</svg>\n'
     return svg
