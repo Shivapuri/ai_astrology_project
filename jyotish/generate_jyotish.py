@@ -1,4 +1,5 @@
 import json
+from jyotish.shadbala.shadbala import calculate_shadbala
 import os
 import sys
 from datetime import datetime, timedelta
@@ -418,7 +419,7 @@ def generate_kala_chart(
                 p_data["dignity_breakdown"]["final_dignity"],
                 is_retrograde,
                 is_combust,
-                is_conjunct_malefic
+                conjunct_planets
             )
             lajjitadi_avastha = avasthas.get_lajjitadi_avasthas(
                 p_name,
@@ -556,7 +557,10 @@ def generate_kala_chart(
     md_end_y, md_end_m, md_end_d, _ = swe.revjul(md_end_jd, cal_flag)
     md_start_y, md_start_m, md_start_d, _ = swe.revjul(md_start_jd, cal_flag)
     
-    # 5. Assemble JSON Context
+    # 5. Shadbala (6-fold strength)
+    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd)
+    
+    # 6. Assemble JSON Context
     vedic_context = {
         "subject_info": {
             "name": name,
@@ -570,7 +574,8 @@ def generate_kala_chart(
             "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
             "galactic_center_ra": round(ra_gc, 4),
             "house_system": "Campanus (with Whole Sign overlay)",
-            "dasha_year_length_days": SAURA_YEAR_DAYS
+            "dasha_year_length_days": SAURA_YEAR_DAYS,
+            "julian_day": jd
         },
         "nakshatras": {
             "zodiac": "Sidereal Equatorial",
@@ -583,10 +588,11 @@ def generate_kala_chart(
                 "mahadasha_balance_years": round(balance_years, 4),
                 "mahadasha_period": f"{md_start_y:04d}-{md_start_m:02d}-{md_start_d:02d} to {md_end_y:04d}-{md_end_m:02d}-{md_end_d:02d}"
             }
-        }
+        },
+        "shadbala": shadbala_data
     }
     
-    # 6. Write to file
+    # 7. Write to file
     with open(output_filepath, "w", encoding="utf-8") as f:
         json.dump(vedic_context, f, indent=2, ensure_ascii=False)
 
