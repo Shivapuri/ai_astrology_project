@@ -636,54 +636,83 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
         svg += f'<text class="interactive" data-type="house" data-id="{bhava_num}" x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{bhava_num}</text>\n'
 
-    # 4. House Cusps (Campanus lines) - Violet spread dash, Red for solar stations
+    # 4. House Cusps (Campanus lines in D1, clean grouped house numbers in each sign)
     cusps = [it for it in items if it.get("type") == "cusp"]
-    if cusps and len(cusps) >= 12:
+    
+    # Always draw Ascendant red arrow at 180 degrees
+    ax1, ay1 = polar_coords(r_bhava_outer, 180)
+    ax2, ay2 = polar_coords(r_rasi_inner, 180)
+    svg += f'<line x1="{ax1}" y1="{ay1}" x2="{ax2}" y2="{ay2}" stroke="#C0392B" stroke-width="1.5" />\n'
+    tx1, ty1 = polar_coords(r_rasi_inner - 6, 178)
+    tx2, ty2 = polar_coords(r_rasi_inner - 6, 182)
+    svg += f'<polygon points="{ax2},{ay2} {tx1},{ty1} {tx2},{ty2}" fill="#C0392B" />\n'
+
+    # In D1, also draw Campanus lines
+    if varga_name == "D1" and cusps and len(cusps) >= 12:
         for i in range(12):
             c = cusps[i]
             house_num = i + 1
+            if house_num == 1:
+                continue # Already drawn above as Ascendant arrow
             lon = c.get("longitude")
             if lon is None:
                 s_idx = signs_list.index(c["sign"])
                 lon = s_idx * 30 + c["degree"] + c["minute"] / 60.0
                 
             angle_start = lon_to_angle(lon)
-            
             x1, y1 = polar_coords(r_bhava_outer, angle_start)
             x2, y2 = polar_coords(r_rasi_inner, angle_start)
             
-            is_angle = house_num in [1, 4, 7, 10]
+            is_angle = house_num in [4, 7, 10]
             if is_angle:
-                # Red for solar stations, not so thick
                 color = "#C0392B"
                 thickness = "1.0"
                 dash = ""
             else:
-                # Violet, thin, spreaded dash
                 color = "#8E44AD"
                 thickness = "0.5"
                 dash = 'stroke-dasharray="2,6"'
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash}/>\n'
+
+    # Draw cusp numbers clearly positioned within each sign sector without stacking
+    if cusps:
+        cusps_by_sign = {s: [] for s in signs_list}
+        for c in cusps:
+            if c.get("sign") in cusps_by_sign:
+                cusps_by_sign[c["sign"]].append(c)
+
+        for i in range(12):
+            sign_name = signs_list[i]
+            sign_cusps = cusps_by_sign[sign_name]
+            if not sign_cusps:
+                continue
             
+            # Sort cusps by house number
+            sign_cusps.sort(key=lambda c: int(c.get("text", 0)))
             
-            # Draw cusp number closer to center
-            cx, cy = polar_coords(r_bhava_outer + 12, angle_start)
-            fw = "bold" if is_angle else "normal"
-            fs = "12" if is_angle else "10"
+            start_lon = i * 30.0
+            angle_mid = lon_to_angle(start_lon + 15.0)
             
-            # For Ascendant (house 1), draw a red arrow from inner house border to inner sign border
-            if house_num == 1:
-                # Line from r_bhava_outer to r_rasi_inner
-                ax1, ay1 = polar_coords(r_bhava_outer, angle_start)
-                ax2, ay2 = polar_coords(r_rasi_inner, angle_start)
-                svg += f'<line x1="{ax1}" y1="{ay1}" x2="{ax2}" y2="{ay2}" stroke="#C0392B" stroke-width="1.5" />\n'
-                # Arrowhead at r_rasi_inner (touching inner sign border)
-                tx1, ty1 = polar_coords(r_rasi_inner - 6, angle_start - 2)
-                tx2, ty2 = polar_coords(r_rasi_inner - 6, angle_start + 2)
-                svg += f'<polygon points="{ax2},{ay2} {tx1},{ty1} {tx2},{ty2}" fill="#C0392B" />\n'
+            count = len(sign_cusps)
+            if count == 1:
+                spacing = 0
+                start_offset = 0
+            else:
+                spacing = min(24.0 / (count - 1), 9.0)
+                start_offset = -(count - 1) * spacing / 2.0
+            
+            for idx, c in enumerate(sign_cusps):
+                house_num = int(c.get("text", 0))
+                cusp_angle = angle_mid + start_offset + idx * spacing
+                cx, cy = polar_coords(r_bhava_outer + 13, cusp_angle)
                 
-            # Draw the number for all cusps (except maybe 1 if they don't want it, but let's draw it anyway or skip 1)
-            if house_num != 1:
-                svg += f'<text x="{cx}" y="{cy}" font-size="{fs}" font-weight="{fw}" fill="{color}" text-anchor="middle" dominant-baseline="central">{house_num}</text>\n'
+                is_angle = house_num in [1, 4, 7, 10]
+                color = "#C0392B" if is_angle else "#7D3C98"
+                fw = "bold" if is_angle else "600"
+                fs = "12" if is_angle else "10.5"
+                
+                tooltip = f"House Cusp {house_num} in {sign_name}"
+                svg += f'<text class="interactive" data-type="house" data-id="{house_num}" x="{cx}" y="{cy}" font-size="{fs}" font-weight="{fw}" fill="{color}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;"><title>{tooltip}</title>{house_num}</text>\n'
 
 
     # 5. Planets (radially stacked)

@@ -364,14 +364,78 @@ def generate_kala_chart(
                     "final_dignity": cmp_dig
                 }
             
-            # Calculate Avasthas (Jagradadi uses Natural Dignity per Parashara & Ernst Wilhelm)
+            # --- Prepare Data for Avasthas ---
             p_deg = p_data["degree_0_to_30"]
+            
+            # Find conjunct planets (in the same sign in this Varga)
+            conjunct_planets = [
+                op_name for op_name, op_data in v_data["grahas"].items()
+                if op_name != p_name and op_data["sign"] == p_data["sign"]
+            ]
+            
+            # Find aspecting planets (via Rasi Drishti on this sign)
+            aspecting_planets = []
+            for op_name, op_data in v_data["grahas"].items():
+                if op_name != p_name:
+                    rasi_aspects = rel.get_rasi_aspects(op_data["sign"])
+                    if p_data["sign"] in rasi_aspects:
+                        aspecting_planets.append(op_name)
+                        
+            # Combustion (Physical phenomenon, so calculated strictly from D1 physical longitudes)
+            # Distance < 8 degrees from Sun is a general threshold for combustion.
+            is_combust = False
+            if p_name not in ["Sun", "Rahu", "Ketu"]:
+                sun_lon = d1_longitudes["Sun"]
+                p_lon_d1 = d1_longitudes[p_name]
+                dist = min((sun_lon - p_lon_d1) % 360, (p_lon_d1 - sun_lon) % 360)
+                is_combust = dist < 8.0
+                
+            is_retrograde = p_data.get("is_retrograde", False)
+            malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+            is_conjunct_malefic = any(cp in malefics for cp in conjunct_planets)
+            
+            # House number: distance from Lagna in this Varga
+            # We assume Whole Sign house system
+            lagna_sign = v_data["lagna"]["sign"]
+            lagna_idx = ZODIAC_SIGNS.index(lagna_sign)
+            p_idx = ZODIAC_SIGNS.index(p_data["sign"])
+            house_num = (p_idx - lagna_idx) % 12 + 1
+            
+            # Natural friends/enemies
+            if p_name in ["Rahu", "Ketu"]:
+                proxy = "Saturn" if p_name == "Rahu" else "Mars"
+                natural_friends = rel.NAISARGIKA_SAMBANDHA.get(proxy, {}).get("Friends", [])
+                natural_enemies = rel.NAISARGIKA_SAMBANDHA.get(proxy, {}).get("Enemies", [])
+            else:
+                natural_friends = rel.NAISARGIKA_SAMBANDHA.get(p_name, {}).get("Friends", [])
+                natural_enemies = rel.NAISARGIKA_SAMBANDHA.get(p_name, {}).get("Enemies", [])
+
+            # --- Calculate Avasthas ---
+            # Jagradadi uses Natural Dignity per Parashara & Ernst Wilhelm
             bala_avastha = avasthas.get_bala_avastha(p_deg, p_data["sign"])
             jagrat_avastha = avasthas.get_jagrat_avastha(p_data["dignity_breakdown"]["natural_dignity"])
+            deeptadi_avastha = avasthas.get_deeptadi_avastha(
+                p_data["dignity_breakdown"]["final_dignity"],
+                is_retrograde,
+                is_combust,
+                is_conjunct_malefic
+            )
+            lajjitadi_avastha = avasthas.get_lajjitadi_avasthas(
+                p_name,
+                p_data["sign"],
+                house_num,
+                p_data["dignity_breakdown"]["natural_dignity"],
+                conjunct_planets,
+                aspecting_planets,
+                natural_friends,
+                natural_enemies
+            )
             
             p_data["avasthas"] = {
                 "bala": bala_avastha,
-                "jagrat": jagrat_avastha
+                "jagrat": jagrat_avastha,
+                "deeptadi": deeptadi_avastha,
+                "lajjitadi": lajjitadi_avastha
             }
 
     # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
