@@ -15,11 +15,6 @@ async def main():
         try:
             await page.click('#btn-circular')
             print("Clicked circular button")
-            await page.wait_for_timeout(500)
-            
-            # Select D1 Rasi
-            await page.select_option('#vargaSelect1', 'D1')
-            print("Selected D1")
             await page.wait_for_timeout(1000)
         except Exception as e:
             print("Error:", e)

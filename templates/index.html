@@ -723,7 +723,7 @@
                 </div>
                 
                 <div class="setting-option-card" onclick="document.getElementById('radio-devanagari').click()">
-                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" onchange="onModalNotationChange('devanagari')">
+                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" checked onchange="onModalNotationChange('devanagari')">
                     <label for="radio-devanagari">
                         <strong>Devanagari Script</strong>
                         <span class="setting-chip">सू चं मं बु गु शु श रा के ल</span>
@@ -760,13 +760,6 @@
                     <input type="checkbox" id="modalToggleRightSlot" checked onchange="onModalLayoutChange()">
                     <label for="modalToggleRightSlot" style="margin-left: 10px;">
                         <strong>Show Right Chart Slot (Comparison)</strong>
-                    </label>
-                </div>
-                
-                <div class="setting-option-card">
-                    <input type="checkbox" id="modalToggleDignity" onchange="onModalLayoutChange()">
-                    <label for="modalToggleDignity" style="margin-left: 10px;">
-                        <strong>Show Dignity & Friendship Table in Top Panel</strong>
                     </label>
                 </div>
             </div>
@@ -1042,7 +1035,7 @@
         }
         
         
-        let currentNotation = "symbol";
+        let currentNotation = "devanagari";
         let showSiSigns = true;
 
         function switchNotation(mode) {
@@ -1414,7 +1407,6 @@
             const showSouth = document.getElementById('modalToggleSouth').checked;
             const showNorth = document.getElementById('modalToggleNorth').checked;
             const showRightSlot = document.getElementById('modalToggleRightSlot').checked;
-            const showDignityPanel = document.getElementById('modalToggleDignity').checked;
 
             // Handle Left Slot
             const sb1 = document.getElementById('southBox1');
@@ -1431,10 +1423,6 @@
                 if(sb2) sb2.style.display = showSouth ? 'flex' : 'none';
                 if(nb2) nb2.style.display = showNorth ? 'flex' : 'none';
             }
-            
-            // Handle Dignity Side Panel
-            const dp = document.getElementById('dignitySidePanel');
-            if(dp) dp.style.display = showDignityPanel ? 'flex' : 'none';
         }
 
         function onModalSignToggle(show) {

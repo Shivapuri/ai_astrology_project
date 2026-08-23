@@ -725,14 +725,13 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
             
             a1 = p1["draw_angle"] % 360
             a2 = p2["draw_angle"] % 360
-            
             diff = (a2 - a1) % 360
             if diff < MIN_SEP:
                 push = (MIN_SEP - diff) / 2.0
                 p1["draw_angle"] -= push
                 p2["draw_angle"] += push
 
-    r_pl_base = r_rasi_inner - 12
+    r_pl_base = r_rasi_inner - 10
 
     for p in planets_to_draw:
         item = p["item"]
@@ -754,29 +753,29 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
             
         px, py = polar_coords(r_pl_base, angle)
 
-        font_sz = 10 if p_name == "Lagna" else 13
+        font_sz = 10 if p_name == "Lagna" else (13.5 if mode == "devanagari" else 13)
         
         tooltip = f"{info.get('full_sa', p_name)} — {item['degree']}° {s_sym} {item['minute']:02d}'{retro_badge} {item['sign']}"
         svg += f'<g class="interactive" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
+        r_deg_base = r_rasi_inner - 27 if p_name == 'Lagna' else r_rasi_inner - 24
+        r_sign_base = r_rasi_inner - 40 if p_name == 'Lagna' else r_rasi_inner - 35
+        r_min_base = r_rasi_inner - 51 if p_name == 'Lagna' else r_rasi_inner - 45
         
-
-
-        # Planet Glyph
-        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
-            
-        r_deg_base = r_rasi_inner - 26 if p_name == 'Lagna' else r_rasi_inner - 22
-        r_sign_base = r_rasi_inner - 40 if p_name == 'Lagna' else r_rasi_inner - 32
-        r_min_base = r_rasi_inner - 52 if p_name == 'Lagna' else r_rasi_inner - 42
-        
-        dx, dy = polar_coords(r_deg_base, angle)
-        svg += f'<text x="{dx}" y="{dy}" font-size="7" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
-        
-        sx, sy = polar_coords(r_sign_base, angle)
-        svg += f'<text x="{sx}" y="{sy}" font-size="9" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
-        
+        # 1. Minute text
         mx, my = polar_coords(r_min_base, angle)
         svg += f'<text x="{mx}" y="{my}" font-size="6" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{retro_badge}</text>\n'
+
+        # 2. Sign symbol
+        sx, sy = polar_coords(r_sign_base, angle)
+        svg += f'<text x="{sx}" y="{sy}" font-size="9" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        # 3. Degree text
+        dx, dy = polar_coords(r_deg_base, angle)
+        svg += f'<text x="{dx}" y="{dy}" font-size="7" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+
+        # 4. Planet Glyph (Drawn on top with protective halo so matras are never cut)
+        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         
         svg += f'</g>\n'
         
