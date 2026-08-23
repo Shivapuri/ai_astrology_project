@@ -19,3 +19,8 @@ We will use the **Campanus** house system as the default for all Bhava Chalita a
 ## Trade-offs
 - **Pros:** 100% authentic alignment with the Kala software methodology. Correctly handles high-latitude edge cases where intercepted signs drastically alter house bounds.
 - **Cons:** Diverges from other standard Vedic software (like Jagannatha Hora or Parashara's Light) which may default to Placidus or Sri Pati, potentially causing initial confusion for users comparing outputs across different tools.
+
+## Clarification on Ascendant Mechanics
+To prevent any future confusion between Ernst Wilhelm's older writings (*Vault of the Heavens*) and his current *Kala* software calculations:
+- **Whole Sign Layer (Bhavas):** The Ascendant is simply an actual point in space (e.g., $9^\circ 35'$ Leo). It does *not* define the middle or edge of the house. To find the house boundaries, the system goes backward to the start of the sign ($0^\circ$) and forward to the end of the sign ($30^\circ$), making the *entire sign* the house.
+- **Campanus Cusp Layer:** This is a mathematically separate 3D layer. In this layer *only*, the exact Ascendant degree acts as the rigid **starting edge (cusp)** of the 1st slice, completely ignoring the 30-degree Zodiac sign boundaries. It is not the middle of the house.

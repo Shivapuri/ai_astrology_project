@@ -76,7 +76,7 @@ The Circular (Western-style) chart with Nakshatras will be built using concentri
 *   [ ] **Phase 2: Enhanced Context Info & Knowledge Base**
     *   Expand click handlers for houses and signs to show classical BPHS descriptions.
     *   Live highlights when clicking planets/houses.
-*   [ ] **Phase 3: Circular Western / Nakshatra Chart Engine**
+*   [x] **Phase 3: Circular Western / Nakshatra Chart Engine**
     *   Polar math helper functions.
     *   Concentric ring SVG renderer.
     *   Hotkey `C` integration.

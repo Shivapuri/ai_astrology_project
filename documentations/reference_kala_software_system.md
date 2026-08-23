@@ -91,7 +91,7 @@ For even signs in specific divisional charts, Ernst Wilhelm applies Parashara's 
 
 ### 4.3 House Cusp Systems
 * **Rasi Chakra (Whole Sign):** The core foundational chart ($1 \text{ sign} = 1 \text{ house}$).
-* **Vedic Equal House System (Bhava Chalita):** The exact Ascendant degree becomes the **center (cusp)** of House 1, with each house extending $15^\circ$ before and after. Preferred over unequal systems (like Sri Pati) because it remains mathematically robust at high latitudes.
+* **Campanus System (Current Kala Standard):** Ernst Wilhelm’s updated methodology uses Campanus for exact 3D spatial cusps. The exact Ascendant degree acts as the **starting edge (cusp)** of the 1st House, not the middle. This replaces his older, legacy use of the Vedic Equal House system from *Vault of the Heavens*.
 * **Sri Pati:** Trisects the space between Ascendant and Midheaven; primarily used for *Varshaphala* (annual solar returns).
 
 ### 4.4 Dashas (Planetary Cycles)
