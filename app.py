@@ -15,10 +15,19 @@ tf = TimezoneFinder()
 app = Flask(__name__)
 CHARTS_FILE = os.path.join(os.path.dirname(__file__), "database", "Charts.jsonl")
 
+import json
+
 @app.route('/')
 def index():
     natives = native_manager.load_natives(CHARTS_FILE)
-    return render_template('index.html', natives=natives)
+    kb_path = os.path.join(os.path.dirname(__file__), "jyotish", "knowledge_base.json")
+    try:
+        with open(kb_path, 'r', encoding='utf-8') as f:
+            knowledge_base = json.load(f)
+    except Exception as e:
+        knowledge_base = {}
+        
+    return render_template('index.html', natives=natives, knowledge_base=knowledge_base)
 
 @app.route('/api/chart/<native_id>')
 def get_chart(native_id):
@@ -71,12 +80,14 @@ def get_chart(native_id):
         svgs[v_name] = {}
         for m in modes:
             svgs[v_name][m] = {
+                "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=chart_data["astronomy"]["equatorial_ayanamsa_value"]),
                 "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name),
                 "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name)
             }
         # Default top-level shortcuts for backward compatibility
         svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
         svgs[v_name]["north"] = svgs[v_name]["symbol"]["north"]
+        svgs[v_name]["circular"] = svgs[v_name]["symbol"]["circular"]
         
     return jsonify({
         "data": chart_data,

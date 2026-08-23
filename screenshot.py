@@ -9,7 +9,16 @@ async def main():
         page.on("pageerror", lambda err: print(f"PAGE ERROR: {err}"))
         
         await page.goto("http://127.0.0.1:5001")
-        await page.wait_for_timeout(2000)
+        await page.wait_for_timeout(1000)
+        
+        # Click the circular button
+        try:
+            await page.click('#btn-circular')
+            print("Clicked circular button")
+            await page.wait_for_timeout(1000)
+        except Exception as e:
+            print("Could not click circular button", e)
+            
         await page.screenshot(path="screenshot.png", full_page=True)
         await browser.close()
 

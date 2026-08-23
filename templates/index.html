@@ -2,6 +2,9 @@
 <html lang="en">
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
+    <script>
+        window.knowledgeBase = {{ knowledge_base | tojson | safe }};
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ernst Wilhelm Kala Chart Software</title>
@@ -762,6 +765,7 @@
                 <div class="chart-hotkeys">
                     <button class="hotkey-btn active" onclick="switchChartType('south')" id="btn-south">[S] South</button>
                     <button class="hotkey-btn" onclick="switchChartType('north')" id="btn-north">[N] North</button>
+                    <button class="hotkey-btn" onclick="switchChartType('circular')" id="btn-circular">[C] Circular</button>
                 </div>
             </div>
 
@@ -771,6 +775,9 @@
             
             <div id="view-north" class="chart-view">
                 <div class="chart-svg-container" id="northChart1"></div>
+            </div>
+            <div id="view-circular" class="chart-view">
+                <div class="chart-svg-container" id="circularChart1"></div>
             </div>
         </div>
         
@@ -865,14 +872,17 @@
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
                 if (e.key.toLowerCase() === 's') switchChartType('south');
                 if (e.key.toLowerCase() === 'n') switchChartType('north');
+                if (e.key.toLowerCase() === 'c') switchChartType('circular');
             });
         }
 
         function switchChartType(type) {
             document.getElementById('view-south').classList.remove('active');
             document.getElementById('view-north').classList.remove('active');
+            if (document.getElementById('view-circular')) document.getElementById('view-circular').classList.remove('active');
             document.getElementById('btn-south').classList.remove('active');
             document.getElementById('btn-north').classList.remove('active');
+            if (document.getElementById('btn-circular')) document.getElementById('btn-circular').classList.remove('active');
             
             if (type === 'south') {
                 document.getElementById('view-south').classList.add('active');
@@ -880,6 +890,9 @@
             } else if (type === 'north') {
                 document.getElementById('view-north').classList.add('active');
                 document.getElementById('btn-north').classList.add('active');
+            } else if (type === 'circular') {
+                document.getElementById('view-circular').classList.add('active');
+                document.getElementById('btn-circular').classList.add('active');
             }
         }
 
@@ -986,8 +999,9 @@
             const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
             
             if (vSvg) {
-                document.getElementById(`southChart${slot}`).innerHTML = vSvg.south;
-                document.getElementById(`northChart${slot}`).innerHTML = vSvg.north;
+                if (document.getElementById(`southChart${slot}`)) document.getElementById(`southChart${slot}`).innerHTML = vSvg.south;
+                if (document.getElementById(`northChart${slot}`)) document.getElementById(`northChart${slot}`).innerHTML = vSvg.north;
+                if (document.getElementById(`circularChart${slot}`)) document.getElementById(`circularChart${slot}`).innerHTML = vSvg.circular;
             }
             
             toggleSiSigns(showSiSigns);
@@ -1278,7 +1292,7 @@
             const varga = document.getElementById(`vargaSelect${slot}`).value;
             const selectEl = document.getElementById(`vargaSelect${slot}`);
             const vargaLabel = selectEl.options[selectEl.selectedIndex].text;
-            const typeLabel = (type === 'south') ? 'Tropical South Indian' : 'Tropical North Indian';
+            const typeLabel = (type === 'south') ? 'Tropical South Indian' : ((type === 'north') ? 'Tropical North Indian' : 'Circular');
             
             document.getElementById('maximizeModalTitle').innerText = `${currentChartData.subject_info.name} — ${typeLabel} (${vargaLabel})`;
             
@@ -1286,7 +1300,7 @@
             const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
             
             if (vSvg) {
-                const markup = (type === 'south') ? vSvg.south : vSvg.north;
+                const markup = (type === 'south') ? vSvg.south : ((type === 'north') ? vSvg.north : vSvg.circular);
                 document.getElementById('maximizeChartContainer').innerHTML = markup;
             }
             
