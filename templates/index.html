@@ -635,28 +635,9 @@
         }
     
         /* Avasthas UI */
-        .avastha-bar-container {
-            width: 100%;
-            background-color: #e2e8f0;
-            border-radius: 999px;
-            height: 8px;
-            margin-top: 4px;
-            overflow: hidden;
-        }
-        .avastha-bar {
-            height: 100%;
-            border-radius: 999px;
-            transition: width 0.3s ease;
-        }
-        .avastha-pill {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 999px;
-            font-size: 0.8em;
-            font-weight: 500;
-            margin: 2px;
-            color: #fff;
-        }
+        
+        
+        
         #avasthasTable th, #avasthasTable td { padding: 6px 8px; font-size: 0.9em; }
         .shayanadi-widget {
             display: flex;
@@ -1215,9 +1196,10 @@
             }
             
             function getBarColor(val) {
-                if (val >= 0.8) return "#d35400"; // burnt orange
-                if (val >= 0.5) return "#8c7b64"; // warm gray
-                return "#3d312a"; // dark chocolate
+                if (val >= 1.0) return "#16a34a"; // green
+                if (val >= 0.5) return "#eab308"; // yellow
+                if (val > 0) return "#f97316"; // orange
+                return "#94a3b8"; // gray
             }
 
             planetsOrder.forEach(p => {
@@ -1240,21 +1222,29 @@
                 // Lajjitadi
                 let lajjitadiHtml = "";
                 if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
-                    lajjitadiHtml = av.lajjitadi.map(st => `<span class="avastha-pill ${getPillColor(st)}">${st}</span>`).join(" ");
+                    lajjitadiHtml = av.lajjitadi.join(", ");
                 }
                 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${p}</strong></td>
                     <td>
-                        <div>${balaState} (${balaPct}%)</div>
-                        <div class="avastha-bar-container"><div class="avastha-bar" style="width: ${balaPct}%; background-color: ${getBarColor(balaVal)}"></div></div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${balaPct}%; height: 100%; background-color: ${getBarColor(balaVal)}"></div>
+                            </div>
+                            <span>${balaState}</span>
+                        </div>
                     </td>
                     <td>
-                        <div>${jagratState} (${jagratPct}%)</div>
-                        <div class="avastha-bar-container"><div class="avastha-bar" style="width: ${jagratPct}%; background-color: ${getBarColor(jagratVal)}"></div></div>
+                        <div style="display: flex; align-items: center;">
+                            <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
+                                <div style="width: ${jagratPct}%; height: 100%; background-color: ${getBarColor(jagratVal)}"></div>
+                            </div>
+                            <span>${jagratState}</span>
+                        </div>
                     </td>
-                    <td><span class="avastha-pill ${getPillColor(deepState)}">${deepState}</span></td>
+                    <td>${deepState}</td>
                     <td>${lajjitadiHtml}</td>
                 `;
                 if(tbody) tbody.appendChild(tr);
