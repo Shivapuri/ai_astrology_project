@@ -165,7 +165,7 @@ def get_varnamashka_value(name: str) -> int:
     if not name:
         return 1
         
-    clean_name = name.strip().upper()
+    clean_name = str(name).strip().upper() if name else ""
     if not clean_name:
         return 1
         
