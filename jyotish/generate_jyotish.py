@@ -500,6 +500,40 @@ def generate_kala_chart(
             "sidereal_ra": round(sidereal_ra, 4)
         }
         
+    # --- 3.5 Calculate Shayanadi Avasthas ---
+    import math
+    
+    # Calculate Sunrise (Center of Disk)
+    res_rise = swe.rise_trans(jd, swe.SUN, "", swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
+    sunrise_jd = res_rise[1][0]
+    
+    # If birth was before today's sunrise, use yesterday's sunrise
+    if sunrise_jd > jd:
+        res_rise = swe.rise_trans(jd - 1.0, swe.SUN, "", swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
+        sunrise_jd = res_rise[1][0]
+        
+    minutes_elapsed = (jd - sunrise_jd) * 24.0 * 60.0
+    ishta_ghati = math.ceil(minutes_elapsed / 24.0)
+    if ishta_ghati <= 0: ishta_ghati = 1
+    
+    varnamashka = avasthas.get_varnamashka(name)
+    lagna_rasi_no = ZODIAC_SIGNS.index(vargas_data["D1"]["lagna"]["sign"]) + 1
+    moon_nakshatra_no = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"]) + 1
+    
+    for p_name in planet_ids.keys():
+        p_nak_no = NAKSHATRAS.index(nakshatras_sidereal[p_name]["nakshatra"]) + 1
+        p_pada = nakshatras_sidereal[p_name]["pada"]
+        
+        shayanadi = avasthas.get_shayanadi_avastha(
+            p_name, p_nak_no, p_pada, lagna_rasi_no, 
+            moon_nakshatra_no, ishta_ghati, varnamashka
+        )
+        
+        # Add to D1 (and other vargas if they share the same dictionary ref, but let's safely add to all)
+        for v_name in vargas_data:
+            if p_name in vargas_data[v_name]["grahas"]:
+                vargas_data[v_name]["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
+
     # 4. Vimshottari Dasha (Basic calculation based on Equatorial Moon)
     moon_sid_ra = nakshatras_sidereal["Moon"]["sidereal_ra"]
     moon_n_idx = int(moon_sid_ra / 13.3333333)
