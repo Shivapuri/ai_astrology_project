@@ -153,11 +153,15 @@ def parse_varga_data(varga_data):
         })
         
     # House Cusps
-    for i, cusp in enumerate(varga_data["cusps"]):
+    for i, cusp in enumerate(varga_data.get("cusps", [])):
+        c_deg = cusp.get("degree_0_to_30", 0)
         items.append({
             "type": "cusp",
             "text": str(i + 1),
             "sign": cusp["sign"],
+            "degree": int(c_deg),
+            "minute": int((c_deg - int(c_deg)) * 60),
+            "longitude": cusp.get("longitude", 0),
             "color": "#7d3c98"
         })
         
@@ -544,3 +548,158 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
     svg += "</svg>\n"
     return svg
 
+
+import math
+
+def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
+    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
+    
+    r_nak_outer = 200
+    r_nak_inner = 175
+    r_rasi_inner = 155  # Narrower Rasi ring
+    r_house_inner = 45  # Center circle for houses
+    
+    svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="1.5"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="1"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="1.5"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_house_inner}" fill="none" stroke="#5C4433" stroke-width="1"/>\n'
+    
+    asc_lon = 0
+    for item in items:
+        if item["name"] == "Lagna":
+            s_idx = signs_list.index(item["sign"])
+            asc_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
+            break
+            
+    def lon_to_angle(lon):
+        return 180 + asc_lon - lon
+
+    def polar_coords(r, angle_deg):
+        rad = math.radians(angle_deg)
+        return r * math.cos(rad), r * math.sin(rad)
+
+    # 1. Nakshatras
+    nak_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
+                 "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
+                 "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
+                 "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", 
+                 "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
+                 
+    for i in range(27):
+        start_lon = ayanamsha + i * (360.0 / 27.0)
+        angle_start = lon_to_angle(start_lon)
+        angle_mid = lon_to_angle(start_lon + (360.0 / 54.0))
+        
+        x1, y1 = polar_coords(r_nak_inner, angle_start)
+        x2, y2 = polar_coords(r_nak_outer, angle_start)
+        svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="0.5" stroke-dasharray="2,2"/>\n'
+        
+        lx, ly = polar_coords( (r_nak_inner + r_nak_outer)/2, angle_mid)
+        rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
+        svg += f'<text x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})">{nak_names[i][:4]}.</text>\n'
+
+    # 2. Tropical Rasis
+    for i in range(12):
+        start_lon = i * 30.0
+        angle_start = lon_to_angle(start_lon)
+        angle_mid = lon_to_angle(start_lon + 15.0)
+        
+        x1, y1 = polar_coords(r_rasi_inner, angle_start)
+        x2, y2 = polar_coords(r_nak_inner, angle_start)
+        svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="1"/>\n'
+        
+        lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
+        sign_name = signs_list[i]
+        s_sym, s_col, _ = sign_symbols[sign_name]
+        svg += f'<text x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+    # 3. Houses (Using Cusps if available, else Equal)
+    cusps = [it for it in items if it.get("type") == "cusp"]
+    if cusps and len(cusps) >= 12:
+        for i in range(12):
+            c = cusps[i]
+            house_num = i + 1
+            lon = c.get("longitude")
+            if lon is None:
+                s_idx = signs_list.index(c["sign"])
+                lon = s_idx * 30 + c["degree"] + c["minute"] / 60.0
+                
+            angle_start = lon_to_angle(lon)
+            
+            x1, y1 = polar_coords(r_house_inner, angle_start)
+            x2, y2 = polar_coords(r_rasi_inner, angle_start)
+            
+            is_angle = house_num in [1, 4, 7, 10]
+            color = "#C0392B" if is_angle else "#5C4433"
+            thickness = "1.5" if is_angle else "0.5"
+            dash = "" if is_angle else 'stroke-dasharray="2,2"'
+            
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} />\n'
+            
+            # House number near center
+            # Place number slightly inside the house (add ~5-10 degrees to angle)
+            # wait, if house increases in longitude, angle decreases. So angle_start - 7
+            lbl_angle = angle_start - 7
+            lx, ly = polar_coords(r_house_inner + 8, lbl_angle)
+            svg += f'<text x="{lx}" y="{ly}" font-size="8" fill="#5C4433" font-weight="bold" text-anchor="middle" dominant-baseline="central">{house_num}</text>\n'
+    else:
+        for i in range(12):
+            house_lon = asc_lon + i * 30.0
+            angle_start = lon_to_angle(house_lon)
+            
+            x1, y1 = polar_coords(r_house_inner, angle_start)
+            x2, y2 = polar_coords(r_rasi_inner, angle_start)
+            
+            house_num = i + 1
+            is_angle = house_num in [1, 4, 7, 10]
+            color = "#C0392B" if is_angle else "#5C4433"
+            thickness = "1.5" if is_angle else "0.5"
+            dash = "" if is_angle else 'stroke-dasharray="2,2"'
+            
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash}/>\n'
+            
+            lbl_angle = angle_start - 10
+            lx, ly = polar_coords(r_house_inner + 10, lbl_angle)
+            svg += f'<text x="{lx}" y="{ly}" font-size="9" fill="#5C4433" text-anchor="middle" dominant-baseline="central">{house_num}</text>\n'
+
+    # 4. Planets
+    planets_to_draw = []
+    for item in items:
+        if item.get("type") == "planet":
+            s_idx = signs_list.index(item["sign"])
+            pl_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
+            planets_to_draw.append((item, pl_lon))
+            
+    planets_to_draw.sort(key=lambda x: x[1])
+    for idx, (item, pl_lon) in enumerate(planets_to_draw):
+        angle = lon_to_angle(pl_lon)
+        # distribute planet radii between r_house_inner+20 and r_rasi_inner-15
+        r_pl = r_rasi_inner - 20 - (idx % 3) * 18
+        
+        px, py = polar_coords(r_pl, angle)
+        
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        
+        is_retro = item.get("is_retrograde", False)
+        retro_badge = "R" if is_retro else ""
+        s_sym, _, _ = sign_symbols[item["sign"]]
+        deg_str = f"{item['degree']}° {s_sym} {item['minute']:02d}'"
+        tooltip = f"{info.get('full_sa', p_name)} — {deg_str}{retro_badge} {item['sign']}"
+        
+        svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+        font_sz = 14 if p_name == "Lagna" else 18
+        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        
+        # Draw degree and minute next to it (like Aries chart)
+        # Position slightly to the bottom right
+        svg += f'<text x="{px + 10}" y="{py + 8}" font-size="7" fill="{color}" text-anchor="start" dominant-baseline="central">{deg_str} {retro_badge}</text>\n'
+        svg += f'</g>\n'
+        
+        cx, cy = polar_coords(r_rasi_inner, angle)
+        svg += f'<line x1="{px}" y1="{py}" x2="{cx}" y2="{cy}" stroke="{color}" stroke-width="0.5" opacity="0.3"/>\n'
+
+    svg += '</svg>\n'
+    return svg
