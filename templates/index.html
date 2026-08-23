@@ -890,6 +890,7 @@
                         <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
                         <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
+                        <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
                     </div>
                     
                     <div class="tab-content active" id="tab-nakshatras">
@@ -909,6 +910,8 @@
                                 <tr>
                                     <th>Graha</th>
                                     <th>Sign Lord</th>
+                                    <th>Natural</th>
+                                    <th>Temporary</th>
                                     <th>Compound</th>
                                     <th>Final Dignity</th>
                                 </tr>
@@ -925,23 +928,44 @@
                                 <thead>
                                     <tr>
                                         <th>Graha</th>
-                                        <th>Bala (Age)</th>
-                                        <th>Jagrat (Alertness)</th>
-                                        <th>Deeptadi (Condition)</th>
-                                        <th>Lajjitadi (Moods)</th>
+                                        <th title="Bālādi Avasthā: Evaluates the infant-to-old-age strength of a planet based on its degree in odd/even signs.">Bala (Age)</th>
+                                        <th title="Jāgratādi Avasthā: Jāgrat (Awake/Own Sign), Svapna (Dreaming/Friend), Suṣupti (Asleep/Enemy). Determines mental awareness and capacity to give fruits.">Jagrat (Alertness)</th>
+                                        <th title="Dīptādi Avasthā: Dīpta (Radiant), Svāstha (Confident), Vikala (Mutilated). The internal mood resulting from exaltation, combustion, or compound relationships.">Deeptadi (Condition)</th>
+                                        <th title="Lajjitādi Avasthā: Lajjita (Ashamed), Garvita (Proud), Kṣudhita (Starved), etc. The external social conditioning caused by aspects and conjunctions.">Lajjitadi (Moods)</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Shayanadi (Daily Activity)</h3>
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Śayanādi Avasthā: 12 dynamic physical activities (Śayana, Bhojana, Prakāśana) calculated by nakshatras, time, and the native's name syllable (Varnamashka).">Shayanadi (Daily Activity)</h3>
                             <div id="shayanadiWidget" class="shayanadi-widget" style="display: flex; flex-wrap: wrap; gap: 10px;">
                                 <!-- Widget items -->
                             </div>
                         </div>
                         </div>
                     </div>
+                    <div class="tab-content" id="tab-shadbala">
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Shadbala (Six-fold Strength)</h3>
+                            <table id="shadbalaTable">
+                                <thead>
+                                    <tr>
+                                        <th>Graha</th>
+                                        <th title="Total Strength in Rupas (60 Virupas = 1 Rupa). A higher value indicates a stronger planet.">Total Rupas</th>
+                                        <th title="Positional Strength based on exaltation, mulatrikona, own sign, friendly sign, etc.">Sthana Bala</th>
+                                        <th title="Directional Strength. Sun/Mars strong in 10th, Jupiter/Mercury in 1st, Moon/Venus in 4th, Saturn in 7th.">Dig Bala</th>
+                                        <th title="Temporal Strength based on day/night, month, year, and planetary war.">Kala Bala</th>
+                                        <th title="Motional Strength based on retrograde motion or proximity to the Sun.">Cheshta Bala</th>
+                                        <th title="Natural Strength based on inherent luminosity. Sun > Moon > Venus > Jupiter > Mercury > Mars > Saturn.">Naisargika Bala</th>
+                                        <th title="Aspectual Strength based on benefic and malefic aspects received.">Drik Bala</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             
@@ -1076,6 +1100,8 @@
                 
                 // Update Nakshatra Table
                 updateNakshatraTable();
+                updateShadbalaTable();
+
                 
                 // Show UI
                 setupSplit();
@@ -1217,12 +1243,23 @@
                 let jagratPct = Math.round(jagratVal * 100);
                 
                 // Deeptadi
-                let deepState = av.deeptadi ? av.deeptadi.state : "N/A";
+                let deepState = "N/A";
+                let deepTitle = "";
+                if (av.deeptadi) {
+                    deepState = av.deeptadi.state || "N/A";
+                    deepTitle = av.deeptadi.condition || "";
+                }
                 
                 // Lajjitadi
                 let lajjitadiHtml = "";
                 if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
-                    lajjitadiHtml = av.lajjitadi.join(", ");
+                    lajjitadiHtml = av.lajjitadi.map(item => {
+                        if (typeof item === 'object') {
+                            return `<span title="${item.condition}">${item.state}</span>`;
+                        } else {
+                            return `<span>${item}</span>`;
+                        }
+                    }).join(", ");
                 }
                 
                 const tr = document.createElement('tr');
@@ -1244,7 +1281,7 @@
                             <span>${jagratState}</span>
                         </div>
                     </td>
-                    <td>${deepState}</td>
+                    <td><span title="${deepTitle}">${deepState}</span></td>
                     <td>${lajjitadiHtml}</td>
                 `;
                 if(tbody) tbody.appendChild(tr);
@@ -1256,8 +1293,15 @@
                     
                     let shState = typeof av.shayanadi === 'object' ? av.shayanadi.state : av.shayanadi;
                     let shSub = typeof av.shayanadi === 'object' ? av.shayanadi.sub_state : '';
+                    let shMeaning = typeof av.shayanadi === 'object' && av.shayanadi.meaning ? av.shayanadi.meaning : '';
+                    let shSubDesc = typeof av.shayanadi === 'object' && av.shayanadi.sub_state_description ? av.shayanadi.sub_state_description : '';
+                    
+                    let titleStr = '';
+                    if (shMeaning) titleStr += `Activity Meaning: ${shMeaning}`;
+                    if (shSubDesc) titleStr += `\nSub-State: ${shSubDesc}`;
+                    
                     let shDisp = shSub ? `${shState} - <em>${shSub}</em>` : shState;
-                    shItem.innerHTML = `<strong>${p}</strong>: ${shDisp}`;
+                    shItem.innerHTML = `<span title="${titleStr}"><strong>${p}</strong>: ${shDisp}</span>`;
 
                     if(shWidget) shWidget.appendChild(shItem);
                 }
@@ -1301,9 +1345,7 @@
                                 <td>${d.natural_relationship}</td>
                                 <td>${d.temporary_relationship}</td>
                                 <td>${d.compound_relationship}</td>
-                                <td><strong>${d.final_dignity}</strong></td>
-                                <td>${balaHtml}</td>
-                                <td>${jagratHtml}</td>`;
+                                <td><strong>${d.final_dignity}</strong></td>`;
                 
                 if (tbody) {
                     const tr = document.createElement('tr');
@@ -1354,6 +1396,33 @@
             }
         }
         
+        function updateShadbalaTable() {
+            const tbody = document.querySelector("#shadbalaTable tbody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            if (!currentChartData || !currentChartData.shadbala) return;
+            
+            const sb = currentChartData.shadbala;
+            const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+            
+            planetsOrder.forEach(p => {
+                if (!sb[p]) return;
+                const data = sb[p];
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${p}</strong></td>
+                    <td><strong>${data.Total_Rupas.toFixed(2)}</strong></td>
+                    <td>${data.Sthana_Bala.toFixed(2)}</td>
+                    <td>${data.Dig_Bala.toFixed(2)}</td>
+                    <td>${data.Kala_Bala.toFixed(2)}</td>
+                    <td>${data.Cheshta_Bala.toFixed(2)}</td>
+                    <td>${data.Naisargika_Bala.toFixed(2)}</td>
+                    <td>${data.Drik_Bala.toFixed(2)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         async function saveNative(isUpdate) {
             const cityEl = document.getElementById('citySelect');
             const placeName = cityEl.selectedIndex > 0 ? cityEl.options[cityEl.selectedIndex].text : "Custom";
