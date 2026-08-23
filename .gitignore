@@ -1,5 +1,6 @@
 venv/
-__pycache__/
+**/__pycache__/
+*.pyc
 *.json
 cache/
 *.sqlite
@@ -29,6 +30,7 @@ rag/chroma_modern_db/
 database/backups/
 !templates/*.html
 !source-material/sanskrit_texts/**
+source-material/sanskrit_texts/**/__pycache__/
 *.db
 *_database.json
 source-material/sanskrit_texts/bphs_database.json

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit colors="true" bootstrap="tests/bootstrap.php">
+    <testsuites>
+        <testsuite name="Jyotish Test Suite">
+            <directory>./tests/unit</directory>
+        </testsuite>
+    </testsuites>
+    
+    <filter>
+        <blacklist>
+            <directory suffix=".php">./tests</directory>
+        </blacklist>
+        <whitelist>
+            <directory suffix=".php">./src</directory>
+        </whitelist>
+    </filter>
+    
+    <logging>
+        <log type="coverage-html" 
+            target="./tests/logs/coverage" 
+            charset="UTF-8"
+            yui="true" 
+            highlight="true"
+            lowUpperBound="50" 
+            highLowerBound="80"/>
+    </logging>
+</phpunit>

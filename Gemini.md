@@ -14,3 +14,9 @@ It utilizes a unified, hybrid astronomical approach:
 ## Reference & Cache
 - Ephemeris cache and star data are stored in `/cache/` and `/jyotish/cache/`.
 - Astrological reference diagrams, audio transcripts, and study materials reside in `/source-material/`.
+
+## UI Development & Verification Protocol (MANDATORY)
+- **Visual Verification Loop**: Never make significant UI/Frontend changes blindly. You must always verify your changes visually before reporting back to the user.
+- **Automated Screenshots**: You must run the local Flask server, execute the Playwright screenshot script (`screenshot.py`), and use your file viewing tools to physically inspect the screenshot image.
+- **Use the Design Subagent**: For major UI/UX overhauls or layout changes, it is mandatory to invoke a specialized "Gemini 3.7" design subagent (using the `pro` model). Delegate the visual iteration loop (edit -> screenshot -> inspect -> refine) completely to this subagent. 
+- **Do Not Interrupt**: Do not come back to the user after every small, untested incremental update. Wait until the design subagent has fully verified the UI is polished and unbroken before responding.

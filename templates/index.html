@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ernst Wilhelm Kala Chart Software</title>
@@ -10,10 +11,12 @@
             background-color: #f7f3eb;
             color: #3d312a;
             margin: 0;
-            padding: 24px;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: stretch;
+            height: 100vh;
+            overflow: hidden;
         }
         h1 {
             color: #4a3325;
@@ -318,53 +321,281 @@
             margin-left: 8px;
             font-weight: bold;
         }
+    
+        /* Split.js Layout CSS */
+        #main-container {
+            display: flex;
+            width: 100%;
+            flex: 1; /* Take up all remaining height */
+            overflow: hidden;
+            background: #fffdfa;
+            border-top: 1px solid #e5dccb;
+        }
+        
+        .split {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        #chart-pane {
+            background-color: #f7f3eb;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 24px;
+            position: relative;
+        }
+        
+        #info-pane {
+            background: #fffdfa;
+            border-left: 1px solid #e5dccb;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .pane-section {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #fffdfa;
+        }
+        
+        .gutter {
+            background-color: #eee5d3;
+            background-repeat: no-repeat;
+            background-position: 50%;
+            transition: background-color 0.2s ease;
+        }
+        .gutter.gutter-horizontal {
+            cursor: col-resize;
+            border-left: 1px solid #e5dccb;
+            border-right: 1px solid #e5dccb;
+        }
+        .gutter.gutter-vertical {
+            cursor: row-resize;
+            border-top: 1px solid #e5dccb;
+            border-bottom: 1px solid #e5dccb;
+        }
+        .gutter:hover {
+            background-color: #d5c8b2;
+        }
+        
+        /* New Chart View inside Split */
+        .chart-view {
+            display: none;
+            flex-direction: column;
+            background: #fffdfa;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 2px 8px rgba(74, 51, 37, 0.04);
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 24px;
+        }
+        .chart-view.active {
+            display: flex;
+        }
+        
+        .chart-view h2 {
+            margin-top: 0;
+            font-size: 17px;
+            color: #4a3325;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+        
+        .chart-svg-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .chart-svg-container svg {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        /* Tabs and Info Windows */
+        .sub-window {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+        }
+        
+        .sub-window-header {
+            padding: 16px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4a3325;
+            border-bottom: 1px solid #e5dccb;
+            background: #f5ede0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .sub-window-content {
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+            color: #3d312a;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f5ede0;
+            border-bottom: 1px solid #e5dccb;
+            padding: 0 16px;
+            gap: 8px;
+        }
+        
+        .tab-btn {
+            padding: 14px 12px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #8c7b64;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            transition: color 0.2s;
+        }
+        
+        .tab-btn:hover {
+            color: #4a3325;
+        }
+        
+        .tab-btn.active {
+            color: #d35400;
+            border-bottom: 2px solid #d35400;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 24px;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .interactive {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .interactive:hover {
+            opacity: 0.6;
+        }
+        .top-toolbar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 16px;
+            background: #fffdfa;
+            border-bottom: 1px solid #e5dccb;
+            box-sizing: border-box;
+            box-shadow: 0 2px 10px rgba(74, 51, 37, 0.04);
+            z-index: 100;
+        }
+        .toolbar-left, .toolbar-center, .toolbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .top-toolbar h1 {
+            font-size: 18px;
+            margin: 0;
+            margin-right: 16px;
+            letter-spacing: -0.5px;
+        }
+        .top-toolbar select, .top-toolbar button {
+            margin: 0;
+            padding: 6px 12px;
+        }
+        #chartTitle {
+            font-size: 15px;
+            font-weight: 600;
+            margin: 0;
+        }
+        #chartSubtitle {
+            font-size: 13px;
+            color: #8c7b64;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
-    <div style="width: 90%; max-width: 1200px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h1 style="margin: 0;">Kala Vedic Astrology</h1>
-        <button type="button" onclick="openSettingsModal()" style="background-color: #5C4433; color: white; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-            <span>⚙️</span> Display Settings
-        </button>
-    </div>
-    
-    <div class="header-controls">
-        <div class="select-section">
-            <h3>Select Saved Chart</h3>
+    <div class="top-toolbar">
+        <div class="toolbar-left">
+            <h1>Astra</h1>
             <select id="nativeSelect">
                 <option value="">-- Select Person --</option>
                 {% for n in natives %}
                 <option value="{{ n.id }}">{{ n.name }} ({{ n.date }})</option>
                 {% endfor %}
             </select>
-            <button onclick="loadChart()">Load Chart</button>
-            <div id="loading" style="display:none; color: #3498db; margin-top:10px;">Calculating...</div>
+            <button onclick="loadChart()">Load</button>
+            <button onclick="document.getElementById('addPersonModal').style.display='flex'">+ Add</button>
+            <div id="loading" style="display:none; color: #3498db; margin-left:10px; font-size:13px;">Calculating...</div>
         </div>
-        
-        <div class="add-section">
-            <h3>Add / Edit Person</h3>
-            <input type="hidden" id="editNativeId" value="">
-            <input type="text" id="newName" placeholder="Name" required>
-            <input type="text" id="newDate" placeholder="YYYY-MM-DD (e.g. -3102-02-18)" required style="width: 200px;">
-            <input type="time" id="newTime" step="1" required>
-            <br>
-            <select id="countrySelect" onchange="loadCities()" style="width: 150px; padding: 4px;">
-                <option value="">-- Country --</option>
-            </select>
-            <select id="citySelect" onchange="fetchTimezone()" style="width: 150px; padding: 4px;" disabled>
-                <option value="">-- City --</option>
-            </select>
-            <input type="number" id="newLat" placeholder="Lat" step="0.0001" required style="width: 80px;">
-            <input type="number" id="newLon" placeholder="Lon" step="0.0001" required style="width: 80px;">
-            <input type="text" id="newTz" placeholder="TZ (e.g. +05:30)" value="+00:00" required style="width: 100px;">
-            <br>
-            <button onclick="saveNative(false)">Save as New</button>
-            <button onclick="saveNative(true)" id="updateBtn" style="display:none; background-color: #27ae60;">Update Selected</button>
+        <div class="toolbar-center">
+            <span id="chartTitle">No Chart Loaded</span>
+            <span id="chartSubtitle"></span>
+        </div>
+        <div class="toolbar-right">
+            <button type="button" onclick="openSettingsModal()" style="background-color: transparent; color: #3d312a; border: 1px solid #d5c8b2;">
+                ⚙️ Settings
+            </button>
         </div>
     </div>
-    
-    <h2 id="chartTitle" style="color: #2c3e50;">No Chart Loaded</h2>
-    <p id="chartSubtitle"></p>
+
+    <!-- Add Person Modal -->
+    <div class="modal-overlay" id="addPersonModal" onclick="if(event.target===this) this.style.display='none'">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Add / Edit Person</h2>
+                <button type="button" class="modal-close-btn" onclick="document.getElementById('addPersonModal').style.display='none'">×</button>
+            </div>
+            <div class="setting-section">
+                <input type="hidden" id="editNativeId" value="">
+                <input type="text" id="newName" placeholder="Name" required style="width:100%; box-sizing:border-box;">
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="text" id="newDate" placeholder="YYYY-MM-DD" required style="flex:1;">
+                    <input type="time" id="newTime" step="1" required style="flex:1;">
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <select id="countrySelect" onchange="loadCities()" style="flex:1;">
+                        <option value="">-- Country --</option>
+                    </select>
+                    <select id="citySelect" onchange="fetchTimezone()" style="flex:1;" disabled>
+                        <option value="">-- City --</option>
+                    </select>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <input type="number" id="newLat" placeholder="Lat" step="0.0001" required style="flex:1;">
+                    <input type="number" id="newLon" placeholder="Lon" step="0.0001" required style="flex:1;">
+                    <input type="text" id="newTz" placeholder="TZ (+00:00)" value="+00:00" required style="flex:1;">
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+                <button onclick="saveNative(false)">Save as New</button>
+                <button onclick="saveNative(true)" id="updateBtn" style="display:none; background-color: #27ae60;">Update Selected</button>
+            </div>
+        </div>
+    </div>
     
     <!-- Settings Modal Window -->
     <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
@@ -472,164 +703,150 @@
         </div>
     </div>
 
-    <div class="charts-comparison" id="chartsComparison" style="display:none; width:95%; max-width:1440px; display:flex; gap:36px;">
-        <div id="leftSlot" style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px;">
-        
-            <div class="varga-selector">
-                <label for="vargaSelect1">Left Chart: </label>
-                <select id="vargaSelect1" onchange="updateSlot(1)">
-                    
-        <option value="D1">D1 - Rasi</option>
-        <option value="D2">D2 - Hora</option>
-        <option value="D3">D3 - Drekkana</option>
-        <option value="D4">D4 - Chaturthamsha</option>
-        <option value="D7">D7 - Saptamsha</option>
-        <option value="D9">D9 - Navamsa</option>
-        <option value="D10">D10 - Dashamsha</option>
-        <option value="D12">D12 - Dwadashamsha</option>
-        <option value="D16">D16 - Shodashamsha</option>
-        <option value="D20">D20 - Vimshamsha</option>
-        <option value="D24">D24 - Chaturvimshamsha</option>
-        <option value="D27">D27 - Saptavimshamsha</option>
-        <option value="D30">D30 - Trimshamsha</option>
-        <option value="D40">D40 - Khavedamsha</option>
-        <option value="D45">D45 - Akshavedamsha</option>
-        <option value="D60">D60 - Shashtiamsha</option>
-
-                </select>
-            </div>
-            <div class="chart-box" id="southBox1">
-                <div class="chart-header-row">
-                    <h2 id="titleSouth1">Tropical South Indian (D1)</h2>
-                    <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
-                </div>
-                <div id="southChart1" style="width: 100%; display: flex; justify-content: center;"></div>
-            </div>
-            <div class="chart-box" id="northBox1">
-                <div class="chart-header-row">
-                    <h2 id="titleNorth1">Tropical North Indian (D1)</h2>
-                    <button type="button" class="btn-maximize" onclick="maximizeChart(1, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
-                </div>
-                <div id="northChart1" style="width: 100%; display: flex; justify-content: center;"></div>
-            </div>
-        </div>
-        
-        <div id="rightSlot" style="flex:1; display:flex; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
-        
-            <div class="varga-selector">
-                <label for="vargaSelect2">Right Chart: </label>
-                <select id="vargaSelect2" onchange="updateSlot(2)">
-                    
-        <option value="D1">D1 - Rasi</option>
-        <option value="D2">D2 - Hora</option>
-        <option value="D3">D3 - Drekkana</option>
-        <option value="D4">D4 - Chaturthamsha</option>
-        <option value="D7">D7 - Saptamsha</option>
-        <option value="D9">D9 - Navamsa</option>
-        <option value="D10">D10 - Dashamsha</option>
-        <option value="D12">D12 - Dwadashamsha</option>
-        <option value="D16">D16 - Shodashamsha</option>
-        <option value="D20">D20 - Vimshamsha</option>
-        <option value="D24">D24 - Chaturvimshamsha</option>
-        <option value="D27">D27 - Saptavimshamsha</option>
-        <option value="D30">D30 - Trimshamsha</option>
-        <option value="D40">D40 - Khavedamsha</option>
-        <option value="D45">D45 - Akshavedamsha</option>
-        <option value="D60">D60 - Shashtiamsha</option>
-
-                </select>
-            </div>
-            <div class="chart-box" id="southBox2">
-                <div class="chart-header-row">
-                    <h2 id="titleSouth2">Tropical South Indian (D9)</h2>
-                    <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'south')" title="Zoom / Maximize Chart">⛶ Zoom</button>
-                </div>
-                <div id="southChart2" style="width: 100%; display: flex; justify-content: center;"></div>
-            </div>
-            <div class="chart-box" id="northBox2">
-                <div class="chart-header-row">
-                    <h2 id="titleNorth2">Tropical North Indian (D9)</h2>
-                    <button type="button" class="btn-maximize" onclick="maximizeChart(2, 'north')" title="Zoom / Maximize Chart">⛶ Zoom</button>
-                </div>
-                <div id="northChart2" style="width: 100%; display: flex; justify-content: center;"></div>
-            </div>
-        </div>
-
-        <div id="dignitySidePanel" style="flex:1; display:none; flex-direction:column; align-items:center; gap: 20px; border-left: 2px solid #ecf0f1; padding-left: 36px;">
-            <div class="chart-box" style="width: 100%; padding: 20px; box-sizing: border-box;">
-                <h2 id="dignitySideTitle" style="color: #4a3325; font-size: 17px; margin-bottom: 12px; margin-top: 0;">Planetary Dignity & Sambandha</h2>
-                <table id="dignitySideTable" style="width: 100%; font-size: 13px;">
-                    <thead>
-                        <tr>
-                            <th>Graha</th>
-                            <th title="The planet that rules the sign this graha is placed in">Sign Lord</th>
-                            <th title="Fixed natural relationship based on Moolatrikona rulerships">Natural</th>
-                            <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
-                            <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
-                            <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
-                            <th title="Age/Vitality based on degrees">Bala Avastha</th>
-                            <th title="Alertness/Consciousness based on dignity">Jagrat Avastha</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
     
-<div class="info-panel" id="infoPanel" style="display:none;">
-        <h2>Equatorial Sidereal Nakshatras</h2>
-        <p><strong id="ayanamsaName"></strong></p>
-        <table id="nakshatraTable">
-            <thead>
-                <tr>
-                    <th>Graha</th>
-                    <th>Deg</th>
-                    <th>Sign</th>
-                    <th>Nakshatra</th>
-                    <th>Pada</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-        
-        <h2 style="margin-top: 30px;" id="dignityTitle">Planetary Dignity & Sambandha (Panchadha)</h2>
-        <table id="dignityTable">
-            <thead>
-                <tr>
-                    <th>Graha</th>
-                    <th title="The planet that rules the sign this graha is placed in">Sign Lord</th>
-                    <th title="Fixed natural relationship based on Moolatrikona rulerships">Natural</th>
-                    <th title="Dynamic time-space relationship: 3 signs in front & 3 behind are friends">Temporary</th>
-                    <th title="The mathematical sum of Natural and Temporary relationships">Compound</th>
-                    <th title="The actual strength/state of the planet (e.g. Exalted, Great Friend's Sign)">Final Dignity</th>
-                    <th title="Age/Vitality based on degrees">Bala Avastha</th>
-                    <th title="Alertness/Consciousness based on dignity">Jagrat Avastha</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+    <div id="main-container" style="display:none;">
+        <!-- Left Pane: Chart -->
+        <div id="chart-pane" class="split">
+            
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 10px; left: 10px; right: 10px; padding: 0 20px; z-index: 10;">
+                <div class="varga-selector">
+                    <label for="vargaSelect1">Varga: </label>
+                    <select id="vargaSelect1" onchange="updateSlot(1)">
+                        <option value="D1">D1 - Rasi</option>
+                        <option value="D2">D2 - Hora</option>
+                        <option value="D3">D3 - Drekkana</option>
+                        <option value="D4">D4 - Chaturthamsha</option>
+                        <option value="D7">D7 - Saptamsha</option>
+                        <option value="D9">D9 - Navamsa</option>
+                        <option value="D10">D10 - Dashamsha</option>
+                        <option value="D12">D12 - Dwadashamsha</option>
+                        <option value="D16">D16 - Shodashamsha</option>
+                        <option value="D20">D20 - Vimshamsha</option>
+                        <option value="D24">D24 - Chaturvimshamsha</option>
+                        <option value="D27">D27 - Saptavimshamsha</option>
+                        <option value="D30">D30 - Trimshamsha</option>
+                        <option value="D40">D40 - Khavedamsha</option>
+                        <option value="D45">D45 - Akshavedamsha</option>
+                        <option value="D60">D60 - Shashtiamsha</option>
+                    </select>
+                </div>
+                <div class="shortcuts-hint" style="font-size: 13px; color: #8c7b64;">
+                    Hotkeys: <strong>S</strong> (South) | <strong>N</strong> (North)
+                </div>
+            </div>
 
-        <h2 style="margin-top: 30px;">Bhava Chalita (Proper House Cusps)</h2>
-        <table id="bhavaTable">
-            <thead>
-                <tr>
-                    <th>House</th>
-                    <th>Start</th>
-                    <th>Cusp (Middle)</th>
-                    <th>End</th>
-                    <th>Planets In It</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+            <div id="view-south" class="chart-view active">
+                <h2 id="titleSouth1">Tropical South Indian</h2>
+                <div class="chart-svg-container" id="southChart1"></div>
+            </div>
+            
+            <div id="view-north" class="chart-view">
+                <h2 id="titleNorth1">Tropical North Indian</h2>
+                <div class="chart-svg-container" id="northChart1"></div>
+            </div>
+            
+        </div>
+        
+        <!-- Right Pane: Info & Metrics -->
+        <div id="info-pane" class="split">
+            
+            <div id="info-top" class="pane-section">
+                <div class="sub-window">
+                    <div class="sub-window-header">Context Info</div>
+                    <div class="sub-window-content" id="context-info-content">
+                        <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="info-bottom" class="pane-section">
+                <div class="sub-window">
+                    <div class="tabs">
+                        <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
+                        <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="tab-nakshatras">
+                        <p><strong id="ayanamsaName"></strong></p>
+                        <table id="nakshatraTable">
+                            <thead>
+                                <tr><th>Graha</th><th>Deg</th><th>Sign</th><th>Nakshatra</th><th>Pada</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-metrics">
+                        <h3 id="dignityTitle" style="color: #4a3325; margin-top: 0;">Planetary Dignity</h3>
+                        <table id="dignityTable">
+                            <thead>
+                                <tr>
+                                    <th>Graha</th>
+                                    <th>Sign Lord</th>
+                                    <th>Compound</th>
+                                    <th>Final Dignity</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
     </div>
+
+
 
     <script>
+        let splitInstance = null;
+        let infoSplitInstance = null;
+
+        function setupSplit() {
+            document.getElementById('main-container').style.display = 'flex';
+            if (!splitInstance) {
+                splitInstance = Split(['#chart-pane', '#info-pane'], {
+                    sizes: [60, 40],
+                    minSize: [400, 300],
+                    gutterSize: 8,
+                    cursor: 'col-resize'
+                });
+            }
+            if (!infoSplitInstance) {
+                infoSplitInstance = Split(['#info-top', '#info-bottom'], {
+                    direction: 'vertical',
+                    sizes: [30, 70],
+                    minSize: [150, 200],
+                    gutterSize: 8,
+                    cursor: 'row-resize'
+                });
+            }
+            
+            // Tab switching logic
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.target).classList.add('active');
+                });
+            });
+            
+            // Hotkeys for South/North
+            window.addEventListener('keydown', (e) => {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+                if (e.key.toLowerCase() === 's') {
+                    document.getElementById('view-south').classList.add('active');
+                    document.getElementById('view-north').classList.remove('active');
+                }
+                if (e.key.toLowerCase() === 'n') {
+                    document.getElementById('view-north').classList.add('active');
+                    document.getElementById('view-south').classList.remove('active');
+                }
+            });
+        }
+
         let currentChartData = null;
         let currentSvgs = null;
 
@@ -638,9 +855,6 @@
             if (!id) return;
             
             document.getElementById('loading').style.display = 'block';
-            const cc = document.getElementById('chartsComparison');
-            if(cc) cc.style.display = 'none';
-            document.getElementById('infoPanel').style.display = 'none';
             
             try {
                 const response = await fetch(`/api/chart/${id}`);
@@ -697,14 +911,12 @@
                 updateNakshatraTable();
                 
                 // Show UI
-                document.getElementById('chartsComparison').style.display = 'flex';
-                document.getElementById('infoPanel').style.display = 'block';
+                setupSplit();
                 
-                // Default to D1 on left, D9 on right
+                
+                // Default to D1 on left
                 document.getElementById('vargaSelect1').value = "D1";
-                document.getElementById('vargaSelect2').value = "D9";
                 updateSlot(1);
-                updateSlot(2);
                 
             } catch (e) {
                 console.error(e);
@@ -721,12 +933,13 @@
         function switchNotation(mode) {
             currentNotation = mode;
             updateSlot(1);
-            updateSlot(2);
         }
 
         function updateSlot(slot) {
             if (!currentSvgs) return;
-            const varga = document.getElementById(`vargaSelect${slot}`).value;
+            const selectEl = document.getElementById(`vargaSelect${slot}`);
+            if (!selectEl) return;
+            const varga = selectEl.value;
             
             document.getElementById(`titleSouth${slot}`).innerText = `Tropical South Indian (${varga})`;
             document.getElementById(`titleNorth${slot}`).innerText = `Tropical North Indian (${varga})`;
@@ -758,6 +971,7 @@
         
         function updateBhavaTable(varga) {
             const tbody = document.querySelector('#bhavaTable tbody');
+            if (!tbody) return;
             tbody.innerHTML = '';
             
             if (!currentChartData || !currentChartData.vargas[varga]) return;
