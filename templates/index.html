@@ -342,11 +342,7 @@
             background-color: #f7f3eb;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             overflow: hidden;
-            padding: 24px;
-            position: relative;
         }
         
         #info-pane {
@@ -387,14 +383,11 @@
         .chart-view {
             display: none;
             flex-direction: column;
-            background: #fffdfa;
-            border-radius: 12px;
-            border: 1px solid #e5dccb;
-            box-shadow: 0 2px 8px rgba(74, 51, 37, 0.04);
+            flex: 1;
             width: 100%;
             height: 100%;
             overflow: hidden;
-            padding: 24px;
+            background: transparent;
         }
         .chart-view.active {
             display: flex;
@@ -406,6 +399,7 @@
             color: #4a3325;
             margin-bottom: 16px;
             text-align: center;
+            display: none; /* Hide redundant external headers */
         }
         
         .chart-svg-container {
@@ -416,6 +410,8 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            padding: 16px;
+            box-sizing: border-box;
         }
         
         .chart-svg-container svg {
@@ -534,6 +530,39 @@
             font-size: 13px;
             color: #8c7b64;
             margin: 0;
+        }
+
+        /* Dedicated Chart Sub-Toolbar */
+        .chart-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 38px;
+            padding: 0 16px;
+            background: #f7f3eb;
+            border-bottom: 1px solid #e5dccb;
+            flex-shrink: 0;
+        }
+        .chart-hotkeys {
+            display: flex;
+            gap: 8px;
+        }
+        .hotkey-btn {
+            background: #fffdfa;
+            border: 1px solid #d5c8b2;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a3325;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0;
+        }
+        .hotkey-btn:hover, .hotkey-btn.active {
+            background: #d35400;
+            color: #fff;
+            border-color: #d35400;
         }
     </style>
 </head>
@@ -707,9 +736,8 @@
     <div id="main-container" style="display:none;">
         <!-- Left Pane: Chart -->
         <div id="chart-pane" class="split">
-            
-            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; position: absolute; top: 10px; left: 10px; right: 10px; padding: 0 20px; z-index: 10;">
-                <div class="varga-selector">
+            <div class="chart-toolbar">
+                <div class="varga-selector" style="margin-bottom: 0;">
                     <label for="vargaSelect1">Varga: </label>
                     <select id="vargaSelect1" onchange="updateSlot(1)">
                         <option value="D1">D1 - Rasi</option>
@@ -730,21 +758,20 @@
                         <option value="D60">D60 - Shashtiamsha</option>
                     </select>
                 </div>
-                <div class="shortcuts-hint" style="font-size: 13px; color: #8c7b64;">
-                    Hotkeys: <strong>S</strong> (South) | <strong>N</strong> (North)
+                <div id="toolbar-chart-title" style="font-weight: 600; font-size: 15px; color: #4a3325; flex: 1; text-align: center;">D1 - Rasi</div>
+                <div class="chart-hotkeys">
+                    <button class="hotkey-btn active" onclick="switchChartType('south')" id="btn-south">[S] South</button>
+                    <button class="hotkey-btn" onclick="switchChartType('north')" id="btn-north">[N] North</button>
                 </div>
             </div>
 
             <div id="view-south" class="chart-view active">
-                <h2 id="titleSouth1">Tropical South Indian</h2>
                 <div class="chart-svg-container" id="southChart1"></div>
             </div>
             
             <div id="view-north" class="chart-view">
-                <h2 id="titleNorth1">Tropical North Indian</h2>
                 <div class="chart-svg-container" id="northChart1"></div>
             </div>
-            
         </div>
         
         <!-- Right Pane: Info & Metrics -->
@@ -836,15 +863,24 @@
             // Hotkeys for South/North
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-                if (e.key.toLowerCase() === 's') {
-                    document.getElementById('view-south').classList.add('active');
-                    document.getElementById('view-north').classList.remove('active');
-                }
-                if (e.key.toLowerCase() === 'n') {
-                    document.getElementById('view-north').classList.add('active');
-                    document.getElementById('view-south').classList.remove('active');
-                }
+                if (e.key.toLowerCase() === 's') switchChartType('south');
+                if (e.key.toLowerCase() === 'n') switchChartType('north');
             });
+        }
+
+        function switchChartType(type) {
+            document.getElementById('view-south').classList.remove('active');
+            document.getElementById('view-north').classList.remove('active');
+            document.getElementById('btn-south').classList.remove('active');
+            document.getElementById('btn-north').classList.remove('active');
+            
+            if (type === 'south') {
+                document.getElementById('view-south').classList.add('active');
+                document.getElementById('btn-south').classList.add('active');
+            } else if (type === 'north') {
+                document.getElementById('view-north').classList.add('active');
+                document.getElementById('btn-north').classList.add('active');
+            }
         }
 
         let currentChartData = null;
@@ -940,9 +976,11 @@
             const selectEl = document.getElementById(`vargaSelect${slot}`);
             if (!selectEl) return;
             const varga = selectEl.value;
+            const vargaLabel = selectEl.options[selectEl.selectedIndex].text;
             
-            document.getElementById(`titleSouth${slot}`).innerText = `Tropical South Indian (${varga})`;
-            document.getElementById(`titleNorth${slot}`).innerText = `Tropical North Indian (${varga})`;
+            if (slot === 1) {
+                document.getElementById('toolbar-chart-title').innerText = vargaLabel;
+            }
             
             const vData = currentSvgs[varga];
             const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;

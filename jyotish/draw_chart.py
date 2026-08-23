@@ -252,7 +252,7 @@ def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
         positions.append((cx + 22, r2_y))
     return positions
 
-def generate_south_indian(items, mode="symbol"):
+def generate_south_indian(items, mode="symbol", varga_name="D1"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
@@ -260,7 +260,7 @@ def generate_south_indian(items, mode="symbol"):
         "Sagittarius": (0, 300), "Scorpio": (100, 300), "Libra": (200, 300), "Virgo": (300, 300)
     }
 
-    svg = '<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<rect x="100" y="100" width="200" height="200" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="100" y1="0" x2="100" y2="100" stroke="#5C4433" stroke-width="2"/>\n'
@@ -275,6 +275,10 @@ def generate_south_indian(items, mode="symbol"):
     svg += '<line x1="300" y1="200" x2="400" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="300" x2="100" y2="300" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="300" y1="300" x2="400" y2="300" stroke="#5C4433" stroke-width="2"/>\n'
+    
+    # Center Chart Title
+    svg += f'<text x="200" y="190" font-family="sans-serif" font-size="18" font-weight="bold" fill="#4a3325" text-anchor="middle">{varga_name}</text>\n'
+    svg += f'<text x="200" y="215" font-family="sans-serif" font-size="13" fill="#8c7b64" text-anchor="middle">Tropical South Indian</text>\n'
 
     items_by_sign = {s: [] for s in signs_list}
     for item in items:
@@ -371,8 +375,8 @@ def generate_south_indian(items, mode="symbol"):
     svg += '</svg>\n'
     return svg
 
-def generate_north_indian(items, mode="symbol"):
-    svg = '<svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
+def generate_north_indian(items, mode="symbol", varga_name="D1"):
+    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -476,7 +480,7 @@ def generate_north_indian(items, mode="symbol"):
     return svg
 
 def generate_bhava_chalita_north(bhavas, mode="symbol"):
-    svg = '<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="background:#FAF5EB; border-radius:8px; border:1px solid #D0C5B4;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -484,7 +488,9 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
     svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
-
+    
+    # ... rest remains unmodified for bhava_chalita
+    
     ni_centers = [
         (200, 100), (100, 45),  (48, 100),  (100, 200),
         (48, 300),  (100, 355), (200, 300), (300, 355),
@@ -537,3 +543,4 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
 
     svg += "</svg>\n"
     return svg
+

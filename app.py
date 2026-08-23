@@ -71,8 +71,8 @@ def get_chart(native_id):
         svgs[v_name] = {}
         for m in modes:
             svgs[v_name][m] = {
-                "south": draw_chart.generate_south_indian(parsed_items, mode=m),
-                "north": draw_chart.generate_north_indian(parsed_items, mode=m)
+                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name),
+                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name)
             }
         # Default top-level shortcuts for backward compatibility
         svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
