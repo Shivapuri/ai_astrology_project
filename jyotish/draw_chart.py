@@ -647,13 +647,14 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
     tx2, ty2 = polar_coords(r_rasi_inner - 6, 182)
     svg += f'<polygon points="{ax2},{ay2} {tx1},{ty1} {tx2},{ty2}" fill="#C0392B" />\n'
 
-    # In D1, also draw Campanus lines
+    # In D1, draw lines ONLY for the 4 cardinal angle stations (1: Asc, 4: IC, 7: Dsc, 10: MC)
     if varga_name == "D1" and cusps and len(cusps) >= 12:
         for i in range(12):
             c = cusps[i]
             house_num = i + 1
-            if house_num == 1:
-                continue # Already drawn above as Ascendant arrow
+            if house_num not in [4, 7, 10]:
+                continue # Only draw the lines for the 4 Kendra angles (1 is already drawn as Ascendant arrow)
+                
             lon = c.get("longitude")
             if lon is None:
                 s_idx = signs_list.index(c["sign"])
@@ -663,16 +664,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
             x1, y1 = polar_coords(r_bhava_outer, angle_start)
             x2, y2 = polar_coords(r_rasi_inner, angle_start)
             
-            is_angle = house_num in [4, 7, 10]
-            if is_angle:
-                color = "#C0392B"
-                thickness = "1.0"
-                dash = ""
-            else:
-                color = "#8E44AD"
-                thickness = "0.5"
-                dash = 'stroke-dasharray="2,6"'
-            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash}/>\n'
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#C0392B" stroke-width="1.0"/>\n'
 
     # Draw cusp numbers clearly positioned within each sign sector without stacking
     if cusps:
