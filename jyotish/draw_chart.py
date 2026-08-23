@@ -664,11 +664,376 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
                 dash = 'stroke-dasharray="2,6"'
             
             
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} />\n'
             if is_angle:
-                marker = 'marker-end="url(#arrowRed)"'
+                # Manual arrowhead
+                ax1, ay1 = polar_coords(r_rasi_inner - 6, angle_start - 2)
+                ax2, ay2 = polar_coords(r_rasi_inner - 6, angle_start + 2)
+                svg += f'<polygon points="{x2},{y2} {ax1},{ay1} {ax2},{ay2}" fill="{color}" />\n'
+
+
+    # 5. Planets (radially stacked)
+    planets_to_draw = []
+    for item in items:
+        if item.get("type") == "planet":
+            s_idx = signs_list.index(item["sign"])
+            pl_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
+            planets_to_draw.append({"item": item, "lon": pl_lon, "draw_angle": lon_to_angle(pl_lon)})
+            
+    # Relaxation for overlap (MIN_SEP degrees)
+    MIN_SEP = 4.5
+    for _ in range(30):
+        planets_to_draw.sort(key=lambda p: (p["draw_angle"] % 360))
+        for i in range(len(planets_to_draw)):
+            p1 = planets_to_draw[i]
+            p2 = planets_to_draw[(i+1) % len(planets_to_draw)]
+            
+            a1 = p1["draw_angle"] % 360
+            a2 = p2["draw_angle"] % 360
+            
+            diff = (a2 - a1) % 360
+            if diff < MIN_SEP:
+                push = (MIN_SEP - diff) / 2.0
+                p1["draw_angle"] -= push
+                p2["draw_angle"] += push
+
+    r_pl_base = r_rasi_inner - 12
+
+    for p in planets_to_draw:
+        item = p["item"]
+        angle = p["draw_angle"]
+        
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        
+        is_retro = item.get("is_retrograde", False)
+        retro_badge = "R" if is_retro else ""
+        s_sym, s_col, _ = sign_symbols[item["sign"]]
+        
+        px, py = polar_coords(r_pl_base, angle)
+        
+        if p_name == "Lagna":
+            # Lagna is exactly at 180 degrees (left horizontal axis, meaning py=0).
+            # We want to push the entire text block DOWN so it doesn't overlap the red arrow.
+            px, py = polar_coords(r_pl_base, 180)
+            py += 15 # shift 15 pixels down (underneath the line)
+
+        font_sz = 10 if p_name == "Lagna" else 13
+        
+        tooltip = f"{info.get('full_sa', p_name)} — {item['degree']}° {s_sym} {item['minute']:02d}'{retro_badge} {item['sign']}"
+        svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+        
+        # Planet Glyph
+        svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        
+        # Combined horizontal text: Degree Sign Minute
+        ty = py + 10
+        if p_name == "Lagna": ty += 2
+        svg += f'<text x="{px}" y="{ty}" font-size="6" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}° <tspan fill="{s_col}">{s_sym}</tspan> {item["minute"]:02d}\'{retro_badge}</text>\n'
+        
+        svg += f'</g>\n'
+        
+        true_angle = lon_to_angle(p["lon"])
+        if abs((angle - true_angle) % 360) > 0.5 and abs((angle - true_angle) % 360) < 359.5:
+            cx, cy = polar_coords(r_rasi_inner, true_angle)
+            svg += f'<line x1="{px}" y1="{py}" x2="{cx}" y2="{cy}" stroke="{color}" stroke-width="0.5" opacity="0.3"/>\n'
+
+    svg += '</svg>\n'
+    return svg
+
+def generate_north_indian(items, mode="symbol", varga_name="D1"):
+    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="200" y1="0" x2="400" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
+
+    ni_centers = [
+        (200, 100), (100, 45),  (48, 100),  (100, 200),
+        (48, 300),  (100, 355), (200, 300), (300, 355),
+        (352, 300), (300, 200), (352, 100), (300, 45)
+    ]
+    sign_pos = [
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
+    ]
+
+    asc_item = next(it for it in items if it["name"] == "Lagna")
+    asc_sign = asc_item["sign"]
+    asc_index = signs_list.index(asc_sign)
+
+    items_by_house = [[] for _ in range(12)]
+    
+    for item in items:
+        s_idx = signs_list.index(item["sign"])
+        h_idx = (s_idx - asc_index + 12) % 12
+        if item.get("type") == "cusp":
+            items_by_house[h_idx].append(item)
+        else:
+            items_by_house[h_idx].append({
+                "type": "planet",
+                "name": item["name"],
+                "sign": item["sign"],
+                "deg": f"{item['degree']}°{item['minute']:02d}'",
+                "is_retrograde": item.get("is_retrograde", False)
+            })
+
+    for h in range(12):
+        s_idx = (asc_index + h) % 12
+        sign = signs_list[s_idx]
+        s_sym, s_col, _ = sign_symbols[sign]
+        
+        sx, sy = sign_pos[h]
+        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        cx, cy = ni_centers[h]
+        house_items = items_by_house[h]
+        planets = [it for it in house_items if it["type"] == "planet"]
+        cusps = [it for it in house_items if it["type"] == "cusp"]
+        
+        positions = get_north_indian_positions(len(planets), cx, cy, has_cusps=bool(cusps))
+        
+        for idx, p in enumerate(planets):
+            if idx >= len(positions):
+                break
+            px, py = positions[idx]
+            info = planet_notations.get(p["name"], {
+                "symbol": p["name"][:2],
+                "english": p["name"][:2],
+                "devanagari": p["name"][:2],
+                "translit": p["name"][:2],
+                "full_en": p["name"],
+                "full_sa": p["name"],
+                "color": "#000"
+            })
+            label = info.get(mode, info["symbol"])
+            if len(planets) > 4:
+                font_sz = "16" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
+                deg_sz = "9"
+                retro_sz = "8"
             else:
-                marker = ""
-            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} {marker} />\n'
+                font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+                deg_sz = "10"
+                retro_sz = "9"
+                
+            dev_name = info.get('dev_full', '')
+            is_retro = p.get("is_retrograde", False)
+            retro_badge = " R" if is_retro else ""
+            retro_label = " [Retrograde (R)]" if is_retro else ""
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
+            
+            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 15}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
+            svg += f'<tspan>{p["deg"]}</tspan>'
+            if is_retro:
+                svg += f'<tspan font-size="{retro_sz}" font-weight="bold" fill="#C0392B"> R</tspan>'
+            svg += '</text></g>\n'
+            
+        if cusps:
+            cusp_texts = [c["text"] for c in cusps]
+            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+            cusp_y = cy + 28 if planets else cy
+            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
+            svg += f'<text x="{cx}" y="{cusp_y}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+            svg += '</g>\n'
+
+    svg += '</svg>\n'
+    return svg
+
+def generate_bhava_chalita_north(bhavas, mode="symbol"):
+    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="200" y1="0" x2="400" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
+    svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
+    
+    # ... rest remains unmodified for bhava_chalita
+    
+    ni_centers = [
+        (200, 100), (100, 45),  (48, 100),  (100, 200),
+        (48, 300),  (100, 355), (200, 300), (300, 355),
+        (352, 300), (300, 200), (352, 100), (300, 45)
+    ]
+    
+    sign_pos = [
+        (200, 175), (145, 25),  (25, 145),  (175, 200),
+        (25, 255),  (145, 375), (200, 225), (255, 375),
+        (375, 255), (225, 200), (375, 145), (255, 25)
+    ]
+    
+    for h_idx in range(12):
+        cx, cy = ni_centers[h_idx]
+        bhava = bhavas[h_idx]
+        
+        cusp_lon = bhava["cusp"]
+        sign_idx = int(cusp_lon // 30)
+        s_sym, s_col, _ = sign_symbols[signs_list[sign_idx]]
+        
+        sx, sy = sign_pos[h_idx]
+        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        items_in_house = bhava["planets"]
+        
+        item_height = 21
+        total_h = len(items_in_house) * item_height
+        start_y = cy - (total_h / 2) + (item_height / 2)
+        
+        curr_y = start_y
+        for p_name in items_in_house:
+            info = planet_notations.get(p_name, {
+                "symbol": p_name[:2],
+                "english": p_name[:2],
+                "devanagari": p_name[:2],
+                "translit": p_name[:2],
+                "full_en": p_name,
+                "full_sa": p_name,
+                "color": "#000"
+            })
+            label = info.get(mode, info["symbol"])
+            font_sz = "24" if (mode == "symbol" and p_name != "Lagna") else ("16" if mode == "devanagari" else "14")
+            tooltip = f"{info['full_sa']} ({info['full_en']})"
+            
+            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
+            svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
+            svg += f'</text></g>\n'
+            curr_y += item_height
+
+    svg += "</svg>\n"
+    return svg
+
+
+import math
+
+def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
+    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
+    
+    r_nak_outer = 200
+    r_nak_inner = 175
+    r_rasi_inner = 155
+    r_bhava_outer = 60
+    r_bhava_inner = 45
+    
+    # Outer house circuits a little bit thinner
+    circle_stroke = "0.7"
+    svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_outer}" fill="none" stroke="#27AE60" stroke-width="{circle_stroke}"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_inner}" fill="none" stroke="#000000" stroke-width="{circle_stroke}"/>\n'
+    
+    asc_item = next((it for it in items if it["name"] == "Lagna"), None)
+    if asc_item:
+        asc_s_idx = signs_list.index(asc_item["sign"])
+        asc_lon = asc_s_idx * 30 + asc_item["degree"] + asc_item["minute"] / 60.0
+    else:
+        asc_s_idx = 0
+        asc_lon = 0
+            
+    def lon_to_angle(lon):
+        return 180 + asc_lon - lon
+
+    def polar_coords(r, angle_deg):
+        rad = math.radians(angle_deg)
+        return r * math.cos(rad), r * math.sin(rad)
+
+    # 1. Nakshatras
+    nak_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
+                 "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
+                 "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
+                 "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", 
+                 "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
+                 
+    for i in range(27):
+        start_lon = ayanamsha + i * (360.0 / 27.0)
+        angle_start = lon_to_angle(start_lon)
+        angle_mid = lon_to_angle(start_lon + (360.0 / 54.0))
+        
+        x1, y1 = polar_coords(r_nak_inner, angle_start)
+        x2, y2 = polar_coords(r_nak_outer, angle_start)
+        svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="0.5" stroke-dasharray="2,2"/>\n'
+        
+        lx, ly = polar_coords( (r_nak_inner + r_nak_outer)/2, angle_mid)
+        rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
+        svg += f'<text x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})">{nak_names[i][:4]}.</text>\n'
+
+    # 2 & 3. Tropical Rasis and Bhavas (Whole Signs)
+    for i in range(12):
+        start_lon = i * 30.0
+        angle_start = lon_to_angle(start_lon)
+        angle_mid = lon_to_angle(start_lon + 15.0)
+        
+        # Draw Rasi separator line
+        x1, y1 = polar_coords(r_rasi_inner, angle_start)
+        x2, y2 = polar_coords(r_nak_inner, angle_start)
+        svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="1"/>\n'
+        
+        # Whole House boundaries (Bhavas) - Green dense dashed line
+        x3, y3 = polar_coords(r_bhava_outer, angle_start)
+        x4, y4 = polar_coords(r_rasi_inner, angle_start)
+        svg += f'<line x1="{x3}" y1="{y3}" x2="{x4}" y2="{y4}" stroke="#27AE60" stroke-width="0.8" stroke-dasharray="3,2"/>\n'
+        
+        # Bhava inner circle separator
+        x5, y5 = polar_coords(r_bhava_inner, angle_start)
+        x6, y6 = polar_coords(r_bhava_outer, angle_start)
+        svg += f'<line x1="{x5}" y1="{y5}" x2="{x6}" y2="{y6}" stroke="#000000" stroke-width="1"/>\n'
+        
+        # Rasi symbol label
+        lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
+        sign_name = signs_list[i]
+        s_sym, s_col, _ = sign_symbols[sign_name]
+        svg += f'<text x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        
+        # Bhava number label (Whole Sign)
+        bhava_num = (i - asc_s_idx + 12) % 12 + 1
+        bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
+        svg += f'<text x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central">{bhava_num}</text>\n'
+
+    # 4. House Cusps (Campanus lines) - Violet spread dash, Red for solar stations
+    cusps = [it for it in items if it.get("type") == "cusp"]
+    if cusps and len(cusps) >= 12:
+        for i in range(12):
+            c = cusps[i]
+            house_num = i + 1
+            lon = c.get("longitude")
+            if lon is None:
+                s_idx = signs_list.index(c["sign"])
+                lon = s_idx * 30 + c["degree"] + c["minute"] / 60.0
+                
+            angle_start = lon_to_angle(lon)
+            
+            x1, y1 = polar_coords(r_bhava_outer, angle_start)
+            x2, y2 = polar_coords(r_rasi_inner, angle_start)
+            
+            is_angle = house_num in [1, 4, 7, 10]
+            if is_angle:
+                # Red for solar stations, not so thick
+                color = "#C0392B"
+                thickness = "1.0"
+                dash = ""
+            else:
+                # Violet, thin, spreaded dash
+                color = "#8E44AD"
+                thickness = "0.5"
+                dash = 'stroke-dasharray="2,6"'
+            
+            
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{color}" stroke-width="{thickness}" {dash} />\n'
+            if is_angle:
+                # Manual arrowhead
+                ax1, ay1 = polar_coords(r_rasi_inner - 6, angle_start - 2)
+                ax2, ay2 = polar_coords(r_rasi_inner - 6, angle_start + 2)
+                svg += f'<polygon points="{x2},{y2} {ax1},{ay1} {ax2},{ay2}" fill="{color}" />\n'
 
 
     # 5. Planets (radially stacked)
