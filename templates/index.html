@@ -633,6 +633,56 @@
             color: #fff;
             border-color: #d35400;
         }
+    
+        /* Avasthas UI */
+        .avastha-bar-container {
+            width: 100%;
+            background-color: #e2e8f0;
+            border-radius: 999px;
+            height: 8px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .avastha-bar {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+        .avastha-pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 0.8em;
+            font-weight: 500;
+            margin: 2px;
+            color: #fff;
+        }
+        #avasthasTable th, #avasthasTable td { padding: 6px 8px; font-size: 0.9em; }
+        .shayanadi-widget {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .shayanadi-item {
+            background: #f8fafc;
+            border-left: 4px solid #4f46e5;
+            padding: 8px;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .color-spiritual { background-color: #8c7b64; color: #fff; } /* Warm gray/brown */
+        .color-beneficial { background-color: #d35400; color: #fff; } /* Burnt Orange */
+        .color-damaging { background-color: #3d312a; color: #fff; } /* Dark chocolate */
+        .color-neutral { background-color: #a89f91; color: #fff; } /* Muted earth */
+        
+        .shayanadi-widget { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+        .shayanadi-item { background: #fff; border-left: 4px solid #d35400; padding: 10px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); font-size: 0.9em; }
+
+        .color-beneficial { background-color: #d97706; }
+        .color-damaging { background-color: #475569; }
+        .color-neutral { background-color: #0ea5e9; }
+
     </style>
 </head>
 <body>
@@ -849,6 +899,7 @@
                     <div class="sub-window-content" id="context-info-content">
                         <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
                     </div>
+
                 </div>
             </div>
             
@@ -857,6 +908,7 @@
                     <div class="tabs">
                         <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
+                        <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
                     </div>
                     
                     <div class="tab-content active" id="tab-nakshatras">
@@ -882,6 +934,32 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+
+                    <div class="tab-content" id="tab-avasthas">
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div>
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Core Avasthas (States)</h3>
+                            <table id="avasthasTable">
+                                <thead>
+                                    <tr>
+                                        <th>Graha</th>
+                                        <th>Bala (Age)</th>
+                                        <th>Jagrat (Alertness)</th>
+                                        <th>Deeptadi (Condition)</th>
+                                        <th>Lajjitadi (Moods)</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Shayanadi (Daily Activity)</h3>
+                            <div id="shayanadiWidget" class="shayanadi-widget" style="display: flex; flex-wrap: wrap; gap: 10px;">
+                                <!-- Widget items -->
+                            </div>
+                        </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1069,6 +1147,7 @@
             if (slot === 1) {
                 updateBhavaTable(varga);
                 updateDignityTable(varga);
+                updateAvasthasTable(varga);
             }
         }
         
@@ -1115,6 +1194,86 @@
                 tbody.appendChild(tr);
             });
         }
+        
+        function updateAvasthasTable(varga) {
+            const tbody = document.querySelector('#avasthasTable tbody');
+            const shWidget = document.getElementById('shayanadiWidget');
+            if(tbody) tbody.innerHTML = '';
+            if(shWidget) shWidget.innerHTML = '';
+            
+            if (!currentChartData || !currentChartData.vargas[varga]) return;
+
+            const grahas = currentChartData.vargas[varga].grahas;
+            const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            
+            function getPillColor(state) {
+                const s = state.toLowerCase();
+                if (s.includes("delight") || s.includes("proud") || s.includes("happy")) return "color-beneficial";
+                if (s.includes("agitat") || s.includes("mutilated") || s.includes("starv") || s.includes("ashamed") || s.includes("thirst")) return "color-damaging";
+                if (s.includes("sleep") || s.includes("dream")) return "color-spiritual";
+                return "color-neutral";
+            }
+            
+            function getBarColor(val) {
+                if (val >= 0.8) return "#d35400"; // burnt orange
+                if (val >= 0.5) return "#8c7b64"; // warm gray
+                return "#3d312a"; // dark chocolate
+            }
+
+            planetsOrder.forEach(p => {
+                if (!grahas[p] || !grahas[p].avasthas) return;
+                const av = grahas[p].avasthas;
+                
+                // Bala
+                let balaState = av.bala ? av.bala.state : "N/A";
+                let balaVal = av.bala ? av.bala.strength : 0;
+                let balaPct = Math.round(balaVal * 100);
+                
+                // Jagrat
+                let jagratState = av.jagrat ? av.jagrat.state : "N/A";
+                let jagratVal = av.jagrat ? av.jagrat.alertness : 0;
+                let jagratPct = Math.round(jagratVal * 100);
+                
+                // Deeptadi
+                let deepState = av.deeptadi ? av.deeptadi.state : "N/A";
+                
+                // Lajjitadi
+                let lajjitadiHtml = "";
+                if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
+                    lajjitadiHtml = av.lajjitadi.map(st => `<span class="avastha-pill ${getPillColor(st)}">${st}</span>`).join(" ");
+                }
+                
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${p}</strong></td>
+                    <td>
+                        <div>${balaState} (${balaPct}%)</div>
+                        <div class="avastha-bar-container"><div class="avastha-bar" style="width: ${balaPct}%; background-color: ${getBarColor(balaVal)}"></div></div>
+                    </td>
+                    <td>
+                        <div>${jagratState} (${jagratPct}%)</div>
+                        <div class="avastha-bar-container"><div class="avastha-bar" style="width: ${jagratPct}%; background-color: ${getBarColor(jagratVal)}"></div></div>
+                    </td>
+                    <td><span class="avastha-pill ${getPillColor(deepState)}">${deepState}</span></td>
+                    <td>${lajjitadiHtml}</td>
+                `;
+                if(tbody) tbody.appendChild(tr);
+                
+                // Shayanadi
+                if (av.shayanadi) {
+                    const shItem = document.createElement('div');
+                    shItem.className = 'shayanadi-item';
+                    
+                    let shState = typeof av.shayanadi === 'object' ? av.shayanadi.state : av.shayanadi;
+                    let shSub = typeof av.shayanadi === 'object' ? av.shayanadi.sub_state : '';
+                    let shDisp = shSub ? `${shState} - <em>${shSub}</em>` : shState;
+                    shItem.innerHTML = `<strong>${p}</strong>: ${shDisp}`;
+
+                    if(shWidget) shWidget.appendChild(shItem);
+                }
+            });
+        }
+
         function updateDignityTable(varga) {
             const tbody = document.querySelector('#dignityTable tbody');
             const sideTbody = document.querySelector('#dignitySideTable tbody');
