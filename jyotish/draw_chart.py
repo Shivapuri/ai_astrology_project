@@ -728,7 +728,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         if p_name == "Lagna":
             # Lagna is exactly at 180 degrees (left horizontal axis).
             # Shift the angle slightly so the entire stack draws below the red arrow line.
-            angle = (angle + 4) % 360
+            angle = (angle + 2.2) % 360
             
         px, py = polar_coords(r_pl_base, angle)
 
@@ -742,9 +742,9 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         # Planet Glyph
         svg += f'<text x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
             
-        r_deg_base = r_rasi_inner - 22
-        r_sign_base = r_rasi_inner - 32
-        r_min_base = r_rasi_inner - 42
+        r_deg_base = r_rasi_inner - 26 if p_name == 'Lagna' else r_rasi_inner - 22
+        r_sign_base = r_rasi_inner - 40 if p_name == 'Lagna' else r_rasi_inner - 32
+        r_min_base = r_rasi_inner - 52 if p_name == 'Lagna' else r_rasi_inner - 42
         
         dx, dy = polar_coords(r_deg_base, angle)
         svg += f'<text x="{dx}" y="{dy}" font-size="7" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
