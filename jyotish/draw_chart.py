@@ -322,13 +322,13 @@ def generate_south_indian(items, mode="symbol", varga_name="D1"):
         
         # Draw Rasi Sign (Inner Corner)
         s_sym, s_col, _ = sign_symbols[sign]
-        svg += f'<text x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
         # Draw House Cusps (Outer Corner)
         if cusps:
             cusp_texts = [c["text"] for c in cusps]
             cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
-            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
+            svg += f'<g class="interactive" data-type="house" data-id="{cusp_texts[0]}" style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
             
             if len(cusp_texts) > 3:
                 mid = len(cusp_texts) // 2
@@ -365,7 +365,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1"):
             
             font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
             
-            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{px}" y="{py - 2}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 15}" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
@@ -426,7 +426,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1"):
         s_sym, s_col, _ = sign_symbols[sign]
         
         sx, sy = sign_pos[h]
-        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
         cx, cy = ni_centers[h]
         house_items = items_by_house[h]
@@ -464,7 +464,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1"):
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
-            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 15}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
@@ -476,7 +476,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1"):
             cusp_texts = [c["text"] for c in cusps]
             cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
             cusp_y = cy + 28 if planets else cy
-            svg += f'<g style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
+            svg += f'<g class="interactive" data-type="house" data-id="{cusp_texts[0]}" style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{cusp_y}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
             svg += '</g>\n'
 
@@ -516,7 +516,7 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
         s_sym, s_col, _ = sign_symbols[signs_list[sign_idx]]
         
         sx, sy = sign_pos[h_idx]
-        svg += f'<text x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="interactive" data-type="sign" data-id="{signs_list[sign_idx]}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
         items_in_house = bhava["planets"]
         
@@ -539,7 +539,7 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
             font_sz = "24" if (mode == "symbol" and p_name != "Lagna") else ("16" if mode == "devanagari" else "14")
             tooltip = f"{info['full_sa']} ({info['full_en']})"
             
-            svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<g class="interactive" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
             svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
             svg += f'</text></g>\n'
@@ -601,7 +601,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         
         lx, ly = polar_coords( (r_nak_inner + r_nak_outer)/2, angle_mid)
         rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
-        svg += f'<text x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})">{nak_names[i][:4]}.</text>\n'
+        svg += f'<text class="interactive" data-type="nakshatra" data-id="{nak_names[i]}" x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})" style="cursor: pointer;">{nak_names[i][:4]}.</text>\n'
 
     # 2 & 3. Tropical Rasis and Bhavas (Whole Signs)
     for i in range(12):
@@ -628,12 +628,13 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
         sign_name = signs_list[i]
         s_sym, s_col, _ = sign_symbols[sign_name]
-        svg += f'<text x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="interactive" data-type="sign" data-id="{sign_name}" x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
+
         
         # Bhava number label (Whole Sign)
         bhava_num = (i - asc_s_idx + 12) % 12 + 1
         bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
-        svg += f'<text x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central">{bhava_num}</text>\n'
+        svg += f'<text class="interactive" data-type="house" data-id="{bhava_num}" x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{bhava_num}</text>\n'
 
     # 4. House Cusps (Campanus lines) - Violet spread dash, Red for solar stations
     cusps = [it for it in items if it.get("type") == "cusp"]
@@ -735,7 +736,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         font_sz = 10 if p_name == "Lagna" else 13
         
         tooltip = f"{info.get('full_sa', p_name)} — {item['degree']}° {s_sym} {item['minute']:02d}'{retro_badge} {item['sign']}"
-        svg += f'<g style="cursor: pointer;"><title>{tooltip}</title>\n'
+        svg += f'<g class="interactive" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+
         
 
 

@@ -16,8 +16,21 @@ async def main():
             await page.click('#btn-circular')
             print("Clicked circular button")
             await page.wait_for_timeout(1000)
+            
+            # Click Nakshatra Ashwini
+            await page.wait_for_selector('.chart-view.active [data-type="nakshatra"][data-id="Ashwini"]', timeout=5000)
+            await page.click('.chart-view.active [data-type="nakshatra"][data-id="Ashwini"]', timeout=5000)
+            print("Clicked Ashwini")
+            await page.wait_for_timeout(500)
+            
+            # Scroll down to show the table
+            await page.evaluate("document.getElementById('context-info-content').scrollTop = 0;")
+            await page.wait_for_timeout(300)
+            
+            html = await page.evaluate("document.getElementById('context-info-content').innerHTML")
+            print("INFO HTML:", html)
         except Exception as e:
-            print("Could not click circular button", e)
+            print("Could not click", e)
             
         await page.screenshot(path="screenshot.png", full_page=True)
         await browser.close()

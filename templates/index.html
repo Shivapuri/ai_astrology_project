@@ -492,11 +492,77 @@
         
         .interactive {
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: all 0.2s ease;
         }
         .interactive:hover {
-            opacity: 0.6;
+            filter: drop-shadow(0px 0px 4px rgba(211,84,0,0.6));
+            opacity: 1.0 !important;
         }
+        
+        .kb-content {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #4a3325;
+        }
+        .kb-content h1, .kb-content h2, .kb-content h3, .kb-content h4 {
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: #d35400;
+        }
+        .kb-content p {
+            margin-bottom: 10px;
+        }
+        .kb-content ul, .kb-content ol {
+            margin-bottom: 10px;
+            padding-left: 20px;
+        }
+        .kb-content li {
+            margin-bottom: 5px;
+        }
+        .kb-content table {
+            width: 100%;
+            margin: 12px 0 16px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border: 1px solid #e2d7c5;
+            border-radius: 6px;
+            overflow: hidden;
+            font-size: 13px;
+            background: #fffdfa;
+        }
+        .kb-content th, .kb-content td {
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+            line-height: 1.4;
+        }
+        .kb-content th {
+            background-color: #f3eae0;
+            color: #4a3325;
+            font-weight: 600;
+            font-size: 12.5px;
+            border-bottom: 1px solid #e2d7c5;
+            border-right: 1px solid #e2d7c5;
+            letter-spacing: 0.2px;
+        }
+        .kb-content td {
+            border-bottom: 1px solid #ede4d7;
+            border-right: 1px solid #ede4d7;
+            color: #44372e;
+        }
+        .kb-content tr:last-child td {
+            border-bottom: none;
+        }
+        .kb-content th:last-child, .kb-content td:last-child {
+            border-right: none;
+        }
+        .kb-content tbody tr:nth-child(even) {
+            background-color: #fdfaf6;
+        }
+        .kb-content tbody tr:hover {
+            background-color: #f7f0e6;
+        }
+        
         .top-toolbar {
             width: 100%;
             display: flex;
@@ -849,7 +915,7 @@
             if (!infoSplitInstance) {
                 infoSplitInstance = Split(['#info-top', '#info-bottom'], {
                     direction: 'vertical',
-                    sizes: [30, 70],
+                    sizes: [60, 40],
                     minSize: [150, 200],
                     gutterSize: 8,
                     cursor: 'row-resize'
@@ -1393,6 +1459,78 @@
                 select.selectedIndex = 1;
                 loadChart();
             }
+        });
+
+        // Interactive Elements Click Handler (Delegated to document to handle dynamic SVGs)
+        document.addEventListener('click', (e) => {
+            // Find closest interactive element (handles clicks on <g> and its children like <text>)
+            const el = e.target.closest('.interactive');
+            if (!el) return;
+            
+            const type = el.getAttribute('data-type');
+            const id = el.getAttribute('data-id');
+            const infoContent = document.getElementById('context-info-content');
+            if (!infoContent) return;
+
+            let infoHtml = `<h3>${id}</h3>`;
+            
+            // Try to pull data from knowledge base if available
+            let kbData = null;
+            if (window.knowledgeBase && window.knowledgeBase[type]) {
+                kbData = window.knowledgeBase[type][id];
+            }
+            
+            if (type === 'planet') {
+                const mathData = currentChartData && currentChartData.vargas.D1.grahas[id];
+                if (kbData) {
+                    infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
+                    infoHtml += `<div style="font-size: 13px; margin-bottom: 10px;"><i>${kbData.title}</i></div>`;
+                }
+                
+                if (mathData) {
+                    infoHtml += `<p><strong>Degree:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
+                    infoHtml += `<p><strong>Sign:</strong> ${mathData.sign}</p>`;
+                    infoHtml += `<p><strong>Nakshatra:</strong> ${mathData.nakshatra}</p>`;
+                    if (mathData.dignity) infoHtml += `<p><strong>Dignity:</strong> ${mathData.dignity}</p>`;
+                }
+                
+                if (kbData && kbData.content) {
+                    infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
+                    infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                }
+            } else if (type === 'sign') {
+                if (kbData) {
+                    infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
+                    if (kbData.content) {
+                        infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
+                        infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                    }
+                } else {
+                    infoHtml += `<p>General knowledge base for ${id} will load here.</p>`;
+                }
+            } else if (type === 'house') {
+                if (kbData) {
+                    infoHtml = `<h3>House ${id} - ${kbData.title || 'Bhava'}</h3>`;
+                    if (kbData.content) {
+                        infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
+                        infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                    }
+                } else {
+                    infoHtml += `<p>Details about house ${id} will load here.</p>`;
+                }
+            } else if (type === 'nakshatra') {
+                if (kbData) {
+                    infoHtml = `<h3>${id} (${kbData.number})</h3>`;
+                    if (kbData.content) {
+                        infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
+                        infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                    }
+                } else {
+                    infoHtml += `<p>Details about nakshatra ${id} will load here.</p>`;
+                }
+            }
+            
+            infoContent.innerHTML = infoHtml;
         });
     </script>
 </body>
