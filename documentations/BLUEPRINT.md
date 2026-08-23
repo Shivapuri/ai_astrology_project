@@ -4,103 +4,83 @@ This document outlines the strategic pipeline and technical architecture for the
 
 ---
 
-## 1. UI/UX Design Philosophy
+## 1. UI/UX Dashboard Architecture
 
-The application will transition from a static HTML page to a dynamic, dashboard-style interface. 
+The interface is built as a **Full-Screen, Resizable Split-Pane Dashboard** utilizing the authentic **Pergamon Color Palette** (`#f7f3eb` background, `#fffdfa` cards, `#4a3325` text, and `#d35400` accents).
 
 ### Layout Structure
-The interface will be divided into a **Resizable Split-Pane Layout**:
-1.  **Left Pane (Main Chart Area - 60-70% width):**
-    *   The single, large visual chart.
-    *   Supports keyboard shortcuts to hot-swap the view instantly (e.g., `N` for North Indian, `S` for South Indian, `C` for Circular).
-2.  **Right Pane (Information & Metrics Dashboard - 30-40% width):**
-    *   A vertically stacked, accordion-style or grid-based layout of "Sub-Windows".
-    *   **Top Window (Context Info):** A dynamic panel. When you click a planet, sign, or house in the Main Chart, this panel instantly updates with the relevant classical texts, dignities, and details.
-    *   **Middle Window (Metrics/Strengths):** The Avasthas, Shadbala, and Ishta/Kashta metrics.
-    *   **Bottom Windows (Future Additions):** Collapsible panels for Dashas, Yogas, and Nakshatra details.
-
-### Tech Stack Recommendation for UI
-Since Astra currently uses lightweight Python (Flask) and plain HTML/JS, we can keep the stack simple but professional:
-*   **Grid/Sizing Engine:** Use a lightweight Vanilla JS library like **Split.js** or **Muuri.js**. This gives you professional drag-to-resize, expand, and collapse functionalities without needing a heavy framework like React (which Aries uses).
-*   **Interactivity:** Vanilla JavaScript event listeners utilizing HTML5 `data-*` attributes.
-
----
-
-## 2. Interaction Pipeline (How Clicks Work)
-
-To make the SVGs interactive without "knitting" messy code together, we must establish a clean data contract between the SVG shapes and the UI panels.
-
-1.  **Tagging SVGs in Python:** When `generate_html_chart.py` builds the SVG, every element must have a specific class and data attribute.
-    *   *Example:* `<text class="interactive-element planet" data-id="Sun" x="10" y="20">☉</text>`
-    *   *Example:* `<rect class="interactive-element house" data-id="1" ... />`
-2.  **Central JSON State:** When the page loads, Flask passes the entire `vedic_context.json` into a JavaScript variable in the browser: `const chartData = {...}`.
-3.  **Event Listeners:** A single JavaScript file (`ui_controller.js`) listens for clicks on any `.interactive-element`.
-4.  **Dynamic Rendering:** When "Sun" is clicked, JS looks up `chartData.grahas.Sun` and injects its data (longitude, dignity, avasthas) into the Right Pane's HTML. No page reloads are required.
+1.  **Top Menu Bar / Native Toolbar:**
+    *   Compact, native app style header.
+    *   Contains app title, saved person selector dropdown, "Load" button, "+ Add Person" modal trigger, chart title/subtitle, and Display Settings.
+2.  **Left Pane (Main Chart Area - 60% default width):**
+    *   Full-height responsive SVG container that scales with the window size.
+    *   Varga dropdown with all 16 divisions (D1 to D60).
+    *   Keyboard shortcut hot-swapping: `S` for South Indian, `N` for North Indian, `C` for Circular.
+3.  **Right Pane (Information & Metrics Dashboard - 40% default width):**
+    *   Split vertically into two sub-windows with a horizontal drag handle:
+    *   **Top Sub-Window (Context Info):** Dynamic panel displaying details about whatever planet, sign, or house is clicked in the main chart.
+    *   **Bottom Sub-Window (Tabbed Metrics):**
+        *   **Tab 1: Nakshatras:** Table of Graha longitudes, degrees (0-30°), signs, Nakshatras, and Padas.
+        *   **Tab 2: Metrics / Dignity:** Planetary Sambandha, 5-fold dignity (Panchadha), Baladi Avasthas, and Jagradadi Avasthas.
 
 ---
 
-## 3. The Circular Chart (Aries Inspiration)
+## 2. Calculation Engine Architecture (`/jyotish/`)
 
-Inspired by the *Aries* software, the Circular (Western-style) chart should be built using concentric SVG rings.
+All calculation logic is modular, deterministic, and isolated from the UI layer:
+
+| Component | File Path | Method / Description |
+|---|---|---|
+| **Vargas (D1–D60)** | `jyotish/generate_jyotish.py` | `calculate_varga_longitude()`: Implements all 16 Parashara/Ernst Wilhelm harmonic and unequal divisions. |
+| **Baladi Avastha** | `jyotish/avasthas/bala.py` | 5-state physical age/vitality based on odd/even sign degree brackets. |
+| **Jagradadi Avastha** | `jyotish/avasthas/jagrat.py` | 3-state consciousness/alertness based on natural dignity (*Naisargika*). |
+| **Panchadha Sambandha** | `jyotish/relationships.py` | Natural + Temporary = Compound relationship and final planetary dignity. |
+| **Bhava Chalita** | `jyotish/generate_jyotish.py` | Campanus house cusps + intermediate midpoint boundaries (*Sandhis*). |
+| **Equatorial Nakshatras** | `jyotish/generate_jyotish.py` | Dhruva Galactic Center Ayanamsa calculation anchored to the middle of Mula. |
+| **SVG Visuals** | `jyotish/draw_chart.py` | Responsive South Indian and North Indian vector chart generators with tagged interactive elements. |
+
+---
+
+## 3. UI Interaction Pipeline (How Clicks Work)
+
+1.  **Tagging SVGs in Python:** When `draw_chart.py` builds the SVG, every element receives CSS classes and data attributes:
+    *   *Example:* `<text class="interactive" data-type="planet" data-id="Sun">☉</text>`
+    *   *Example:* `<text class="interactive" data-type="sign" data-id="Leo">♌</text>`
+2.  **Central JSON State:** Flask passes the full calculation dictionary (`currentChartData`) into the browser session.
+3.  **Event Listeners:** The UI listens for click events on `.interactive`.
+4.  **Dynamic Rendering:** Clicking a planet populates the "Context Info" sub-window with degrees, dignity, and avasthas without reloading the page.
+
+---
+
+## 4. Circular Chart (Aries Inspiration - Phase 3)
+
+The Circular (Western-style) chart with Nakshatras will be built using concentric SVG rings:
 
 **Structural Layers (Outer to Inner):**
-1.  **Outer Ring (Nakshatras):** 27 segments of $13^\circ 20'$ each.
+1.  **Outer Ring (Nakshatras):** 27 segments of $13^\circ 20'$ each, labeled with Nakshatra names/glyphs.
 2.  **Middle Ring (Tropical Rasis):** 12 segments of $30^\circ$ each.
-3.  **Inner Ring (Houses/Bhavas):** Equal House or Campanus cusps drawing the slices.
-4.  **Data Layer (Planets):** Planetary glyphs plotted at their exact degree along the circumference.
-5.  **Core (Aspects):** Lines drawn across the center connecting planets that aspect each other.
-
-*Implementation Note:* Instead of hardcoding SVG coordinates, implement a Python math helper `polar_to_cartesian(center_x, center_y, radius, degree)` to calculate precise `x, y` SVG coordinates on the fly.
+3.  **Inner Ring (Houses/Bhavas):** Campanus house slices.
+4.  **Data Layer (Planets):** Planetary glyphs plotted along the circle circumference via `polar_to_cartesian()`.
+5.  **Core (Aspects):** Center lines connecting aspecting planets.
 
 ---
 
-## 4. Backend Architecture: The Feature Pipeline
+## 5. Development Roadmap & Status
 
-To prevent the software from becoming a tangled mess as you add Dashas, Yogas, and Avasthas, Astra will use a **Modular Engine Pipeline**. 
-
-Whenever you want to build a new feature, you follow these exact steps:
-
-### Step 1: Create the Engine Module
-Create a new file in `jyotish/engines/` (e.g., `jyotish/engines/dasha_engine.py`).
-This file contains a single class or function that takes the *Core Astronomical Data* (degrees of planets) and applies the astrological logic.
-
-### Step 2: The Core Rule
-**Engines never touch HTML or the UI.** They only take in floats/dicts and return raw Python dictionaries.
-*Example:* `calculate_vimshottari(moon_deg)` returns `{"maha_dasha": "Venus", "balance_years": 12.4}`.
-
-### Step 3: The Context Aggregator
-In a `chart_context.py` file, you build the Master JSON. You simply plug your new engine into the aggregator:
-```python
-def build_master_context(birth_data):
-    core_math = calculate_ephemeris(birth_data)
-    
-    context = {
-        "astronomy": core_math,
-        "strengths": avastha_engine.calculate(core_math),
-        "dashas": dasha_engine.calculate(core_math),
-        "yogas": yoga_engine.calculate(core_math)
-    }
-    return context
-```
-
-### Step 4: UI Registration
-Because the new feature is cleanly packed into the Master JSON, the frontend immediately has access to `chartData.dashas`. You simply add a new HTML template block in the Right Pane to display it, and you're done.
-
----
-
-## 5. Next Immediate Steps (Action Plan)
-
-To transition to this professional structure, here is the recommended order of development:
-
-1.  **Phase 1: The UI Shell (HTML/CSS)**
-    *   Implement **Split.js** (or standard CSS Grid) in `index.html` to create a resizable Left Pane (Chart) and Right Pane (Info).
-    *   Create the collapsible sub-windows in the Right Pane (Info, Metrics).
-    *   Add Keyboard Event Listeners in JS for `N`, `S`, `C` to toggle SVG visibility.
-2.  **Phase 2: Interactive SVG Upgrades**
-    *   Refactor `generate_html_chart.py` to inject `class="clickable"` and `data-*` attributes into the SVG elements.
-    *   Write the Javascript click-handler to update the Right Pane when a planet/house is clicked.
-3.  **Phase 3: The Circular Chart Engine**
-    *   Write the polar-to-cartesian math helpers in Python.
-    *   Implement the concentric Nakshatra/Rasi SVG rings.
-4.  **Phase 4: Engine Refactoring**
-    *   Move the current Avasthas logic into a dedicated `jyotish/engines/avasthas.py` following the Pipeline rules above, ensuring it outputs pure JSON ready for the frontend.
+*   [x] **Phase 1: Full-Screen Split Dashboard & Toolbar** (Completed)
+    *   Full-width edge-to-edge layout with `Split.js`.
+    *   Compact native app top toolbar with "+ Add Person" modal.
+    *   All 16 Vargas restored (D1 to D60).
+    *   Pergamon aesthetic styling.
+    *   Mandatory automated UI verification protocol locked into `GEMINI.md`.
+*   [ ] **Phase 2: Enhanced Context Info & Knowledge Base**
+    *   Expand click handlers for houses and signs to show classical BPHS descriptions.
+    *   Live highlights when clicking planets/houses.
+*   [ ] **Phase 3: Circular Western / Nakshatra Chart Engine**
+    *   Polar math helper functions.
+    *   Concentric ring SVG renderer.
+    *   Hotkey `C` integration.
+*   [ ] **Phase 4: Additional Jyotish Engines**
+    *   Vimshottari Dasha engine.
+    *   Shadbala engine.
+    *   Yoga detection engine.
