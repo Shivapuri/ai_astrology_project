@@ -311,10 +311,7 @@ def generate_kala_chart(
 
     # 2.5 Calculate Planetary Friendships, Dignity & Avasthas
     
-    # Get D1 sign indexes for Temporary Friendship (Tatkalika) calculation
-    d1_signs_idx = {}
-    for p_name, p_data in vargas_data["D1"]["grahas"].items():
-        d1_signs_idx[p_name] = ZODIAC_SIGNS.index(p_data["sign"])
+
 
     for v_name, v_data in vargas_data.items():
         for p_name, p_data in v_data["grahas"].items():
@@ -323,11 +320,11 @@ def generate_kala_chart(
                 proxy = "Saturn" if p_name == "Rahu" else "Mars"
                 sign = p_data["sign"]
                 sign_lord = rel.SIGN_LORDS[sign]
-                sign_lord_d1_idx = d1_signs_idx[sign_lord]
-                p_d1_idx = d1_signs_idx[p_name]
+                p_v_idx = ZODIAC_SIGNS.index(sign)
+                sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
                 
                 nat = rel.get_natural_relationship(p_name, sign_lord)
-                tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
+                tmp = rel.get_temporary_relationship(p_v_idx, sign_lord_v_idx)
                 cmp = rel.get_compound_relationship(nat, tmp)
                 nat_dig = rel.get_dignity(p_name, sign, nat)
                 cmp_dig = rel.get_dignity(p_name, sign, cmp)
@@ -349,11 +346,11 @@ def generate_kala_chart(
                     nat_dig = rel.get_dignity(p_name, sign, "Self")
                     cmp_dig = nat_dig
                 else:
-                    sign_lord_d1_idx = d1_signs_idx[sign_lord]
-                    p_d1_idx = d1_signs_idx[p_name]
+                    p_v_idx = ZODIAC_SIGNS.index(sign)
+                    sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
                     
                     nat = rel.get_natural_relationship(p_name, sign_lord)
-                    tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
+                    tmp = rel.get_temporary_relationship(p_v_idx, sign_lord_v_idx)
                     cmp = rel.get_compound_relationship(nat, tmp)
                     nat_dig = rel.get_dignity(p_name, sign, nat)
                     cmp_dig = rel.get_dignity(p_name, sign, cmp)
@@ -383,6 +380,9 @@ def generate_kala_chart(
                     rasi_aspects = aspects.get_rasi_drishti(op_data["sign"])
                     if p_data["sign"] in rasi_aspects:
                         aspecting_planets.append(op_name)
+                        
+            # Store what signs THIS planet aspects
+            p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
                         
             # Combustion (Physical phenomenon, so calculated strictly from D1 physical longitudes)
             # Distance < 8 degrees from Sun is a general threshold for combustion.

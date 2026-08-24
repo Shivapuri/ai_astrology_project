@@ -595,6 +595,23 @@
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             border-radius: 0 4px 4px 0;
         }
+
+        /* SVG Highlighting */
+        svg .interactive {
+            transition: opacity 0.3s ease, filter 0.3s ease;
+        }
+        svg.highlight-mode .interactive:not(.highlight-active):not(.highlight-source) {
+            opacity: 0.2 !important;
+            filter: grayscale(100%);
+        }
+        svg.highlight-mode .interactive.highlight-active {
+            opacity: 1 !important;
+            filter: drop-shadow(0px 0px 4px rgba(46, 204, 113, 0.6));
+        }
+        svg.highlight-mode .interactive.highlight-source {
+            opacity: 1 !important;
+            filter: drop-shadow(0px 0px 5px rgba(211, 84, 0, 0.8));
+        }
         
         .top-toolbar {
             width: 100%;
@@ -978,25 +995,25 @@
                             <div id="help-avasthas" class="help-box" style="display: none;">
                                 <strong>What are Planetary States (Avasthas)?</strong><br>
                                 Avasthas are the "states of being" or moods of a planet. They modify how effectively the planet can do its job:<br>
-                                &bull; <strong>Bala (Age):</strong> Shows physical vitality (e.g., Infant, Adult, Dead).<br>
-                                &bull; <strong>Jagrat (Alertness):</strong> Shows mental awareness (Awake, Dreaming, or Sleeping).<br>
-                                &bull; <strong>Deeptadi & Lajjitadi (Moods):</strong> Show the psychological condition (e.g., Proud, Ashamed, Starving, Delighted) based on who the planet is interacting with.
+                                &bull; <strong>Bala (Age):</strong> Represents the age and physical vitality of the planet, determining its sheer capacity and stamina to produce results.<br>
+                                &bull; <strong>Jagrat (Alertness):</strong> Indicates the awakening of the planet's consciousness, showing whether it is awake and eager to act, slumbering, or somewhere in between.<br>
+                                &bull; <strong>Deeptadi & Lajjitadi (Moods):</strong> Reveals the internal mood, ease, or stress the planet experiences while it produces events, coloring how the event will ultimately feel to you.
                             </div>
                             <table id="avasthasTable">
                                 <thead>
                                     <tr>
                                         <th>Graha</th>
-                                        <th title="Bala Avastha: Measures the physical maturity and raw bodily stamina of a planet based on its degree within a sign, determining how easily it produces tangible results in the external world (ranging from Infant to Dead).">Bala (Age)</th>
-                                        <th title="Jagrat Avastha: Indicates the level of mental alertness and awareness of a planet based on its sign dignity—whether its energy is fully awake (100%), dreaming semi-consciously (50%), or deeply asleep and dormant (0%).">Jagrat (Alertness)</th>
-                                        <th title="Deeptadi Avastha: Describes the internal psychological mood, comfort, and emotional state of a planet based on astronomical factors (like retrograde or combustion) and host sign friendships, reflecting how the person feels on the inside about that planet's life areas.">Deeptadi (Condition)</th>
-                                        <th title="Lajjitadi Avastha: Reveals interpersonal relationship dynamics (such as feeling Proud, Ashamed, Delighted, Starved, Agitated, or Thirsty) based on natural friendships, conjunctions, and whole-sign aspects, strongly indicating whether the occupied house thrives or suffers.">Lajjitadi (Moods)</th>
+                                        <th class="tooltip-target" data-tooltip="Bala (Age): Represents the age and physical vitality of the planet, determining its sheer capacity and stamina to produce results.">Bala (Age)</th>
+                                        <th class="tooltip-target" data-tooltip="Jagradi (Alertness): Indicates the awakening of the planet's consciousness, showing whether it is awake and eager to act, slumbering, or somewhere in between.">Jagrat (Alertness)</th>
+                                        <th class="tooltip-target" data-tooltip="Deeptadi (Mood/Stress): Reveals the internal mood, ease, or stress the planet experiences while it produces events, coloring how the event will ultimately feel to you.">Deeptadi (Condition)</th>
+                                        <th class="tooltip-target" data-tooltip="Lajjitadi (Support/Hindrance): Shows the concrete help or hindrance the planet receives from friendly or inimical planets, dictating its ultimate success or failure.">Lajjitadi (Moods)</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Shayanadi Avastha: A personalized mathematical calculation showing what specific activity the planet is engaged in (e.g., Lying Down, Sitting, Eating, Council, Dancing) and how actively that activity manifests in real life.">Shayanadi (Daily Activity)</h3>
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" class="tooltip-target" data-tooltip="Shayanadi (Mental Seizure): Describes exactly how the planet 'seizes' or grabs your mind (e.g., making you eager, sleepy, or distracted) to magnetically attract and ensure its fated events happen.">Shayanadi (Daily Activity)</h3>
                             <div id="shayanadiWidget" class="shayanadi-widget" style="display: flex; flex-wrap: wrap; gap: 10px;">
                                 <!-- Widget items -->
                             </div>
@@ -1328,19 +1345,18 @@
         function formatSentence(planet, state, condition, category) {
             if (!state || state === "N/A" || state === "Neutral (None)" || state === "Unknown") return "";
             
-            // Clean state string for lookup
             let lookupState = state;
             
             if (category === "Bala") {
-                return `${planet} is in ${state} state because it occupies ${condition}.`;
+                return `${planet} is in a ${state} state (${condition}). This determines its sheer physical vitality and stamina to produce results.`;
             } else if (category === "Jagrat") {
-                return `${planet} is ${state} because it is ${condition}.`;
+                return `${planet} is ${state} (${condition}). This reflects its level of consciousness and readiness to act.`;
             } else if (category === "Deeptadi") {
                 let meaning = AVASHTHA_MEANINGS[lookupState] || "";
-                return `${planet} feels ${state} internally because it is ${condition.toLowerCase()}. ${meaning}`;
+                return `While producing results, ${planet} operates in a ${state} mood (${condition.toLowerCase()}), coloring how the event will ultimately feel. ${meaning}`;
             } else if (category === "Lajjitadi") {
                 let meaning = AVASHTHA_MEANINGS[lookupState] || "";
-                return `${planet} is ${state} because: ${condition}. ${meaning}`;
+                return `${planet} is ultimately affected by its ${state} state, indicating concrete help or hindrance from others (${condition}). ${meaning}`;
             }
             return condition;
         }
@@ -1403,7 +1419,7 @@
                     lajjitadiHtml = av.lajjitadi.map(item => {
                         if (typeof item === 'object') {
                             let lTooltip = formatSentence(p, item.state, item.condition, "Lajjitadi");
-                            return `<span title="${lTooltip}">${item.state}</span>`;
+                            return `<span class="tooltip-target" data-tooltip="${lTooltip}">${item.state}</span>`;
                         } else {
                             return `<span>${item}</span>`;
                         }
@@ -1414,7 +1430,7 @@
                 tr.innerHTML = `
                     <td><strong>${p}</strong></td>
                     <td>
-                        <div style="display: flex; align-items: center;" title="${balaTooltip}">
+                        <div style="display: flex; align-items: center;" class="tooltip-target" data-tooltip="${balaTooltip}">
                             <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
                                 <div style="width: ${balaPct}%; height: 100%; background-color: ${getBarColor(balaVal)}"></div>
                             </div>
@@ -1422,14 +1438,14 @@
                         </div>
                     </td>
                     <td>
-                        <div style="display: flex; align-items: center;" title="${jagratTooltip}">
+                        <div style="display: flex; align-items: center;" class="tooltip-target" data-tooltip="${jagratTooltip}">
                             <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
                                 <div style="width: ${jagratPct}%; height: 100%; background-color: ${getBarColor(jagratVal)}"></div>
                             </div>
                             <span>${jagratState}</span>
                         </div>
                     </td>
-                    <td><span title="${deepTooltip}">${deepState}</span></td>
+                    <td><span class="tooltip-target" data-tooltip="${deepTooltip}">${deepState}</span></td>
                     <td>${lajjitadiHtml}</td>
                 `;
                 if(tbody) tbody.appendChild(tr);
@@ -1437,7 +1453,7 @@
                 // Shayanadi
                 if (av.shayanadi) {
                     const shItem = document.createElement('div');
-                    shItem.className = 'shayanadi-item';
+                    shItem.className = 'shayanadi-item tooltip-target';
                     
                     let shState = typeof av.shayanadi === 'object' ? av.shayanadi.state : av.shayanadi;
                     let shSub = typeof av.shayanadi === 'object' ? av.shayanadi.sub_state : '';
@@ -1445,11 +1461,12 @@
                     let shSubDesc = typeof av.shayanadi === 'object' && av.shayanadi.sub_state_description ? av.shayanadi.sub_state_description : '';
                     
                     let titleStr = '';
-                    if (shState && shMeaning) titleStr += `${p} is in ${shState} state. ${shMeaning}`;
+                    if (shState && shMeaning) titleStr += `${p} seizes your mind with ${shState}. ${shMeaning}`;
                     if (shSubDesc) titleStr += `\nModified by ${shSub}: ${shSubDesc}`;
                     
                     let shDisp = shSub ? `${shState} - <em>${shSub}</em>` : shState;
-                    shItem.innerHTML = `<span title="${titleStr}"><strong>${p}</strong>: ${shDisp}</span>`;
+                    shItem.innerHTML = `<strong>${p}</strong>: ${shDisp}`;
+                    shItem.setAttribute('data-tooltip', titleStr);
 
                     if(shWidget) shWidget.appendChild(shItem);
                 }
@@ -1846,6 +1863,15 @@
 
         // Interactive Elements Click Handler (Delegated to document to handle dynamic SVGs)
         document.addEventListener('click', (e) => {
+            // Clear highlights if clicking anywhere in the chart container
+            const chartContainer = e.target.closest('#chart-container');
+            if (chartContainer) {
+                document.querySelectorAll('svg').forEach(svg => svg.classList.remove('highlight-mode'));
+                document.querySelectorAll('.interactive').forEach(node => {
+                    node.classList.remove('highlight-active', 'highlight-source');
+                });
+            }
+
             // Find closest interactive element (handles clicks on <g> and its children like <text>)
             const el = e.target.closest('.interactive');
             if (!el) return;
@@ -1864,7 +1890,41 @@
             }
             
             if (type === 'planet') {
-                const mathData = currentChartData && currentChartData.vargas.D1.grahas[id];
+                const vargaSelect = document.getElementById('vargaSelect1');
+                const varga = vargaSelect ? vargaSelect.value : 'D1';
+                const mathData = currentChartData && currentChartData.vargas[varga].grahas[id];
+                
+                // Add highlights for Rashi Aspects
+                if (mathData && mathData.aspects_signs) {
+                    const aspectSigns = mathData.aspects_signs;
+                    
+                    document.querySelectorAll('svg').forEach(svg => svg.classList.add('highlight-mode'));
+                    el.classList.add('highlight-source'); // The clicked planet itself
+                    
+                    // Highlight the sign the planet is in
+                    document.querySelectorAll(`.interactive[data-type="sign"][data-id="${mathData.sign}"]`).forEach(node => {
+                        node.classList.add('highlight-source');
+                    });
+                    
+                    // Highlight aspected signs and planets in those signs
+                    aspectSigns.forEach(asSign => {
+                        document.querySelectorAll(`.interactive[data-type="sign"][data-id="${asSign}"]`).forEach(node => {
+                            node.classList.add('highlight-active');
+                        });
+                        
+                        if (currentChartData && currentChartData.vargas[varga]) {
+                            const grahas = currentChartData.vargas[varga].grahas;
+                            for (const pName in grahas) {
+                                if (grahas[pName].sign === asSign) {
+                                    document.querySelectorAll(`.interactive[data-type="planet"][data-id="${pName}"]`).forEach(node => {
+                                        node.classList.add('highlight-active');
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+
                 if (kbData) {
                     infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
                     infoHtml += `<div style="font-size: 13px; margin-bottom: 10px;"><i>${kbData.title}</i></div>`;
@@ -1873,8 +1933,15 @@
                 if (mathData) {
                     infoHtml += `<p><strong>Degree:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
                     infoHtml += `<p><strong>Sign:</strong> ${mathData.sign}</p>`;
-                    infoHtml += `<p><strong>Nakshatra:</strong> ${mathData.nakshatra}</p>`;
-                    if (mathData.dignity) infoHtml += `<p><strong>Dignity:</strong> ${mathData.dignity}</p>`;
+                    
+                    const nakData = currentChartData && currentChartData.nakshatras && currentChartData.nakshatras.grahas[id];
+                    if (nakData) {
+                        infoHtml += `<p><strong>Nakshatra:</strong> ${nakData.nakshatra} (Pada ${nakData.pada})</p>`;
+                    }
+                    
+                    if (mathData.dignity_breakdown && mathData.dignity_breakdown.final_dignity) {
+                        infoHtml += `<p><strong>Dignity:</strong> ${mathData.dignity_breakdown.final_dignity}</p>`;
+                    }
                 }
                 
                 if (kbData && kbData.content) {
@@ -1914,6 +1981,46 @@
             }
             
             infoContent.innerHTML = infoHtml;
+        });
+    </script>
+    
+    <!-- Global Custom Tooltip Engine -->
+    <div id="global-tooltip" style="position: absolute; display: none; background: #1f2937; color: #f9fafb; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: normal; max-width: 300px; z-index: 99999; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); pointer-events: none; line-height: 1.4; white-space: pre-wrap; font-family: sans-serif;"></div>
+    
+    <script>
+        document.addEventListener('mouseover', function(e) {
+            const target = e.target.closest('.tooltip-target');
+            if (target) {
+                const tooltip = document.getElementById('global-tooltip');
+                const text = target.getAttribute('data-tooltip');
+                if (!text) return;
+                
+                tooltip.innerHTML = text.replace(/\n/g, '<br>');
+                tooltip.style.display = 'block';
+                
+                const rect = target.getBoundingClientRect();
+                let top = rect.top + window.scrollY - tooltip.offsetHeight - 8;
+                let left = rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2);
+                
+                // Prevent going off screen
+                if (left < 10) left = 10;
+                if (left + tooltip.offsetWidth > window.innerWidth - 10) {
+                    left = window.innerWidth - tooltip.offsetWidth - 10;
+                }
+                if (top < window.scrollY + 10) {
+                    top = rect.bottom + window.scrollY + 8; // flip to bottom
+                }
+                
+                tooltip.style.top = top + 'px';
+                tooltip.style.left = left + 'px';
+            }
+        });
+        
+        document.addEventListener('mouseout', function(e) {
+            const target = e.target.closest('.tooltip-target');
+            if (target) {
+                document.getElementById('global-tooltip').style.display = 'none';
+            }
         });
     </script>
 </body>
