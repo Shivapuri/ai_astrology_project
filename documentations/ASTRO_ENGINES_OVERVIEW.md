@@ -9,38 +9,43 @@ It categorizes every engine we have built (and are building) into a logical pipe
 ```mermaid
 graph TD
     %% Base Realities
-    subgraph 1. The Stage
-        V[Vargas / Divisional Charts \n Specific Areas of Life]
-        BC[Bhava Chalit \n Exact House Centers]
+    subgraph Stage [1. The Stage]
+        V[Vargas / Divisional Charts]
+        BC[Bhava Chalit / House Centers]
     end
 
     %% Core Power
-    subgraph 2. The Actor's Physical Power
-        SB[Shadbala \n Raw Horsepower & Physical Strength]
-        SB --> IP[Ishta Phala / Kashta Phala \n Capacity to do Good vs. Harm]
+    subgraph Power [2. The Actor's Physical Power]
+        SB[Shadbala / Physical Strength]
+        IP[Ishta & Kashta Phala]
+        SB --> IP
     end
 
     %% Environment & Mood
-    subgraph 3. The Actor's Environment & Mood
-        Dig[Planetary Dignity \n How welcome they feel in the sign]
-        Dig --> Av[Avasthas \n Alertness, Age, and Psychological Mood]
+    subgraph Mood [3. The Actor's Environment & Mood]
+        Dig[Planetary Dignity]
+        Av[Avasthas]
+        Dig --> Av
     end
 
     %% Actions & Influence
-    subgraph 4. How They Interact
-        RD[Rasi Drishti \n Structural Sign-to-Sign Aspects]
-        GD[Graha Drishti \n Planetary Glances / Desire]
+    subgraph Interact [4. How They Interact]
+        RD[Rasi Drishti]
+        GD[Graha Drishti]
     end
 
     %% Final Delivery
-    subgraph 5. The Final Result
-        GD --> SAP[Subha & Asubha Phala / +/- Scores \n The actual positive or negative impact delivered]
+    subgraph Result [5. The Final Result]
+        SAP[Subha & Asubha Phala / +/- Scores]
     end
 
-    1. The Stage --> 3. The Actor's Environment & Mood
-    3. The Actor's Environment & Mood --> 5. The Final Result
-    2. The Actor's Physical Power --> 5. The Final Result
-    4. How They Interact --> 5. The Final Result
+    %% Node connections to show flow
+    V --> Dig
+    BC --> Dig
+    IP --> SAP
+    Av --> SAP
+    RD --> SAP
+    GD --> SAP
 ```
 
 ---
