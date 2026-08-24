@@ -1,13 +1,14 @@
 import pytest
-from jyotish.shadbala.shadbala import calculate_drishti_value, calculate_cheshta_bala, calculate_nathonnatha_bala
+from jyotish.shadbala.shadbala import calculate_cheshta_bala, calculate_nathonnatha_bala
+from jyotish.aspects import get_graha_drishti as calculate_drishti_value
 
 def test_drishti_value():
     # 180 degrees should be 60
-    assert calculate_drishti_value(0, 180) == 60.0
+    assert calculate_drishti_value("Sun", 0, 180) == 60.0
     # 120 degrees should be 30
-    assert calculate_drishti_value(0, 120) == 30.0
+    assert calculate_drishti_value("Sun", 0, 120) == 30.0
     # < 30 degrees should be 0
-    assert calculate_drishti_value(0, 15) == 0.0
+    assert calculate_drishti_value("Sun", 0, 15) == 0.0
     
 def test_nathonnatha_bala():
     # Sun at MC (Midday) gets 60

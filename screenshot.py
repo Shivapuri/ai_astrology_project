@@ -17,6 +17,10 @@ async def main():
             await page.wait_for_timeout(1000)
             await page.screenshot(path="screenshot_shadbala.png")
             
+            await page.click('button:has-text("Dashas")')
+            await page.wait_for_timeout(1000)
+            await page.screenshot(path="screenshot_dashas.png")
+            
         except Exception as e:
             print("Error clicking:", e)
             

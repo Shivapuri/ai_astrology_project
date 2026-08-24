@@ -562,6 +562,39 @@
         .kb-content tbody tr:hover {
             background-color: #f7f0e6;
         }
+
+        .help-btn {
+            background: #e5dccb;
+            color: #44372e;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            line-height: 1;
+            transition: background 0.2s;
+        }
+        .help-btn:hover {
+            background: #d35400;
+            color: white;
+        }
+        .help-box {
+            background: #fffdfa;
+            border-left: 3px solid #d35400;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-size: 13px;
+            color: #4a3325;
+            line-height: 1.5;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            border-radius: 0 4px 4px 0;
+        }
         
         .top-toolbar {
             width: 100%;
@@ -891,10 +924,18 @@
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
                         <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
                         <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
+                        <button class="tab-btn" data-target="tab-dashas">Dashas</button>
                     </div>
                     
                     <div class="tab-content active" id="tab-nakshatras">
-                        <p><strong id="ayanamsaName"></strong></p>
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <p style="margin: 0;"><strong id="ayanamsaName"></strong></p>
+                            <button class="help-btn" onclick="toggleHelp('help-nakshatras')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-nakshatras" class="help-box" style="display: none;">
+                            <strong>What are Nakshatras?</strong><br>
+                            Nakshatras are the 27 lunar mansions of Vedic astrology. While the 12 zodiac signs show the broad environment, the Nakshatras reveal the deeper psychological focus and specific energy of a planet. Each Nakshatra is divided into 4 <em>Padas</em> (steps or quarters), which fine-tune how the planet behaves.
+                        </div>
                         <table id="nakshatraTable">
                             <thead>
                                 <tr><th>Graha</th><th>Deg</th><th>Sign</th><th>Nakshatra</th><th>Pada</th></tr>
@@ -904,7 +945,14 @@
                     </div>
                     
                     <div class="tab-content" id="tab-metrics">
-                        <h3 id="dignityTitle" style="color: #4a3325; margin-top: 0;" title="Dignity: Measures how welcomed, comfortable, and respected a planet is in the sign it occupies, combining fixed statuses (Exaltation, Moolatrikona) with 5-fold compound friendships (Panchadha Maitri).">Planetary Dignity</h3>
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 id="dignityTitle" style="color: #4a3325; margin: 0;">Planetary Dignity</h3>
+                            <button class="help-btn" onclick="toggleHelp('help-dignity')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-dignity" class="help-box" style="display: none;">
+                            <strong>What is Planetary Dignity?</strong><br>
+                            Dignity measures how welcomed and comfortable a planet feels in its current sign. A planet in its own sign or exalted is like a king in his castle (strong, positive, and capable). A planet in an enemy's sign or debilitated is like a guest in a hostile house (stressed and struggling to do its job). This uses the 5-fold compound friendship rules (Panchadha Maitri).
+                        </div>
                         <table id="dignityTable">
                             <thead>
                                 <tr>
@@ -923,7 +971,17 @@
                     <div class="tab-content" id="tab-avasthas">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                         <div>
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Core Avasthas (States)</h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                                <h3 style="color: #3d312a; margin: 0;">Core Avasthas (States)</h3>
+                                <button class="help-btn" onclick="toggleHelp('help-avasthas')" title="What is this?">?</button>
+                            </div>
+                            <div id="help-avasthas" class="help-box" style="display: none;">
+                                <strong>What are Planetary States (Avasthas)?</strong><br>
+                                Avasthas are the "states of being" or moods of a planet. They modify how effectively the planet can do its job:<br>
+                                &bull; <strong>Bala (Age):</strong> Shows physical vitality (e.g., Infant, Adult, Dead).<br>
+                                &bull; <strong>Jagrat (Alertness):</strong> Shows mental awareness (Awake, Dreaming, or Sleeping).<br>
+                                &bull; <strong>Deeptadi & Lajjitadi (Moods):</strong> Show the psychological condition (e.g., Proud, Ashamed, Starving, Delighted) based on who the planet is interacting with.
+                            </div>
                             <table id="avasthasTable">
                                 <thead>
                                     <tr>
@@ -947,7 +1005,18 @@
                     </div>
                     <div class="tab-content" id="tab-shadbala">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Shadbala: Quantifies the total raw 'horsepower' or physical capacity of a planet (measured in points called Virupas) compiled across six astronomical sources (Positional, Directional, Motional, Temporal, Natural, and Aspectual).">Shadbala (Six-fold Strength)</h3>
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                                <h3 style="color: #3d312a; margin: 0;">Shadbala (Six-fold Strength)</h3>
+                                <button class="help-btn" onclick="toggleHelp('help-shadbala')" title="What is this?">?</button>
+                            </div>
+                            <div id="help-shadbala" class="help-box" style="display: none;">
+                                <strong>What is Shadbala?</strong><br>
+                                Shadbala calculates the total raw "horsepower" or physical capacity of a planet to influence your life. It compiles strength from six different astronomical sources (position, direction, time, motion, nature, and aspects).<br>
+                                It is measured in <strong>Rupas</strong> (where 1 Rupa = 60 Virupas).<br>
+                                &bull; <strong>High (e.g., Above 7 Rupas):</strong> Very strong, highly active, and capable of overpowering other planets.<br>
+                                &bull; <strong>Average (e.g., 5 to 7 Rupas):</strong> Standard strength, capable of doing its necessary work.<br>
+                                &bull; <strong>Low (e.g., Below 5 Rupas):</strong> Weak, might struggle to produce its intended results independently.
+                            </div>
                             <table id="shadbalaTable">
                                 <thead>
                                     <tr>
@@ -969,6 +1038,27 @@
                         </div>
                     </div>
 
+                    <div class="tab-content" id="tab-dashas">
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 style="color: #3d312a; margin: 0;">Vimshottari Dasha (Saura Year)</h3>
+                            <button class="help-btn" onclick="toggleHelp('help-dashas')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-dashas" class="help-box" style="display: none;">
+                            <strong>What are Dashas?</strong><br>
+                            Dashas are the planetary time periods that trigger the events promised in your birth chart. The "Mahadasha" is the major period ruled by a specific planet. During a planet's Mahadasha, its themes, its house placements, and its overall strength in your chart become the central focus of your life for that entire duration.
+                        </div>
+                        <table id="dashaTable">
+                            <thead>
+                                <tr>
+                                    <th>Mahadasha</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+
                 </div>
             </div>
             
@@ -980,6 +1070,15 @@
     <script>
         let splitInstance = null;
         let infoSplitInstance = null;
+
+        function toggleHelp(id) {
+            const el = document.getElementById(id);
+            if (el.style.display === 'none') {
+                el.style.display = 'block';
+            } else {
+                el.style.display = 'none';
+            }
+        }
 
         function setupSplit() {
             document.getElementById('main-container').style.display = 'flex';
@@ -1104,6 +1203,7 @@
                 // Update Nakshatra Table
                 updateNakshatraTable();
                 updateShadbalaTable();
+                updateDashaTable();
 
                 
                 // Show UI
@@ -1476,6 +1576,25 @@
                     <td><span style="color: #27ae60; font-weight: bold;">${data.Ishta_Phala.toFixed(2)}</span></td>
                     <td><span style="color: #c0392b; font-weight: bold;">${data.Kashta_Phala.toFixed(2)}</span></td>
 
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateDashaTable() {
+            const tbody = document.querySelector("#dashaTable tbody");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+            if (!currentChartData || !currentChartData.vimshottari_dasha || !currentChartData.vimshottari_dasha.mahadashas) return;
+            
+            const dashas = currentChartData.vimshottari_dasha.mahadashas;
+            
+            dashas.forEach(d => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td><strong>${d.planet}</strong></td>
+                    <td>${d.start}</td>
+                    <td>${d.end}</td>
                 `;
                 tbody.appendChild(tr);
             });

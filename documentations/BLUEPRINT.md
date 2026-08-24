@@ -81,6 +81,9 @@ The Circular (Western-style) chart with Nakshatras will be built using concentri
     *   Concentric ring SVG renderer.
     *   Hotkey `C` integration.
 *   [ ] **Phase 4: Additional Jyotish Engines**
-    *   Vimshottari Dasha engine.
-    *   Shadbala engine.
-    *   Yoga detection engine.
+    *   [x] Vimshottari Dasha engine (Integrated with full timeline).
+    *   [x] Shadbala engine (Fully integrated in UI).
+    *   [x] Aspects (Drishti) engine - Rasi and Graha Drishti.
+    *   [ ] Yoga detection engine.
+*   [ ] **Phase 5: Documentation & Refining**
+    *   [ ] Update `avasthas.md` to document Deeptadi, Lajjitadi, and Shayanadi logic.

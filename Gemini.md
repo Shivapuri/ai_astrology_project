@@ -7,9 +7,15 @@ It utilizes a unified, hybrid astronomical approach:
 - **Sidereal Equatorial Nakshatras** anchored to the Dhruva Galactic Center (Middle of Mula).
 - Calculations are powered exclusively by the Swiss Ephemeris (`swisseph`).
 
-## Architecture
+## Architecture & Math Documentation (CRITICAL)
 - All core chart generation and engine logic resides in the `/jyotish/` directory.
 - The project previously used a dual Western/Vedic engine approach; this has been deprecated. Do not recreate the `/western/` folder.
+- **Twin Markdown Pattern**: EVERY mathematical module in `/jyotish/` has a strict companion `.md` file that you MUST read before touching the Python code. These files contain the exact logical rules and Sanskrit proofs:
+  - `jyotish/generate_jyotish.md` -> Rules for `generate_jyotish.py` (Orchestration, Dashas, Nakshatras, Houses)
+  - `jyotish/relationships.md` -> Rules for `relationships.py`
+  - `jyotish/shadbala/shadbala.md` -> Rules for `shadbala.py`
+  - `jyotish/avasthas/*.md` -> Rules for all Avastha submodules (`bala.py`, `jagrat.py`, etc.)
+- Before calculating or guessing astrological logic, always read the corresponding `.md` file first.
 
 ## Reference & Cache
 - Ephemeris cache and star data are stored in `/cache/` and `/jyotish/cache/`.

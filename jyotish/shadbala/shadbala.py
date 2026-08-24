@@ -1,4 +1,6 @@
 import math
+import jyotish.relationships as rel
+import jyotish.aspects as aspects
 from jyotish.relationships import (
     SIGN_LORDS,
     get_natural_relationship,
@@ -315,29 +317,7 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
     return round(virupas, 2)
 
 
-def calculate_drishti_value(aspecting_lon: float, aspected_lon: float) -> float:
-    """
-    Calculates the raw Drishti (Aspect) value in Virupas (0 to 60) cast by one planet onto another.
-    Based on the piecewise function from BPHS Chapter 27.
-    """
-    diff = (aspected_lon - aspecting_lon) % 360.0
-    
-    if diff <= 30.0:
-        return 0.0
-    elif diff <= 60.0:
-        return (diff - 30.0) / 2.0
-    elif diff <= 90.0:
-        return (diff - 60.0) + 15.0
-    elif diff <= 120.0:
-        return (120.0 - diff) / 2.0 + 30.0
-    elif diff <= 150.0:
-        return 150.0 - diff
-    elif diff <= 180.0:
-        return (diff - 150.0) * 2.0
-    elif diff <= 300.0:
-        return (300.0 - diff) / 2.0
-    else:
-        return 0.0
+
 
 def calculate_drik_bala(planet: str, lon: float, planet_positions: dict) -> float:
     """
@@ -346,7 +326,6 @@ def calculate_drik_bala(planet: str, lon: float, planet_positions: dict) -> floa
     Malefics reduce strength (1/4 of aspect value).
     Benefics increase strength (1/4 of aspect value), EXCEPT Jupiter and Mercury which add full value.
     """
-    # Natural benefics/malefics for Drik Bala (standard categorization)
     benefics = ["Jupiter", "Mercury", "Venus", "Moon"] 
     malefics = ["Sun", "Mars", "Saturn"]
     
@@ -354,20 +333,8 @@ def calculate_drik_bala(planet: str, lon: float, planet_positions: dict) -> floa
     for p_other, lon_other in planet_positions.items():
         if p_other == planet: continue
         
-        raw_drishti = calculate_drishti_value(lon_other, lon)
+        raw_drishti = aspects.get_graha_drishti(p_other, lon_other, lon)
         if raw_drishti <= 0: continue
-            
-        # Add special aspects
-        # Saturn 3/10 (60-90, 270-300)
-        diff = (lon - lon_other) % 360.0
-        if p_other == "Saturn" and ((60.0 <= diff <= 90.0) or (270.0 <= diff <= 300.0)):
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 75.0)) # Approximation of peak
-        # Jupiter 5/9
-        if p_other == "Jupiter" and ((120.0 <= diff <= 150.0) or (240.0 <= diff <= 270.0)):
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 135.0))
-        # Mars 4/8
-        if p_other == "Mars" and ((90.0 <= diff <= 120.0) or (210.0 <= diff <= 240.0)):
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 105.0))
             
         if p_other in benefics:
             if p_other in ["Jupiter", "Mercury"]:

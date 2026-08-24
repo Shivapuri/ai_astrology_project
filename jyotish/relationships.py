@@ -96,33 +96,4 @@ def get_dignity(planet: str, sign: str, compound_rel: str) -> str:
     return f"{compound_rel}'s Sign"
 
 
-def get_rasi_aspects(sign: str) -> list[str]:
-    """
-    Returns a list of signs that the given sign aspects via Rasi Drishti.
-    - Cardinal/Moveable signs (Aries, Cancer, Libra, Capricorn) aspect all Fixed signs EXCEPT the adjacent one.
-    - Fixed signs (Taurus, Leo, Scorpio, Aquarius) aspect all Cardinal signs EXCEPT the adjacent one.
-    - Dual/Mutable signs (Gemini, Virgo, Sagittarius, Pisces) aspect all other Dual signs.
-    """
-    cardinal = ["Aries", "Cancer", "Libra", "Capricorn"]
-    fixed = ["Taurus", "Leo", "Scorpio", "Aquarius"]
-    dual = ["Gemini", "Virgo", "Sagittarius", "Pisces"]
-    
-    if sign in cardinal:
-        # Avoid the fixed sign immediately next to it
-        if sign == "Aries": return ["Leo", "Scorpio", "Aquarius"]
-        if sign == "Cancer": return ["Scorpio", "Aquarius", "Taurus"]
-        if sign == "Libra": return ["Aquarius", "Taurus", "Leo"]
-        if sign == "Capricorn": return ["Taurus", "Leo", "Scorpio"]
-        
-    elif sign in fixed:
-        # Avoid the cardinal sign immediately before it
-        if sign == "Taurus": return ["Cancer", "Libra", "Capricorn"]
-        if sign == "Leo": return ["Libra", "Capricorn", "Aries"]
-        if sign == "Scorpio": return ["Capricorn", "Aries", "Cancer"]
-        if sign == "Aquarius": return ["Aries", "Cancer", "Libra"]
-        
-    elif sign in dual:
-        # Aspects all other dual signs
-        return [s for s in dual if s != sign]
-        
-    return []
+

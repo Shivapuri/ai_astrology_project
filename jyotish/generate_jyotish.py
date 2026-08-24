@@ -7,6 +7,7 @@ from typing import Dict, Any, Optional
 import math
 import jyotish.calc_utils as calc_utils
 import jyotish.relationships as rel
+import jyotish.aspects as aspects
 import jyotish.avasthas as avasthas
 
 try:
@@ -379,7 +380,7 @@ def generate_kala_chart(
             aspecting_planets = []
             for op_name, op_data in v_data["grahas"].items():
                 if op_name != p_name:
-                    rasi_aspects = rel.get_rasi_aspects(op_data["sign"])
+                    rasi_aspects = aspects.get_rasi_drishti(op_data["sign"])
                     if p_data["sign"] in rasi_aspects:
                         aspecting_planets.append(op_name)
                         
@@ -549,13 +550,40 @@ def generate_kala_chart(
     
     # Calculate MD start and end based on Saura Years
     balance_days = balance_years * SAURA_YEAR_DAYS
-    md_end_jd = jd_local + balance_days
-    md_start_jd = md_end_jd - (total_md_years * SAURA_YEAR_DAYS)
     
-    # swe.revjul returns (year, month, day, hour_fraction)
-    md_end_y, md_end_m, md_end_d, _ = swe.revjul(md_end_jd, cal_flag)
-    md_start_y, md_start_m, md_start_d, _ = swe.revjul(md_start_jd, cal_flag)
+    dashas_list = []
+    current_end_jd = jd_local + balance_days
     
+    # First dasha (balance at birth)
+    md_end_y, md_end_m, md_end_d, _ = swe.revjul(current_end_jd, cal_flag)
+    md_start_y, md_start_m, md_start_d, _ = swe.revjul(current_end_jd - (total_md_years * SAURA_YEAR_DAYS), cal_flag)
+    
+    dashas_list.append({
+        "planet": birth_md_lord,
+        "start": f"{md_start_y:04d}-{md_start_m:02d}-{md_start_d:02d}",
+        "end": f"{md_end_y:04d}-{md_end_m:02d}-{md_end_d:02d}"
+    })
+    
+    # Next 8 dashas
+    for i in range(1, 9):
+        next_idx = (lord_idx + i) % 9
+        d_lord = DASHA_LORDS[next_idx]
+        d_years = DASHA_YEARS[next_idx]
+        
+        start_jd = current_end_jd
+        end_jd = start_jd + (d_years * SAURA_YEAR_DAYS)
+        
+        s_y, s_m, s_d, _ = swe.revjul(start_jd, cal_flag)
+        e_y, e_m, e_d, _ = swe.revjul(end_jd, cal_flag)
+        
+        dashas_list.append({
+            "planet": d_lord,
+            "start": f"{s_y:04d}-{s_m:02d}-{s_d:02d}",
+            "end": f"{e_y:04d}-{e_m:02d}-{e_d:02d}"
+        })
+        
+        current_end_jd = end_jd
+        
     # 5. Shadbala (6-fold strength)
     shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd)
     
@@ -585,8 +613,8 @@ def generate_kala_chart(
             "at_birth": {
                 "mahadasha": birth_md_lord,
                 "mahadasha_balance_years": round(balance_years, 4),
-                "mahadasha_period": f"{md_start_y:04d}-{md_start_m:02d}-{md_start_d:02d} to {md_end_y:04d}-{md_end_m:02d}-{md_end_d:02d}"
-            }
+            },
+            "mahadashas": dashas_list
         },
         "shadbala": shadbala_data
     }
