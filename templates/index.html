@@ -959,6 +959,9 @@
                                         <th title="Motional Strength based on retrograde motion or proximity to the Sun.">Cheshta Bala</th>
                                         <th title="Natural Strength based on inherent luminosity. Sun > Moon > Venus > Jupiter > Mercury > Mars > Saturn.">Naisargika Bala</th>
                                         <th title="Aspectual Strength based on benefic and malefic aspects received.">Drik Bala</th>
+                                        <th title="Auspicious Effects during Dasa. sqrt(Uccha * Cheshta)">Ishta Phala</th>
+                                        <th title="Inauspicious Effects during Dasa. sqrt((60-Uccha) * (60-Cheshta))">Kashta Phala</th>
+
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -1418,6 +1421,9 @@
                     <td>${data.Cheshta_Bala.toFixed(2)}</td>
                     <td>${data.Naisargika_Bala.toFixed(2)}</td>
                     <td>${data.Drik_Bala.toFixed(2)}</td>
+                    <td><span style="color: #27ae60; font-weight: bold;">${data.Ishta_Phala.toFixed(2)}</span></td>
+                    <td><span style="color: #c0392b; font-weight: bold;">${data.Kashta_Phala.toFixed(2)}</span></td>
+
                 `;
                 tbody.appendChild(tr);
             });

@@ -440,17 +440,25 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         # 6. Drik Bala (Aspectual)
         drik = calculate_drik_bala(p, lon, planet_positions)
         
+        # 7. Ishta and Kashta Phala (Auspicious / Inauspicious Effects)
+        # Ishta Phala = sqrt(Ochcha Bala * Cheshta Bala)
+        # Kashta Phala = sqrt((60 - Ochcha Bala) * (60 - Cheshta Bala))
+        ishta_phala = math.sqrt(uccha * cheshta)
+        kashta_phala = math.sqrt((60.0 - uccha) * (60.0 - cheshta))
+        
         total_virupas = sthana + dig + kala + cheshta + naisarg + drik
         
         results[p] = {
-            "Total_Virupas": total_virupas,
-            "Total_Rupas": total_virupas / 60.0,
-            "Sthana_Bala": sthana,
-            "Dig_Bala": dig,
-            "Kala_Bala": kala,
-            "Cheshta_Bala": cheshta,
-            "Naisargika_Bala": naisarg,
-            "Drik_Bala": drik
+            "Total_Virupas": round(total_virupas, 2),
+            "Total_Rupas": round(total_virupas / 60.0, 4),
+            "Sthana_Bala": round(sthana, 2),
+            "Dig_Bala": round(dig, 2),
+            "Kala_Bala": round(kala, 2),
+            "Cheshta_Bala": round(cheshta, 2),
+            "Naisargika_Bala": round(naisarg, 2),
+            "Drik_Bala": round(drik, 2),
+            "Ishta_Phala": round(ishta_phala, 2),
+            "Kashta_Phala": round(kashta_phala, 2)
         }
         
     return results

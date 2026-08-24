@@ -208,3 +208,22 @@ The aspect value is a mathematically precise piecewise function that awards 60 V
 > vishodhyArNavato dvAbhyAM labdhaM triMshad.hyutaM cha dR^ik.h | dvyadhike tu vinA rAshiM bhAgAstithiyutAstathA || 8||*
 > **Translation:** Subtract the aspecting planet from the aspected planet. If the difference is > 6 signs (180°), subtract from 10 signs and divide by 2. If > 5 signs, ignore the sign and double the degrees. If > 4 signs, subtract from 5 signs... [this continues to form the exact piecewise function].
 > *— Brihat Parashara Hora Shastra Chapter 27:6-8*
+
+### Phase 7: Ishta and Kashta Phalas (Auspicious / Inauspicious Effects)
+Beyond standard strength (Bala), the exact measure of a planet's tendency to give good (Ishta) or evil (Kashta) results during its Dasa (planetary period) is calculated mathematically.
+- **Ishta Phala** is the geometric mean of the planet's Positional Exaltation strength (Uccha Bala) and its Motional Anomaly strength (Cheshta Bala).
+- **Kashta Phala** is the geometric mean of the *lack* of these two strengths (the difference from 60).
+
+**Formula:**
+- Ishta Phala = $\sqrt{\text{Uccha Bala} \times \text{Cheshta Bala}}$
+- Kashta Phala = $\sqrt{(60 - \text{Uccha Bala}) \times (60 - \text{Cheshta Bala})}$
+
+### Ishta / Kashta Rules
+> कथ्याम्यथा भावानां खेटानां च पदं द्विज । अथ चेष्टमनिष्टं च ग्रहानां कथयाम्यहम्।ह् । यद्।ह्वशाच्च प्रयच्छन्ति शुभाऽशुभदशाफलम्।ह् ॥ १॥
+> स्वनीचोनो ग्रह शोध्यः षड्।ह्भाधिक्ये भमण्डलात्।ह् । सैको राशिर्भवेदुच्चरश्मिर्द्विघ्नांशसंयुतः ॥ २॥
+> चेष्टाकेन्द्राच्च तद्रश्मिं साधयेदुच्चरश्मिवत्।ह् । चेष्टाकेन्द्रं कुजादीनां पूर्वमुक्तं मया द्विज ॥ ३॥
+> *kathyAmyathA bhAvAnAM kheTAnAM cha padaM dvija | atha cheShTamaniShTaM cha grahAnAM kathayAmyaham.h | yad.hvashAchcha prayachChanti shubhA.ashubhadashAphalam.h || 1||*
+> *svanIchono graha shodhyaH ShaD.hbhAdhikye bhamaNDalAt.h | saiko rAshirbhaveduchcharashmirdvighnAMshasaMyutaH || 2||*
+> *cheShTAkendrAchcha tadrashmiM sAdhayeduchcharashmivat.h | cheShTAkendraM kujAdInAM pUrvamuktaM mayA dvija || 3||*
+> **Translation:** Now I shall tell the strength of Bhavas and Grahas, O Brahmin. I shall explain the Ishta (auspicious) and Anishta / Kashta (inauspicious) state of planets, by which they yield good and bad effects in their Dasas. Subtract the planet's longitude from its debilitation point... this yields the Uccha Rashmi (exaltation rays). From the Cheshta Kendra, determine its rays (strength) exactly like Exaltation.
+> *— Brihat Parashara Hora Shastra Chapter 29:1-3*
