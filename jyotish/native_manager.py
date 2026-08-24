@@ -4,9 +4,29 @@ import shutil
 import uuid
 from datetime import datetime
 from typing import List, Dict, Any, Optional
+import time
 
 BACKUP_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "database", "backups")
 DOCUMENTS_MIRROR = os.path.expanduser("~/Documents/Aries/Charts/Charts.jsonl")
+
+def _acquire_lock(filepath: str, timeout=5.0) -> bool:
+    lockfile = f"{filepath}.lock"
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            fd = os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR)
+            os.close(fd)
+            return True
+        except FileExistsError:
+            time.sleep(0.1)
+    return False
+
+def _release_lock(filepath: str):
+    lockfile = f"{filepath}.lock"
+    try:
+        os.remove(lockfile)
+    except FileNotFoundError:
+        pass
 
 def get_backup_dir(filepath: str) -> str:
     parent = os.path.dirname(filepath)
@@ -130,61 +150,76 @@ def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_emp
 
 def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "") -> Dict[str, Any]:
     """Adds a new native with atomic safety."""
-    natives = load_natives(filepath)
-    new_native = {
-        "v": 1,
-        "id": str(uuid.uuid4()),
-        "name": name,
-        "type": "radix",
-        "male": True,
-        "date": date,
-        "time": time,
-        "tz": tz,
-        "tz_name": "",
-        "tzid": "",
-        "tzauto": False,
-        "cal": "gregorian",
-        "zt": "zone",
-        "bc": False,
-        "dst": False,
-        "place": place,
-        "country": country,
-        "lat": float(lat),
-        "lon": float(lon),
-        "alt": 0.0,
-        "notes": "",
-        "modified_at": datetime.now().isoformat()
-    }
-    
-    natives.append(new_native)
-    atomic_write_natives(filepath, natives)
-    return new_native
+    if not _acquire_lock(filepath):
+        raise RuntimeError("Could not acquire lock to save native")
+    try:
+        natives = load_natives(filepath)
+        new_native = {
+            "v": 1,
+            "id": str(uuid.uuid4()),
+            "name": name,
+            "type": "radix",
+            "male": True,
+            "date": date,
+            "time": time,
+            "tz": tz,
+            "tz_name": "",
+            "tzid": "",
+            "tzauto": False,
+            "cal": "gregorian",
+            "zt": "zone",
+            "bc": False,
+            "dst": False,
+            "place": place,
+            "country": country,
+            "lat": float(lat),
+            "lon": float(lon),
+            "alt": 0.0,
+            "notes": "",
+            "modified_at": datetime.now().isoformat()
+        }
+        
+        natives.append(new_native)
+        atomic_write_natives(filepath, natives)
+        return new_native
+    finally:
+        _release_lock(filepath)
 
 def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """Updates an existing native by ID with atomic safety."""
-    natives = load_natives(filepath)
-    updated_native = None
-    for i, n in enumerate(natives):
-        if n.get("id") == native_id:
-            for k, v in updated_fields.items():
-                if k in ['lat', 'lon']:
-                    n[k] = float(v)
-                else:
-                    n[k] = v
-            n['modified_at'] = datetime.now().isoformat()
-            natives[i] = n
-            updated_native = n
-            break
+    if not _acquire_lock(filepath):
+        raise RuntimeError("Could not acquire lock to update native")
+    try:
+        natives = load_natives(filepath)
+        updated_native = None
+        for i, n in enumerate(natives):
+            if n.get("id") == native_id:
+                for k, v in updated_fields.items():
+                    if k in ['lat', 'lon']:
+                        n[k] = float(v)
+                    else:
+                        n[k] = v
+                n['modified_at'] = datetime.now().isoformat()
+                natives[i] = n
+                updated_native = n
+                break
 
-    if updated_native:
-        atomic_write_natives(filepath, natives)
-        return updated_native
-    return None
+        if updated_native:
+            atomic_write_natives(filepath, natives)
+            return updated_native
+        return None
+    finally:
+        _release_lock(filepath)
 
 def delete_native(filepath: str, native_id: str) -> bool:
     """Deletes a native by ID safely with atomic backup."""
-    natives = load_natives(filepath)
-    filtered = [n for n in natives if n.get("id") != native_id]
-    if len(filtered) < len(natives):
-        return atomic_write_natives(filepath, filtered, allow_empty=True)
-    return False
+    if not _acquire_lock(filepath):
+        raise RuntimeError("Could not acquire lock to delete native")
+    try:
+        natives = load_natives(filepath)
+        filtered = [n for n in natives if n.get("id") != native_id]
+        if len(filtered) < len(natives):
+            return atomic_write_natives(filepath, filtered, allow_empty=True)
+        return False
+    finally:
+        _release_lock(filepath)

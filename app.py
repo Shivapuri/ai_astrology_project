@@ -35,41 +35,52 @@ def get_chart(native_id):
     if not native:
         return jsonify({"error": "Native not found"}), 404
         
-    date_str = native['date']
-    if date_str.startswith('-'):
-        parts = date_str[1:].split('-')
-        year = -int(parts[0])
-        month = int(parts[1])
-        day = int(parts[2])
-    else:
-        parts = date_str.split('-')
-        year = int(parts[0])
-        month = int(parts[1])
-        day = int(parts[2])
-        
-    time_parts = native['time'].split(':')
+    try:
+        date_str = native.get('date', '2000-01-01')
+        if date_str.startswith('-'):
+            parts = date_str[1:].split('-')
+            year = -int(parts[0])
+            month = int(parts[1])
+            day = int(parts[2])
+        else:
+            parts = date_str.split('-')
+            year = int(parts[0])
+            month = int(parts[1])
+            day = int(parts[2])
+            
+        time_parts = native.get('time', '12:00').split(':')
+        hour = int(time_parts[0])
+        minute = int(time_parts[1]) if len(time_parts) > 1 else 0
+    except Exception:
+        year, month, day = 2000, 1, 1
+        hour, minute = 12, 0
     
-    tz_str = str(native['tz'])
-    if tz_str.startswith('+'):
-        tz_offset = float(tz_str[1:3]) + float(tz_str[4:6])/60.0
-    elif tz_str.startswith('-'):
-        tz_offset = -(float(tz_str[1:3]) + float(tz_str[4:6])/60.0)
-    elif tz_str == 'Z':
-        tz_offset = 0.0
-    else:
-        tz_offset = 0.0
+    tz_str = str(native.get('tz', '+00:00'))
+    try:
+        tz_offset = float(tz_str)
+    except ValueError:
+        try:
+            if tz_str.upper() == 'Z':
+                tz_offset = 0.0
+            else:
+                sign = -1 if tz_str.startswith('-') else 1
+                tz_parts = tz_str.lstrip('+-').split(':')
+                hours = float(tz_parts[0])
+                minutes = float(tz_parts[1]) if len(tz_parts) > 1 else 0.0
+                tz_offset = sign * (hours + minutes / 60.0)
+        except Exception:
+            tz_offset = 0.0
 
     chart_data = generate_jyotish.generate_kala_chart(
         name=native['name'],
         year=year,
         month=month,
         day=day,
-        hour=int(time_parts[0]),
-        minute=int(time_parts[1]),
+        hour=hour,
+        minute=minute,
         latitude=float(native['lat']),
         longitude=float(native['lon']),
-        timezone_offset=tz_offset,
-        output_filepath="cache/current_chart.json"
+        timezone_offset=tz_offset
     )
     
     # Generate SVGs for all vargas and all notation modes
@@ -149,12 +160,15 @@ def get_cities(country_code):
 
 @app.route('/api/timezone', methods=['POST'])
 def get_timezone():
-    data = request.json
-    lat = float(data['lat'])
-    lon = float(data['lon'])
-    date_str = data['date']  # e.g., "1990-01-01" or "-3102-02-18"
-    time_str = data['time']  # e.g., "14:30"
-    
+    try:
+        data = request.json
+        lat = float(data['lat'])
+        lon = float(data['lon'])
+        date_str = data['date']  # e.g., "1990-01-01" or "-3102-02-18"
+        time_str = data['time']  # e.g., "14:30"
+    except (KeyError, ValueError, TypeError) as e:
+        return jsonify({"offset": "+00:00", "tz_name": "UTC", "error": f"Invalid input: {e}"})
+        
     # Try to find timezone name
     tz_name = tf.timezone_at(lng=lon, lat=lat)
     if not tz_name:

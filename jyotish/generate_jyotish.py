@@ -4,6 +4,10 @@ import os
 import sys
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
+import math
+import jyotish.calc_utils as calc_utils
+import jyotish.relationships as rel
+import jyotish.avasthas as avasthas
 
 try:
     import swisseph as swe
@@ -152,7 +156,7 @@ def generate_kala_chart(
     latitude: float = 51.5074,
     longitude: float = -0.1278,
     timezone_offset: float = 1.0,
-    output_filepath: str = "vedic_context.json"
+    output_filepath: Optional[str] = None
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -206,7 +210,6 @@ def generate_kala_chart(
     
     for p_name, p_id in planet_ids.items():
         if p_name == "Rahu":
-            import jyotish.calc_utils as calc_utils
             r_lon = calc_utils.calculate_interpolated_node(jd)
             d1_longitudes["Rahu"] = r_lon
             d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
@@ -306,8 +309,6 @@ def generate_kala_chart(
             })
 
     # 2.5 Calculate Planetary Friendships, Dignity & Avasthas
-    import jyotish.relationships as rel
-    import jyotish.avasthas as avasthas
     
     # Get D1 sign indexes for Temporary Friendship (Tatkalika) calculation
     d1_signs_idx = {}
@@ -471,7 +472,6 @@ def generate_kala_chart(
 
     for p_name, p_id in planet_ids.items():
         if p_name == "Rahu":
-            import jyotish.calc_utils as calc_utils
             r_lon = calc_utils.calculate_interpolated_node(jd)
             r_eq = swe.cotrans([r_lon, 0.0, 1.0], -eps)
             ra_planet = r_eq[0]
@@ -502,7 +502,6 @@ def generate_kala_chart(
         }
         
     # --- 3.5 Calculate Shayanadi Avasthas ---
-    import math
     
     # Calculate Sunrise (Center of Disk)
     res_rise = swe.rise_trans(jd, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
@@ -592,11 +591,12 @@ def generate_kala_chart(
         "shadbala": shadbala_data
     }
     
-    # 7. Write to file
-    with open(output_filepath, "w", encoding="utf-8") as f:
-        json.dump(vedic_context, f, indent=2, ensure_ascii=False)
-
-    print(f"Successfully generated Ernst Wilhelm Kala astrology context: {output_filepath}")
+    # 7. Write to file (only if requested)
+    if output_filepath:
+        with open(output_filepath, "w", encoding="utf-8") as f:
+            json.dump(vedic_context, f, indent=2, ensure_ascii=False)
+        print(f"Successfully generated Ernst Wilhelm Kala astrology context: {output_filepath}")
+        
     return vedic_context
 
 if __name__ == "__main__":
