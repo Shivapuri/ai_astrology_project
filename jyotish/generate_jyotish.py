@@ -616,7 +616,8 @@ def generate_kala_chart(
             },
             "mahadashas": dashas_list
         },
-        "shadbala": shadbala_data
+        "shadbala": shadbala_data,
+        "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"])
     }
     
     # 7. Write to file (only if requested)

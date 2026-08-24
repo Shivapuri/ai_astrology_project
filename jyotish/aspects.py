@@ -146,3 +146,70 @@ def get_all_rasi_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, 
                     results[aspected_planet].append(aspecting_planet)
                     
     return results
+
+def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, house_cusps: list = None) -> dict:
+    """
+    Calculates the advanced +/- Graha Aspects.
+    Returns:
+    {
+        "planets": { aspected_planet: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
+        "cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } }
+    }
+    """
+    results = {"planets": {}, "cusps": {}}
+    
+    # 1. Aspects to Planets
+    for aspected, aspected_info in planets_data.items():
+        if aspected in ["Rahu", "Ketu"]: continue # usually nodes don't receive these structured scores in Kala, but we can include them.
+        results["planets"][aspected] = {}
+        for aspecting, aspecting_info in planets_data.items():
+            if aspected == aspecting or aspecting in ["Rahu", "Ketu"]:
+                continue
+                
+            aspected_lon = aspected_info.get("longitude", 0.0)
+            aspecting_lon = aspecting_info.get("longitude", 0.0)
+            raw = get_graha_drishti(aspecting, aspecting_lon, aspected_lon)
+            
+            if raw > 0:
+                ishta = shadbala_data.get(aspecting, {}).get("Ishta_Phala", 30.0)
+                kashta = shadbala_data.get(aspecting, {}).get("Kashta_Phala", 30.0)
+                
+                plus = (raw * ishta) / 60.0
+                minus = (raw * kashta) / 60.0
+                net = plus - minus
+                
+                results["planets"][aspected][aspecting] = {
+                    "raw": round(raw, 2),
+                    "plus": round(plus, 2),
+                    "minus": round(minus, 2),
+                    "net": round(net, 2)
+                }
+
+    # 2. Aspects to House Cusps
+    if house_cusps:
+        for idx, cusp in enumerate(house_cusps):
+            h_num = idx + 1
+            cusp_lon = cusp.get("longitude", 0.0)
+            results["cusps"][h_num] = {}
+            
+            for aspecting, aspecting_info in planets_data.items():
+                if aspecting in ["Rahu", "Ketu"]: continue
+                aspecting_lon = aspecting_info.get("longitude", 0.0)
+                raw = get_graha_drishti(aspecting, aspecting_lon, cusp_lon)
+                
+                if raw > 0:
+                    ishta = shadbala_data.get(aspecting, {}).get("Ishta_Phala", 30.0)
+                    kashta = shadbala_data.get(aspecting, {}).get("Kashta_Phala", 30.0)
+                    
+                    plus = (raw * ishta) / 60.0
+                    minus = (raw * kashta) / 60.0
+                    net = plus - minus
+                    
+                    results["cusps"][h_num][aspecting] = {
+                        "raw": round(raw, 2),
+                        "plus": round(plus, 2),
+                        "minus": round(minus, 2),
+                        "net": round(net, 2)
+                    }
+
+    return results

@@ -1100,6 +1100,62 @@
                                     <tbody></tbody>
                                 </table>
                             </div>
+                            
+                            <hr style="border: 0; border-top: 1px dashed #d35400; margin: 10px 0;">
+
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                                    <h3 style="color: #3d312a; margin: 0;">Graha Drishti to Planets (+/- Scores)</h3>
+                                    <button class="help-btn" onclick="toggleHelp('help-graha-planets')" title="What is this?">?</button>
+                                </div>
+                                <div id="help-graha-planets" class="help-box" style="display: none;">
+                                    <strong>What are the +/- Scores?</strong><br>
+                                    This measures the exact Subha/Asubha Phala (Auspicious/Inauspicious impact) delivered from one planet to another based on Graha Drishti. 
+                                    <br><br>
+                                    <strong>+ Score:</strong> The exact amount of positive support and blessings the planet is giving.<br>
+                                    <strong>- Score:</strong> The exact amount of stress, harm, or affliction the planet is causing.
+                                </div>
+                                <table id="grahaPlanetsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Aspected Planet</th>
+                                            <th>Aspecting Planet</th>
+                                            <th>Raw Drishti</th>
+                                            <th style="color: #27ae60;">+ Score (Subha)</th>
+                                            <th style="color: #c0392b;">- Score (Asubha)</th>
+                                            <th>Net Impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
+                            <hr style="border: 0; border-top: 1px dashed #d35400; margin: 10px 0;">
+
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                                    <h3 style="color: #3d312a; margin: 0;">Graha Drishti to Bhava Chalit Cusps</h3>
+                                    <button class="help-btn" onclick="toggleHelp('help-graha-cusps')" title="What is this?">?</button>
+                                </div>
+                                <div id="help-graha-cusps" class="help-box" style="display: none;">
+                                    <strong>Aspects to House Cusps?</strong><br>
+                                    Houses have exact mathematical center points (cusps). This shows exactly how much a planet is blessing (+) or afflicting (-) that specific area of life by casting an aspect directly onto the exact degree of the house center.
+                                </div>
+                                <table id="grahaCuspsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>House Cusp</th>
+                                            <th>Aspecting Planet</th>
+                                            <th>Raw Drishti</th>
+                                            <th style="color: #27ae60;">+ Score (Subha)</th>
+                                            <th style="color: #c0392b;">- Score (Asubha)</th>
+                                            <th>Net Impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
 
@@ -1563,20 +1619,25 @@
         }
 
         function updateAspectsTable(varga) {
-            const tbody = document.querySelector('#rasiAspectsTable tbody');
-            if (tbody) tbody.innerHTML = '';
+            const rasiTbody = document.querySelector('#rasiAspectsTable tbody');
+            const pTbody = document.querySelector('#grahaPlanetsTable tbody');
+            const cTbody = document.querySelector('#grahaCuspsTable tbody');
+            
+            if (rasiTbody) rasiTbody.innerHTML = '';
+            if (pTbody) pTbody.innerHTML = '';
+            if (cTbody) cTbody.innerHTML = '';
             
             if (!currentChartData || !currentChartData.vargas[varga]) return;
             
             const grahas = currentChartData.vargas[varga].grahas;
             const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
             
+            // 1. Rasi Aspects
             planetsOrder.forEach(p => {
                 if (!grahas[p]) return;
                 const sign = grahas[p].sign;
                 const aspectedSigns = grahas[p].aspects_signs || [];
                 
-                // Find which planets are in those aspected signs
                 const aspectedPlanets = [];
                 for (const otherP of planetsOrder) {
                     if (otherP !== p && grahas[otherP] && aspectedSigns.includes(grahas[otherP].sign)) {
@@ -1584,15 +1645,75 @@
                     }
                 }
                 
-                if (tbody) {
+                if (rasiTbody) {
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td><strong>${p}</strong></td>
                                     <td>${sign}</td>
                                     <td>${aspectedSigns.join(', ')}</td>
                                     <td>${aspectedPlanets.length > 0 ? aspectedPlanets.join(', ') : '-'}</td>`;
-                    tbody.appendChild(tr);
+                    rasiTbody.appendChild(tr);
                 }
             });
+
+            // 2. Graha Aspects (Advanced +/-)
+            if (varga === "D1" && currentChartData.advanced_aspects) {
+                const adv = currentChartData.advanced_aspects;
+                
+                // Planets
+                for (const aspPlanet of planetsOrder) {
+                    if (!adv.planets[aspPlanet]) continue;
+                    const aspectors = adv.planets[aspPlanet];
+                    
+                    for (const aspectingP of planetsOrder) {
+                        if (!aspectors[aspectingP]) continue;
+                        const scores = aspectors[aspectingP];
+                        
+                        if (pTbody) {
+                            const tr = document.createElement('tr');
+                            const netColor = scores.net >= 0 ? '#27ae60' : '#c0392b';
+                            tr.innerHTML = `<td><strong>${aspPlanet}</strong></td>
+                                            <td>${aspectingP}</td>
+                                            <td>${scores.raw.toFixed(1)}</td>
+                                            <td style="color: #27ae60;">+${scores.plus.toFixed(1)}</td>
+                                            <td style="color: #c0392b;">-${scores.minus.toFixed(1)}</td>
+                                            <td style="color: ${netColor}; font-weight: bold;">${scores.net >= 0 ? '+' : ''}${scores.net.toFixed(1)}</td>`;
+                            pTbody.appendChild(tr);
+                        }
+                    }
+                }
+                
+                // Cusps
+                const cuspOrder = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                for (const house of cuspOrder) {
+                    if (!adv.cusps[house]) continue;
+                    const aspectors = adv.cusps[house];
+                    
+                    for (const aspectingP of planetsOrder) {
+                        if (!aspectors[aspectingP]) continue;
+                        const scores = aspectors[aspectingP];
+                        
+                        if (cTbody) {
+                            const tr = document.createElement('tr');
+                            const netColor = scores.net >= 0 ? '#27ae60' : '#c0392b';
+                            tr.innerHTML = `<td><strong>House ${house}</strong></td>
+                                            <td>${aspectingP}</td>
+                                            <td>${scores.raw.toFixed(1)}</td>
+                                            <td style="color: #27ae60;">+${scores.plus.toFixed(1)}</td>
+                                            <td style="color: #c0392b;">-${scores.minus.toFixed(1)}</td>
+                                            <td style="color: ${netColor}; font-weight: bold;">${scores.net >= 0 ? '+' : ''}${scores.net.toFixed(1)}</td>`;
+                            cTbody.appendChild(tr);
+                        }
+                    }
+                }
+            } else {
+                // If not D1, maybe we don't have house cusps or advanced aspects calculated for other Vargas yet
+                if (pTbody) {
+                    pTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">Advanced +/- aspects are currently calculated for the D1 chart.</td></tr>`;
+                }
+                if (cTbody) {
+                    cTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">House Cusp aspects are calculated for the D1 chart.</td></tr>`;
+                }
+            }
         }
 
         function updateNakshatraTable() {
