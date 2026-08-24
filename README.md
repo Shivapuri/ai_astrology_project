@@ -34,3 +34,16 @@ Astra mandates visual verification via Playwright screenshots before finalizing 
 - **[System & UI Blueprint](documentations/BLUEPRINT.md)**: Architectural roadmap, UI interaction pipeline, and circular chart specifications.
 - **[Vargas Functioning & Calculation Guide](documentations/vargas_functioning.md)**: Detailed technical reference on algorithms, rules, degree scaling, and cusp projection for all 16 Shodashavarga charts.
 - **[Architecture Decision Records (ADRs)](documentations/adr/)**: Architectural rationale covering House Systems (ADR 001), Nakshatras (ADR 002), Intercepted Signs (ADR 003), Engine Unification (ADR 004), and Vargas Functioning (ADR 005).
+
+### Core Engine Documentation (Twin Markdown Pattern)
+Per the repository rules (see [`jyotish/GEMINI.md`](jyotish/GEMINI.md)), every mathematical python module in the `/jyotish/` directory is strictly paired with a "Twin Markdown" (`.md`) file containing explicit formulas, logic rules, and Sanskrit scriptural grounding. 
+When modifying the engine, AI agents must consult these files first:
+- **Orchestration, Dashas, & Nakshatras:** [`jyotish/generate_jyotish.md`](jyotish/generate_jyotish.md) (pairs with `generate_jyotish.py`)
+- **Planetary Friendships & Dignity:** [`jyotish/relationships.md`](jyotish/relationships.md) (pairs with `relationships.py`)
+- **Shadbala (6-fold strength):** [`jyotish/shadbala/shadbala.md`](jyotish/shadbala/shadbala.md) (pairs with `shadbala.py`)
+- **Avasthas (States & Conditions):** Located in `jyotish/avasthas/`
+  - [`bala.md`](jyotish/avasthas/bala.md) (Physical Vitality)
+  - [`jagrat.md`](jyotish/avasthas/jagrat.md) (Consciousness)
+  - [`deepti.md`](jyotish/avasthas/deepti.md) (Mood / Illumination)
+  - [`lajjita.md`](jyotish/avasthas/lajjita.md) (Shame / Starvation / Thirst)
+  - [`shayana.md`](jyotish/avasthas/shayana.md) (Sleeping / Resting states)
