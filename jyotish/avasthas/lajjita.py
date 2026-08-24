@@ -44,53 +44,60 @@ def get_lajjitadi_avasthas(planet: str, sign: str, house_num: int,
     
     # 1. Garvita (Proud): Exaltation or Moolatrikona
     if natural_dignity in ["Exalted", "Moolatrikona"]:
-        states.append("Garvita (Proud)")
+        states.append({"state": "Garvita (Proud)", "condition": f"In {natural_dignity} ({sign})"})
         
     # 2. Lajjita (Ashamed): In 5th house with malefics
     malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
-    has_malefic_conjunct = any(p in malefics for p in conjunct_planets)
-    if house_num == 5 and has_malefic_conjunct:
-        states.append("Lajjita (Ashamed)")
+    conjunct_malefics = [p for p in conjunct_planets if p in malefics]
+    if house_num == 5 and conjunct_malefics:
+        malefic_str = ", ".join(conjunct_malefics)
+        states.append({"state": "Lajjita (Ashamed)", "condition": f"In 5th House conjoined with {malefic_str}"})
         
     # 3. Kshudhita (Starved)
     # Rule: In enemy sign AND (influenced by enemy OR influenced by Saturn)
     # Jupiter is never considered an enemy here.
     enemies_no_jup = [e for e in natural_enemies if e != "Jupiter"]
-    in_enemy_sign = natural_dignity == "Enemy's Sign"
-    influenced_by_enemy = any(p in enemies_no_jup for p in all_influences)
+    in_enemy_sign = natural_dignity == "Enemy's Sign" or natural_dignity == "Great Enemy's Sign"
+    influencing_enemies = [p for p in all_influences if p in enemies_no_jup]
     influenced_by_saturn = "Saturn" in all_influences
     
-    if in_enemy_sign and (influenced_by_enemy or influenced_by_saturn):
-        states.append("Kshudhita (Starved)")
+    if in_enemy_sign and (influencing_enemies or influenced_by_saturn):
+        reasons = influencing_enemies + (["Saturn"] if influenced_by_saturn and "Saturn" not in influencing_enemies else [])
+        reason_str = ", ".join(reasons)
+        states.append({"state": "Kshudhita (Starved)", "condition": f"In Enemy sign ({sign}) & influenced by {reason_str}"})
         
     # 4. Trushita (Thirsty)
     # Rule: In water sign, aspected by enemy, NOT aspected by benefic.
     water_signs = ["Cancer", "Scorpio", "Pisces"]
     if sign in water_signs:
-        aspected_by_enemy = any(p in natural_enemies for p in aspecting_planets)
+        aspecting_enemies = [p for p in aspecting_planets if p in natural_enemies]
         aspected_by_benefic = any(p in natural_benefics for p in aspecting_planets)
-        if aspected_by_enemy and not aspected_by_benefic:
-            states.append("Trushita (Thirsty)")
+        if aspecting_enemies and not aspected_by_benefic:
+            enemy_str = ", ".join(aspecting_enemies)
+            states.append({"state": "Trushita (Thirsty)", "condition": f"In Water sign ({sign}), aspected by {enemy_str}, and lacking benefic aspect"})
             
     # 5. Mudita (Delighted)
     # Rule: In friend sign AND (influenced by friend OR influenced by Jupiter)
     # Saturn is never considered a friend here.
     friends_no_sat = [f for f in natural_friends if f != "Saturn"]
     in_friend_sign = natural_dignity == "Friend's Sign" or natural_dignity == "Great Friend's Sign"
-    influenced_by_friend = any(p in friends_no_sat for p in all_influences)
+    influencing_friends = [p for p in all_influences if p in friends_no_sat]
     influenced_by_jupiter = "Jupiter" in all_influences
     
-    if in_friend_sign and (influenced_by_friend or influenced_by_jupiter):
-        states.append("Mudita (Delighted)")
+    if in_friend_sign and (influencing_friends or influenced_by_jupiter):
+        reasons = influencing_friends + (["Jupiter"] if influenced_by_jupiter and "Jupiter" not in influencing_friends else [])
+        reason_str = ", ".join(reasons)
+        states.append({"state": "Mudita (Delighted)", "condition": f"In Friend's sign ({sign}) & influenced by {reason_str}"})
         
     # 6. Kshobhita (Agitated)
     # Rule: Conjunct Sun AND aspected by malefic or enemy.
     if "Sun" in conjunct_planets:
-        aspected_by_enemy_or_malefic = any(p in natural_enemies or p in malefics for p in aspecting_planets)
-        if aspected_by_enemy_or_malefic:
-            states.append("Kshobhita (Agitated)")
+        aspecting_enemies_or_malefics = [p for p in aspecting_planets if p in natural_enemies or p in malefics]
+        if aspecting_enemies_or_malefics:
+            reason_str = ", ".join(aspecting_enemies_or_malefics)
+            states.append({"state": "Kshobhita (Agitated)", "condition": f"Conjoined Sun and aspected by {reason_str}"})
             
     if not states:
-        states.append("Neutral (None)")
+        states.append({"state": "Neutral (None)", "condition": "No special social conditions met"})
         
     return states

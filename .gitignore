@@ -39,3 +39,5 @@ source-material/sanskrit_texts/*/*_database.json
 western/logs/
 .DS_Store
 
+
+source-material/calculation-books/

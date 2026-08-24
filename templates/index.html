@@ -904,7 +904,7 @@
                     </div>
                     
                     <div class="tab-content" id="tab-metrics">
-                        <h3 id="dignityTitle" style="color: #4a3325; margin-top: 0;">Planetary Dignity</h3>
+                        <h3 id="dignityTitle" style="color: #4a3325; margin-top: 0;" title="Dignity: Measures how welcomed, comfortable, and respected a planet is in the sign it occupies, combining fixed statuses (Exaltation, Moolatrikona) with 5-fold compound friendships (Panchadha Maitri).">Planetary Dignity</h3>
                         <table id="dignityTable">
                             <thead>
                                 <tr>
@@ -928,17 +928,17 @@
                                 <thead>
                                     <tr>
                                         <th>Graha</th>
-                                        <th title="Bālādi Avasthā: Evaluates the infant-to-old-age strength of a planet based on its degree in odd/even signs.">Bala (Age)</th>
-                                        <th title="Jāgratādi Avasthā: Jāgrat (Awake/Own Sign), Svapna (Dreaming/Friend), Suṣupti (Asleep/Enemy). Determines mental awareness and capacity to give fruits.">Jagrat (Alertness)</th>
-                                        <th title="Dīptādi Avasthā: Dīpta (Radiant), Svāstha (Confident), Vikala (Mutilated). The internal mood resulting from exaltation, combustion, or compound relationships.">Deeptadi (Condition)</th>
-                                        <th title="Lajjitādi Avasthā: Lajjita (Ashamed), Garvita (Proud), Kṣudhita (Starved), etc. The external social conditioning caused by aspects and conjunctions.">Lajjitadi (Moods)</th>
+                                        <th title="Bala Avastha: Measures the physical maturity and raw bodily stamina of a planet based on its degree within a sign, determining how easily it produces tangible results in the external world (ranging from Infant to Dead).">Bala (Age)</th>
+                                        <th title="Jagrat Avastha: Indicates the level of mental alertness and awareness of a planet based on its sign dignity—whether its energy is fully awake (100%), dreaming semi-consciously (50%), or deeply asleep and dormant (0%).">Jagrat (Alertness)</th>
+                                        <th title="Deeptadi Avastha: Describes the internal psychological mood, comfort, and emotional state of a planet based on astronomical factors (like retrograde or combustion) and host sign friendships, reflecting how the person feels on the inside about that planet's life areas.">Deeptadi (Condition)</th>
+                                        <th title="Lajjitadi Avastha: Reveals interpersonal relationship dynamics (such as feeling Proud, Ashamed, Delighted, Starved, Agitated, or Thirsty) based on natural friendships, conjunctions, and whole-sign aspects, strongly indicating whether the occupied house thrives or suffers.">Lajjitadi (Moods)</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                         <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Śayanādi Avasthā: 12 dynamic physical activities (Śayana, Bhojana, Prakāśana) calculated by nakshatras, time, and the native's name syllable (Varnamashka).">Shayanadi (Daily Activity)</h3>
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Shayanadi Avastha: A personalized mathematical calculation showing what specific activity the planet is engaged in (e.g., Lying Down, Sitting, Eating, Council, Dancing) and how actively that activity manifests in real life.">Shayanadi (Daily Activity)</h3>
                             <div id="shayanadiWidget" class="shayanadi-widget" style="display: flex; flex-wrap: wrap; gap: 10px;">
                                 <!-- Widget items -->
                             </div>
@@ -947,7 +947,7 @@
                     </div>
                     <div class="tab-content" id="tab-shadbala">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;">Shadbala (Six-fold Strength)</h3>
+                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" title="Shadbala: Quantifies the total raw 'horsepower' or physical capacity of a planet (measured in points called Virupas) compiled across six astronomical sources (Positional, Directional, Motional, Temporal, Natural, and Aspectual).">Shadbala (Six-fold Strength)</h3>
                             <table id="shadbalaTable">
                                 <thead>
                                     <tr>
@@ -1204,7 +1204,46 @@
                 tbody.appendChild(tr);
             });
         }
+        const AVASHTHA_MEANINGS = {
+            "Sakta (Powerful / Driven)": "It acts with intense, persistent inner drive and stubborn determination.",
+            "Kopa / Mushita (Angry / Robbed)": "The ego feels vulnerable and frustrated, often resorting to irritation or defensiveness when its needs are overlooked.",
+            "Vikala (Mutilated / Agitated)": "Its natural ease is damaged and distressed, causing stress and friction in the house it occupies.",
+            "Deepta (Radiant)": "It experiences supreme confidence and noble clarity, effortlessly expressing its highest virtues and joy.",
+            "Pramudita (Joyous)": "It feels inspired, aligned with its true purpose, and cheerful in taking action.",
+            "Svastha (Confident)": "It feels secure, relaxed, and fully in control of its own domain.",
+            "Mudita (Rejoicing)": "It feels welcomed, appreciated, and happy with its surroundings.",
+            "Shanta (Serene)": "It enjoys a harmonious, cooperative atmosphere without pressure.",
+            "Dina (Scarce / Depressed)": "It feels modest, having to scrape by with basic resources and lacking special backing.",
+            "Dukhita (Miserable)": "It feels unwelcome and uneasy, encountering emotional struggle and grief.",
+            "Khala (Cruel)": "It feels defensive and harsh, having to fight through severe obstacles and hostility.",
+            "Bhita (Alarmed)": "Having hit rock bottom, it feels exposed and insecure, panicked into dealing with pressing crises or deficiencies.",
+            "Garvita (Proud)": "It feels dignified, self-respecting, and noble, powerfully enriching its house.",
+            "Lajjita (Ashamed)": "It brings a sense of embarrassment, shame, or reluctance, causing hesitation in taking worthy action.",
+            "Kshudhita (Starved)": "It feels starved of essential nourishment and resources, severely damaging or draining its affairs.",
+            "Trushita (Thirsty)": "It feels parched and emotionally unfulfilled, leaving the native craving satisfaction.",
+            "Mudita (Delighted)": "It feels loved and abundantly nourished, allowing its house to produce full, joyful blessings.",
+            "Kshobhita (Agitated)": "It suffers extreme agitation and conflict, tending to destroy or destabilize its house."
+        };
         
+        function formatSentence(planet, state, condition, category) {
+            if (!state || state === "N/A" || state === "Neutral (None)" || state === "Unknown") return "";
+            
+            // Clean state string for lookup
+            let lookupState = state;
+            
+            if (category === "Bala") {
+                return `${planet} is in ${state} state because it occupies ${condition}.`;
+            } else if (category === "Jagrat") {
+                return `${planet} is ${state} because it is ${condition}.`;
+            } else if (category === "Deeptadi") {
+                let meaning = AVASHTHA_MEANINGS[lookupState] || "";
+                return `${planet} feels ${state} internally because it is ${condition.toLowerCase()}. ${meaning}`;
+            } else if (category === "Lajjitadi") {
+                let meaning = AVASHTHA_MEANINGS[lookupState] || "";
+                return `${planet} is ${state} because: ${condition}. ${meaning}`;
+            }
+            return condition;
+        }
         function updateAvasthasTable(varga) {
             const tbody = document.querySelector('#avasthasTable tbody');
             const shWidget = document.getElementById('shayanadiWidget');
@@ -1239,18 +1278,23 @@
                 let balaState = av.bala ? av.bala.state : "N/A";
                 let balaVal = av.bala ? av.bala.strength : 0;
                 let balaPct = Math.round(balaVal * 100);
+                let balaCond = av.bala && av.bala.condition ? av.bala.condition : "";
+                let balaTooltip = formatSentence(p, balaState, balaCond, "Bala");
                 
                 // Jagrat
                 let jagratState = av.jagrat ? av.jagrat.state : "N/A";
                 let jagratVal = av.jagrat ? av.jagrat.alertness : 0;
                 let jagratPct = Math.round(jagratVal * 100);
+                let jagratCond = av.jagrat && av.jagrat.condition ? av.jagrat.condition : "";
+                let jagratTooltip = formatSentence(p, jagratState, jagratCond, "Jagrat");
                 
                 // Deeptadi
                 let deepState = "N/A";
-                let deepTitle = "";
+                let deepTooltip = "";
                 if (av.deeptadi) {
                     deepState = av.deeptadi.state || "N/A";
-                    deepTitle = av.deeptadi.condition || "";
+                    let deepCond = av.deeptadi.condition || "";
+                    deepTooltip = formatSentence(p, deepState, deepCond, "Deeptadi");
                 }
                 
                 // Lajjitadi
@@ -1258,7 +1302,8 @@
                 if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
                     lajjitadiHtml = av.lajjitadi.map(item => {
                         if (typeof item === 'object') {
-                            return `<span title="${item.condition}">${item.state}</span>`;
+                            let lTooltip = formatSentence(p, item.state, item.condition, "Lajjitadi");
+                            return `<span title="${lTooltip}">${item.state}</span>`;
                         } else {
                             return `<span>${item}</span>`;
                         }
@@ -1269,7 +1314,7 @@
                 tr.innerHTML = `
                     <td><strong>${p}</strong></td>
                     <td>
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center;" title="${balaTooltip}">
                             <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
                                 <div style="width: ${balaPct}%; height: 100%; background-color: ${getBarColor(balaVal)}"></div>
                             </div>
@@ -1277,14 +1322,14 @@
                         </div>
                     </td>
                     <td>
-                        <div style="display: flex; align-items: center;">
+                        <div style="display: flex; align-items: center;" title="${jagratTooltip}">
                             <div class="avastha-bar-container" style="width: 40px; height: 6px; margin-right: 8px; background-color: #e2e8f0; border-radius: 3px; overflow: hidden;">
                                 <div style="width: ${jagratPct}%; height: 100%; background-color: ${getBarColor(jagratVal)}"></div>
                             </div>
                             <span>${jagratState}</span>
                         </div>
                     </td>
-                    <td><span title="${deepTitle}">${deepState}</span></td>
+                    <td><span title="${deepTooltip}">${deepState}</span></td>
                     <td>${lajjitadiHtml}</td>
                 `;
                 if(tbody) tbody.appendChild(tr);
@@ -1300,8 +1345,8 @@
                     let shSubDesc = typeof av.shayanadi === 'object' && av.shayanadi.sub_state_description ? av.shayanadi.sub_state_description : '';
                     
                     let titleStr = '';
-                    if (shMeaning) titleStr += `Activity Meaning: ${shMeaning}`;
-                    if (shSubDesc) titleStr += `\nSub-State: ${shSubDesc}`;
+                    if (shState && shMeaning) titleStr += `${p} is in ${shState} state. ${shMeaning}`;
+                    if (shSubDesc) titleStr += `\nModified by ${shSub}: ${shSubDesc}`;
                     
                     let shDisp = shSub ? `${shState} - <em>${shSub}</em>` : shState;
                     shItem.innerHTML = `<span title="${titleStr}"><strong>${p}</strong>: ${shDisp}</span>`;
@@ -1310,6 +1355,18 @@
                 }
             });
         }
+
+        const DIGNITY_MEANINGS = {
+            "Exalted": "It operates at its absolute highest potential with royal honor, confidence, and uncontested clarity.",
+            "Moolatrikona": "It feels purposeful, duty-bound, and cheerful, working energetically on its primary mission.",
+            "Own Sign": "It is master of its own household, secure, self-sufficient, and fully in control of its resources.",
+            "Great Friend's Sign": "It receives exceptional warmth, hospitality, and enthusiastic support.",
+            "Friend's Sign": "It enjoys a peaceful, cooperative environment.",
+            "Neutral's Sign": "It receives standard, no-frills hospitality and relies on its own resources.",
+            "Enemy's Sign": "It feels unwelcome and stressed, requiring extra grit to overcome resistance.",
+            "Great Enemy's Sign": "It faces intense friction, discomfort, and active opposition.",
+            "Debilitated": "Having hit rock bottom, it feels vulnerable and inadequate in outer worldly matters, urging the native to build humble, non-material inner strengths."
+        };
 
         function updateDignityTable(varga) {
             const tbody = document.querySelector('#dignityTable tbody');
@@ -1334,21 +1391,16 @@
             planetsOrder.forEach(p => {
                 if (!grahas[p] || !grahas[p].dignity_breakdown) return;
                 const d = grahas[p].dignity_breakdown;
-                const av = grahas[p].avasthas;
                 
-                let balaHtml = "N/A";
-                let jagratHtml = "N/A";
-                if (av) {
-                    balaHtml = `${av.bala.state} (${av.bala.strength * 100}%)`;
-                    jagratHtml = `${av.jagrat.state} (${av.jagrat.alertness * 100}%)`;
-                }
+                let digMeaning = DIGNITY_MEANINGS[d.final_dignity] || "";
+                let digTooltip = digMeaning ? `${p} is in ${d.final_dignity} in its current sign. ${digMeaning}` : "";
 
                 const rowHtml = `<td><strong>${p}</strong></td>
                                 <td>${d.sign_lord}</td>
                                 <td>${d.natural_relationship}</td>
                                 <td>${d.temporary_relationship}</td>
                                 <td>${d.compound_relationship}</td>
-                                <td><strong>${d.final_dignity}</strong></td>`;
+                                <td title="${digTooltip}"><strong>${d.final_dignity}</strong></td>`;
                 
                 if (tbody) {
                     const tr = document.createElement('tr');

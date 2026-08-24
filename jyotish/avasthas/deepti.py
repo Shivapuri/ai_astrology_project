@@ -20,7 +20,7 @@ The states (priority order typically handles physical conditions first):
 11. Bhita (Alarmed): Debilitated.
 """
 
-def get_deeptadi_avastha(dignity: str, is_retrograde: bool, is_combust: bool, is_conjunct_malefic: bool) -> dict:
+def get_deeptadi_avastha(dignity: str, is_retrograde: bool, is_combust: bool, conjunct_planets: list[str]) -> dict:
     """
     Calculates the Deeptadi Avastha for a given planet based on its dignity and physical state.
     
@@ -28,7 +28,7 @@ def get_deeptadi_avastha(dignity: str, is_retrograde: bool, is_combust: bool, is
         dignity (str): The final dignity string (e.g., 'Exalted', "Great Friend's Sign").
         is_retrograde (bool): True if the planet is retrograde.
         is_combust (bool): True if the planet is combust (too close to the Sun).
-        is_conjunct_malefic (bool): True if conjoined with a natural malefic (Sun, Mars, Saturn, Rahu, Ketu) in the same sign.
+        conjunct_planets (list[str]): List of planets conjunct in the same sign.
                        
     Returns:
         dict: A dictionary containing the 'state' (Sanskrit and English) and condition that triggered it.
@@ -38,16 +38,22 @@ def get_deeptadi_avastha(dignity: str, is_retrograde: bool, is_combust: bool, is
         return {"state": "Sakta (Powerful / Driven)", "condition": "Retrograde"}
     
     if is_combust:
-        return {"state": "Kopa / Mushita (Angry / Robbed)", "condition": "Combust"}
+        return {"state": "Kopa / Mushita (Angry / Robbed)", "condition": "Combust (Close to Sun)"}
         
-    if is_conjunct_malefic:
-        return {"state": "Vikala (Mutilated / Agitated)", "condition": "Conjunct Malefic"}
+    natural_malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+    conjunct_malefics = [p for p in conjunct_planets if p in natural_malefics]
+    
+    if conjunct_malefics:
+        malefic_str = ", ".join(conjunct_malefics)
+        return {"state": "Vikala (Mutilated / Agitated)", "condition": f"Conjunct Malefic ({malefic_str})"}
         
     # Dignity-based states (Compound Friendship)
     if dignity == "Exalted":
         return {"state": "Deepta (Radiant)", "condition": "Exalted"}
     elif dignity == "Own Sign":
         return {"state": "Svastha (Confident)", "condition": "Own Sign"}
+    elif dignity == "Moolatrikona":
+        return {"state": "Pramudita (Joyous)", "condition": "Moolatrikona"}
     elif dignity == "Great Friend's Sign":
         return {"state": "Mudita (Rejoicing)", "condition": "Great Friend's Sign"}
     elif dignity == "Friend's Sign":
@@ -59,6 +65,8 @@ def get_deeptadi_avastha(dignity: str, is_retrograde: bool, is_combust: bool, is
     elif dignity == "Great Enemy's Sign":
         return {"state": "Khala (Cruel)", "condition": "Great Enemy's Sign"}
     elif dignity == "Debilitated":
-        return {"state": "Bhita (Alarmed / Fearful)", "condition": "Debilitated"}
+        return {"state": "Bhita (Alarmed)", "condition": "Debilitated"}
+    else:
+        return {"state": "Unknown", "condition": dignity}
         
     return {"state": "Unknown", "condition": dignity}

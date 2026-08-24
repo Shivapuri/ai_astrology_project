@@ -57,24 +57,24 @@ def get_bala_avastha(degree: float, sign_name: str) -> dict:
     if is_odd:
         # Odd sign logic
         if segment == 0:
-            return {"state": "Bala (Infant)", "strength": 0.25}
+            return {"state": "Bala (Infant)", "strength": 0.25, "condition": f"between 0° and 6° in an Odd sign ({sign_name})"}
         elif segment == 1:
-            return {"state": "Kumara (Youth)", "strength": 0.50}
+            return {"state": "Kumara (Youth)", "strength": 0.50, "condition": f"between 6° and 12° in an Odd sign ({sign_name})"}
         elif segment == 2:
-            return {"state": "Yuva (Adult/Prime)", "strength": 1.00}
+            return {"state": "Yuva (Adult/Prime)", "strength": 1.00, "condition": f"between 12° and 18° in an Odd sign ({sign_name})"}
         elif segment == 3:
-            return {"state": "Vriddha (Elderly)", "strength": 0.10}
+            return {"state": "Vriddha (Elderly)", "strength": 0.10, "condition": f"between 18° and 24° in an Odd sign ({sign_name})"}
         else: # segment == 4
-            return {"state": "Mrita (Dead)", "strength": 0.00}
+            return {"state": "Mrita (Dead)", "strength": 0.00, "condition": f"between 24° and 30° in an Odd sign ({sign_name})"}
     else:
         # Even sign logic (reversed)
         if segment == 0:
-            return {"state": "Mrita (Dead)", "strength": 0.00}
+            return {"state": "Mrita (Dead)", "strength": 0.00, "condition": f"between 0° and 6° in an Even sign ({sign_name})"}
         elif segment == 1:
-            return {"state": "Vriddha (Elderly)", "strength": 0.10}
+            return {"state": "Vriddha (Elderly)", "strength": 0.10, "condition": f"between 6° and 12° in an Even sign ({sign_name})"}
         elif segment == 2:
-            return {"state": "Yuva (Adult/Prime)", "strength": 1.00}
+            return {"state": "Yuva (Adult/Prime)", "strength": 1.00, "condition": f"between 12° and 18° in an Even sign ({sign_name})"}
         elif segment == 3:
-            return {"state": "Kumara (Youth)", "strength": 0.50}
+            return {"state": "Kumara (Youth)", "strength": 0.50, "condition": f"between 18° and 24° in an Even sign ({sign_name})"}
         else: # segment == 4
-            return {"state": "Bala (Infant)", "strength": 0.25}
+            return {"state": "Bala (Infant)", "strength": 0.25, "condition": f"between 24° and 30° in an Even sign ({sign_name})"}

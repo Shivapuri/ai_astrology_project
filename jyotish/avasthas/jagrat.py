@@ -34,12 +34,12 @@ def get_jagrat_avastha(dignity: str) -> dict:
     """
     # Awake conditions
     if dignity in ["Exalted", "Moolatrikona", "Own Sign"]:
-        return {"state": "Jagrat (Awake)", "alertness": 1.00}
+        return {"state": "Jagrat (Awake)", "alertness": 1.00, "condition": f"in {dignity}"}
         
     # Sleeping conditions
     elif dignity in ["Debilitated", "Enemy's Sign", "Great Enemy's Sign"]:
-        return {"state": "Sushupti (Sleeping/Slumbering)", "alertness": 0.00}
+        return {"state": "Sushupti (Sleeping/Slumbering)", "alertness": 0.00, "condition": f"in {dignity}"}
         
     # Dreaming conditions (Neutral, Friend, Great Friend)
     else:
-        return {"state": "Svapna (Dreaming)", "alertness": 0.50}
+        return {"state": "Svapna (Dreaming)", "alertness": 0.50, "condition": f"in {dignity}"}
