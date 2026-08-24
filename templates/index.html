@@ -941,6 +941,7 @@
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
                         <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
                         <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
+                        <button class="tab-btn" data-target="tab-aspects">Aspects</button>
                         <button class="tab-btn" data-target="tab-dashas">Dashas</button>
                     </div>
                     
@@ -1074,6 +1075,32 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+
+                    <div class="tab-content" id="tab-aspects">
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <div>
+                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                                    <h3 style="color: #3d312a; margin: 0;">Rasi Drishti (Sign Aspects)</h3>
+                                    <button class="help-btn" onclick="toggleHelp('help-rasi-aspects')" title="What is this?">?</button>
+                                </div>
+                                <div id="help-rasi-aspects" class="help-box" style="display: none;">
+                                    <strong>What are Rasi Aspects?</strong><br>
+                                    In Vedic astrology, signs (Rasis) aspect other signs directly based on their modality. If a planet sits in a sign, it fully aspects all planets located in the aspected signs. This is a binary "all-or-nothing" aspect used heavily in Jaimini astrology and for structural Yogas.
+                                </div>
+                                <table id="rasiAspectsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Graha</th>
+                                            <th>Occupied Sign</th>
+                                            <th>Aspects Signs</th>
+                                            <th>Planets Aspected</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                 </div>
@@ -1257,6 +1284,10 @@
             
             if (slot === 1) {
                 document.getElementById('toolbar-chart-title').innerText = vargaLabel;
+                
+                updateDignityTable(varga);
+                updateAspectsTable(varga);
+                updateAvasthasTable(varga);
             }
             
             const vData = currentSvgs[varga];
@@ -1270,11 +1301,9 @@
             
             toggleSiSigns(showSiSigns);
             
-            // We update the Bhava table using slot 1 (Left chart) as the primary reference
+            // We update the tables using slot 1 (Left chart) as the primary reference
             if (slot === 1) {
                 updateBhavaTable(varga);
-                updateDignityTable(varga);
-                updateAvasthasTable(varga);
             }
         }
         
@@ -1529,6 +1558,39 @@
                     const trSide = document.createElement('tr');
                     trSide.innerHTML = rowHtml;
                     sideTbody.appendChild(trSide);
+                }
+            });
+        }
+
+        function updateAspectsTable(varga) {
+            const tbody = document.querySelector('#rasiAspectsTable tbody');
+            if (tbody) tbody.innerHTML = '';
+            
+            if (!currentChartData || !currentChartData.vargas[varga]) return;
+            
+            const grahas = currentChartData.vargas[varga].grahas;
+            const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            
+            planetsOrder.forEach(p => {
+                if (!grahas[p]) return;
+                const sign = grahas[p].sign;
+                const aspectedSigns = grahas[p].aspects_signs || [];
+                
+                // Find which planets are in those aspected signs
+                const aspectedPlanets = [];
+                for (const otherP of planetsOrder) {
+                    if (otherP !== p && grahas[otherP] && aspectedSigns.includes(grahas[otherP].sign)) {
+                        aspectedPlanets.push(otherP);
+                    }
+                }
+                
+                if (tbody) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${p}</strong></td>
+                                    <td>${sign}</td>
+                                    <td>${aspectedSigns.join(', ')}</td>
+                                    <td>${aspectedPlanets.length > 0 ? aspectedPlanets.join(', ') : '-'}</td>`;
+                    tbody.appendChild(tr);
                 }
             });
         }
@@ -1864,7 +1926,7 @@
         // Interactive Elements Click Handler (Delegated to document to handle dynamic SVGs)
         document.addEventListener('click', (e) => {
             // Clear highlights if clicking anywhere in the chart container
-            const chartContainer = e.target.closest('#chart-container');
+            const chartContainer = e.target.closest('#chart-pane');
             if (chartContainer) {
                 document.querySelectorAll('svg').forEach(svg => svg.classList.remove('highlight-mode'));
                 document.querySelectorAll('.interactive').forEach(node => {
