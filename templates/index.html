@@ -944,7 +944,8 @@
                     <div class="tabs">
                         <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
-                        <button class="tab-btn" data-target="tab-varga-dignities">Dignities in Vargas</button>
+                                                <button class="tab-btn" data-target="tab-varga-dignities">Dignities in Vargas</button>
+                        <button class="tab-btn" data-target="tab-avasthas-calc">Avasthas (Calculated)</button>
                         <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
                         <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
                         <button class="tab-btn" data-target="tab-aspects">Aspects</button>
@@ -1013,6 +1014,37 @@
                             </thead>
                             <tbody></tbody>
                         </table>
+                    </div>
+
+                    
+                    <div class="tab-content" id="tab-avasthas-calc">
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 style="color: #3d312a; margin: 0;">Rasi - Avasthas - Calculated</h3>
+                            <button class="help-btn" onclick="toggleHelp('help-avasthas-calc')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-avasthas-calc" class="help-box" style="display: none;">
+                            <strong>What is this matrix?</strong><br>
+                            This is a quantitative calculation of the Lajjitadi Avasthas (Interactive Social States). 
+                            The black diagonal numbers represent the planet's core strength (Shadbala modified by Alertness).
+                            The off-diagonal numbers show how much another planet Delights (Green), Starves (Red), or Thirsts (Blue) it based on aspects and relationships.
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="avasthasCalcTable" class="dignity-grid">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Su</th>
+                                        <th>Mo</th>
+                                        <th>Ma</th>
+                                        <th>Me</th>
+                                        <th>Ju</th>
+                                        <th>Ve</th>
+                                        <th>Sa</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
 
                     <div class="tab-content" id="tab-avasthas">
@@ -1332,6 +1364,7 @@
                 // Update Nakshatra Table
                 updateNakshatraTable();
                 updateVargaDignitiesTable();
+                updateAvasthasCalcTable();
                 updateShadbalaTable();
                 updateDashaTable();
 
@@ -1475,6 +1508,43 @@
             }
             return condition;
         }
+        
+        function updateAvasthasCalcTable() {
+            const tbody = document.querySelector('#avasthasCalcTable tbody');
+            tbody.innerHTML = '';
+            
+            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+            const labels = ['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'];
+            
+            const matrix = currentChartData.avastha_matrix;
+            if (!matrix) return;
+            
+            planets.forEach((p_row, i) => {
+                const tr = document.createElement('tr');
+                let html = `<td>${labels[i]}</td>`; // The "Giver" row
+                
+                planets.forEach((p_col) => {
+                    // p_col is receiving, p_row is giving
+                    const cell = matrix[p_col][p_row];
+                    
+                    if (p_col === p_row) {
+                        html += `<td style="color:black; font-weight:bold; cursor:help; vertical-align: middle; padding-top: 15px;" title="${cell.tooltip}">
+                                    ${cell.bottom}
+                                 </td>`;
+                    } else if (cell) {
+                        html += `<td style="color:${cell.color}; cursor:help;" title="${cell.tooltip}">
+                                    <div style="font-size: 0.85em; margin-bottom: 4px;">${cell.top}</div>
+                                    <div style="font-size: 0.85em;">${cell.bottom}</div>
+                                 </td>`;
+                    } else {
+                        html += `<td></td>`;
+                    }
+                });
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        }
+
         function updateAvasthasTable(varga) {
             const tbody = document.querySelector('#avasthasTable tbody');
             const shWidget = document.getElementById('shayanadiWidget');

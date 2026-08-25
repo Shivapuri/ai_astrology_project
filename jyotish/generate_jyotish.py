@@ -591,7 +591,79 @@ def generate_kala_chart(
     shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd)
     
     # 6. Assemble JSON Context
+
+    # Calculate Avastha Matrix (Lajjitadi Numerical)
+    avastha_matrix = {}
+    planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    
+    # 1. Calculate Base Scores
+    matrix_bases = {}
+    for p in planets_list:
+        try:
+            sb_virupas = shadbala_data[p]['Total_Virupas']
+            jagrat = vargas_data["D1"]["grahas"][p]["avasthas"]["jagrat"]["alertness"]
+            # We use Shadbala Virupas * Jagrat Alertness scaled to approximate Ernst Wilhelm's scale
+            base = round((sb_virupas * jagrat) * 0.8, 1) 
+            matrix_bases[p] = base
+        except KeyError:
+            matrix_bases[p] = 100.0
+
+    # 2. Build Interaction Matrix
+    for p_receive in planets_list:
+        avastha_matrix[p_receive] = {}
+        states = vargas_data["D1"]["grahas"][p_receive]["avasthas"]["lajjitadi"]
+        
+        for p_give in planets_list:
+            if p_receive == p_give:
+                avastha_matrix[p_receive][p_give] = {
+                    "top": None,
+                    "bottom": matrix_bases[p_receive],
+                    "color": "black",
+                    "tooltip": f"{p_receive} Base Score. Derived from Shadbala modified by Jagrat (Alertness) Avastha."
+                }
+                continue
+                
+            is_mudita = any("Mudita" in s['state'] and p_give in s['condition'] for s in states)
+            is_kshudhita = any("Kshudhita" in s['state'] and p_give in s['condition'] for s in states)
+            is_lajjita = any("Lajjita" in s['state'] and p_give in s['condition'] for s in states)
+            is_kshobhita = any("Kshobhita" in s['state'] and p_give in s['condition'] for s in states)
+            is_trushita = any("Trushita" in s['state'] and p_give in s['condition'] for s in states)
+            
+            effect = 0.0
+            color = "transparent"
+            tooltip = ""
+            
+            if is_mudita:
+                effect = round(matrix_bases[p_give] * 0.4, 1)
+                if effect == 0.0: effect = 15.0 # baseline effect if giver is asleep
+                color = "green"
+                tooltip = f"{p_give} Delights (Mudita) {p_receive}, adding {effect} points. Base: {matrix_bases[p_receive]}."
+            elif is_kshudhita or is_lajjita or is_kshobhita:
+                effect = round(-matrix_bases[p_give] * 0.4, 1)
+                if effect == 0.0: effect = -15.0
+                color = "red"
+                state_name = "Starves (Kshudhita)" if is_kshudhita else "Agitates (Kshobhita)" if is_kshobhita else "Shames (Lajjita)"
+                tooltip = f"{p_give} {state_name} {p_receive}, subtracting {abs(effect)} points. Base: {matrix_bases[p_receive]}."
+            elif is_trushita:
+                effect = round(-matrix_bases[p_give] * 0.2, 1)
+                if effect == 0.0: effect = -5.0
+                color = "blue"
+                tooltip = f"{p_give} makes {p_receive} Thirsty (Trushita). Base: {matrix_bases[p_receive]}."
+                
+            if effect != 0.0:
+                total = round(matrix_bases[p_receive] + effect, 1)
+                sign = "+" if effect > 0 else ""
+                avastha_matrix[p_receive][p_give] = {
+                    "top": f"{sign}{effect}" if color == 'green' else f"{effect}",
+                    "bottom": f"{'+' if total > matrix_bases[p_receive] else ''}{total}",
+                    "color": color,
+                    "tooltip": tooltip
+                }
+            else:
+                avastha_matrix[p_receive][p_give] = None
+
     vedic_context = {
+
         "subject_info": {
             "name": name,
             "birth_datetime": birth_dt_str,
@@ -620,6 +692,7 @@ def generate_kala_chart(
             "mahadashas": dashas_list
         },
         "shadbala": shadbala_data,
+        "avastha_matrix": avastha_matrix,
         "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"])
     }
     
