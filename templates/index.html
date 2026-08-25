@@ -1017,29 +1017,54 @@
                     </div>
 
                     
-                    <div class="tab-content" id="tab-avasthas-calc">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h3 style="color: #3d312a; margin: 0;">Rasi - Avasthas - Calculated</h3>
-                            <button class="help-btn" onclick="toggleHelp('help-avasthas-calc')" title="What is this?">?</button>
+                    <div class="tab-content" id="tab-avasthas-calc" style="background-color: #ffffcc; padding: 20px; font-family: 'Times New Roman', Times, serif;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h3 id="avasthaCalcTitle" style="color: #000099; margin: 0; font-size: 1.3em; font-weight: bold;">Rasi - Avasthas - Calculated</h3>
                         </div>
-                        <div id="help-avasthas-calc" class="help-box" style="display: none;">
-                            <strong>What is this matrix?</strong><br>
-                            This is a quantitative calculation of the Lajjitadi Avasthas (Interactive Social States). 
-                            The black diagonal numbers represent the planet's core strength (Shadbala modified by Alertness).
-                            The off-diagonal numbers show how much another planet Delights (Green), Starves (Red), or Thirsts (Blue) it based on aspects and relationships.
-                        </div>
-                        <div style="overflow-x: auto;">
-                            <table id="avasthasCalcTable" class="dignity-grid">
+                        <div style="overflow-x: auto; background-color: #ffffcc;">
+                            <style>
+                                .kala-matrix {
+                                    width: 100%;
+                                    border-collapse: collapse;
+                                    text-align: center;
+                                    background-color: white;
+                                    border: 1px solid #e88e55;
+                                }
+                                .kala-matrix th {
+                                    background-color: #ffffcc;
+                                    color: #000099;
+                                    font-weight: normal;
+                                    padding: 15px 5px;
+                                    border: 1px solid #e88e55;
+                                    position: relative;
+                                    min-width: 60px;
+                                }
+                                .kala-matrix th.kala-header {
+                                    border: 2px solid #e88e55;
+                                    box-shadow: inset 0 0 0 2px #ffffcc, inset 0 0 0 3px #e88e55;
+                                }
+                                .kala-matrix td {
+                                    border: 1px solid #e88e55;
+                                    padding: 10px 5px;
+                                    height: 70px;
+                                    vertical-align: middle;
+                                }
+                                .kala-matrix td:first-child {
+                                    color: #000099;
+                                    width: 50px;
+                                }
+                            </style>
+                            <table id="avasthasCalcTable" class="kala-matrix">
                                 <thead>
                                     <tr>
-                                        <th></th>
-                                        <th>Su</th>
-                                        <th>Mo</th>
-                                        <th>Ma</th>
-                                        <th>Me</th>
-                                        <th>Ju</th>
-                                        <th>Ve</th>
-                                        <th>Sa</th>
+                                        <th style="background-color: #ffffcc; border: none; box-shadow: none;"></th>
+                                        <th class="kala-header">Su</th>
+                                        <th class="kala-header">Mo</th>
+                                        <th class="kala-header">Ma</th>
+                                        <th class="kala-header">Me</th>
+                                        <th class="kala-header">Ju</th>
+                                        <th class="kala-header">Ve</th>
+                                        <th class="kala-header">Sa</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -1364,7 +1389,7 @@
                 // Update Nakshatra Table
                 updateNakshatraTable();
                 updateVargaDignitiesTable();
-                updateAvasthasCalcTable();
+                updateAvasthasCalcTable("Rasi");
                 updateShadbalaTable();
                 updateDashaTable();
 
@@ -1407,6 +1432,7 @@
                 updateDignityTable(varga);
                 updateAspectsTable(varga);
                 updateAvasthasTable(varga);
+                updateAvasthasCalcTable(varga);
             }
             
             const vData = currentSvgs[varga];
@@ -1509,38 +1535,51 @@
             return condition;
         }
         
-        function updateAvasthasCalcTable() {
+        function updateAvasthasCalcTable(vargaName = "Rasi") {
+            const titleEl = document.getElementById('avasthaCalcTitle');
+            if (titleEl) {
+                // Determine display name for D1 vs others
+                const vargaDisplay = vargaName === "D1" ? "Rasi" : 
+                                     vargaName === "D9" ? "Navamsa" : 
+                                     vargaName === "D7" ? "Saptamsa" : vargaName;
+                titleEl.textContent = `${vargaDisplay} - Avasthas - Calculated`;
+            }
+
             const tbody = document.querySelector('#avasthasCalcTable tbody');
             tbody.innerHTML = '';
             
             const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
             const labels = ['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'];
             
-            const matrix = currentChartData.avastha_matrix;
+            const matrix = currentChartData.avastha_matrix[vargaName];
             if (!matrix) return;
             
             planets.forEach((p_row, i) => {
                 const tr = document.createElement('tr');
-                let html = `<td>${labels[i]}</td>`; // The "Giver" row
+                let htmlStr = `<td>${labels[i]}</td>`; // The "Giver" row
                 
                 planets.forEach((p_col) => {
                     // p_col is receiving, p_row is giving
                     const cell = matrix[p_col][p_row];
                     
                     if (p_col === p_row) {
-                        html += `<td style="color:black; font-weight:bold; cursor:help; vertical-align: middle; padding-top: 15px;" title="${cell.tooltip}">
+                        htmlStr += `<td style="color:black; font-size: 0.95em;" title="${cell.tooltip}">
                                     ${cell.bottom}
                                  </td>`;
                     } else if (cell) {
-                        html += `<td style="color:${cell.color}; cursor:help;" title="${cell.tooltip}">
-                                    <div style="font-size: 0.85em; margin-bottom: 4px;">${cell.top}</div>
-                                    <div style="font-size: 0.85em;">${cell.bottom}</div>
+                        let colorHex = cell.color === "green" ? "#006600" : 
+                                       cell.color === "red" ? "#cc0000" : 
+                                       "#000099"; // blue
+                                       
+                        htmlStr += `<td style="color:${colorHex}; font-size: 0.9em; line-height: 1.8;" title="${cell.tooltip}">
+                                    <div>${cell.top}</div>
+                                    <div>${cell.bottom}</div>
                                  </td>`;
                     } else {
-                        html += `<td></td>`;
+                        htmlStr += `<td></td>`;
                     }
                 });
-                tr.innerHTML = html;
+                tr.innerHTML = htmlStr;
                 tbody.appendChild(tr);
             });
         }

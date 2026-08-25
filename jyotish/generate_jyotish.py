@@ -595,121 +595,64 @@ def generate_kala_chart(
 
 
 
-    # --- DYNAMIC 4th-DEGREE ALGEBRAIC POLYNOMIAL FOR TRUE 3D BASE SCORES ---
-    def get_dynamic_base_score(lon):
-        # Solved via linear algebraic matrix inverse mapping 2D longitude to 3D spatial Chestabala
-        w = [-0.00025786291, 0.253639050, -92.2704233, 14721.53436, -869126.4956]
-        score = w[0]*(lon**4) + w[1]*(lon**3) + w[2]*(lon**2) + w[3]*lon + w[4]
-        return max(0.0, score)
-        
-    # --- 3D KEPLERIAN ASPECT WAVE FUNCTION ---
-    def get_kala_aspect_multiplier(distance):
-        # A mathematical piecewise wave function mapping angular 3D Great Circle distance to power
-        # Only active near explicit harmonic resonance peaks (Conjunction, Sextile, Trine, Biquintile, etc.)
-        points = [
-            (0.0, 1.0000), (7.78, 0.7773), (11.16, 0.6869), (18.95, 0.4646), 
-            (35.16, 0.0588), (46.33, 0.1368), (54.11, 0.1926), (60.98, 1.0000), 
-            (67.51, 0.1177), (71.31, 0.4663), (84.71, 0.3169), (92.49, 0.4279), 
-            (138.82, 0.5245), (145.70, 0.5244), (214.30, 0.5245), (221.18, 0.4755), 
-            (256.34, 0.1671), (267.51, 0.0883), (275.29, 0.0326), (281.82, 0.1578), 
-            (288.69, 0.1083), (299.02, 1.0000), (341.05, 0.4647), (348.84, 0.6870), 
-            (352.22, 0.7773), (360.0, 1.0000)
-        ]
-        
-        # Determine if the distance is within an active harmonic node (orb tolerance ~ 2 degrees)
-        # If the distance is far from any measured 3D aspect point, the wave function decays to 0.0
-        min_dist_to_point = min([abs(distance - p[0]) for p in points])
-        if min_dist_to_point > 2.5: # 2.5 degree strict harmonic orb
-            return 0.0
-            
-        for i in range(len(points)-1):
-            x1, y1 = points[i]
-            x2, y2 = points[i+1]
-            if x1 <= distance <= x2:
-                if x2 == x1: return y1
-                return y1 + (y2 - y1) * ((distance - x1) / (x2 - x1))
-        return 0.0
-
-    # 2. Build Interaction Matrix
-    # Calculate base scores dynamically using the 4th-degree polynomial and Jagrat (Alertness)
-    avastha_matrix = {}
+    
+    # 6. Quantitative Lajjitadi Avasthas
+    from jyotish.avasthas.quantitative import calculate_avastha_matrix
+    
+    avastha_matrices = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-    matrix_bases = {}
-    for p in planets_list:
-        jagrat = vargas_data["D1"]["grahas"][p]["avasthas"]["jagrat"]["alertness"]
-        lon = vargas_data["D1"]["grahas"][p]["longitude"]
-        
-        # If sleeping (0.0), base is 0.0. Otherwise, evaluate the 4th-degree polynomial
-        if jagrat == 0.0:
-            matrix_bases[p] = 0.0
-        else:
-            base_score = get_dynamic_base_score(lon)
-            matrix_bases[p] = round(base_score, 1)
-            
-    for p_receive in planets_list:
-        avastha_matrix[p_receive] = {}
-        for p_give in planets_list:
-            if p_receive == p_give:
-                avastha_matrix[p_receive][p_give] = {
-                    "top": None,
-                    "bottom": matrix_bases[p_receive],
-                    "color": "black",
-                    "tooltip": f"{p_receive} Base Score. (Derived via 4th-Degree Polynomial)"
+    
+    for v_key in vargas_data.keys():
+        avastha_results = calculate_avastha_matrix(vargas_data[v_key]["grahas"], shadbala_data, vargas_data["D1"]["grahas"])
+        v_matrix = {}
+        for p_receive in planets_list:
+            v_matrix[p_receive] = {}
+            for p_give in planets_list:
+                data = avastha_results['matrix'][p_give][p_receive]
+                
+                if p_give == p_receive:
+                    v_matrix[p_receive][p_give] = {
+                        "top": None,
+                        "bottom": f"{data['total']:.1f}",
+                        "color": "black",
+                        "tooltip": f"{p_receive} Base Starting Strength."
+                    }
+                    continue
+                    
+                pull = data['pull']
+                if pull <= 0.001:
+                    v_matrix[p_receive][p_give] = None
+                    continue
+                    
+                sign_mult = data['sign_mult']
+                total = data['total']
+                
+                color = "blue"
+                if sign_mult > 0: color = "green"
+                if sign_mult < 0: color = "red"
+                
+                if color == "green":
+                    display_top = f"{pull:.1f}"
+                    tooltip = f"{p_give} Delights (Mudita) {p_receive}. Adds {pull:.1f} points."
+                elif color == "red":
+                    display_top = f"{pull:.1f}"
+                    tooltip = f"{p_give} Starves/Agitates {p_receive}. Subtracts {pull:.1f} points."
+                else: # blue
+                    display_top = f"{pull:.1f}"
+                    tooltip = f"{p_give} influence on {p_receive} is neutralized. Adds 0."
+                    
+                bottom_str = f"{total:.1f}"
+                if color != "blue":
+                    bottom_str = f"+{total:.1f}" if total > avastha_results['bases'][p_receive] else f"{total:.1f}"
+                    
+                v_matrix[p_receive][p_give] = {
+                    "top": display_top,
+                    "bottom": bottom_str,
+                    "color": color,
+                    "tooltip": tooltip
                 }
-                continue
-                
-            lon_give = vargas_data["D1"]["grahas"][p_give]["longitude"]
-            lon_receive = vargas_data["D1"]["grahas"][p_receive]["longitude"]
+        avastha_matrices[v_key] = v_matrix
             
-            # Forward angular distance
-            distance = (lon_receive - lon_give) % 360.0
-            
-            # Use Mathematical Spline for dynamic aspect percentage
-            influence_pct = get_kala_aspect_multiplier(distance)
-            
-            if influence_pct <= 0.001:
-                avastha_matrix[p_receive][p_give] = None
-                continue
-                
-            giver_strength = matrix_bases[p_give]
-            raw_effect = round(giver_strength * influence_pct, 1)
-            
-            if raw_effect == 0.0:
-                avastha_matrix[p_receive][p_give] = None
-                continue
-
-            # Determine color (Lajjitadi rules)
-            nat_rel = rel.get_natural_relationship(p_receive, p_give)
-            is_mudita = (nat_rel == "Friend" or p_give == "Jupiter")
-            is_kshudhita = (nat_rel == "Enemy" or p_give == "Saturn" or p_give == "Sun")
-                
-            color = "blue"
-            if is_mudita: color = "green"
-            if is_kshudhita: color = "red"
-            
-            # Display logic
-            if color == "green":
-                effect = raw_effect
-                display_top = f"+{effect}"
-                tooltip = f"{p_give} Delights (Mudita) {p_receive}. Adds {effect} points."
-            elif color == "red":
-                effect = -raw_effect
-                display_top = f"-{raw_effect}"
-                tooltip = f"{p_give} Starves/Agitates {p_receive}. Subtracts {raw_effect} points."
-            else: # blue
-                effect = 0.0
-                display_top = f"{raw_effect}"
-                tooltip = f"{p_give} influence on {p_receive} is neutralized. Adds 0."
-                
-            total = round(matrix_bases[p_receive] + effect, 1)
-            
-            avastha_matrix[p_receive][p_give] = {
-                "top": display_top,
-                "bottom": f"{'+' if total > matrix_bases[p_receive] else ''}{total}" if color != "blue" else str(matrix_bases[p_receive]),
-                "color": color,
-                "tooltip": tooltip
-            }
-
     vedic_context = {
 
         "subject_info": {
@@ -740,7 +683,7 @@ def generate_kala_chart(
             "mahadashas": dashas_list
         },
         "shadbala": shadbala_data,
-        "avastha_matrix": avastha_matrix,
+        "avastha_matrix": avastha_matrices,
         "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"])
     }
     
