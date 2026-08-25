@@ -27,6 +27,11 @@
             font-weight: 700;
             letter-spacing: -0.5px;
         }
+        .dignity-grid { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 0.9em; }
+        .dignity-grid th { background-color: #eee5d3; color: #4a3325; border: 1px solid #dcb594; padding: 6px; }
+        .dignity-grid td { border: 1px solid #e5dccb; padding: 6px; }
+        .dignity-grid td:first-child { font-weight: bold; background-color: #fcfaf5; }
+
         .header-controls {
             background: #fffdfa;
             padding: 24px;
@@ -939,10 +944,34 @@
                     <div class="tabs">
                         <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
                         <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
+                        <button class="tab-btn" data-target="tab-varga-dignities">Dignities in Vargas</button>
                         <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
                         <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
                         <button class="tab-btn" data-target="tab-aspects">Aspects</button>
                         <button class="tab-btn" data-target="tab-dashas">Dashas</button>
+                    </div>
+                    
+                    <div class="tab-content" id="tab-varga-dignities">
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 style="color: #3d312a; margin: 0;">Dignities in Vargas</h3>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table id="vargaDignitiesTable" class="dignity-grid">
+                                <thead>
+                                    <tr>
+                                        <th>Varga</th>
+                                        <th>Su</th>
+                                        <th>Mo</th>
+                                        <th>Ma</th>
+                                        <th>Me</th>
+                                        <th>Ju</th>
+                                        <th>Ve</th>
+                                        <th>Sa</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
                     </div>
                     
                     <div class="tab-content active" id="tab-nakshatras">
@@ -1302,6 +1331,7 @@
                 
                 // Update Nakshatra Table
                 updateNakshatraTable();
+                updateVargaDignitiesTable();
                 updateShadbalaTable();
                 updateDashaTable();
 
@@ -1714,6 +1744,65 @@
                     cTbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888;">House Cusp aspects are calculated for the D1 chart.</td></tr>`;
                 }
             }
+        }
+
+        
+        function updateVargaDignitiesTable() {
+            const tbody = document.querySelector('#vargaDignitiesTable tbody');
+            tbody.innerHTML = '';
+            
+            const vargasList = [
+                'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12', 
+                'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
+            ];
+            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+            
+            const mapDig = (fullStr) => {
+                if (!fullStr) return '-';
+                const s = fullStr.toLowerCase();
+                if (s.includes('exalt')) return 'EX';
+                if (s.includes('debilitat')) return 'DB';
+                if (s.includes('mool') || s.includes('mul')) return 'MT';
+                if (s.includes('own')) return 'OH';
+                if (s.includes('great friend')) return 'GF';
+                if (s.includes('great enemy')) return 'GE';
+                if (s.includes('friend')) return 'F';
+                if (s.includes('enemy')) return 'E';
+                if (s.includes('neutral')) return 'N';
+                return '-';
+            };
+            
+            vargasList.forEach(v => {
+                const tr = document.createElement('tr');
+                let html = `<td>${v.replace('D', '')}</td>`;
+                
+                const vData = currentChartData.vargas[v];
+                if (vData && vData.grahas) {
+                    planets.forEach(p => {
+                        let digStr = '';
+                        if (vData.grahas[p] && vData.grahas[p].dignity_breakdown) {
+                            digStr = vData.grahas[p].dignity_breakdown.final_dignity;
+                        }
+                        const abbrev = mapDig(digStr);
+                        // Add some color coding similar to dignity table
+                        let color = "inherit";
+                        if (abbrev === "EX") color = "#27ae60";
+                        else if (abbrev === "DB") color = "#c0392b";
+                        else if (abbrev === "OH" || abbrev === "MT") color = "#2980b9";
+                        else if (abbrev === "GF") color = "#16a085";
+                        else if (abbrev === "GE") color = "#e74c3c";
+                        else if (abbrev === "F") color = "#2ecc71";
+                        else if (abbrev === "E") color = "#e67e22";
+                        else if (abbrev === "N") color = "#7f8c8d";
+                        
+                        html += `<td style="color:${color}; font-weight:bold;">${abbrev}</td>`;
+                    });
+                } else {
+                    html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
+                }
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
         }
 
         function updateNakshatraTable() {
