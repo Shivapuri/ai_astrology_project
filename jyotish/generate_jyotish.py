@@ -593,6 +593,7 @@ def generate_kala_chart(
     # 6. Assemble JSON Context
 
 
+
     # Calculate Avastha Matrix (Lajjitadi Numerical)
     avastha_matrix = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
@@ -627,7 +628,7 @@ def generate_kala_chart(
             lon_give = vargas_data["D1"]["grahas"][p_give]["longitude"]
             sign_give = vargas_data["D1"]["grahas"][p_give]["sign"]
             
-            # Calculate influence percentage (conjunction = 100%, else Graha Drishti / 60)
+            # Calculate influence percentage
             if sign_receive == sign_give:
                 influence_pct = 1.0
                 drishti_type = "Conjunct"
@@ -640,64 +641,74 @@ def generate_kala_chart(
                 avastha_matrix[p_receive][p_give] = None
                 continue
                 
-            # Determine relationship
+            # HOW RECEIVER VIEWS THE GIVER
             nat_rel = rel.get_natural_relationship(p_receive, p_give)
             
-            # Ernst Wilhelm Lajjitadi logic:
             is_mudita = False
             is_kshudhita = False
             is_kshobhita = False
+            is_neutral = False
             
-            if p_give == "Jupiter":
-                is_mudita = True
-            elif p_give == "Saturn":
-                is_kshudhita = True
-            elif p_give == "Sun" and drishti_type == "Conjunct":
+            if p_give == "Sun" and drishti_type == "Conjunct":
                 is_kshobhita = True
-            elif p_give == "Sun" and drishti_type != "Conjunct" and nat_rel in ["Friend", "Great Friend"]:
+            elif nat_rel in ["Friend", "Great Friend"] or p_give == "Jupiter":
                 is_mudita = True
-            elif nat_rel in ["Friend", "Great Friend"]:
-                is_mudita = True
-            elif nat_rel in ["Enemy", "Great Enemy"]:
+            elif nat_rel in ["Enemy", "Great Enemy"] or p_give == "Saturn":
                 is_kshudhita = True
+            else:
+                is_neutral = True
+                
+            # Combust exception: If giving planet is conjunct Sun, its ability to delight may be neutralized (Blue)
+            # We'll approximate this by checking if p_give is conjunct Sun and receiver views it as friend
+            giver_conj_sun = vargas_data["D1"]["grahas"][p_give]["sign"] == vargas_data["D1"]["grahas"]["Sun"]["sign"] and p_give != "Sun"
+            if giver_conj_sun and p_receive == "Sun":
+                is_neutral = True
+                is_mudita = False
                 
             effect = 0.0
             color = "transparent"
             tooltip = ""
             
-            # Max possible points transferred is a fraction of the giver's base strength
-            # To avoid 0.0 for sleeping planets (like Mars/Saturn in this chart), use their Shadbala instead of sleeping base
+            # Giver's power to influence
             giver_strength = shadbala_data[p_give]['Total_Virupas'] * 0.4
+            raw_effect = round(giver_strength * influence_pct, 1)
             
-            if is_mudita:
-                effect = round(giver_strength * influence_pct, 1)
-                color = "green"
-                tooltip = f"{p_give} Delights (Mudita) {p_receive} via {drishti_type}. Adds {effect} points."
-            elif is_kshudhita:
-                effect = round(-giver_strength * influence_pct, 1)
-                color = "red"
-                tooltip = f"{p_give} Starves (Kshudhita) {p_receive} via {drishti_type}. Subtracts {abs(effect)} points."
-            elif is_kshobhita:
-                effect = round(-giver_strength * influence_pct, 1)
-                color = "red"
-                tooltip = f"{p_give} Agitates (Kshobhita) {p_receive} via {drishti_type}. Subtracts {abs(effect)} points."
-            else:
-                # Neutral (Trushita or just neutral interaction)
-                effect = round(-giver_strength * influence_pct * 0.5, 1)
-                color = "blue"
-                tooltip = f"{p_give} makes {p_receive} Thirsty (Trushita) via {drishti_type}. Subtracts {abs(effect)} points."
+            if raw_effect == 0.0:
+                raw_effect = 10.0 # baseline
                 
-            if effect != 0.0:
-                total = round(matrix_bases[p_receive] + effect, 1)
-                sign = "+" if effect > 0 else ""
-                avastha_matrix[p_receive][p_give] = {
-                    "top": f"{sign}{effect}" if color == 'green' else f"{effect}",
-                    "bottom": f"{'+' if total > matrix_bases[p_receive] else ''}{total}",
-                    "color": color,
-                    "tooltip": tooltip
-                }
+            if is_neutral:
+                # Blue: shows potential influence but does NOT add/subtract from base!
+                effect = 0.0 
+                color = "blue"
+                tooltip = f"{p_receive} views {p_give} as Neutral. Influence of {raw_effect} is neutralized (adds 0)."
+            elif is_mudita:
+                effect = raw_effect
+                color = "green"
+                tooltip = f"{p_receive} views {p_give} as Friend. {p_give} Delights (Mudita) {p_receive} via {drishti_type}. Adds {effect} points."
+            elif is_kshudhita:
+                effect = -raw_effect
+                color = "red"
+                tooltip = f"{p_receive} views {p_give} as Enemy. {p_give} Starves (Kshudhita) {p_receive} via {drishti_type}. Subtracts {abs(effect)} points."
+            elif is_kshobhita:
+                effect = -raw_effect
+                color = "red"
+                tooltip = f"{p_give} Agitates (Kshobhita) {p_receive} via Conjunction. Subtracts {abs(effect)} points."
+                
+            total = round(matrix_bases[p_receive] + effect, 1)
+            
+            if color == "blue":
+                display_top = str(raw_effect)
+            elif color == "green":
+                display_top = f"+{effect}"
             else:
-                avastha_matrix[p_receive][p_give] = None
+                display_top = str(effect)
+                
+            avastha_matrix[p_receive][p_give] = {
+                "top": display_top,
+                "bottom": f"{'+' if total > matrix_bases[p_receive] else ''}{total}" if color != "blue" else str(matrix_bases[p_receive]),
+                "color": color,
+                "tooltip": tooltip
+            }
 
     vedic_context = {
 
