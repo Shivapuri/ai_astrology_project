@@ -1747,6 +1747,7 @@
         }
 
         
+        
         function updateVargaDignitiesTable() {
             const tbody = document.querySelector('#vargaDignitiesTable tbody');
             tbody.innerHTML = '';
@@ -1771,6 +1772,21 @@
                 if (s.includes('neutral')) return 'N';
                 return '-';
             };
+
+            const getFullName = (abbrev) => {
+                const map = {
+                    'EX': 'Exalted',
+                    'DB': 'Debilitated',
+                    'MT': 'Moolatrikona',
+                    'OH': 'Own House',
+                    'GF': 'Great Friend',
+                    'GE': 'Great Enemy',
+                    'F':  'Friend',
+                    'E':  'Enemy',
+                    'N':  'Neutral'
+                };
+                return map[abbrev] || abbrev;
+            };
             
             vargasList.forEach(v => {
                 const tr = document.createElement('tr');
@@ -1780,9 +1796,27 @@
                 if (vData && vData.grahas) {
                     planets.forEach(p => {
                         let digStr = '';
+                        let tooltip = '';
                         if (vData.grahas[p] && vData.grahas[p].dignity_breakdown) {
-                            digStr = vData.grahas[p].dignity_breakdown.final_dignity;
+                            const d = vData.grahas[p].dignity_breakdown;
+                            digStr = d.final_dignity;
+                            const abbrev = mapDig(digStr);
+                            const fullName = getFullName(abbrev);
+                            
+                            // Build tooltip
+                            tooltip = `${fullName} (${abbrev})&#10;`; // &#10; is newline in tooltip
+                            tooltip += `Sign: ${vData.grahas[p].sign}&#10;`;
+                            
+                            if (['EX', 'DB', 'MT', 'OH'].includes(abbrev)) {
+                                tooltip += `Based on fixed planetary dignities.`;
+                            } else {
+                                tooltip += `Lord: ${d.sign_lord}&#10;`;
+                                tooltip += `Natural: ${d.natural_relationship}&#10;`;
+                                tooltip += `Temporary: ${d.temporary_relationship}&#10;`;
+                                tooltip += `Compound: ${d.compound_relationship}`;
+                            }
                         }
+                        
                         const abbrev = mapDig(digStr);
                         // Add some color coding similar to dignity table
                         let color = "inherit";
@@ -1795,7 +1829,7 @@
                         else if (abbrev === "E") color = "#e67e22";
                         else if (abbrev === "N") color = "#7f8c8d";
                         
-                        html += `<td style="color:${color}; font-weight:bold;">${abbrev}</td>`;
+                        html += `<td style="color:${color}; font-weight:bold; cursor:help;" title="${tooltip}">${abbrev}</td>`;
                     });
                 } else {
                     html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
