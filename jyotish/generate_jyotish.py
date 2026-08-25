@@ -630,8 +630,12 @@ def generate_kala_chart(
             
             # Calculate influence percentage
             if sign_receive == sign_give:
-                influence_pct = 1.0
-                drishti_type = "Conjunct"
+                # Ernst Wilhelm's conjunction influence decreases with degree distance
+                distance = abs(lon_receive - lon_give)
+                if distance > 180:
+                    distance = 360 - distance
+                influence_pct = max(0.0, (35.0 - distance) / 35.0)
+                drishti_type = f"Conjunct ({round(influence_pct*100)}%)"
             else:
                 drishti_virupas = aspects.get_graha_drishti(p_give, lon_give, lon_receive)
                 influence_pct = drishti_virupas / 60.0
@@ -669,12 +673,14 @@ def generate_kala_chart(
             color = "transparent"
             tooltip = ""
             
-            # Giver's power to influence
-            giver_strength = shadbala_data[p_give]['Total_Virupas'] * 0.4
+            # Giver's power to influence (in Kala, if base is 0, influence is 0)
+            giver_strength = matrix_bases[p_give]
             raw_effect = round(giver_strength * influence_pct, 1)
             
+            # If raw_effect is exactly 0.0, it leaves the cell empty
             if raw_effect == 0.0:
-                raw_effect = 10.0 # baseline
+                avastha_matrix[p_receive][p_give] = None
+                continue
                 
             if is_neutral:
                 # Blue: shows potential influence but does NOT add/subtract from base!
