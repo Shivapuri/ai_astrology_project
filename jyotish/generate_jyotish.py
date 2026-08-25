@@ -120,16 +120,9 @@ def calculate_varga_longitude(longitude: float, varga: str) -> float:
         return uniform_varga(27, start)
         
     elif varga == "D30":
-        if is_odd:
-            bounds = [(0, 5, 0), (5, 10, 10), (10, 18, 8), (18, 25, 2), (25, 30, 6)]
-        else:
-            bounds = [(0, 5, 1), (5, 12, 5), (12, 20, 11), (20, 25, 9), (25, 30, 7)]
-            
-        for (b_start, b_end, varga_sign) in bounds:
-            if b_start <= deg < b_end or (b_end == 30 and deg == 30.0):
-                fraction = (deg - b_start) / (b_end - b_start)
-                return (varga_sign * 30.0) + (fraction * 30.0)
-        return 0.0
+        # Ernst Wilhelm / Kala uses the continuous 1-degree cyclical division for D30 (longitude * 30)
+        return (longitude * 30.0) % 360.0
+        
         
     elif varga == "D40":
         start = 0 if is_odd else 6
@@ -312,6 +305,8 @@ def generate_kala_chart(
     # 2.5 Calculate Planetary Friendships, Dignity & Avasthas
     
 
+    d1_grahas = vargas_data["D1"]["grahas"]
+
 
     for v_name, v_data in vargas_data.items():
         for p_name, p_data in v_data["grahas"].items():
@@ -324,10 +319,14 @@ def generate_kala_chart(
                 sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
                 
                 nat = rel.get_natural_relationship(p_name, sign_lord)
-                tmp = rel.get_temporary_relationship(p_v_idx, sign_lord_v_idx)
+                # Use D1 chart positions for temporary relationship as per BPHS
+                p_d1_idx = ZODIAC_SIGNS.index(d1_grahas[p_name]["sign"])
+                sign_lord_d1_idx = ZODIAC_SIGNS.index(d1_grahas[sign_lord]["sign"])
+                tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                 cmp = rel.get_compound_relationship(nat, tmp)
-                nat_dig = rel.get_dignity(p_name, sign, nat)
-                cmp_dig = rel.get_dignity(p_name, sign, cmp)
+                p_deg = p_data["degree_0_to_30"]
+                nat_dig = rel.get_dignity(p_name, sign, nat, p_deg)
+                cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg)
                 
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
@@ -343,17 +342,22 @@ def generate_kala_chart(
                 
                 if sign_lord == p_name:
                     nat, tmp, cmp = "Self", "Self", "Self"
-                    nat_dig = rel.get_dignity(p_name, sign, "Self")
+                    p_deg = p_data["degree_0_to_30"]
+                    nat_dig = rel.get_dignity(p_name, sign, "Self", p_deg)
                     cmp_dig = nat_dig
                 else:
                     p_v_idx = ZODIAC_SIGNS.index(sign)
                     sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
                     
                     nat = rel.get_natural_relationship(p_name, sign_lord)
-                    tmp = rel.get_temporary_relationship(p_v_idx, sign_lord_v_idx)
+                    # Use D1 chart positions for temporary relationship as per BPHS
+                    p_d1_idx = ZODIAC_SIGNS.index(d1_grahas[p_name]["sign"])
+                    sign_lord_d1_idx = ZODIAC_SIGNS.index(d1_grahas[sign_lord]["sign"])
+                    tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                     cmp = rel.get_compound_relationship(nat, tmp)
-                    nat_dig = rel.get_dignity(p_name, sign, nat)
-                    cmp_dig = rel.get_dignity(p_name, sign, cmp)
+                    p_deg = p_data["degree_0_to_30"]
+                    nat_dig = rel.get_dignity(p_name, sign, nat, p_deg)
+                    cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg)
                     
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
@@ -365,7 +369,6 @@ def generate_kala_chart(
                 }
             
             # --- Prepare Data for Avasthas ---
-            p_deg = p_data["degree_0_to_30"]
             
             # Find conjunct planets (in the same sign in this Varga)
             conjunct_planets = [

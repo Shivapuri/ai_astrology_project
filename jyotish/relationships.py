@@ -84,15 +84,66 @@ def get_compound_relationship(natural: str, temporary: str) -> str:
     
     return "Neutral"
 
-def get_dignity(planet: str, sign: str, compound_rel: str) -> str:
-    """Evaluates final planetary dignity based on sign and compound relationship to sign lord."""
-    fixed = FIXED_DIGNITIES.get(planet, {})
-    
-    if sign == fixed.get("Exalted"): return "Exalted"
-    if sign == fixed.get("Debilitated"): return "Debilitated"
-    if sign == fixed.get("Moolatrikona"): return "Moolatrikona"
-    if sign in fixed.get("Own", []): return "Own Sign"
-    
+def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) -> str:
+    """Evaluates final planetary dignity based on sign, precise degree (for MT/OH), and compound relationship to sign lord."""
+    if planet == "Sun":
+        if sign == "Aries": return "Exalted"
+        if sign == "Libra": return "Debilitated"
+        if sign == "Leo":
+            if degree <= 20: return "Moolatrikona"
+            else: return "Own Sign"
+    elif planet == "Moon":
+        if sign == "Taurus":
+            if degree <= 3: return "Exalted"
+            else: return "Moolatrikona"
+        if sign == "Scorpio": return "Debilitated"
+        if sign == "Cancer": return "Own Sign"
+    elif planet == "Mars":
+        if sign == "Capricorn": return "Exalted"
+        if sign == "Cancer": return "Debilitated"
+        if sign == "Aries":
+            if degree <= 12: return "Moolatrikona"
+            else: return "Own Sign"
+        if sign == "Scorpio": return "Own Sign"
+    elif planet == "Mercury":
+        if sign == "Virgo":
+            if degree <= 15: return "Exalted"
+            elif degree <= 20: return "Moolatrikona"
+            else: return "Own Sign"
+        if sign == "Pisces": return "Debilitated"
+        if sign == "Gemini": return "Own Sign"
+    elif planet == "Jupiter":
+        if sign == "Cancer": return "Exalted"
+        if sign == "Capricorn": return "Debilitated"
+        if sign == "Sagittarius":
+            if degree <= 10: return "Moolatrikona"
+            else: return "Own Sign"
+        if sign == "Pisces": return "Own Sign"
+    elif planet == "Venus":
+        if sign == "Pisces": return "Exalted"
+        if sign == "Virgo": return "Debilitated"
+        if sign == "Libra":
+            if degree <= 15: return "Moolatrikona"
+            else: return "Own Sign"
+        if sign == "Taurus": return "Own Sign"
+    elif planet == "Saturn":
+        if sign == "Libra": return "Exalted"
+        if sign == "Aries": return "Debilitated"
+        if sign == "Aquarius":
+            if degree <= 20: return "Moolatrikona"
+            else: return "Own Sign"
+        if sign == "Capricorn": return "Own Sign"
+    elif planet == "Rahu":
+        if sign == "Taurus": return "Exalted"
+        if sign == "Scorpio": return "Debilitated"
+        if sign == "Gemini": return "Moolatrikona"
+        if sign == "Aquarius": return "Own Sign"
+    elif planet == "Ketu":
+        if sign == "Scorpio": return "Exalted"
+        if sign == "Taurus": return "Debilitated"
+        if sign == "Sagittarius": return "Moolatrikona"
+        if sign == "Scorpio": return "Own Sign"
+
     return f"{compound_rel}'s Sign"
 
 
