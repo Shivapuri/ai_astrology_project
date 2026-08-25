@@ -592,6 +592,7 @@ def generate_kala_chart(
     
     # 6. Assemble JSON Context
 
+
     # Calculate Avastha Matrix (Lajjitadi Numerical)
     avastha_matrix = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
@@ -602,7 +603,6 @@ def generate_kala_chart(
         try:
             sb_virupas = shadbala_data[p]['Total_Virupas']
             jagrat = vargas_data["D1"]["grahas"][p]["avasthas"]["jagrat"]["alertness"]
-            # We use Shadbala Virupas * Jagrat Alertness scaled to approximate Ernst Wilhelm's scale
             base = round((sb_virupas * jagrat) * 0.8, 1) 
             matrix_bases[p] = base
         except KeyError:
@@ -611,7 +611,8 @@ def generate_kala_chart(
     # 2. Build Interaction Matrix
     for p_receive in planets_list:
         avastha_matrix[p_receive] = {}
-        states = vargas_data["D1"]["grahas"][p_receive]["avasthas"]["lajjitadi"]
+        lon_receive = vargas_data["D1"]["grahas"][p_receive]["longitude"]
+        sign_receive = vargas_data["D1"]["grahas"][p_receive]["sign"]
         
         for p_give in planets_list:
             if p_receive == p_give:
@@ -623,32 +624,68 @@ def generate_kala_chart(
                 }
                 continue
                 
-            is_mudita = any("Mudita" in s['state'] and p_give in s['condition'] for s in states)
-            is_kshudhita = any("Kshudhita" in s['state'] and p_give in s['condition'] for s in states)
-            is_lajjita = any("Lajjita" in s['state'] and p_give in s['condition'] for s in states)
-            is_kshobhita = any("Kshobhita" in s['state'] and p_give in s['condition'] for s in states)
-            is_trushita = any("Trushita" in s['state'] and p_give in s['condition'] for s in states)
+            lon_give = vargas_data["D1"]["grahas"][p_give]["longitude"]
+            sign_give = vargas_data["D1"]["grahas"][p_give]["sign"]
             
+            # Calculate influence percentage (conjunction = 100%, else Graha Drishti / 60)
+            if sign_receive == sign_give:
+                influence_pct = 1.0
+                drishti_type = "Conjunct"
+            else:
+                drishti_virupas = aspects.get_graha_drishti(p_give, lon_give, lon_receive)
+                influence_pct = drishti_virupas / 60.0
+                drishti_type = f"Aspect ({round(influence_pct*100)}%)"
+            
+            if influence_pct == 0.0:
+                avastha_matrix[p_receive][p_give] = None
+                continue
+                
+            # Determine relationship
+            nat_rel = rel.get_natural_relationship(p_receive, p_give)
+            
+            # Ernst Wilhelm Lajjitadi logic:
+            is_mudita = False
+            is_kshudhita = False
+            is_kshobhita = False
+            
+            if p_give == "Jupiter":
+                is_mudita = True
+            elif p_give == "Saturn":
+                is_kshudhita = True
+            elif p_give == "Sun" and drishti_type == "Conjunct":
+                is_kshobhita = True
+            elif p_give == "Sun" and drishti_type != "Conjunct" and nat_rel in ["Friend", "Great Friend"]:
+                is_mudita = True
+            elif nat_rel in ["Friend", "Great Friend"]:
+                is_mudita = True
+            elif nat_rel in ["Enemy", "Great Enemy"]:
+                is_kshudhita = True
+                
             effect = 0.0
             color = "transparent"
             tooltip = ""
             
+            # Max possible points transferred is a fraction of the giver's base strength
+            # To avoid 0.0 for sleeping planets (like Mars/Saturn in this chart), use their Shadbala instead of sleeping base
+            giver_strength = shadbala_data[p_give]['Total_Virupas'] * 0.4
+            
             if is_mudita:
-                effect = round(matrix_bases[p_give] * 0.4, 1)
-                if effect == 0.0: effect = 15.0 # baseline effect if giver is asleep
+                effect = round(giver_strength * influence_pct, 1)
                 color = "green"
-                tooltip = f"{p_give} Delights (Mudita) {p_receive}, adding {effect} points. Base: {matrix_bases[p_receive]}."
-            elif is_kshudhita or is_lajjita or is_kshobhita:
-                effect = round(-matrix_bases[p_give] * 0.4, 1)
-                if effect == 0.0: effect = -15.0
+                tooltip = f"{p_give} Delights (Mudita) {p_receive} via {drishti_type}. Adds {effect} points."
+            elif is_kshudhita:
+                effect = round(-giver_strength * influence_pct, 1)
                 color = "red"
-                state_name = "Starves (Kshudhita)" if is_kshudhita else "Agitates (Kshobhita)" if is_kshobhita else "Shames (Lajjita)"
-                tooltip = f"{p_give} {state_name} {p_receive}, subtracting {abs(effect)} points. Base: {matrix_bases[p_receive]}."
-            elif is_trushita:
-                effect = round(-matrix_bases[p_give] * 0.2, 1)
-                if effect == 0.0: effect = -5.0
+                tooltip = f"{p_give} Starves (Kshudhita) {p_receive} via {drishti_type}. Subtracts {abs(effect)} points."
+            elif is_kshobhita:
+                effect = round(-giver_strength * influence_pct, 1)
+                color = "red"
+                tooltip = f"{p_give} Agitates (Kshobhita) {p_receive} via {drishti_type}. Subtracts {abs(effect)} points."
+            else:
+                # Neutral (Trushita or just neutral interaction)
+                effect = round(-giver_strength * influence_pct * 0.5, 1)
                 color = "blue"
-                tooltip = f"{p_give} makes {p_receive} Thirsty (Trushita). Base: {matrix_bases[p_receive]}."
+                tooltip = f"{p_give} makes {p_receive} Thirsty (Trushita) via {drishti_type}. Subtracts {abs(effect)} points."
                 
             if effect != 0.0:
                 total = round(matrix_bases[p_receive] + effect, 1)
