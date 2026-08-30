@@ -908,7 +908,7 @@
         <div class="menu-item" onclick="assignWidget('chart')">Chart</div>
         <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
         <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
-        <div class="menu-item" onclick="assignWidget('avasthas-calc')">Avasthas (Calculated)</div>
+        <div class="menu-item" onclick="assignWidget('avasthas-calc')">Qualitative Avasthas</div>
         <div class="menu-item" onclick="assignWidget('aspects-planets')">Aspects (Planets)</div>
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
@@ -1098,76 +1098,28 @@
                     </div>
     </template>
     <template id="tmpl-avasthas-calc">
-        <div class="widget-content" id="tab-avasthas-calc" style="background-color: #ffffcc; padding: 20px; font-family: 'Times New Roman', Times, serif;">
-                        <div style="text-align: center; margin-bottom: 20px;">
-                            <h3 id="avasthaCalcTitle" style="color: #000099; margin: 0; font-size: 1.3em; font-weight: bold;">Rasi - Avasthas - Calculated</h3>
-                        </div>
-                        <div style="overflow-x: auto; background-color: #ffffcc;">
-                            <style>
-                                .kala-matrix {
-                                    width: 100%;
-                                    border-collapse: collapse;
-                                    text-align: center;
-                                    background-color: white;
-                                    border: 1px solid #e88e55;
-                                }
-                                .kala-matrix th {
-                                    background-color: #ffffcc;
-                                    color: #000099;
-                                    font-weight: normal;
-                                    padding: 8px 4px;
-                                    border: 1px solid #e88e55;
-                                    position: relative;
-                                    min-width: 30px;
-                                }
-                                .kala-matrix th.kala-header {
-                                    border: 2px solid #e88e55;
-                                    box-shadow: inset 0 0 0 2px #ffffcc, inset 0 0 0 3px #e88e55;
-                                }
-                                .kala-matrix td {
-                                    border: 1px solid #e88e55;
-                                    padding: 8px 4px;
-                                    height: auto;
-                                    vertical-align: middle;
-                                }
-                                .kala-matrix td:first-child {
-                                    color: #000099;
-                                    width: 50px;
-                                }
-                            </style>
-
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h4 style="margin: 0; color: #000099;">Lajjitadi Avastha Calculations</h4>
-                                <div>
-                                    <select id="avasthaBaselineSelect" onchange="updateAvasthasCalcTable(document.getElementById('vargaSelect1').value)" style="padding: 4px; border: 1px solid #e88e55; color: #000099; background: white; font-weight: bold;">
-                                        <option value="ShadBala">&lt; ShadBala &gt;</option>
-                                        <option value="Subha">&lt; Subha &gt;</option>
-                                        <option value="Drishti Yuti">&lt; Drishti Yuti &gt;</option>
-                                        <option value="Ishta">&lt; Ishta &gt;</option>
-                                        <option value="Veda">&lt; Veda &gt;</option>
-                                        <option value="Cheshta">&lt; Cheshta &gt;</option>
-                                        <option value="Uccha">&lt; Uccha &gt;</option>
-                                        <option value="Dig">&lt; Dig &gt;</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <table id="avasthasCalcTable" class="kala-matrix">
-                                <thead>
-                                    <tr>
-                                        <th style="background-color: #ffffcc; border: none; box-shadow: none;"></th>
-                                        <th class="kala-header">Su</th>
-                                        <th class="kala-header">Mo</th>
-                                        <th class="kala-header">Ma</th>
-                                        <th class="kala-header">Me</th>
-                                        <th class="kala-header">Ju</th>
-                                        <th class="kala-header">Ve</th>
-                                        <th class="kala-header">Sa</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+        <div class="widget-content" id="tab-avasthas-calc">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                <h3 id="avasthaCalcTitle" style="color: #3d312a; margin: 0;">Rasi - Qualitative Avasthas</h3>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="avasthasCalcTable" class="dignity-grid">
+                    <thead>
+                        <tr>
+                            <th>Avastha</th>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Ma</th>
+                            <th>Me</th>
+                            <th>Ju</th>
+                            <th>Ve</th>
+                            <th>Sa</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
     </template>
 
     <script>
@@ -1815,50 +1767,61 @@
         function updateAvasthasCalcTable(vargaName = "D1") {
             const titleEl = document.getElementById('avasthaCalcTitle');
             if (titleEl) {
-                // Determine display name for D1 vs others
                 const vargaDisplay = vargaName === "D1" ? "Rasi" : 
                                      vargaName === "D9" ? "Navamsa" : 
                                      vargaName === "D7" ? "Saptamsa" : vargaName;
-                titleEl.textContent = `${vargaDisplay} - Avasthas - Calculated`;
+                titleEl.textContent = `${vargaDisplay} - Qualitative Avasthas`;
             }
 
-            const tbody = document.querySelector('#avasthasCalcTable tbody');
-            tbody.innerHTML = '';
-            
-            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-            const labels = ['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'];
-            
-            const baseline = document.getElementById('avasthaBaselineSelect').value;
-            const matrix = currentChartData.avastha_matrix[vargaName][baseline];
-            if (!matrix) return;
-            
-            planets.forEach((p_row, i) => {
-                const tr = document.createElement('tr');
-                let htmlStr = `<td>${labels[i]}</td>`; // The "Giver" row
+            document.querySelectorAll('.grid-cell[data-widget="avasthas-calc"]').forEach(cell => {
+                const tbody = cell.querySelector('tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
                 
-                planets.forEach((p_col) => {
-                    // p_col is receiving, p_row is giving
-                    const cell = matrix[p_col][p_row];
+                const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+                const avasthas_types = [
+                    {key: 'jagrat', label: 'Jagradadi'},
+                    {key: 'bala', label: 'Baladi'},
+                    {key: 'deeptadi', label: 'Deeptadi'},
+                    {key: 'lajjitadi', label: 'Lajjitadi'}
+                ];
+                
+                const vargaGrahas = currentChartData.vargas[vargaName].grahas;
+                
+                avasthas_types.forEach(avType => {
+                    const tr = document.createElement('tr');
+                    let htmlStr = `<td>${avType.label}</td>`;
                     
-                    if (p_col === p_row) {
-                        htmlStr += `<td style="color:black; font-size: 0.95em;" title="${cell.tooltip}">
-                                    ${cell.bottom}
-                                 </td>`;
-                    } else if (cell) {
-                        let colorHex = cell.color === "green" ? "#006600" : 
-                                       cell.color === "red" ? "#cc0000" : 
-                                       "#000099"; // blue
-                                       
-                        htmlStr += `<td style="color:${colorHex}; font-size: 0.9em; line-height: 1.8;" title="${cell.tooltip}">
-                                    <div>${cell.top}</div>
-                                    <div>${cell.bottom}</div>
-                                 </td>`;
-                    } else {
-                        htmlStr += `<td></td>`;
-                    }
+                    planets.forEach(p => {
+                        if (!vargaGrahas[p] || !vargaGrahas[p].avasthas) {
+                            htmlStr += `<td>-</td>`;
+                            return;
+                        }
+                        const avData = vargaGrahas[p].avasthas[avType.key];
+                        let stateStr = '-';
+                        if (Array.isArray(avData)) {
+                            if (avData.length > 0) {
+                                stateStr = avData.map(a => a.state.split(' ')[0]).join(',<br/>');
+                            } else {
+                                stateStr = '-';
+                            }
+                        } else if (avData && avData.state) {
+                            stateStr = avData.state.split(' ')[0];
+                        }
+                        
+                        let conditionTooltip = '';
+                        if (Array.isArray(avData)) {
+                            conditionTooltip = avData.map(a => a.state + ': ' + a.condition).join(' | ');
+                        } else if (avData) {
+                            conditionTooltip = avData.condition || '';
+                        }
+                        
+                        htmlStr += `<td title="${conditionTooltip}" style="font-size:0.95em;">${stateStr}</td>`;
+                    });
+                    
+                    tr.innerHTML = htmlStr;
+                    tbody.appendChild(tr);
                 });
-                tr.innerHTML = htmlStr;
-                tbody.appendChild(tr);
             });
         }
 
