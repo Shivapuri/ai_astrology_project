@@ -2,12 +2,11 @@
 
 If you are an AI modifying or adding files in this directory, you **MUST** adhere to the following:
 
-## 0. THE SANSKRIT VECTOR DATABASE (CRITICAL)
-We have a local SQLite vector database containing the main Sanskrit astrological scriptures (BPHS, Jataka Parijata, Phaladeepika, etc.). 
-**Every agent must use this database to find original Sanskrit quotes to vouch for the correctness of their calculations.**
-To query the database, run the provided python script via the terminal:
+## 0. SOURCES OF TRUTH & THE SANSKRIT DB (CRITICAL)
+While Brihat Parashara Hora Shastra (BPHS) is a foundational text, **it is not the sole source of truth.** 
+For complex algorithms (like Shadbala, Lajjitadi Avasthas, etc.), the absolute sources of truth are Ernst Wilhelm's PDFs located in `/source-material/software-setup/` (e.g., `Vedic Astrology An Integrated Approach.pdf` and `Bhava and Graha Balas.pdf`).
+However, we also have a local SQLite vector database containing BPHS and other Sanskrit texts. You can query it to find original Sanskrit quotes to provide scriptural backing for core rules:
 `python3 /Users/hajnaljanos/PycharmProjects/astra/jyotish/scripture_db.py search <keyword>`
-You can also list chapters and read specific verses to extract the exact Shlokas and their English/ITRANS transliterations.
 
 ## 1. Feature Integration Standard (The 4-Part Structure)
 Whenever a **new astrological feature** (such as Shad Bala, Ishta/Kashta Phala, Sphuta Drishti, etc.) is integrated, it must follow this exact format:
@@ -19,7 +18,8 @@ Whenever a **new astrological feature** (such as Shad Bala, Ishta/Kashta Phala, 
    - **Textual Grounding & Quotations:** (MANDATORY) Explicit quotations and references from the original Sanskrit text retrieved from our vector database (`scripture_db.py`) or Ernst Wilhelm's translations demonstrating exactly where these rules are laid out.
 
 ## 2. Separation of Concerns
-The calculation of a planet's base status (Friendships, Dignities, Aspects) is done in `relationships.py`. Do NOT calculate friendships or dignities directly inside specific UI scripts or Avastha scripts. Call the functions in `relationships.py`.
+The calculation of a planet's base status (Friendships, Dignities) is strictly managed in `jyotish/relationships/relationships.py`. Aspects (Drishti) are handled in `jyotish/aspects/aspects.py`. 
+Do NOT calculate friendships, dignities, or aspects directly inside specific UI scripts or Avastha scripts. Always import and call the functions from their dedicated modules to respect the Calculation Hierarchy DAG.
 
 ## 3. Zero Breakage Policy
 This mathematical engine is heavily tested. Ensure you do not change the return types of core functions.
