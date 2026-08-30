@@ -1,25 +1,21 @@
-# AI Session Handoff
+# Session Handoff
 
-## 1. Current State (What was accomplished)
-- **Phase 1 (Architecture) & Phase 2 (Dignities) are COMPLETE.** 
-- The `test_dignities.py` suite passes with 100% accuracy against the `angelina_jolie_dignities.csv` baseline (112 distinct dignity checks across 16 Vargas).
-- **UI/UX Overhaul:** The frontend was completely rewritten to use a modular, resizable `Split.js` grid system (mimicking Kala software).
-- **Responsive UI Scaling:** Implemented a strict `ResizeObserver` bounding-box scaler for all data tables. Tables now automatically scale to use 100% of their cell space without scrolling. The "Context Info" (`tmpl-info`) widget is the sole exception, retaining `overflow: auto`.
+## 1. Current State
+- **Phase 3 (Aspects) is 100% COMPLETE & VERIFIED:** We achieved a massive breakthrough in calculating Graha Drishti. Our engine now perfectly matches Kala's Aspect tables (Planets, Equal Houses, Bhava Chalita) cell-by-cell with 0 mismatches.
+- **UI Persistence & Cleanup:** The frontend grid layout system was completely overhauled. It now uses `localStorage` to save and persist the exact widget layout across chart reloads and page refreshes. The 11-Cell Grid layout was fully implemented.
+- **UI Strictness:** Per user request, all completely unverified widgets (Dashas, Shadbala, Planetary States, Nakshatras, and Rasi Drishti) have been stripped from the UI and context menus to ensure the frontend strictly reflects mathematically verified data. 
 
-## 2. Mathematical Discoveries (Crucial Engine Logic)
-While debugging `relationships.py` and `generate_jyotish.py`, we discovered and hard-coded several non-obvious Parashara constraints:
-- **Varga Specific Distances (Tatkalika):** Temporary Friendship (Tatkalika) is *always* calculated using the D1 planetary positions, even when determining Dignity for higher Vargas.
-- **Deep Debilitation Limits:** A planet is only considered 'Debilitated' if it falls within specific degree bounds. If it exceeds them, it reverts to the sign lord's compound friendship.
-  - Moon: 0° to 3° of Scorpio.
-  - Mercury: 0° to 15° of Pisces.
-- **Even Rasi Reversals:** For D10 (Dasamsa) and D24 (Chaturvimsamsa), Even signs dictate counting *backwards* from the starting point, breaking the standard uniform varga formula.
+## 2. Mathematical Discoveries & Edge Cases (CRITICAL)
+- **The Triangle Wave Discovery (Visesha Drishti):** We solved the great mystery of Kala's special aspects. Kala evaluates special aspects (Mars 4/8, Jupiter 5/9, Saturn 3/10) using a strict **Triangle Wave interpolation**, not the standard continuous BPHS formula. The bonus (+15, +30, or +45) peaks *exactly* at the targeted house cusp degree and drops linearly to 0 over a span of exactly 30 degrees in both directions. `bonus = max(0.0, peak_bonus * (1.0 - distance_from_peak / 30.0))`. This is now hard-documented in `GEMINI.md`.
+- **Conjunctions (Yuti):** Kala treats conjunctions as 0.0 virupas for the mathematical totals (`+` and `-` columns) but labels them as `Y` in the UI. We replicated this exact behavior.
+- **Shadbala Dig Bala Anomaly:** A preliminary run of `compare_shadbala.py` against the Angelina Jolie chart revealed that Kala calculates Dig Bala vastly differently than classical texts. (e.g., Mars is exactly conjunct the MC, which classically yields full 60 Dig Bala, but Kala assigns it 20.0). This points to Kala using a modified coordinate framework (perhaps Chalit house distances rather than ecliptic degrees).
 
-## 3. Documentation Check
-- [x] Updated `jyotish/relationships/relationships.md` to reflect the mathematical limits discovered above.
-- [x] Updated `source-material/software-setup/ui_scaling_guidelines.md` to dictate how CSS/JS scaling is handled for future UI updates.
-- [x] Updated `GEMINI.md` to enforce this handoff protocol.
+## 3. Next Steps
+- **Start Phase 4 (Level 5 Verification - Shadbala):** The next grand objective is reverse-engineering Kala's Shadbala calculations.
+- We have the total overview table (`angelina_jolie_shadbala.csv`) which currently shows 42 out of 49 cells mismatching.
+- The next step is for the user to provide the granular baseline screenshots/CSVs from Kala for the individual Shadbala components (Sthana Bala, Dig Bala, Kala Bala, etc.). Once provided, we must analyze the discrepancies component-by-component.
 
-## 4. Next Steps for the Next AI
-- **Proceed to Phase 3:** Verify **Aspects (Drishti)**.
-- **Task:** Create `test_aspects.py` and test against `angelina_jolie_drishti_yuti.csv`.
-- **Warning:** Before calculating Shadbala, ensure the engine correctly calculates the 0-60 Virupa strength of planetary aspects.
+## 4. Documentation Check
+- [x] Triangle Wave math documented in `GEMINI.md`.
+- [x] UI/Verification changes noted.
+- [x] Phase 3 marked as completely finished.

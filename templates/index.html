@@ -907,16 +907,11 @@
     <div id="widget-context-menu" style="display:none; position:absolute; background:white; border:1px solid #ccc; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10000; border-radius:4px; padding:5px 0; min-width:150px;">
         <div class="menu-item" onclick="assignWidget('chart')">Chart</div>
         <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
-        <div class="menu-item" onclick="assignWidget('nakshatras')">Nakshatras</div>
         <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
         <div class="menu-item" onclick="assignWidget('avasthas-calc')">Avasthas (Calculated)</div>
-        <div class="menu-item" onclick="assignWidget('avasthas')">Planetary States</div>
-        <div class="menu-item" onclick="assignWidget('shadbala')">Shadbala</div>
-                <div class="menu-item" onclick="assignWidget('aspects')">Rasi Drishti (Aspects)</div>
         <div class="menu-item" onclick="assignWidget('aspects-planets')">Aspects (Planets)</div>
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
-        <div class="menu-item" onclick="assignWidget('dashas')">Dashas</div>
         <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
     </div>
     
@@ -1035,24 +1030,6 @@
                         <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
                     </div>
     </template>
-    <template id="tmpl-nakshatras">
-        <div class="widget-content" id="tab-nakshatras">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <p style="margin: 0;"><strong id="ayanamsaName"></strong></p>
-                            <button class="help-btn" onclick="toggleHelp('help-nakshatras')" title="What is this?">?</button>
-                        </div>
-                        <div id="help-nakshatras" class="help-box" style="display: none;">
-                            <strong>What are Nakshatras?</strong><br>
-                            Nakshatras are the 27 lunar mansions of Vedic astrology. While the 12 zodiac signs show the broad environment, the Nakshatras reveal the deeper psychological focus and specific energy of a planet. Each Nakshatra is divided into 4 <em>Padas</em> (steps or quarters), which fine-tune how the planet behaves.
-                        </div>
-                        <table id="nakshatraTable">
-                            <thead>
-                                <tr><th>Graha</th><th>Deg</th><th>Sign</th><th>Nakshatra</th><th>Pada</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-    </template>
     <template id="tmpl-dignities">
         <div class="widget-content" id="tab-varga-dignities">
                         <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
@@ -1147,184 +1124,6 @@
                                 <tbody></tbody>
                             </table>
                         </div>
-                    </div>
-    </template>
-    <template id="tmpl-avasthas">
-        <div class="widget-content" id="tab-avasthas">
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                        <div>
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                                <h3 style="color: #3d312a; margin: 0;">Core Avasthas (States)</h3>
-                                <button class="help-btn" onclick="toggleHelp('help-avasthas')" title="What is this?">?</button>
-                            </div>
-                            <div id="help-avasthas" class="help-box" style="display: none;">
-                                <strong>What are Planetary States (Avasthas)?</strong><br>
-                                Avasthas are the "states of being" or moods of a planet. They modify how effectively the planet can do its job:<br>
-                                &bull; <strong>Bala (Age):</strong> Represents the age and physical vitality of the planet, determining its sheer capacity and stamina to produce results.<br>
-                                &bull; <strong>Jagrat (Alertness):</strong> Indicates the awakening of the planet's consciousness, showing whether it is awake and eager to act, slumbering, or somewhere in between.<br>
-                                &bull; <strong>Deeptadi & Lajjitadi (Moods):</strong> Reveals the internal mood, ease, or stress the planet experiences while it produces events, coloring how the event will ultimately feel to you.
-                            </div>
-                            <table id="avasthasTable">
-                                <thead>
-                                    <tr>
-                                        <th>Graha</th>
-                                        <th class="tooltip-target" data-tooltip="Bala (Age): Represents the age and physical vitality of the planet, determining its sheer capacity and stamina to produce results.">Bala (Age)</th>
-                                        <th class="tooltip-target" data-tooltip="Jagradi (Alertness): Indicates the awakening of the planet's consciousness, showing whether it is awake and eager to act, slumbering, or somewhere in between.">Jagrat (Alertness)</th>
-                                        <th class="tooltip-target" data-tooltip="Deeptadi (Mood/Stress): Reveals the internal mood, ease, or stress the planet experiences while it produces events, coloring how the event will ultimately feel to you.">Deeptadi (Condition)</th>
-                                        <th class="tooltip-target" data-tooltip="Lajjitadi (Support/Hindrance): Shows the concrete help or hindrance the planet receives from friendly or inimical planets, dictating its ultimate success or failure.">Lajjitadi (Moods)</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                        <div style="border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                            <h3 style="color: #3d312a; margin-top: 0; border-bottom: 2px solid #d35400; padding-bottom: 5px;" class="tooltip-target" data-tooltip="Shayanadi (Mental Seizure): Describes exactly how the planet 'seizes' or grabs your mind (e.g., making you eager, sleepy, or distracted) to magnetically attract and ensure its fated events happen.">Shayanadi (Daily Activity)</h3>
-                            <div id="shayanadiWidget" class="shayanadi-widget" style="display: flex; flex-wrap: wrap; gap: 10px;">
-                                <!-- Widget items -->
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-    </template>
-    <template id="tmpl-shadbala">
-        <div class="widget-content" id="tab-shadbala">
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                                <h3 style="color: #3d312a; margin: 0;">Shadbala (Six-fold Strength)</h3>
-                                <button class="help-btn" onclick="toggleHelp('help-shadbala')" title="What is this?">?</button>
-                            </div>
-                            <div id="help-shadbala" class="help-box" style="display: none;">
-                                <strong>What is Shadbala?</strong><br>
-                                Shadbala calculates the total raw "horsepower" or physical capacity of a planet to influence your life. It compiles strength from six different astronomical sources (position, direction, time, motion, nature, and aspects).<br>
-                                It is measured in <strong>Rupas</strong> (where 1 Rupa = 60 Virupas).<br>
-                                &bull; <strong>High (e.g., Above 7 Rupas):</strong> Very strong, highly active, and capable of overpowering other planets.<br>
-                                &bull; <strong>Average (e.g., 5 to 7 Rupas):</strong> Standard strength, capable of doing its necessary work.<br>
-                                &bull; <strong>Low (e.g., Below 5 Rupas):</strong> Weak, might struggle to produce its intended results independently.
-                            </div>
-                            <table id="shadbalaTable">
-                                <thead>
-                                    <tr>
-                                        <th>Graha</th>
-                                        <th title="Total Strength in Rupas (60 Virupas = 1 Rupa). A higher value indicates a stronger planet.">Total Rupas</th>
-                                        <th title="Positional Strength based on exaltation, mulatrikona, own sign, friendly sign, etc.">Sthana Bala</th>
-                                        <th title="Directional Strength. Sun/Mars strong in 10th, Jupiter/Mercury in 1st, Moon/Venus in 4th, Saturn in 7th.">Dig Bala</th>
-                                        <th title="Temporal Strength based on day/night, month, year, and planetary war.">Kala Bala</th>
-                                        <th title="Motional Strength based on retrograde motion or proximity to the Sun.">Cheshta Bala</th>
-                                        <th title="Natural Strength based on inherent luminosity. Sun > Moon > Venus > Jupiter > Mercury > Mars > Saturn.">Naisargika Bala</th>
-                                        <th title="Aspectual Strength based on benefic and malefic aspects received.">Drik Bala</th>
-                                        <th title="Auspicious Effects during Dasa. sqrt(Uccha * Cheshta)">Ishta Phala</th>
-                                        <th title="Inauspicious Effects during Dasa. sqrt((60-Uccha) * (60-Cheshta))">Kashta Phala</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-    </template>
-    <template id="tmpl-aspects">
-        <div class="widget-content" id="tab-aspects">
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                                    <h3 style="color: #3d312a; margin: 0;">Rasi Drishti (Sign Aspects)</h3>
-                                    <button class="help-btn" onclick="toggleHelp('help-rasi-aspects')" title="What is this?">?</button>
-                                </div>
-                                <div id="help-rasi-aspects" class="help-box" style="display: none;">
-                                    <strong>What are Rasi Aspects?</strong><br>
-                                    In Vedic astrology, signs (Rasis) aspect other signs directly based on their modality. If a planet sits in a sign, it fully aspects all planets located in the aspected signs. This is a binary "all-or-nothing" aspect used heavily in Jaimini astrology and for structural Yogas.
-                                </div>
-                                <table id="rasiAspectsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Graha</th>
-                                            <th>Occupied Sign</th>
-                                            <th>Aspects Signs</th>
-                                            <th>Planets Aspected</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-                            
-                            <hr style="border: 0; border-top: 1px dashed #d35400; margin: 10px 0;">
-
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                                    <h3 style="color: #3d312a; margin: 0;">Graha Drishti to Planets (+/- Scores)</h3>
-                                    <button class="help-btn" onclick="toggleHelp('help-graha-planets')" title="What is this?">?</button>
-                                </div>
-                                <div id="help-graha-planets" class="help-box" style="display: none;">
-                                    <strong>What are the +/- Scores?</strong><br>
-                                    This measures the exact Subha/Asubha Phala (Auspicious/Inauspicious impact) delivered from one planet to another based on Graha Drishti. 
-                                    <br><br>
-                                    <strong>+ Score:</strong> The exact amount of positive support and blessings the planet is giving.<br>
-                                    <strong>- Score:</strong> The exact amount of stress, harm, or affliction the planet is causing.
-                                </div>
-                                <table id="grahaPlanetsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Aspected Planet</th>
-                                            <th>Aspecting Planet</th>
-                                            <th>Raw Drishti</th>
-                                            <th style="color: #27ae60;">+ Score (Subha)</th>
-                                            <th style="color: #c0392b;">- Score (Asubha)</th>
-                                            <th>Net Impact</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-
-                            <hr style="border: 0; border-top: 1px dashed #d35400; margin: 10px 0;">
-
-                            <div>
-                                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                                    <h3 style="color: #3d312a; margin: 0;">Graha Drishti to Bhava Chalit Cusps</h3>
-                                    <button class="help-btn" onclick="toggleHelp('help-graha-cusps')" title="What is this?">?</button>
-                                </div>
-                                <div id="help-graha-cusps" class="help-box" style="display: none;">
-                                    <strong>Aspects to House Cusps?</strong><br>
-                                    Houses have exact mathematical center points (cusps). This shows exactly how much a planet is blessing (+) or afflicting (-) that specific area of life by casting an aspect directly onto the exact degree of the house center.
-                                </div>
-                                <table id="grahaCuspsTable">
-                                    <thead>
-                                        <tr>
-                                            <th>House Cusp</th>
-                                            <th>Aspecting Planet</th>
-                                            <th>Raw Drishti</th>
-                                            <th style="color: #27ae60;">+ Score (Subha)</th>
-                                            <th style="color: #c0392b;">- Score (Asubha)</th>
-                                            <th>Net Impact</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody></tbody>
-                                </table>
-                            </div>
-
-                        </div>
-                    </div>
-    </template>
-    <template id="tmpl-dashas">
-        <div class="widget-content" id="tab-dashas">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h3 style="color: #3d312a; margin: 0;">Vimshottari Dasha (Saura Year)</h3>
-                            <button class="help-btn" onclick="toggleHelp('help-dashas')" title="What is this?">?</button>
-                        </div>
-                        <div id="help-dashas" class="help-box" style="display: none;">
-                            <strong>What are Dashas?</strong><br>
-                            Dashas are the planetary time periods that trigger the events promised in your birth chart. The "Mahadasha" is the major period ruled by a specific planet. During a planet's Mahadasha, its themes, its house placements, and its overall strength in your chart become the central focus of your life for that entire duration.
-                        </div>
-                        <table id="dashaTable">
-                            <thead>
-                                <tr>
-                                    <th>Mahadasha</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
                     </div>
     </template>
 
@@ -1616,7 +1415,7 @@
                     assignWidget('aspects-equal-houses', document.getElementById('cell4'));
                     assignWidget('avasthas-calc', document.getElementById('cell5'));
                     assignWidget('dignities', document.getElementById('cell6'));
-                    assignWidget('dashas', document.getElementById('cell7'));
+                    assignWidget('empty', document.getElementById('cell7'));
                 } else if (layoutType === '11cell') {
                     assignWidget('chart', document.getElementById('c1'));
                     assignWidget('aspects-planets', document.getElementById('c2'));
@@ -2176,7 +1975,7 @@
         }
 
         function updateAspectsTable(varga) {
-            const rasiTbody = document.querySelector('#rasiAspectsTable tbody');
+            const rasiTbody = null;
             const pTbody = document.querySelector('#grahaPlanetsTable tbody');
             const cTbody = document.querySelector('#grahaCuspsTable tbody');
             
