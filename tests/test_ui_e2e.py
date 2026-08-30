@@ -75,3 +75,35 @@ def test_planet_selection_clear(page: Page):
         expect(interactive_elements[0]).not_to_have_class(re.compile(r"highlight-source"))
         # Verify second IS highlighted
         expect(interactive_elements[1]).to_have_class(re.compile(r"highlight-source"))
+
+def test_client_change_updates_chart(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    
+    # Ensure the first client is loaded and SVG is visible
+    page.locator("svg").first.wait_for(state="visible")
+    
+    # Grab the HTML content of the first chart widget's South SVG
+    chart_widget = page.locator('.grid-cell[data-widget="chart"]').first
+    initial_svg_html = chart_widget.locator('.svg-south').inner_html()
+    
+    # Check options in select
+    select_locator = page.locator("#nativeSelect")
+    options_count = select_locator.locator("option").count()
+    
+    if options_count >= 3:
+        # Select the next client (index 2)
+        second_option_value = select_locator.locator("option").nth(2).get_attribute("value")
+        select_locator.select_option(second_option_value)
+        
+        # Click Load
+        page.locator("button", has_text="Load").click()
+        
+        # Wait for loading indicator to show then hide (or just wait a bit)
+        page.wait_for_timeout(1500)
+        
+        # Grab the HTML content again
+        new_svg_html = chart_widget.locator('.svg-south').inner_html()
+        
+        # The chart should have updated, so the SVGs should be different
+        assert initial_svg_html != new_svg_html, "Chart SVG did not update after loading a new client!"
