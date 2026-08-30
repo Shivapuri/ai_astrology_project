@@ -157,7 +157,7 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
         }
     }
     """
-    results = {"planets": {}, "cusps": {}, "equal_cusps": {}, "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}}}
+    results = {"planets": {}, "cusps": {}, "equal_cusps": {}, "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}}, "yutis": {}}
     
     # Helper to determine if planet is benefic or malefic for Drishti
     def is_benefic(p_name, moon_lon, sun_lon):
@@ -214,9 +214,17 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
         totals_dict[aspected_key]["minus"] = round(totals_dict[aspected_key]["minus"], 2)
         totals_dict[aspected_key]["net"] = round(totals_dict[aspected_key]["net"], 2)
 
-    # 1. Aspects to Planets
+    # 1. Aspects to Planets and Yutis
     for aspected, aspected_info in planets_data.items():
         if aspected in ["Rahu", "Ketu"]: continue
+        
+        # Calculate Yutis (Conjunctions in same sign)
+        results["yutis"][aspected] = []
+        aspected_sign = aspected_info.get("sign")
+        for other, other_info in planets_data.items():
+            if other != aspected and other not in ["Rahu", "Ketu"] and aspected_sign and other_info.get("sign") == aspected_sign:
+                results["yutis"][aspected].append(other)
+                
         aspected_lon = aspected_info.get("longitude", 0.0)
         calc_aspects(aspected, aspected_lon, results["planets"], results["totals"]["planets"])
 

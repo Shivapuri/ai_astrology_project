@@ -2031,24 +2031,10 @@
             
             const aspects = currentChartData.advanced_aspects[dataKey];
             const totals = currentChartData.advanced_aspects.totals ? currentChartData.advanced_aspects.totals[dataKey] : null;
+            const yutis = currentChartData.advanced_aspects.yutis || {};
             if (!aspects) return;
             
             const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
-            
-            // Build yuti map from chart data (planets sharing the same sign)
-            const yutiMap = {};
-            if (!isHouse && currentChartData.vargas && currentChartData.vargas.D1) {
-                const grahas = currentChartData.vargas.D1.grahas;
-                aspectingPlanets.forEach(p => {
-                    if (!grahas[p]) return;
-                    yutiMap[p] = [];
-                    aspectingPlanets.forEach(q => {
-                        if (p !== q && grahas[q] && grahas[p].sign === grahas[q].sign) {
-                            yutiMap[p].push(q);
-                        }
-                    });
-                });
-            }
             
             // Header Row
             const trHead = document.createElement('tr');
@@ -2064,7 +2050,7 @@
                     const cKey = c.toString();
                     if (!isHouse && p === c) {
                         html += `<td>--</td>`;
-                    } else if (!isHouse && yutiMap[p] && yutiMap[p].includes(c)) {
+                    } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
                         html += `<td style="color:red; font-weight:bold;">Y</td>`;
                     } else {
                         const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
