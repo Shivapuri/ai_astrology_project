@@ -96,7 +96,9 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) 
         if sign == "Taurus":
             if degree <= 3: return "Exalted"
             else: return "Moolatrikona"
-        if sign == "Scorpio": return "Debilitated"
+        if sign == "Scorpio":
+            if degree <= 3: return "Debilitated"
+            # If > 3 degrees, it falls back to the sign lord relationship
         if sign == "Cancer": return "Own Sign"
     elif planet == "Mars":
         if sign == "Capricorn": return "Exalted"
@@ -110,7 +112,9 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) 
             if degree <= 15: return "Exalted"
             elif degree <= 20: return "Moolatrikona"
             else: return "Own Sign"
-        if sign == "Pisces": return "Debilitated"
+        if sign == "Pisces":
+            if degree <= 15: return "Debilitated"
+            # If > 15 degrees, falls back to sign lord
         if sign == "Gemini": return "Own Sign"
     elif planet == "Jupiter":
         if sign == "Cancer": return "Exalted"

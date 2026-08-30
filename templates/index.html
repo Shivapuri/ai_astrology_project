@@ -732,8 +732,15 @@
                 {% endfor %}
             </select>
             <button onclick="loadChart()">Load</button>
-            <button onclick="document.getElementById('addPersonModal').style.display='flex'">+ Add</button>
-            <div id="loading" style="display:none; color: #3498db; margin-left:10px; font-size:13px;">Calculating...</div>
+            <button onclick="openAddModal()">+ Add</button>
+            <div id="loading" style="display:none; color: #3498db; margin-left:10px; font-size:13px;">Calculating...
+            <select id="layoutSelect" onchange="changeLayout(this.value)" style="margin-left: 10px;">
+                <option value="kala">Kala Layout (3x3)</option>
+                <option value="8cell">8-Cell Grid</option>
+                <option value="11cell">11-Cell Grid</option>
+                <option value="2chart">2 Charts Side-by-Side</option>
+            </select>
+</div>
         </div>
         <div class="toolbar-center">
             <span id="chartTitle">No Chart Loaded</span>
@@ -766,6 +773,16 @@
                     </select>
                     <select id="citySelect" onchange="fetchTimezone()" style="flex:1;" disabled>
                         <option value="">-- City --</option>
+                    </select>
+                </div>
+                <div style="margin-top:10px;">
+                    <select id="newNameSoundValue" style="width:100%; box-sizing:border-box;">
+                        <option value="0">Auto-detect Sound (Varnamashka) from Name</option>
+                        <option value="1">1: A, AA, K, CH, T, P, Y, SH, Q</option>
+                        <option value="2">2: I, EE, KH, CHH, TH, F, PH, R</option>
+                        <option value="3">3: U, OO, G, J, D, B, L, S, Z</option>
+                        <option value="4">4: E, AI, GH, JH, DH, BH, V, W, H</option>
+                        <option value="5">5: O, AU, NG, NY, N, M</option>
                     </select>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
@@ -881,78 +898,160 @@
     </div>
 
     
-    <div id="main-container" style="display:none;">
-        <!-- Left Pane: Chart -->
-        <div id="chart-pane" class="split">
-            <div class="chart-toolbar">
-                <div class="varga-selector" style="margin-bottom: 0;">
-                    <label for="vargaSelect1">Varga: </label>
-                    <select id="vargaSelect1" onchange="updateSlot(1)">
-                        <option value="D1">D1 - Rasi</option>
-                        <option value="D2">D2 - Hora</option>
-                        <option value="D3">D3 - Drekkana</option>
-                        <option value="D4">D4 - Chaturthamsha</option>
-                        <option value="D7">D7 - Saptamsha</option>
-                        <option value="D9">D9 - Navamsa</option>
-                        <option value="D10">D10 - Dashamsha</option>
-                        <option value="D12">D12 - Dwadashamsha</option>
-                        <option value="D16">D16 - Shodashamsha</option>
-                        <option value="D20">D20 - Vimshamsha</option>
-                        <option value="D24">D24 - Chaturvimshamsha</option>
-                        <option value="D27">D27 - Saptavimshamsha</option>
-                        <option value="D30">D30 - Trimshamsha</option>
-                        <option value="D40">D40 - Khavedamsha</option>
-                        <option value="D45">D45 - Akshavedamsha</option>
-                        <option value="D60">D60 - Shashtiamsha</option>
-                    </select>
-                </div>
-                <div id="toolbar-chart-title" style="font-weight: 600; font-size: 15px; color: #4a3325; flex: 1; text-align: center;">D1 - Rasi</div>
-                <div class="chart-hotkeys">
-                    <button class="hotkey-btn active" onclick="switchChartType('south')" id="btn-south">[S] South</button>
-                    <button class="hotkey-btn" onclick="switchChartType('north')" id="btn-north">[N] North</button>
-                    <button class="hotkey-btn" onclick="switchChartType('circular')" id="btn-circular">[C] Circular</button>
-                </div>
-            </div>
+    
+    <div id="main-container" style="display:flex; flex-direction:column; flex: 1; overflow:hidden;">
+        <div id="grid-container" style="flex:1; width:100%; height:100%; display:flex; flex-direction:row;"></div>
+    </div>
+    
+    <!-- Context Menu for Widget Selection -->
+    <div id="widget-context-menu" style="display:none; position:absolute; background:white; border:1px solid #ccc; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10000; border-radius:4px; padding:5px 0; min-width:150px;">
+        <div class="menu-item" onclick="assignWidget('chart')">Chart</div>
+        <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
+        <div class="menu-item" onclick="assignWidget('nakshatras')">Nakshatras</div>
+        <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
+        <div class="menu-item" onclick="assignWidget('avasthas-calc')">Avasthas (Calculated)</div>
+        <div class="menu-item" onclick="assignWidget('avasthas')">Planetary States</div>
+        <div class="menu-item" onclick="assignWidget('shadbala')">Shadbala</div>
+        <div class="menu-item" onclick="assignWidget('aspects')">Aspects</div>
+        <div class="menu-item" onclick="assignWidget('dashas')">Dashas</div>
+        <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
+    </div>
+    
+    <style>
+        .menu-item { padding: 8px 15px; cursor: pointer; font-size: 14px; color: #3d312a; }
+        .menu-item:hover { background-color: #eee5d3; }
+        
+                .grid-cell {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            overflow: auto;
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+            border: 1px solid #dcb594;
+            overflow: auto;
+            position: relative;
+            box-sizing: border-box;
+        }
+        .grid-cell-header {
+            background: #eee5d3;
+            padding: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #4a3325;
+            text-align: center;
+            border-bottom: 1px solid #dcb594;
+            display: none; /* Can be enabled if needed */
+        }
+        .grid-cell {
+            container-type: size;
+        }
+                .grid-cell-content {
+            padding: 5px;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .grid-cell-content.scrollable {
+            overflow: auto;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
 
-            <div id="view-south" class="chart-view active">
-                <div class="chart-svg-container" id="southChart1"></div>
+        /* The wrapper that gets transformed */
+        .scale-wrapper {
+            transform-origin: center center;
+            display: inline-block;
+        }
+        
+        .grid-cell-content table {
+            border-collapse: collapse;
+            font-size: 14px; /* Base size, will be scaled via transform */
+            width: max-content;
+        }
+        
+        .grid-cell-content th, .grid-cell-content td {
+            padding: 8px 12px;
+            white-space: nowrap;
+        }
+
+        .gutter {
+            background-color: #eee5d3 !important;
+        }
+        .gutter:hover {
+            background-color: #d5c8b2 !important;
+        }
+        .gutter.gutter-horizontal {
+            cursor: col-resize;
+            width: 4px !important;
+        }
+        .gutter.gutter-vertical {
+            cursor: row-resize;
+            height: 4px !important;
+        }
+    </style>
+
+    <!-- Templates -->
+    <template id="tmpl-chart">
+        <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
+            <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
+                    <option value="D1">D1</option>
+                    <option value="D9">D9</option>
+                    <option value="D10">D10</option>
+                    <option value="D60">D60</option>
+                    <!-- add others as needed -->
+                </select>
+                <div class="chart-hotkeys">
+                    <button class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')">S</button>
+                    <button class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')">N</button>
+                    <button class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')">C</button>
+                </div>
             </div>
-            
-            <div id="view-north" class="chart-view">
-                <div class="chart-svg-container" id="northChart1"></div>
+            <div class="view-south chart-view active" style="flex:1; display:flex; align-items:center; justify-content:center;">
+                <div class="chart-svg-container svg-south" style="width:100%; height:100%;"></div>
             </div>
-            <div id="view-circular" class="chart-view">
-                <div class="chart-svg-container" id="circularChart1"></div>
+            <div class="view-north chart-view" style="flex:1; display:none; align-items:center; justify-content:center;">
+                <div class="chart-svg-container svg-north" style="width:100%; height:100%;"></div>
+            </div>
+            <div class="view-circular chart-view" style="flex:1; display:none; align-items:center; justify-content:center;">
+                <div class="chart-svg-container svg-circular" style="width:100%; height:100%;"></div>
             </div>
         </div>
-        
-        <!-- Right Pane: Info & Metrics -->
-        <div id="info-pane" class="split">
-            
-            <div id="info-top" class="pane-section">
-                <div class="sub-window">
-                    <div class="sub-window-header">Context Info</div>
-                    <div class="sub-window-content" id="context-info-content">
+    </template>
+    
+    <template id="tmpl-info">
+        <div class="sub-window-content" id="context-info-content">
                         <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
                     </div>
-
-                </div>
-            </div>
-            
-            <div id="info-bottom" class="pane-section">
-                <div class="sub-window">
-                    <div class="tabs">
-                        <button class="tab-btn active" data-target="tab-nakshatras">Nakshatras</button>
-                        <button class="tab-btn" data-target="tab-metrics">Metrics / Dignity</button>
-                                                <button class="tab-btn" data-target="tab-varga-dignities">Dignities in Vargas</button>
-                        <button class="tab-btn" data-target="tab-avasthas-calc">Avasthas (Calculated)</button>
-                        <button class="tab-btn" data-target="tab-avasthas">Planetary States</button>
-                        <button class="tab-btn" data-target="tab-shadbala">Shadbala</button>
-                        <button class="tab-btn" data-target="tab-aspects">Aspects</button>
-                        <button class="tab-btn" data-target="tab-dashas">Dashas</button>
+    </template>
+    <template id="tmpl-nakshatras">
+        <div class="widget-content" id="tab-nakshatras">
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <p style="margin: 0;"><strong id="ayanamsaName"></strong></p>
+                            <button class="help-btn" onclick="toggleHelp('help-nakshatras')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-nakshatras" class="help-box" style="display: none;">
+                            <strong>What are Nakshatras?</strong><br>
+                            Nakshatras are the 27 lunar mansions of Vedic astrology. While the 12 zodiac signs show the broad environment, the Nakshatras reveal the deeper psychological focus and specific energy of a planet. Each Nakshatra is divided into 4 <em>Padas</em> (steps or quarters), which fine-tune how the planet behaves.
+                        </div>
+                        <table id="nakshatraTable">
+                            <thead>
+                                <tr><th>Graha</th><th>Deg</th><th>Sign</th><th>Nakshatra</th><th>Pada</th></tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
-                    
-                    <div class="tab-content" id="tab-varga-dignities">
+    </template>
+    <template id="tmpl-dignities">
+        <div class="widget-content" id="tab-varga-dignities">
                         <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
                             <h3 style="color: #3d312a; margin: 0;">Dignities in Vargas</h3>
                         </div>
@@ -974,50 +1073,9 @@
                             </table>
                         </div>
                     </div>
-                    
-                    <div class="tab-content active" id="tab-nakshatras">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <p style="margin: 0;"><strong id="ayanamsaName"></strong></p>
-                            <button class="help-btn" onclick="toggleHelp('help-nakshatras')" title="What is this?">?</button>
-                        </div>
-                        <div id="help-nakshatras" class="help-box" style="display: none;">
-                            <strong>What are Nakshatras?</strong><br>
-                            Nakshatras are the 27 lunar mansions of Vedic astrology. While the 12 zodiac signs show the broad environment, the Nakshatras reveal the deeper psychological focus and specific energy of a planet. Each Nakshatra is divided into 4 <em>Padas</em> (steps or quarters), which fine-tune how the planet behaves.
-                        </div>
-                        <table id="nakshatraTable">
-                            <thead>
-                                <tr><th>Graha</th><th>Deg</th><th>Sign</th><th>Nakshatra</th><th>Pada</th></tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="tab-content" id="tab-metrics">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h3 id="dignityTitle" style="color: #4a3325; margin: 0;">Planetary Dignity</h3>
-                            <button class="help-btn" onclick="toggleHelp('help-dignity')" title="What is this?">?</button>
-                        </div>
-                        <div id="help-dignity" class="help-box" style="display: none;">
-                            <strong>What is Planetary Dignity?</strong><br>
-                            Dignity measures how welcomed and comfortable a planet feels in its current sign. A planet in its own sign or exalted is like a king in his castle (strong, positive, and capable). A planet in an enemy's sign or debilitated is like a guest in a hostile house (stressed and struggling to do its job). This uses the 5-fold compound friendship rules (Panchadha Maitri).
-                        </div>
-                        <table id="dignityTable">
-                            <thead>
-                                <tr>
-                                    <th>Graha</th>
-                                    <th>Sign Lord</th>
-                                    <th>Natural</th>
-                                    <th>Temporary</th>
-                                    <th>Compound</th>
-                                    <th>Final Dignity</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
-                    
-                    <div class="tab-content" id="tab-avasthas-calc" style="background-color: #ffffcc; padding: 20px; font-family: 'Times New Roman', Times, serif;">
+    </template>
+    <template id="tmpl-avasthas-calc">
+        <div class="widget-content" id="tab-avasthas-calc" style="background-color: #ffffcc; padding: 20px; font-family: 'Times New Roman', Times, serif;">
                         <div style="text-align: center; margin-bottom: 20px;">
                             <h3 id="avasthaCalcTitle" style="color: #000099; margin: 0; font-size: 1.3em; font-weight: bold;">Rasi - Avasthas - Calculated</h3>
                         </div>
@@ -1034,10 +1092,10 @@
                                     background-color: #ffffcc;
                                     color: #000099;
                                     font-weight: normal;
-                                    padding: 15px 5px;
+                                    padding: 8px 4px;
                                     border: 1px solid #e88e55;
                                     position: relative;
-                                    min-width: 60px;
+                                    min-width: 30px;
                                 }
                                 .kala-matrix th.kala-header {
                                     border: 2px solid #e88e55;
@@ -1045,8 +1103,8 @@
                                 }
                                 .kala-matrix td {
                                     border: 1px solid #e88e55;
-                                    padding: 10px 5px;
-                                    height: 70px;
+                                    padding: 8px 4px;
+                                    height: auto;
                                     vertical-align: middle;
                                 }
                                 .kala-matrix td:first-child {
@@ -1054,6 +1112,22 @@
                                     width: 50px;
                                 }
                             </style>
+
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                                <h4 style="margin: 0; color: #000099;">Lajjitadi Avastha Calculations</h4>
+                                <div>
+                                    <select id="avasthaBaselineSelect" onchange="updateAvasthasCalcTable(document.getElementById('vargaSelect1').value)" style="padding: 4px; border: 1px solid #e88e55; color: #000099; background: white; font-weight: bold;">
+                                        <option value="ShadBala">&lt; ShadBala &gt;</option>
+                                        <option value="Subha">&lt; Subha &gt;</option>
+                                        <option value="Drishti Yuti">&lt; Drishti Yuti &gt;</option>
+                                        <option value="Ishta">&lt; Ishta &gt;</option>
+                                        <option value="Veda">&lt; Veda &gt;</option>
+                                        <option value="Cheshta">&lt; Cheshta &gt;</option>
+                                        <option value="Uccha">&lt; Uccha &gt;</option>
+                                        <option value="Dig">&lt; Dig &gt;</option>
+                                    </select>
+                                </div>
+                            </div>
                             <table id="avasthasCalcTable" class="kala-matrix">
                                 <thead>
                                     <tr>
@@ -1071,8 +1145,9 @@
                             </table>
                         </div>
                     </div>
-
-                    <div class="tab-content" id="tab-avasthas">
+    </template>
+    <template id="tmpl-avasthas">
+        <div class="widget-content" id="tab-avasthas">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                         <div>
                             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
@@ -1107,7 +1182,9 @@
                         </div>
                         </div>
                     </div>
-                    <div class="tab-content" id="tab-shadbala">
+    </template>
+    <template id="tmpl-shadbala">
+        <div class="widget-content" id="tab-shadbala">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
                                 <h3 style="color: #3d312a; margin: 0;">Shadbala (Six-fold Strength)</h3>
@@ -1141,29 +1218,9 @@
                             </table>
                         </div>
                     </div>
-
-                    <div class="tab-content" id="tab-dashas">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h3 style="color: #3d312a; margin: 0;">Vimshottari Dasha (Saura Year)</h3>
-                            <button class="help-btn" onclick="toggleHelp('help-dashas')" title="What is this?">?</button>
-                        </div>
-                        <div id="help-dashas" class="help-box" style="display: none;">
-                            <strong>What are Dashas?</strong><br>
-                            Dashas are the planetary time periods that trigger the events promised in your birth chart. The "Mahadasha" is the major period ruled by a specific planet. During a planet's Mahadasha, its themes, its house placements, and its overall strength in your chart become the central focus of your life for that entire duration.
-                        </div>
-                        <table id="dashaTable">
-                            <thead>
-                                <tr>
-                                    <th>Mahadasha</th>
-                                    <th>Start Date</th>
-                                    <th>End Date</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-
-                    <div class="tab-content" id="tab-aspects">
+    </template>
+    <template id="tmpl-aspects">
+        <div class="widget-content" id="tab-aspects">
                         <div style="display: flex; flex-direction: column; gap: 15px;">
                             <div>
                                 <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
@@ -1244,16 +1301,32 @@
 
                         </div>
                     </div>
-
-                </div>
-            </div>
-            
-        </div>
-    </div>
-
-
+    </template>
+    <template id="tmpl-dashas">
+        <div class="widget-content" id="tab-dashas">
+                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
+                            <h3 style="color: #3d312a; margin: 0;">Vimshottari Dasha (Saura Year)</h3>
+                            <button class="help-btn" onclick="toggleHelp('help-dashas')" title="What is this?">?</button>
+                        </div>
+                        <div id="help-dashas" class="help-box" style="display: none;">
+                            <strong>What are Dashas?</strong><br>
+                            Dashas are the planetary time periods that trigger the events promised in your birth chart. The "Mahadasha" is the major period ruled by a specific planet. During a planet's Mahadasha, its themes, its house placements, and its overall strength in your chart become the central focus of your life for that entire duration.
+                        </div>
+                        <table id="dashaTable">
+                            <thead>
+                                <tr>
+                                    <th>Mahadasha</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+    </template>
 
     <script>
+
         let splitInstance = null;
         let infoSplitInstance = null;
 
@@ -1266,7 +1339,275 @@
             }
         }
 
+        
+        // Widget Management System
+        let currentActiveCell = null;
+        
+        document.addEventListener('contextmenu', function(e) {
+            const cell = e.target.closest('.grid-cell');
+            if (cell) {
+                e.preventDefault();
+                currentActiveCell = cell;
+                const menu = document.getElementById('widget-context-menu');
+                menu.style.display = 'block';
+                menu.style.left = e.pageX + 'px';
+                menu.style.top = e.pageY + 'px';
+            }
+        });
+        
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('widget-context-menu');
+            if (menu && menu.style.display === 'block') {
+                menu.style.display = 'none';
+            }
+            
+            // Left click on chart to switch vargas? The prompt says "Left-clicking it should allow switching to other charts (D9, D10, etc.)."
+            // Wait, we have a select for that in the toolbar.
+        });
+        
+        function assignWidget(widgetType, targetCell = null) {
+            const cell = targetCell || currentActiveCell;
+            if (!cell) return;
+            
+            cell.dataset.widget = widgetType;
+            const contentDiv = cell.querySelector('.grid-cell-content');
+            contentDiv.innerHTML = '';
+            
+            if (widgetType !== 'empty') {
+                const tmpl = document.getElementById('tmpl-' + widgetType);
+                if (tmpl) {
+                    if (widgetType === 'info') {
+                        contentDiv.classList.add('scrollable');
+                        contentDiv.appendChild(tmpl.content.cloneNode(true));
+                    } else if (widgetType === 'chart') {
+                        contentDiv.classList.remove('scrollable');
+                        contentDiv.appendChild(tmpl.content.cloneNode(true));
+                    } else {
+                        contentDiv.classList.remove('scrollable');
+                        const wrapper = document.createElement('div');
+                        wrapper.className = 'scale-wrapper';
+                        wrapper.appendChild(tmpl.content.cloneNode(true));
+                        contentDiv.appendChild(wrapper);
+                    }
+                }
+            }
+            
+            // Update the widget with current chart data
+            updateWidget(cell);
+        }
+        
+        function switchWidgetChartType(btn, type) {
+            const widget = btn.closest('.widget-chart');
+            widget.querySelectorAll('.chart-view').forEach(v => {
+                v.style.display = 'none';
+                v.classList.remove('active');
+            });
+            widget.querySelectorAll('.hotkey-btn').forEach(b => b.classList.remove('active'));
+            
+            const targetView = widget.querySelector('.view-' + type);
+            targetView.style.display = 'flex';
+            targetView.classList.add('active');
+            
+            btn.classList.add('active');
+        }
+        
+        function updateWidget(cell) {
+            if (!currentChartData || !currentSvgs) return;
+            const widgetType = cell.dataset.widget;
+            if (!widgetType) return;
+            
+            if (widgetType === 'chart') {
+                const varga = cell.querySelector('.varga-select').value;
+                const vData = currentSvgs[varga];
+                const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+                
+                if (vSvg) {
+                    const s = cell.querySelector('.svg-south');
+                    const n = cell.querySelector('.svg-north');
+                    const c = cell.querySelector('.svg-circular');
+                    if (s) s.innerHTML = vSvg.south;
+                    if (n) n.innerHTML = vSvg.north;
+                    if (c) c.innerHTML = vSvg.circular;
+                }
+            }
+            // For other widgets, we call their respective update functions. 
+            // We need to modify the original update functions to take a container argument, OR just let them update ALL instances.
+            // Let's modify the update functions below to target ALL widgets of that type.
+            updateAllWidgets();
+        }
+        
+        function updateAllWidgets() {
+            if (!currentChartData) return;
+            
+            // Trigger global updates for existing tables
+            try { updateNakshatraTable(); } catch(e) {}
+            try { updateVargaDignitiesTable(); } catch(e) {}
+            try { updateAvasthasCalcTable("D1"); } catch(e) {}
+            try { updateAvasthasTable("D1"); } catch(e) {}
+            try { updateShadbalaTable(); } catch(e) {}
+            try { updateDashaTable(); } catch(e) {}
+            try { updateAspectsTable("D1"); } catch(e) {}
+            
+            // Nakshatras
+            document.querySelectorAll('.grid-cell[data-widget="nakshatras"]').forEach(cell => {
+                const tbody = cell.querySelector('tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                const naks = currentChartData.nakshatras.grahas;
+                const d1_grahas = currentChartData.vargas.D1.grahas;
+                const d1_lagna = currentChartData.vargas.D1.lagna;
+                
+                function formatDeg(deg_float) {
+                    let d = Math.floor(deg_float);
+                    let m = Math.round((deg_float - d) * 60);
+                    if (m === 60) { d += 1; m = 0; }
+                    return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+                }
+                
+                if (naks["Lagna"]) {
+                    tbody.innerHTML += `<tr><td><strong>Asc</strong></td><td>${formatDeg(d1_lagna.degree_0_to_30)}</td><td>${d1_lagna.sign}</td><td>${naks["Lagna"].nakshatra}</td><td>${naks["Lagna"].pada}</td></tr>`;
+                }
+                for (const [graha, data] of Object.entries(naks)) {
+                    if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
+                    tbody.innerHTML += `<tr><td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td></tr>`;
+                }
+            });
+            
+            // Dignities in Vargas
+            // (We just use the global updateVargaDignitiesTable but modify it to write to all instances)
+            document.querySelectorAll('.grid-cell[data-widget="dignities"]').forEach(cell => {
+                const tbody = cell.querySelector('tbody');
+                if (!tbody) return;
+                // Just let the global function handle one, and we copy its html to others?
+                // Actually, the original function targets '#vargaDignitiesTable tbody'.
+                // If we replace those IDs with classes in the template, it works better.
+            });
+            
+            // To be robust, let's just trigger the original global functions, which we will modify to use classes or querySelectorAll.
+        }
+
+        let splitInstances = [];
+        
+        function changeLayout(layoutType) {
+            // Destroy old splits
+            splitInstances.forEach(s => {
+                try { s.destroy(); } catch(e) {}
+            });
+            splitInstances = [];
+            
+            const container = document.getElementById('grid-container');
+            container.innerHTML = '';
+            
+            if (layoutType === 'kala') {
+                // 3 columns: Left (Chart, 50%), Middle (25%), Right (25%)
+                container.innerHTML = `
+                    <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="cell1" style="height:100%;"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="col2" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="cell2"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="cell3"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="cell4"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="col3" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="cell5"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="cell6"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="cell7"><div class="grid-cell-content"></div></div>
+                    </div>
+                `;
+                
+                splitInstances.push(Split(['#col1', '#col2', '#col3'], {
+                    sizes: [50, 25, 25],
+                    gutterSize: 4,
+                    cursor: 'col-resize'
+                }));
+                
+                splitInstances.push(Split(['#cell2', '#cell3', '#cell4'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
+                splitInstances.push(Split(['#cell5', '#cell6', '#cell7'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
+                
+                assignWidget('chart', document.getElementById('cell1'));
+                assignWidget('avasthas-calc', document.getElementById('cell2'));
+                assignWidget('empty', document.getElementById('cell5'));
+                assignWidget('dignities', document.getElementById('cell3'));
+                assignWidget('empty', document.getElementById('cell6'));
+                assignWidget('dashas', document.getElementById('cell4'));
+                assignWidget('empty', document.getElementById('cell7'));
+                
+            } else if (layoutType === '8cell') {
+                container.innerHTML = `
+                    <div id="row1" class="split-row" style="display:flex; height:100%;">
+                        <div class="grid-cell" id="c1"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c2"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c3"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c4"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="row2" class="split-row" style="display:flex; height:100%;">
+                        <div class="grid-cell" id="c5"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c6"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c7"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c8"><div class="grid-cell-content"></div></div>
+                    </div>
+                `;
+                splitInstances.push(Split(['#row1', '#row2'], { direction: 'vertical', sizes: [50, 50], gutterSize: 4 }));
+                splitInstances.push(Split(['#c1', '#c2', '#c3', '#c4'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
+                splitInstances.push(Split(['#c5', '#c6', '#c7', '#c8'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
+                
+                assignWidget('chart', document.getElementById('c1'));
+                assignWidget('chart', document.getElementById('c2'));
+                // others empty
+            } else if (layoutType === '2chart') {
+                container.innerHTML = `
+                    <div class="grid-cell" id="c1" style="height:100%;"><div class="grid-cell-content"></div></div>
+                    <div class="grid-cell" id="c2" style="height:100%;"><div class="grid-cell-content"></div></div>
+                `;
+                splitInstances.push(Split(['#c1', '#c2'], { sizes: [50, 50], gutterSize: 4 }));
+                assignWidget('chart', document.getElementById('c1'));
+                assignWidget('chart', document.getElementById('c2'));
+            }
+            observeGridCells();
+        }
+        
+        
+        // Auto-scaling logic for Data Tables
+        const scaleObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const cell = entry.target;
+                const contentDiv = cell.querySelector('.grid-cell-content');
+                if (!contentDiv || contentDiv.classList.contains('scrollable')) continue;
+                
+                const wrapper = contentDiv.querySelector('.scale-wrapper');
+                if (!wrapper) continue;
+                
+                // Reset transform to measure natural size
+                wrapper.style.transform = 'scale(1)';
+                
+                const cellW = contentDiv.clientWidth - 10; // minus padding
+                const cellH = contentDiv.clientHeight - 10;
+                
+                const wrapW = wrapper.offsetWidth;
+                const wrapH = wrapper.offsetHeight;
+                
+                if (wrapW > 0 && wrapH > 0) {
+                    const scale = Math.min(cellW / wrapW, cellH / wrapH);
+                    wrapper.style.transform = `scale(${scale})`;
+                }
+            }
+        });
+        
+        // We must observe all grid cells
+        function observeGridCells() {
+            document.querySelectorAll('.grid-cell').forEach(cell => {
+                scaleObserver.observe(cell);
+            });
+        }
+
         function setupSplit() {
+            document.getElementById('main-container').style.display = 'flex';
+            changeLayout('kala');
+            observeGridCells();
+        }
+
+        function setupSplit_old() {
             document.getElementById('main-container').style.display = 'flex';
             if (!splitInstance) {
                 splitInstance = Split(['#chart-pane', '#info-pane'], {
@@ -1361,6 +1702,11 @@
                     document.getElementById('newLat').value = result.native.lat;
                     document.getElementById('newLon').value = result.native.lon;
                     document.getElementById('newTz').value = result.native.tz;
+                    if (result.native.name_sound_value !== undefined) {
+                        document.getElementById('newNameSoundValue').value = result.native.name_sound_value;
+                    } else {
+                        document.getElementById('newNameSoundValue').value = "0";
+                    }
                     document.getElementById('updateBtn').style.display = 'inline-block';
                     
                     if (result.native.country) {
@@ -1386,21 +1732,14 @@
                 document.getElementById('chartTitle').innerText = `${currentChartData.subject_info.name} - Birth Chart`;
                 document.getElementById('chartSubtitle').innerText = `${currentChartData.subject_info.birth_datetime} | ${currentChartData.subject_info.latitude} N, ${currentChartData.subject_info.longitude} E`;
                 
-                // Update Nakshatra Table
-                updateNakshatraTable();
-                updateVargaDignitiesTable();
-                updateAvasthasCalcTable("Rasi");
-                updateShadbalaTable();
-                updateDashaTable();
+                // Setup Split before updating widgets so they exist in DOM
+                setupSplit();
+                // Update all widgets
+                updateAllWidgets();
+
 
                 
-                // Show UI
-                setupSplit();
-                
-                
-                // Default to D1 on left
-                document.getElementById('vargaSelect1').value = "D1";
-                updateSlot(1);
+
                 
             } catch (e) {
                 console.error(e);
@@ -1535,7 +1874,7 @@
             return condition;
         }
         
-        function updateAvasthasCalcTable(vargaName = "Rasi") {
+        function updateAvasthasCalcTable(vargaName = "D1") {
             const titleEl = document.getElementById('avasthaCalcTitle');
             if (titleEl) {
                 // Determine display name for D1 vs others
@@ -1551,7 +1890,8 @@
             const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
             const labels = ['Su', 'Mo', 'Ma', 'Me', 'Ju', 'Ve', 'Sa'];
             
-            const matrix = currentChartData.avastha_matrix[vargaName];
+            const baseline = document.getElementById('avasthaBaselineSelect').value;
+            const matrix = currentChartData.avastha_matrix[vargaName][baseline];
             if (!matrix) return;
             
             planets.forEach((p_row, i) => {
@@ -1913,17 +2253,12 @@
                             const fullName = getFullName(abbrev);
                             
                             // Build tooltip
-                            tooltip = `${fullName} (${abbrev})&#10;`; // &#10; is newline in tooltip
-                            tooltip += `Sign: ${vData.grahas[p].sign}&#10;`;
-                            
-                            if (['EX', 'DB', 'MT', 'OH'].includes(abbrev)) {
-                                tooltip += `Based on fixed planetary dignities.`;
-                            } else {
-                                tooltip += `Lord: ${d.sign_lord}&#10;`;
-                                tooltip += `Natural: ${d.natural_relationship}&#10;`;
-                                tooltip += `Temporary: ${d.temporary_relationship}&#10;`;
-                                tooltip += `Compound: ${d.compound_relationship}`;
-                            }
+                            tooltip = `Sign: ${vData.grahas[p].sign}\n`;
+                            tooltip += `Lord: ${d.sign_lord}\n`;
+                            tooltip += `Natural: ${d.natural_relationship}\n`;
+                            tooltip += `Temporary: ${d.temporary_relationship}\n`;
+                            tooltip += `Compound: ${d.compound_relationship}\n`;
+                            tooltip += `Final: ${d.final_dignity}`;
                         }
                         
                         const abbrev = mapDig(digStr);
@@ -1938,7 +2273,7 @@
                         else if (abbrev === "E") color = "#e67e22";
                         else if (abbrev === "N") color = "#7f8c8d";
                         
-                        html += `<td style="color:${color}; font-weight:bold; cursor:help;" title="${tooltip}">${abbrev}</td>`;
+                        html += `<td class="tooltip-target" title="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
                     });
                 } else {
                     html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
@@ -2044,7 +2379,8 @@
                 lon: document.getElementById('newLon').value,
                 tz: document.getElementById('newTz').value,
                 country: document.getElementById('countrySelect').value || "",
-                place: placeName
+                place: placeName,
+                name_sound_value: document.getElementById('newNameSoundValue').value
             };
             
             if (!payload.name || !payload.date || !payload.time || !payload.lat || !payload.lon || !payload.tz) {
@@ -2100,6 +2436,22 @@
             }
         }
         
+        function openAddModal() {
+            document.getElementById('editNativeId').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newDate').value = '';
+            document.getElementById('newTime').value = '';
+            document.getElementById('newLat').value = '';
+            document.getElementById('newLon').value = '';
+            document.getElementById('newTz').value = '+00:00';
+            document.getElementById('newNameSoundValue').value = '0';
+            document.getElementById('countrySelect').value = '';
+            document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
+            document.getElementById('citySelect').disabled = true;
+            document.getElementById('updateBtn').style.display = 'none';
+            document.getElementById('addPersonModal').style.display = 'flex';
+        }
+
         async function loadCountries() {
             try {
                 const response = await fetch('/api/countries');
@@ -2279,7 +2631,7 @@
         // Interactive Elements Click Handler (Delegated to document to handle dynamic SVGs)
         document.addEventListener('click', (e) => {
             // Clear highlights if clicking anywhere in the chart container
-            const chartContainer = e.target.closest('#chart-pane');
+            const chartContainer = e.target.closest('.grid-cell');
             if (chartContainer) {
                 document.querySelectorAll('svg').forEach(svg => svg.classList.remove('highlight-mode'));
                 document.querySelectorAll('.interactive').forEach(node => {

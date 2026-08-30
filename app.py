@@ -80,7 +80,8 @@ def get_chart(native_id):
         minute=minute,
         latitude=float(native['lat']),
         longitude=float(native['lon']),
-        timezone_offset=tz_offset
+        timezone_offset=tz_offset,
+        name_sound_value=native.get('name_sound_value', 0)
     )
     
     # Generate SVGs for all vargas and all notation modes
@@ -118,7 +119,8 @@ def add_native():
         data['lon'],
         data['tz'],
         place=data.get('place', 'Custom'),
-        country=data.get('country', '')
+        country=data.get('country', ''),
+        name_sound_value=int(data.get('name_sound_value', 0))
     )
     return jsonify(new_native)
 

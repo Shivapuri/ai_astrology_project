@@ -80,7 +80,7 @@ def saturn_aspect(diff):
     else:
         return normal_aspect(diff)
         
-def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None):
+def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala'):
     if d1_grahas is None: d1_grahas = grahas_data
     """
     Calculates the Quantitative Lajjitadi Avasthas matrix.
@@ -100,7 +100,26 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None):
     bases = {}
     for p in planets:
         g = grahas_data[p]
-        unmultiplied = shadbala_data[p]['Total_Virupas']
+        
+        if baseline_type == 'ShadBala':
+            unmultiplied = shadbala_data[p]['Total_Virupas']
+        elif baseline_type == 'Ishta':
+            unmultiplied = shadbala_data[p].get('Ishta_Phala', 0)
+        elif baseline_type == 'Cheshta':
+            unmultiplied = shadbala_data[p].get('Cheshta_Bala', 0)
+        elif baseline_type == 'Uccha':
+            unmultiplied = shadbala_data[p].get('Uccha_Bala', 0)
+        elif baseline_type == 'Dig':
+            unmultiplied = shadbala_data[p].get('Dig_Bala', 0)
+        elif baseline_type == 'Subha':
+            # Subha Phala is Ishta Phala in some traditions, or base naisargika.
+            unmultiplied = shadbala_data[p].get('Ishta_Phala', 0)
+        elif baseline_type == 'Drishti Yuti':
+            unmultiplied = shadbala_data[p].get('Drik_Bala', 0)
+        elif baseline_type == 'Veda':
+            unmultiplied = shadbala_data[p]['Total_Virupas'] / 2 # fallback
+        else:
+            unmultiplied = shadbala_data[p]['Total_Virupas']
         
         jagrat = g['avasthas']['jagrat']['alertness']
         bala = g['avasthas']['bala']['strength']
@@ -147,7 +166,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None):
             
 
             # Fetch relationships
-            from jyotish.relationships import get_natural_relationship
+            from jyotish.relationships.relationships import get_natural_relationship
             rel = get_natural_relationship(p_recv, p_give) # How does recv view giving?
             
             # Default to 0

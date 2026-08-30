@@ -1,6 +1,6 @@
 import pytest
 from jyotish.shadbala.shadbala import calculate_cheshta_bala, calculate_nathonnatha_bala
-from jyotish.aspects import get_graha_drishti as calculate_drishti_value
+from jyotish.aspects.aspects import get_graha_drishti as calculate_drishti_value
 
 def test_drishti_value():
     # 180 degrees should be 60

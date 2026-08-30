@@ -148,7 +148,7 @@ def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_emp
 
     return True
 
-def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "") -> Dict[str, Any]:
+def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0) -> Dict[str, Any]:
     """Adds a new native with atomic safety."""
     if not _acquire_lock(filepath):
         raise RuntimeError("Could not acquire lock to save native")
@@ -175,6 +175,7 @@ def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon:
             "lat": float(lat),
             "lon": float(lon),
             "alt": 0.0,
+            "name_sound_value": name_sound_value,
             "notes": "",
             "modified_at": datetime.now().isoformat()
         }

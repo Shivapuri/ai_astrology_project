@@ -6,8 +6,8 @@ from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import math
 import jyotish.calc_utils as calc_utils
-import jyotish.relationships as rel
-import jyotish.aspects as aspects
+import jyotish.relationships.relationships as rel
+import jyotish.aspects.aspects as aspects
 import jyotish.avasthas as avasthas
 
 try:
@@ -92,8 +92,14 @@ def calculate_varga_longitude(longitude: float, varga: str) -> float:
         return uniform_varga(9, start)
         
     elif varga == "D10":
-        start = sign_idx if is_odd else (sign_idx + 8) % 12
-        return uniform_varga(10, start)
+        div_size = 3.0
+        div_index = int(deg // div_size)
+        if is_odd:
+            varga_sign = (sign_idx + div_index) % 12
+        else:
+            varga_sign = (sign_idx + 8 - div_index) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
         
     elif varga == "D12":
         return uniform_varga(12, sign_idx)
@@ -111,8 +117,14 @@ def calculate_varga_longitude(longitude: float, varga: str) -> float:
         return uniform_varga(20, start)
         
     elif varga == "D24":
-        start = 4 if is_odd else 3
-        return uniform_varga(24, start)
+        div_size = 30.0 / 24.0
+        div_index = int(deg // div_size)
+        if is_odd:
+            varga_sign = (4 + div_index) % 12
+        else:
+            varga_sign = (3 - div_index) % 12
+        fraction = (deg % div_size) / div_size
+        return (varga_sign * 30.0) + (fraction * 30.0)
         
     elif varga == "D27":
         element = sign_idx % 4
@@ -150,6 +162,7 @@ def generate_kala_chart(
     latitude: float = 51.5074,
     longitude: float = -0.1278,
     timezone_offset: float = 1.0,
+    name_sound_value: Optional[int] = None,
     output_filepath: Optional[str] = None
 ) -> Dict[str, Any]:
     
@@ -520,7 +533,7 @@ def generate_kala_chart(
     ishta_ghati = math.ceil(minutes_elapsed / 24.0)
     if ishta_ghati <= 0: ishta_ghati = 1
     
-    varnamashka = avasthas.get_varnamashka(name)
+    varnamashka = name_sound_value if name_sound_value else avasthas.get_varnamashka(name)
     lagna_rasi_no = ZODIAC_SIGNS.index(vargas_data["D1"]["lagna"]["sign"]) + 1
     moon_nakshatra_no = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"]) + 1
     
@@ -599,60 +612,63 @@ def generate_kala_chart(
     # 6. Quantitative Lajjitadi Avasthas
     from jyotish.avasthas.quantitative import calculate_avastha_matrix
     
+
     avastha_matrices = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    baseline_types = ["ShadBala", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti", "Veda"]
     
     for v_key in vargas_data.keys():
-        avastha_results = calculate_avastha_matrix(vargas_data[v_key]["grahas"], shadbala_data, vargas_data["D1"]["grahas"])
-        v_matrix = {}
-        for p_receive in planets_list:
-            v_matrix[p_receive] = {}
-            for p_give in planets_list:
-                data = avastha_results['matrix'][p_give][p_receive]
-                
-                if p_give == p_receive:
+        avastha_matrices[v_key] = {}
+        for baseline in baseline_types:
+            avastha_results = calculate_avastha_matrix(vargas_data[v_key]["grahas"], shadbala_data, vargas_data["D1"]["grahas"], baseline_type=baseline)
+            v_matrix = {}
+            for p_receive in planets_list:
+                v_matrix[p_receive] = {}
+                for p_give in planets_list:
+                    data = avastha_results['matrix'][p_give][p_receive]
+                    
+                    if p_give == p_receive:
+                        v_matrix[p_receive][p_give] = {
+                            "top": None,
+                            "bottom": f"{data['total']:.1f}",
+                            "color": "black",
+                            "tooltip": f"{p_receive} Base Starting Strength."
+                        }
+                        continue
+                        
+                    pull = data['pull']
+                    if pull <= 0.001:
+                        v_matrix[p_receive][p_give] = None
+                        continue
+                        
+                    sign_mult = data['sign_mult']
+                    total = data['total']
+                    
+                    color = "blue"
+                    if sign_mult > 0: color = "green"
+                    if sign_mult < 0: color = "red"
+                    
+                    if color == "green":
+                        display_top = f"{pull:.1f}"
+                        tooltip = f"{p_give} Delights (Mudita) {p_receive}. Adds {pull:.1f} points."
+                    elif color == "red":
+                        display_top = f"{pull:.1f}"
+                        tooltip = f"{p_give} Starves/Agitates {p_receive}. Subtracts {pull:.1f} points."
+                    else: # blue
+                        display_top = f"{pull:.1f}"
+                        tooltip = f"{p_give} influence on {p_receive} is neutralized. Adds 0."
+                        
+                    bottom_str = f"{total:.1f}"
+                    if color != "blue":
+                        bottom_str = f"+{total:.1f}" if total > avastha_results['bases'][p_receive] else f"{total:.1f}"
+                        
                     v_matrix[p_receive][p_give] = {
-                        "top": None,
-                        "bottom": f"{data['total']:.1f}",
-                        "color": "black",
-                        "tooltip": f"{p_receive} Base Starting Strength."
+                        "top": display_top,
+                        "bottom": bottom_str,
+                        "color": color,
+                        "tooltip": tooltip
                     }
-                    continue
-                    
-                pull = data['pull']
-                if pull <= 0.001:
-                    v_matrix[p_receive][p_give] = None
-                    continue
-                    
-                sign_mult = data['sign_mult']
-                total = data['total']
-                
-                color = "blue"
-                if sign_mult > 0: color = "green"
-                if sign_mult < 0: color = "red"
-                
-                if color == "green":
-                    display_top = f"{pull:.1f}"
-                    tooltip = f"{p_give} Delights (Mudita) {p_receive}. Adds {pull:.1f} points."
-                elif color == "red":
-                    display_top = f"{pull:.1f}"
-                    tooltip = f"{p_give} Starves/Agitates {p_receive}. Subtracts {pull:.1f} points."
-                else: # blue
-                    display_top = f"{pull:.1f}"
-                    tooltip = f"{p_give} influence on {p_receive} is neutralized. Adds 0."
-                    
-                bottom_str = f"{total:.1f}"
-                if color != "blue":
-                    bottom_str = f"+{total:.1f}" if total > avastha_results['bases'][p_receive] else f"{total:.1f}"
-                    
-                v_matrix[p_receive][p_give] = {
-                    "top": display_top,
-                    "bottom": bottom_str,
-                    "color": color,
-                    "tooltip": tooltip
-                }
-        avastha_matrices[v_key] = v_matrix
-            
+            avastha_matrices[v_key][baseline] = v_matrix
     vedic_context = {
 
         "subject_info": {

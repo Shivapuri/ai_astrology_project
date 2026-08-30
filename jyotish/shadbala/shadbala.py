@@ -1,7 +1,7 @@
 import math
-import jyotish.relationships as rel
-import jyotish.aspects as aspects
-from jyotish.relationships import (
+import jyotish.relationships.relationships as rel
+import jyotish.aspects.aspects as aspects
+from jyotish.relationships.relationships import (
     SIGN_LORDS,
     get_natural_relationship,
     get_temporary_relationship,
@@ -416,6 +416,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         total_virupas = sthana + dig + kala + cheshta + naisarg + drik
         
         results[p] = {
+            "Uccha_Bala": round(uccha, 2),
             "Total_Virupas": round(total_virupas, 2),
             "Total_Rupas": round(total_virupas / 60.0, 4),
             "Sthana_Bala": round(sthana, 2),

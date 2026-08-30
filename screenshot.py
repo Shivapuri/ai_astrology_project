@@ -4,25 +4,18 @@ from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
-        page = await browser.new_page(viewport={"width": 1600, "height": 800})
+        page = await browser.new_page(viewport={"width": 1920, "height": 1080})
         
         await page.goto("http://127.0.0.1:5001")
-        await page.wait_for_timeout(1000)
+        await page.wait_for_timeout(2000)
         
         try:
             await page.click('button:has-text("Load")')
             await page.wait_for_timeout(2000)
-            
-            await page.click('button:has-text("Shadbala")')
-            await page.wait_for_timeout(1000)
-            await page.screenshot(path="screenshot_shadbala.png")
-            
-            await page.click('button:has-text("Dashas")')
-            await page.wait_for_timeout(1000)
-            await page.screenshot(path="screenshot_dashas.png")
+            await page.screenshot(path="screenshot_new_layout.png")
             
         except Exception as e:
-            print("Error clicking:", e)
+            print("Error:", e)
             
         await browser.close()
 

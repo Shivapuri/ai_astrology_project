@@ -1,5 +1,5 @@
 import pytest
-from jyotish.aspects import get_rasi_drishti, get_graha_drishti, get_all_graha_drishtis, get_all_rasi_drishtis
+from jyotish.aspects.aspects import get_rasi_drishti, get_graha_drishti, get_all_graha_drishtis, get_all_rasi_drishtis
 
 def test_rasi_drishti_cardinal():
     """Moveable signs aspect Fixed signs EXCEPT the adjacent one."""
