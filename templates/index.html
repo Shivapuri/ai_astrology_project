@@ -1365,6 +1365,17 @@
             // Wait, we have a select for that in the toolbar.
         });
         
+        
+        function saveLayoutState() {
+            const layoutType = document.getElementById('layoutSelect').value;
+            if (!layoutType) return;
+            const cells = Array.from(document.querySelectorAll('.grid-cell')).map(c => {
+                return { id: c.id, widget: c.dataset.widget || 'empty' };
+            });
+            localStorage.setItem('astra_layout_' + layoutType, JSON.stringify(cells));
+            localStorage.setItem('astra_current_layout', layoutType);
+        }
+
         function assignWidget(widgetType, targetCell = null) {
             const cell = targetCell || currentActiveCell;
             if (!cell) return;
@@ -1394,6 +1405,7 @@
             
             // Update the widget with current chart data
             updateWidget(cell);
+            saveLayoutState();
         }
         
         function switchWidgetChartType(btn, type) {
@@ -1488,7 +1500,7 @@
 
         let splitInstances = [];
         
-        function changeLayout(layoutType) {
+                function changeLayout(layoutType) {
             // Destroy old splits
             splitInstances.forEach(s => {
                 try { s.destroy(); } catch(e) {}
@@ -1499,7 +1511,6 @@
             container.innerHTML = '';
             
             if (layoutType === 'kala') {
-                // 3 columns: Left (Chart, 50%), Middle (25%), Right (25%)
                 container.innerHTML = `
                     <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column;">
                         <div class="grid-cell" id="cell1" style="height:100%;"><div class="grid-cell-content"></div></div>
@@ -1515,23 +1526,36 @@
                         <div class="grid-cell" id="cell7"><div class="grid-cell-content"></div></div>
                     </div>
                 `;
-                
-                splitInstances.push(Split(['#col1', '#col2', '#col3'], {
-                    sizes: [50, 25, 25],
-                    gutterSize: 4,
-                    cursor: 'col-resize'
-                }));
-                
+                splitInstances.push(Split(['#col1', '#col2', '#col3'], { sizes: [50, 25, 25], gutterSize: 4 }));
                 splitInstances.push(Split(['#cell2', '#cell3', '#cell4'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
                 splitInstances.push(Split(['#cell5', '#cell6', '#cell7'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
                 
-                assignWidget('chart', document.getElementById('cell1'));
-                assignWidget('avasthas-calc', document.getElementById('cell2'));
-                assignWidget('empty', document.getElementById('cell5'));
-                assignWidget('dignities', document.getElementById('cell3'));
-                assignWidget('empty', document.getElementById('cell6'));
-                assignWidget('dashas', document.getElementById('cell4'));
-                assignWidget('empty', document.getElementById('cell7'));
+            } else if (layoutType === '11cell') {
+                container.innerHTML = `
+                    <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="c1" style="height:100%;"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="col2" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="c2"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c3"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c4"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c5"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="col3" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="c6"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c7"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c8"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="col4" class="split-col" style="height:100%; display:flex; flex-direction:column;">
+                        <div class="grid-cell" id="c9"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c10"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c11"><div class="grid-cell-content"></div></div>
+                    </div>
+                `;
+                splitInstances.push(Split(['#col1', '#col2', '#col3', '#col4'], { sizes: [40, 20, 20, 20], gutterSize: 4 }));
+                splitInstances.push(Split(['#c2', '#c3', '#c4', '#c5'], { direction: 'vertical', sizes: [25, 25, 25, 25], gutterSize: 4 }));
+                splitInstances.push(Split(['#c6', '#c7', '#c8'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
+                splitInstances.push(Split(['#c9', '#c10', '#c11'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
                 
             } else if (layoutType === '8cell') {
                 container.innerHTML = `
@@ -1552,17 +1576,63 @@
                 splitInstances.push(Split(['#c1', '#c2', '#c3', '#c4'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
                 splitInstances.push(Split(['#c5', '#c6', '#c7', '#c8'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
                 
-                assignWidget('chart', document.getElementById('c1'));
-                assignWidget('chart', document.getElementById('c2'));
-                // others empty
             } else if (layoutType === '2chart') {
                 container.innerHTML = `
                     <div class="grid-cell" id="c1" style="height:100%;"><div class="grid-cell-content"></div></div>
                     <div class="grid-cell" id="c2" style="height:100%;"><div class="grid-cell-content"></div></div>
                 `;
                 splitInstances.push(Split(['#c1', '#c2'], { sizes: [50, 50], gutterSize: 4 }));
-                assignWidget('chart', document.getElementById('c1'));
-                assignWidget('chart', document.getElementById('c2'));
+            }
+            
+            const savedStateStr = localStorage.getItem('astra_layout_' + layoutType);
+            let stateLoaded = false;
+            if (savedStateStr) {
+                try {
+                    const savedCells = JSON.parse(savedStateStr);
+                    if (savedCells && savedCells.length > 0) {
+                        const originalSave = saveLayoutState;
+                        window._tempSave = saveLayoutState;
+                        saveLayoutState = function() {}; 
+                        
+                        savedCells.forEach(sc => {
+                            const cell = document.getElementById(sc.id);
+                            if (cell) assignWidget(sc.widget, cell);
+                        });
+                        
+                        saveLayoutState = window._tempSave;
+                        stateLoaded = true;
+                    }
+                } catch(e) {}
+            }
+            
+            if (!stateLoaded) {
+                if (layoutType === 'kala') {
+                    assignWidget('chart', document.getElementById('cell1'));
+                    assignWidget('aspects-planets', document.getElementById('cell2'));
+                    assignWidget('aspects-bhava-chalita', document.getElementById('cell3'));
+                    assignWidget('aspects-equal-houses', document.getElementById('cell4'));
+                    assignWidget('avasthas-calc', document.getElementById('cell5'));
+                    assignWidget('dignities', document.getElementById('cell6'));
+                    assignWidget('dashas', document.getElementById('cell7'));
+                } else if (layoutType === '11cell') {
+                    assignWidget('chart', document.getElementById('c1'));
+                    assignWidget('aspects-planets', document.getElementById('c2'));
+                    assignWidget('aspects-bhava-chalita', document.getElementById('c3'));
+                    assignWidget('aspects-equal-houses', document.getElementById('c4'));
+                    for(let i=5; i<=11; i++) assignWidget('empty', document.getElementById('c'+i));
+                } else if (layoutType === '8cell') {
+                    assignWidget('chart', document.getElementById('c1'));
+                    assignWidget('chart', document.getElementById('c2'));
+                    assignWidget('aspects-planets', document.getElementById('c3'));
+                    assignWidget('aspects-bhava-chalita', document.getElementById('c4'));
+                    assignWidget('aspects-equal-houses', document.getElementById('c5'));
+                    assignWidget('empty', document.getElementById('c6'));
+                    assignWidget('empty', document.getElementById('c7'));
+                    assignWidget('empty', document.getElementById('c8'));
+                } else if (layoutType === '2chart') {
+                    assignWidget('chart', document.getElementById('c1'));
+                    assignWidget('chart', document.getElementById('c2'));
+                }
             }
             observeGridCells();
         }
@@ -1601,9 +1671,14 @@
             });
         }
 
-        function setupSplit() {
+                function setupSplit() {
             document.getElementById('main-container').style.display = 'flex';
-            changeLayout('kala');
+            if (splitInstances.length === 0) {
+                const savedLayout = localStorage.getItem('astra_current_layout') || 'kala';
+                const layoutSelect = document.getElementById('layoutSelect');
+                if (layoutSelect) layoutSelect.value = savedLayout;
+                changeLayout(savedLayout);
+            }
             observeGridCells();
         }
 
