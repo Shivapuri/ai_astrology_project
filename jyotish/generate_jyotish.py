@@ -391,11 +391,23 @@ def generate_kala_chart(
             
             # Find aspecting planets (via Rasi Drishti on this sign)
             aspecting_planets = []
+            graha_aspecting_planets = []
             for op_name, op_data in v_data["grahas"].items():
                 if op_name != p_name:
                     rasi_aspects = aspects.get_rasi_drishti(op_data["sign"])
                     if p_data["sign"] in rasi_aspects:
                         aspecting_planets.append(op_name)
+                    
+                    # Also calculate Graha Drishti for Avasthas
+                    g_drishti = aspects.get_graha_drishti(
+                        op_name, 
+                        op_data["longitude"], 
+                        p_data["longitude"], 
+                        op_data["sign"], 
+                        p_data["sign"]
+                    )
+                    if g_drishti > 0:
+                        graha_aspecting_planets.append(op_name)
                         
             # Store what signs THIS planet aspects
             p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
@@ -449,15 +461,22 @@ def generate_kala_chart(
                 is_combust,
                 conjunct_planets
             )
+            
+            moon_lon = d1_longitudes["Moon"]
+            sun_lon_d1 = d1_longitudes["Sun"]
+            is_moon_waning = ((moon_lon - sun_lon_d1) % 360.0) >= 180.0
+            is_waning_moon_as_enemy = is_moon_waning and ("Moon" in natural_enemies)
+            
             lajjitadi_avastha = avasthas.get_lajjitadi_avasthas(
                 p_name,
                 p_data["sign"],
                 house_num,
                 p_data["dignity_breakdown"]["natural_dignity"],
                 conjunct_planets,
-                aspecting_planets,
+                graha_aspecting_planets,
                 natural_friends,
-                natural_enemies
+                natural_enemies,
+                is_waning_moon_as_enemy
             )
             
             p_data["avasthas"] = {
@@ -611,7 +630,7 @@ def generate_kala_chart(
         current_end_jd = end_jd
         
     # 5. Shadbala (6-fold strength)
-    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd)
+    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude)
     
     # 6. Assemble JSON Context
 
