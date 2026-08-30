@@ -44,20 +44,18 @@ def get_rasi_drishti(sign: str) -> List[str]:
         
     return []
 
-def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon: float) -> float:
+def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon: float, aspecting_sign: str = None, aspected_sign: str = None) -> float:
     """
     Calculates the exact fractional strength of the planetary aspect (Graha Drishti)
     cast by `aspecting_planet` upon the longitude `aspected_lon`.
     Returns a float from 0.0 to 60.0 (Virupas).
-    
-    Note: Rahu and Ketu do not cast Graha Drishti in strict Parashara methodology.
     """
     if aspecting_planet in ["Rahu", "Ketu"]:
         return 0.0
         
     diff = (aspected_lon - aspecting_lon) % 360.0
     
-    # Base Drishti (calculated according to BPHS Ch 26 / 27 piecewise function)
+    # Base Drishti (calculated according to BPHS/BV Raman piecewise function)
     raw_drishti = 0.0
     if diff <= 30.0:
         raw_drishti = 0.0
@@ -68,37 +66,34 @@ def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon:
     elif diff <= 120.0:
         raw_drishti = (120.0 - diff) / 2.0 + 30.0
     elif diff <= 150.0:
-        raw_drishti = 150.0 - diff
+        raw_drishti = (150.0 - diff)
     elif diff <= 180.0:
         raw_drishti = (diff - 150.0) * 2.0
     elif diff <= 300.0:
         raw_drishti = (300.0 - diff) / 2.0
     else:
         raw_drishti = 0.0
-        
-    # Apply Special Planetary Aspects
-    # Saturn 3/10 (60-90, 270-300). Center is 75 and 285.
+
+    # Visesha Drishti (Special Aspects) using Triangle Wave interpolation (Kala exact math)
+    def apply_special_bonus(current_raw, peak_degree, peak_bonus):
+        # The bonus applies within +/- 30 degrees of the peak
+        dist = abs(diff - peak_degree)
+        if dist < 30.0:
+            bonus = peak_bonus * (1.0 - (dist / 30.0))
+            return current_raw + bonus
+        return current_raw
+
     if aspecting_planet == "Saturn":
-        if 60.0 <= diff <= 90.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 75.0))
-        elif 270.0 <= diff <= 300.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 285.0))
-            
-    # Jupiter 5/9 (120-150, 240-270). Center is 135 and 255.
+        raw_drishti = apply_special_bonus(raw_drishti, 60.0, 45.0)  # 3rd aspect
+        raw_drishti = apply_special_bonus(raw_drishti, 270.0, 45.0) # 10th aspect
     elif aspecting_planet == "Jupiter":
-        if 120.0 <= diff <= 150.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 135.0))
-        elif 240.0 <= diff <= 270.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 255.0))
-            
-    # Mars 4/8 (90-120, 210-240). Center is 105 and 225.
+        raw_drishti = apply_special_bonus(raw_drishti, 120.0, 30.0) # 5th aspect
+        raw_drishti = apply_special_bonus(raw_drishti, 240.0, 30.0) # 9th aspect
     elif aspecting_planet == "Mars":
-        if 90.0 <= diff <= 120.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 105.0))
-        elif 210.0 <= diff <= 240.0:
-            raw_drishti = max(raw_drishti, 60.0 - abs(diff - 225.0))
+        raw_drishti = apply_special_bonus(raw_drishti, 90.0, 15.0)  # 4th aspect
+        raw_drishti = apply_special_bonus(raw_drishti, 210.0, 15.0) # 8th aspect
             
-    return min(max(raw_drishti, 0.0), 60.0)
+    return float(min(max(raw_drishti, 0.0), 60.0))
 
 def get_all_graha_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
     """
@@ -147,69 +142,95 @@ def get_all_rasi_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, 
                     
     return results
 
-def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, house_cusps: list = None) -> dict:
+def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, house_cusps: list = None, ascendant_lon: float = None) -> dict:
     """
     Calculates the advanced +/- Graha Aspects.
     Returns:
     {
         "planets": { aspected_planet: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
-        "cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } }
+        "cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
+        "equal_cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
+        "totals": {
+            "planets": { aspected_planet: {"plus": val, "minus": val, "net": val} },
+            "cusps": { house_num: {"plus": val, "minus": val, "net": val} },
+            "equal_cusps": { house_num: {"plus": val, "minus": val, "net": val} }
+        }
     }
     """
-    results = {"planets": {}, "cusps": {}}
+    results = {"planets": {}, "cusps": {}, "equal_cusps": {}, "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}}}
     
-    # 1. Aspects to Planets
-    for aspected, aspected_info in planets_data.items():
-        if aspected in ["Rahu", "Ketu"]: continue # usually nodes don't receive these structured scores in Kala, but we can include them.
-        results["planets"][aspected] = {}
+    # Helper to determine if planet is benefic or malefic for Drishti
+    def is_benefic(p_name, moon_lon, sun_lon):
+        if p_name in ["Jupiter", "Venus", "Mercury"]:
+            return True
+        if p_name == "Moon":
+            diff = (moon_lon - sun_lon) % 360.0
+            return diff < 180.0
+        return False
+
+    sun_lon = planets_data.get("Sun", {}).get("longitude", 0.0)
+    moon_lon = planets_data.get("Moon", {}).get("longitude", 0.0)
+
+    # Helper to calculate and store aspect
+    def calc_aspects(aspected_key, aspected_lon, target_dict, totals_dict):
+        target_dict[aspected_key] = {}
+        totals_dict[aspected_key] = {"plus": 0.0, "minus": 0.0, "net": 0.0}
+        
         for aspecting, aspecting_info in planets_data.items():
-            if aspected == aspecting or aspecting in ["Rahu", "Ketu"]:
+            if aspecting in ["Rahu", "Ketu"] or aspecting == aspected_key:
                 continue
                 
-            aspected_lon = aspected_info.get("longitude", 0.0)
             aspecting_lon = aspecting_info.get("longitude", 0.0)
-            raw = get_graha_drishti(aspecting, aspecting_lon, aspected_lon)
+            sign1 = aspecting_info.get("sign")
+            # If aspected_key is a planet, we might have its sign. If it's a house, sign2 is None.
+            sign2 = planets_data.get(aspected_key, {}).get("sign") if isinstance(aspected_key, str) else None
+            
+            raw = get_graha_drishti(aspecting, aspecting_lon, aspected_lon, sign1, sign2)
             
             if raw > 0:
-                ishta = shadbala_data.get(aspecting, {}).get("Ishta_Phala", 30.0)
-                kashta = shadbala_data.get(aspecting, {}).get("Kashta_Phala", 30.0)
+                plus = 0.0
+                minus = 0.0
                 
-                plus = (raw * ishta) / 60.0
-                minus = (raw * kashta) / 60.0
+                if is_benefic(aspecting, moon_lon, sun_lon):
+                    plus = raw
+                else:
+                    minus = raw
+                    
                 net = plus - minus
                 
-                results["planets"][aspected][aspecting] = {
+                target_dict[aspected_key][aspecting] = {
                     "raw": round(raw, 2),
                     "plus": round(plus, 2),
                     "minus": round(minus, 2),
                     "net": round(net, 2)
                 }
+                
+                totals_dict[aspected_key]["plus"] += plus
+                totals_dict[aspected_key]["minus"] += minus
+                totals_dict[aspected_key]["net"] += net
+                
+        # Round totals
+        totals_dict[aspected_key]["plus"] = round(totals_dict[aspected_key]["plus"], 2)
+        totals_dict[aspected_key]["minus"] = round(totals_dict[aspected_key]["minus"], 2)
+        totals_dict[aspected_key]["net"] = round(totals_dict[aspected_key]["net"], 2)
 
-    # 2. Aspects to House Cusps
+    # 1. Aspects to Planets
+    for aspected, aspected_info in planets_data.items():
+        if aspected in ["Rahu", "Ketu"]: continue
+        aspected_lon = aspected_info.get("longitude", 0.0)
+        calc_aspects(aspected, aspected_lon, results["planets"], results["totals"]["planets"])
+
+    # 2. Aspects to Bhava Chalita Cusps
     if house_cusps:
         for idx, cusp in enumerate(house_cusps):
             h_num = idx + 1
             cusp_lon = cusp.get("longitude", 0.0)
-            results["cusps"][h_num] = {}
+            calc_aspects(h_num, cusp_lon, results["cusps"], results["totals"]["cusps"])
             
-            for aspecting, aspecting_info in planets_data.items():
-                if aspecting in ["Rahu", "Ketu"]: continue
-                aspecting_lon = aspecting_info.get("longitude", 0.0)
-                raw = get_graha_drishti(aspecting, aspecting_lon, cusp_lon)
-                
-                if raw > 0:
-                    ishta = shadbala_data.get(aspecting, {}).get("Ishta_Phala", 30.0)
-                    kashta = shadbala_data.get(aspecting, {}).get("Kashta_Phala", 30.0)
-                    
-                    plus = (raw * ishta) / 60.0
-                    minus = (raw * kashta) / 60.0
-                    net = plus - minus
-                    
-                    results["cusps"][h_num][aspecting] = {
-                        "raw": round(raw, 2),
-                        "plus": round(plus, 2),
-                        "minus": round(minus, 2),
-                        "net": round(net, 2)
-                    }
+    # 3. Aspects to Equal Houses
+    if ascendant_lon is not None:
+        for h_num in range(1, 13):
+            equal_lon = (ascendant_lon + (h_num - 1) * 30.0) % 360.0
+            calc_aspects(h_num, equal_lon, results["equal_cusps"], results["totals"]["equal_cusps"])
 
     return results

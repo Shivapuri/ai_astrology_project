@@ -700,7 +700,7 @@ def generate_kala_chart(
         },
         "shadbala": shadbala_data,
         "avastha_matrix": avastha_matrices,
-        "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"])
+        "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"], asc_lon)
     }
     
     # 7. Write to file (only if requested)

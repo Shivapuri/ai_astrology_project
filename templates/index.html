@@ -2030,6 +2030,7 @@
             if (!currentChartData || !currentChartData.advanced_aspects) return;
             
             const aspects = currentChartData.advanced_aspects[dataKey];
+            const totals = currentChartData.advanced_aspects.totals ? currentChartData.advanced_aspects.totals[dataKey] : null;
             if (!aspects) return;
             
             const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
@@ -2054,11 +2055,6 @@
             trHead.innerHTML = '<th></th>' + columnsList.map(c => `<th>${c.toString().substring(0, 2)}</th>`).join('');
             thead.appendChild(trHead);
             
-            // Accumulate totals while rendering rows
-            const plusTotals = {};
-            const minusTotals = {};
-            columnsList.forEach(c => { plusTotals[c] = 0; minusTotals[c] = 0; });
-            
             // Data Rows (Aspecting Planets)
             aspectingPlanets.forEach(p => {
                 const tr = document.createElement('tr');
@@ -2074,8 +2070,6 @@
                         const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
                         if (entry && entry.raw > 0) {
                             html += `<td>${Math.round(entry.raw)}</td>`;
-                            plusTotals[c] += (entry.plus || 0);
-                            minusTotals[c] += (entry.minus || 0);
                         } else {
                             html += `<td></td>`;
                         }
@@ -2089,7 +2083,8 @@
             const trPlus = document.createElement('tr');
             let plusHtml = `<td><strong>+</strong></td>`;
             columnsList.forEach(c => {
-                const v = Math.round(plusTotals[c]);
+                const cKey = c.toString();
+                const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
                 plusHtml += `<td>${v > 0 ? v : ''}</td>`;
             });
             trPlus.innerHTML = plusHtml;
@@ -2099,7 +2094,8 @@
             const trMinus = document.createElement('tr');
             let minusHtml = `<td><strong>-</strong></td>`;
             columnsList.forEach(c => {
-                const v = Math.round(minusTotals[c]);
+                const cKey = c.toString();
+                const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
                 minusHtml += `<td>${v > 0 ? v : ''}</td>`;
             });
             trMinus.innerHTML = minusHtml;
@@ -2125,7 +2121,7 @@
                 const planetsList = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
                 const housesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
                 renderKalaAspectTable('kalaAspectsPlanetsTable', 'planets', planetsList, false);
-                renderKalaAspectTable('kalaAspectsEqualHousesTable', 'cusps', housesList, true);
+                renderKalaAspectTable('kalaAspectsEqualHousesTable', 'equal_cusps', housesList, true);
                 renderKalaAspectTable('kalaAspectsBhavaChalitaTable', 'cusps', housesList, true);
             }
 
