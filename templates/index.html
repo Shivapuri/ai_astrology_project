@@ -997,6 +997,49 @@
     </style>
 
     <!-- Templates -->
+
+    <template id="tmpl-aspects-planets">
+        <div class="widget-content" id="tab-aspects-planets" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h3 style="color: #000099; margin: 0; font-weight: bold;">Aspected Planets in Rasi</h3>
+            </div>
+            <div style="overflow-x: auto; background-color: #ffffcc;">
+                <table id="kalaAspectsPlanetsTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+    
+    <template id="tmpl-aspects-equal-houses">
+        <div class="widget-content" id="tab-aspects-equal-houses" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h3 style="color: #000099; margin: 0; font-weight: bold;">Rasi - Aspects to Equal Houses</h3>
+            </div>
+            <div style="overflow-x: auto; background-color: #ffffcc;">
+                <table id="kalaAspectsEqualHousesTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
+    <template id="tmpl-aspects-bhava-chalita">
+        <div class="widget-content" id="tab-aspects-bhava-chalita" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h3 style="color: #000099; margin: 0; font-weight: bold;">Rasi - Aspects to Bhava Chalita Houses</h3>
+            </div>
+            <div style="overflow-x: auto; background-color: #ffffcc;">
+                <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+
     <template id="tmpl-chart">
         <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
             <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
@@ -1974,6 +2017,95 @@
             });
         }
 
+        
+        function renderKalaAspectTable(tableId, dataKey, columnsList, isHouse=false) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            
+            const thead = table.querySelector('thead');
+            const tbody = table.querySelector('tbody');
+            thead.innerHTML = '';
+            tbody.innerHTML = '';
+            
+            if (!currentChartData || !currentChartData.advanced_aspects) return;
+            
+            const aspects = currentChartData.advanced_aspects[dataKey];
+            if (!aspects) return;
+            
+            const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            
+            // Build yuti map from chart data (planets sharing the same sign)
+            const yutiMap = {};
+            if (!isHouse && currentChartData.vargas && currentChartData.vargas.D1) {
+                const grahas = currentChartData.vargas.D1.grahas;
+                aspectingPlanets.forEach(p => {
+                    if (!grahas[p]) return;
+                    yutiMap[p] = [];
+                    aspectingPlanets.forEach(q => {
+                        if (p !== q && grahas[q] && grahas[p].sign === grahas[q].sign) {
+                            yutiMap[p].push(q);
+                        }
+                    });
+                });
+            }
+            
+            // Header Row
+            const trHead = document.createElement('tr');
+            trHead.innerHTML = '<th></th>' + columnsList.map(c => `<th>${c.toString().substring(0, 2)}</th>`).join('');
+            thead.appendChild(trHead);
+            
+            // Accumulate totals while rendering rows
+            const plusTotals = {};
+            const minusTotals = {};
+            columnsList.forEach(c => { plusTotals[c] = 0; minusTotals[c] = 0; });
+            
+            // Data Rows (Aspecting Planets)
+            aspectingPlanets.forEach(p => {
+                const tr = document.createElement('tr');
+                let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
+                
+                columnsList.forEach(c => {
+                    const cKey = c.toString();
+                    if (!isHouse && p === c) {
+                        html += `<td>--</td>`;
+                    } else if (!isHouse && yutiMap[p] && yutiMap[p].includes(c)) {
+                        html += `<td style="color:red; font-weight:bold;">Y</td>`;
+                    } else {
+                        const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
+                        if (entry && entry.raw > 0) {
+                            html += `<td>${Math.round(entry.raw)}</td>`;
+                            plusTotals[c] += (entry.plus || 0);
+                            minusTotals[c] += (entry.minus || 0);
+                        } else {
+                            html += `<td></td>`;
+                        }
+                    }
+                });
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+            
+            // Totals Row (+)
+            const trPlus = document.createElement('tr');
+            let plusHtml = `<td><strong>+</strong></td>`;
+            columnsList.forEach(c => {
+                const v = Math.round(plusTotals[c]);
+                plusHtml += `<td>${v > 0 ? v : ''}</td>`;
+            });
+            trPlus.innerHTML = plusHtml;
+            tbody.appendChild(trPlus);
+            
+            // Totals Row (-)
+            const trMinus = document.createElement('tr');
+            let minusHtml = `<td><strong>-</strong></td>`;
+            columnsList.forEach(c => {
+                const v = Math.round(minusTotals[c]);
+                minusHtml += `<td>${v > 0 ? v : ''}</td>`;
+            });
+            trMinus.innerHTML = minusHtml;
+            tbody.appendChild(trMinus);
+        }
+
         function updateAspectsTable(varga) {
             const rasiTbody = null;
             const pTbody = document.querySelector('#grahaPlanetsTable tbody');
@@ -1988,6 +2120,15 @@
             const grahas = currentChartData.vargas[varga].grahas;
             const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
             
+            
+            if (varga === "D1") {
+                const planetsList = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+                const housesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+                renderKalaAspectTable('kalaAspectsPlanetsTable', 'planets', planetsList, false);
+                renderKalaAspectTable('kalaAspectsEqualHousesTable', 'cusps', housesList, true);
+                renderKalaAspectTable('kalaAspectsBhavaChalitaTable', 'cusps', housesList, true);
+            }
+
             // 1. Rasi Aspects
             planetsOrder.forEach(p => {
                 if (!grahas[p]) return;
