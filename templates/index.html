@@ -1340,6 +1340,24 @@
                 // If we replace those IDs with classes in the template, it works better.
             });
             
+            // Charts
+            document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(cell => {
+                const vargaSelect = cell.querySelector('.varga-select');
+                if (!vargaSelect) return;
+                const varga = vargaSelect.value;
+                const vData = currentSvgs[varga];
+                const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+                
+                if (vSvg) {
+                    const s = cell.querySelector('.svg-south');
+                    const n = cell.querySelector('.svg-north');
+                    const c = cell.querySelector('.svg-circular');
+                    if (s) s.innerHTML = vSvg.south;
+                    if (n) n.innerHTML = vSvg.north;
+                    if (c) c.innerHTML = vSvg.circular;
+                }
+            });
+            
             // To be robust, let's just trigger the original global functions, which we will modify to use classes or querySelectorAll.
         }
 
