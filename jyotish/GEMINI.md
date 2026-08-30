@@ -4,7 +4,7 @@ If you are an AI modifying or adding files in this directory, you **MUST** adher
 
 ## 0. SOURCES OF TRUTH & THE SANSKRIT DB (CRITICAL)
 While Brihat Parashara Hora Shastra (BPHS) is a foundational text, **it is not the sole source of truth.** 
-For complex algorithms (like Shadbala, Lajjitadi Avasthas, etc.), the absolute sources of truth are Ernst Wilhelm's PDFs located in `/source-material/software-setup/` (e.g., `Vedic Astrology An Integrated Approach.pdf` and `Bhava and Graha Balas.pdf`).
+For complex algorithms (like Shadbala, Lajjitadi Avasthas, etc.), the absolute sources of truth are the classical reference PDFs located in `/source-material/software-setup/` (e.g., P.V.R. Narasimha Rao's `Vedic Astrology An Integrated Approach.pdf` and B.V. Raman's `Bhava and Graha Balas.pdf`).
 However, we also have a local SQLite vector database containing BPHS and other Sanskrit texts. You can query it to find original Sanskrit quotes to provide scriptural backing for core rules:
 `python3 /Users/hajnaljanos/PycharmProjects/astra/jyotish/scripture_db.py search <keyword>`
 
