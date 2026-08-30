@@ -1,7 +1,9 @@
+from jyotish.aspects.aspects import get_graha_drishti
+
 def get_aspect(p1, p2, l1, l2, sign1, sign2, lord1, lord2):
     """
     Calculates the exact Graha Sphuta Drishti (Longitude Aspect) in Virupas (0-60).
-    Implements Ernst Wilhelm's Graha Sutras mathematical logic.
+    Combines Yuti (Conjunction), Parivartana (Mutual Reception), and standard Kala Graha Drishti.
     """
     if p1 == p2:
         return 0.0
@@ -18,67 +20,8 @@ def get_aspect(p1, p2, l1, l2, sign1, sign2, lord1, lord2):
     elif diff >= 330:
         return max(0, 60 - 2 * (360 - diff))
         
-    # 3. Normal Parashari Aspect
-    if p1 not in ['Mars', 'Jupiter', 'Saturn']:
-        return normal_aspect(diff)
-    elif p1 == 'Mars':
-        return mars_aspect(diff)
-    elif p1 == 'Jupiter':
-        return jupiter_aspect(diff)
-    elif p1 == 'Saturn':
-        return saturn_aspect(diff)
-
-def normal_aspect(diff):
-    if 30 < diff <= 60:
-        return (diff - 30) / 2.0
-    elif 60 < diff <= 90:
-        return (diff - 60) + 15.0
-    elif 90 < diff <= 120:
-        return (120 - diff) / 2.0 + 30.0
-    elif 120 < diff <= 150:
-        return 150 - diff
-    elif 150 < diff <= 180:
-        return (diff - 150) * 2.0
-    elif 180 < diff <= 300:
-        return (300 - diff) / 2.0
-    else:
-        return 0.0
-
-def mars_aspect(diff):
-    if 90 < diff <= 120:
-        return 60 - (diff - 90)
-    elif 60 < diff <= 90:
-        return (diff - 60) / 2.0 + 15.0
-    elif 180 < diff <= 210:
-        return 60.0
-    elif 210 < diff <= 240:
-        return 60 - (diff - 210)
-    else:
-        return normal_aspect(diff)
-
-def jupiter_aspect(diff):
-    if 90 < diff <= 120:
-        return (diff - 90) / 2.0 + 45.0
-    elif 120 < diff <= 150:
-        return 60 - (diff - 120) * 2.0
-    elif 210 < diff <= 240:
-        return (diff - 210) / 2.0 + 45.0
-    elif 240 < diff <= 270:
-        return (30 - (diff - 240)) * 1.5 + 15.0
-    else:
-        return normal_aspect(diff)
-
-def saturn_aspect(diff):
-    if 60 < diff <= 90:
-        return (diff - 60) * 2.0
-    elif 270 < diff <= 300:
-        return (300 - diff) * 2.0
-    elif 30 < diff <= 60:
-        return (diff - 30) / 2.0 + 45.0
-    elif 240 < diff <= 270:
-        return (diff - 240) / 2.0 + 45.0
-    else:
-        return normal_aspect(diff)
+    # 3. Normal Kala/Ernst Wilhelm Aspect (Unified with aspects.py)
+    return get_graha_drishti(p1, l1, l2)
         
 def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala'):
     if d1_grahas is None: d1_grahas = grahas_data

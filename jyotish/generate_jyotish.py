@@ -401,13 +401,23 @@ def generate_kala_chart(
             p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
                         
             # Combustion (Physical phenomenon, so calculated strictly from D1 physical longitudes)
-            # Distance < 8 degrees from Sun is a general threshold for combustion.
+            # Uses Parashari/Surya Siddhanta specific degree orbs for each planet.
             is_combust = False
             if p_name not in ["Sun", "Rahu", "Ketu"]:
                 sun_lon = d1_longitudes["Sun"]
                 p_lon_d1 = d1_longitudes[p_name]
                 dist = min((sun_lon - p_lon_d1) % 360, (p_lon_d1 - sun_lon) % 360)
-                is_combust = dist < 8.0
+                
+                combustion_orbs = {
+                    "Moon": 12.0,
+                    "Mars": 17.0,
+                    "Mercury": 14.0,
+                    "Jupiter": 11.0,
+                    "Venus": 10.0,
+                    "Saturn": 15.0
+                }
+                orb = combustion_orbs.get(p_name, 8.0)
+                is_combust = dist < orb
                 
             is_retrograde = p_data.get("is_retrograde", False)
             malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]

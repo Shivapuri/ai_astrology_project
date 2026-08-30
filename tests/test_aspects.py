@@ -41,17 +41,17 @@ def test_graha_drishti_standard():
 
 def test_graha_drishti_special():
     """Test the special aspect bonuses for Mars, Jupiter, Saturn."""
-    # Saturn gets a bonus at 3rd (approx 75 deg) and 10th (approx 285 deg)
-    assert get_graha_drishti("Saturn", 0.0, 75.0) == 60.0
-    assert get_graha_drishti("Saturn", 0.0, 285.0) == 60.0
+    # Saturn gets a bonus at 3rd (60 deg) and 10th (270 deg)
+    assert get_graha_drishti("Saturn", 0.0, 60.0) == 60.0
+    assert get_graha_drishti("Saturn", 0.0, 270.0) == 60.0
     
-    # Jupiter gets a bonus at 5th (approx 135 deg) and 9th (approx 255 deg)
-    assert get_graha_drishti("Jupiter", 0.0, 135.0) == 60.0
-    assert get_graha_drishti("Jupiter", 0.0, 255.0) == 60.0
+    # Jupiter gets a bonus at 5th (120 deg) and 9th (240 deg)
+    assert get_graha_drishti("Jupiter", 0.0, 120.0) == 60.0
+    assert get_graha_drishti("Jupiter", 0.0, 240.0) == 60.0
     
-    # Mars gets a bonus at 4th (approx 105 deg) and 8th (approx 225 deg)
-    assert get_graha_drishti("Mars", 0.0, 105.0) == 60.0
-    assert get_graha_drishti("Mars", 0.0, 225.0) == 60.0
+    # Mars gets a bonus at 4th (90 deg) and 8th (210 deg)
+    assert get_graha_drishti("Mars", 0.0, 90.0) == 60.0
+    assert get_graha_drishti("Mars", 0.0, 210.0) == 60.0
     
     # Standard planets do not get these bonuses
     assert get_graha_drishti("Venus", 0.0, 75.0) < 60.0
