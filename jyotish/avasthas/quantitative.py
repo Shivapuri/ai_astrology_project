@@ -3,24 +3,24 @@ from jyotish.aspects.aspects import get_graha_drishti
 def get_aspect(p1, p2, l1, l2, sign1, sign2, lord1, lord2):
     """
     Calculates the exact Graha Sphuta Drishti (Longitude Aspect) in Virupas (0-60).
-    Combines Yuti (Conjunction), Parivartana (Mutual Reception), and standard Kala Graha Drishti.
+    Combines Yuti (Conjunction), Parivartana (Mutual Reception), Dispositorship, and standard Kala Graha Drishti.
     """
     if p1 == p2:
         return 0.0
 
-    # 1. Parivartana Yoga (Mutual Reception) check:
-    if lord1 == p2 and lord2 == p1:
+    # 1. Same Sign (Full Conjunction / Yuti)
+    if sign1 and sign2 and sign1 == sign2:
         return 60.0
 
-    diff = (l2 - l1) % 360
-    
-    # 2. Conjunction (within 30 degrees)
-    if diff <= 30:
-        return max(0, 60 - 2 * diff)
-    elif diff >= 330:
-        return max(0, 60 - 2 * (360 - diff))
-        
-    # 3. Normal Kala/Ernst Wilhelm Aspect (Unified with aspects.py)
+    # 2. Lord of receiving planet's sign (Dispositor influence)
+    if lord2 and lord2 == p1:
+        return 60.0
+
+    # 3. Parivartana Yoga (Mutual Reception) check:
+    if lord1 and lord2 and lord1 == p2 and lord2 == p1:
+        return 60.0
+
+    # 4. Normal Kala/Ernst Wilhelm Aspect (Graha Sphuta Drishti)
     return get_graha_drishti(p1, l1, l2)
         
 def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala'):
@@ -36,14 +36,9 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
 
 
 
-    # Calculate Base Strengths
-    # By default in Kala: Base = Shadbala (in Virupas) * Jagradadi * Baladi
-    # This evaluates dynamically per Varga, as Jagrat/Bala change based on Varga Dignity and Varga Degree.
-    
     bases = {}
     for p in planets:
-        g = grahas_data[p]
-        
+        # Calculate Base Strengths
         if baseline_type == 'ShadBala':
             unmultiplied = shadbala_data[p]['Total_Virupas']
         elif baseline_type == 'Ishta':
@@ -55,8 +50,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         elif baseline_type == 'Dig':
             unmultiplied = shadbala_data[p].get('Dig_Bala', 0)
         elif baseline_type == 'Subha':
-            # Subha Phala is Ishta Phala in some traditions, or base naisargika.
-            unmultiplied = shadbala_data[p].get('Ishta_Phala', 0)
+            # In Kala, Subha usually maps to Kashta Phala or Auspiciousness
+            unmultiplied = shadbala_data[p].get('Kashta_Phala', 0)
         elif baseline_type == 'Drishti Yuti':
             unmultiplied = shadbala_data[p].get('Drik_Bala', 0)
         elif baseline_type == 'Veda':
@@ -64,10 +59,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         else:
             unmultiplied = shadbala_data[p]['Total_Virupas']
         
-        jagrat = g['avasthas']['jagrat']['alertness']
-        bala = g['avasthas']['bala']['strength']
-        
-        bases[p] = round(unmultiplied * jagrat * bala, 1)
+        bases[p] = round(unmultiplied, 1)
     for p_give in planets:
         matrix[p_give] = {}
         for p_recv in planets:
@@ -97,33 +89,55 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             # Left Number: Pull (Points of Influence)
             pull = bases[p_give] * (aspect_virupas / 60.0)
             
-            # Right Number: Determine sign (+/-)
-            # This requires analyzing Lajjitadi relationships.
-            # Simplified approach for now based on natural friendship.
-            # Ernst Wilhelm rule:
-            # - Friends / Benefics (Jupiter, Venus) add (+) if friendly/neutral.
-            # - Enemies / Malefics (Saturn, Mars, Sun) subtract (-) if enemy.
-            # Since we don't have the full boolean rules matrix coded here yet,
-            # we provide the raw pull and let the engine or front-end decide,
-            # OR we can implement the basic Friend/Enemy logic:
-            
-
-            # Fetch relationships
-            from jyotish.relationships.relationships import get_natural_relationship
-            rel = get_natural_relationship(p_recv, p_give) # How does recv view giving?
-            
-            # Default to 0
-            sign_mult = 0
-            
-            # Mudita (Delighted): Planet is aspected/conjoined by a Great Friend, Friend, or Jupiter. Adds points.
-            if rel in ["Friend", "Great Friend"] or p_give == "Jupiter":
-                sign_mult = 1
+            # Right Number: Determine sign (+/-) based on Lajjitadi qualitative states
+            # Get qualitative states for receiving planet
+            lajjitadi_states = d1_grahas[p_recv].get('avasthas', {}).get('lajjitadi')
+            if lajjitadi_states is None:
+                from jyotish.relationships.relationships import NAISARGIKA_SAMBANDHA
+                from jyotish.avasthas.lajjita import get_lajjitadi_avasthas
                 
-            # Kshudhita (Starved): Planet is aspected/conjoined by an Enemy, or Saturn. Subtracts points.
-            # Kshobhita (Agitated): Planet is aspected/conjoined by Sun, Mars, or Saturn. Subtracts points.
-            # Note: Kshudhita/Kshobhita override Mudita (if Sun is a friend, it still Agitates and subtracts).
-            if rel in ["Enemy", "Great Enemy"] or p_give in ["Sun", "Mars", "Saturn"]:
-                sign_mult = -1
+                natural_friends = NAISARGIKA_SAMBANDHA.get(p_recv, {}).get("Friends", [])
+                natural_enemies = NAISARGIKA_SAMBANDHA.get(p_recv, {}).get("Enemies", [])
+                recv_sign = d1_grahas[p_recv].get('sign', '')
+                conjunct_planets = [p for p, data in d1_grahas.items() if data.get('sign') == recv_sign and p != p_recv]
+                aspecting_planets = []
+                for p, data in d1_grahas.items():
+                    if p != p_recv:
+                        asp = get_aspect(p, p_recv, data['longitude'], d1_grahas[p_recv]['longitude'],
+                                         data.get('sign', ''), recv_sign,
+                                         data.get('dignity_breakdown', {}).get('sign_lord', ''),
+                                         d1_grahas[p_recv].get('dignity_breakdown', {}).get('sign_lord', ''))
+                        if asp > 0:
+                            aspecting_planets.append(p)
+                
+                moon_lon = d1_grahas.get("Moon", {}).get("longitude", 0.0)
+                sun_lon_d1 = d1_grahas.get("Sun", {}).get("longitude", 0.0)
+                is_moon_waning = ((moon_lon - sun_lon_d1) % 360.0) >= 180.0
+                is_waning_moon_as_enemy = is_moon_waning and ("Moon" in natural_enemies)
+                
+                lajjitadi_states = get_lajjitadi_avasthas(
+                    p_recv,
+                    recv_sign,
+                    d1_grahas[p_recv].get('house', 1),
+                    d1_grahas[p_recv].get('dignity_breakdown', {}).get('natural_dignity', 'Neutral'),
+                    conjunct_planets,
+                    aspecting_planets,
+                    natural_friends,
+                    natural_enemies,
+                    is_waning_moon_as_enemy
+                )
+                
+            sign_mult = 0
+            for st in lajjitadi_states:
+                s_name = st.get('state', '')
+                s_cond = st.get('condition', '')
+                if p_give in s_cond:
+                    if any(pos in s_name for pos in ['Mudita', 'Garvita']):
+                        sign_mult = 1
+                    elif any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']):
+                        sign_mult = -1
+                        break
+
             total = bases[p_recv] + (sign_mult * pull)
             
             matrix[p_give][p_recv] = {

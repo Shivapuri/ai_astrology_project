@@ -10,6 +10,9 @@ cache/
 *.log
 
 code_export.txt
+codebase_export.txt
+commits_export.txt
+commits_export.md
 rag/chroma_astrology_db/
 rag/chroma_jyotish_db/
 rag/chroma_structural_db/

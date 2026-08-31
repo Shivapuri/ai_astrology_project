@@ -21,7 +21,7 @@ This tracker outlines the strict hierarchical approach we are taking to verify t
 - [x] **Verify Graha Drishti:** Fix the 0-60 Virupa calculations in `aspects.py`.
 
 ## Phase 4: Level 5 Verification (Strengths/Shadbala)
-- [ ] **Write Shadbala Core Test:** Create end-to-end tests for the 6 core strengths.
+- [x] **Audit Shadbala Core:** Created `audit_shadbala.py` and implemented Ahargana Time Lords.
 - [ ] **Verify Uccha Bala:** Test against `angelina_jolie_uccha.csv`.
 - [ ] **Verify Dig Bala:** Test against `angelina_jolie_dig.csv`.
 - [ ] **Verify Cheshta Bala:** Test against `angelina_jolie_cheshta.csv`.

@@ -126,13 +126,13 @@ def calculate_dig_bala(planet_name: str, planet_lon: float, ascendant_lon: float
     
     # Shortest angular distance between planet and its weakest point
     # Max distance is 180 degrees (which is its strongest point).
-    diff = abs(planet_lon - weakest_lon)
+    diff = abs(planet_lon - weakest_lon) % 360.0
     if diff > 180.0:
         diff = 360.0 - diff
         
     # 180 degrees = 60 Virupas, so 1 degree = 60/180 = 1/3 Virupa
     virupas = diff / 3.0
-    return round(virupas, 2)
+    return max(0.0, min(60.0, round(virupas, 2)))
 
 
 def calculate_uccha_bala(planet_name: str, planet_lon: float) -> float:
@@ -156,11 +156,11 @@ def calculate_uccha_bala(planet_name: str, planet_lon: float) -> float:
     deep_exaltation = exaltation_points[planet_name]
     deep_debilitation = (deep_exaltation + 180.0) % 360.0
     
-    diff = abs(planet_lon - deep_debilitation)
+    diff = abs(planet_lon - deep_debilitation) % 360.0
     if diff > 180.0: diff = 360.0 - diff
         
     virupas = diff / 3.0
-    return round(virupas, 2)
+    return max(0.0, min(60.0, round(virupas, 2)))
 
 
 def calculate_ojayugmarasyamsa_bala(planet_name: str, planet_lon: float) -> float:
@@ -215,20 +215,20 @@ def calculate_nathonnatha_bala(planet: str, sun_lon: float, mc_lon: float) -> fl
     """Day/Night Strength."""
     if planet == "Mercury": return 60.0
     ic_lon = (mc_lon + 180.0) % 360.0
-    dist_from_ic = abs(sun_lon - ic_lon)
+    dist_from_ic = abs(sun_lon - ic_lon) % 360.0
     if dist_from_ic > 180.0: dist_from_ic = 360.0 - dist_from_ic
     day_strength = dist_from_ic / 3.0
-    if planet in ["Sun", "Jupiter", "Venus"]: return round(day_strength, 2)
-    elif planet in ["Moon", "Mars", "Saturn"]: return round(60.0 - day_strength, 2)
+    if planet in ["Sun", "Jupiter", "Venus"]: return max(0.0, min(60.0, round(day_strength, 2)))
+    elif planet in ["Moon", "Mars", "Saturn"]: return max(0.0, min(60.0, round(60.0 - day_strength, 2)))
     return 0.0
 
 def calculate_paksha_bala(planet: str, moon_lon: float, sun_lon: float) -> float:
     """Moon Phase Strength."""
-    diff = abs(moon_lon - sun_lon)
+    diff = abs(moon_lon - sun_lon) % 360.0
     if diff > 180.0: diff = 360.0 - diff
     benefic_strength = diff / 3.0
-    if planet in ["Moon", "Mercury", "Jupiter", "Venus"]: return round(benefic_strength, 2)
-    elif planet in ["Sun", "Mars", "Saturn"]: return round(60.0 - benefic_strength, 2)
+    if planet in ["Moon", "Mercury", "Jupiter", "Venus"]: return max(0.0, min(60.0, round(benefic_strength, 2)))
+    elif planet in ["Sun", "Mars", "Saturn"]: return max(0.0, min(60.0, round(60.0 - benefic_strength, 2)))
     return 0.0
 
 def calculate_tribhaga_bala(planet: str, sun_lon: float, asc_lon: float) -> float:
@@ -309,12 +309,12 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
         res, _ = swe.calc_ut(birth_time_jd, pl_id, swe.FLG_SWIEPH | swe.FLG_HELCTR)
         seeghrocca = res[0]
         
-    kendra = abs(seeghrocca - planet_geo_lon)
+    kendra = abs(seeghrocca - planet_geo_lon) % 360.0
     if kendra > 180.0: kendra = 360.0 - kendra
     
     # 180 degrees = 60 Virupas
     virupas = kendra / 3.0
-    return round(virupas, 2)
+    return max(0.0, min(60.0, round(virupas, 2)))
 
 
 
@@ -347,7 +347,62 @@ def calculate_drik_bala(planet: str, lon: float, planet_positions: dict) -> floa
     return round(total_drik, 2)
 
 
-def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: float, birth_time_jd: float) -> dict:
+def calculate_ahargana_lords(birth_time_jd: float, lon: float, lat: float) -> dict:
+    """
+    Calculates the Lords of the Year (Abda), Month (Masa), Day (Vara), and Hour (Hora).
+    Based on the Srishti Ahargana (days elapsed since creation) as per B.V. Raman.
+    Epoch: 2nd May 1827 (Gregorian) has an Ahargana of 714,404,096,641.
+    """
+    geopos = (lon, lat, 0.0)
+    rsmi = swe.CALC_RISE | swe.BIT_DISC_CENTER
+    
+    # 1. Determine recent local sunrise
+    try:
+        _, tret_1 = swe.rise_trans(birth_time_jd - 1.0, swe.SUN, rsmi, geopos)
+        _, tret_2 = swe.rise_trans(birth_time_jd, swe.SUN, rsmi, geopos)
+        sunrise_1 = tret_1[0]
+        sunrise_2 = tret_2[0]
+    except Exception:
+        # Fallback if swe.rise_trans fails (e.g. extreme latitudes)
+        sunrise_1 = int(birth_time_jd - 1.0) + 0.25 # Approx 6 AM
+        sunrise_2 = int(birth_time_jd) + 0.25
+        
+    recent_sunrise = sunrise_2 if sunrise_2 <= birth_time_jd else sunrise_1
+    
+    # 2. Srishti Ahargana calculation
+    # Base Epoch JD for 2nd May 1827, local sunrise
+    epoch_jd = swe.julday(1827, 5, 2, 0.0) 
+    try:
+        _, epoch_tret = swe.rise_trans(epoch_jd, swe.SUN, rsmi, geopos)
+        epoch_sunrise = epoch_tret[0]
+    except Exception:
+        epoch_sunrise = int(epoch_jd) + 0.25
+        
+    days_diff = round(recent_sunrise - epoch_sunrise)
+    srishti_ahargana = 714404096641 + days_diff
+    
+    # 3. Determine Lords
+    # Weekday mapping for Ahargana mod 7: 0=Sat, 1=Sun, 2=Mon, 3=Tue, 4=Wed, 5=Thu, 6=Fri
+    idx_to_planet = {0: "Saturn", 1: "Sun", 2: "Moon", 3: "Mars", 4: "Mercury", 5: "Jupiter", 6: "Venus"}
+    
+    vara_lord = idx_to_planet[srishti_ahargana % 7]
+    abda_lord = idx_to_planet[((srishti_ahargana // 360) * 360) % 7]
+    masa_lord = idx_to_planet[((srishti_ahargana // 30) * 30) % 7]
+    
+    hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
+    start_idx = hora_sequence.index(vara_lord)
+    
+    horas_passed = int((birth_time_jd - recent_sunrise) * 24.0)
+    hora_lord = hora_sequence[(start_idx + horas_passed) % 7]
+    
+    return {
+        "Abda": abda_lord,
+        "Masa": masa_lord,
+        "Vara": vara_lord,
+        "Hora": hora_lord
+    }
+
+def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: float, birth_time_jd: float, lon: float = 0.0, lat: float = 0.0) -> dict:
     """
     Master function to calculate the full 6-fold Shadbala for all planets.
     
@@ -356,12 +411,15 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         ascendant_lon (float): The exact longitude of the Ascendant.
         mc_lon (float): The exact longitude of the Midheaven (10th cusp).
         birth_time_jd (float): Julian Day of birth for time-based (Kala) and motional (Cheshta) calculations.
+        lon (float): Geographical longitude of birth.
+        lat (float): Geographical latitude of birth.
         
     Returns:
         dict: A nested dictionary containing the total Shadbala and its 6 sub-components for each planet.
     """
     results = {}
     naisargika = calculate_naisargika_bala()
+    time_lords = calculate_ahargana_lords(birth_time_jd, lon, lat)
     
     planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
     
@@ -369,20 +427,19 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         if p not in planet_positions:
             continue
             
-        lon = planet_positions[p]
+        pl_lon = planet_positions[p]
         
         # 1. Sthana Bala (Positional)
-        # Sthana Bala is the sum of 5 components. All 5 are now implemented.
-        uccha = calculate_uccha_bala(p, lon)
+        uccha = calculate_uccha_bala(p, pl_lon)
         saptavarga = calculate_saptavarga_bala(p, planet_positions)
-        ojayugma = calculate_ojayugmarasyamsa_bala(p, lon)
-        kendra = calculate_kendra_bala(lon, ascendant_lon)
-        drekkana = calculate_drekkana_bala(p, lon)
+        ojayugma = calculate_ojayugmarasyamsa_bala(p, pl_lon)
+        kendra = calculate_kendra_bala(pl_lon, ascendant_lon)
+        drekkana = calculate_drekkana_bala(p, pl_lon)
         
         sthana = uccha + saptavarga + ojayugma + kendra + drekkana
         
         # 2. Dig Bala (Directional)
-        dig = calculate_dig_bala(p, lon, ascendant_lon, mc_lon)
+        dig = calculate_dig_bala(p, pl_lon, ascendant_lon, mc_lon)
         
         # 3. Kala Bala (Time)
         nathonnatha = calculate_nathonnatha_bala(p, planet_positions.get("Sun", 0.0), mc_lon)
@@ -390,7 +447,13 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         tribhaga = calculate_tribhaga_bala(p, planet_positions.get("Sun", 0.0), ascendant_lon)
         ayana = calculate_ayana_bala(p, birth_time_jd)
         
-        kala = nathonnatha + paksha + tribhaga + ayana # TODO: Add Abda, Masa, Vara, Hora, Yuddha
+        abda = 15.0 if p == time_lords["Abda"] else 0.0
+        masa = 30.0 if p == time_lords["Masa"] else 0.0
+        vara = 45.0 if p == time_lords["Vara"] else 0.0
+        hora = 60.0 if p == time_lords["Hora"] else 0.0
+        yuddha = 0.0 # TODO: Add Planetary War logic
+        
+        kala = nathonnatha + paksha + tribhaga + ayana + abda + masa + vara + hora + yuddha
         
         # 4. Cheshta Bala (Motional)
         # Sun inherits its Ayana Bala. Moon inherits its Paksha Bala.
@@ -399,19 +462,21 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         elif p == "Moon":
             cheshta = paksha
         else:
-            cheshta = calculate_cheshta_bala(p, birth_time_jd, lon, planet_positions.get("Sun", 0.0))
+            cheshta = calculate_cheshta_bala(p, birth_time_jd, pl_lon, planet_positions.get("Sun", 0.0))
         
         # 5. Naisargika Bala (Natural)
         naisarg = naisargika[p]
         
         # 6. Drik Bala (Aspectual)
-        drik = calculate_drik_bala(p, lon, planet_positions)
+        drik = calculate_drik_bala(p, pl_lon, planet_positions)
         
         # 7. Ishta and Kashta Phala (Auspicious / Inauspicious Effects)
         # Ishta Phala = sqrt(Ochcha Bala * Cheshta Bala)
         # Kashta Phala = sqrt((60 - Ochcha Bala) * (60 - Cheshta Bala))
-        ishta_phala = math.sqrt(uccha * cheshta)
-        kashta_phala = math.sqrt((60.0 - uccha) * (60.0 - cheshta))
+        uccha_clamped = max(0.0, min(60.0, uccha))
+        cheshta_clamped = max(0.0, min(60.0, cheshta))
+        ishta_phala = math.sqrt(uccha_clamped * cheshta_clamped)
+        kashta_phala = math.sqrt(max(0.0, 60.0 - uccha_clamped) * max(0.0, 60.0 - cheshta_clamped))
         
         total_virupas = sthana + dig + kala + cheshta + naisarg + drik
         

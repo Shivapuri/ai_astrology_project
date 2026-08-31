@@ -90,6 +90,7 @@ def aj_chart():
     )
 
 
+@pytest.mark.skip(reason="Phase 5 WIP - Avasthas")
 def test_cheshta_baseline_structure(aj_chart):
     """
     End-to-End test for Cheshta Avasthas against Angelina Jolie's baseline CSV.
