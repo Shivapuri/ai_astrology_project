@@ -114,7 +114,7 @@ def get_lajjitadi_avasthas(planet: str, sign: str, house_num: int,
     # Exclude Saturn as a friend. Sun conjunction causes Kshobhita (don't count for Mudita).
     friends_no_sat = [f for f in natural_friends if f != "Saturn"]
     in_friend_sign = natural_dignity in ["Friend's Sign", "Great Friend's Sign"]
-    conjunct_friends = [p for p in conjunct_planets if p in friends_no_sat]
+    conjunct_friends = [p for p in conjunct_planets if p in friends_no_sat and p != "Sun"]
     aspecting_friends = [p for p in aspecting_planets if p in friends_no_sat]
     
     mudita_reasons = []

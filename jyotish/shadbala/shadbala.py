@@ -78,6 +78,62 @@ def calculate_saptavarga_bala(planet: str, planet_positions: dict) -> float:
         
     return total_virupas
 
+def calculate_subha_phala(planet: str, planet_positions: dict) -> float:
+    from jyotish.generate_jyotish import calculate_varga_longitude
+    from jyotish.relationships.relationships import get_dignity
+    
+    exalt_signs = {"Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn", "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra"}
+    deb_signs = {"Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer", "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries"}
+    
+    vargas = ["D1", "D2", "D3", "D7", "D9", "D12", "D30"]
+    total_subha = 0.0
+    
+    p1_d1_lon = planet_positions[planet]
+    p1_d1_idx = int(p1_d1_lon / 30.0)
+    
+    for varga in vargas:
+        varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
+        varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+        varga_sign_name = SIGNS[varga_sign_idx]
+        sign_lord = SIGN_LORDS[varga_sign_name]
+        
+        is_rasi = (varga == "D1")
+        
+        # Use exact degree logic to get final dignity string
+        lord_d1_lon = planet_positions.get(sign_lord)
+        if lord_d1_lon is None:
+            compound = "Neutral"
+        else:
+            lord_d1_idx = int(lord_d1_lon / 30.0)
+            natural = get_natural_relationship(planet, sign_lord)
+            temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
+            compound = get_compound_relationship(natural, temporary)
+            
+        deg_in_sign = varga_lon % 30.0
+        dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign)
+        
+        if "Exalted" in dignity: pts = 60.0
+        elif "Moolatrikona" in dignity: pts = 45.0
+        elif "Own Sign" in dignity: pts = 30.0
+        elif "Great Friend" in dignity: pts = 22.5
+        elif "Friend" in dignity: pts = 15.0
+        elif "Neutral" in dignity: pts = 7.5
+        elif "Great Enemy" in dignity: pts = 1.875
+        elif "Enemy" in dignity: pts = 3.75
+        elif "Debilitated" in dignity: pts = 0.0
+        else: pts = 7.5
+                
+        if not is_rasi:
+            pts /= 2.0
+            
+        total_subha += pts
+        
+    # Scale by dividing by 4 to map max 240 back to 60.
+    # Note: Ernst Wilhelm might use a slightly different divisor or round differently,
+    # but 4 mathematically scales the 1 + 6*0.5 weights back to 60.
+    return total_subha / 4.0
+
+
 def calculate_naisargika_bala() -> dict:
     """
     Calculates the Naisargika Bala (Natural Strength) of the 7 primary planets.
@@ -511,10 +567,13 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         # Kashta Phala = sqrt((60 - Ochcha Bala) * (60 - Cheshta Bala))
         uccha_clamped = max(0.0, min(60.0, uccha))
         cheshta_clamped = max(0.0, min(60.0, cheshta))
-        ishta_phala = math.sqrt(uccha_clamped * cheshta_clamped)
-        kashta_phala = math.sqrt(max(0.0, 60.0 - uccha_clamped) * max(0.0, 60.0 - cheshta_clamped))
+        ishta_phala = (uccha_clamped + cheshta_clamped) / 2.0
+        kashta_phala = (max(0.0, 60.0 - uccha_clamped) + max(0.0, 60.0 - cheshta_clamped)) / 2.0
         
         total_virupas = sthana + dig + kala + cheshta + naisarg + drik
+        
+        subha_phala = calculate_subha_phala(p, planet_positions)
+        asubha_phala = max(0.0, 60.0 - subha_phala)
         
         results[p] = {
             "Uccha_Bala": round(uccha, 2),
@@ -527,7 +586,9 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
             "Naisargika_Bala": round(naisarg, 2),
             "Drik_Bala": round(drik, 2),
             "Ishta_Phala": round(ishta_phala, 2),
-            "Kashta_Phala": round(kashta_phala, 2)
+            "Kashta_Phala": round(kashta_phala, 2),
+            "Subha_Phala": round(subha_phala, 2),
+            "Asubha_Phala": round(asubha_phala, 2)
         }
         
     return results

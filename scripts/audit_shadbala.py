@@ -91,8 +91,8 @@ def run_audit():
     
     # 6 Pillars Micro-Audit
     report_lines.append("\n## Shadbala 6 Pillars Micro-Audit Breakdown")
-    report_lines.append("| Planet | Sthana | Dig | Kala | Cheshta | Naisargika | Drik | Total (Virupas) | Total (Rupas) |")
-    report_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
+    report_lines.append("| Planet | Sthana | Dig | Kala | Cheshta | Naisarg | Drik | Total (V) | Subha | Asubha | Ishta | Kashta |")
+    report_lines.append("| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |")
     
     shadbala_data = chart.get('shadbala', {})
     for p in PLANETS:
@@ -104,8 +104,11 @@ def run_audit():
         naisarg = p_sb.get('Naisargika_Bala', 0.0)
         drik = p_sb.get('Drik_Bala', 0.0)
         tot_v = p_sb.get('Total_Virupas', 0.0)
-        tot_r = p_sb.get('Total_Rupas', 0.0)
-        report_lines.append(f"| {p} | {sthana:.2f} | {dig:.2f} | {kala:.2f} | {cheshta:.2f} | {naisarg:.2f} | {drik:.2f} | {tot_v:.2f} | {tot_r:.4f} |")
+        subha = p_sb.get('Subha_Phala', 0.0)
+        asubha = p_sb.get('Asubha_Phala', 0.0)
+        ishta = p_sb.get('Ishta_Phala', 0.0)
+        kashta = p_sb.get('Kashta_Phala', 0.0)
+        report_lines.append(f"| {p} | {sthana:.2f} | {dig:.2f} | {kala:.2f} | {cheshta:.2f} | {naisarg:.2f} | {drik:.2f} | {tot_v:.2f} | {subha:.2f} | {asubha:.2f} | {ishta:.2f} | {kashta:.2f} |")
     
     total_cells_checked = 0
     total_failures = 0
