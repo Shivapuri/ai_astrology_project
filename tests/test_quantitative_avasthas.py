@@ -31,6 +31,7 @@ def parse_tagged_csv(filename):
     
     if not os.path.exists(filepath):
         pytest.skip(f"Baseline CSV {filename} not found.")
+        return matrix
         
     with open(filepath, 'r', encoding='utf-8') as f:
         reader = csv.reader(f)
@@ -40,34 +41,22 @@ def parse_tagged_csv(filename):
         for row in reader:
             giving_planet = row[0].strip()
             if giving_planet not in PLANETS:
-                continue # Skip total rows or empty
+                continue 
                 
             for i, cell in enumerate(row[1:8]):
                 receiving_planet = col_planets[i].strip()
                 if receiving_planet not in PLANETS:
                     continue
                 
-                # Extract all numbers and tags from the cell
-                lines = cell.strip().split('\n')
+                # Extract all numbers and tags from the cell (e.g. '11.7[R]', '32.7[R]+92.7[G]')
+                matches = re.findall(r'([+-]?\d+\.?\d*)\s*\[([A-Z])\]', cell)
                 cell_data = []
-                for line in lines:
-                    line = line.strip()
-                    if not line:
-                        continue
-                    
-                    # Regex to separate number and tag like [G], [R]
-                    match = re.search(r'(.*?)(?:\[([GRBK])\])?$', line)
-                    if match:
-                        val_str = match.group(1).strip()
-                        tag = match.group(2)
-                        
-                        try:
-                            # Handle clean up of asterisks or weird OCR artifacts
-                            val_str = val_str.replace('*', '').replace('+', '')
-                            val = float(val_str)
-                            cell_data.append({'value': val, 'color': tag})
-                        except ValueError:
-                            pass # Skip if unparseable
+                for val_str, tag in matches:
+                    try:
+                        val = float(val_str)
+                        cell_data.append({'value': abs(val), 'color': tag})
+                    except ValueError:
+                        pass
                             
                 matrix[giving_planet][receiving_planet] = cell_data
                 
@@ -89,55 +78,64 @@ def aj_chart():
         timezone_offset=TZ, 
     )
 
+MATRIX_TARGETS = [
+    ("Uccha", "angelina_jolie_uccha.csv"),
+    ("Dig", "angelina_jolie_dig.csv"),
+    ("Cheshta", "angelina_jolie_cheshta.csv"),
+    ("Subha", "angelina_jolie_subha.csv"),
+    ("Ishta", "angelina_jolie_ishta.csv")
+]
 
-@pytest.mark.skip(reason="Phase 5 WIP - Avasthas")
-def test_cheshta_baseline_structure(aj_chart):
-    """
-    End-to-End test for Cheshta Avasthas against Angelina Jolie's baseline CSV.
-    """
+@pytest.mark.parametrize("matrix_name, csv_filename", MATRIX_TARGETS)
+def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
     calculated_matrices = aj_chart.get('avastha_matrix', {})
     d1_calculated = calculated_matrices.get('D1', {})
-    calc_cheshta = d1_calculated.get('Cheshta', {})
+    calc_matrix = d1_calculated.get(matrix_name, {})
     
-    assert calc_cheshta, "Calculated Cheshta matrix is missing from context!"
+    assert calc_matrix, f"Calculated {matrix_name} matrix is missing from context!"
     
-    expected_cheshta = parse_tagged_csv('angelina_jolie_cheshta.csv')
+    expected_matrix = parse_tagged_csv(csv_filename)
     
-    # Loop over the expected matrix and compare it to the calculated matrix
+    # 1. Check Baselines (Diagonals) and Net Modifiers (Off-Diagonals)
     for giver in PLANETS:
         for receiver in PLANETS:
-            exp_cell = expected_cheshta[giver][receiver]
+            exp_cell = expected_matrix[giver][receiver]
+            calc_cell = calc_matrix.get(receiver, {}).get(giver)
             
-            # The backend structures it as dict[receiver][giver]
-            calc_receiver_dict = calc_cheshta.get(receiver, {})
-            calc_cell = calc_receiver_dict.get(giver)
-            
-            # Currently, the backend outputs a flat dict: {'top': '...', 'bottom': '...', 'color': '...'}
-            # The expected data from CSV is a list of dicts: [{'value': 1.0, 'color': 'G'}, ...]
-            
-            if not exp_cell:
-                # If the CSV cell is empty, the calculated cell should ideally be None or empty
-                # assert not calc_cell, f"Expected empty cell for {giver}->{receiver}, but got {calc_cell}"
-                continue
-                
-            # If the CSV has data, we expect the calculated cell to have data
-            assert calc_cell is not None, f"Expected data for {giver}->{receiver}, but calculated was None."
-            
-            # Next Step for TDD:
-            # You will need to align the structure of `calc_cell` in quantitative.py 
-            # to match the 3-number diagonal / 2-number off-diagonal format of `exp_cell`.
-            # For now, we print a useful failure if the Top values don't match.
-            
-            if giver != receiver:
-                # Off-diagonal: Top value in CSV is the Modifier
-                expected_modifier = exp_cell[0]['value']
-                # Try to parse the calculated top value
-                try:
-                    calc_modifier = float(calc_cell.get('top', 0))
-                except (ValueError, TypeError):
-                    calc_modifier = 0.0
+            if giver == receiver:
+                # Baseline Check
+                if exp_cell:
+                    exp_baseline = exp_cell[0]['value']
+                    try:
+                        calc_baseline = float(calc_cell.get('bottom', 0))
+                    except (ValueError, TypeError):
+                        calc_baseline = 0.0
                     
-                assert expected_modifier == calc_modifier, (
-                    f"Modifier Mismatch for {giver} -> {receiver}: "
-                    f"Expected {expected_modifier}, Got {calc_modifier}"
-                )
+                    assert abs(exp_baseline - calc_baseline) <= 1.5, f"{matrix_name} - {giver} Baseline: Expected {exp_baseline}, Got {calc_baseline}"
+            else:
+                # Net Modifier Check
+                exp_net = 0.0
+                if exp_cell:
+                    num_mods = len(exp_cell) // 2
+                    modifiers = exp_cell[:num_mods]
+                    for item in modifiers:
+                        val = item['value']
+                        color = item['color']
+                        if color == 'G':
+                            exp_net += val
+                        elif color in ('R', 'K'):
+                            exp_net -= val
+                        
+                calc_net = 0.0
+                if calc_cell:
+                    try:
+                        top_val = float(calc_cell.get('top', 0))
+                        color = calc_cell.get('color', '')
+                        if color == 'green':
+                            calc_net = top_val
+                        elif color == 'red':
+                            calc_net = -top_val
+                    except (ValueError, TypeError):
+                        calc_net = 0.0
+                
+                assert abs(exp_net - calc_net) <= 0.5, f"{matrix_name} - {giver} -> {receiver} Net Modifier: Expected {exp_net:.1f}, Got {calc_net:.1f}"

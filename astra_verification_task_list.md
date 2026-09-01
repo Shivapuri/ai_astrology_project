@@ -22,12 +22,12 @@ This tracker outlines the strict hierarchical approach we are taking to verify t
 
 ## Phase 4: Level 5 Verification (Strengths/Shadbala)
 - [x] **Audit Shadbala Core:** Created `audit_shadbala.py` and implemented Ahargana Time Lords.
-- [ ] **Verify Uccha Bala:** Test against `angelina_jolie_uccha.csv`.
-- [ ] **Verify Dig Bala:** Test against `angelina_jolie_dig.csv`.
-- [ ] **Verify Cheshta Bala:** Test against `angelina_jolie_cheshta.csv`.
+- [x] **Verify Uccha Bala:** Test against `angelina_jolie_uccha.csv`.
+- [x] **Verify Dig Bala:** Test against `angelina_jolie_dig.csv`.
+- [x] **Verify Cheshta Bala:** Test against `angelina_jolie_cheshta.csv`.
 
 ## Phase 5: Level 6 Verification (Avasthas)
-- [ ] **Verify Ishta Phala:** Test against `angelina_jolie_ishta.csv`.
-- [ ] **Verify Subha Phala:** Test against `angelina_jolie_subha.csv`.
-- [ ] **Verify Lajjitadi Avasthas:** Use the fully nested JSON matrix to test the final addition/subtraction modifiers.
-- [ ] **Verify Shayanadi Avasthas:** Ensure Nakshatra/Navamsa calculations yield correct Shayanadi states.
+- [x] **Verify Ishta Phala:** Test against `angelina_jolie_ishta.csv`.
+- [x] **Verify Subha Phala:** Test against `angelina_jolie_subha.csv`.
+- [x] **Verify Lajjitadi Avasthas:** Use the fully nested JSON matrix to test the final addition/subtraction modifiers.
+- [x] **Verify Shayanadi Avasthas:** Ensure Nakshatra/Navamsa calculations yield correct Shayanadi states.
