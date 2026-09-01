@@ -50,24 +50,18 @@ def parse_tagged_csv(filename):
                 if receiving_planet not in PLANETS:
                     continue
                 
-                # Extract all numbers and tags from the cell
+                # Extract all numbers and tags from the cell (e.g. '11.7[R]', '32.7[R]+92.7[G]')
                 import re
-                lines = re.split(r'[\n ]+', cell.strip())
+                # Find all occurrences of number optionally preceded by + or - and followed by [TAG]
+                matches = re.findall(r'([+-]?\d+\.?\d*)\s*\[([A-Z])\]', cell)
                 cell_data = []
-                for line in lines:
-                    line = line.strip()
-                    if not line: continue
-                    match = re.search(r'(.*?)(?:\[([GRBK])\])?$', line)
-                    if match:
-                        val_str = match.group(1).strip()
-                        tag = match.group(2)
-                        
-                        try:
-                            val_str = val_str.replace('*', '').replace('+', '')
-                            val = float(val_str)
-                            cell_data.append({'value': val, 'color': tag})
-                        except ValueError:
-                            pass
+                for val_str, tag in matches:
+                    try:
+                        val = float(val_str)
+                        cell_data.append({'value': abs(val), 'color': tag})
+                    except ValueError:
+                        pass
+
                             
                 matrix[giving_planet][receiving_planet] = cell_data
                 

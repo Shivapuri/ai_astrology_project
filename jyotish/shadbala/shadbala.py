@@ -98,46 +98,59 @@ def calculate_naisargika_bala() -> dict:
 
 def calculate_dig_bala(planet_name: str, planet_lon: float, ascendant_lon: float, spatial_mc_lon: float) -> float:
     """
-    Calculates Dig Bala (Directional Strength) for a given planet.
+    Calculates Dig Bala (Directional Strength) for a given planet using Proportional Quadrants.
     """
-    # Sripathi / Equal House rules for Dig Bala:
-    # 1st House (Ascendant)
-    # 4th House (IC) = Ascendant + 90
-    # 7th House (Descendant) = Ascendant + 180
-    # 10th House (MC) = Ascendant - 90
+    asc = ascendant_lon
+    mc = spatial_mc_lon
+    dsc = (asc + 180.0) % 360.0
+    ic = (mc + 180.0) % 360.0
     
-    mc_lon = (ascendant_lon - 90.0) % 360.0
-    ic_lon = (ascendant_lon + 90.0) % 360.0
-    descendant_lon = (ascendant_lon + 180.0) % 360.0
+    # Define the 4 cusps in counter-clockwise longitudinal order
+    # (East -> North -> West -> South) => (Asc -> IC -> Dsc -> MC)
+    cusps_order = [asc, ic, dsc, mc]
     
-    # Map each planet to its WEAKEST point (opposite of its strongest cusp).
-    # Strength = 60 Virupas at strongest, 0 at weakest.
-    # We find the shortest angular distance from the WEAKEST point.
-    weakest_points = {
-        "Sun": ic_lon,           # Strong at MC(10th), Weak at IC(4th)
-        "Mars": ic_lon,          # Strong at MC(10th), Weak at IC(4th)
-        "Moon": mc_lon,          # Strong at IC(4th), Weak at MC(10th)
-        "Venus": mc_lon,         # Strong at IC(4th), Weak at MC(10th)
-        "Jupiter": descendant_lon, # Strong at Asc(1st), Weak at Desc(7th)
-        "Mercury": descendant_lon, # Strong at Asc(1st), Weak at Desc(7th)
-        "Saturn": ascendant_lon    # Strong at Desc(7th), Weak at Asc(1st)
+    # Planet specific mappings for [Asc, IC, Dsc, MC]
+    planet_virupas = {
+        "Sun":     [30.0, 0.0, 30.0, 60.0],
+        "Mars":    [30.0, 0.0, 30.0, 60.0],
+        "Moon":    [30.0, 60.0, 30.0, 0.0],
+        "Venus":   [30.0, 60.0, 30.0, 0.0],
+        "Jupiter": [60.0, 30.0, 0.0, 30.0],
+        "Mercury": [60.0, 30.0, 0.0, 30.0],
+        "Saturn":  [0.0, 30.0, 60.0, 30.0]
     }
     
-    if planet_name not in weakest_points:
+    if planet_name not in planet_virupas:
         return 0.0
         
-    weakest_lon = weakest_points[planet_name]
+    virupas = planet_virupas[planet_name]
     
-    # Shortest angular distance between planet and its weakest point
-    # Max distance is 180 degrees (which is its strongest point).
-    diff = abs(planet_lon - weakest_lon) % 360.0
-    if diff > 180.0:
-        diff = 360.0 - diff
+    # Find which quadrant the planet resides in
+    for i in range(4):
+        c1 = cusps_order[i]
+        c2 = cusps_order[(i + 1) % 4]
+        v1 = virupas[i]
+        v2 = virupas[(i + 1) % 4]
         
-    # 180 degrees = 60 Virupas, so 1 degree = 60/180 = 1/3 Virupa
-    virupas = diff / 3.0
-    return max(0.0, min(60.0, round(virupas, 2)))
-
+        in_quadrant = False
+        if c1 < c2:
+            if c1 <= planet_lon < c2:
+                in_quadrant = True
+        else:
+            if planet_lon >= c1 or planet_lon < c2:
+                in_quadrant = True
+                
+        if in_quadrant:
+            span = (c2 - c1) % 360.0
+            prog = (planet_lon - c1) % 360.0
+            if span == 0:
+                val = v1
+            else:
+                fraction = prog / span
+                val = v1 + fraction * (v2 - v1)
+            return max(0.0, min(60.0, round(val, 2)))
+            
+    return 0.0
 
 def calculate_uccha_bala(planet_name: str, planet_lon: float) -> float:
     """
