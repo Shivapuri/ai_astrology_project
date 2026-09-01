@@ -137,13 +137,22 @@ def run_audit():
             for p in PLANETS:
                 exp_tot = expected_totals.get(p, 0)
                 # In the backend, the base strength of the planet is at (p, p) bottom
-                try:
-                    calc_tot = float(calc_matrix[p][p]['bottom'])
-                except (KeyError, TypeError, ValueError):
-                    calc_tot = 0.0
-                    
+                calc_tot = 0.0
+                for giver in PLANETS:
+                    if giver != p:
+                        # Add the modifiers which are the off-diagonals
+                        try:
+                            val = float(calc_matrix[giver][p]['top'])
+                            color = calc_matrix[giver][p]['color']
+                            if color == 'green':
+                                calc_tot += val
+                            elif color == 'red':
+                                calc_tot -= val
+                        except (KeyError, TypeError, ValueError):
+                            pass
+                            
                 if abs(exp_tot - calc_tot) > 0.5:
-                    failures.append(f"- **{p} Total Baseline**: Expected `{exp_tot}`, Got `{calc_tot}` (Diff: `{abs(exp_tot - calc_tot):.2f}`)")
+                    failures.append(f"- **{p} Total Baseline**: Expected `{exp_tot}`, Got `{calc_tot:.1f}` (Diff: `{abs(exp_tot - calc_tot):.2f}`)")
 
         # Check Off-Diagonals (Modifiers)
         for giver in PLANETS:

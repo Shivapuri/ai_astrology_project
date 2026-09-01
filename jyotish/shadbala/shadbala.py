@@ -300,15 +300,34 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
     }
     
     if planet not in planet_map: return 0.0
-    
     p_id = planet_map[planet]
+    
+    # Sripathi Formula Base: Compute Mean Sun
+    T = (birth_time_jd - 2451545.0) / 36525.0
+    mean_sun = (280.46646 + 36000.76983 * T + 0.0003032 * T**2) % 360.0
+    
     if planet in ["Mars", "Jupiter", "Saturn"]:
-        seeghrocca = sun_geo_lon
-        kendra = abs(seeghrocca - planet_geo_lon) % 360.0
+        if planet == "Mars":
+            mean_p = (355.45332 + 19140.299300 * T) % 360.0
+        elif planet == "Jupiter":
+            mean_p = (34.40438 + 3034.905674 * T) % 360.0
+        else: # Saturn
+            mean_p = (50.07747 + 1222.113794 * T) % 360.0
+            
+        diff = (planet_geo_lon - mean_p) % 360.0
+        if diff > 180.0: diff -= 360.0
+        midpoint = (mean_p + diff / 2.0) % 360.0
+        
+        kendra = abs(mean_sun - midpoint) % 360.0
     else: # Mercury, Venus
         res, _ = swe.calc_ut(birth_time_jd, p_id, swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_HELCTR)
         seeghrocca = res[0]
-        kendra = abs(seeghrocca - sun_geo_lon) % 360.0
+        
+        diff = (planet_geo_lon - mean_sun) % 360.0
+        if diff > 180.0: diff -= 360.0
+        midpoint = (mean_sun + diff / 2.0) % 360.0
+        
+        kendra = abs(seeghrocca - midpoint) % 360.0
         
     if kendra > 180.0: kendra = 360.0 - kendra
     

@@ -161,6 +161,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                         if not has_neg:
                             if baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Ishta', 'Subha']:
                                 current_pull = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
+                            elif baseline_type == 'ShadBala':
+                                current_pull = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
                             else:
                                 current_pull = bases[p_give] * (aspect_virupas / 60.0)
                             pulls.append(-current_pull)
