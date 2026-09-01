@@ -144,38 +144,30 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     'total': bases[p_recv]
                 }
             else:
-                total_pull = 0.0
-                sign_mult = 0
-                has_pos = False
-                has_neg = False
-                for s_name in active_states:
-                    if any(pos in s_name for pos in ['Mudita', 'Garvita']):
-                        if not has_pos:
-                            current_pull = bases[p_give] * (aspect_virupas / 60.0)
-                            pulls.append(current_pull)
-                            total_pull += current_pull
-                            sign_mult = 1
-                            has_pos = True
-                    elif any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']):
-                        if not has_neg:
-                            if baseline_type == 'Ishta':
-                                current_pull = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
-                            elif baseline_type == 'Subha':
-                                current_pull = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
-                            elif baseline_type in ['Uccha', 'Dig', 'Cheshta']:
-                                current_pull = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
-                            elif baseline_type == 'ShadBala':
-                                current_pull = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
-                            else:
-                                current_pull = bases[p_give] * (aspect_virupas / 60.0)
-                            pulls.append(-current_pull)
-                            total_pull -= current_pull
-                            sign_mult = -1 if sign_mult == 0 else sign_mult
-                            has_neg = True
+                positive_pull = 0.0
+                negative_pull = 0.0
+                has_pos = any(any(pos in s_name for pos in ['Mudita', 'Garvita']) for s_name in active_states)
+                has_neg = any(any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']) for s_name in active_states)
                 
-                # In UI, we can just sum the pulls for the net effect, or return the first one if we want to match the naive check
-                # But to be accurate, we return the net pull.
-                net_pull = total_pull
+                if has_pos:
+                    positive_pull = bases[p_give] * (aspect_virupas / 60.0)
+                    pulls.append(positive_pull)
+                    
+                if has_neg:
+                    if baseline_type == 'Ishta':
+                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                    elif baseline_type == 'Subha':
+                        neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
+                    elif baseline_type in ['Uccha', 'Dig', 'Cheshta']:
+                        neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
+                    elif baseline_type == 'ShadBala':
+                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                    else:
+                        neg_calc = bases[p_give] * (aspect_virupas / 60.0)
+                    negative_pull = neg_calc
+                    pulls.append(-negative_pull)
+                
+                net_pull = positive_pull - negative_pull
                 total = bases[p_recv] + net_pull
                 
                 matrix[p_give][p_recv] = {
