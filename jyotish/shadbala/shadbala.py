@@ -96,14 +96,18 @@ def calculate_naisargika_bala() -> dict:
     }
 
 
-def calculate_dig_bala(planet_name: str, planet_lon: float, ascendant_lon: float, mc_lon: float) -> float:
+def calculate_dig_bala(planet_name: str, planet_lon: float, ascendant_lon: float, spatial_mc_lon: float) -> float:
     """
     Calculates Dig Bala (Directional Strength) for a given planet.
-    Requires the exact planet longitude, Ascendant longitude (1st House Cusp),
-    and Midheaven longitude (10th House Cusp).
-    Returns the strength in Virupas (0 to 60).
     """
-    ic_lon = (mc_lon + 180.0) % 360.0
+    # Sripathi / Equal House rules for Dig Bala:
+    # 1st House (Ascendant)
+    # 4th House (IC) = Ascendant + 90
+    # 7th House (Descendant) = Ascendant + 180
+    # 10th House (MC) = Ascendant - 90
+    
+    mc_lon = (ascendant_lon - 90.0) % 360.0
+    ic_lon = (ascendant_lon + 90.0) % 360.0
     descendant_lon = (ascendant_lon + 180.0) % 360.0
     
     # Map each planet to its WEAKEST point (opposite of its strongest cusp).

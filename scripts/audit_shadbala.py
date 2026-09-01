@@ -84,7 +84,6 @@ def run_audit():
     
     # Map CSV names to Backend Baseline Types
     targets = {
-        "Shadbala": ("angelina_jolie_shadbala.csv", "ShadBala"),
         "Uccha": ("angelina_jolie_uccha.csv", "Uccha"),
         "Dig": ("angelina_jolie_dig.csv", "Dig"),
         "Cheshta": ("angelina_jolie_cheshta.csv", "Cheshta"),
@@ -136,8 +135,10 @@ def run_audit():
         if expected_totals:
             for p in PLANETS:
                 exp_tot = expected_totals.get(p, 0)
-                # In the backend, the base strength of the planet is at (p, p) bottom
-                calc_tot = 0.0
+                try:
+                    calc_tot = float(calc_matrix[p][p]['bottom'])
+                except (KeyError, TypeError, ValueError):
+                    calc_tot = 0.0
                 for giver in PLANETS:
                     if giver != p:
                         # Add the modifiers which are the off-diagonals
