@@ -107,7 +107,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 if exp_cell:
                     exp_baseline = exp_cell[0]['value']
                     try:
-                        calc_baseline = float(calc_cell.get('bottom', 0))
+                        calc_baseline = calc_cell.get('net_total', 0)
                     except (ValueError, TypeError):
                         calc_baseline = 0.0
                     
@@ -129,12 +129,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 calc_net = 0.0
                 if calc_cell:
                     try:
-                        top_val = float(calc_cell.get('top', 0))
-                        color = calc_cell.get('color', '')
-                        if color == 'green':
-                            calc_net = top_val
-                        elif color == 'red':
-                            calc_net = -top_val
+                        calc_net = calc_cell.get('modifier', 0)
                     except (ValueError, TypeError):
                         calc_net = 0.0
                 

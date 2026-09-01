@@ -718,6 +718,12 @@
         .color-beneficial { background-color: #d97706; }
         .color-damaging { background-color: #475569; }
         .color-neutral { background-color: #0ea5e9; }
+        .quant-matrices-table td { text-align: center; vertical-align: middle; padding: 6px; }
+        .quant-matrices-table td span { display: block; line-height: 1.3; }
+        .text-green { color: #27ae60; font-weight: bold; }
+        .text-red { color: #c0392b; font-weight: bold; }
+        .text-gray { color: #7f8c8d; font-size: 0.85em; }
+        .text-black-bold { color: #3d312a; font-weight: bold; }
 
     </style>
 </head>
@@ -912,6 +918,7 @@
         <div class="menu-item" onclick="assignWidget('aspects-planets')">Aspects (Planets)</div>
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
+        <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
         <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
     </div>
     
@@ -1034,6 +1041,46 @@
             <div style="overflow-x: auto; background-color: #ffffcc;">
                 <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
                     <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </template>
+    
+    <template id="tmpl-quant-matrices">
+        <div class="widget-content" style="display:flex; flex-direction:column; height:100%;">
+            <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
+                    <option value="D1">D1</option>
+                    <option value="D9">D9</option>
+                    <option value="D10">D10</option>
+                    <option value="D60">D60</option>
+                </select>
+                <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
+                    <option value="ShadBala">ShadBala</option>
+                    <option value="Ishta">Ishta</option>
+                    <option value="Subha">Subha</option>
+                    <option value="Cheshta">Cheshta</option>
+                    <option value="Uccha">Uccha</option>
+                    <option value="Dig">Dig</option>
+                    <option value="Drishti Yuti">Drishti Yuti</option>
+                    <option value="Veda">Veda</option>
+                </select>
+            </div>
+            <div style="overflow-x: auto; flex:1; padding: 10px;">
+                <table class="quant-matrices-table dignity-grid" style="width: 100%; border-collapse: collapse; text-align: center;">
+                    <thead>
+                        <tr>
+                            <th>↓ Giv \ Rec →</th>
+                            <th>Su</th>
+                            <th>Mo</th>
+                            <th>Ma</th>
+                            <th>Me</th>
+                            <th>Ju</th>
+                            <th>Ve</th>
+                            <th>Sa</th>
+                        </tr>
+                    </thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -1256,6 +1303,7 @@
             try { updateShadbalaTable(); } catch(e) {}
             try { updateDashaTable(); } catch(e) {}
             try { updateAspectsTable("D1"); } catch(e) {}
+            try { updateQuantMatricesTable(); } catch(e) {}
             
             // Nakshatras
             document.querySelectorAll('.grid-cell[data-widget="nakshatras"]').forEach(cell => {
@@ -1762,6 +1810,75 @@
                 return `${planet} is ultimately affected by its ${state} state, indicating concrete help or hindrance from others (${condition}). ${meaning}`;
             }
             return condition;
+        }
+        
+        function updateQuantMatricesTable() {
+            document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
+                const tbody = cell.querySelector('tbody');
+                const vargaSelect = cell.querySelector('.varga-select');
+                const matrixSelect = cell.querySelector('.matrix-type-select');
+                
+                if (!tbody || !vargaSelect || !matrixSelect || !currentChartData) return;
+                
+                const varga = vargaSelect.value;
+                const matrixType = matrixSelect.value;
+                
+                tbody.innerHTML = '';
+                
+                const matrices = currentChartData.avastha_matrix;
+                if (!matrices || !matrices[varga] || !matrices[varga][matrixType]) return;
+                
+                const matrixData = matrices[varga][matrixType];
+                const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+                
+                planets.forEach(pGive => {
+                    const tr = document.createElement('tr');
+                    const thRow = document.createElement('td');
+                    thRow.innerHTML = `<strong>${pGive}</strong>`;
+                    thRow.style.backgroundColor = '#fcfaf5';
+                    tr.appendChild(thRow);
+                    
+                    planets.forEach(pRecv => {
+                        const td = document.createElement('td');
+                        const data = matrixData[pRecv] ? matrixData[pRecv][pGive] : null;
+                        
+                        if (!data) {
+                            td.innerHTML = '-';
+                        } else {
+                            if (pGive === pRecv) {
+                                // Diagonal: Base on top, Net Total on bottom
+                                td.innerHTML = `
+                                    <span class="text-gray">${data.base.toFixed(1)}</span>
+                                    <span class="text-black-bold">${data.net_total.toFixed(1)}</span>
+                                `;
+                                td.title = `${pRecv} Base Starting Strength: ${data.base.toFixed(1)}. Net Total: ${data.net_total.toFixed(1)}`;
+                            } else {
+                                // Off-Diagonal: Modifier on top, Isolated total on bottom
+                                const mod = data.modifier;
+                                const isPos = data.is_positive;
+                                const sign = mod > 0 ? '+' : (mod < 0 ? '-' : '');
+                                const cssClass = mod > 0 ? 'text-green' : (mod < 0 ? 'text-red' : 'text-gray');
+                                
+                                let actionWord = mod > 0 ? "Delights (Mudita)" : (mod < 0 ? "Starves/Agitates" : "Neutralizes");
+                                let addSub = mod >= 0 ? "Adds" : "Subtracts";
+                                
+                                td.innerHTML = `
+                                    <span class="${cssClass}">${sign}${Math.abs(mod).toFixed(1)}</span>
+                                    <span class="text-gray">${data.isolated_total.toFixed(1)}</span>
+                                `;
+                                td.title = `${pGive} ${actionWord} ${pRecv}. ${addSub} ${Math.abs(mod).toFixed(1)} points. Isolated Scenario: ${data.isolated_total.toFixed(1)}`;
+                            }
+                            
+                            // Attach tooltips
+                            td.classList.add('has-tooltip');
+                            td.setAttribute('data-tooltip', td.title);
+                            td.title = ''; // clear native title to use custom tooltips if global tooltip engine is active
+                        }
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+            });
         }
         
         function updateAvasthasCalcTable(vargaName = "D1") {

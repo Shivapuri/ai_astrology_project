@@ -49,3 +49,17 @@ It utilizes a unified, **Integrated Approach**:
   - `test_api.py`: Verify that Flask JSON endpoints return 200 OK and expected schemas.
   - `test_svg_generation.py`: Verify that chart SVGs have correct safe margins (`viewBox`), transparent backgrounds, and labels.
   - `test_ui_e2e.py`: Playwright tests to verify the UI layout, Split.js, tabs, and hotkeys.
+
+## Anki Flashcard Strategy & Data Structuring (MANDATORY)
+When creating or updating Anki flashcards (especially for broad concepts like Planets, Houses, and Signs), you must **strictly adhere** to the following cognitive rules to avoid cognitive overload and "Anki purgatory":
+
+1. **Atomization (Rule of 4)**: Never put a long list of attributes on a single card. You must consistently break down Planets, Houses, and Signs into **exactly four separate sub-cards** based on their natural astrological categories:
+   - **Card 1: Core/Psychological Themes** (What is the primary nature, behavior, or core area of life? e.g., Wealth, delay, aggression, Dharma).
+   - **Card 2: Physical/Biological** (What specific body parts, organs, or diseases does this govern? e.g., Head, nerves, immune system).
+   - **Card 3: People & Relational** (Which specific family members, societal roles, or relationships are represented? e.g., Mother, enemies, the Guru).
+   - **Card 4: Material & Environmental** (What external objects, places, careers, or environments are signified? e.g., Vehicles, foreign lands, dark forests).
+
+2. **No "Reverse" Guessing**: Avoid creating basic "reverse" cards (e.g., *Front: "Which planet is the wise Guru?" Back: "Jupiter"*). These are too easy because the prompt gives away the answer immediately. Testing should always flow from the astrological concept to its specific manifestation (e.g., *Front: "What specific family members and societal roles does Jupiter represent?" Back: "Children, elder brothers, and teachers/counselors"*).
+
+3. **Mnemonic Isolation**: If a mnemonic is used to remember an entity's core pillars, it must be isolated onto its own specific card (e.g., *Front: "What is the mnemonic phrase for Jupiter?"*). Do not bundle it with the other attributes.
+

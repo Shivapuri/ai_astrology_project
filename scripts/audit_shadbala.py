@@ -133,19 +133,15 @@ def run_audit():
             for p in PLANETS:
                 exp_tot = expected_totals.get(p, 0)
                 try:
-                    calc_tot = float(calc_matrix[p][p]['bottom'])
+                    calc_tot = calc_matrix[p][p].get('net_total', 0.0)
                 except (KeyError, TypeError, ValueError):
                     calc_tot = 0.0
                 for giver in PLANETS:
                     if giver != p:
                         # Add the modifiers which are the off-diagonals
                         try:
-                            val = float(calc_matrix[giver][p]['top'])
-                            color = calc_matrix[giver][p]['color']
-                            if color == 'green':
-                                calc_tot += val
-                            elif color == 'red':
-                                calc_tot -= val
+                            val = calc_matrix[giver][p].get('modifier', 0.0)
+                            calc_tot += val
                         except (KeyError, TypeError, ValueError):
                             pass
                             
@@ -179,12 +175,7 @@ def run_audit():
                 calc_net = 0.0
                 if calc_cell:
                     try:
-                        top_val = float(calc_cell.get('top', 0))
-                        color = calc_cell.get('color', '')
-                        if color == 'green':
-                            calc_net = top_val
-                        elif color == 'red':
-                            calc_net = -top_val
+                        calc_net = calc_cell.get('modifier', 0.0)
                     except (ValueError, TypeError):
                         calc_net = 0.0
                 

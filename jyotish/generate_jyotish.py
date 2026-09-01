@@ -658,10 +658,8 @@ def generate_kala_chart(
                     
                     if p_give == p_receive:
                         v_matrix[p_receive][p_give] = {
-                            "top": None,
-                            "bottom": f"{data['total']:.1f}",
-                            "color": "black",
-                            "tooltip": f"{p_receive} Base Starting Strength."
+                            "base": avastha_results['bases'][p_give],
+                            "net_total": data['total']
                         }
                         continue
                         
@@ -673,29 +671,13 @@ def generate_kala_chart(
                     sign_mult = data['sign_mult']
                     total = data['total']
                     
-                    color = "blue"
-                    if sign_mult > 0: color = "green"
-                    if sign_mult < 0: color = "red"
-                    
-                    if color == "green":
-                        display_top = f"{pull:.1f}"
-                        tooltip = f"{p_give} Delights (Mudita) {p_receive}. Adds {pull:.1f} points."
-                    elif color == "red":
-                        display_top = f"{pull:.1f}"
-                        tooltip = f"{p_give} Starves/Agitates {p_receive}. Subtracts {pull:.1f} points."
-                    else: # blue
-                        display_top = f"{pull:.1f}"
-                        tooltip = f"{p_give} influence on {p_receive} is neutralized. Adds 0."
-                        
-                    bottom_str = f"{total:.1f}"
-                    if color != "blue":
-                        bottom_str = f"+{total:.1f}" if total > avastha_results['bases'][p_receive] else f"{total:.1f}"
+                    net_pull = pull if sign_mult > 0 else (-pull if sign_mult < 0 else 0)
                         
                     v_matrix[p_receive][p_give] = {
-                        "top": display_top,
-                        "bottom": bottom_str,
-                        "color": color,
-                        "tooltip": tooltip
+                        "base": avastha_results['bases'][p_receive],
+                        "modifier": net_pull,
+                        "isolated_total": total,
+                        "is_positive": sign_mult > 0
                     }
             avastha_matrices[v_key][baseline] = v_matrix
     vedic_context = {
