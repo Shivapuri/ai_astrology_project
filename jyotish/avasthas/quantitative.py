@@ -127,25 +127,58 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     is_waning_moon_as_enemy
                 )
                 
-            sign_mult = 0
+            pulls = []
+            
+            # Determine specific qualitative states from p_give to p_recv
+            active_states = []
             for st in lajjitadi_states:
                 s_name = st.get('state', '')
                 s_cond = st.get('condition', '')
                 if p_give in s_cond:
+                    active_states.append(s_name)
+                    
+            if not active_states:
+                matrix[p_give][p_recv] = {
+                    'aspect_virupas': aspect_virupas,
+                    'pull': 0.0,
+                    'sign_mult': 0,
+                    'total': bases[p_recv]
+                }
+            else:
+                total_pull = 0.0
+                sign_mult = 0
+                has_pos = False
+                has_neg = False
+                for s_name in active_states:
                     if any(pos in s_name for pos in ['Mudita', 'Garvita']):
-                        sign_mult = 1
+                        if not has_pos:
+                            current_pull = bases[p_give] * (aspect_virupas / 60.0)
+                            pulls.append(current_pull)
+                            total_pull += current_pull
+                            sign_mult = 1
+                            has_pos = True
                     elif any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']):
-                        sign_mult = -1
-                        break
-
-            total = bases[p_recv] + (sign_mult * pull)
-            
-            matrix[p_give][p_recv] = {
-                'aspect_virupas': aspect_virupas,
-                'pull': pull,
-                'sign_mult': sign_mult,
-                'total': total
-            }
+                        if not has_neg:
+                            if baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Ishta', 'Subha']:
+                                current_pull = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
+                            else:
+                                current_pull = bases[p_give] * (aspect_virupas / 60.0)
+                            pulls.append(-current_pull)
+                            total_pull -= current_pull
+                            sign_mult = -1 if sign_mult == 0 else sign_mult
+                            has_neg = True
+                
+                # In UI, we can just sum the pulls for the net effect, or return the first one if we want to match the naive check
+                # But to be accurate, we return the net pull.
+                net_pull = total_pull
+                total = bases[p_recv] + net_pull
+                
+                matrix[p_give][p_recv] = {
+                    'aspect_virupas': aspect_virupas,
+                    'pull': abs(net_pull),
+                    'sign_mult': 1 if net_pull > 0 else (-1 if net_pull < 0 else 0),
+                    'total': total
+                }
             
     return {
         'bases': bases,

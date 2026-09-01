@@ -51,13 +51,12 @@ def parse_tagged_csv(filename):
                     continue
                 
                 # Extract all numbers and tags from the cell
-                lines = cell.strip().split('\n')
+                import re
+                lines = re.split(r'[\n ]+', cell.strip())
                 cell_data = []
                 for line in lines:
                     line = line.strip()
-                    if not line:
-                        continue
-                    
+                    if not line: continue
                     match = re.search(r'(.*?)(?:\[([GRBK])\])?$', line)
                     if match:
                         val_str = match.group(1).strip()
@@ -157,19 +156,33 @@ def run_audit():
                 exp_cell = expected_matrix[giver][receiver]
                 calc_cell = calc_matrix.get(receiver, {}).get(giver)
                 
-                exp_mod = 0.0
-                if exp_cell and len(exp_cell) > 0:
-                    exp_mod = exp_cell[0]['value']
-                    
-                calc_mod = 0.0
+                exp_net = 0.0
+                if exp_cell:
+                    num_mods = len(exp_cell) // 2
+                    modifiers = exp_cell[:num_mods]
+                    for item in modifiers:
+                        val = item['value']
+                        color = item['color']
+                        if color == 'G':
+                            exp_net += val
+                        elif color == 'R' or color == 'K':
+                            exp_net -= val
+                        # 'B' means neutral, so it adds/subtracts 0.
+                        
+                calc_net = 0.0
                 if calc_cell:
                     try:
-                        calc_mod = float(calc_cell.get('top', 0))
+                        top_val = float(calc_cell.get('top', 0))
+                        color = calc_cell.get('color', '')
+                        if color == 'green':
+                            calc_net = top_val
+                        elif color == 'red':
+                            calc_net = -top_val
                     except (ValueError, TypeError):
-                        calc_mod = 0.0
+                        calc_net = 0.0
                 
-                if abs(exp_mod - calc_mod) > 0.5:
-                    failures.append(f"- **{giver} → {receiver} (Pull/Modifier)**: Expected `{exp_mod}`, Got `{calc_mod}` (Diff: `{abs(exp_mod - calc_mod):.2f}`)")
+                if abs(exp_net - calc_net) > 0.5:
+                    failures.append(f"- **{giver} → {receiver} (Net Modifier)**: Expected `{exp_net:.1f}`, Got `{calc_net:.1f}` (Diff: `{abs(exp_net - calc_net):.2f}`)")
 
         if not failures:
             report_lines.append("✅ **Status:** Perfectly Aligned.")

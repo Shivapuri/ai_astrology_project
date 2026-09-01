@@ -300,16 +300,16 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
     }
     
     if planet not in planet_map: return 0.0
-        
+    
+    p_id = planet_map[planet]
     if planet in ["Mars", "Jupiter", "Saturn"]:
         seeghrocca = sun_geo_lon
-    else:
-        # Get true heliocentric longitude
-        pl_id = planet_map[planet]
-        res, _ = swe.calc_ut(birth_time_jd, pl_id, swe.FLG_SWIEPH | swe.FLG_HELCTR)
+        kendra = abs(seeghrocca - planet_geo_lon) % 360.0
+    else: # Mercury, Venus
+        res, _ = swe.calc_ut(birth_time_jd, p_id, swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_HELCTR)
         seeghrocca = res[0]
+        kendra = abs(seeghrocca - sun_geo_lon) % 360.0
         
-    kendra = abs(seeghrocca - planet_geo_lon) % 360.0
     if kendra > 180.0: kendra = 360.0 - kendra
     
     # 180 degrees = 60 Virupas

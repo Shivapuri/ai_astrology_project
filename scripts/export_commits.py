@@ -14,20 +14,45 @@ def get_commit_hashes(count: int) -> list[str]:
         return []
 
 
-def get_commit_details(commit_hash: str) -> str:
-    """Retrieves metadata and code diff for a specific commit."""
+def get_commit_details(commit_hash: str, max_lines_per_diff: int = 300) -> str:
+    """
+    Retrieves metadata and code diff for a specific commit.
+    Filters out heavy non-code paths (e.g. source-material/) and caps large diffs.
+    """
     try:
-        # --stat shows summary of modified files
-        # --patch shows the exact code additions and deletions
-        # --unified=3 shows 3 lines of surrounding context
-        cmd = ["git", "show", "--stat", "--patch", "--unified=3", commit_hash]
+        # Exclude non-code/data directories from diff inspection to keep context lean
+        cmd = [
+            "git",
+            "show",
+            "--stat",
+            "--patch",
+            "--unified=3",
+            commit_hash,
+            "--",
+            ".",
+            ":(exclude)source-material/*",
+            ":(exclude)*.db",
+            ":(exclude)*.sqlite",
+            ":(exclude)*.jsonl",
+            ":(exclude)*.bin",
+        ]
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        lines = result.stdout.splitlines()
+
+        if len(lines) > max_lines_per_diff:
+            truncated = lines[:max_lines_per_diff]
+            truncated.append(
+                f"\n[... Diff truncated: showing first {max_lines_per_diff} lines of {len(lines)} total lines ...]"
+            )
+            return "\n".join(truncated)
         return result.stdout
     except subprocess.CalledProcessError as e:
         return f"Error fetching details for commit {commit_hash}: {e}"
 
 
-def export_commits(count: int = 5, output_file: str = "commits_export.txt") -> None:
+def export_commits(
+    count: int = 5, output_file: str = "commits_export.txt", max_lines_per_diff: int = 300
+) -> None:
     """Generates a text/markdown file export of recent commits."""
     hashes = get_commit_hashes(count)
     if not hashes:
@@ -43,7 +68,7 @@ def export_commits(count: int = 5, output_file: str = "commits_export.txt") -> N
         f.write("=" * 80 + "\n\n")
 
         for i, h in enumerate(hashes, 1):
-            details = get_commit_details(h)
+            details = get_commit_details(h, max_lines_per_diff=max_lines_per_diff)
             f.write(f"## Commit {i}: {h[:7]} ({h})\n\n")
             f.write("```diff\n")
             f.write(details)

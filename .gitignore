@@ -44,3 +44,9 @@ western/logs/
 
 
 source-material/calculation-books/
+source-material/software-setup/va_text.txt
+source-material/sanskrit_texts/temp.txt
+source-material/sanskrit_texts/bphs_avasthas.txt
+*.tmp
+temp.txt
+
