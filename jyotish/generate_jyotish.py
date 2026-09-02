@@ -667,8 +667,13 @@ def generate_kala_chart(
                     v_matrix[p_receive][p_give] = {
                         "positive_pull": data["positive_pull"],
                         "negative_pull": data["negative_pull"],
+                        "neutral_pull": data.get("neutral_pull", 0.0),
+                        "has_pos": data.get("has_pos", False),
+                        "has_neg": data.get("has_neg", False),
+                        "has_neutral": data.get("has_neutral", False),
                         "isolated_positive": data["isolated_positive"],
                         "isolated_negative": data["isolated_negative"],
+                        "isolated_neutral": data.get("isolated_neutral", None),
                         "net_pull": data["net_pull"],
                         "modifier": data["net_pull"],
                         "isolated_total": data["isolated_positive"] if data["net_pull"] >= 0 else data["isolated_negative"],
