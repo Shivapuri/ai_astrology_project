@@ -1065,7 +1065,6 @@
                     <option value="Uccha">Uccha</option>
                     <option value="Dig">Dig</option>
                     <option value="Drishti Yuti">Drishti Yuti</option>
-                    <option value="Veda">Veda</option>
                 </select>
             </div>
             <div style="overflow-x: auto; flex:1; padding: 10px;">
@@ -1857,7 +1856,7 @@
                         
                         if (pGive === pRecv) {
                             // Diagonal Cells (Giver == Receiver)
-                            if (data) {
+                            if (data && data.base !== null && data.base !== undefined) {
                                 if (data.base_negative !== null && data.base_negative !== undefined) {
                                     // Stack three numbers: data.base (black), data.base_negative (black), and data.base - data.base_negative (red if negative, else black)
                                     const diff = data.base - data.base_negative;
@@ -1869,23 +1868,26 @@
                                             <span class="${diffColor}">${diff.toFixed(1)}</span>
                                         </div>
                                     `;
-                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Negative: ${data.base_negative.toFixed(1)}, Net: ${diff.toFixed(1)}. Final Net Total: ${data.net_total.toFixed(1)}`;
+                                    const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
+                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Negative: ${data.base_negative.toFixed(1)}, Net: ${diff.toFixed(1)}${netTotStr}`;
                                 } else {
                                     // Single data.base number (black, bold)
                                     td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}</span>`;
-                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}. Final Net Total: ${data.net_total.toFixed(1)}`;
+                                    const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
+                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${netTotStr}`;
                                 }
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else {
-                                td.innerHTML = '-';
+                                td.innerHTML = '';
                             }
                         } else {
                             // Off-Diagonal Cells (Giver != Receiver)
-                            const posPull = data && data.positive_pull !== undefined ? data.positive_pull : 0;
-                            const negPull = data && data.negative_pull !== undefined ? data.negative_pull : 0;
+                            const posPull = data && data.positive_pull !== undefined && data.positive_pull !== null ? data.positive_pull : 0;
+                            const negPull = data && data.negative_pull !== undefined && data.negative_pull !== null ? data.negative_pull : 0;
                             const hasPos = posPull > 0.001;
                             const hasNeg = negPull > 0.001;
+                            const hasIsolated = data && data.isolated_total !== null && data.isolated_total !== undefined;
                             
                             if (hasPos && hasNeg) {
                                 // Split left/right:
@@ -1895,15 +1897,16 @@
                                     <div class="quant-cell-split">
                                         <div class="quant-sub-col text-red">
                                             <span>${data.negative_pull.toFixed(1)}</span>
-                                            <span>${data.isolated_negative.toFixed(1)}</span>
+                                            ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
                                         </div>
                                         <div class="quant-sub-col text-green">
                                             <span>${data.positive_pull.toFixed(1)}</span>
-                                            <span>${data.isolated_positive.toFixed(1)}</span>
+                                            ${hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
                                         </div>
                                     </div>
                                 `;
-                                td.title = `${pGive} affects ${pRecv}: Negative pull -${data.negative_pull.toFixed(1)} (Isolated: ${data.isolated_negative.toFixed(1)}) | Positive pull +${data.positive_pull.toFixed(1)} (Isolated: ${data.isolated_positive.toFixed(1)})`;
+                                const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_positive !== null ? ` (Isolated: -${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
+                                td.title = `${pGive} affects ${pRecv}: Negative pull -${data.negative_pull.toFixed(1)} | Positive pull +${data.positive_pull.toFixed(1)}${isoInfo}`;
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else if (hasPos) {
@@ -1911,21 +1914,23 @@
                                 td.innerHTML = `
                                     <div class="quant-sub-col text-green">
                                         <span>${data.positive_pull.toFixed(1)}</span>
-                                        <span>${data.isolated_positive.toFixed(1)}</span>
+                                        ${hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
                                     </div>
                                 `;
-                                td.title = `${pGive} delights ${pRecv}: +${data.positive_pull.toFixed(1)} (Isolated: ${data.isolated_positive.toFixed(1)})`;
+                                const isoInfo = hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? ` (Isolated: ${data.isolated_positive.toFixed(1)})` : '';
+                                td.title = `${pGive} delights ${pRecv}: +${data.positive_pull.toFixed(1)}${isoInfo}`;
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else if (hasNeg) {
-                                // Stack negative_pull (blue/black) over isolated_negative (blue/black)
+                                // Stack negative_pull (red) over isolated_negative (red)
                                 td.innerHTML = `
-                                    <div class="quant-sub-col text-blue">
+                                    <div class="quant-sub-col text-red">
                                         <span>${data.negative_pull.toFixed(1)}</span>
-                                        <span>${data.isolated_negative.toFixed(1)}</span>
+                                        ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
                                     </div>
                                 `;
-                                td.title = `${pGive} starves/agitates ${pRecv}: -${data.negative_pull.toFixed(1)} (Isolated: ${data.isolated_negative.toFixed(1)})`;
+                                const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? ` (Isolated: ${data.isolated_negative.toFixed(1)})` : '';
+                                td.title = `${pGive} starves/agitates ${pRecv}: -${data.negative_pull.toFixed(1)}${isoInfo}`;
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else {
@@ -1950,7 +1955,7 @@
                         const diagData = matrixData[pRecv] ? matrixData[pRecv][pRecv] : null;
                         const tdFoot = document.createElement('td');
                         tdFoot.style.backgroundColor = '#f7f3eb';
-                        if (diagData && diagData.net_total !== undefined) {
+                        if (diagData && diagData.net_total !== undefined && diagData.net_total !== null) {
                             const val = diagData.net_total;
                             const isNeg = val < 0;
                             tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${val.toFixed(1)}</span>`;

@@ -52,9 +52,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         elif baseline_type == 'Subha':
             unmultiplied = shadbala_data[p].get('Subha_Phala', 0)
         elif baseline_type == 'Drishti Yuti':
-            unmultiplied = shadbala_data[p].get('Drik_Bala', 0)
-        elif baseline_type == 'Veda':
-            unmultiplied = shadbala_data[p]['Total_Virupas'] / 2 # fallback
+            unmultiplied = 0.0
         else:
             unmultiplied = shadbala_data[p]['Total_Virupas']
         
@@ -129,50 +127,74 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 has_pos = any(any(pos in s_name for pos in ['Mudita', 'Garvita']) for s_name in active_states)
                 has_neg = any(any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']) for s_name in active_states)
                 
-                if has_pos:
-                    positive_pull = bases[p_give] * (aspect_virupas / 60.0)
-                    
-                if has_neg:
-                    if baseline_type == 'Ishta':
-                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
-                    elif baseline_type == 'Subha':
-                        neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
-                    elif baseline_type in ['Uccha', 'Dig', 'Cheshta']:
-                        neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
-                    elif baseline_type == 'ShadBala':
-                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
-                    else:
-                        neg_calc = bases[p_give] * (aspect_virupas / 60.0)
-                    negative_pull = neg_calc
+                if baseline_type == 'Drishti Yuti':
+                    if has_pos:
+                        positive_pull = aspect_virupas
+                    if has_neg:
+                        negative_pull = aspect_virupas
+                else:
+                    if has_pos:
+                        positive_pull = bases[p_give] * (aspect_virupas / 60.0)
+                        
+                    if has_neg:
+                        if baseline_type == 'Ishta':
+                            neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                        elif baseline_type == 'Subha':
+                            neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
+                        elif baseline_type in ['Uccha', 'Dig', 'Cheshta']:
+                            neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
+                        elif baseline_type == 'ShadBala':
+                            neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                        else:
+                            neg_calc = bases[p_give] * (aspect_virupas / 60.0)
+                        negative_pull = neg_calc
+
+            if baseline_type == 'Drishti Yuti':
+                isolated_positive = None
+                isolated_negative = None
+                total_val = None
+            else:
+                isolated_positive = round(bases[p_recv] + positive_pull, 1)
+                isolated_negative = round(bases[p_recv] - negative_pull, 1)
+                total_val = round(bases[p_recv] + (positive_pull - negative_pull), 1)
 
             matrix[p_give][p_recv] = {
                 "positive_pull": round(positive_pull, 1),
                 "negative_pull": round(negative_pull, 1),
-                "isolated_positive": round(bases[p_recv] + positive_pull, 1),
-                "isolated_negative": round(bases[p_recv] - negative_pull, 1),
+                "isolated_positive": isolated_positive,
+                "isolated_negative": isolated_negative,
                 "net_pull": round(positive_pull - negative_pull, 1),
                 "aspect_virupas": aspect_virupas,
                 "pull": round(abs(positive_pull - negative_pull), 1),
                 "sign_mult": 1 if positive_pull > negative_pull else (-1 if negative_pull > positive_pull else 0),
-                "total": round(bases[p_recv] + (positive_pull - negative_pull), 1)
+                "total": total_val
             }
 
     # Populate diagonal cells with base, base_negative, and column net_total
     for p in planets:
-        col_total = round(bases[p] + sum(matrix[giver][p]["net_pull"] for giver in planets if giver != p), 1)
-        base_neg = None
-        if baseline_type == 'Ishta':
-            base_neg = round(shadbala_data[p].get('Kashta_Phala', 0), 1)
-        elif baseline_type == 'Subha':
-            base_neg = round(shadbala_data[p].get('Asubha_Phala', 0), 1)
+        if baseline_type == 'Drishti Yuti':
+            matrix[p][p] = {
+                "base": None,
+                "base_negative": None,
+                "net_total": None,
+                "pull": 0.0,
+                "total": None
+            }
+        else:
+            col_total = round(bases[p] + sum(matrix[giver][p]["net_pull"] for giver in planets if giver != p), 1)
+            base_neg = None
+            if baseline_type == 'Ishta':
+                base_neg = round(shadbala_data[p].get('Kashta_Phala', 0), 1)
+            elif baseline_type == 'Subha':
+                base_neg = round(shadbala_data[p].get('Asubha_Phala', 0), 1)
 
-        matrix[p][p] = {
-            "base": bases[p],
-            "base_negative": base_neg,
-            "net_total": col_total,
-            "pull": 0.0,
-            "total": col_total
-        }
+            matrix[p][p] = {
+                "base": bases[p],
+                "base_negative": base_neg,
+                "net_total": col_total,
+                "pull": 0.0,
+                "total": col_total
+            }
             
     return {
         'bases': bases,

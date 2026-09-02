@@ -83,7 +83,8 @@ MATRIX_TARGETS = [
     ("Dig", "angelina_jolie_dig.csv"),
     ("Cheshta", "angelina_jolie_cheshta.csv"),
     ("Subha", "angelina_jolie_subha.csv"),
-    ("Ishta", "angelina_jolie_ishta.csv")
+    ("Ishta", "angelina_jolie_ishta.csv"),
+    ("Drishti Yuti", "angelina_jolie_drishti_yuti.csv"),
 ]
 
 @pytest.mark.parametrize("matrix_name, csv_filename", MATRIX_TARGETS)
@@ -104,7 +105,9 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
             
             if giver == receiver:
                 # Baseline Check
-                if exp_cell:
+                if not exp_cell or matrix_name == "Drishti Yuti":
+                    assert calc_cell.get('base') is None, f"{matrix_name} - {giver} Baseline: Expected None, Got {calc_cell.get('base')}"
+                else:
                     exp_baseline = exp_cell[0]['value']
                     try:
                         calc_baseline = calc_cell.get('base', 0)
@@ -116,8 +119,11 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 # Net Modifier Check
                 exp_net = 0.0
                 if exp_cell:
-                    num_mods = len(exp_cell) // 2
-                    modifiers = exp_cell[:num_mods]
+                    if matrix_name == "Drishti Yuti":
+                        modifiers = exp_cell
+                    else:
+                        num_mods = len(exp_cell) // 2
+                        modifiers = exp_cell[:num_mods]
                     for item in modifiers:
                         val = item['value']
                         color = item['color']

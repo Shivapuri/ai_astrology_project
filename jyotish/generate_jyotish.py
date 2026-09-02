@@ -644,7 +644,7 @@ def generate_kala_chart(
 
     avastha_matrices = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-    baseline_types = ["ShadBala", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti", "Veda"]
+    baseline_types = ["ShadBala", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti"]
     
     for v_key in vargas_data.keys():
         avastha_matrices[v_key] = {}
