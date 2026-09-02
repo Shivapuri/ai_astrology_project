@@ -54,7 +54,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         elif baseline_type == 'Drishti Yuti':
             unmultiplied = 0.0
         elif baseline_type == 'Veda':
-            unmultiplied = shadbala_data[p]['Total_Virupas'] / 2 # fallback placeholder until classical formula is decoded
+            unmultiplied = (shadbala_data[p].get('Uccha_Bala', 0) + shadbala_data[p].get('Cheshta_Bala', 0) + shadbala_data[p].get('Dig_Bala', 0)) / 3.0
         else:
             unmultiplied = shadbala_data[p]['Total_Virupas']
         
@@ -125,6 +125,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     
             positive_pull = 0.0
             negative_pull = 0.0
+            has_pos = False
+            has_neg = False
             if active_states:
                 has_pos = any(any(pos in s_name for pos in ['Mudita', 'Garvita']) for s_name in active_states)
                 has_neg = any(any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']) for s_name in active_states)
@@ -143,7 +145,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                             neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
                         elif baseline_type == 'Subha':
                             neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
-                        elif baseline_type in ['Uccha', 'Dig', 'Cheshta']:
+                        elif baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Veda']:
                             neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
                         elif baseline_type == 'ShadBala':
                             neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
@@ -155,21 +157,31 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 isolated_positive = None
                 isolated_negative = None
                 total_val = None
+                net_pull = round(aspect_virupas, 1)
             else:
                 isolated_positive = round(bases[p_recv] + positive_pull, 1)
                 isolated_negative = round(bases[p_recv] - negative_pull, 1)
+                net_pull = round(positive_pull - negative_pull, 1)
                 total_val = round(bases[p_recv] + (positive_pull - negative_pull), 1)
+
+            if has_pos:
+                color_state = "positive"
+            elif has_neg:
+                color_state = "negative"
+            else:
+                color_state = "neutral"
 
             matrix[p_give][p_recv] = {
                 "positive_pull": round(positive_pull, 1),
                 "negative_pull": round(negative_pull, 1),
                 "isolated_positive": isolated_positive,
                 "isolated_negative": isolated_negative,
-                "net_pull": round(positive_pull - negative_pull, 1),
+                "net_pull": net_pull,
                 "aspect_virupas": aspect_virupas,
-                "pull": round(abs(positive_pull - negative_pull), 1),
+                "pull": round(aspect_virupas, 1) if baseline_type == 'Drishti Yuti' else round(abs(positive_pull - negative_pull), 1),
                 "sign_mult": 1 if positive_pull > negative_pull else (-1 if negative_pull > positive_pull else 0),
-                "total": total_val
+                "total": total_val,
+                "color_state": color_state
             }
 
     # Populate diagonal cells with base, base_negative, and column net_total

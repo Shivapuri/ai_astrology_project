@@ -672,7 +672,9 @@ def generate_kala_chart(
                         "net_pull": data["net_pull"],
                         "modifier": data["net_pull"],
                         "isolated_total": data["isolated_positive"] if data["net_pull"] >= 0 else data["isolated_negative"],
-                        "is_positive": data["net_pull"] > 0
+                        "is_positive": data["net_pull"] > 0,
+                        "color_state": data.get("color_state", "neutral"),
+                        "aspect_virupas": data.get("aspect_virupas", 0.0)
                     }
             avastha_matrices[v_key][baseline] = v_matrix
     vedic_context = {

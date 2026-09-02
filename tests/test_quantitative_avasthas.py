@@ -115,15 +115,28 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                         calc_baseline = 0.0
                     
                     assert abs(exp_baseline - calc_baseline) <= 1.5, f"{matrix_name} - {giver} Baseline: Expected {exp_baseline}, Got {calc_baseline}"
+            elif matrix_name == "Drishti Yuti":
+                # Drishti Yuti displays raw aspect virupas (always positive) and color_state
+                exp_val = exp_cell[0]['value'] if exp_cell else 0.0
+                calc_val = 0.0
+                if calc_cell:
+                    try:
+                        calc_val = calc_cell.get('net_pull', 0)
+                    except (ValueError, TypeError):
+                        calc_val = 0.0
+                assert abs(exp_val - calc_val) <= 0.5, f"{matrix_name} - {giver} -> {receiver} Aspect Virupas: Expected {exp_val:.1f}, Got {calc_val:.1f}"
+                
+                if exp_cell:
+                    exp_colors = [item['color'] for item in exp_cell]
+                    exp_color_states = ['positive' if c == 'G' else ('negative' if c == 'R' else 'neutral') for c in exp_colors]
+                    calc_color = calc_cell.get('color_state', 'neutral')
+                    assert calc_color in exp_color_states, f"{matrix_name} - {giver} -> {receiver} Color: Expected {exp_color_states}, Got {calc_color}"
             else:
-                # Net Modifier Check
+                # Net Modifier Check for other matrices
                 exp_net = 0.0
                 if exp_cell:
-                    if matrix_name == "Drishti Yuti":
-                        modifiers = exp_cell
-                    else:
-                        num_mods = len(exp_cell) // 2
-                        modifiers = exp_cell[:num_mods]
+                    num_mods = len(exp_cell) // 2
+                    modifiers = exp_cell[:num_mods]
                     for item in modifiers:
                         val = item['value']
                         color = item['color']
@@ -140,3 +153,24 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                         calc_net = 0.0
                 
                 assert abs(exp_net - calc_net) <= 0.5, f"{matrix_name} - {giver} -> {receiver} Net Modifier: Expected {exp_net:.1f}, Got {calc_net:.1f}"
+
+
+def test_veda_base_scores(aj_chart):
+    """
+    Verifies that Veda baseline scores are within realistic 0-60 scale,
+    approximating (Uccha + Cheshta + Dig) / 3.0.
+    """
+    calculated_matrices = aj_chart.get('avastha_matrix', {})
+    d1_calculated = calculated_matrices.get('D1', {})
+    veda_matrix = d1_calculated.get("Veda", {})
+    assert veda_matrix, "Veda matrix is missing!"
+    
+    shadbala = aj_chart.get('shadbala', {})
+    for p in PLANETS:
+        diag = veda_matrix.get(p, {}).get(p, {})
+        base = diag.get('base')
+        assert base is not None, f"Veda base for {p} is None"
+        assert 0.0 <= base <= 60.0, f"Veda base for {p} ({base}) out of 0-60 range!"
+        
+        expected_approx = (shadbala[p].get('Uccha_Bala', 0) + shadbala[p].get('Cheshta_Bala', 0) + shadbala[p].get('Dig_Bala', 0)) / 3.0
+        assert abs(base - round(expected_approx, 1)) <= 0.2, f"Veda base for {p}: Expected {expected_approx:.1f}, Got {base}"

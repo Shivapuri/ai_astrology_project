@@ -1884,59 +1884,77 @@
                             }
                         } else {
                             // Off-Diagonal Cells (Giver != Receiver)
-                            const posPull = data && data.positive_pull !== undefined && data.positive_pull !== null ? data.positive_pull : 0;
-                            const negPull = data && data.negative_pull !== undefined && data.negative_pull !== null ? data.negative_pull : 0;
-                            const hasPos = posPull > 0.001;
-                            const hasNeg = negPull > 0.001;
-                            const hasIsolated = data && data.isolated_total !== null && data.isolated_total !== undefined;
-                            
-                            if (hasPos && hasNeg) {
-                                // Split left/right:
-                                // Left side: negative_pull (red) over isolated_negative (red)
-                                // Right side: positive_pull (green) over isolated_positive (green)
-                                td.innerHTML = `
-                                    <div class="quant-cell-split">
-                                        <div class="quant-sub-col text-red">
-                                            <span>${data.negative_pull.toFixed(1)}</span>
-                                            ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
+                            if (matrixType === 'Drishti Yuti') {
+                                const val = data && data.net_pull !== undefined && data.net_pull !== null ? data.net_pull : (data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0);
+                                if (val > 0.001) {
+                                    let colorClass = 'text-blue';
+                                    if (data && data.color_state === 'positive') {
+                                        colorClass = 'text-green';
+                                    } else if (data && data.color_state === 'negative') {
+                                        colorClass = 'text-red';
+                                    }
+                                    td.innerHTML = `<span class="${colorClass}">${val.toFixed(1)}</span>`;
+                                    td.title = `${pGive} aspects ${pRecv}: ${val.toFixed(1)} Virupas (${data && data.color_state ? data.color_state : 'neutral'})`;
+                                    td.classList.add('has-tooltip');
+                                    td.setAttribute('data-tooltip', td.title);
+                                } else {
+                                    td.innerHTML = '<span class="text-gray">-</span>';
+                                }
+                            } else {
+                                const posPull = data && data.positive_pull !== undefined && data.positive_pull !== null ? data.positive_pull : 0;
+                                const negPull = data && data.negative_pull !== undefined && data.negative_pull !== null ? data.negative_pull : 0;
+                                const hasPos = posPull > 0.001;
+                                const hasNeg = negPull > 0.001;
+                                const hasIsolated = data && data.isolated_total !== null && data.isolated_total !== undefined;
+                                
+                                if (hasPos && hasNeg) {
+                                    // Split left/right:
+                                    // Left side: negative_pull (red) over isolated_negative (red)
+                                    // Right side: positive_pull (green) over isolated_positive (green)
+                                    td.innerHTML = `
+                                        <div class="quant-cell-split">
+                                            <div class="quant-sub-col text-red">
+                                                <span>${data.negative_pull.toFixed(1)}</span>
+                                                ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
+                                            </div>
+                                            <div class="quant-sub-col text-green">
+                                                <span>${data.positive_pull.toFixed(1)}</span>
+                                                ${hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
+                                            </div>
                                         </div>
+                                    `;
+                                    const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_positive !== null ? ` (Isolated: -${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
+                                    td.title = `${pGive} affects ${pRecv}: Negative pull -${data.negative_pull.toFixed(1)} | Positive pull +${data.positive_pull.toFixed(1)}${isoInfo}`;
+                                    td.classList.add('has-tooltip');
+                                    td.setAttribute('data-tooltip', td.title);
+                                } else if (hasPos) {
+                                    // Stack positive_pull (green) over isolated_positive (green)
+                                    td.innerHTML = `
                                         <div class="quant-sub-col text-green">
                                             <span>${data.positive_pull.toFixed(1)}</span>
                                             ${hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
                                         </div>
-                                    </div>
-                                `;
-                                const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_positive !== null ? ` (Isolated: -${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
-                                td.title = `${pGive} affects ${pRecv}: Negative pull -${data.negative_pull.toFixed(1)} | Positive pull +${data.positive_pull.toFixed(1)}${isoInfo}`;
-                                td.classList.add('has-tooltip');
-                                td.setAttribute('data-tooltip', td.title);
-                            } else if (hasPos) {
-                                // Stack positive_pull (green) over isolated_positive (green)
-                                td.innerHTML = `
-                                    <div class="quant-sub-col text-green">
-                                        <span>${data.positive_pull.toFixed(1)}</span>
-                                        ${hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
-                                    </div>
-                                `;
-                                const isoInfo = hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? ` (Isolated: ${data.isolated_positive.toFixed(1)})` : '';
-                                td.title = `${pGive} delights ${pRecv}: +${data.positive_pull.toFixed(1)}${isoInfo}`;
-                                td.classList.add('has-tooltip');
-                                td.setAttribute('data-tooltip', td.title);
-                            } else if (hasNeg) {
-                                // Stack negative_pull (red) over isolated_negative (red)
-                                td.innerHTML = `
-                                    <div class="quant-sub-col text-red">
-                                        <span>${data.negative_pull.toFixed(1)}</span>
-                                        ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
-                                    </div>
-                                `;
-                                const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? ` (Isolated: ${data.isolated_negative.toFixed(1)})` : '';
-                                td.title = `${pGive} starves/agitates ${pRecv}: -${data.negative_pull.toFixed(1)}${isoInfo}`;
-                                td.classList.add('has-tooltip');
-                                td.setAttribute('data-tooltip', td.title);
-                            } else {
-                                // Neutral: Leave cell blank or put a -
-                                td.innerHTML = '<span class="text-gray">-</span>';
+                                    `;
+                                    const isoInfo = hasIsolated && data.isolated_positive !== null && data.isolated_positive !== undefined ? ` (Isolated: ${data.isolated_positive.toFixed(1)})` : '';
+                                    td.title = `${pGive} delights ${pRecv}: +${data.positive_pull.toFixed(1)}${isoInfo}`;
+                                    td.classList.add('has-tooltip');
+                                    td.setAttribute('data-tooltip', td.title);
+                                } else if (hasNeg) {
+                                    // Stack negative_pull (red) over isolated_negative (red)
+                                    td.innerHTML = `
+                                        <div class="quant-sub-col text-red">
+                                            <span>${data.negative_pull.toFixed(1)}</span>
+                                            ${hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
+                                        </div>
+                                    `;
+                                    const isoInfo = hasIsolated && data.isolated_negative !== null && data.isolated_negative !== undefined ? ` (Isolated: ${data.isolated_negative.toFixed(1)})` : '';
+                                    td.title = `${pGive} starves/agitates ${pRecv}: -${data.negative_pull.toFixed(1)}${isoInfo}`;
+                                    td.classList.add('has-tooltip');
+                                    td.setAttribute('data-tooltip', td.title);
+                                } else {
+                                    // Neutral: Leave cell blank or put a -
+                                    td.innerHTML = '<span class="text-gray">-</span>';
+                                }
                             }
                         }
                         tr.appendChild(td);
