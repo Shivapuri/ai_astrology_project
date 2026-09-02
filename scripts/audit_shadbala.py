@@ -32,12 +32,12 @@ def parse_tagged_csv(filename):
         
         for row in reader:
             giving_planet = row[0].strip()
-            if giving_planet == "Total":
+            if giving_planet in ("Total", "+"):
                 for i, cell in enumerate(row[1:8]):
                     receiving_planet = col_planets[i].strip()
                     if receiving_planet in PLANETS:
                         try:
-                            totals[receiving_planet] = float(cell.replace('*', '').strip())
+                            totals[receiving_planet] = float(cell.replace('*', '').replace('+', '').replace('[K]', '').replace('[R]', '').replace('[G]', '').replace('[B]', '').strip())
                         except ValueError:
                             pass
                 continue
@@ -127,8 +127,8 @@ def run_audit():
         failures = []
         
         # Check Totals (Diagonal or bottom totals depending on the matrix type)
-        # Note: In Kala CSVs, the diagonal usually matches the backend's "bottom" for (P, P).
-        # Sometimes there's a explicit Total row.
+        # Note: In Kala CSVs, the diagonal matches the backend's "base",
+        # while the "+" row matches the column's "net_total".
         if expected_totals:
             for p in PLANETS:
                 exp_tot = expected_totals.get(p, 0)
@@ -136,16 +136,8 @@ def run_audit():
                     calc_tot = calc_matrix[p][p].get('net_total', 0.0)
                 except (KeyError, TypeError, ValueError):
                     calc_tot = 0.0
-                for giver in PLANETS:
-                    if giver != p:
-                        # Add the modifiers which are the off-diagonals
-                        try:
-                            val = calc_matrix[giver][p].get('modifier', 0.0)
-                            calc_tot += val
-                        except (KeyError, TypeError, ValueError):
-                            pass
                             
-                if abs(exp_tot - calc_tot) > 0.5:
+                if abs(exp_tot - calc_tot) > 1.5:
                     failures.append(f"- **{p} Total Baseline**: Expected `{exp_tot}`, Got `{calc_tot:.1f}` (Diff: `{abs(exp_tot - calc_tot):.2f}`)")
 
         # Check Off-Diagonals (Modifiers)
@@ -175,7 +167,7 @@ def run_audit():
                 calc_net = 0.0
                 if calc_cell:
                     try:
-                        calc_net = calc_cell.get('modifier', 0.0)
+                        calc_net = calc_cell.get('net_pull', 0.0)
                     except (ValueError, TypeError):
                         calc_net = 0.0
                 

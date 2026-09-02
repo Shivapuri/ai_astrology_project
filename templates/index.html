@@ -718,10 +718,16 @@
         .color-beneficial { background-color: #d97706; }
         .color-damaging { background-color: #475569; }
         .color-neutral { background-color: #0ea5e9; }
-        .quant-matrices-table td { text-align: center; vertical-align: middle; padding: 6px; }
-        .quant-matrices-table td span { display: block; line-height: 1.3; }
+        .quant-matrices-table td { text-align: center; vertical-align: middle; padding: 4px 6px; font-size: 12px; }
+        .quant-matrices-table tfoot td { font-weight: bold; background-color: #f7f3eb; border-top: 2px solid #d5c8b5; padding: 5px; }
+        .quant-cell-split { display: flex; justify-content: space-around; align-items: center; width: 100%; gap: 4px; }
+        .quant-sub-col { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25; }
+        .quant-sub-col span { display: block; font-size: 11px; }
+        .quant-diagonal-stack { display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.25; color: #222; }
+        .quant-diagonal-stack span { display: block; font-size: 11px; }
         .text-green { color: #27ae60; font-weight: bold; }
         .text-red { color: #c0392b; font-weight: bold; }
+        .text-blue { color: #2980b9; font-weight: bold; }
         .text-gray { color: #7f8c8d; font-size: 0.85em; }
         .text-black-bold { color: #3d312a; font-weight: bold; }
 
@@ -926,7 +932,7 @@
         .menu-item { padding: 8px 15px; cursor: pointer; font-size: 14px; color: #3d312a; }
         .menu-item:hover { background-color: #eee5d3; }
         
-                .grid-cell {
+        .grid-cell {
             background: #fffdfa;
             border: 1px solid #dcb594;
             overflow: auto;
@@ -934,11 +940,6 @@
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
-        }
-            border: 1px solid #dcb594;
-            overflow: auto;
-            position: relative;
-            box-sizing: border-box;
         }
         .grid-cell-header {
             background: #eee5d3;
@@ -1082,6 +1083,11 @@
                         </tr>
                     </thead>
                     <tbody></tbody>
+                    <tfoot>
+                        <tr>
+                            <td style="background-color: #fcfaf5;"><strong>+</strong></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
@@ -1815,6 +1821,7 @@
         function updateQuantMatricesTable() {
             document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
                 const tbody = cell.querySelector('tbody');
+                const tfoot = cell.querySelector('tfoot');
                 const vargaSelect = cell.querySelector('.varga-select');
                 const matrixSelect = cell.querySelector('.matrix-type-select');
                 
@@ -1824,6 +1831,12 @@
                 const matrixType = matrixSelect.value;
                 
                 tbody.innerHTML = '';
+                if (tfoot) {
+                    let trFoot = tfoot.querySelector('tr');
+                    if (trFoot) {
+                        trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
+                    }
+                }
                 
                 const matrices = currentChartData.avastha_matrix;
                 if (!matrices || !matrices[varga] || !matrices[varga][matrixType]) return;
@@ -1842,42 +1855,114 @@
                         const td = document.createElement('td');
                         const data = matrixData[pRecv] ? matrixData[pRecv][pGive] : null;
                         
-                        if (!data) {
-                            td.innerHTML = '-';
-                        } else {
-                            if (pGive === pRecv) {
-                                // Diagonal: Base on top, Net Total on bottom
-                                td.innerHTML = `
-                                    <span class="text-gray">${data.base.toFixed(1)}</span>
-                                    <span class="text-black-bold">${data.net_total.toFixed(1)}</span>
-                                `;
-                                td.title = `${pRecv} Base Starting Strength: ${data.base.toFixed(1)}. Net Total: ${data.net_total.toFixed(1)}`;
+                        if (pGive === pRecv) {
+                            // Diagonal Cells (Giver == Receiver)
+                            if (data) {
+                                if (data.base_negative !== null && data.base_negative !== undefined) {
+                                    // Stack three numbers: data.base (black), data.base_negative (black), and data.base - data.base_negative (red if negative, else black)
+                                    const diff = data.base - data.base_negative;
+                                    const diffColor = diff < 0 ? 'text-red' : '';
+                                    td.innerHTML = `
+                                        <div class="quant-diagonal-stack">
+                                            <span>${data.base.toFixed(1)}</span>
+                                            <span>${data.base_negative.toFixed(1)}</span>
+                                            <span class="${diffColor}">${diff.toFixed(1)}</span>
+                                        </div>
+                                    `;
+                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Negative: ${data.base_negative.toFixed(1)}, Net: ${diff.toFixed(1)}. Final Net Total: ${data.net_total.toFixed(1)}`;
+                                } else {
+                                    // Single data.base number (black, bold)
+                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}</span>`;
+                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}. Final Net Total: ${data.net_total.toFixed(1)}`;
+                                }
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
                             } else {
-                                // Off-Diagonal: Modifier on top, Isolated total on bottom
-                                const mod = data.modifier;
-                                const isPos = data.is_positive;
-                                const sign = mod > 0 ? '+' : (mod < 0 ? '-' : '');
-                                const cssClass = mod > 0 ? 'text-green' : (mod < 0 ? 'text-red' : 'text-gray');
-                                
-                                let actionWord = mod > 0 ? "Delights (Mudita)" : (mod < 0 ? "Starves/Agitates" : "Neutralizes");
-                                let addSub = mod >= 0 ? "Adds" : "Subtracts";
-                                
-                                td.innerHTML = `
-                                    <span class="${cssClass}">${sign}${Math.abs(mod).toFixed(1)}</span>
-                                    <span class="text-gray">${data.isolated_total.toFixed(1)}</span>
-                                `;
-                                td.title = `${pGive} ${actionWord} ${pRecv}. ${addSub} ${Math.abs(mod).toFixed(1)} points. Isolated Scenario: ${data.isolated_total.toFixed(1)}`;
+                                td.innerHTML = '-';
                             }
+                        } else {
+                            // Off-Diagonal Cells (Giver != Receiver)
+                            const posPull = data && data.positive_pull !== undefined ? data.positive_pull : 0;
+                            const negPull = data && data.negative_pull !== undefined ? data.negative_pull : 0;
+                            const hasPos = posPull > 0.001;
+                            const hasNeg = negPull > 0.001;
                             
-                            // Attach tooltips
-                            td.classList.add('has-tooltip');
-                            td.setAttribute('data-tooltip', td.title);
-                            td.title = ''; // clear native title to use custom tooltips if global tooltip engine is active
+                            if (hasPos && hasNeg) {
+                                // Split left/right:
+                                // Left side: negative_pull (red) over isolated_negative (red)
+                                // Right side: positive_pull (green) over isolated_positive (green)
+                                td.innerHTML = `
+                                    <div class="quant-cell-split">
+                                        <div class="quant-sub-col text-red">
+                                            <span>${data.negative_pull.toFixed(1)}</span>
+                                            <span>${data.isolated_negative.toFixed(1)}</span>
+                                        </div>
+                                        <div class="quant-sub-col text-green">
+                                            <span>${data.positive_pull.toFixed(1)}</span>
+                                            <span>${data.isolated_positive.toFixed(1)}</span>
+                                        </div>
+                                    </div>
+                                `;
+                                td.title = `${pGive} affects ${pRecv}: Negative pull -${data.negative_pull.toFixed(1)} (Isolated: ${data.isolated_negative.toFixed(1)}) | Positive pull +${data.positive_pull.toFixed(1)} (Isolated: ${data.isolated_positive.toFixed(1)})`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (hasPos) {
+                                // Stack positive_pull (green) over isolated_positive (green)
+                                td.innerHTML = `
+                                    <div class="quant-sub-col text-green">
+                                        <span>${data.positive_pull.toFixed(1)}</span>
+                                        <span>${data.isolated_positive.toFixed(1)}</span>
+                                    </div>
+                                `;
+                                td.title = `${pGive} delights ${pRecv}: +${data.positive_pull.toFixed(1)} (Isolated: ${data.isolated_positive.toFixed(1)})`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (hasNeg) {
+                                // Stack negative_pull (blue/black) over isolated_negative (blue/black)
+                                td.innerHTML = `
+                                    <div class="quant-sub-col text-blue">
+                                        <span>${data.negative_pull.toFixed(1)}</span>
+                                        <span>${data.isolated_negative.toFixed(1)}</span>
+                                    </div>
+                                `;
+                                td.title = `${pGive} starves/agitates ${pRecv}: -${data.negative_pull.toFixed(1)} (Isolated: ${data.isolated_negative.toFixed(1)})`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else {
+                                // Neutral: Leave cell blank or put a -
+                                td.innerHTML = '<span class="text-gray">-</span>';
+                            }
                         }
                         tr.appendChild(td);
                     });
                     tbody.appendChild(tr);
                 });
+                
+                // Bottom Row (<tfoot>): Populate the + row columns using data.net_total from respective diagonal cells
+                if (tfoot) {
+                    let trFoot = tfoot.querySelector('tr');
+                    if (!trFoot) {
+                        trFoot = document.createElement('tr');
+                        tfoot.appendChild(trFoot);
+                    }
+                    trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
+                    planets.forEach(pRecv => {
+                        const diagData = matrixData[pRecv] ? matrixData[pRecv][pRecv] : null;
+                        const tdFoot = document.createElement('td');
+                        tdFoot.style.backgroundColor = '#f7f3eb';
+                        if (diagData && diagData.net_total !== undefined) {
+                            const val = diagData.net_total;
+                            const isNeg = val < 0;
+                            tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${val.toFixed(1)}</span>`;
+                            tdFoot.title = `${pRecv} Final Net Total: ${val.toFixed(1)}`;
+                        } else {
+                            tdFoot.innerHTML = '-';
+                        }
+                        tdFoot.classList.add('has-tooltip');
+                        tdFoot.setAttribute('data-tooltip', tdFoot.title);
+                        trFoot.appendChild(tdFoot);
+                    });
+                }
             });
         }
         

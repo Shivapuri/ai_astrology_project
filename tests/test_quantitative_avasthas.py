@@ -107,7 +107,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 if exp_cell:
                     exp_baseline = exp_cell[0]['value']
                     try:
-                        calc_baseline = calc_cell.get('net_total', 0)
+                        calc_baseline = calc_cell.get('base', 0)
                     except (ValueError, TypeError):
                         calc_baseline = 0.0
                     
@@ -129,7 +129,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 calc_net = 0.0
                 if calc_cell:
                     try:
-                        calc_net = calc_cell.get('modifier', 0)
+                        calc_net = calc_cell.get('net_pull', 0)
                     except (ValueError, TypeError):
                         calc_net = 0.0
                 

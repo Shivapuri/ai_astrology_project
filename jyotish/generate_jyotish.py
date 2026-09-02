@@ -658,26 +658,21 @@ def generate_kala_chart(
                     
                     if p_give == p_receive:
                         v_matrix[p_receive][p_give] = {
-                            "base": avastha_results['bases'][p_give],
-                            "net_total": data['total']
+                            "base": data["base"],
+                            "base_negative": data["base_negative"],
+                            "net_total": data["net_total"]
                         }
                         continue
                         
-                    pull = data['pull']
-                    if pull <= 0.001:
-                        v_matrix[p_receive][p_give] = None
-                        continue
-                        
-                    sign_mult = data['sign_mult']
-                    total = data['total']
-                    
-                    net_pull = pull if sign_mult > 0 else (-pull if sign_mult < 0 else 0)
-                        
                     v_matrix[p_receive][p_give] = {
-                        "base": avastha_results['bases'][p_receive],
-                        "modifier": net_pull,
-                        "isolated_total": total,
-                        "is_positive": sign_mult > 0
+                        "positive_pull": data["positive_pull"],
+                        "negative_pull": data["negative_pull"],
+                        "isolated_positive": data["isolated_positive"],
+                        "isolated_negative": data["isolated_negative"],
+                        "net_pull": data["net_pull"],
+                        "modifier": data["net_pull"],
+                        "isolated_total": data["isolated_positive"] if data["net_pull"] >= 0 else data["isolated_negative"],
+                        "is_positive": data["net_pull"] > 0
                     }
             avastha_matrices[v_key][baseline] = v_matrix
     vedic_context = {

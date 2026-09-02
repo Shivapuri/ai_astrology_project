@@ -63,10 +63,6 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         matrix[p_give] = {}
         for p_recv in planets:
             if p_give == p_recv:
-                matrix[p_give][p_recv] = {
-                    'pull': 0.0,
-                    'total': bases[p_recv]
-                }
                 continue
                 
             g_give = grahas_data[p_give]
@@ -75,8 +71,6 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             # Use D1 longitudes for aspect calculation (Graha Drishti is always from Rasi chart)
             l1 = d1_grahas[p_give]['longitude']
             l2 = d1_grahas[p_recv]['longitude']
-            # We still use the current varga's signs/lords for Parivartana rules?
-            # Wait, Parivartana Yoga (Exchange) for aspects is based on D1 signs!
             s1 = d1_grahas[p_give]['sign']
             s2 = d1_grahas[p_recv]['sign']
             lord1 = d1_grahas[p_give]['dignity_breakdown']['sign_lord']
@@ -85,10 +79,6 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             # Exact Graha Sphuta Drishti aspect (0-60 Virupas)
             aspect_virupas = get_aspect(p_give, p_recv, l1, l2, s1, s2, lord1, lord2)
             
-            # Left Number: Pull (Points of Influence)
-            pull = bases[p_give] * (aspect_virupas / 60.0)
-            
-            # Right Number: Determine sign (+/-) based on Lajjitadi qualitative states
             # Get qualitative states for receiving planet
             lajjitadi_states = d1_grahas[p_recv].get('avasthas', {}).get('lajjitadi')
             if lajjitadi_states is None:
@@ -126,9 +116,6 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     is_waning_moon_as_enemy
                 )
                 
-            pulls = []
-            
-            # Determine specific qualitative states from p_give to p_recv
             active_states = []
             for st in lajjitadi_states:
                 s_name = st.get('state', '')
@@ -136,22 +123,14 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 if p_give in s_cond:
                     active_states.append(s_name)
                     
-            if not active_states:
-                matrix[p_give][p_recv] = {
-                    'aspect_virupas': aspect_virupas,
-                    'pull': 0.0,
-                    'sign_mult': 0,
-                    'total': bases[p_recv]
-                }
-            else:
-                positive_pull = 0.0
-                negative_pull = 0.0
+            positive_pull = 0.0
+            negative_pull = 0.0
+            if active_states:
                 has_pos = any(any(pos in s_name for pos in ['Mudita', 'Garvita']) for s_name in active_states)
                 has_neg = any(any(neg in s_name for neg in ['Kshudhita', 'Kshobhita', 'Lajjita', 'Trushita']) for s_name in active_states)
                 
                 if has_pos:
                     positive_pull = bases[p_give] * (aspect_virupas / 60.0)
-                    pulls.append(positive_pull)
                     
                 if has_neg:
                     if baseline_type == 'Ishta':
@@ -165,17 +144,35 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     else:
                         neg_calc = bases[p_give] * (aspect_virupas / 60.0)
                     negative_pull = neg_calc
-                    pulls.append(-negative_pull)
-                
-                net_pull = positive_pull - negative_pull
-                total = bases[p_recv] + net_pull
-                
-                matrix[p_give][p_recv] = {
-                    'aspect_virupas': aspect_virupas,
-                    'pull': abs(net_pull),
-                    'sign_mult': 1 if net_pull > 0 else (-1 if net_pull < 0 else 0),
-                    'total': total
-                }
+
+            matrix[p_give][p_recv] = {
+                "positive_pull": round(positive_pull, 1),
+                "negative_pull": round(negative_pull, 1),
+                "isolated_positive": round(bases[p_recv] + positive_pull, 1),
+                "isolated_negative": round(bases[p_recv] - negative_pull, 1),
+                "net_pull": round(positive_pull - negative_pull, 1),
+                "aspect_virupas": aspect_virupas,
+                "pull": round(abs(positive_pull - negative_pull), 1),
+                "sign_mult": 1 if positive_pull > negative_pull else (-1 if negative_pull > positive_pull else 0),
+                "total": round(bases[p_recv] + (positive_pull - negative_pull), 1)
+            }
+
+    # Populate diagonal cells with base, base_negative, and column net_total
+    for p in planets:
+        col_total = round(bases[p] + sum(matrix[giver][p]["net_pull"] for giver in planets if giver != p), 1)
+        base_neg = None
+        if baseline_type == 'Ishta':
+            base_neg = round(shadbala_data[p].get('Kashta_Phala', 0), 1)
+        elif baseline_type == 'Subha':
+            base_neg = round(shadbala_data[p].get('Asubha_Phala', 0), 1)
+
+        matrix[p][p] = {
+            "base": bases[p],
+            "base_negative": base_neg,
+            "net_total": col_total,
+            "pull": 0.0,
+            "total": col_total
+        }
             
     return {
         'bases': bases,
