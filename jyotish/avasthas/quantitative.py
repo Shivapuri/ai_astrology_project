@@ -53,6 +53,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             unmultiplied = shadbala_data[p].get('Subha_Phala', 0)
         elif baseline_type == 'Drishti Yuti':
             unmultiplied = 0.0
+        elif baseline_type == 'Veda':
+            unmultiplied = shadbala_data[p]['Total_Virupas'] / 2 # fallback placeholder until classical formula is decoded
         else:
             unmultiplied = shadbala_data[p]['Total_Virupas']
         
