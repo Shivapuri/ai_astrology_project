@@ -45,7 +45,7 @@ def test_all_matrix_subvalues(aj_data, matrix_key):
         key_title = matrix_key.title()
     calc_matrix = chart["avastha_matrix"]["D1"][key_title]
     exp_matrix = baselines[matrix_key]
-    tol = 90.0 if matrix_key == "shadbala" else 1.5
+    tol = 1.5
 
     for giver in PLANETS:
         for recv in PLANETS:

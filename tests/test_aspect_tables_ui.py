@@ -12,8 +12,20 @@ from playwright.sync_api import sync_playwright
 
 
 FLASK_URL = "http://127.0.0.1:5001"
+import urllib.request
 CHART_ID = "angelina-jolie"
 
+def is_server_running(url=FLASK_URL):
+    try:
+        urllib.request.urlopen(url)
+        return True
+    except:
+        return False
+
+@pytest.fixture(scope="module", autouse=True)
+def check_server():
+    if not is_server_running():
+        pytest.skip("Flask server is not running on port 5001")
 
 @pytest.fixture(scope="module")
 def page():

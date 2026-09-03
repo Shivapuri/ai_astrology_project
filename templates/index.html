@@ -925,6 +925,7 @@
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
         <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
+        <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
     </div>
     
@@ -986,6 +987,74 @@
         .grid-cell-content th, .grid-cell-content td {
             padding: 8px 12px;
             white-space: nowrap;
+        }
+
+        /* Kala-style Shad Bala Breakdown Grid */
+        .shadbala-breakdown-grid {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-size: 0.82rem;
+        }
+        .shadbala-breakdown-grid th {
+            background: #e28743;
+            color: #ffffff;
+            padding: 6px 10px;
+            font-weight: 600;
+            text-align: right;
+            border: 1px solid #c97130;
+            white-space: nowrap;
+        }
+        .shadbala-breakdown-grid th:first-child {
+            text-align: left;
+        }
+        .shadbala-breakdown-grid td {
+            padding: 4px 10px;
+            border: 1px solid #e28743;
+            text-align: right;
+            background: #ffffcc; /* Kala software pale yellow */
+            color: #000099; /* Kala software deep blue */
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+        }
+        .shadbala-breakdown-grid td:first-child {
+            text-align: left;
+            color: #3d312a;
+            background: #fff8f0;
+            font-weight: 500;
+        }
+        .shadbala-breakdown-grid tr.category-header td {
+            background: #f7d5b8;
+            color: #8c3b05;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.74rem;
+            letter-spacing: 0.5px;
+            padding: 5px 10px;
+            text-align: left;
+        }
+        .shadbala-breakdown-grid tr.subtotal-row td {
+            background: #faebd7;
+            font-weight: bold;
+        }
+        .shadbala-breakdown-grid tr.grandtotal-row td {
+            background: #ffe3c6;
+            font-weight: bold;
+            font-size: 0.88rem;
+        }
+        .shadbala-breakdown-grid .pct-val {
+            font-weight: bold;
+        }
+        .shadbala-breakdown-grid .pct-val.under-req {
+            color: #c0392b; /* Bold red when under 100% required */
+        }
+        .shadbala-breakdown-grid .pct-val.over-req {
+            color: #000099; /* Deep blue when meeting/exceeding required */
+        }
+        .shadbala-breakdown-grid .rank-val {
+            font-weight: bold;
+            color: #d35400;
+            font-size: 0.9rem;
         }
 
         .gutter {
@@ -1172,6 +1241,29 @@
                     <tbody></tbody>
                 </table>
             </div>
+    </template>
+    <template id="tmpl-shadbala-table">
+        <div class="widget-content" id="tab-shadbala-table">
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 8px;">
+                <h3 style="color: #3d312a; margin: 0; font-size: 1.05rem;">Shad Bala Detailed Breakdown</h3>
+            </div>
+            <div style="overflow-x: auto; max-height: calc(100% - 35px); overflow-y: auto; padding-bottom: 15px;">
+                <table class="shadbala-breakdown-grid" style="margin-bottom: 10px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; min-width: 170px;">Strength Component</th>
+                            <th>Sun</th>
+                            <th>Moon</th>
+                            <th>Mars</th>
+                            <th>Mercury</th>
+                            <th>Jupiter</th>
+                            <th>Venus</th>
+                            <th>Saturn</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </template>
 
@@ -1237,7 +1329,7 @@
             if (widgetType !== 'empty') {
                 const tmpl = document.getElementById('tmpl-' + widgetType);
                 if (tmpl) {
-                    if (widgetType === 'info') {
+                    if (widgetType === 'info' || widgetType === 'shadbala-table') {
                         contentDiv.classList.add('scrollable');
                         contentDiv.appendChild(tmpl.content.cloneNode(true));
                     } else if (widgetType === 'chart') {
@@ -2562,32 +2654,127 @@
         }
         
         function updateShadbalaTable() {
-            const tbody = document.querySelector("#shadbalaTable tbody");
-            if (!tbody) return;
-            tbody.innerHTML = "";
             if (!currentChartData || !currentChartData.shadbala) return;
-            
             const sb = currentChartData.shadbala;
             const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
             
-            planetsOrder.forEach(p => {
-                if (!sb[p]) return;
-                const data = sb[p];
-                const tr = document.createElement("tr");
-                tr.innerHTML = `
-                    <td><strong>${p}</strong></td>
-                    <td><strong>${data.Total_Rupas.toFixed(2)}</strong></td>
-                    <td>${data.Sthana_Bala.toFixed(2)}</td>
-                    <td>${data.Dig_Bala.toFixed(2)}</td>
-                    <td>${data.Kala_Bala.toFixed(2)}</td>
-                    <td>${data.Cheshta_Bala.toFixed(2)}</td>
-                    <td>${data.Naisargika_Bala.toFixed(2)}</td>
-                    <td>${data.Drik_Bala.toFixed(2)}</td>
-                    <td><span style="color: #27ae60; font-weight: bold;">${data.Ishta_Phala.toFixed(2)}</span></td>
-                    <td><span style="color: #c0392b; font-weight: bold;">${data.Kashta_Phala.toFixed(2)}</span></td>
-
-                `;
-                tbody.appendChild(tr);
+            // 1. Legacy #shadbalaTable support
+            const legacyTbody = document.querySelector("#shadbalaTable tbody");
+            if (legacyTbody) {
+                legacyTbody.innerHTML = "";
+                planetsOrder.forEach(p => {
+                    if (!sb[p]) return;
+                    const data = sb[p];
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                        <td><strong>${p}</strong></td>
+                        <td><strong>${data.Total_Rupas !== undefined ? data.Total_Rupas.toFixed(2) : (data.Total_Virupas / 60.0).toFixed(2)}</strong></td>
+                        <td>${data.Sthana_Bala.toFixed(2)}</td>
+                        <td>${data.Dig_Bala.toFixed(2)}</td>
+                        <td>${data.Kala_Bala.toFixed(2)}</td>
+                        <td>${data.Cheshta_Bala.toFixed(2)}</td>
+                        <td>${data.Naisargika_Bala.toFixed(2)}</td>
+                        <td>${data.Drik_Bala.toFixed(2)}</td>
+                        <td><span style="color: #27ae60; font-weight: bold;">${(data.Ishta_Phala || 0).toFixed(2)}</span></td>
+                        <td><span style="color: #c0392b; font-weight: bold;">${(data.Kashta_Phala || 0).toFixed(2)}</span></td>
+                    `;
+                    legacyTbody.appendChild(tr);
+                });
+            }
+            
+            // 2. Comprehensive Kala-style 25-row Breakdown Grids
+            const breakdownGrids = document.querySelectorAll(".shadbala-breakdown-grid tbody");
+            if (breakdownGrids.length === 0) return;
+            
+            const rowsDef = [
+                // Sthana Bala
+                { type: "header", title: "Sthana Bala (Positional Strength)" },
+                { label: "Uccha Bala", key: "Uccha_Bala", decimals: 2 },
+                { label: "Saptavargaja Bala", key: "Saptavarga_Bala", decimals: 0 },
+                { label: "Ojhayugmarasyamsa Bala", key: "Ojhayugma_Bala", decimals: 0 },
+                { label: "Kendradi Bala", key: "Kendradi_Bala", decimals: 0 },
+                { label: "Drekkana Bala", key: "Drekkana_Bala", decimals: 0 },
+                { label: "Total Sthana Bala", key: "Sthana_Bala", decimals: 1, isSubtotal: true },
+                { label: "Required Sthana Bala", key: "Required_Sthana", decimals: 0, isRequired: true },
+                { label: "% of Required Sthana Bala", key: "Pct_Required_Sthana", decimals: 1, isPct: true },
+                
+                // Dig Bala
+                { type: "header", title: "Dig Bala (Directional Strength)" },
+                { label: "Total Dig Bala", key: "Dig_Bala", decimals: 2, isSubtotal: true },
+                { label: "Required Dig Bala", key: "Required_Dig", decimals: 0, isRequired: true },
+                { label: "% of Required Dig Bala", key: "Pct_Required_Dig", decimals: 1, isPct: true },
+                
+                // Kaala Bala
+                { type: "header", title: "Kaala Bala (Time Strength)" },
+                { label: "Natonnata Bala", key: "Natonnata_Bala", decimals: 2 },
+                { label: "Paksha Bala", key: "Paksha_Bala", decimals: 2 },
+                { label: "Tribhaga Bala", key: "Tribhaga_Bala", decimals: 0 },
+                { label: "Varsha Bala", key: "Varsha_Bala", decimals: 0 },
+                { label: "Masa Bala", key: "Masa_Bala", decimals: 0 },
+                { label: "Dina Bala", key: "Dina_Bala", decimals: 0 },
+                { label: "Hora Bala", key: "Hora_Bala", decimals: 0 },
+                { label: "Total Kaala Bala", key: "Kala_Bala", decimals: 1, isSubtotal: true },
+                { label: "Required Kaala Bala", key: "Required_Kaala", decimals: 0, isRequired: true },
+                { label: "% of Required Kaala Bala", key: "Pct_Required_Kaala", decimals: 1, isPct: true },
+                
+                // Ayana Bala
+                { type: "header", title: "Ayana Bala (Declination Strength)" },
+                { label: "Total Ayana Bala", key: "Ayana_Bala", decimals: 2, isSubtotal: true },
+                { label: "Required Ayana Bala", key: "Required_Ayana", decimals: 0, isRequired: true },
+                { label: "% of Required Ayana Bala", key: "Pct_Required_Ayana", decimals: 1, isPct: true },
+                
+                // Cheshta Bala
+                { type: "header", title: "Cheshta Bala (Motional Strength)" },
+                { label: "Total Cheshta Bala", key: "Cheshta_Bala", decimals: 2, isSubtotal: true },
+                { label: "Required Cheshta Bala", key: "Required_Cheshta", decimals: 0, isRequired: true },
+                { label: "% of Required Cheshta Bala", key: "Pct_Required_Cheshta", decimals: 1, isPct: true },
+                
+                // Other Balas
+                { type: "header", title: "Other Balas" },
+                { label: "Naisargika Bala", key: "Naisargika_Bala", decimals: 2 },
+                { label: "Drig Bala", key: "Drik_Bala", decimals: 1 },
+                { label: "Yuddha Bala", key: "Yuddha_Bala", decimals: 0 },
+                
+                // Final Summary & Rankings
+                { type: "header", title: "Summary & Rankings" },
+                { label: "Shad Bala Total", key: "Total_Virupas", decimals: 1, isGrandTotal: true },
+                { label: "Required Shad Bala", key: "Required_Total", decimals: 0, isRequired: true },
+                { label: "% of Required Shad Bala", key: "Pct_Required_Total", decimals: 1, isPct: true },
+                { label: "Shad Bala in Rupas", key: "Total_Rupas", decimals: 2, isGrandTotal: true },
+                { label: "Relative Rank", key: "Relative_Rank", decimals: 0, isRank: true }
+            ];
+            
+            breakdownGrids.forEach(tbody => {
+                tbody.innerHTML = "";
+                rowsDef.forEach(row => {
+                    const tr = document.createElement("tr");
+                    if (row.type === "header") {
+                        tr.className = "category-header";
+                        tr.innerHTML = `<td colspan="8">${row.title}</td>`;
+                    } else {
+                        if (row.isGrandTotal) tr.className = "grandtotal-row";
+                        else if (row.isSubtotal) tr.className = "subtotal-row";
+                        
+                        let html = `<td>${row.label}</td>`;
+                        planetsOrder.forEach(p => {
+                            const pData = sb[p] || {};
+                            const val = pData[row.key];
+                            if (val === undefined || val === null) {
+                                html += `<td>-</td>`;
+                            } else if (row.isPct) {
+                                const numVal = Number(val);
+                                const colorCls = numVal < 100.0 ? "under-req" : "over-req";
+                                html += `<td><span class="pct-val ${colorCls}">${numVal.toFixed(row.decimals)}%</span></td>`;
+                            } else if (row.isRank) {
+                                html += `<td><span class="rank-val">#${val}</span></td>`;
+                            } else {
+                                html += `<td>${Number(val).toFixed(row.decimals)}</td>`;
+                            }
+                        });
+                        tr.innerHTML = html;
+                    }
+                    tbody.appendChild(tr);
+                });
             });
         }
 

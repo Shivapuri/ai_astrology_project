@@ -99,7 +99,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
     assert calc_matrix, f"Calculated {matrix_name} matrix is missing from context!"
     
     expected_matrix = parse_tagged_csv(csv_filename)
-    tol = 50.0 if matrix_name == "ShadBala" else 1.5
+    tol = 1.5
     
     # 1. Check Baselines (Diagonals) and Net Modifiers (Off-Diagonals)
     for giver in PLANETS:
