@@ -1958,7 +1958,7 @@
                                 } else if (hasPos) {
                                     td.innerHTML = `
                                         <div class="quant-sub-col text-green">
-                                            <span>+${posPull.toFixed(1)}</span>
+                                            <span>${posPull.toFixed(1)}</span>
                                             ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
                                         </div>
                                     `;
@@ -1969,7 +1969,7 @@
                                 } else if (hasNeg) {
                                     td.innerHTML = `
                                         <div class="quant-sub-col text-red">
-                                            <span>-${negPull.toFixed(1)}</span>
+                                            <span>${negPull.toFixed(1)}</span>
                                             ${hasIsolatedNeg ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
                                         </div>
                                     `;

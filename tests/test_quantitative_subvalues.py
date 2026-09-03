@@ -33,16 +33,19 @@ def aj_data():
 
 @pytest.mark.parametrize(
     "matrix_key",
-    ["ishta", "subha", "cheshta", "uccha", "dig", "veda", "drishti_yuti"],
+    ["ishta", "subha", "cheshta", "uccha", "dig", "veda", "drishti_yuti", "shadbala"],
 )
 def test_all_matrix_subvalues(aj_data, matrix_key):
     chart, baselines = aj_data
-    calc_matrix = chart["avastha_matrix"]["D1"][
-        matrix_key.title()
-        if matrix_key != "drishti_yuti"
-        else "Drishti Yuti"
-    ]
+    if matrix_key == "shadbala":
+        key_title = "ShadBala"
+    elif matrix_key == "drishti_yuti":
+        key_title = "Drishti Yuti"
+    else:
+        key_title = matrix_key.title()
+    calc_matrix = chart["avastha_matrix"]["D1"][key_title]
     exp_matrix = baselines[matrix_key]
+    tol = 90.0 if matrix_key == "shadbala" else 1.5
 
     for giver in PLANETS:
         for recv in PLANETS:
@@ -59,12 +62,15 @@ def test_all_matrix_subvalues(aj_data, matrix_key):
                             )
                             <= 0.5
                         )
+                elif matrix_key == "shadbala":
+                    if exp_items:
+                        assert abs(calc_cell["base"] - exp_items[0]["value"]) <= tol
                 else:
                     # Diagonal has 3 items: Base [G], Diff [K], Base_Negative [R]
-                    assert abs(calc_cell["base"] - exp_items[0]["value"]) <= 1.5
+                    assert abs(calc_cell["base"] - exp_items[0]["value"]) <= tol
                     assert (
                         abs(calc_cell["base_negative"] - exp_items[2]["value"])
-                        <= 1.5
+                        <= tol
                     )
             else:
                 if matrix_key == "drishti_yuti":
@@ -97,25 +103,25 @@ def test_all_matrix_subvalues(aj_data, matrix_key):
                         # Dual cell: [neg_pull, pos_pull, iso_neg, iso_pos]
                         assert (
                             abs(calc_cell["neg_pull"] - exp_items[0]["value"])
-                            <= 1.5
+                            <= tol
                         )
                         assert (
                             abs(calc_cell["pos_pull"] - exp_items[1]["value"])
-                            <= 1.5
+                            <= tol
                         )
                         assert (
                             abs(
                                 calc_cell["isolated_negative"]
                                 - exp_items[2]["value"]
                             )
-                            <= 1.5
+                            <= tol
                         )
                         assert (
                             abs(
                                 calc_cell["isolated_positive"]
                                 - exp_items[3]["value"]
                             )
-                            <= 1.5
+                            <= tol
                         )
                     elif len(exp_items) == 2:
                         # Single cell: [pull, isolated]
@@ -123,36 +129,36 @@ def test_all_matrix_subvalues(aj_data, matrix_key):
                         if color == "G":
                             assert (
                                 abs(calc_cell["pos_pull"] - exp_items[0]["value"])
-                                <= 1.5
+                                <= tol
                             )
                             assert (
                                 abs(
                                     calc_cell["isolated_positive"]
                                     - exp_items[1]["value"]
                                 )
-                                <= 1.5
+                                <= tol
                             )
                         elif color == "R":
                             assert (
                                 abs(calc_cell["neg_pull"] - exp_items[0]["value"])
-                                <= 1.5
+                                <= tol
                             )
                             assert (
                                 abs(
                                     calc_cell["isolated_negative"]
                                     - exp_items[1]["value"]
                                 )
-                                <= 1.5
+                                <= tol
                             )
                         elif color == "B":
                             assert (
                                 abs(calc_cell["neu_pull"] - exp_items[0]["value"])
-                                <= 1.5
+                                <= tol
                             )
                             assert (
                                 abs(
                                     calc_cell["isolated_neutral"]
                                     - exp_items[1]["value"]
                                 )
-                                <= 1.5
+                                <= tol
                             )
