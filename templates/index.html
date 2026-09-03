@@ -31,6 +31,7 @@
         .dignity-grid th { background-color: #eee5d3; color: #4a3325; border: 1px solid #dcb594; padding: 6px; }
         .dignity-grid td { border: 1px solid #e5dccb; padding: 6px; }
         .dignity-grid td:first-child { font-weight: bold; background-color: #fcfaf5; }
+        .dignity-grid tbody tr:hover { background-color: #f7eedd; }
 
         .header-controls {
             background: #fffdfa;
@@ -1119,23 +1120,24 @@
     
     <template id="tmpl-quant-matrices">
         <div class="widget-content" style="display:flex; flex-direction:column; height:100%;">
-            <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
-                    <option value="D1">D1</option>
-                    <option value="D9">D9</option>
-                    <option value="D10">D10</option>
-                    <option value="D60">D60</option>
-                </select>
-                <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
-                    <option value="ShadBala">ShadBala</option>
-                    <option value="Ishta">Ishta</option>
-                    <option value="Subha">Subha</option>
-                    <option value="Cheshta">Cheshta</option>
-                    <option value="Uccha">Uccha</option>
-                    <option value="Dig">Dig</option>
-                    <option value="Drishti Yuti">Drishti Yuti</option>
-                    <option value="Veda">Veda</option>
-                </select>
+            <div class="chart-toolbar" style="padding: 5px 10px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <strong style="color: #4a3325; font-size: 0.9em;">Lajjitādi Calculations</strong>
+                    <span style="font-size: 0.72em; background: #eadecc; color: #5a4233; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Root Natal (D1)</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <label style="font-size: 0.8em; color: #666; font-weight: bold;">Baseline:</label>
+                    <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="ShadBala">ShadBala</option>
+                        <option value="Ishta">Ishta</option>
+                        <option value="Subha">Subha</option>
+                        <option value="Cheshta">Cheshta</option>
+                        <option value="Uccha">Uccha</option>
+                        <option value="Dig">Dig</option>
+                        <option value="Drishti Yuti">Drishti Yuti</option>
+                        <option value="Veda">Veda</option>
+                    </select>
+                </div>
             </div>
             <div style="overflow-x: auto; flex:1; padding: 10px;">
                 <table class="quant-matrices-table dignity-grid" style="width: 100%; border-collapse: collapse; text-align: center;">
@@ -1165,12 +1167,23 @@
     <template id="tmpl-chart">
         <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
             <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding:2px; font-size:12px;">
-                    <option value="D1">D1</option>
-                    <option value="D9">D9</option>
-                    <option value="D10">D10</option>
-                    <option value="D60">D60</option>
-                    <!-- add others as needed -->
+                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                    <option value="D1" selected>D1 - Rāśi (Physical Existence)</option>
+                    <option value="D2">D2 - Horā (Wealth & Resources)</option>
+                    <option value="D3">D3 - Drekkāṇa (Siblings & Courage)</option>
+                    <option value="D4">D4 - Caturthāṁśa (Home, Land & Fortune)</option>
+                    <option value="D7">D7 - Saptāṁśa (Children & Progeny)</option>
+                    <option value="D9">D9 - Navāṁśa (Spouse, Dharma & Soul)</option>
+                    <option value="D10">D10 - Daśāṁśa (Career & Status)</option>
+                    <option value="D12">D12 - Dvādaśāṁśa (Parents & Lineage)</option>
+                    <option value="D16">D16 - Ṣoḍaśāṁśa (Vehicles & Pleasures)</option>
+                    <option value="D20">D20 - Viṁśāṁśa (Spiritual Life & Upāsana)</option>
+                    <option value="D24">D24 - Caturviṁśāṁśa (Learning & Higher Knowledge)</option>
+                    <option value="D27">D27 - Saptaviṁśāṁśa (Inherent Strengths & Weaknesses)</option>
+                    <option value="D30">D30 - Triṁśāṁśa (Misfortune & Subconscious Trials)</option>
+                    <option value="D40">D40 - Khavedāṁśa (Karmic Auspiciousness)</option>
+                    <option value="D45">D45 - Akṣavedāṁśa (All Areas of Life / Conduct)</option>
+                    <option value="D60">D60 - Ṣaṣṭyāṁśa (Past Life Karma / Destiny)</option>
                 </select>
                 <div class="chart-hotkeys">
                     <button class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')">S</button>
@@ -1220,32 +1233,45 @@
                     </div>
     </template>
     <template id="tmpl-avasthas-calc">
-        <div class="widget-content" id="tab-avasthas-calc">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                <h3 id="avasthaCalcTitle" style="color: #3d312a; margin: 0;">Rasi - Qualitative Avasthas</h3>
+        <div class="widget-content" style="display:flex; flex-direction:column; height:100%;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <span class="avastha-calc-title" style="font-weight: bold; font-size: 13px; color: #4a3325;">Qualitative Avasthas</span>
+                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                    <option value="D1" selected>D1 - Rāśi (Physical Existence)</option>
+                    <option value="D2">D2 - Horā (Wealth & Resources)</option>
+                    <option value="D3">D3 - Drekkāṇa (Siblings & Courage)</option>
+                    <option value="D4">D4 - Caturthāṁśa (Home, Land & Fortune)</option>
+                    <option value="D7">D7 - Saptāṁśa (Children & Progeny)</option>
+                    <option value="D9">D9 - Navāṁśa (Spouse, Dharma & Soul)</option>
+                    <option value="D10">D10 - Daśāṁśa (Career & Status)</option>
+                    <option value="D12">D12 - Dvādaśāṁśa (Parents & Lineage)</option>
+                    <option value="D16">D16 - Ṣoḍaśāṁśa (Vehicles & Pleasures)</option>
+                    <option value="D20">D20 - Viṁśāṁśa (Spiritual Life & Upāsana)</option>
+                    <option value="D24">D24 - Caturviṁśāṁśa (Learning & Higher Knowledge)</option>
+                    <option value="D27">D27 - Saptaviṁśāṁśa (Inherent Strengths & Weaknesses)</option>
+                    <option value="D30">D30 - Triṁśāṁśa (Misfortune & Subconscious Trials)</option>
+                    <option value="D40">D40 - Khavedāṁśa (Karmic Auspiciousness)</option>
+                    <option value="D45">D45 - Akṣavedāṁśa (All Areas of Life / Conduct)</option>
+                    <option value="D60">D60 - Ṣaṣṭyāṁśa (Past Life Karma / Destiny)</option>
+                </select>
             </div>
-            <div style="overflow-x: auto;">
-                <table id="avasthasCalcTable" class="dignity-grid">
+            <div style="overflow-x: auto; flex: 1; padding: 6px;">
+                <table class="dignity-grid avasthas-calc-table" style="width: 100%; border-collapse: collapse; text-align: center;">
                     <thead>
-                        <tr>
-                            <th>Avastha</th>
-                            <th>Su</th>
-                            <th>Mo</th>
-                            <th>Ma</th>
-                            <th>Me</th>
-                            <th>Ju</th>
-                            <th>Ve</th>
-                            <th>Sa</th>
-                        </tr>
+                        <tr><th>Avastha</th><th>Su</th><th>Mo</th><th>Ma</th><th>Me</th><th>Ju</th><th>Ve</th><th>Sa</th></tr>
                     </thead>
                     <tbody></tbody>
                 </table>
             </div>
+        </div>
     </template>
     <template id="tmpl-shadbala-table">
         <div class="widget-content" id="tab-shadbala-table">
             <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 8px;">
-                <h3 style="color: #3d312a; margin: 0; font-size: 1.05rem;">Shad Bala Detailed Breakdown</h3>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <h3 style="color: #3d312a; margin: 0; font-size: 1.05rem;">Shad Bala Detailed Breakdown</h3>
+                    <span style="font-size: 0.72em; background: #eadecc; color: #5a4233; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Root Natal (D1)</span>
+                </div>
             </div>
             <div style="overflow-x: auto; max-height: calc(100% - 35px); overflow-y: auto; padding-bottom: 15px;">
                 <table class="shadbala-breakdown-grid" style="margin-bottom: 10px;">
@@ -1332,7 +1358,7 @@
                     if (widgetType === 'info' || widgetType === 'shadbala-table') {
                         contentDiv.classList.add('scrollable');
                         contentDiv.appendChild(tmpl.content.cloneNode(true));
-                    } else if (widgetType === 'chart') {
+                    } else if (widgetType === 'chart' || widgetType === 'quant-matrices' || widgetType === 'avasthas-calc') {
                         contentDiv.classList.remove('scrollable');
                         contentDiv.appendChild(tmpl.content.cloneNode(true));
                     } else {
@@ -1369,9 +1395,10 @@
             if (!currentChartData || !currentSvgs) return;
             const widgetType = cell.dataset.widget;
             if (!widgetType) return;
-            
+
             if (widgetType === 'chart') {
-                const varga = cell.querySelector('.varga-select').value;
+                const vargaSelect = cell.querySelector('.varga-select');
+                const varga = vargaSelect ? vargaSelect.value : 'D1';
                 const vData = currentSvgs[varga];
                 const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
                 
@@ -1383,20 +1410,62 @@
                     if (n) n.innerHTML = vSvg.north;
                     if (c) c.innerHTML = vSvg.circular;
                 }
+            } 
+            else if (widgetType === 'quant-matrices') {
+                updateQuantMatricesTableForCell(cell);
+            } 
+            else if (widgetType === 'avasthas-calc') {
+                updateAvasthasCalcTableForCell(cell);
+            } 
+            else if (widgetType === 'dignities') {
+                updateVargaDignitiesTable();
+            } 
+            else if (widgetType === 'shadbala-table') {
+                updateShadbalaTableWidget();
             }
-            // For other widgets, we call their respective update functions. 
-            // We need to modify the original update functions to take a container argument, OR just let them update ALL instances.
-            // Let's modify the update functions below to target ALL widgets of that type.
-            updateAllWidgets();
+            else if (widgetType === 'nakshatras') {
+                updateNakshatraWidgetForCell(cell);
+            }
+            else if (widgetType && widgetType.startsWith('aspects-')) {
+                updateAspectsTable("D1");
+            }
         }
-        
+
+        function updateShadbalaTableWidget() {
+            updateShadbalaTable();
+        }
+
+        function updateNakshatraWidgetForCell(cell) {
+            const tbody = cell.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.nakshatras) return;
+            tbody.innerHTML = '';
+            const naks = currentChartData.nakshatras.grahas;
+            const d1_grahas = currentChartData.vargas.D1.grahas;
+            const d1_lagna = currentChartData.vargas.D1.lagna;
+            
+            function formatDeg(deg_float) {
+                let d = Math.floor(deg_float);
+                let m = Math.round((deg_float - d) * 60);
+                if (m === 60) { d += 1; m = 0; }
+                return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            }
+            
+            if (naks["Lagna"]) {
+                tbody.innerHTML += `<tr><td><strong>Asc</strong></td><td>${formatDeg(d1_lagna.degree_0_to_30)}</td><td>${d1_lagna.sign}</td><td>${naks["Lagna"].nakshatra}</td><td>${naks["Lagna"].pada}</td></tr>`;
+            }
+            for (const [graha, data] of Object.entries(naks)) {
+                if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
+                tbody.innerHTML += `<tr><td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td></tr>`;
+            }
+        }
+
         function updateAllWidgets() {
             if (!currentChartData) return;
             
             // Trigger global updates for existing tables
             try { updateNakshatraTable(); } catch(e) {}
             try { updateVargaDignitiesTable(); } catch(e) {}
-            try { updateAvasthasCalcTable("D1"); } catch(e) {}
+            try { updateAvasthasCalcTable(); } catch(e) {}
             try { updateAvasthasTable("D1"); } catch(e) {}
             try { updateShadbalaTable(); } catch(e) {}
             try { updateDashaTable(); } catch(e) {}
@@ -1405,44 +1474,16 @@
             
             // Nakshatras
             document.querySelectorAll('.grid-cell[data-widget="nakshatras"]').forEach(cell => {
-                const tbody = cell.querySelector('tbody');
-                if (!tbody) return;
-                tbody.innerHTML = '';
-                const naks = currentChartData.nakshatras.grahas;
-                const d1_grahas = currentChartData.vargas.D1.grahas;
-                const d1_lagna = currentChartData.vargas.D1.lagna;
-                
-                function formatDeg(deg_float) {
-                    let d = Math.floor(deg_float);
-                    let m = Math.round((deg_float - d) * 60);
-                    if (m === 60) { d += 1; m = 0; }
-                    return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-                }
-                
-                if (naks["Lagna"]) {
-                    tbody.innerHTML += `<tr><td><strong>Asc</strong></td><td>${formatDeg(d1_lagna.degree_0_to_30)}</td><td>${d1_lagna.sign}</td><td>${naks["Lagna"].nakshatra}</td><td>${naks["Lagna"].pada}</td></tr>`;
-                }
-                for (const [graha, data] of Object.entries(naks)) {
-                    if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
-                    tbody.innerHTML += `<tr><td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td></tr>`;
-                }
+                updateNakshatraWidgetForCell(cell);
             });
             
             // Dignities in Vargas
-            // (We just use the global updateVargaDignitiesTable but modify it to write to all instances)
-            document.querySelectorAll('.grid-cell[data-widget="dignities"]').forEach(cell => {
-                const tbody = cell.querySelector('tbody');
-                if (!tbody) return;
-                // Just let the global function handle one, and we copy its html to others?
-                // Actually, the original function targets '#vargaDignitiesTable tbody'.
-                // If we replace those IDs with classes in the template, it works better.
-            });
+            updateVargaDignitiesTable();
             
             // Charts
             document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(cell => {
                 const vargaSelect = cell.querySelector('.varga-select');
-                if (!vargaSelect) return;
-                const varga = vargaSelect.value;
+                const varga = vargaSelect ? vargaSelect.value : 'D1';
                 const vData = currentSvgs[varga];
                 const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
                 
@@ -1455,8 +1496,16 @@
                     if (c) c.innerHTML = vSvg.circular;
                 }
             });
-            
-            // To be robust, let's just trigger the original global functions, which we will modify to use classes or querySelectorAll.
+
+            // Qualitative Avasthas
+            document.querySelectorAll('.grid-cell[data-widget="avasthas-calc"]').forEach(cell => {
+                updateAvasthasCalcTableForCell(cell);
+            });
+
+            // Quant Matrices
+            document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
+                updateQuantMatricesTableForCell(cell);
+            });
         }
 
         let splitInstances = [];
@@ -1910,272 +1959,276 @@
             return condition;
         }
         
-        function updateQuantMatricesTable() {
-            document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
-                const tbody = cell.querySelector('tbody');
-                const tfoot = cell.querySelector('tfoot');
-                const vargaSelect = cell.querySelector('.varga-select');
-                const matrixSelect = cell.querySelector('.matrix-type-select');
-                
-                if (!tbody || !vargaSelect || !matrixSelect || !currentChartData) return;
-                
-                const varga = vargaSelect.value;
-                const matrixType = matrixSelect.value;
-                
-                tbody.innerHTML = '';
-                if (tfoot) {
-                    let trFoot = tfoot.querySelector('tr');
-                    if (trFoot) {
-                        trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
-                    }
+        function updateQuantMatricesTableForCell(cell) {
+            const tbody = cell.querySelector('tbody');
+            const tfoot = cell.querySelector('tfoot');
+            const vargaSelect = cell.querySelector('.varga-select');
+            const matrixSelect = cell.querySelector('.matrix-type-select');
+            
+            if (!tbody || !matrixSelect || !currentChartData) return;
+            
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+            const matrixType = matrixSelect.value;
+            
+            tbody.innerHTML = '';
+            if (tfoot) {
+                let trFoot = tfoot.querySelector('tr');
+                if (trFoot) {
+                    trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
                 }
+            }
+            
+            const matrices = currentChartData.avastha_matrix;
+            if (!matrices || !matrices[varga] || !matrices[varga][matrixType]) return;
+            
+            const matrixData = matrices[varga][matrixType];
+            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+            
+            planets.forEach(pGive => {
+                const tr = document.createElement('tr');
+                const thRow = document.createElement('td');
+                thRow.innerHTML = `<strong>${pGive}</strong>`;
+                thRow.style.backgroundColor = '#fcfaf5';
+                tr.appendChild(thRow);
                 
-                const matrices = currentChartData.avastha_matrix;
-                if (!matrices || !matrices[varga] || !matrices[varga][matrixType]) return;
-                
-                const matrixData = matrices[varga][matrixType];
-                const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-                
-                planets.forEach(pGive => {
-                    const tr = document.createElement('tr');
-                    const thRow = document.createElement('td');
-                    thRow.innerHTML = `<strong>${pGive}</strong>`;
-                    thRow.style.backgroundColor = '#fcfaf5';
-                    tr.appendChild(thRow);
+                planets.forEach(pRecv => {
+                    const td = document.createElement('td');
+                    const data = matrixData[pGive] ? matrixData[pGive][pRecv] : null;
                     
-                    planets.forEach(pRecv => {
-                        const td = document.createElement('td');
-                        const data = matrixData[pGive] ? matrixData[pGive][pRecv] : null;
-                        
-                        if (pGive === pRecv) {
-                            // Diagonal Cells (Giver == Receiver)
-                            if (matrixType === 'Drishti Yuti') {
-                                const asp = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
-                                if (asp > 0.001) {
-                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${asp.toFixed(1)}</span>`;
-                                    td.title = `${pRecv} Self Aspect: ${asp.toFixed(1)} Virupas`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else {
-                                    td.innerHTML = '';
-                                }
-                            } else if (data && data.base !== null && data.base !== undefined) {
-                                if (matrixType !== 'ShadBala' && data.base_negative !== null && data.base_negative !== undefined) {
-                                    // Stack three numbers: Base (Green), Difference (Black), Base Negative (Red)
-                                    const diff = data.diff !== null && data.diff !== undefined ? data.diff : (data.base - data.base_negative);
-                                    const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
-                                    td.innerHTML = `
-                                        <div class="quant-diagonal-stack">
-                                            <span class="text-green">${data.base.toFixed(1)}</span>
-                                            <span class="text-black-bold">${diff.toFixed(1)}${moolaFlag}</span>
-                                            <span class="text-red">${data.base_negative.toFixed(1)}</span>
-                                        </div>
-                                    `;
-                                    const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
-                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Difference: ${diff.toFixed(1)}${moolaFlag}, Negative: ${data.base_negative.toFixed(1)}${netTotStr}`;
-                                } else {
-                                    // Single data.base number (black, bold)
-                                    const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
-                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}${moolaFlag}</span>`;
-                                    const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
-                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${moolaFlag}${netTotStr}`;
-                                }
+                    if (pGive === pRecv) {
+                        // Diagonal Cells (Giver == Receiver)
+                        if (matrixType === 'Drishti Yuti') {
+                            const asp = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
+                            if (asp > 0.001) {
+                                td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${asp.toFixed(1)}</span>`;
+                                td.title = `${pRecv} Self Aspect: ${asp.toFixed(1)} Virupas`;
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else {
                                 td.innerHTML = '';
                             }
-                        } else {
-                            // Off-Diagonal Cells (Giver != Receiver)
-                            if (matrixType === 'Drishti Yuti') {
-                                const val = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
-                                if (val > 0.001) {
-                                    if (data.has_pos && data.has_neg) {
-                                        // 2x2 Cell Splitting (Both Positive and Negative Exist Simultaneously)
-                                        td.innerHTML = `
-                                            <div class="quant-cell-split">
-                                                <div class="quant-sub-col text-red">
-                                                    <span>${val.toFixed(1)}</span>
-                                                </div>
-                                                <div class="quant-sub-col text-green">
-                                                    <span>${val.toFixed(1)}</span>
-                                                </div>
-                                            </div>
-                                        `;
-                                    } else if (data.has_pos) {
-                                        td.innerHTML = `<span class="text-green">${val.toFixed(1)}</span>`;
-                                    } else if (data.has_neg) {
-                                        td.innerHTML = `<span class="text-red">${val.toFixed(1)}</span>`;
-                                    } else if (data.has_neutral) {
-                                        td.innerHTML = `<span class="text-blue">${val.toFixed(1)}</span>`;
-                                    } else {
-                                        td.innerHTML = `<span class="text-gray">-</span>`;
-                                    }
-                                    td.title = `${pGive} aspects ${pRecv}: ${val.toFixed(1)} Virupas`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else {
-                                    td.innerHTML = '<span class="text-gray">-</span>';
-                                }
+                        } else if (data && data.base !== null && data.base !== undefined) {
+                            if (matrixType !== 'ShadBala' && data.base_negative !== null && data.base_negative !== undefined) {
+                                // Stack three numbers: Base (Green), Difference (Black), Base Negative (Red)
+                                const diff = data.diff !== null && data.diff !== undefined ? data.diff : (data.base - data.base_negative);
+                                const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
+                                td.innerHTML = `
+                                    <div class="quant-diagonal-stack">
+                                        <span class="text-green">${data.base.toFixed(1)}</span>
+                                        <span class="text-black-bold">${diff.toFixed(1)}${moolaFlag}</span>
+                                        <span class="text-red">${data.base_negative.toFixed(1)}</span>
+                                    </div>
+                                `;
+                                const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
+                                td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Difference: ${diff.toFixed(1)}${moolaFlag}, Negative: ${data.base_negative.toFixed(1)}${netTotStr}`;
                             } else {
-                                const hasPos = data && data.has_pos;
-                                const hasNeg = data && data.has_neg;
-                                const hasNeu = data && data.has_neutral;
-                                
-                                const posPull = data && data.pos_pull !== undefined ? data.pos_pull : (data && data.positive_pull !== undefined ? data.positive_pull : 0);
-                                const negPull = data && data.neg_pull !== undefined ? data.neg_pull : (data && data.negative_pull !== undefined ? data.negative_pull : 0);
-                                const neuPull = data && data.neu_pull !== undefined ? data.neu_pull : (data && data.neutral_pull !== undefined ? data.neutral_pull : 0);
-                                
-                                const hasIsolatedPos = data && data.isolated_positive !== null && data.isolated_positive !== undefined;
-                                const hasIsolatedNeg = data && data.isolated_negative !== null && data.isolated_negative !== undefined;
-                                const hasIsolatedNeu = data && data.isolated_neutral !== null && data.isolated_neutral !== undefined;
-                                
-                                if (hasPos && hasNeg) {
+                                // Single data.base number (black, bold)
+                                const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
+                                td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}${moolaFlag}</span>`;
+                                const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
+                                td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${moolaFlag}${netTotStr}`;
+                            }
+                            td.classList.add('has-tooltip');
+                            td.setAttribute('data-tooltip', td.title);
+                        } else {
+                            td.innerHTML = '';
+                        }
+                    } else {
+                        // Off-Diagonal Cells (Giver != Receiver)
+                        if (matrixType === 'Drishti Yuti') {
+                            const val = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
+                            if (val > 0.001) {
+                                if (data.has_pos && data.has_neg) {
+                                    // 2x2 Cell Splitting (Both Positive and Negative Exist Simultaneously)
                                     td.innerHTML = `
                                         <div class="quant-cell-split">
                                             <div class="quant-sub-col text-red">
-                                                <span>${negPull.toFixed(1)}</span>
-                                                ${hasIsolatedNeg ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
+                                                <span>${val.toFixed(1)}</span>
                                             </div>
                                             <div class="quant-sub-col text-green">
-                                                <span>${posPull.toFixed(1)}</span>
-                                                ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
+                                                <span>${val.toFixed(1)}</span>
                                             </div>
                                         </div>
                                     `;
-                                    const isoInfo = hasIsolatedNeg && hasIsolatedPos ? ` (Isolated: ${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
-                                    td.title = `${pGive} affects ${pRecv}: Negative pull -${negPull.toFixed(1)} | Positive pull +${posPull.toFixed(1)}${isoInfo}`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else if (hasPos) {
-                                    td.innerHTML = `
-                                        <div class="quant-sub-col text-green">
-                                            <span>${posPull.toFixed(1)}</span>
-                                            ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
-                                        </div>
-                                    `;
-                                    const isoInfo = hasIsolatedPos ? ` (Isolated: +${data.isolated_positive.toFixed(1)})` : '';
-                                    td.title = `${pGive} delights ${pRecv}: +${posPull.toFixed(1)}${isoInfo}`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else if (hasNeg) {
-                                    td.innerHTML = `
+                                } else if (data.has_pos) {
+                                    td.innerHTML = `<span class="text-green">${val.toFixed(1)}</span>`;
+                                } else if (data.has_neg) {
+                                    td.innerHTML = `<span class="text-red">${val.toFixed(1)}</span>`;
+                                } else if (data.has_neutral) {
+                                    td.innerHTML = `<span class="text-blue">${val.toFixed(1)}</span>`;
+                                } else {
+                                    td.innerHTML = `<span class="text-gray">-</span>`;
+                                }
+                                td.title = `${pGive} aspects ${pRecv}: ${val.toFixed(1)} Virupas`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else {
+                                td.innerHTML = '<span class="text-gray">-</span>';
+                            }
+                        } else {
+                            const hasPos = data && data.has_pos;
+                            const hasNeg = data && data.has_neg;
+                            const hasNeu = data && data.has_neutral;
+                            
+                            const posPull = data && data.pos_pull !== undefined ? data.pos_pull : (data && data.positive_pull !== undefined ? data.positive_pull : 0);
+                            const negPull = data && data.neg_pull !== undefined ? data.neg_pull : (data && data.negative_pull !== undefined ? data.negative_pull : 0);
+                            const neuPull = data && data.neu_pull !== undefined ? data.neu_pull : (data && data.neutral_pull !== undefined ? data.neutral_pull : 0);
+                            
+                            const hasIsolatedPos = data && data.isolated_positive !== null && data.isolated_positive !== undefined;
+                            const hasIsolatedNeg = data && data.isolated_negative !== null && data.isolated_negative !== undefined;
+                            const hasIsolatedNeu = data && data.isolated_neutral !== null && data.isolated_neutral !== undefined;
+                            
+                            if (hasPos && hasNeg) {
+                                td.innerHTML = `
+                                    <div class="quant-cell-split">
                                         <div class="quant-sub-col text-red">
                                             <span>${negPull.toFixed(1)}</span>
                                             ${hasIsolatedNeg ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
                                         </div>
-                                    `;
-                                    const isoInfo = hasIsolatedNeg ? ` (Isolated: ${data.isolated_negative.toFixed(1)})` : '';
-                                    td.title = `${pGive} starves/agitates ${pRecv}: -${negPull.toFixed(1)}${isoInfo}`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else if (hasNeu) {
-                                    td.innerHTML = `
-                                        <div class="quant-sub-col text-blue">
-                                            <span>${neuPull.toFixed(1)}</span>
-                                            ${hasIsolatedNeu ? `<span>${data.isolated_neutral.toFixed(1)}</span>` : ''}
+                                        <div class="quant-sub-col text-green">
+                                            <span>${posPull.toFixed(1)}</span>
+                                            ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
                                         </div>
-                                    `;
-                                    const isoInfo = hasIsolatedNeu ? ` (Base: ${data.isolated_neutral.toFixed(1)})` : '';
-                                    td.title = `${pGive} neutrally pulls ${pRecv}: ${neuPull.toFixed(1)}${isoInfo}`;
-                                    td.classList.add('has-tooltip');
-                                    td.setAttribute('data-tooltip', td.title);
-                                } else {
-                                    td.innerHTML = '<span class="text-gray">-</span>';
-                                }
+                                    </div>
+                                `;
+                                const isoInfo = hasIsolatedNeg && hasIsolatedPos ? ` (Isolated: ${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
+                                td.title = `${pGive} affects ${pRecv}: Negative pull -${negPull.toFixed(1)} | Positive pull +${posPull.toFixed(1)}${isoInfo}`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (hasPos) {
+                                td.innerHTML = `
+                                    <div class="quant-sub-col text-green">
+                                        <span>${posPull.toFixed(1)}</span>
+                                        ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
+                                    </div>
+                                `;
+                                const isoInfo = hasIsolatedPos ? ` (Isolated: +${data.isolated_positive.toFixed(1)})` : '';
+                                td.title = `${pGive} delights ${pRecv}: +${posPull.toFixed(1)}${isoInfo}`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (hasNeg) {
+                                td.innerHTML = `
+                                    <div class="quant-sub-col text-red">
+                                        <span>${negPull.toFixed(1)}</span>
+                                        ${hasIsolatedNeg ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
+                                    </div>
+                                `;
+                                const isoInfo = hasIsolatedNeg ? ` (Isolated: ${data.isolated_negative.toFixed(1)})` : '';
+                                td.title = `${pGive} starves/agitates ${pRecv}: -${negPull.toFixed(1)}${isoInfo}`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (hasNeu) {
+                                td.innerHTML = `
+                                    <div class="quant-sub-col text-blue">
+                                        <span>${neuPull.toFixed(1)}</span>
+                                        ${hasIsolatedNeu ? `<span>${data.isolated_neutral.toFixed(1)}</span>` : ''}
+                                    </div>
+                                `;
+                                const isoInfo = hasIsolatedNeu ? ` (Base: ${data.isolated_neutral.toFixed(1)})` : '';
+                                td.title = `${pGive} neutrally pulls ${pRecv}: ${neuPull.toFixed(1)}${isoInfo}`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else {
+                                td.innerHTML = '<span class="text-gray">-</span>';
                             }
                         }
-                        tr.appendChild(td);
-                    });
-                    tbody.appendChild(tr);
-                });
-                
-                // Bottom Row (<tfoot>): Populate the + row columns using data.net_total from respective diagonal cells
-                if (tfoot) {
-                    let trFoot = tfoot.querySelector('tr');
-                    if (!trFoot) {
-                        trFoot = document.createElement('tr');
-                        tfoot.appendChild(trFoot);
                     }
-                    trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
-                    planets.forEach(pRecv => {
-                        const diagData = matrixData[pRecv] ? matrixData[pRecv][pRecv] : null;
-                        const tdFoot = document.createElement('td');
-                        tdFoot.style.backgroundColor = '#f7f3eb';
-                        if (diagData && diagData.net_total !== undefined && diagData.net_total !== null) {
-                            const val = diagData.net_total;
-                            const isNeg = val < 0;
-                            tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${val.toFixed(1)}</span>`;
-                            tdFoot.title = `${pRecv} Final Net Total: ${val.toFixed(1)}`;
-                        } else {
-                            tdFoot.innerHTML = '-';
-                        }
-                        tdFoot.classList.add('has-tooltip');
-                        tdFoot.setAttribute('data-tooltip', tdFoot.title);
-                        trFoot.appendChild(tdFoot);
-                    });
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            
+            // Bottom Row (<tfoot>): Populate the + row columns using data.net_total from respective diagonal cells
+            if (tfoot) {
+                let trFoot = tfoot.querySelector('tr');
+                if (!trFoot) {
+                    trFoot = document.createElement('tr');
+                    tfoot.appendChild(trFoot);
                 }
+                trFoot.innerHTML = '<td style="background-color: #fcfaf5;"><strong>+</strong></td>';
+                planets.forEach(pRecv => {
+                    const diagData = matrixData[pRecv] ? matrixData[pRecv][pRecv] : null;
+                    const tdFoot = document.createElement('td');
+                    tdFoot.style.backgroundColor = '#f7f3eb';
+                    if (diagData && diagData.net_total !== undefined && diagData.net_total !== null) {
+                        const val = diagData.net_total;
+                        const isNeg = val < 0;
+                        tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${val.toFixed(1)}</span>`;
+                        tdFoot.title = `${pRecv} Final Net Total: ${val.toFixed(1)}`;
+                    } else {
+                        tdFoot.innerHTML = '-';
+                    }
+                    tdFoot.classList.add('has-tooltip');
+                    tdFoot.setAttribute('data-tooltip', tdFoot.title);
+                    trFoot.appendChild(tdFoot);
+                });
+            }
+        }
+
+        function updateQuantMatricesTable() {
+            document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
+                updateQuantMatricesTableForCell(cell);
             });
         }
         
-        function updateAvasthasCalcTable(vargaName = "D1") {
-            const titleEl = document.getElementById('avasthaCalcTitle');
+        function updateAvasthasCalcTableForCell(cell) {
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+            const titleEl = cell.querySelector('.avastha-calc-title') || cell.querySelector('#avasthaCalcTitle');
             if (titleEl) {
-                const vargaDisplay = vargaName === "D1" ? "Rasi" : 
-                                     vargaName === "D9" ? "Navamsa" : 
-                                     vargaName === "D7" ? "Saptamsa" : vargaName;
-                titleEl.textContent = `${vargaDisplay} - Qualitative Avasthas`;
+                titleEl.textContent = `${varga} - Qualitative Avasthas`;
             }
 
-            document.querySelectorAll('.grid-cell[data-widget="avasthas-calc"]').forEach(cell => {
-                const tbody = cell.querySelector('tbody');
-                if (!tbody) return;
-                tbody.innerHTML = '';
-                
-                const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-                const avasthas_types = [
-                    {key: 'jagrat', label: 'Jagradadi'},
-                    {key: 'bala', label: 'Baladi'},
-                    {key: 'deeptadi', label: 'Deeptadi'},
-                    {key: 'lajjitadi', label: 'Lajjitadi'}
-                ];
-                
-                const vargaGrahas = currentChartData.vargas[vargaName].grahas;
-                
-                avasthas_types.forEach(avType => {
-                    const tr = document.createElement('tr');
-                    let htmlStr = `<td>${avType.label}</td>`;
-                    
-                    planets.forEach(p => {
-                        if (!vargaGrahas[p] || !vargaGrahas[p].avasthas) {
-                            htmlStr += `<td>-</td>`;
-                            return;
-                        }
-                        const avData = vargaGrahas[p].avasthas[avType.key];
-                        let stateStr = '-';
-                        if (Array.isArray(avData)) {
-                            if (avData.length > 0) {
-                                stateStr = avData.map(a => a.state.split(' ')[0]).join(',<br/>');
-                            } else {
-                                stateStr = '-';
-                            }
-                        } else if (avData && avData.state) {
-                            stateStr = avData.state.split(' ')[0];
-                        }
-                        
-                        let conditionTooltip = '';
-                        if (Array.isArray(avData)) {
-                            conditionTooltip = avData.map(a => a.state + ': ' + a.condition).join(' | ');
-                        } else if (avData) {
-                            conditionTooltip = avData.condition || '';
-                        }
-                        
-                        htmlStr += `<td title="${conditionTooltip}" style="font-size:0.95em;">${stateStr}</td>`;
-                    });
-                    
-                    tr.innerHTML = htmlStr;
-                    tbody.appendChild(tr);
+            const tbody = cell.querySelector('.avasthas-calc-table tbody') || cell.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.vargas || !currentChartData.vargas[varga]) return;
+            tbody.innerHTML = '';
+
+            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+            const avasthaTypes = [
+                { key: 'jagrat', label: 'Jagradādi' },
+                { key: 'bala', label: 'Bālādi' },
+                { key: 'deeptadi', label: 'Dīptādi' },
+                { key: 'lajjitadi', label: 'Lajjitādi' }
+            ];
+
+            const vargaGrahas = currentChartData.vargas[varga].grahas;
+
+            avasthaTypes.forEach(avType => {
+                const tr = document.createElement('tr');
+                let htmlStr = `<td><strong>${avType.label}</strong></td>`;
+
+                planets.forEach(p => {
+                    if (!vargaGrahas[p] || !vargaGrahas[p].avasthas) {
+                        htmlStr += `<td>-</td>`;
+                        return;
+                    }
+                    const avData = vargaGrahas[p].avasthas[avType.key];
+                    let stateStr = '-';
+                    let tooltip = '';
+
+                    if (Array.isArray(avData)) {
+                        stateStr = avData.length > 0 ? avData.map(a => a.state.split(' ')[0]).join(',<br/>') : '-';
+                        tooltip = avData.map(a => `${a.state}: ${a.condition}`).join(' | ');
+                    } else if (avData && avData.state) {
+                        stateStr = avData.state.split(' ')[0];
+                        tooltip = avData.condition || '';
+                    }
+
+                    htmlStr += `<td title="${tooltip}" style="cursor: help;">${stateStr}</td>`;
                 });
+
+                tr.innerHTML = htmlStr;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateAvasthasCalcTable(vargaName) {
+            document.querySelectorAll('.grid-cell[data-widget="avasthas-calc"]').forEach(cell => {
+                if (vargaName) {
+                    const select = cell.querySelector('.varga-select');
+                    if (select) select.value = vargaName;
+                }
+                updateAvasthasCalcTableForCell(cell);
             });
         }
 
@@ -2533,8 +2586,8 @@
         
         
         function updateVargaDignitiesTable() {
-            const tbody = document.querySelector('#vargaDignitiesTable tbody');
-            tbody.innerHTML = '';
+            const tbodies = document.querySelectorAll('#vargaDignitiesTable tbody, .grid-cell[data-widget="dignities"] tbody');
+            if (tbodies.length === 0) return;
             
             const vargasList = [
                 'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12', 
@@ -2572,49 +2625,66 @@
                 return map[abbrev] || abbrev;
             };
             
-            vargasList.forEach(v => {
-                const tr = document.createElement('tr');
-                let html = `<td>${v.replace('D', '')}</td>`;
+            tbodies.forEach(tbody => {
+                tbody.innerHTML = '';
                 
-                const vData = currentChartData.vargas[v];
-                if (vData && vData.grahas) {
-                    planets.forEach(p => {
-                        let digStr = '';
-                        let tooltip = '';
-                        if (vData.grahas[p] && vData.grahas[p].dignity_breakdown) {
-                            const d = vData.grahas[p].dignity_breakdown;
-                            digStr = d.final_dignity;
-                            const abbrev = mapDig(digStr);
-                            const fullName = getFullName(abbrev);
-                            
-                            // Build tooltip
-                            tooltip = `Sign: ${vData.grahas[p].sign}\n`;
-                            tooltip += `Lord: ${d.sign_lord}\n`;
-                            tooltip += `Natural: ${d.natural_relationship}\n`;
-                            tooltip += `Temporary: ${d.temporary_relationship}\n`;
-                            tooltip += `Compound: ${d.compound_relationship}\n`;
-                            tooltip += `Final: ${d.final_dignity}`;
+                vargasList.forEach(v => {
+                    const tr = document.createElement('tr');
+                    tr.style.cursor = 'pointer';
+                    tr.title = `Click to view ${v} in main chart`;
+                    tr.onclick = function() {
+                        // Find the active chart cell or first chart widget on screen
+                        const chartCell = (currentActiveCell && currentActiveCell.dataset.widget === 'chart') ? currentActiveCell : document.querySelector('.grid-cell[data-widget="chart"]');
+                        if (chartCell) {
+                            const select = chartCell.querySelector('.varga-select');
+                            if (select) {
+                                select.value = v;
+                                updateWidget(chartCell);
+                            }
                         }
-                        
-                        const abbrev = mapDig(digStr);
-                        // Add some color coding similar to dignity table
-                        let color = "inherit";
-                        if (abbrev === "EX") color = "#27ae60";
-                        else if (abbrev === "DB") color = "#c0392b";
-                        else if (abbrev === "OH" || abbrev === "MT") color = "#2980b9";
-                        else if (abbrev === "GF") color = "#16a085";
-                        else if (abbrev === "GE") color = "#e74c3c";
-                        else if (abbrev === "F") color = "#2ecc71";
-                        else if (abbrev === "E") color = "#e67e22";
-                        else if (abbrev === "N") color = "#7f8c8d";
-                        
-                        html += `<td class="tooltip-target" title="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
-                    });
-                } else {
-                    html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
-                }
-                tr.innerHTML = html;
-                tbody.appendChild(tr);
+                    };
+
+                    let html = `<td><strong>${v.replace('D', '')}</strong></td>`;
+                    
+                    const vData = (currentChartData && currentChartData.vargas) ? currentChartData.vargas[v] : null;
+                    if (vData && vData.grahas) {
+                        planets.forEach(p => {
+                            let digStr = '';
+                            let tooltip = '';
+                            if (vData.grahas[p] && vData.grahas[p].dignity_breakdown) {
+                                const d = vData.grahas[p].dignity_breakdown;
+                                digStr = d.final_dignity;
+                                const abbrev = mapDig(digStr);
+                                const fullName = getFullName(abbrev);
+                                
+                                // Build tooltip
+                                tooltip = `Sign: ${vData.grahas[p].sign}\n`;
+                                tooltip += `Lord: ${d.sign_lord}\n`;
+                                tooltip += `Natural: ${d.natural_relationship}\n`;
+                                tooltip += `Temporary: ${d.temporary_relationship}\n`;
+                                tooltip += `Compound: ${d.compound_relationship}\n`;
+                                tooltip += `Final: ${d.final_dignity}`;
+                            }
+                            
+                            const abbrev = mapDig(digStr);
+                            let color = "inherit";
+                            if (abbrev === "EX") color = "#27ae60";
+                            else if (abbrev === "DB") color = "#c0392b";
+                            else if (abbrev === "OH" || abbrev === "MT") color = "#2980b9";
+                            else if (abbrev === "GF") color = "#16a085";
+                            else if (abbrev === "GE") color = "#e74c3c";
+                            else if (abbrev === "F") color = "#2ecc71";
+                            else if (abbrev === "E") color = "#e67e22";
+                            else if (abbrev === "N") color = "#7f8c8d";
+                            
+                            html += `<td class="tooltip-target" title="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
+                        });
+                    } else {
+                        html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
+                    }
+                    tr.innerHTML = html;
+                    tbody.appendChild(tr);
+                });
             });
         }
 

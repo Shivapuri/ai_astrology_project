@@ -107,3 +107,63 @@ def test_client_change_updates_chart(page: Page):
         
         # The chart should have updated, so the SVGs should be different
         assert initial_svg_html != new_svg_html, "Chart SVG did not update after loading a new client!"
+
+def test_16_shodashavargas_options(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    
+    expected_vargas = [
+        "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12",
+        "D16", "D20", "D24", "D27", "D30", "D40", "D45", "D60"
+    ]
+    
+    # Check chart dropdown
+    chart_select = page.locator(".widget-chart .varga-select").first
+    chart_options = [opt.get_attribute("value") for opt in chart_select.locator("option").all()]
+    assert chart_options == expected_vargas, f"Chart varga options mismatch: {chart_options}"
+    
+    # Check qualitative avasthas dropdown
+    avastha_select = page.locator('.grid-cell[data-widget="avasthas-calc"] .varga-select').first
+    avastha_options = [opt.get_attribute("value") for opt in avastha_select.locator("option").all()]
+    assert avastha_options == expected_vargas, f"Avastha varga options mismatch: {avastha_options}"
+
+def test_dignities_table_click_switches_chart(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    page.locator("svg").first.wait_for(state="visible")
+    
+    # Find row 9 in Dignities table and click it
+    rows = page.locator("#vargaDignitiesTable tbody tr").all()
+    clicked = False
+    for r in rows:
+        val = r.locator("td").first.inner_text().strip()
+        if val == "9":
+            r.click()
+            clicked = True
+            break
+    assert clicked, "Row 9 not found in Dignities table"
+    page.wait_for_timeout(500)
+    
+    # Check chart select value is D9
+    expect(page.locator(".widget-chart .varga-select").first).to_have_value("D9")
+
+def test_avasthas_calc_independent_varga_switch(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    page.locator("svg").first.wait_for(state="visible")
+    
+    chart_select = page.locator(".widget-chart .varga-select").first
+    chart_select.select_option("D1")
+    expect(chart_select).to_have_value("D1")
+    
+    # Switch avastha select to D10
+    avastha_cell = page.locator('.grid-cell[data-widget="avasthas-calc"]').first
+    avastha_select = avastha_cell.locator(".varga-select")
+    avastha_select.select_option("D10")
+    page.wait_for_timeout(500)
+    
+    # Verify title updated to D10
+    expect(avastha_cell.locator(".avastha-calc-title")).to_have_text("D10 - Qualitative Avasthas")
+    
+    # Verify chart select remained D1 (independent multi-varga grid)
+    expect(chart_select).to_have_value("D1")
