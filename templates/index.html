@@ -1853,28 +1853,40 @@
                     
                     planets.forEach(pRecv => {
                         const td = document.createElement('td');
-                        const data = matrixData[pRecv] ? matrixData[pRecv][pGive] : null;
+                        const data = matrixData[pGive] ? matrixData[pGive][pRecv] : null;
                         
                         if (pGive === pRecv) {
                             // Diagonal Cells (Giver == Receiver)
-                            if (data && data.base !== null && data.base !== undefined) {
-                                if (data.base_negative !== null && data.base_negative !== undefined) {
-                                    // Stack three numbers: Base (Black), Difference (Black), Base Negative (Red)
-                                    const diff = data.base - data.base_negative;
+                            if (matrixType === 'Drishti Yuti') {
+                                const asp = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
+                                if (asp > 0.001) {
+                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${asp.toFixed(1)}</span>`;
+                                    td.title = `${pRecv} Self Aspect: ${asp.toFixed(1)} Virupas`;
+                                    td.classList.add('has-tooltip');
+                                    td.setAttribute('data-tooltip', td.title);
+                                } else {
+                                    td.innerHTML = '';
+                                }
+                            } else if (data && data.base !== null && data.base !== undefined) {
+                                if (matrixType !== 'ShadBala' && data.base_negative !== null && data.base_negative !== undefined) {
+                                    // Stack three numbers: Base (Green), Difference (Black), Base Negative (Red)
+                                    const diff = data.diff !== null && data.diff !== undefined ? data.diff : (data.base - data.base_negative);
+                                    const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
                                     td.innerHTML = `
                                         <div class="quant-diagonal-stack">
-                                            <span class="text-black-bold">${data.base.toFixed(1)}</span>
-                                            <span class="text-black-bold">${diff.toFixed(1)}</span>
+                                            <span class="text-green">${data.base.toFixed(1)}</span>
+                                            <span class="text-black-bold">${diff.toFixed(1)}${moolaFlag}</span>
                                             <span class="text-red">${data.base_negative.toFixed(1)}</span>
                                         </div>
                                     `;
                                     const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
-                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Difference: ${diff.toFixed(1)}, Negative: ${data.base_negative.toFixed(1)}${netTotStr}`;
+                                    td.title = `${pRecv} Base: ${data.base.toFixed(1)}, Difference: ${diff.toFixed(1)}${moolaFlag}, Negative: ${data.base_negative.toFixed(1)}${netTotStr}`;
                                 } else {
                                     // Single data.base number (black, bold)
-                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}</span>`;
+                                    const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
+                                    td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}${moolaFlag}</span>`;
                                     const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
-                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${netTotStr}`;
+                                    td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${moolaFlag}${netTotStr}`;
                                 }
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
@@ -1918,9 +1930,9 @@
                                 const hasNeg = data && data.has_neg;
                                 const hasNeu = data && data.has_neutral;
                                 
-                                const posPull = data && data.positive_pull !== undefined ? data.positive_pull : 0;
-                                const negPull = data && data.negative_pull !== undefined ? data.negative_pull : 0;
-                                const neuPull = data && data.neutral_pull !== undefined ? data.neutral_pull : 0;
+                                const posPull = data && data.pos_pull !== undefined ? data.pos_pull : (data && data.positive_pull !== undefined ? data.positive_pull : 0);
+                                const negPull = data && data.neg_pull !== undefined ? data.neg_pull : (data && data.negative_pull !== undefined ? data.negative_pull : 0);
+                                const neuPull = data && data.neu_pull !== undefined ? data.neu_pull : (data && data.neutral_pull !== undefined ? data.neutral_pull : 0);
                                 
                                 const hasIsolatedPos = data && data.isolated_positive !== null && data.isolated_positive !== undefined;
                                 const hasIsolatedNeg = data && data.isolated_negative !== null && data.isolated_negative !== undefined;
@@ -1935,29 +1947,29 @@
                                             </div>
                                             <div class="quant-sub-col text-green">
                                                 <span>${posPull.toFixed(1)}</span>
-                                                ${hasIsolatedPos ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
+                                                ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
                                             </div>
                                         </div>
                                     `;
-                                    const isoInfo = hasIsolatedNeg && hasIsolatedPos ? ` (Isolated: -${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
+                                    const isoInfo = hasIsolatedNeg && hasIsolatedPos ? ` (Isolated: ${data.isolated_negative.toFixed(1)} / +${data.isolated_positive.toFixed(1)})` : '';
                                     td.title = `${pGive} affects ${pRecv}: Negative pull -${negPull.toFixed(1)} | Positive pull +${posPull.toFixed(1)}${isoInfo}`;
                                     td.classList.add('has-tooltip');
                                     td.setAttribute('data-tooltip', td.title);
                                 } else if (hasPos) {
                                     td.innerHTML = `
                                         <div class="quant-sub-col text-green">
-                                            <span>${posPull.toFixed(1)}</span>
-                                            ${hasIsolatedPos ? `<span>${data.isolated_positive.toFixed(1)}</span>` : ''}
+                                            <span>+${posPull.toFixed(1)}</span>
+                                            ${hasIsolatedPos ? `<span>+${data.isolated_positive.toFixed(1)}</span>` : ''}
                                         </div>
                                     `;
-                                    const isoInfo = hasIsolatedPos ? ` (Isolated: ${data.isolated_positive.toFixed(1)})` : '';
+                                    const isoInfo = hasIsolatedPos ? ` (Isolated: +${data.isolated_positive.toFixed(1)})` : '';
                                     td.title = `${pGive} delights ${pRecv}: +${posPull.toFixed(1)}${isoInfo}`;
                                     td.classList.add('has-tooltip');
                                     td.setAttribute('data-tooltip', td.title);
                                 } else if (hasNeg) {
                                     td.innerHTML = `
                                         <div class="quant-sub-col text-red">
-                                            <span>${negPull.toFixed(1)}</span>
+                                            <span>-${negPull.toFixed(1)}</span>
                                             ${hasIsolatedNeg ? `<span>${data.isolated_negative.toFixed(1)}</span>` : ''}
                                         </div>
                                     `;
@@ -1972,7 +1984,7 @@
                                             ${hasIsolatedNeu ? `<span>${data.isolated_neutral.toFixed(1)}</span>` : ''}
                                         </div>
                                     `;
-                                    const isoInfo = hasIsolatedNeu ? ` (Isolated: ${data.isolated_neutral.toFixed(1)})` : '';
+                                    const isoInfo = hasIsolatedNeu ? ` (Base: ${data.isolated_neutral.toFixed(1)})` : '';
                                     td.title = `${pGive} neutrally pulls ${pRecv}: ${neuPull.toFixed(1)}${isoInfo}`;
                                     td.classList.add('has-tooltip');
                                     td.setAttribute('data-tooltip', td.title);

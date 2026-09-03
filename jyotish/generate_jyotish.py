@@ -651,36 +651,10 @@ def generate_kala_chart(
         for baseline in baseline_types:
             avastha_results = calculate_avastha_matrix(vargas_data[v_key]["grahas"], shadbala_data, vargas_data["D1"]["grahas"], baseline_type=baseline)
             v_matrix = {}
-            for p_receive in planets_list:
-                v_matrix[p_receive] = {}
-                for p_give in planets_list:
-                    data = avastha_results['matrix'][p_give][p_receive]
-                    
-                    if p_give == p_receive:
-                        v_matrix[p_receive][p_give] = {
-                            "base": data["base"],
-                            "base_negative": data["base_negative"],
-                            "net_total": data["net_total"]
-                        }
-                        continue
-                        
-                    v_matrix[p_receive][p_give] = {
-                        "positive_pull": data["positive_pull"],
-                        "negative_pull": data["negative_pull"],
-                        "neutral_pull": data.get("neutral_pull", 0.0),
-                        "has_pos": data.get("has_pos", False),
-                        "has_neg": data.get("has_neg", False),
-                        "has_neutral": data.get("has_neutral", False),
-                        "isolated_positive": data["isolated_positive"],
-                        "isolated_negative": data["isolated_negative"],
-                        "isolated_neutral": data.get("isolated_neutral", None),
-                        "net_pull": data["net_pull"],
-                        "modifier": data["net_pull"],
-                        "isolated_total": data["isolated_positive"] if data["net_pull"] >= 0 else data["isolated_negative"],
-                        "is_positive": data["net_pull"] > 0,
-                        "color_state": data.get("color_state", "neutral"),
-                        "aspect_virupas": data.get("aspect_virupas", 0.0)
-                    }
+            for p_give in planets_list:
+                v_matrix[p_give] = {}
+                for p_receive in planets_list:
+                    v_matrix[p_give][p_receive] = avastha_results['matrix'][p_give][p_receive]
             avastha_matrices[v_key][baseline] = v_matrix
     vedic_context = {
 

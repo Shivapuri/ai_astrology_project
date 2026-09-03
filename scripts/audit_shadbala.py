@@ -149,7 +149,7 @@ def run_audit():
                     
                 total_cells_checked += 1
                 exp_cell = expected_matrix[giver][receiver]
-                calc_cell = calc_matrix.get(receiver, {}).get(giver)
+                calc_cell = calc_matrix.get(giver, {}).get(receiver)
                 
                 exp_net = 0.0
                 if exp_cell:

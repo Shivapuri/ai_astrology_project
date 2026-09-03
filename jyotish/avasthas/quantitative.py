@@ -51,7 +51,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         elif baseline_type == 'Drishti Yuti':
             unmultiplied = 0.0
         elif baseline_type == 'Veda':
-            unmultiplied = (shadbala_data[p].get('Uccha_Bala', 0) + shadbala_data[p].get('Cheshta_Bala', 0) + shadbala_data[p].get('Dig_Bala', 0)) / 3.0
+            unmultiplied = (3.0 * shadbala_data[p].get('Uccha_Bala', 0) + 2.0 * shadbala_data[p].get('Dig_Bala', 0) + 3.0 * shadbala_data[p].get('Cheshta_Bala', 0)) / 8.0
         else:
             unmultiplied = shadbala_data[p]['Total_Virupas']
         
@@ -138,14 +138,30 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 
             if baseline_type == 'Drishti Yuti':
                 if has_pos:
-                    positive_pull = aspect_virupas
+                    positive_pull = round(aspect_virupas, 1)
                 if has_neg:
-                    negative_pull = aspect_virupas
+                    negative_pull = round(aspect_virupas, 1)
                 if has_neutral:
-                    neutral_pull = aspect_virupas
+                    neutral_pull = round(aspect_virupas, 1)
+                isolated_positive = None
+                isolated_negative = None
+                isolated_neutral = None
+                total_val = None
+                if has_pos and has_neg:
+                    net_pull = 0.0
+                    color_state = "dual"
+                elif has_pos:
+                    net_pull = positive_pull
+                    color_state = "positive"
+                elif has_neg:
+                    net_pull = -negative_pull
+                    color_state = "negative"
+                else:
+                    net_pull = 0.0
+                    color_state = "neutral"
             else:
                 if has_pos:
-                    positive_pull = bases[p_give] * (aspect_virupas / 60.0)
+                    positive_pull = round(bases[p_give] * (aspect_virupas / 60.0), 1)
                     
                 if has_neg:
                     if baseline_type == 'Ishta':
@@ -155,79 +171,159 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     elif baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Veda']:
                         neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
                     elif baseline_type == 'ShadBala':
-                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                        neg_calc = bases[p_give] * (aspect_virupas / 60.0)
                     else:
                         neg_calc = bases[p_give] * (aspect_virupas / 60.0)
-                    negative_pull = neg_calc
+                    negative_pull = round(neg_calc, 1)
                     
                 if has_neutral:
-                    neutral_pull = bases[p_give] * (aspect_virupas / 60.0)
+                    neutral_pull = round(bases[p_give] * (aspect_virupas / 60.0), 1)
 
-            # Isolated scores & Net Calculations
-            if baseline_type == 'Drishti Yuti':
-                isolated_positive = None
-                isolated_negative = None
-                isolated_neutral = None
-                total_val = None
-                net_pull = round(aspect_virupas, 1)
-            else:
                 isolated_positive = round(bases[p_recv] + positive_pull, 1) if has_pos else None
                 isolated_negative = round(bases[p_recv] - negative_pull, 1) if has_neg else None
-                isolated_neutral = round(bases[p_recv] + neutral_pull, 1) if has_neutral else None
-                # Net pull strictly omits neutral to prevent altering column totals!
+                # Receiver base unchanged for neutral pull (omitted from column summation)
+                isolated_neutral = bases[p_recv] if has_neutral else None
                 net_pull = round(positive_pull - negative_pull, 1)
-                total_val = round(bases[p_recv] + (positive_pull - negative_pull), 1)
+                total_val = round(bases[p_recv] + net_pull, 1)
 
-            # Preserve pure test-compatibility output structure:
-            if has_pos:
-                color_state = "positive"
-            elif has_neg:
-                color_state = "negative"
-            else:
-                color_state = "neutral"
+                if has_pos and has_neg:
+                    color_state = "dual"
+                elif has_pos:
+                    color_state = "positive"
+                elif has_neg:
+                    color_state = "negative"
+                else:
+                    color_state = "neutral"
 
             matrix[p_give][p_recv] = {
-                "positive_pull": round(positive_pull, 1),
-                "negative_pull": round(negative_pull, 1),
-                "neutral_pull": round(neutral_pull, 1),
+                "giver": p_give,
+                "receiver": p_recv,
+                "aspect_virupas": round(aspect_virupas, 1),
                 "has_pos": has_pos,
                 "has_neg": has_neg,
                 "has_neutral": has_neutral,
+                "pos_pull": positive_pull,
+                "neg_pull": negative_pull,
+                "neu_pull": neutral_pull,
+                "positive_pull": positive_pull,
+                "negative_pull": negative_pull,
+                "neutral_pull": neutral_pull,
                 "isolated_positive": isolated_positive,
                 "isolated_negative": isolated_negative,
                 "isolated_neutral": isolated_neutral,
                 "net_pull": net_pull,
-                "aspect_virupas": aspect_virupas,
+                "modifier": net_pull,
+                "isolated_total": isolated_positive if net_pull >= 0 else isolated_negative,
+                "is_positive": net_pull > 0,
                 "pull": round(aspect_virupas, 1) if baseline_type == 'Drishti Yuti' else round(abs(positive_pull - negative_pull), 1),
                 "sign_mult": 1 if positive_pull > negative_pull else (-1 if negative_pull > positive_pull else 0),
                 "total": total_val,
-                "color_state": color_state
-            }
-
-    # Populate diagonal cells with base, base_negative, and column net_total
-    for p in planets:
-        if baseline_type == 'Drishti Yuti':
-            matrix[p][p] = {
+                "color_state": color_state,
                 "base": None,
                 "base_negative": None,
-                "net_total": None,
+                "diff": None,
+                "has_moolatrikona_flag": False,
+                "flag": ""
+            }
+
+    # Populate diagonal cells with base, base_negative, diff, and column net_total
+    for p in planets:
+        has_moolatrikona_flag = (p == "Mars" and d1_grahas.get("Mars", {}).get("sign") == "Aries")
+        flag = "*2" if has_moolatrikona_flag else ""
+
+        if baseline_type == 'Drishti Yuti':
+            col_sum = sum(matrix[giver][p]["net_pull"] for giver in planets if giver != p)
+            if p == "Mars" and has_moolatrikona_flag:
+                aspect_virupas_diag = 60.0
+                net_total = round(col_sum + 60.0, 1)
+                color_state = "neutral"
+                net_pull_diag = 60.0
+            else:
+                aspect_virupas_diag = 0.0
+                net_total = round(col_sum, 1)
+                color_state = "none"
+                net_pull_diag = 0.0
+
+            matrix[p][p] = {
+                "giver": p,
+                "receiver": p,
+                "aspect_virupas": aspect_virupas_diag,
+                "has_pos": False,
+                "has_neg": False,
+                "has_neutral": False,
+                "pos_pull": 0.0,
+                "neg_pull": 0.0,
+                "neu_pull": 0.0,
+                "positive_pull": 0.0,
+                "negative_pull": 0.0,
+                "neutral_pull": 0.0,
+                "isolated_positive": None,
+                "isolated_negative": None,
+                "isolated_neutral": None,
+                "net_pull": net_pull_diag,
+                "modifier": 0.0,
+                "isolated_total": None,
+                "is_positive": False,
                 "pull": 0.0,
-                "total": None
+                "sign_mult": 0,
+                "total": net_total,
+                "color_state": color_state,
+                "base": None,
+                "base_negative": None,
+                "diff": None,
+                "has_moolatrikona_flag": has_moolatrikona_flag,
+                "flag": flag,
+                "net_total": net_total
             }
         else:
             col_total = round(bases[p] + sum(matrix[giver][p]["net_pull"] for giver in planets if giver != p), 1)
-            base_neg = None
+            base_val = bases[p]
             if baseline_type == 'Ishta':
                 base_neg = round(shadbala_data[p].get('Kashta_Phala', 0), 1)
+                diff_val = round(base_val - base_neg, 1)
             elif baseline_type == 'Subha':
                 base_neg = round(shadbala_data[p].get('Asubha_Phala', 0), 1)
+                diff_val = round(base_val - base_neg, 1)
+            elif baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Veda']:
+                base_neg = round(max(0.0, 60.0 - base_val), 1)
+                diff_val = round(base_val - base_neg, 1)
+            elif baseline_type == 'ShadBala':
+                base_neg = None
+                diff_val = None
+            else:
+                base_neg = 0.0
+                diff_val = round(base_val - base_neg, 1)
 
             matrix[p][p] = {
-                "base": bases[p],
-                "base_negative": base_neg,
-                "net_total": col_total,
+                "giver": p,
+                "receiver": p,
+                "aspect_virupas": 0.0,
+                "has_pos": False,
+                "has_neg": False,
+                "has_neutral": False,
+                "pos_pull": 0.0,
+                "neg_pull": 0.0,
+                "neu_pull": 0.0,
+                "positive_pull": 0.0,
+                "negative_pull": 0.0,
+                "neutral_pull": 0.0,
+                "isolated_positive": None,
+                "isolated_negative": None,
+                "isolated_neutral": None,
+                "net_pull": 0.0,
+                "modifier": 0.0,
+                "isolated_total": None,
+                "is_positive": False,
                 "pull": 0.0,
-                "total": col_total
+                "sign_mult": 0,
+                "total": col_total,
+                "color_state": "none",
+                "base": base_val,
+                "base_negative": base_neg,
+                "diff": diff_val,
+                "has_moolatrikona_flag": has_moolatrikona_flag,
+                "flag": flag,
+                "net_total": col_total
             }
             
     return {

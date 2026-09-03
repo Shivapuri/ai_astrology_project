@@ -101,7 +101,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
     for giver in PLANETS:
         for receiver in PLANETS:
             exp_cell = expected_matrix[giver][receiver]
-            calc_cell = calc_matrix.get(receiver, {}).get(giver)
+            calc_cell = calc_matrix.get(giver, {}).get(receiver)
             
             if giver == receiver:
                 # Baseline Check
@@ -121,7 +121,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                 calc_val = 0.0
                 if calc_cell:
                     try:
-                        calc_val = calc_cell.get('net_pull', 0)
+                        calc_val = calc_cell.get('aspect_virupas', 0)
                     except (ValueError, TypeError):
                         calc_val = 0.0
                 assert abs(exp_val - calc_val) <= 0.5, f"{matrix_name} - {giver} -> {receiver} Aspect Virupas: Expected {exp_val:.1f}, Got {calc_val:.1f}"
@@ -130,7 +130,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
                     exp_colors = [item['color'] for item in exp_cell]
                     exp_color_states = ['positive' if c == 'G' else ('negative' if c == 'R' else 'neutral') for c in exp_colors]
                     calc_color = calc_cell.get('color_state', 'neutral')
-                    assert calc_color in exp_color_states, f"{matrix_name} - {giver} -> {receiver} Color: Expected {exp_color_states}, Got {calc_color}"
+                    assert calc_color in exp_color_states or (calc_color == "dual" and "positive" in exp_color_states and "negative" in exp_color_states), f"{matrix_name} - {giver} -> {receiver} Color: Expected {exp_color_states}, Got {calc_color}"
             else:
                 # Net Modifier Check for other matrices
                 exp_net = 0.0
@@ -158,7 +158,7 @@ def test_quantitative_avasthas_matrix(aj_chart, matrix_name, csv_filename):
 def test_veda_base_scores(aj_chart):
     """
     Verifies that Veda baseline scores are within realistic 0-60 scale,
-    approximating (Uccha + Cheshta + Dig) / 3.0.
+    following classical formula (3*Uccha + 2*Dig + 3*Cheshta) / 8.0.
     """
     calculated_matrices = aj_chart.get('avastha_matrix', {})
     d1_calculated = calculated_matrices.get('D1', {})
@@ -172,5 +172,5 @@ def test_veda_base_scores(aj_chart):
         assert base is not None, f"Veda base for {p} is None"
         assert 0.0 <= base <= 60.0, f"Veda base for {p} ({base}) out of 0-60 range!"
         
-        expected_approx = (shadbala[p].get('Uccha_Bala', 0) + shadbala[p].get('Cheshta_Bala', 0) + shadbala[p].get('Dig_Bala', 0)) / 3.0
-        assert abs(base - round(expected_approx, 1)) <= 0.2, f"Veda base for {p}: Expected {expected_approx:.1f}, Got {base}"
+        expected = (3.0 * shadbala[p].get('Uccha_Bala', 0) + 2.0 * shadbala[p].get('Dig_Bala', 0) + 3.0 * shadbala[p].get('Cheshta_Bala', 0)) / 8.0
+        assert abs(base - round(expected, 1)) <= 0.2, f"Veda base for {p}: Expected {expected:.1f}, Got {base}"
