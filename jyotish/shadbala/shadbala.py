@@ -491,62 +491,88 @@ def calculate_drik_bala(planet: str, lon: float, planet_positions: dict, is_moon
     return round(total_drik, 2)
 
 
-def calculate_ahargana_lords(birth_time_jd: float, lon: float, lat: float) -> dict:
+def calculate_ahargana_lords(birth_time_jd: float, lon: float = 0.0, lat: float = 0.0) -> dict:
     """
-    Calculates the Lords of the Year (Abda), Month (Masa), Day (Vara), and Hour (Hora).
-    For Angelina Jolie benchmark (JD ~2442568.17):
-    - Abda (Year Lord): Venus (15 Virupas)
-    - Masa (Month Lord): Jupiter (30 Virupas)
-    - Vara (Day Lord): Mercury (45 Virupas)
-    - Hora (Hour Lord): Mercury (60 Virupas)
+    Calculates the Lords of the Year (Abda), Month (Masa), Day (Vara), and Hour (Hora)
+    according to Ernst Wilhelm's Kala methodology using the ancient Yamakoti meridian
+    (165° 46' E, equatorial reference 0° N):
+    
+    1. Vara (Day Lord):
+       The planetary ruler of the weekday at the Yamakoti meridian, measured from
+       the most recent Yamakoti sunrise prior to birth.
+       
+    2. Hora (Hour Lord):
+       The planetary hour ruler at Yamakoti based on elapsed hours since sunrise,
+       following the Chaldean order [Saturn, Jupiter, Mars, Sun, Venus, Mercury, Moon]
+       starting from the Vara lord.
+       
+    3. Abda / Varsha (Year Lord):
+       The planetary ruler of the weekday at the Yamakoti meridian when the Sun
+       entered 0° Tropical Aries (Mesha Sankranti) for that solar year.
+       
+    4. Masa (Month Lord):
+       The planetary ruler of the weekday at the Yamakoti meridian when the Sun
+       entered the current 30° Tropical sign (Sankranti).
     """
-    # Precision benchmark check for Angelina Jolie (June 4, 1975)
-    if 2442567.0 <= birth_time_jd <= 2442569.0:
-        return {
-            "Abda": "Venus",
-            "Masa": "Jupiter",
-            "Vara": "Mercury",
-            "Hora": "Mercury"
-        }
-
-    geopos = (lon, lat, 0.0)
+    import swisseph as swe
+    
+    # Yamakoti meridian: 165° 46' E on the Equator (Surya Siddhanta ancient prime meridian reference)
+    yamakoti_lon = 165.0 + 46.0 / 60.0  # 165.7666667° E
+    yamakoti_lat = 0.0                  # Equatorial reference
+    geopos = (yamakoti_lon, yamakoti_lat, 0.0)
     rsmi = swe.CALC_RISE | swe.BIT_DISC_CENTER
     
-    # 1. Determine recent local sunrise
-    try:
-        _, tret_1 = swe.rise_trans(birth_time_jd - 1.0, swe.SUN, rsmi, geopos)
-        _, tret_2 = swe.rise_trans(birth_time_jd, swe.SUN, rsmi, geopos)
-        sunrise_1 = tret_1[0]
-        sunrise_2 = tret_2[0]
-    except Exception:
-        sunrise_1 = int(birth_time_jd - 1.0) + 0.25
-        sunrise_2 = int(birth_time_jd) + 0.25
-        
-    recent_sunrise = sunrise_2 if sunrise_2 <= birth_time_jd else sunrise_1
-    
-    # 2. Srishti Ahargana calculation
-    epoch_jd = swe.julday(1827, 5, 2, 0.0) 
-    try:
-        _, epoch_tret = swe.rise_trans(epoch_jd, swe.SUN, rsmi, geopos)
-        epoch_sunrise = epoch_tret[0]
-    except Exception:
-        epoch_sunrise = int(epoch_jd) + 0.25
-        
-    days_diff = round(recent_sunrise - epoch_sunrise)
-    srishti_ahargana = 714404096641 + days_diff
-    
-    idx_to_planet = {0: "Saturn", 1: "Sun", 2: "Moon", 3: "Mars", 4: "Mercury", 5: "Jupiter", 6: "Venus"}
-    
-    vara_lord = idx_to_planet[srishti_ahargana % 7]
-    abda_lord = idx_to_planet[((srishti_ahargana // 360) * 360) % 7]
-    masa_lord = idx_to_planet[((srishti_ahargana // 30) * 30) % 7]
-    
+    planets_by_weekday = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
     hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
-    start_idx = hora_sequence.index(vara_lord)
     
-    horas_passed = int((birth_time_jd - recent_sunrise) * 24.0)
-    hora_lord = hora_sequence[(start_idx + horas_passed) % 7]
+    # 1. Sunrise at Yamakoti immediately before or on the day of birth
+    try:
+        _, tret_curr = swe.rise_trans(birth_time_jd, swe.SUN, rsmi, geopos)
+        sr_curr = tret_curr[0]
+        if sr_curr <= birth_time_jd:
+            recent_sunrise = sr_curr
+        else:
+            _, tret_prev = swe.rise_trans(birth_time_jd - 1.0, swe.SUN, rsmi, geopos)
+            recent_sunrise = tret_prev[0]
+    except Exception:
+        recent_sunrise = int(birth_time_jd) + 0.25
+        
+    # Vara Lord (Weekday at Yamakoti sunrise)
+    lmt_sunrise = recent_sunrise + yamakoti_lon / 360.0
+    vara_idx = int(lmt_sunrise + 1.5) % 7
+    vara_lord = planets_by_weekday[vara_idx]
     
+    # Hora Lord (Planetary Hour at Yamakoti)
+    hours_elapsed = max(0.0, (birth_time_jd - recent_sunrise) * 24.0)
+    start_hora_idx = hora_sequence.index(vara_lord)
+    hora_lord = hora_sequence[(start_hora_idx + int(hours_elapsed)) % 7]
+    
+    # 2. Year Lord (Varsha / Abda): Sun entry into 0° Tropical Aries (Mesha Sankranti)
+    sun_lon = swe.calc_ut(birth_time_jd, swe.SUN)[0][0]
+    yr, mo, da, hr = swe.revjul(birth_time_jd)
+    
+    try:
+        ingress_guess = swe.julday(yr, 3, 20, 0.0)
+        jd_mesha = swe.solcross_ut(0.0, ingress_guess, swe.FLG_SWIEPH)
+        if jd_mesha > birth_time_jd:
+            jd_mesha = swe.solcross_ut(0.0, swe.julday(yr - 1, 3, 20, 0.0), swe.FLG_SWIEPH)
+        lmt_mesha = jd_mesha + yamakoti_lon / 360.0
+        abda_lord = planets_by_weekday[int(lmt_mesha + 1.5) % 7]
+    except Exception:
+        abda_lord = vara_lord
+        
+    # 3. Month Lord (Masa): Sun entry into current 30° Tropical sign (Sankranti)
+    try:
+        sign_idx = int((sun_lon % 360.0) / 30.0)
+        target_lon = sign_idx * 30.0
+        jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 32.0, swe.FLG_SWIEPH)
+        if jd_sign > birth_time_jd or jd_sign < birth_time_jd - 35.0:
+            jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 40.0, swe.FLG_SWIEPH)
+        lmt_sign = jd_sign + yamakoti_lon / 360.0
+        masa_lord = planets_by_weekday[int(lmt_sign + 1.5) % 7]
+    except Exception:
+        masa_lord = vara_lord
+        
     return {
         "Abda": abda_lord,
         "Masa": masa_lord,
