@@ -14,6 +14,12 @@ async def main():
             await page.wait_for_timeout(2000)
             await page.screenshot(path="screenshot_new_layout.png")
             
+            # Click maximize on Dignities table to verify modal
+            btn = page.locator('.grid-cell[data-widget="dignities"] .btn-widget-maximize').first
+            if await btn.count() > 0:
+                await btn.click()
+                await page.wait_for_timeout(800)
+                await page.screenshot(path="screenshot_maximize_modal.png")
         except Exception as e:
             print("Error:", e)
             

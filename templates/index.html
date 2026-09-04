@@ -910,6 +910,20 @@
         </div>
     </div>
 
+    <!-- Table / Widget Maximize Modal Window -->
+    <div class="modal-overlay" id="widgetMaximizeModal" onclick="closeWidgetMaximizeModal(event)">
+        <div class="maximize-modal-card" style="max-width: 1200px; width: 95%; max-height: 92vh;" onclick="event.stopPropagation()">
+            <div class="modal-header" style="width: 100%;">
+                <h2 id="widgetMaximizeModalTitle">Data Table</h2>
+                <button type="button" class="modal-close-btn" onclick="closeWidgetMaximizeModal()">×</button>
+            </div>
+            <div id="widgetMaximizeContainer" style="width: 100%; flex: 1; overflow: auto; padding: 10px 0;"></div>
+            <div style="margin-top: 15px; display: flex; justify-content: flex-end; width: 100%;">
+                <button type="button" onclick="closeWidgetMaximizeModal()" style="background-color: #d35400; color: white; padding: 8px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Close (Esc)</button>
+            </div>
+        </div>
+    </div>
+
     
     
     <div id="main-container" style="display:flex; flex-direction:column; flex: 1; overflow:hidden;">
@@ -937,11 +951,12 @@
         .grid-cell {
             background: #fffdfa;
             border: 1px solid #dcb594;
-            overflow: auto;
+            overflow: hidden;
             position: relative;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            container-type: inline-size;
         }
         .grid-cell-header {
             background: #eee5d3;
@@ -951,111 +966,296 @@
             color: #4a3325;
             text-align: center;
             border-bottom: 1px solid #dcb594;
-            display: none; /* Can be enabled if needed */
+            display: none;
         }
-        .grid-cell {
-            container-type: size;
-        }
-                .grid-cell-content {
-            padding: 5px;
+        .grid-cell-content {
+            padding: 0;
             height: 100%;
             width: 100%;
             box-sizing: border-box;
             overflow: hidden;
             display: flex;
-            align-items: center;
-            justify-content: center;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start;
         }
         
         .grid-cell-content.scrollable {
             overflow: auto;
-            align-items: flex-start;
-            justify-content: flex-start;
         }
 
-        /* The wrapper that gets transformed */
+        /* Widget general content & header */
+        .widget-content {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+        
+        .responsive-table-container {
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            position: relative;
+            box-sizing: border-box;
+        }
+
+        /* The wrapper that gets scaled to fit width */
         .scale-wrapper {
-            transform-origin: center center;
-            display: inline-block;
+            transform-origin: top left;
+            display: block;
+            width: 100%;
+            height: 100%;
         }
         
         .grid-cell-content table {
-            border-collapse: collapse;
-            font-size: 14px; /* Base size, will be scaled via transform */
-            width: max-content;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .grid-cell-content th, .grid-cell-content td {
-            padding: 8px 12px;
+            padding: 4px 8px;
             white-space: nowrap;
         }
 
-        /* Kala-style Shad Bala Breakdown Grid */
+        /* Sticky Table Headers (Horizontal & Vertical) */
+        .grid-cell-content thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background-color: #eee5d3;
+            box-shadow: 0 1px 0 #dcb594;
+        }
+        .grid-cell-content tbody td:first-child,
+        .grid-cell-content tbody th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 4;
+            background-color: #fcfaf5;
+            box-shadow: 1px 0 0 #e5dccb;
+        }
+        .grid-cell-content thead th:first-child {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 6;
+            background-color: #eee5d3;
+            box-shadow: 1px 1px 0 #dcb594;
+        }
+
+        /* Unified Astra styling for Kala Aspects Matrix */
+        .kala-matrix {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .kala-matrix thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background-color: #eee5d3 !important;
+            color: #4a3325 !important;
+            border: 1px solid #dcb594 !important;
+            box-shadow: 0 1px 0 #dcb594 !important;
+            padding: 5px 6px;
+            font-weight: 600;
+        }
+        .kala-matrix td {
+            border: 1px solid #e5dccb !important;
+            padding: 4px 6px;
+            background-color: #fffdfa !important;
+            color: #3d312a !important;
+            font-variant-numeric: tabular-nums;
+        }
+        .kala-matrix tbody td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 4;
+            background-color: #fcfaf5 !important;
+            color: #4a3325 !important;
+            font-weight: bold;
+            box-shadow: 1px 0 0 #e5dccb !important;
+        }
+        .kala-matrix thead th:first-child {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 6;
+            background-color: #eee5d3 !important;
+            box-shadow: 1px 1px 0 #dcb594 !important;
+        }
+        .kala-matrix tbody tr:hover td {
+            background-color: #f7eedd !important;
+        }
+        .kala-matrix tbody tr.total-row td {
+            background-color: #fcfaf5 !important;
+            font-weight: bold;
+        }
+
+        /* Unified Astra styling for Shad Bala Breakdown Grid */
         .shadbala-breakdown-grid {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             font-size: 0.82rem;
         }
-        .shadbala-breakdown-grid th {
-            background: #e28743;
-            color: #ffffff;
-            padding: 6px 10px;
+        .shadbala-breakdown-grid thead th {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: #eee5d3 !important;
+            color: #4a3325 !important;
+            padding: 5px 8px;
             font-weight: 600;
             text-align: right;
-            border: 1px solid #c97130;
+            border: 1px solid #dcb594 !important;
             white-space: nowrap;
+            box-shadow: 0 1px 0 #dcb594 !important;
         }
         .shadbala-breakdown-grid th:first-child {
             text-align: left;
         }
         .shadbala-breakdown-grid td {
-            padding: 4px 10px;
-            border: 1px solid #e28743;
+            padding: 3px 8px;
+            border: 1px solid #e5dccb !important;
             text-align: right;
-            background: #ffffcc; /* Kala software pale yellow */
-            color: #000099; /* Kala software deep blue */
+            background: #fffdfa !important;
+            color: #3d312a !important;
             font-variant-numeric: tabular-nums;
             white-space: nowrap;
         }
         .shadbala-breakdown-grid td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 4;
             text-align: left;
-            color: #3d312a;
-            background: #fff8f0;
+            color: #4a3325 !important;
+            background: #fcfaf5 !important;
             font-weight: 500;
+            box-shadow: 1px 0 0 #e5dccb !important;
+        }
+        .shadbala-breakdown-grid thead th:first-child {
+            position: sticky;
+            top: 0;
+            left: 0;
+            z-index: 6;
+            background: #eee5d3 !important;
+            box-shadow: 1px 1px 0 #dcb594 !important;
+        }
+        .shadbala-breakdown-grid tbody tr:hover td {
+            background: #f7eedd !important;
         }
         .shadbala-breakdown-grid tr.category-header td {
-            background: #f7d5b8;
-            color: #8c3b05;
+            background: #f2e8d8 !important;
+            color: #5c3d28 !important;
             font-weight: bold;
             text-transform: uppercase;
             font-size: 0.74rem;
             letter-spacing: 0.5px;
-            padding: 5px 10px;
+            padding: 4px 8px;
             text-align: left;
+            border: 1px solid #dcb594 !important;
         }
         .shadbala-breakdown-grid tr.subtotal-row td {
-            background: #faebd7;
+            background: #f5ece0 !important;
+            color: #4a3325 !important;
             font-weight: bold;
+            border-top: 1px solid #dcb594 !important;
+            border-bottom: 1px solid #dcb594 !important;
         }
         .shadbala-breakdown-grid tr.grandtotal-row td {
-            background: #ffe3c6;
+            background: #ebdcc4 !important;
+            color: #3d2617 !important;
             font-weight: bold;
             font-size: 0.88rem;
+            border-top: 2px solid #c8ab8d !important;
+            border-bottom: 2px solid #c8ab8d !important;
         }
         .shadbala-breakdown-grid .pct-val {
             font-weight: bold;
         }
         .shadbala-breakdown-grid .pct-val.under-req {
-            color: #c0392b; /* Bold red when under 100% required */
+            color: #c0392b;
         }
         .shadbala-breakdown-grid .pct-val.over-req {
-            color: #000099; /* Deep blue when meeting/exceeding required */
+            color: #27ae60;
         }
         .shadbala-breakdown-grid .rank-val {
             font-weight: bold;
             color: #d35400;
             font-size: 0.9rem;
+        }
+
+        /* Container Query: responsive table adjustments for compact cells */
+        @container (max-width: 360px) {
+            .grid-cell-content table {
+                font-size: 11.5px;
+            }
+            .grid-cell-content th, .grid-cell-content td {
+                padding: 3px 5px;
+            }
+            .chart-toolbar {
+                padding: 2px 6px !important;
+                height: 32px !important;
+            }
+            .chart-toolbar select {
+                font-size: 11px !important;
+                padding: 2px 4px !important;
+            }
+            .chart-toolbar strong, .chart-toolbar span {
+                font-size: 11.5px !important;
+            }
+            .shadbala-breakdown-grid th, .shadbala-breakdown-grid td {
+                padding: 2px 5px !important;
+            }
+            .quant-matrices-table td {
+                padding: 2px 4px !important;
+                font-size: 11px !important;
+            }
+        }
+
+        @container (max-width: 290px) {
+            .grid-cell-content table {
+                font-size: 10px;
+            }
+            .grid-cell-content th, .grid-cell-content td {
+                padding: 2px 3px;
+            }
+            .quant-matrices-table td {
+                padding: 1px 2px !important;
+                font-size: 9.5px !important;
+            }
+        }
+
+        .btn-widget-maximize {
+            background: #fffdfa;
+            border: 1px solid #d5c8b2;
+            border-radius: 4px;
+            color: #4a3325;
+            padding: 2px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            line-height: 1;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .btn-widget-maximize:hover {
+            background: #d35400;
+            color: #ffffff;
+            border-color: #d35400;
         }
 
         .gutter {
@@ -1077,57 +1277,66 @@
     <!-- Templates -->
 
     <template id="tmpl-aspects-planets">
-        <div class="widget-content" id="tab-aspects-planets" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <h3 style="color: #000099; margin: 0; font-weight: bold;">Aspected Planets in Rasi</h3>
+        <div class="widget-content" id="tab-aspects-planets" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aspected Planets in Rasi</span>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
-            <div style="overflow-x: auto; background-color: #ffffcc;">
-                <table id="kalaAspectsPlanetsTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
+            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+                <div class="scale-wrapper">
+                    <table id="kalaAspectsPlanetsTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
     
     <template id="tmpl-aspects-equal-houses">
-        <div class="widget-content" id="tab-aspects-equal-houses" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <h3 style="color: #000099; margin: 0; font-weight: bold;">Rasi - Aspects to Equal Houses</h3>
+        <div class="widget-content" id="tab-aspects-equal-houses" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rasi - Aspects to Equal Houses</span>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
-            <div style="overflow-x: auto; background-color: #ffffcc;">
-                <table id="kalaAspectsEqualHousesTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
+            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+                <div class="scale-wrapper">
+                    <table id="kalaAspectsEqualHousesTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
 
     <template id="tmpl-aspects-bhava-chalita">
-        <div class="widget-content" id="tab-aspects-bhava-chalita" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif; font-size: 13px;">
-            <div style="text-align: center; margin-bottom: 10px;">
-                <h3 style="color: #000099; margin: 0; font-weight: bold;">Rasi - Aspects to Bhava Chalita Houses</h3>
+        <div class="widget-content" id="tab-aspects-bhava-chalita" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rasi - Aspects to Bhava Chalita</span>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
-            <div style="overflow-x: auto; background-color: #ffffcc;">
-                <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix" style="width: 100%; border-collapse: collapse; text-align: center;">
-                    <thead></thead>
-                    <tbody></tbody>
-                </table>
+            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+                <div class="scale-wrapper">
+                    <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
     
     <template id="tmpl-quant-matrices">
-        <div class="widget-content" style="display:flex; flex-direction:column; height:100%;">
-            <div class="chart-toolbar" style="padding: 5px 10px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <strong style="color: #4a3325; font-size: 0.9em;">Lajjitādi Calculations</strong>
-                    <span style="font-size: 0.72em; background: #eadecc; color: #5a4233; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Root Natal (D1)</span>
+        <div class="widget-content">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;">
+                    <strong style="color: #4a3325; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Lajjitādi</strong>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 4px; border-radius: 3px; font-weight: bold; white-space: nowrap;">D1</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <label style="font-size: 0.8em; color: #666; font-weight: bold;">Baseline:</label>
-                    <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <label style="font-size: 11px; color: #666; font-weight: bold;">Base:</label>
+                    <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 95px;">
                         <option value="ShadBala">ShadBala</option>
                         <option value="Ishta">Ishta</option>
                         <option value="Subha">Subha</option>
@@ -1137,58 +1346,62 @@
                         <option value="Drishti Yuti">Drishti Yuti</option>
                         <option value="Veda">Veda</option>
                     </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
                 </div>
             </div>
-            <div style="overflow-x: auto; flex:1; padding: 10px;">
-                <table class="quant-matrices-table dignity-grid" style="width: 100%; border-collapse: collapse; text-align: center;">
-                    <thead>
-                        <tr>
-                            <th>↓ Giv \ Rec →</th>
-                            <th>Su</th>
-                            <th>Mo</th>
-                            <th>Ma</th>
-                            <th>Me</th>
-                            <th>Ju</th>
-                            <th>Ve</th>
-                            <th>Sa</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                    <tfoot>
-                        <tr>
-                            <td style="background-color: #fcfaf5;"><strong>+</strong></td>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="quant-matrices-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>↓ Giv \ Rec →</th>
+                                <th>Su</th>
+                                <th>Mo</th>
+                                <th>Ma</th>
+                                <th>Me</th>
+                                <th>Ju</th>
+                                <th>Ve</th>
+                                <th>Sa</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr>
+                                <td style="background-color: #fcfaf5;"><strong>+</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
 
     <template id="tmpl-chart">
         <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
-            <div class="chart-toolbar" style="padding: 5px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
-                    <option value="D1" selected>D1 - Rāśi (Physical Existence)</option>
-                    <option value="D2">D2 - Horā (Wealth & Resources)</option>
-                    <option value="D3">D3 - Drekkāṇa (Siblings & Courage)</option>
-                    <option value="D4">D4 - Caturthāṁśa (Home, Land & Fortune)</option>
-                    <option value="D7">D7 - Saptāṁśa (Children & Progeny)</option>
-                    <option value="D9">D9 - Navāṁśa (Spouse, Dharma & Soul)</option>
-                    <option value="D10">D10 - Daśāṁśa (Career & Status)</option>
-                    <option value="D12">D12 - Dvādaśāṁśa (Parents & Lineage)</option>
-                    <option value="D16">D16 - Ṣoḍaśāṁśa (Vehicles & Pleasures)</option>
-                    <option value="D20">D20 - Viṁśāṁśa (Spiritual Life & Upāsana)</option>
-                    <option value="D24">D24 - Caturviṁśāṁśa (Learning & Higher Knowledge)</option>
-                    <option value="D27">D27 - Saptaviṁśāṁśa (Inherent Strengths & Weaknesses)</option>
-                    <option value="D30">D30 - Triṁśāṁśa (Misfortune & Subconscious Trials)</option>
-                    <option value="D40">D40 - Khavedāṁśa (Karmic Auspiciousness)</option>
-                    <option value="D45">D45 - Akṣavedāṁśa (All Areas of Life / Conduct)</option>
-                    <option value="D60">D60 - Ṣaṣṭyāṁśa (Past Life Karma / Destiny)</option>
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 5px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 140px;">
+                    <option value="D1" selected>D1 - Rāśi</option>
+                    <option value="D2">D2 - Horā</option>
+                    <option value="D3">D3 - Drekkāṇa</option>
+                    <option value="D4">D4 - Caturthāṁśa</option>
+                    <option value="D7">D7 - Saptāṁśa</option>
+                    <option value="D9">D9 - Navāṁśa</option>
+                    <option value="D10">D10 - Daśāṁśa</option>
+                    <option value="D12">D12 - Dvādaśāṁśa</option>
+                    <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                    <option value="D20">D20 - Viṁśāṁśa</option>
+                    <option value="D24">D24 - Caturviṁśāṁśa</option>
+                    <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                    <option value="D30">D30 - Triṁśāṁśa</option>
+                    <option value="D40">D40 - Khavedāṁśa</option>
+                    <option value="D45">D45 - Akṣavedāṁśa</option>
+                    <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
                 </select>
-                <div class="chart-hotkeys">
-                    <button class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')">S</button>
-                    <button class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')">N</button>
-                    <button class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')">C</button>
+                <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
+                    <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
+                    <button type="button" class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')" title="Circular (C)">C</button>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Chart (Full Screen)" onclick="maximizeChartFromWidget(this)">⛶</button>
                 </div>
             </div>
             <div class="view-south chart-view active" style="flex:1; display:flex; align-items:center; justify-content:center;">
@@ -1204,91 +1417,102 @@
     </template>
     
     <template id="tmpl-info">
-        <div class="sub-window-content" id="context-info-content">
-                        <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
-                    </div>
+        <div class="sub-window-content" id="context-info-content" style="height: 100%; overflow-y: auto;">
+            <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
+        </div>
     </template>
     <template id="tmpl-dignities">
         <div class="widget-content" id="tab-varga-dignities">
-                        <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 10px;">
-                            <h3 style="color: #3d312a; margin: 0;">Dignities in Vargas</h3>
-                        </div>
-                        <div style="overflow-x: auto;">
-                            <table id="vargaDignitiesTable" class="dignity-grid">
-                                <thead>
-                                    <tr>
-                                        <th>Varga</th>
-                                        <th>Su</th>
-                                        <th>Mo</th>
-                                        <th>Ma</th>
-                                        <th>Me</th>
-                                        <th>Ju</th>
-                                        <th>Ve</th>
-                                        <th>Sa</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Dignities in Vargas</span>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table id="vargaDignitiesTable" class="dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Varga</th>
+                                <th>Su</th>
+                                <th>Mo</th>
+                                <th>Ma</th>
+                                <th>Me</th>
+                                <th>Ju</th>
+                                <th>Ve</th>
+                                <th>Sa</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </template>
     <template id="tmpl-avasthas-calc">
-        <div class="widget-content" style="display:flex; flex-direction:column; height:100%;">
-            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <span class="avastha-calc-title" style="font-weight: bold; font-size: 13px; color: #4a3325;">Qualitative Avasthas</span>
-                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
-                    <option value="D1" selected>D1 - Rāśi (Physical Existence)</option>
-                    <option value="D2">D2 - Horā (Wealth & Resources)</option>
-                    <option value="D3">D3 - Drekkāṇa (Siblings & Courage)</option>
-                    <option value="D4">D4 - Caturthāṁśa (Home, Land & Fortune)</option>
-                    <option value="D7">D7 - Saptāṁśa (Children & Progeny)</option>
-                    <option value="D9">D9 - Navāṁśa (Spouse, Dharma & Soul)</option>
-                    <option value="D10">D10 - Daśāṁśa (Career & Status)</option>
-                    <option value="D12">D12 - Dvādaśāṁśa (Parents & Lineage)</option>
-                    <option value="D16">D16 - Ṣoḍaśāṁśa (Vehicles & Pleasures)</option>
-                    <option value="D20">D20 - Viṁśāṁśa (Spiritual Life & Upāsana)</option>
-                    <option value="D24">D24 - Caturviṁśāṁśa (Learning & Higher Knowledge)</option>
-                    <option value="D27">D27 - Saptaviṁśāṁśa (Inherent Strengths & Weaknesses)</option>
-                    <option value="D30">D30 - Triṁśāṁśa (Misfortune & Subconscious Trials)</option>
-                    <option value="D40">D40 - Khavedāṁśa (Karmic Auspiciousness)</option>
-                    <option value="D45">D45 - Akṣavedāṁśa (All Areas of Life / Conduct)</option>
-                    <option value="D60">D60 - Ṣaṣṭyāṁśa (Past Life Karma / Destiny)</option>
-                </select>
+        <div class="widget-content">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="avastha-calc-title" style="font-weight: bold; font-size: 12px; color: #4a3325; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Qualitative Avasthas</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
             </div>
-            <div style="overflow-x: auto; flex: 1; padding: 6px;">
-                <table class="dignity-grid avasthas-calc-table" style="width: 100%; border-collapse: collapse; text-align: center;">
-                    <thead>
-                        <tr><th>Avastha</th><th>Su</th><th>Mo</th><th>Ma</th><th>Me</th><th>Ju</th><th>Ve</th><th>Sa</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="dignity-grid avasthas-calc-table" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr><th>Avastha</th><th>Su</th><th>Mo</th><th>Ma</th><th>Me</th><th>Ju</th><th>Ve</th><th>Sa</th></tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
     <template id="tmpl-shadbala-table">
         <div class="widget-content" id="tab-shadbala-table">
-            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #d35400; padding-bottom: 5px; margin-bottom: 8px;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <h3 style="color: #3d312a; margin: 0; font-size: 1.05rem;">Shad Bala Detailed Breakdown</h3>
-                    <span style="font-size: 0.72em; background: #eadecc; color: #5a4233; padding: 2px 6px; border-radius: 4px; font-weight: bold;">Root Natal (D1)</span>
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Shad Bala Breakdown</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 4px; border-radius: 3px; font-weight: bold;">D1</span>
                 </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
-            <div style="overflow-x: auto; max-height: calc(100% - 35px); overflow-y: auto; padding-bottom: 15px;">
-                <table class="shadbala-breakdown-grid" style="margin-bottom: 10px;">
-                    <thead>
-                        <tr>
-                            <th style="text-align: left; min-width: 170px;">Strength Component</th>
-                            <th>Sun</th>
-                            <th>Moon</th>
-                            <th>Mars</th>
-                            <th>Mercury</th>
-                            <th>Jupiter</th>
-                            <th>Venus</th>
-                            <th>Saturn</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="shadbala-breakdown-grid" style="width: 100%; margin-bottom: 10px;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; min-width: 140px;">Strength Component</th>
+                                <th>Sun</th>
+                                <th>Moon</th>
+                                <th>Mars</th>
+                                <th>Mercury</th>
+                                <th>Jupiter</th>
+                                <th>Venus</th>
+                                <th>Saturn</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </template>
@@ -1355,18 +1579,11 @@
             if (widgetType !== 'empty') {
                 const tmpl = document.getElementById('tmpl-' + widgetType);
                 if (tmpl) {
-                    if (widgetType === 'info' || widgetType === 'shadbala-table') {
+                    contentDiv.appendChild(tmpl.content.cloneNode(true));
+                    if (widgetType === 'info') {
                         contentDiv.classList.add('scrollable');
-                        contentDiv.appendChild(tmpl.content.cloneNode(true));
-                    } else if (widgetType === 'chart' || widgetType === 'quant-matrices' || widgetType === 'avasthas-calc') {
-                        contentDiv.classList.remove('scrollable');
-                        contentDiv.appendChild(tmpl.content.cloneNode(true));
                     } else {
                         contentDiv.classList.remove('scrollable');
-                        const wrapper = document.createElement('div');
-                        wrapper.className = 'scale-wrapper';
-                        wrapper.appendChild(tmpl.content.cloneNode(true));
-                        contentDiv.appendChild(wrapper);
                     }
                 }
             }
@@ -1510,7 +1727,7 @@
 
         let splitInstances = [];
         
-                function changeLayout(layoutType) {
+        function changeLayout(layoutType) {
             // Destroy old splits
             splitInstances.forEach(s => {
                 try { s.destroy(); } catch(e) {}
@@ -1536,9 +1753,9 @@
                         <div class="grid-cell" id="cell7"><div class="grid-cell-content"></div></div>
                     </div>
                 `;
-                splitInstances.push(Split(['#col1', '#col2', '#col3'], { sizes: [50, 25, 25], gutterSize: 4 }));
-                splitInstances.push(Split(['#cell2', '#cell3', '#cell4'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
-                splitInstances.push(Split(['#cell5', '#cell6', '#cell7'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
+                splitInstances.push(Split(['#col1', '#col2', '#col3'], { sizes: [50, 25, 25], minSize: [360, 260, 260], gutterSize: 4 }));
+                splitInstances.push(Split(['#cell2', '#cell3', '#cell4'], { direction: 'vertical', sizes: [33, 33, 34], minSize: [110, 110, 110], gutterSize: 4 }));
+                splitInstances.push(Split(['#cell5', '#cell6', '#cell7'], { direction: 'vertical', sizes: [33, 33, 34], minSize: [110, 110, 110], gutterSize: 4 }));
                 
             } else if (layoutType === '11cell') {
                 container.innerHTML = `
@@ -1562,10 +1779,10 @@
                         <div class="grid-cell" id="c11"><div class="grid-cell-content"></div></div>
                     </div>
                 `;
-                splitInstances.push(Split(['#col1', '#col2', '#col3', '#col4'], { sizes: [40, 20, 20, 20], gutterSize: 4 }));
-                splitInstances.push(Split(['#c2', '#c3', '#c4', '#c5'], { direction: 'vertical', sizes: [25, 25, 25, 25], gutterSize: 4 }));
-                splitInstances.push(Split(['#c6', '#c7', '#c8'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
-                splitInstances.push(Split(['#c9', '#c10', '#c11'], { direction: 'vertical', sizes: [33, 33, 34], gutterSize: 4 }));
+                splitInstances.push(Split(['#col1', '#col2', '#col3', '#col4'], { sizes: [40, 20, 20, 20], minSize: [320, 200, 200, 200], gutterSize: 4 }));
+                splitInstances.push(Split(['#c2', '#c3', '#c4', '#c5'], { direction: 'vertical', sizes: [25, 25, 25, 25], minSize: [90, 90, 90, 90], gutterSize: 4 }));
+                splitInstances.push(Split(['#c6', '#c7', '#c8'], { direction: 'vertical', sizes: [33, 33, 34], minSize: [100, 100, 100], gutterSize: 4 }));
+                splitInstances.push(Split(['#c9', '#c10', '#c11'], { direction: 'vertical', sizes: [33, 33, 34], minSize: [100, 100, 100], gutterSize: 4 }));
                 
             } else if (layoutType === '8cell') {
                 container.innerHTML = `
@@ -1582,16 +1799,16 @@
                         <div class="grid-cell" id="c8"><div class="grid-cell-content"></div></div>
                     </div>
                 `;
-                splitInstances.push(Split(['#row1', '#row2'], { direction: 'vertical', sizes: [50, 50], gutterSize: 4 }));
-                splitInstances.push(Split(['#c1', '#c2', '#c3', '#c4'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
-                splitInstances.push(Split(['#c5', '#c6', '#c7', '#c8'], { sizes: [25, 25, 25, 25], gutterSize: 4 }));
+                splitInstances.push(Split(['#row1', '#row2'], { direction: 'vertical', sizes: [50, 50], minSize: [160, 160], gutterSize: 4 }));
+                splitInstances.push(Split(['#c1', '#c2', '#c3', '#c4'], { sizes: [25, 25, 25, 25], minSize: [220, 220, 220, 220], gutterSize: 4 }));
+                splitInstances.push(Split(['#c5', '#c6', '#c7', '#c8'], { sizes: [25, 25, 25, 25], minSize: [220, 220, 220, 220], gutterSize: 4 }));
                 
             } else if (layoutType === '2chart') {
                 container.innerHTML = `
                     <div class="grid-cell" id="c1" style="height:100%;"><div class="grid-cell-content"></div></div>
                     <div class="grid-cell" id="c2" style="height:100%;"><div class="grid-cell-content"></div></div>
                 `;
-                splitInstances.push(Split(['#c1', '#c2'], { sizes: [50, 50], gutterSize: 4 }));
+                splitInstances.push(Split(['#c1', '#c2'], { sizes: [50, 50], minSize: [340, 340], gutterSize: 4 }));
             }
             
             const savedStateStr = localStorage.getItem('astra_layout_' + layoutType);
@@ -1645,35 +1862,192 @@
                 }
             }
             observeGridCells();
+            attachGutterAutoFit();
         }
         
-        
-        // Auto-scaling logic for Data Tables
+        // Width-adaptive scaling for Data Tables
         const scaleObserver = new ResizeObserver(entries => {
             for (let entry of entries) {
                 const cell = entry.target;
                 const contentDiv = cell.querySelector('.grid-cell-content');
-                if (!contentDiv || contentDiv.classList.contains('scrollable')) continue;
+                if (!contentDiv) continue;
                 
                 const wrapper = contentDiv.querySelector('.scale-wrapper');
                 if (!wrapper) continue;
                 
                 // Reset transform to measure natural size
-                wrapper.style.transform = 'scale(1)';
+                wrapper.style.transform = 'none';
                 
-                const cellW = contentDiv.clientWidth - 10; // minus padding
-                const cellH = contentDiv.clientHeight - 10;
+                const table = wrapper.querySelector('table');
+                if (!table) continue;
                 
-                const wrapW = wrapper.offsetWidth;
-                const wrapH = wrapper.offsetHeight;
+                const container = wrapper.closest('.responsive-table-container') || contentDiv;
+                const availW = container.clientWidth - 4;
+                const naturalW = table.scrollWidth || table.offsetWidth;
                 
-                if (wrapW > 0 && wrapH > 0) {
-                    const scale = Math.min(cellW / wrapW, cellH / wrapH);
-                    wrapper.style.transform = `scale(${scale})`;
+                if (naturalW > 0 && availW > 0) {
+                    if (naturalW > availW) {
+                        // Fit to width down to a legible floor of 0.78
+                        const scale = Math.max(0.78, availW / naturalW);
+                        wrapper.style.transform = `scale(${scale})`;
+                        wrapper.style.transformOrigin = 'top left';
+                    } else {
+                        wrapper.style.transform = 'none';
+                    }
                 }
             }
         });
         
+        function attachGutterAutoFit() {
+            document.querySelectorAll('.gutter.gutter-horizontal').forEach(gutter => {
+                if (gutter._hasAutoFit) return;
+                gutter._hasAutoFit = true;
+                gutter.title = "Drag to resize | Double-click to auto-fit to table width";
+                gutter.addEventListener('dblclick', function(e) {
+                    const prevCol = gutter.previousElementSibling;
+                    if (!prevCol) return;
+                    
+                    let maxTableW = 0;
+                    prevCol.querySelectorAll('table').forEach(tbl => {
+                        const w = tbl.scrollWidth;
+                        if (w > maxTableW) maxTableW = w;
+                    });
+                    
+                    if (maxTableW > 0) {
+                        const containerW = document.getElementById('grid-container').clientWidth;
+                        const desiredPx = maxTableW + 20;
+                        const desiredPct = Math.min(60, Math.max(20, (desiredPx / containerW) * 100));
+                        
+                        const mainSplit = splitInstances[0];
+                        if (mainSplit) {
+                            const currentSizes = mainSplit.getSizes();
+                            const cols = Array.from(document.querySelectorAll('#grid-container > .split-col'));
+                            const idx = cols.indexOf(prevCol);
+                            if (idx !== -1 && currentSizes.length > idx) {
+                                const oldSize = currentSizes[idx];
+                                const diff = desiredPct - oldSize;
+                                currentSizes[idx] = desiredPct;
+                                const adjIdx = (idx === currentSizes.length - 1) ? idx - 1 : idx + 1;
+                                currentSizes[adjIdx] = Math.max(15, currentSizes[adjIdx] - diff);
+                                mainSplit.setSizes(currentSizes);
+                                saveLayoutState();
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        function maximizeTableFromWidget(btn) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            const widgetType = cell.dataset.widget;
+            if (!widgetType) return;
+            
+            const modal = document.getElementById('widgetMaximizeModal');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container) return;
+            
+            let title = "Table View";
+            const headerText = cell.querySelector('.chart-toolbar span, .chart-toolbar strong, h3');
+            if (headerText) title = headerText.textContent.trim();
+            const subjectName = currentChartData && currentChartData.subject_info ? currentChartData.subject_info.name : '';
+            if (subjectName) title = `${subjectName} — ${title}`;
+            titleEl.textContent = title;
+            
+            container.innerHTML = '';
+            
+            // Replicate any dropdown controls (e.g. matrix-type-select or varga-select)
+            const origSelect = cell.querySelector('select');
+            let modalTableContainer = document.createElement('div');
+            modalTableContainer.style.width = '100%';
+            modalTableContainer.style.overflow = 'auto';
+            modalTableContainer.style.maxHeight = '72vh';
+            
+            if (origSelect) {
+                const selectWrap = document.createElement('div');
+                selectWrap.style.marginBottom = '12px';
+                selectWrap.style.display = 'flex';
+                selectWrap.style.alignItems = 'center';
+                selectWrap.style.gap = '8px';
+                
+                const label = document.createElement('label');
+                label.style.fontWeight = 'bold';
+                label.style.fontSize = '13px';
+                label.style.color = '#4a3325';
+                label.textContent = origSelect.classList.contains('matrix-type-select') ? 'Baseline Strength:' : 'Varga:';
+                
+                const selectClone = origSelect.cloneNode(true);
+                selectClone.value = origSelect.value;
+                selectClone.style.padding = '6px 12px';
+                selectClone.style.fontSize = '13px';
+                selectClone.style.maxWidth = '300px';
+                selectClone.onchange = function() {
+                    origSelect.value = this.value;
+                    updateWidget(cell);
+                    const updatedTable = cell.querySelector('table');
+                    if (updatedTable) {
+                        modalTableContainer.innerHTML = '';
+                        const updatedClone = updatedTable.cloneNode(true);
+                        updatedClone.style.width = '100%';
+                        updatedClone.style.transform = 'none';
+                        updatedClone.style.fontSize = '14px';
+                        modalTableContainer.appendChild(updatedClone);
+                    }
+                };
+                
+                selectWrap.appendChild(label);
+                selectWrap.appendChild(selectClone);
+                container.appendChild(selectWrap);
+            }
+            
+            const origTable = cell.querySelector('table');
+            if (origTable) {
+                const tableClone = origTable.cloneNode(true);
+                tableClone.style.width = '100%';
+                tableClone.style.transform = 'none';
+                tableClone.style.fontSize = '14px';
+                modalTableContainer.appendChild(tableClone);
+                container.appendChild(modalTableContainer);
+            }
+            
+            modal.style.display = 'flex';
+        }
+        
+        function closeWidgetMaximizeModal(e) {
+            if (!e || e.target === document.getElementById('widgetMaximizeModal') || e.target.classList.contains('modal-close-btn') || e.target.tagName === 'BUTTON') {
+                const m = document.getElementById('widgetMaximizeModal');
+                if (m) m.style.display = 'none';
+            }
+        }
+
+        function maximizeChartFromWidget(btn) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+            
+            let type = 'south';
+            if (cell.querySelector('.view-north.active')) type = 'north';
+            else if (cell.querySelector('.view-circular.active')) type = 'circular';
+            
+            if (!currentSvgs || !currentSvgs[varga]) return;
+            
+            const vData = currentSvgs[varga];
+            const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+            if (!vSvg) return;
+            
+            const typeLabel = (type === 'south') ? 'Tropical South Indian' : ((type === 'north') ? 'Tropical North Indian' : 'Circular');
+            const subjectName = currentChartData && currentChartData.subject_info ? currentChartData.subject_info.name : '';
+            document.getElementById('maximizeModalTitle').innerText = `${subjectName} — ${typeLabel} (${varga})`;
+            
+            const markup = (type === 'south') ? vSvg.south : ((type === 'north') ? vSvg.north : vSvg.circular);
+            document.getElementById('maximizeChartContainer').innerHTML = markup;
+            toggleSiSigns(showSiSigns);
+            document.getElementById('maximizeModal').style.display = 'flex';
+        }
+
         // We must observe all grid cells
         function observeGridCells() {
             document.querySelectorAll('.grid-cell').forEach(cell => {
@@ -2407,13 +2781,8 @@
 
         
         function renderKalaAspectTable(tableId, dataKey, columnsList, isHouse=false) {
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            
-            const thead = table.querySelector('thead');
-            const tbody = table.querySelector('tbody');
-            thead.innerHTML = '';
-            tbody.innerHTML = '';
+            const tables = document.querySelectorAll('#' + tableId);
+            if (tables.length === 0) return;
             
             if (!currentChartData || !currentChartData.advanced_aspects) return;
             
@@ -2424,56 +2793,64 @@
             
             const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
             
-            // Header Row
-            const trHead = document.createElement('tr');
-            trHead.innerHTML = '<th></th>' + columnsList.map(c => `<th>${c.toString().substring(0, 2)}</th>`).join('');
-            thead.appendChild(trHead);
-            
-            // Data Rows (Aspecting Planets)
-            aspectingPlanets.forEach(p => {
-                const tr = document.createElement('tr');
-                let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
+            tables.forEach(table => {
+                const thead = table.querySelector('thead');
+                const tbody = table.querySelector('tbody');
+                if (!thead || !tbody) return;
+                thead.innerHTML = '';
+                tbody.innerHTML = '';
                 
+                // Header Row
+                const trHead = document.createElement('tr');
+                trHead.innerHTML = '<th></th>' + columnsList.map(c => `<th>${c.toString().substring(0, 2)}</th>`).join('');
+                thead.appendChild(trHead);
+                
+                // Data Rows (Aspecting Planets)
+                aspectingPlanets.forEach(p => {
+                    const tr = document.createElement('tr');
+                    let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
+                    
+                    columnsList.forEach(c => {
+                        const cKey = c.toString();
+                        if (!isHouse && p === c) {
+                            html += `<td>--</td>`;
+                        } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
+                            html += `<td style="color:red; font-weight:bold;">Y</td>`;
+                        } else {
+                            const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
+                            if (entry && entry.raw > 0) {
+                                html += `<td>${Math.round(entry.raw)}</td>`;
+                            } else {
+                                html += `<td></td>`;
+                            }
+                        }
+                    });
+                    tr.innerHTML = html;
+                    tbody.appendChild(tr);
+                });
+                
+                // Totals Row (+)
+                const trPlus = document.createElement('tr');
+                let plusHtml = `<td><strong>+</strong></td>`;
                 columnsList.forEach(c => {
                     const cKey = c.toString();
-                    if (!isHouse && p === c) {
-                        html += `<td>--</td>`;
-                    } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
-                        html += `<td style="color:red; font-weight:bold;">Y</td>`;
-                    } else {
-                        const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
-                        if (entry && entry.raw > 0) {
-                            html += `<td>${Math.round(entry.raw)}</td>`;
-                        } else {
-                            html += `<td></td>`;
-                        }
-                    }
+                    const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
+                    plusHtml += `<td>${v > 0 ? v : ''}</td>`;
                 });
-                tr.innerHTML = html;
-                tbody.appendChild(tr);
+                trPlus.innerHTML = plusHtml;
+                tbody.appendChild(trPlus);
+                
+                // Totals Row (-)
+                const trMinus = document.createElement('tr');
+                let minusHtml = `<td><strong>-</strong></td>`;
+                columnsList.forEach(c => {
+                    const cKey = c.toString();
+                    const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
+                    minusHtml += `<td>${v > 0 ? v : ''}</td>`;
+                });
+                trMinus.innerHTML = minusHtml;
+                tbody.appendChild(trMinus);
             });
-            
-            // Totals Row (+)
-            const trPlus = document.createElement('tr');
-            let plusHtml = `<td><strong>+</strong></td>`;
-            columnsList.forEach(c => {
-                const cKey = c.toString();
-                const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
-                plusHtml += `<td>${v > 0 ? v : ''}</td>`;
-            });
-            trPlus.innerHTML = plusHtml;
-            tbody.appendChild(trPlus);
-            
-            // Totals Row (-)
-            const trMinus = document.createElement('tr');
-            let minusHtml = `<td><strong>-</strong></td>`;
-            columnsList.forEach(c => {
-                const cKey = c.toString();
-                const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
-                minusHtml += `<td>${v > 0 ? v : ''}</td>`;
-            });
-            trMinus.innerHTML = minusHtml;
-            tbody.appendChild(trMinus);
         }
 
         function updateAspectsTable(varga) {
@@ -3112,8 +3489,12 @@
         // Close any modal with Escape key
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                document.getElementById('settingsModal').style.display = 'none';
-                document.getElementById('maximizeModal').style.display = 'none';
+                const sm = document.getElementById('settingsModal');
+                if (sm) sm.style.display = 'none';
+                const mm = document.getElementById('maximizeModal');
+                if (mm) mm.style.display = 'none';
+                const wm = document.getElementById('widgetMaximizeModal');
+                if (wm) wm.style.display = 'none';
                 currentMaximized = null;
             }
         });

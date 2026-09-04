@@ -167,3 +167,25 @@ def test_avasthas_calc_independent_varga_switch(page: Page):
     
     # Verify chart select remained D1 (independent multi-varga grid)
     expect(chart_select).to_have_value("D1")
+
+
+def test_table_widget_maximize_modal(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    page.locator("svg").first.wait_for(state="visible")
+
+    # Find Dignities widget and click maximize button
+    dignities_cell = page.locator('.grid-cell[data-widget="dignities"]').first
+    max_btn = dignities_cell.locator(".btn-widget-maximize")
+    expect(max_btn).to_be_visible()
+    max_btn.click()
+
+    modal = page.locator("#widgetMaximizeModal")
+    expect(modal).to_be_visible()
+    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Dignities in Vargas")
+    expect(page.locator("#widgetMaximizeContainer table")).to_be_visible()
+
+    # Close with Escape key
+    page.keyboard.press("Escape")
+    expect(modal).not_to_be_visible()
+

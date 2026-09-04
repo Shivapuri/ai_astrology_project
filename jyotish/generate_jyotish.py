@@ -656,6 +656,17 @@ def generate_kala_chart(
                 for p_receive in planets_list:
                     v_matrix[p_give][p_receive] = avastha_results['matrix'][p_give][p_receive]
             avastha_matrices[v_key][baseline] = v_matrix
+    # 7. Advanced Graha Aspects across all Vargas
+    varga_aspects = {}
+    for v_key in vargas_data.keys():
+        v_asc = vargas_data[v_key]["lagna"]["longitude"]
+        varga_aspects[v_key] = aspects.calculate_advanced_graha_aspects(
+            vargas_data[v_key]["grahas"],
+            shadbala_data,
+            vargas_data[v_key]["cusps"],
+            v_asc
+        )
+
     vedic_context = {
 
         "subject_info": {
@@ -687,7 +698,8 @@ def generate_kala_chart(
         },
         "shadbala": shadbala_data,
         "avastha_matrix": avastha_matrices,
-        "advanced_aspects": aspects.calculate_advanced_graha_aspects(vargas_data["D1"]["grahas"], shadbala_data, vargas_data["D1"]["cusps"], asc_lon)
+        "advanced_aspects": varga_aspects["D1"],
+        "varga_advanced_aspects": varga_aspects
     }
     
     # 7. Write to file (only if requested)
