@@ -1277,14 +1277,34 @@
     <!-- Templates -->
 
     <template id="tmpl-aspects-planets">
-        <div class="widget-content" id="tab-aspects-planets" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
-            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aspected Planets in Rasi</span>
-                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+        <div class="widget-content" id="tab-aspects-planets">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="aspect-table-title" style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">D1 - Aspects (Planets)</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
             </div>
-            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+            <div class="responsive-table-container" style="padding: 4px;">
                 <div class="scale-wrapper">
-                    <table id="kalaAspectsPlanetsTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                    <table id="kalaAspectsPlanetsTable" class="kala-matrix dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
                         <thead></thead>
                         <tbody></tbody>
                     </table>
@@ -1294,14 +1314,34 @@
     </template>
     
     <template id="tmpl-aspects-equal-houses">
-        <div class="widget-content" id="tab-aspects-equal-houses" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
-            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rasi - Aspects to Equal Houses</span>
-                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+        <div class="widget-content" id="tab-aspects-equal-houses">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="aspect-table-title" style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">D1 - Aspects to Equal Houses</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
             </div>
-            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+            <div class="responsive-table-container" style="padding: 4px;">
                 <div class="scale-wrapper">
-                    <table id="kalaAspectsEqualHousesTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                    <table id="kalaAspectsEqualHousesTable" class="kala-matrix dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
                         <thead></thead>
                         <tbody></tbody>
                     </table>
@@ -1311,14 +1351,34 @@
     </template>
 
     <template id="tmpl-aspects-bhava-chalita">
-        <div class="widget-content" id="tab-aspects-bhava-chalita" style="background-color: #ffffcc; font-family: 'Times New Roman', Times, serif;">
-            <div class="chart-toolbar" style="padding: 3px 8px; background: #fff8d6; border-bottom: 1px solid #e0d080; display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #000099; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rasi - Aspects to Bhava Chalita</span>
-                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+        <div class="widget-content" id="tab-aspects-bhava-chalita">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="aspect-table-title" style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">D1 - Aspects to Bhava Chalita</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
             </div>
-            <div class="responsive-table-container" style="background-color: #ffffcc; padding: 4px;">
+            <div class="responsive-table-container" style="padding: 4px;">
                 <div class="scale-wrapper">
-                    <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                    <table id="kalaAspectsBhavaChalitaTable" class="kala-matrix dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
                         <thead></thead>
                         <tbody></tbody>
                     </table>
@@ -1331,10 +1391,28 @@
         <div class="widget-content">
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
                 <div style="display: flex; align-items: center; gap: 6px; min-width: 0; overflow: hidden;">
-                    <strong style="color: #4a3325; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Lajjitādi</strong>
-                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 4px; border-radius: 3px; font-weight: bold; white-space: nowrap;">D1</span>
+                    <strong class="quant-matrices-title" style="color: #4a3325; font-size: 12px; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">Strength Matrices</strong>
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px;">
+                    <label style="font-size: 11px; color: #666; font-weight: bold;">Varga:</label>
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 80px;">
+                        <option value="D1" selected>D1</option>
+                        <option value="D2">D2</option>
+                        <option value="D3">D3</option>
+                        <option value="D4">D4</option>
+                        <option value="D7">D7</option>
+                        <option value="D9">D9</option>
+                        <option value="D10">D10</option>
+                        <option value="D12">D12</option>
+                        <option value="D16">D16</option>
+                        <option value="D20">D20</option>
+                        <option value="D24">D24</option>
+                        <option value="D27">D27</option>
+                        <option value="D30">D30</option>
+                        <option value="D40">D40</option>
+                        <option value="D45">D45</option>
+                        <option value="D60">D60</option>
+                    </select>
                     <label style="font-size: 11px; color: #666; font-weight: bold;">Base:</label>
                     <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 95px;">
                         <option value="ShadBala">ShadBala</option>
@@ -1417,8 +1495,33 @@
     </template>
     
     <template id="tmpl-info">
-        <div class="sub-window-content" id="context-info-content" style="height: 100%; overflow-y: auto;">
-            <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
+        <div class="widget-content" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="context-info-title" style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">D1 - Context Info</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="refreshContextInfoForCell(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sub-window-content" id="context-info-content" style="flex: 1; overflow-y: auto; padding: 12px;">
+                <p style="color:#8c7b64; font-style:italic;">Click on a planet, sign, or house in the chart to view details here.</p>
+            </div>
         </div>
     </template>
     <template id="tmpl-dignities">
