@@ -1746,8 +1746,11 @@
             else if (widgetType === 'nakshatras') {
                 updateNakshatraWidgetForCell(cell);
             }
+            else if (widgetType === 'info') {
+                refreshContextInfoForCell(cell);
+            }
             else if (widgetType && widgetType.startsWith('aspects-')) {
-                updateAspectsTable("D1");
+                updateAspectsWidgetForCell(cell);
             }
         }
 
@@ -1825,6 +1828,21 @@
             // Quant Matrices
             document.querySelectorAll('.grid-cell[data-widget="quant-matrices"]').forEach(cell => {
                 updateQuantMatricesTableForCell(cell);
+            });
+
+            // Aspects widgets
+            document.querySelectorAll('.grid-cell[data-widget^="aspects-"]').forEach(cell => {
+                updateAspectsWidgetForCell(cell);
+            });
+
+            // Context Info widgets
+            document.querySelectorAll('.grid-cell[data-widget="info"]').forEach(cell => {
+                refreshContextInfoForCell(cell);
+            });
+
+            // Shadbala widgets
+            document.querySelectorAll('.grid-cell[data-widget="shadbala-table"]').forEach(cell => {
+                updateShadbalaTableWidget();
             });
         }
 
@@ -2061,47 +2079,60 @@
             
             container.innerHTML = '';
             
-            // Replicate any dropdown controls (e.g. matrix-type-select or varga-select)
-            const origSelect = cell.querySelector('select');
+            // Replicate any dropdown controls (e.g. matrix-type-select and varga-select)
+            const origSelects = cell.querySelectorAll('.chart-toolbar select');
             let modalTableContainer = document.createElement('div');
             modalTableContainer.style.width = '100%';
             modalTableContainer.style.overflow = 'auto';
             modalTableContainer.style.maxHeight = '72vh';
             
-            if (origSelect) {
+            if (origSelects.length > 0) {
                 const selectWrap = document.createElement('div');
                 selectWrap.style.marginBottom = '12px';
                 selectWrap.style.display = 'flex';
                 selectWrap.style.alignItems = 'center';
-                selectWrap.style.gap = '8px';
+                selectWrap.style.gap = '14px';
+                selectWrap.style.flexWrap = 'wrap';
                 
-                const label = document.createElement('label');
-                label.style.fontWeight = 'bold';
-                label.style.fontSize = '13px';
-                label.style.color = '#4a3325';
-                label.textContent = origSelect.classList.contains('matrix-type-select') ? 'Baseline Strength:' : 'Varga:';
-                
-                const selectClone = origSelect.cloneNode(true);
-                selectClone.value = origSelect.value;
-                selectClone.style.padding = '6px 12px';
-                selectClone.style.fontSize = '13px';
-                selectClone.style.maxWidth = '300px';
-                selectClone.onchange = function() {
-                    origSelect.value = this.value;
-                    updateWidget(cell);
-                    const updatedTable = cell.querySelector('table');
-                    if (updatedTable) {
-                        modalTableContainer.innerHTML = '';
-                        const updatedClone = updatedTable.cloneNode(true);
-                        updatedClone.style.width = '100%';
-                        updatedClone.style.transform = 'none';
-                        updatedClone.style.fontSize = '14px';
-                        modalTableContainer.appendChild(updatedClone);
-                    }
-                };
-                
-                selectWrap.appendChild(label);
-                selectWrap.appendChild(selectClone);
+                origSelects.forEach(origSelect => {
+                    const group = document.createElement('div');
+                    group.style.display = 'flex';
+                    group.style.alignItems = 'center';
+                    group.style.gap = '6px';
+
+                    const label = document.createElement('label');
+                    label.style.fontWeight = 'bold';
+                    label.style.fontSize = '13px';
+                    label.style.color = '#4a3325';
+                    label.textContent = origSelect.classList.contains('matrix-type-select') ? 'Baseline Strength:' : 'Varga:';
+                    
+                    const selectClone = origSelect.cloneNode(true);
+                    selectClone.value = origSelect.value;
+                    selectClone.style.padding = '5px 10px';
+                    selectClone.style.fontSize = '13px';
+                    selectClone.style.borderRadius = '4px';
+                    selectClone.style.border = '1px solid #d5c8b2';
+                    selectClone.style.background = '#fffdfa';
+                    selectClone.style.color = '#4a3325';
+                    selectClone.style.fontWeight = '600';
+                    selectClone.onchange = function() {
+                        origSelect.value = this.value;
+                        updateWidget(cell);
+                        const updatedTable = cell.querySelector('table');
+                        if (updatedTable) {
+                            modalTableContainer.innerHTML = '';
+                            const updatedClone = updatedTable.cloneNode(true);
+                            updatedClone.style.width = '100%';
+                            updatedClone.style.transform = 'none';
+                            updatedClone.style.fontSize = '14px';
+                            modalTableContainer.appendChild(updatedClone);
+                        }
+                    };
+                    
+                    group.appendChild(label);
+                    group.appendChild(selectClone);
+                    selectWrap.appendChild(group);
+                });
                 container.appendChild(selectWrap);
             }
             
@@ -2446,6 +2477,11 @@
             
             const varga = vargaSelect ? vargaSelect.value : 'D1';
             const matrixType = matrixSelect.value;
+            
+            const titleEl = cell.querySelector('.quant-matrices-title');
+            if (titleEl) {
+                titleEl.textContent = `${varga} - Strength Matrices`;
+            }
             
             tbody.innerHTML = '';
             if (tfoot) {
@@ -2883,15 +2919,24 @@
         }
 
         
-        function renderKalaAspectTable(tableId, dataKey, columnsList, isHouse=false) {
-            const tables = document.querySelectorAll('#' + tableId);
+        function renderKalaAspectTable(target, dataKey, columnsList, isHouse=false, customAspects=null) {
+            let tables = [];
+            if (typeof target === 'string') {
+                tables = Array.from(document.querySelectorAll('#' + target));
+            } else if (target && target.tagName === 'TABLE') {
+                tables = [target];
+            } else if (target && target.querySelector) {
+                const t = target.querySelector('table');
+                if (t) tables = [t];
+            }
             if (tables.length === 0) return;
             
-            if (!currentChartData || !currentChartData.advanced_aspects) return;
+            const adv = customAspects || (currentChartData ? currentChartData.advanced_aspects : null);
+            if (!adv) return;
             
-            const aspects = currentChartData.advanced_aspects[dataKey];
-            const totals = currentChartData.advanced_aspects.totals ? currentChartData.advanced_aspects.totals[dataKey] : null;
-            const yutis = currentChartData.advanced_aspects.yutis || {};
+            const aspects = adv[dataKey];
+            const totals = adv.totals ? adv.totals[dataKey] : null;
+            const yutis = adv.yutis || {};
             if (!aspects) return;
             
             const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
@@ -2916,9 +2961,9 @@
                     columnsList.forEach(c => {
                         const cKey = c.toString();
                         if (!isHouse && p === c) {
-                            html += `<td>--</td>`;
+                            html += `<td style="color:#a89f91;">--</td>`;
                         } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
-                            html += `<td style="color:red; font-weight:bold;">Y</td>`;
+                            html += `<td style="color:#c0392b; font-weight:bold;">Y</td>`;
                         } else {
                             const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
                             if (entry && entry.raw > 0) {
@@ -2934,49 +2979,77 @@
                 
                 // Totals Row (+)
                 const trPlus = document.createElement('tr');
-                let plusHtml = `<td><strong>+</strong></td>`;
+                trPlus.className = 'total-row';
+                let plusHtml = `<td><strong style="color: #27ae60;">+</strong></td>`;
                 columnsList.forEach(c => {
                     const cKey = c.toString();
                     const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
-                    plusHtml += `<td>${v > 0 ? v : ''}</td>`;
+                    plusHtml += `<td style="color: #27ae60; font-weight: bold;">${v > 0 ? v : ''}</td>`;
                 });
                 trPlus.innerHTML = plusHtml;
                 tbody.appendChild(trPlus);
                 
                 // Totals Row (-)
                 const trMinus = document.createElement('tr');
-                let minusHtml = `<td><strong>-</strong></td>`;
+                trMinus.className = 'total-row';
+                let minusHtml = `<td><strong style="color: #c0392b;">-</strong></td>`;
                 columnsList.forEach(c => {
                     const cKey = c.toString();
                     const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
-                    minusHtml += `<td>${v > 0 ? v : ''}</td>`;
+                    minusHtml += `<td style="color: #c0392b; font-weight: bold;">${v > 0 ? v : ''}</td>`;
                 });
                 trMinus.innerHTML = minusHtml;
                 tbody.appendChild(trMinus);
             });
         }
 
-        function updateAspectsTable(varga) {
-            const rasiTbody = null;
-            const pTbody = document.querySelector('#grahaPlanetsTable tbody');
-            const cTbody = document.querySelector('#grahaCuspsTable tbody');
+        function updateAspectsWidgetForCell(cell) {
+            if (!currentChartData) return;
+            const widgetType = cell.dataset.widget;
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
             
-            if (rasiTbody) rasiTbody.innerHTML = '';
-            if (pTbody) pTbody.innerHTML = '';
-            if (cTbody) cTbody.innerHTML = '';
+            let advData = null;
+            if (currentChartData.varga_advanced_aspects && currentChartData.varga_advanced_aspects[varga]) {
+                advData = currentChartData.varga_advanced_aspects[varga];
+            } else {
+                advData = currentChartData.advanced_aspects;
+            }
+            if (!advData) return;
             
-            if (!currentChartData || !currentChartData.vargas[varga]) return;
+            const table = cell.querySelector('table');
+            const titleSpan = cell.querySelector('.aspect-table-title');
             
-            const grahas = currentChartData.vargas[varga].grahas;
-            const planetsOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            const planetsList = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            const housesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
             
+            if (widgetType === 'aspects-planets') {
+                if (titleSpan) titleSpan.textContent = `${varga} - Aspects (Planets)`;
+                if (table) renderKalaAspectTable(table, 'planets', planetsList, false, advData);
+            } else if (widgetType === 'aspects-equal-houses') {
+                if (titleSpan) titleSpan.textContent = `${varga} - Aspects to Equal Houses`;
+                if (table) renderKalaAspectTable(table, 'equal_cusps', housesList, true, advData);
+            } else if (widgetType === 'aspects-bhava-chalita') {
+                if (titleSpan) titleSpan.textContent = `${varga} - Aspects to Bhava Chalita`;
+                if (table) renderKalaAspectTable(table, 'cusps', housesList, true, advData);
+            }
+        }
+
+        function updateAspectsTable(varga = 'D1') {
+            document.querySelectorAll('.grid-cell[data-widget^="aspects-"]').forEach(cell => {
+                updateAspectsWidgetForCell(cell);
+            });
             
-            if (varga === "D1") {
-                const planetsList = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
-                const housesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-                renderKalaAspectTable('kalaAspectsPlanetsTable', 'planets', planetsList, false);
-                renderKalaAspectTable('kalaAspectsEqualHousesTable', 'equal_cusps', housesList, true);
-                renderKalaAspectTable('kalaAspectsBhavaChalitaTable', 'cusps', housesList, true);
+            // Standalone or legacy table updates
+            const planetsList = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            const housesList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+            const advData = (currentChartData && currentChartData.varga_advanced_aspects && currentChartData.varga_advanced_aspects[varga])
+                ? currentChartData.varga_advanced_aspects[varga]
+                : (currentChartData ? currentChartData.advanced_aspects : null);
+            if (advData) {
+                renderKalaAspectTable('kalaAspectsPlanetsTable', 'planets', planetsList, false, advData);
+                renderKalaAspectTable('kalaAspectsEqualHousesTable', 'equal_cusps', housesList, true, advData);
+                renderKalaAspectTable('kalaAspectsBhavaChalitaTable', 'cusps', housesList, true, advData);
             }
 
             // 1. Rasi Aspects
@@ -3629,21 +3702,18 @@
             
             const type = el.getAttribute('data-type');
             const id = el.getAttribute('data-id');
-            const infoContent = document.getElementById('context-info-content');
-            if (!infoContent) return;
-
-            let infoHtml = `<h3>${id}</h3>`;
+            window.currentSelectedEntity = { type, id };
             
-            // Try to pull data from knowledge base if available
-            let kbData = null;
-            if (window.knowledgeBase && window.knowledgeBase[type]) {
-                kbData = window.knowledgeBase[type][id];
+            // Detect varga of the clicked chart
+            let clickedVarga = 'D1';
+            const chartCell = el.closest('.grid-cell');
+            if (chartCell) {
+                const vSel = chartCell.querySelector('.varga-select');
+                if (vSel) clickedVarga = vSel.value;
             }
             
             if (type === 'planet') {
-                const vargaSelect = document.getElementById('vargaSelect1');
-                const varga = vargaSelect ? vargaSelect.value : 'D1';
-                const mathData = currentChartData && currentChartData.vargas[varga].grahas[id];
+                const mathData = currentChartData && currentChartData.vargas && currentChartData.vargas[clickedVarga] && currentChartData.vargas[clickedVarga].grahas[id];
                 
                 // Add highlights for Rashi Aspects
                 if (mathData && mathData.aspects_signs) {
@@ -3663,8 +3733,8 @@
                             node.classList.add('highlight-active');
                         });
                         
-                        if (currentChartData && currentChartData.vargas[varga]) {
-                            const grahas = currentChartData.vargas[varga].grahas;
+                        if (currentChartData && currentChartData.vargas[clickedVarga]) {
+                            const grahas = currentChartData.vargas[clickedVarga].grahas;
                             for (const pName in grahas) {
                                 if (grahas[pName].sign === asSign) {
                                     document.querySelectorAll(`.interactive[data-type="planet"][data-id="${pName}"]`).forEach(node => {
@@ -3675,14 +3745,39 @@
                         }
                     });
                 }
+            }
+            
+            // Update any Context Info widgets on screen
+            document.querySelectorAll('.grid-cell[data-widget="info"]').forEach(infoCell => {
+                const sel = infoCell.querySelector('.varga-select');
+                if (sel) sel.value = clickedVarga;
+                refreshContextInfoForCell(infoCell);
+            });
+            
+            // Also update standalone context-info if present
+            const standaloneInfo = document.getElementById('context-info-content');
+            if (standaloneInfo) {
+                standaloneInfo.innerHTML = renderContextInfoHtml(type, id, clickedVarga);
+            }
+        });
 
+        function renderContextInfoHtml(type, id, varga = 'D1') {
+            let infoHtml = `<h3>${id}</h3>`;
+            let kbData = null;
+            if (window.knowledgeBase && window.knowledgeBase[type]) {
+                kbData = window.knowledgeBase[type][id];
+            }
+            
+            if (type === 'planet') {
+                const mathData = currentChartData && currentChartData.vargas && currentChartData.vargas[varga] && currentChartData.vargas[varga].grahas[id];
+                
                 if (kbData) {
                     infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
                     infoHtml += `<div style="font-size: 13px; margin-bottom: 10px;"><i>${kbData.title}</i></div>`;
                 }
                 
                 if (mathData) {
-                    infoHtml += `<p><strong>Degree:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
+                    infoHtml += `<p><strong>Degree in ${varga}:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
                     infoHtml += `<p><strong>Sign:</strong> ${mathData.sign}</p>`;
                     
                     const nakData = currentChartData && currentChartData.nakshatras && currentChartData.nakshatras.grahas[id];
@@ -3691,7 +3786,7 @@
                     }
                     
                     if (mathData.dignity_breakdown && mathData.dignity_breakdown.final_dignity) {
-                        infoHtml += `<p><strong>Dignity:</strong> ${mathData.dignity_breakdown.final_dignity}</p>`;
+                        infoHtml += `<p><strong>Dignity in ${varga}:</strong> ${mathData.dignity_breakdown.final_dignity}</p>`;
                     }
                 }
                 
@@ -3730,9 +3825,32 @@
                     infoHtml += `<p>Details about nakshatra ${id} will load here.</p>`;
                 }
             }
+            return infoHtml;
+        }
+
+        function refreshContextInfoForCell(cell) {
+            if (!cell) return;
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+            const titleEl = cell.querySelector('.context-info-title');
+            if (titleEl) {
+                titleEl.textContent = `${varga} - Context Info`;
+            }
             
-            infoContent.innerHTML = infoHtml;
-        });
+            const infoContent = cell.querySelector('#context-info-content') || cell.querySelector('.sub-window-content');
+            if (!infoContent) return;
+            
+            if (window.currentSelectedEntity) {
+                infoContent.innerHTML = renderContextInfoHtml(window.currentSelectedEntity.type, window.currentSelectedEntity.id, varga);
+            } else if (currentChartData && currentChartData.vargas && currentChartData.vargas[varga]) {
+                const lagna = currentChartData.vargas[varga].lagna;
+                let html = `<h3>${varga} Overview</h3>`;
+                html += `<p><strong>Ascendant:</strong> ${lagna.sign} (${lagna.degree_0_to_30.toFixed(2)}°)</p>`;
+                html += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 12px 0;">`;
+                html += `<p style="font-size: 13px; color: #8c7b64; font-style: italic;">Click on any planet, sign, or house in a chart to view details.</p>`;
+                infoContent.innerHTML = html;
+            }
+        }
     </script>
     
     <!-- Global Custom Tooltip Engine -->
