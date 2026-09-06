@@ -31,9 +31,9 @@ This master roadmap outlines our step-by-step plan to verify and expand Astra's 
 
 ### Phase 4: Shadbala Sub-Pillars Precision Calibration (Level 5)
 *Dataset: `angelina_jolie_shadbala_breakdown.csv` (Extracted from `angelina_jolie_shadbala.pdf`)*
-- [ ] **Comprehensive Sub-Pillar Tests:** Update `tests/test_shadbala.py` to assert all 35 sub-metrics (Sthana, Dig, Kaala, Ayana, Cheshta, Drik, Naisargika, Total Virupas, Rupas, and Relative Ranks).
-- [ ] **Calibrate Mercury Cheshta Bala:** Refine Mercury motional strength calculation in `jyotish/shadbala/shadbala.py` to eliminate the remaining 1.19 Virupa difference.
-- [ ] **Audit Saptavargaja Bala:** Ensure planetary strength contributions across the 7 primary Vargas match Kala exactly.
+- [x] **Comprehensive Sub-Pillar Tests:** Update `tests/test_shadbala.py` to assert all 35 sub-metrics (Sthana, Dig, Kaala, Ayana, Cheshta, Drik, Naisargika, Total Virupas, Rupas, and Relative Ranks).
+- [x] **Calibrate Mercury Cheshta Bala:** Refine Mercury motional strength calculation in `jyotish/shadbala/shadbala.py` to eliminate the remaining 1.19 Virupa difference.
+- [x] **Audit Saptavargaja Bala:** Ensure planetary strength contributions across the 7 primary Vargas match Kala exactly.
 
 ### Phase 5: Vimshottari Dasa Full Cycle Timeline (Level 7)
 *Dataset: `angelina_jolie_vimshottari_antardasas.csv` (Extracted from `angelina_jolie_vimshottari_dasa_full.pdf`)*

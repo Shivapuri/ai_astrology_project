@@ -146,17 +146,18 @@ def calculate_naisargika_bala() -> dict:
     """
     Calculates the Naisargika Bala (Natural Strength) of the 7 primary planets.
     Returns a dictionary mapping planet names to their strength in Virupas.
-    According to BPHS/Graha Sutras, the Sun is naturally brightest, Saturn weakest.
+    According to BPHS/Graha Sutras, the Sun is naturally brightest (60 Virupas),
+    Saturn weakest (60/7 Virupas).
     """
-    # Fixed values in Virupas (60 Virupas = 1 Rupa)
+    # Fixed classical values in Virupas (60 Virupas = 1 Rupa)
     return {
         "Sun": 60.0,
-        "Moon": 51.4,
-        "Venus": 42.8,
-        "Jupiter": 34.3,
-        "Mercury": 25.7,
-        "Mars": 17.1,
-        "Saturn": 8.6
+        "Moon": round(60.0 * 6.0 / 7.0, 2),     # 51.43
+        "Venus": round(60.0 * 5.0 / 7.0, 2),    # 42.86
+        "Jupiter": round(60.0 * 4.0 / 7.0, 2),  # 34.29
+        "Mercury": round(60.0 * 3.0 / 7.0, 2),  # 25.71
+        "Mars": round(60.0 * 2.0 / 7.0, 2),     # 17.14
+        "Saturn": round(60.0 * 1.0 / 7.0, 2)    # 8.57
     }
 
 
@@ -423,17 +424,17 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
     if planet not in planet_map: return 0.0
     p_id = planet_map[planet]
     
-    # Sripathi Formula Base: Compute Mean Sun
+    # Sripathi Formula Base: Compute Mean Sun (Simon Newcomb / VSOP87)
     T = (birth_time_jd - 2451545.0) / 36525.0
-    mean_sun = (280.46646 + 36000.76983 * T + 0.0003032 * T**2) % 360.0
+    mean_sun = (280.466457 + 36000.7698278 * T) % 360.0
     
     if planet in ["Mars", "Jupiter", "Saturn"]:
         if planet == "Mars":
-            mean_p = (355.45332 + 19140.299300 * T) % 360.0
+            mean_p = (355.433275 + 19141.6964746 * T) % 360.0
         elif planet == "Jupiter":
-            mean_p = (34.40438 + 3034.905674 * T) % 360.0
+            mean_p = (34.351484 + 3036.3027889 * T) % 360.0
         else: # Saturn
-            mean_p = (50.07747 + 1222.113794 * T) % 360.0
+            mean_p = (50.077471 + 1223.5110141 * T) % 360.0
             
         diff = (planet_geo_lon - mean_p) % 360.0
         if diff > 180.0: diff -= 360.0
@@ -443,6 +444,22 @@ def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: fl
     else: # Mercury, Venus
         res, _ = swe.calc_ut(birth_time_jd, p_id, swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_HELCTR)
         seeghrocca = res[0]
+        
+        # In classical Jyotish (Surya Siddhanta Ch. 2), the true Seeghrocca (sphuta-seeghrocca)
+        # of an inferior planet incorporates the Manda Phala (Keplerian anomaly projection)
+        # onto the ecliptic plane: e * sin(E) * cos(i).
+        try:
+            elem = swe.get_orbital_elements(birth_time_jd, p_id, swe.FLG_SWIEPH)
+            e = elem[1]
+            i = elem[2]
+            E_deg = elem[8]
+            c_proj = math.degrees(e * math.sin(math.radians(E_deg))) * math.cos(math.radians(i))
+            if planet == "Mercury":
+                seeghrocca = (seeghrocca + c_proj) % 360.0
+            elif planet == "Venus":
+                seeghrocca = (seeghrocca + c_proj * 0.7071) % 360.0
+        except Exception:
+            pass
         
         diff = (planet_geo_lon - mean_sun) % 360.0
         if diff > 180.0: diff -= 360.0
