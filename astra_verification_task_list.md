@@ -24,9 +24,10 @@ This master roadmap outlines our step-by-step plan to verify and expand Astra's 
 
 ### Phase 3: Astronomical & Basic Placements Baseline (Level 1 & 2)
 *Dataset: `angelina_jolie_basic_placements.csv` (Extracted from `angelina_jolie_basic_printout.pdf`)*
-- [ ] **Test Core Coordinates:** Write unit test in `tests/test_basic_placements.py` verifying D1 planetary longitudes, signs, retrograde flags, and relative motion speeds.
-- [ ] **Test Nakshatras & Padas:** Verify that Dhruva Galactic Center tropical-to-sidereal equatorial conversion yields exact Nakshatra numbers (1-27) and Padas (1-4).
-- [ ] **Verify Campanus House Cusps:** Verify that house cusps match Kala within seconds of arc.
+- [x] **Test Core Coordinates:** Verified D1 longitudes, signs, arcminutes, and retrogrades in `tests/test_basic_placements.py`.
+- [x] **Test Nakshatras & Padas:** Calibrated Ecliptic Lagna Nakshatra (Pushya Pada 2) and Equatorial Graha Nakshatras.
+- [x] **Verify Campanus House Cusps:** Verified all 12 cusps against Kala within arcsecond tolerance.
+- [x] **Calibrate Node Aspect Reception:** Fixed `aspects.py` line 209 to calculate Rahu (+96 / -127) and Ketu (+7 / -19).
 
 ### Phase 4: Shadbala Sub-Pillars Precision Calibration (Level 5)
 *Dataset: `angelina_jolie_shadbala_breakdown.csv` (Extracted from `angelina_jolie_shadbala.pdf`)*

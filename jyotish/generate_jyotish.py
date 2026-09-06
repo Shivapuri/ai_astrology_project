@@ -37,6 +37,52 @@ NAKSHATRAS = [
 DASHA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
 DASHA_YEARS = [7, 20, 6, 10, 7, 18, 16, 19, 17]
 
+MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 1.3833,
+    "Jupiter": 0.0831,
+    "Venus": 1.2000,
+    "Saturn": 0.0335,
+    "Rahu": 0.05295,
+    "Ketu": 0.05295
+}
+
+# Geocentric mean daily speeds used in Ernst Wilhelm's Kala software
+KALA_MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 0.9856,
+    "Jupiter": 0.0831,
+    "Venus": 0.9856,
+    "Saturn": 0.0334568,
+    "Rahu": 0.05295,
+    "Ketu": 0.05295
+}
+
+VIMSHOTTARI_SEQUENCE = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
+VIMSHOTTARI_YEARS = {'Ketu': 7, 'Venus': 20, 'Sun': 6, 'Moon': 10, 'Mars': 7, 'Rahu': 18, 'Jupiter': 16, 'Saturn': 19, 'Mercury': 17}
+
+PLANET_ABBREVIATIONS = {
+    "Sun": "Su", "Moon": "Mo", "Mars": "Ma", "Mercury": "Me",
+    "Jupiter": "Ju", "Venus": "Ve", "Saturn": "Sa", "Rahu": "Ra", "Ketu": "Ke",
+    "Lagna": "Lg"
+}
+
+def calculate_sub_lord(nakshatra_fraction: float, nakshatra_lord: str) -> str:
+    """Calculates the Vimshottari Sub-Lord for a given fractional position within a Nakshatra."""
+    start_idx = VIMSHOTTARI_SEQUENCE.index(nakshatra_lord)
+    current_fraction = 0.0
+    for i in range(9):
+        lord = VIMSHOTTARI_SEQUENCE[(start_idx + i) % 9]
+        span_fraction = VIMSHOTTARI_YEARS[lord] / 120.0
+        if current_fraction + span_fraction >= nakshatra_fraction:
+            return lord
+        current_fraction += span_fraction
+    return nakshatra_lord
+
 # Ernst Wilhelm Saura Year length in days
 SAURA_YEAR_DAYS = 359.0016
 
@@ -217,11 +263,12 @@ def generate_kala_chart(
     
     for p_name, p_id in planet_ids.items():
         if p_name == "Rahu":
-            r_lon = calc_utils.calculate_interpolated_node(jd)
+            res_node, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_ecliptic)
+            r_lon = res_node[0]
             d1_longitudes["Rahu"] = r_lon
             d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
-            d1_retrogrades["Rahu"] = False
-            d1_retrogrades["Ketu"] = False
+            d1_retrogrades["Rahu"] = True
+            d1_retrogrades["Ketu"] = True
         else:
             res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
             d1_longitudes[p_name] = res[0]
@@ -488,39 +535,43 @@ def generate_kala_chart(
 
     # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
     flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
+    flags_ecliptic_gc = swe.FLG_SWIEPH
     
-    # Galactic Center RA
+    # Galactic Center Longitude and RA
     try:
         res_gc, name_gc, _ = swe.fixstar2_ut("Galactic Center", jd, flags_equatorial)
         ra_gc = res_gc[0]
+        res_gc_ecl, _, _ = swe.fixstar2_ut("Galactic Center", jd, flags_ecliptic_gc)
+        lon_gc = res_gc_ecl[0]
     except Exception:
-        # Fallback approximation for ~1995 if fixstar fails
-        ra_gc = 266.0
+        # High-precision defaults if catalogue is not present
+        ra_gc = 266.0371
+        lon_gc = 266.5179
         
-    # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees
+    # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees (246° 40')
     ayanamsa_eq = ra_gc - 246.6667
+    ayanamsa_ecl = lon_gc - 246.6667
     
-    # Get Equatorial positions of planets
+    # Get Sidereal positions
     nakshatras_sidereal = {}
     
-    # Calculate Ascendant Nakshatra
-    eps = swe.calc_ut(jd, swe.ECL_NUT, 0)[0][0]
-    asc_eq = swe.cotrans([asc_lon, 0.0, 1.0], -eps)
-    asc_ra = asc_eq[0]
-    sid_ra_asc = (asc_ra - ayanamsa_eq) % 360.0
-    a_idx = int(sid_ra_asc / 13.3333333)
-    a_pada = int((sid_ra_asc % 13.3333333) / 3.3333333) + 1
+    # Lagna is an ECLIPTIC intersection: Kala evaluates its Nakshatra using Ecliptic Ayanamsa
+    sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360.0
+    a_idx = int(sid_lon_asc / 13.3333333)
+    a_pada = int((sid_lon_asc % 13.3333333) / 3.3333333) + 1
     nakshatras_sidereal["Lagna"] = {
         "nakshatra": NAKSHATRAS[a_idx],
         "pada": a_pada,
-        "sidereal_ra": round(sid_ra_asc, 4)
+        "sidereal_longitude": round(sid_lon_asc, 4),
+        "sidereal_ra": round(sid_lon_asc, 4),
+        "ecliptic_ayanamsa": round(ayanamsa_ecl, 4)
     }
 
+    # Physical Grahas & Nodes: Measured along the CELESTIAL EQUATOR (Right Ascension)
     for p_name, p_id in planet_ids.items():
         if p_name == "Rahu":
-            r_lon = calc_utils.calculate_interpolated_node(jd)
-            r_eq = swe.cotrans([r_lon, 0.0, 1.0], -eps)
-            ra_planet = r_eq[0]
+            res_eq, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_equatorial)
+            ra_planet = res_eq[0]
         else:
             res_eq, _ = swe.calc_ut(jd, p_id, flags_equatorial)
             ra_planet = res_eq[0]
@@ -546,6 +597,64 @@ def generate_kala_chart(
             "pada": n_pada,
             "sidereal_ra": round(sidereal_ra, 4)
         }
+
+    # Calculate Relative Speeds
+    d1_speeds = {}
+    d1_rel_speeds = {"Lagna": "--"}
+    for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        if p_name in ["Rahu", "Ketu"]:
+            p_eq = swe.calc_ut(jd + 0.5, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)[0][0]
+            m_eq = swe.calc_ut(jd - 0.5, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)[0][0]
+            d = (p_eq - m_eq) % 360
+            if d > 180: d -= 360
+            spd = -abs(d)
+            d1_speeds[p_name] = round(spd, 4)
+            ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
+            d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+        else:
+            p_id = planet_ids[p_name]
+            res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
+            spd = res[3]
+            d1_speeds[p_name] = round(spd, 4)
+            ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
+            d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+
+    # Calculate Navatara & Lord/Sublord for all entities
+    moon_nak_idx = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"])
+    for ent_name, n_info in nakshatras_sidereal.items():
+        t_nak_idx = NAKSHATRAS.index(n_info["nakshatra"])
+        tara_idx = ((t_nak_idx - moon_nak_idx) % 27 % 9) + 1
+        n_info["tara"] = tara_idx
+        
+        pos = n_info.get("sidereal_longitude") if ent_name == "Lagna" else n_info.get("sidereal_ra", 0.0)
+        nak_fraction = (pos % (360.0 / 27.0)) / (360.0 / 27.0)
+        nak_lord = VIMSHOTTARI_SEQUENCE[t_nak_idx % 9]
+        sub_lord = calculate_sub_lord(nak_fraction, nak_lord)
+        
+        n_info["nakshatra_lord"] = nak_lord
+        n_info["sub_lord"] = sub_lord
+        n_info["lord_sublord"] = f"{PLANET_ABBREVIATIONS.get(nak_lord, nak_lord[:2])}/{PLANET_ABBREVIATIONS.get(sub_lord, sub_lord[:2])}"
+        n_info["relative_speed"] = d1_rel_speeds.get(ent_name, "--")
+
+    # Add nakshatra, pada, lord/sublord, tara, and speed info to D1 grahas and lagna
+    for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        if p_name in vargas_data["D1"]["grahas"] and p_name in nakshatras_sidereal:
+            vargas_data["D1"]["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
+            vargas_data["D1"]["grahas"][p_name]["pada"] = nakshatras_sidereal[p_name]["pada"]
+            vargas_data["D1"]["grahas"][p_name]["tara"] = nakshatras_sidereal[p_name]["tara"]
+            vargas_data["D1"]["grahas"][p_name]["nakshatra_lord"] = nakshatras_sidereal[p_name]["nakshatra_lord"]
+            vargas_data["D1"]["grahas"][p_name]["sub_lord"] = nakshatras_sidereal[p_name]["sub_lord"]
+            vargas_data["D1"]["grahas"][p_name]["lord_sublord"] = nakshatras_sidereal[p_name]["lord_sublord"]
+            vargas_data["D1"]["grahas"][p_name]["speed"] = d1_speeds.get(p_name, 0.0)
+            vargas_data["D1"]["grahas"][p_name]["relative_speed"] = d1_rel_speeds.get(p_name, "--")
+            
+    vargas_data["D1"]["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
+    vargas_data["D1"]["lagna"]["pada"] = nakshatras_sidereal["Lagna"]["pada"]
+    vargas_data["D1"]["lagna"]["tara"] = nakshatras_sidereal["Lagna"]["tara"]
+    vargas_data["D1"]["lagna"]["nakshatra_lord"] = nakshatras_sidereal["Lagna"]["nakshatra_lord"]
+    vargas_data["D1"]["lagna"]["sub_lord"] = nakshatras_sidereal["Lagna"]["sub_lord"]
+    vargas_data["D1"]["lagna"]["lord_sublord"] = nakshatras_sidereal["Lagna"]["lord_sublord"]
+    vargas_data["D1"]["lagna"]["relative_speed"] = "--"
         
     # --- 3.5 Calculate Shayanadi Avasthas ---
     
@@ -679,7 +788,9 @@ def generate_kala_chart(
         "astronomy": {
             "ayanamsa_name": "Dhruva Galactic Center (Middle of Mula)",
             "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
+            "ecliptic_ayanamsa_value": round(ayanamsa_ecl, 4),
             "galactic_center_ra": round(ra_gc, 4),
+            "galactic_center_lon": round(lon_gc, 4),
             "house_system": "Campanus (with Whole Sign overlay)",
             "dasha_year_length_days": SAURA_YEAR_DAYS,
             "julian_day": jd

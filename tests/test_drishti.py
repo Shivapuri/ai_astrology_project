@@ -114,3 +114,27 @@ def test_graha_drishti_yutis():
             
             assert is_yuti_calc == is_yuti_exp, f"Yuti mismatch for {aspecting} aspecting {aspected}: expected {is_yuti_exp}, got {is_yuti_calc}"
 
+def test_node_aspect_reception_and_yutis():
+    bases = load_baselines()
+    expected = bases.get("aspects_planets", {})
+    
+    chart = generate_kala_chart(
+        name="Angelina Jolie", year=DOB_YEAR, month=DOB_MONTH, day=DOB_DAY,
+        hour=DOB_HOUR, minute=DOB_MINUTE, latitude=LAT, longitude=LON, timezone_offset=TZ
+    )
+    
+    totals = chart["advanced_aspects"]["totals"]["planets"]
+    yutis = chart["advanced_aspects"]["yutis"]
+    
+    # Rahu Aspects: Expected +96 / -127
+    assert abs(totals["Rahu"]["plus"] - 96.0) <= 1.5
+    assert abs(totals["Rahu"]["minus"] - 127.0) <= 1.5
+    
+    # Ketu Aspects: Expected +7 / -19
+    assert abs(totals["Ketu"]["plus"] - 7.0) <= 1.5
+    assert abs(totals["Ketu"]["minus"] - 19.0) <= 1.5
+    
+    # Conjunctions (Yutis) with Ketu in Gemini
+    assert "Sun" in yutis["Ketu"], "Sun should be conjunct Ketu in Gemini"
+    assert "Mercury" in yutis["Ketu"], "Mercury should be conjunct Ketu in Gemini"
+

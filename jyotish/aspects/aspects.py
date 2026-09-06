@@ -216,7 +216,8 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
 
     # 1. Aspects to Planets and Yutis
     for aspected, aspected_info in planets_data.items():
-        if aspected in ["Rahu", "Ketu"]: continue
+        # Rahu and Ketu cannot cast Graha Drishti, but they DO receive aspects
+        # and form Yutis (conjunctions) with planets in the same sign.
         
         # Calculate Yutis (Conjunctions in same sign)
         results["yutis"][aspected] = []

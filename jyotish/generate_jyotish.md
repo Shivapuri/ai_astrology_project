@@ -25,13 +25,16 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
 
 ### B. Sidereal Equatorial Nakshatras (Dhruva Galactic Center)
 *   **Ayanamsa Definition:** The zodiac of Nakshatras is distinct from Rasis. It is anchored to the **Galactic Center** (GC). The GC is locked precisely to the middle of the Nakshatra *Mula* ($246^\circ 40'$, or $246.6667^\circ$).
-*   **Equatorial Projection:** Nakshatras are not measured on the Ecliptic. Ecliptic longitudes must be converted to Equatorial Right Ascension (RA) using `swe.cotrans`.
+*   **Equatorial Projection for Physical Grahas:** Physical bodies (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, and the Nodes) are measured along the celestial equator (Right Ascension, RA).
+*   **Ecliptic Ayanamsa for Ascendant (Lagna):** The Ascendant is by astronomical definition an intersection on the Ecliptic Plane (horizon intersecting the ecliptic circle). Kala evaluates the Lagna's Nakshatra and Pada using the Ecliptic Ayanamsa ($\text{Tropical Ascendant} - \text{Ayanamsa}_{\text{Ecliptic}}$).
 *   **Mathematical Formula:**
-    1. Calculate GC Right Ascension (RA).
+    1. Calculate GC RA (`ra_gc`) and GC Ecliptic Longitude (`lon_gc`).
     2. `ayanamsa_eq = ra_gc - 246.6667`
-    3. Calculate Planet's Equatorial RA.
-    4. `sidereal_ra = (planet_ra - ayanamsa_eq) % 360`
-    5. `nakshatra_index = floor(sidereal_ra / 13.3333333)`
+    3. `ayanamsa_ecl = lon_gc - 246.6667`
+    4. For Lagna: `sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360`
+    5. For Physical Planets: `sidereal_ra = (planet_ra - ayanamsa_eq) % 360`
+    6. `nakshatra_index = floor(position / 13.3333333)`
+    7. `pada = floor((position % 13.3333333) / 3.3333333) + 1`
 
 ### C. Vimshottari Dasha (Saura Year)
 *   **Lordship:** Determined by the Moon's Sidereal RA Nakshatra.
@@ -41,6 +44,14 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
     1. `fraction_left = 1.0 - ((moon_sid_ra % 13.3333) / 13.3333)`
     2. `balance_days = fraction_left * total_mahadasha_years * 359.0016`
     3. Add `balance_days` to the birth Julian Day to find the start of the next Dasha.
+
+### D. Navatara & Relative Motion Speeds
+*   **Navatara (Tara Chakra):** Computed from the Moon's Janma Nakshatra index (1 to 27):
+    $$\text{Tara Index} = \left((\text{Target Nakshatra Index} - \text{Moon Janma Nakshatra Index}) \pmod{27} \pmod 9\right) + 1$$
+*   **Lord & Sub-Lord:** Each Nakshatra's Vimshottari lord is divided into 9 unequal sub-divisions proportional to the Vimshottari dasha years (out of 120 years total), beginning with the lord of the nakshatra itself.
+*   **Relative Speed Ratio:** Instantaneous daily motion compared against mean motion:
+    $$\text{Speed Ratio} = \left(\frac{\text{Instantaneous Motion}}{\text{Mean Motion}}\right) \times 100\%$$
+    For geocentric inner planets (Mercury, Venus), the mean motion is anchored to the Sun's geocentric mean rate ($0.9856^\circ/\text{day}$). For the Nodes, motion is computed over a 1-day interval centered on the birth coordinate.
 
 ---
 

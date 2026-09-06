@@ -38,7 +38,7 @@ If Rasi Drishti is like rooms with windows, Graha Drishti is like a person shini
 
 ### The Technical Rules
 By default, every planet "looks" directly across the sky (180 degrees) with full strength (60 Virupas). As you move away from 180 degrees, the strength of the glance fades mathematically. 
-*Note: In this strict system, the shadow nodes Rahu and Ketu do **not** cast Graha Drishti.*
+*Note: In this strict system, the shadow nodes Rahu and Ketu do **not** cast Graha Drishti (they do not aspect other planets), but they **do receive** aspects from the classical planets and form conjunctions (Yutis) with planets sharing the same sign.*
 
 **Special Planetary Glances:**
 Three planets have "special" glances that are added on top of the base calculation:

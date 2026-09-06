@@ -45,23 +45,25 @@ def load_dignities():
                 expected[varga][p] = CODE_TO_DIGNITY.get(row[i + 1].strip(), row[i + 1].strip())
     return expected
 
-def test_dignities_baseline():
-    expected = load_dignities()
-    chart = generate_kala_chart(
+@pytest.fixture(scope="module")
+def aj_chart():
+    return generate_kala_chart(
         name="Angelina Jolie", year=DOB_YEAR, month=DOB_MONTH, day=DOB_DAY,
         hour=DOB_HOUR, minute=DOB_MINUTE, latitude=LAT, longitude=LON, timezone_offset=TZ
     )
+
+def test_varga_signs_and_dignities(aj_chart):
+    """Verifies that each planet occupies the exact correct dignity across all 16 harmonic charts."""
+    vargas = aj_chart["vargas"]
+    expected_dignities = load_dignities()
     
-    # Compare
-    vargas = chart.get("vargas", {})
-    for varga_name, expected_planets in expected.items():
-        assert varga_name in vargas, f"Varga {varga_name} missing from calculated chart."
-        calc_grahas = vargas[varga_name].get("grahas", {})
-        for planet in PLANETS:
-            exp_dig = expected_planets[planet]
-            # Handle potential mismatch in key naming
-            if planet not in calc_grahas: continue
-            
+    for v_name, planets_dict in expected_dignities.items():
+        assert v_name in vargas, f"Varga {v_name} missing from calculated chart"
+        calc_grahas = vargas[v_name]["grahas"]
+        
+        for planet, exp_dignity in planets_dict.items():
             calc_dig = calc_grahas[planet]["dignity_breakdown"]["final_dignity"]
-            assert calc_dig == exp_dig, f"Dignity mismatch for {planet} in {varga_name}. Expected {exp_dig}, Got {calc_dig}."
+            assert calc_dig == exp_dignity, (
+                f"Dignity mismatch in {v_name} for {planet}: expected {exp_dignity}, got {calc_dig}"
+            )
 
