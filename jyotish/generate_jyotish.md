@@ -36,14 +36,15 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
     6. `nakshatra_index = floor(position / 13.3333333)`
     7. `pada = floor((position % 13.3333333) / 3.3333333) + 1`
 
-### C. Vimshottari Dasha (Saura Year)
+### C. Vimshottari Dasha (Saura Year Calibration)
 *   **Lordship:** Determined by the Moon's Sidereal RA Nakshatra.
 *   **Fraction Passed:** The exact degree penetration of the Moon into its current $13^\circ 20'$ Nakshatra span determines the balance of years remaining in the first Mahadasha.
-*   **Year Length:** Dashas are calculated using the **Saura Year** (Solar Year) exactly defined as `359.0016` days, not the standard Gregorian 365.24 days or the Savana 360 days.
+*   **Year Length:** Dashas are calculated using the **Saura Year** (Solar Year) exactly defined as `365.2422` days (as configured in Ernst Wilhelm's Kala under `Dasa Settings -> Year Length - Nakshatra Dasas = Saura (365.2422 days)`).
+*   **Modular Implementation:** Full cycle timeline computation (Mahadashas and all 81 Antardashas) is delegated to `jyotish/dashas/vimshottari.py`.
 *   **Mathematical Formula:**
-    1. `fraction_left = 1.0 - ((moon_sid_ra % 13.3333) / 13.3333)`
-    2. `balance_days = fraction_left * total_mahadasha_years * 359.0016`
-    3. Add `balance_days` to the birth Julian Day to find the start of the next Dasha.
+    1. `fraction_left = 1.0 - ((moon_sid_ra % (360.0 / 27.0)) / (360.0 / 27.0))`
+    2. `balance_days = fraction_left * total_mahadasha_years * 365.2422`
+    3. `antardasha_days = ((mahadasha_years * antardasha_years) / 120.0) * 365.2422`
 
 ### D. Navatara & Relative Motion Speeds
 *   **Navatara (Tara Chakra):** Computed from the Moon's Janma Nakshatra index (1 to 27):

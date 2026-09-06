@@ -9,6 +9,7 @@ import jyotish.calc_utils as calc_utils
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
 import jyotish.avasthas as avasthas
+from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEAR_DAYS
 
 try:
     import swisseph as swe
@@ -83,8 +84,7 @@ def calculate_sub_lord(nakshatra_fraction: float, nakshatra_lord: str) -> str:
         current_fraction += span_fraction
     return nakshatra_lord
 
-# Ernst Wilhelm Saura Year length in days
-SAURA_YEAR_DAYS = 359.0016
+
 
 def get_sign(longitude: float) -> tuple[str, float]:
     sign_idx = int(longitude // 30)
@@ -689,54 +689,18 @@ def generate_kala_chart(
             if p_name in vargas_data[v_name]["grahas"]:
                 vargas_data[v_name]["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
 
-    # 4. Vimshottari Dasha (Basic calculation based on Equatorial Moon)
-    moon_sid_ra = nakshatras_sidereal["Moon"]["sidereal_ra"]
-    moon_n_idx = int(moon_sid_ra / 13.3333333)
-    
-    lord_idx = moon_n_idx % 9
-    birth_md_lord = DASHA_LORDS[lord_idx]
-    
-    fraction_passed = (moon_sid_ra % 13.3333333) / 13.3333333
-    fraction_left = 1.0 - fraction_passed
-    
-    total_md_years = DASHA_YEARS[lord_idx]
-    balance_years = fraction_left * total_md_years
-    
-    # Calculate MD start and end based on Saura Years
-    balance_days = balance_years * SAURA_YEAR_DAYS
-    
-    dashas_list = []
-    current_end_jd = jd_local + balance_days
-    
-    # First dasha (balance at birth)
-    md_end_y, md_end_m, md_end_d, _ = swe.revjul(current_end_jd, cal_flag)
-    md_start_y, md_start_m, md_start_d, _ = swe.revjul(current_end_jd - (total_md_years * SAURA_YEAR_DAYS), cal_flag)
-    
-    dashas_list.append({
-        "planet": birth_md_lord,
-        "start": f"{md_start_y:04d}-{md_start_m:02d}-{md_start_d:02d}",
-        "end": f"{md_end_y:04d}-{md_end_m:02d}-{md_end_d:02d}"
-    })
-    
-    # Next 8 dashas
-    for i in range(1, 9):
-        next_idx = (lord_idx + i) % 9
-        d_lord = DASHA_LORDS[next_idx]
-        d_years = DASHA_YEARS[next_idx]
-        
-        start_jd = current_end_jd
-        end_jd = start_jd + (d_years * SAURA_YEAR_DAYS)
-        
-        s_y, s_m, s_d, _ = swe.revjul(start_jd, cal_flag)
-        e_y, e_m, e_d, _ = swe.revjul(end_jd, cal_flag)
-        
-        dashas_list.append({
-            "planet": d_lord,
-            "start": f"{s_y:04d}-{s_m:02d}-{s_d:02d}",
-            "end": f"{e_y:04d}-{e_m:02d}-{e_d:02d}"
-        })
-        
-        current_end_jd = end_jd
+    # 4. Vimshottari Dasha (Full Cycle Timeline based on Equatorial Moon)
+    flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
+    res_moon, _ = swe.calc_ut(jd, swe.MOON, flags_equatorial)
+    moon_sid_ra_precise = (res_moon[0] - ayanamsa_eq) % 360.0
+
+    dasha_timeline = calculate_vimshottari_timeline(
+        moon_sidereal_ra=moon_sid_ra_precise,
+        birth_jd_local=jd_local,
+        cal_flag=cal_flag,
+        total_cycles=1,
+        dasha_year_days=SAURA_YEAR_DAYS
+    )
         
     # 5. Shadbala (6-fold strength)
     shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude)
@@ -801,11 +765,9 @@ def generate_kala_chart(
         },
         "vargas": vargas_data,
         "vimshottari_dasha": {
-            "at_birth": {
-                "mahadasha": birth_md_lord,
-                "mahadasha_balance_years": round(balance_years, 4),
-            },
-            "mahadashas": dashas_list
+            "at_birth": dasha_timeline["at_birth"],
+            "mahadashas": dasha_timeline["mahadashas"],
+            "antardashas": dasha_timeline["antardashas"],
         },
         "shadbala": shadbala_data,
         "avastha_matrix": avastha_matrices,

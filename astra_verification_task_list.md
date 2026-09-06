@@ -37,8 +37,9 @@ This master roadmap outlines our step-by-step plan to verify and expand Astra's 
 
 ### Phase 5: Vimshottari Dasa Full Cycle Timeline (Level 7)
 *Dataset: `angelina_jolie_vimshottari_antardasas.csv` (Extracted from `angelina_jolie_vimshottari_dasa_full.pdf`)*
-- [ ] **Timeline Test Suite:** Create `tests/test_vimshottari_timeline.py` testing all 9 Mahadashas and all 81 Antardashas over the 120-year cycle.
-- [ ] **Year-Length Precision:** Fine-tune the Dasha year constant (Saura 360-day vs. 365.2422 tropical year) so start dates match Kala down to the day.
+- [x] **Timeline Test Suite:** Created `tests/test_vimshottari_timeline.py` testing all 9 Mahadashas and all 81 Antardashas over the 120-year cycle.
+- [x] **Year-Length Precision:** Calibrated the Dasha year constant to Saura `365.2422` days (as configured in Ernst Wilhelm's Kala `Dasa Settings`).
+- [x] **Dedicated Modular Engine:** Built `jyotish/dashas/vimshottari.py` and twin documentation `jyotish/dashas/vimshottari.md`.
 
 ### Phase 6: Multi-Varga Avasthas Calibration (Level 6)
 *Datasets: `angelina_jolie_lajjitadi_varga_net_modifiers.csv` & `angelina_jolie_shayanadi_vargas.csv`*
