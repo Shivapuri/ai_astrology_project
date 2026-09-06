@@ -13,7 +13,8 @@ from .bala import get_bala_avastha, ODD_SIGNS, EVEN_SIGNS
 from .jagrat import get_jagrat_avastha
 from .deepti import get_deeptadi_avastha
 from .lajjita import get_lajjitadi_avasthas
-from .shayana import get_shayanadi_avastha, get_varnamashka
+from .shayana import get_shayanadi_avastha, get_varnamashka, get_varga_amsa_factor
+from .quantitative import calculate_avastha_matrix, calculate_varga_lajjitadi_net_modifiers
 
 __all__ = [
     "get_bala_avastha",
@@ -22,6 +23,10 @@ __all__ = [
     "get_lajjitadi_avasthas",
     "get_shayanadi_avastha",
     "get_varnamashka",
+    "get_varga_amsa_factor",
+    "calculate_avastha_matrix",
+    "calculate_varga_lajjitadi_net_modifiers",
     "ODD_SIGNS",
     "EVEN_SIGNS"
 ]
+

@@ -282,3 +282,21 @@ def get_shayanadi_avastha(
 # Alias for convenience
 get_varnamashka = get_varnamashka_value
 
+
+def get_varga_amsa_factor(deg_in_sign: float, harmonic: int) -> int:
+    """
+    Computes the planetary Amsa factor (1 to 4) based on its proportional
+    progression within its divisional slice for the specified Varga.
+
+    Args:
+        deg_in_sign (float): Position of the planet in degrees within its sign (0.0 to 30.0).
+        harmonic (int): The division harmonic of the Varga (e.g. 1 for D1, 9 for D9, etc.).
+
+    Returns:
+        int: Amsa factor between 1 and 4.
+    """
+    slice_width = 30.0 / max(1, int(harmonic))
+    rem_in_slice = deg_in_sign % slice_width
+    progression = rem_in_slice / slice_width
+    return min(4, max(1, int(progression * 4.0) + 1))
+

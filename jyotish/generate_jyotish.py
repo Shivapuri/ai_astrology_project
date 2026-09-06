@@ -10,6 +10,8 @@ import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
 import jyotish.avasthas as avasthas
 from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEAR_DAYS
+import jyotish.ashtakavarga as ashtakavarga
+import jyotish.vimshopaka as vimshopaka
 
 try:
     import swisseph as swe
@@ -672,22 +674,28 @@ def generate_kala_chart(
     if ishta_ghati <= 0: ishta_ghati = 1
     
     varnamashka = name_sound_value if name_sound_value else avasthas.get_varnamashka(name)
-    lagna_rasi_no = ZODIAC_SIGNS.index(vargas_data["D1"]["lagna"]["sign"]) + 1
     moon_nakshatra_no = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"]) + 1
-    
-    for p_name in planet_ids.keys():
-        p_nak_no = NAKSHATRAS.index(nakshatras_sidereal[p_name]["nakshatra"]) + 1
-        p_pada = nakshatras_sidereal[p_name]["pada"]
-        
-        shayanadi = avasthas.get_shayanadi_avastha(
-            p_name, p_nak_no, p_pada, lagna_rasi_no, 
-            moon_nakshatra_no, ishta_ghati, name_sound_value=varnamashka
-        )
-        
-        # Add to D1 (and other vargas if they share the same dictionary ref, but let's safely add to all)
-        for v_name in vargas_data:
-            if p_name in vargas_data[v_name]["grahas"]:
-                vargas_data[v_name]["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
+    all_planets_shayana = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+    for v_name, v_data in vargas_data.items():
+        v_lagna_sign_no = ZODIAC_SIGNS.index(v_data["lagna"]["sign"]) + 1
+        harmonic = vargas_harmonics.get(v_name, 1)
+
+        for p_name in all_planets_shayana:
+            if p_name in v_data["grahas"] and p_name in nakshatras_sidereal:
+                p_nak_no = NAKSHATRAS.index(nakshatras_sidereal[p_name]["nakshatra"]) + 1
+                if v_name == "D1":
+                    p_amsa = nakshatras_sidereal[p_name]["pada"]
+                else:
+                    lon = d1_longitudes[p_name]
+                    deg_in_sign = lon % 30.0
+                    p_amsa = avasthas.get_varga_amsa_factor(deg_in_sign, harmonic)
+
+                shayanadi = avasthas.get_shayanadi_avastha(
+                    p_name, p_nak_no, p_amsa, v_lagna_sign_no,
+                    moon_nakshatra_no, ishta_ghati, name_sound_value=varnamashka
+                )
+                v_data["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
 
     # 4. Vimshottari Dasha (Full Cycle Timeline based on Equatorial Moon)
     flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
@@ -722,7 +730,13 @@ def generate_kala_chart(
     for v_key in vargas_data.keys():
         avastha_matrices[v_key] = {}
         for baseline in baseline_types:
-            avastha_results = calculate_avastha_matrix(vargas_data[v_key]["grahas"], shadbala_data, vargas_data["D1"]["grahas"], baseline_type=baseline)
+            avastha_results = calculate_avastha_matrix(
+                vargas_data[v_key]["grahas"],
+                shadbala_data,
+                vargas_data["D1"]["grahas"],
+                baseline_type=baseline,
+                varga_name=v_key
+            )
             v_matrix = {}
             for p_give in planets_list:
                 v_matrix[p_give] = {}
@@ -771,8 +785,11 @@ def generate_kala_chart(
         },
         "shadbala": shadbala_data,
         "avastha_matrix": avastha_matrices,
+        "varga_lajjitadi_net_modifiers": avasthas.calculate_varga_lajjitadi_net_modifiers(vargas_data),
         "advanced_aspects": varga_aspects["D1"],
-        "varga_advanced_aspects": varga_aspects
+        "varga_advanced_aspects": varga_aspects,
+        "ashtakavarga": ashtakavarga.calculate_ashtakavarga_engine({"vargas": vargas_data}),
+        "varga_vimshopaka": vimshopaka.calculate_varga_vimshopaka_engine({"vargas": vargas_data})
     }
     
     # 7. Write to file (only if requested)

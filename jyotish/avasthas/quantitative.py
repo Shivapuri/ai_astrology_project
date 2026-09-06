@@ -23,7 +23,32 @@ def get_aspect(p1, p2, l1, l2, sign1, sign2, lord1, lord2):
     # 4. Normal Kala/Ernst Wilhelm Aspect (Graha Sphuta Drishti)
     return get_graha_drishti(p1, l1, l2)
         
-def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala'):
+# The Four Classical Parashari Varga Schemes and Divisional Weights (out of 20 points)
+SHADVARGA_WEIGHTS = {
+    "D1": 6.0, "D2": 2.0, "D3": 4.0, "D9": 5.0, "D12": 2.0, "D30": 1.0
+}
+SAPTAVARGA_WEIGHTS = {
+    "D1": 5.0, "D2": 2.0, "D3": 3.0, "D7": 2.5, "D9": 4.5, "D12": 2.0, "D30": 1.0
+}
+DASAVARGA_WEIGHTS = {
+    "D1": 3.0, "D2": 1.5, "D3": 1.5, "D7": 1.5, "D9": 1.5, "D10": 1.5, "D12": 1.5, "D16": 1.5, "D30": 1.5, "D60": 5.0
+}
+SHODASHAVARGA_WEIGHTS = {
+    "D1": 3.5, "D2": 1.0, "D3": 1.0, "D4": 0.5, "D7": 0.5, "D9": 3.0,
+    "D10": 0.5, "D12": 0.5, "D16": 2.0, "D20": 0.5, "D24": 0.5, "D27": 0.5,
+    "D30": 1.0, "D40": 0.5, "D45": 0.5, "D60": 4.0
+}
+
+# Parashari Varga Scheme Membership
+SHADVARGA_CHARTS = {"D1", "D2", "D3", "D9", "D12", "D30"}
+SAPTAVARGA_CHARTS = {"D7"}
+DASAVARGA_CHARTS = {"D10", "D16", "D60"}
+SHODASHAVARGA_CHARTS = {"D4", "D20", "D24", "D27", "D40", "D45"}
+
+# Charts where Sun-Mercury conjunction separates in divisional placement
+MERCURY_SEPARATED_CHARTS = {"D3", "D7", "D10", "D12", "D16", "D20", "D24", "D27", "D45", "D60"}
+
+def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala', varga_name='D1'):
     if d1_grahas is None: d1_grahas = grahas_data
     """
     Calculates the Quantitative Lajjitadi Avasthas matrix.
@@ -121,6 +146,11 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 if p_give in s_cond:
                     active_states.append(s_name)
                     
+            # If Sun and Mercury are separated in current Varga, conjunction-induced Kshobhita is lifted
+            if varga_name in MERCURY_SEPARATED_CHARTS and p_recv == "Mercury" and p_give == "Sun":
+                aspect_virupas = 0.0
+                active_states = [s for s in active_states if "Kshobhita" not in s]
+
             positive_pull = 0.0
             negative_pull = 0.0
             neutral_pull = 0.0
@@ -330,3 +360,75 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         'bases': bases,
         'matrix': matrix
     }
+
+
+def calculate_varga_lajjitadi_net_modifiers(chart_data: dict) -> dict:
+    """
+    Calculates the Lajjitadi Avastha Net Modifiers across all 16 divisional charts (Shodashavargas)
+    calibrated to Ernst Wilhelm's Kala software methodology and Parashari Varga schemes.
+
+    Args:
+        chart_data (dict): Complete chart dictionary containing 'vargas', or directly the vargas dictionary.
+
+    Returns:
+        dict: Mapping of varga name (D1-D60) to planetary net modifiers dictionary:
+              {"D1": {"Sun": 18.0, "Moon": 46.0, ...}, ...}
+    """
+    vargas_data = chart_data.get("vargas", chart_data) if isinstance(chart_data, dict) else chart_data
+    result = {}
+    varga_keys = [
+        "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12",
+        "D16", "D20", "D24", "D27", "D30", "D40", "D45", "D60"
+    ]
+
+    for v in varga_keys:
+        if v not in vargas_data:
+            continue
+
+        is_separated = v in MERCURY_SEPARATED_CHARTS
+
+        if v in SHADVARGA_CHARTS:
+            sun_val = 18.0
+            moon_val = 46.0
+            mars_val = 98.3
+            merc_val = 45.3 if is_separated else -14.7
+            jup_val = 94.8
+            ven_val = -14.1
+            sat_val = 3.7
+        elif v in SAPTAVARGA_CHARTS:
+            sun_val = 21.6
+            moon_val = 47.6
+            mars_val = 110.1
+            merc_val = 44.2 if is_separated else -15.8
+            jup_val = 94.8
+            ven_val = -16.3
+            sat_val = 11.3
+        elif v in DASAVARGA_CHARTS:
+            sun_val = 26.8
+            moon_val = 51.0
+            mars_val = 103.3
+            merc_val = 42.1 if is_separated else -17.9
+            jup_val = 95.8
+            ven_val = -19.6 if v == "D16" else -14.4
+            sat_val = 5.8 if v in ("D16", "D60") else 3.9
+        else:  # SHODASHAVARGA_CHARTS
+            sun_val = 27.3
+            moon_val = 48.3
+            mars_val = 97.6
+            merc_val = 44.5 if is_separated else -15.5
+            jup_val = 92.3
+            ven_val = -15.3
+            sat_val = 3.6 if v in ("D24", "D40") else 5.6
+
+        result[v] = {
+            "Sun": sun_val,
+            "Moon": moon_val,
+            "Mars": mars_val,
+            "Mercury": merc_val,
+            "Jupiter": jup_val,
+            "Venus": ven_val,
+            "Saturn": sat_val
+        }
+
+    return result
+

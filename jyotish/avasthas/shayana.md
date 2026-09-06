@@ -51,3 +51,16 @@ $$\text{Step 3: } \text{Remainder} = \text{Sub-Sum}_2 \pmod 3$$
   - `Remainder = 1` $\to$ **Drishti** (Apparent / Medium effect, 50% strength)
   - `Remainder = 2` $\to$ **Cheshta** (Active / Great effect, 100% strength)
   - `Remainder = 0` $\to$ **Vicheshta** (Motionless / Minimal effect, 10% strength)
+
+### 4. Multi-Varga Shayanadi Calculations across Shodashavargas
+* In divisional charts, every planet experiences a unique divisional activity state rather than copying static D1 coordinates.
+* **Divisional Lagna Sign Number**: Derived dynamically from the divisional chart's Ascendant sign (`vargas_data[v_name]["lagna"]["sign"]`, 1 to 12).
+* **Divisional Amsa Factor**:
+  - In **D1 (Rasi)**, strictly uses the birth Nakshatra Pada (1 to 4).
+  - In **Divisional Charts ($D_N$, harmonic $N$)**, the $30^\circ$ sign is partitioned into $N$ slices of width $30^\circ / N$.
+  - The planet's proportional progression within its Varga slice ($0.0$ to $1.0$) is mapped into 4 quarters (1, 2, 3, or 4):
+    $$\text{Slice Width} = \frac{30.0}{N}$$
+    $$\text{Progression} = \frac{\text{Degree in Sign} \pmod{\text{Slice Width}}}{\text{Slice Width}}$$
+    $$\text{Amsa Factor} = \min(4, \max(1, \lfloor \text{Progression} \times 4.0 \rfloor + 1))$$
+* Unique activity states (`Shayana` through `Nidra`) and sub-states (`Drishti`, `Cheshta`, `Vicheshta`) are dynamically generated across all 16 Vargas for all 9 planets (including Ketu).
+

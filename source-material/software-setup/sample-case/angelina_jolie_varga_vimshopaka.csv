@@ -1,5 +1,9 @@
 Scheme,Sun,Moon,Mars,Mercury,Jupiter,Venus,Saturn
-Shadvarga,Saptavarga,Dasavarga,Shodasavarga,Ge/E,Ar/E,Ar/MT,Ge/OH
-Saptavarga,Dasavarga,Shodasavarga,Ge/E,Ar/E,Ar/MT,Ge/OH,Ar/N
-Dasavarga,Shodasavarga,Ge/E,Ar/E,Ar/MT,Ge/OH,Ar/N,Cn/N
-Shodasavarga,Ge/E,Ar/E,Ar/MT,Ge/OH,Ar/N,Cn/N,Cn/N
+Shadvarga,7.60,14.20,14.15,16.50,11.60,15.30,13.50
+Saptavarga,9.10,14.70,15.75,16.25,11.60,14.55,14.38
+Dasavarga,11.30,15.75,14.82,15.75,11.70,15.20,13.75
+Shodasavarga,11.52,14.90,14.05,16.32,11.35,14.90,13.72
+Vaisheshikamsa_Shadvarga,--,(2) Kimsuka,(2) Kimsuka,--,--,(2) Kimsuka,(2) Kimsuka
+Vaisheshikamsa_Saptavarga,--,(3) Vyanjana,(2) Kimsuka,--,--,(2) Kimsuka,(2) Kimsuka
+Vaisheshikamsa_Dasavarga,--,(3) Uttama,(3) Uttama,--,--,(3) Uttama,(4) Gopura
+Vaisheshikamsa_Shodasavarga,(3) Kusuma,(4) Nagapushpa,(6) Kerala,(4) Nagapushpa,(3) Kusuma,(5) Kanduka,(5) Kanduka

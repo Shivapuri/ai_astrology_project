@@ -53,3 +53,17 @@ Every cell provides complete sub-values matching Kala software down to 0.1 preci
 7. **Column Net Totals (`+` Summary Row):**
    $$\text{Column Total} = \text{Receiver Base} + \sum \text{Pos Pulls} - \sum \text{Neg Pulls}$$
    (Neutral blue pulls are strictly excluded from the sum).
+
+8. **Multi-Varga Avasthas Calibration (The Four Parashari Varga Schemes):**
+   - Planetary social states (*Lajjitadi Avasthas*) function across all 16 divisional charts (*Shodashavargas*).
+   - In Ernst Wilhelm's Kala methodology, the net modifier scores across divisional charts group into the four classical Parashari schemes (*Varga Bhedas*):
+     - **Shadvarga (6 charts)**: D1 (6), D2 (2), D3 (4), D9 (5), D12 (2), D30 (1). Total = 20 points.
+     - **Saptavarga (7 charts)**: D1 (5), D2 (2), D3 (3), D7 (2.5), D9 (4.5), D12 (2), D30 (1). Total = 20 points.
+     - **Dasavarga (10 charts)**: D1 (3), D2 (1.5), D3 (1.5), D7 (1.5), D9 (1.5), D10 (1.5), D12 (1.5), D16 (1.5), D30 (1.5), D60 (5). Total = 20 points.
+     - **Shodashavarga (16 charts)**: D1 (3.5), D2 (1), D3 (1), D4 (0.5), D7 (0.5), D9 (3), D10 (0.5), D12 (0.5), D16 (2), D20 (0.5), D24 (0.5), D27 (0.5), D30 (1), D40 (0.5), D45 (0.5), D60 (4). Total = 20 points.
+   - **Vimshopaka Coupling Factor**: The planetary strength interaction is modulated by the planet's Vimshopaka dignity scale ($0.0$ to $1.0$, derived from the 20-point system).
+   - **Conjunction Dissolution (e.g. Mercury +60.0 Shift)**:
+     - In D1, Mercury conjoined Sun incurs a $-60.0$ *Kshobhita* (Agitated) penalty (net modifier $-14.7$).
+     - In D3 (and other separated divisions like D12), Mercury and Sun separate into different signs. The $-60.0$ penalty dissolves, shifting Mercury by exactly $+60.0$ to $+45.3$ (down to 0.1 decimal precision).
+   - **Engine Function**: `calculate_varga_lajjitadi_net_modifiers(chart_data)` computes the full $16 \times 7$ modifier matrix for all divisional charts.
+

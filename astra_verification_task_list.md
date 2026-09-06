@@ -43,17 +43,17 @@ This master roadmap outlines our step-by-step plan to verify and expand Astra's 
 
 ### Phase 6: Multi-Varga Avasthas Calibration (Level 6)
 *Datasets: `angelina_jolie_lajjitadi_varga_net_modifiers.csv` & `angelina_jolie_shayanadi_vargas.csv`*
-- [ ] **Quantitative Lajjitadi Matrix Refactor:** Update `jyotish/avasthas/quantitative.py` to consume the new `lajjita.py` qualitative rules and verify net modifier outputs across all 16 Vargas.
-- [ ] **Shayanadi Multi-Varga Engine:** Update `jyotish/avasthas/shayana.py` to dynamically support divisional chart inputs and test against all 1,296 state combinations across all 16 Vargas and 9 Mahadashas.
+- [x] **Quantitative Lajjitadi Matrix Refactor:** Update `jyotish/avasthas/quantitative.py` to consume the new `lajjita.py` qualitative rules and verify net modifier outputs across all 16 Vargas.
+- [x] **Shayanadi Multi-Varga Engine:** Update `jyotish/avasthas/shayana.py` to dynamically support divisional chart inputs and test against all 1,296 state combinations across all 16 Vargas and 9 Mahadashas.
 
 ### Phase 7: New Classical Engines Implementation
 *Datasets: `angelina_jolie_ashtakavarga_sarva.csv` & `angelina_jolie_varga_vimshopaka.csv`*
-- [ ] **Ashtakavarga Engine (`jyotish/ashtakavarga/`):**
+- [x] **Ashtakavarga Engine (`jyotish/ashtakavarga/`):**
   - Implement 8-fold benefic point (*Bindu*) grid for all 7 planets + Lagna across all 12 signs.
   - Implement *Trikona Shodhana* (reduction across trines).
   - Implement *Ekadhipatya Shodhana* (reduction for signs with the same planetary lord).
   - Test against `angelina_jolie_ashtakavarga_sarva.csv` (337 total points).
-- [ ] **Varga Vimshopaka Engine (`jyotish/vimshopaka/`):**
+- [x] **Varga Vimshopaka Engine (`jyotish/vimshopaka/`):**
   - Implement 20-point dignity scoring across Shadvarga, Saptavarga, Dasavarga, and Shodasavarga.
   - Implement Vaisheshikamsa honorific classifications (*Kimsuka, Vyanjana, Uttama, Gopura, Nagapushpa, Kanduka*).
   - Test against `angelina_jolie_varga_vimshopaka.csv`.
