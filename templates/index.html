@@ -809,7 +809,7 @@
         svg .interactive {
             transition: opacity 0.3s ease, filter 0.3s ease;
         }
-        svg.highlight-mode .interactive:not(.highlight-active):not(.highlight-source) {
+        svg.highlight-mode .interactive:not(.highlight-active):not(.highlight-source):not(.house-cell) {
             opacity: 0.2 !important;
             filter: grayscale(100%);
         }
@@ -817,9 +817,25 @@
             opacity: 1 !important;
             filter: drop-shadow(0px 0px 4px rgba(46, 204, 113, 0.6));
         }
-        svg.highlight-mode .interactive.highlight-source {
+        svg.highlight-mode .interactive.highlight-source:not(.house-cell) {
             opacity: 1 !important;
             filter: drop-shadow(0px 0px 5px rgba(211, 84, 0, 0.8));
+        }
+        
+        .house-cell {
+            transition: fill 0.2s ease;
+        }
+        .house-cell:hover {
+            fill: rgba(211, 84, 0, 0.08) !important;
+            filter: none !important;
+        }
+        svg.highlight-mode .house-cell.highlight-source {
+            fill: rgba(211, 84, 0, 0.15) !important;
+            filter: none !important;
+        }
+        svg.highlight-mode .house-cell:not(.highlight-source):not(.highlight-active) {
+            opacity: 1 !important;
+            filter: none !important;
         }
         
         .top-toolbar {
@@ -6506,6 +6522,19 @@
                         }
                     });
                 }
+            } else if (type === 'sign') {
+                document.querySelectorAll('svg').forEach(svg => svg.classList.add('highlight-mode'));
+                el.classList.add('highlight-source');
+                document.querySelectorAll(`.interactive[data-type="sign"][data-id="${id}"]`).forEach(node => {
+                    node.classList.add('highlight-source');
+                });
+            } else if (type === 'house') {
+                const hNum = parseInt(String(id).replace(/[^0-9]/g, ''), 10) || 1;
+                document.querySelectorAll('svg').forEach(svg => svg.classList.add('highlight-mode'));
+                el.classList.add('highlight-source');
+                document.querySelectorAll(`.interactive[data-type="house"][data-id="${hNum}"], .interactive[data-type="house"][data-id="${id}"], .interactive[data-type="house"][data-id="H${hNum}"]`).forEach(node => {
+                    node.classList.add('highlight-source');
+                });
             }
             
             // Update any Context Info widgets on screen

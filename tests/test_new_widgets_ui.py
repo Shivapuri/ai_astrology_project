@@ -103,3 +103,43 @@ def test_hover_tooltips_on_tables(page: Page):
     assert tooltip.is_visible()
     tip_text = tooltip.inner_text()
     assert len(tip_text) > 10
+
+def test_click_house_empty_field_in_charts(page: Page):
+    init_page(page)
+    # Assign Context & Technical Info widget to cell2
+    page.evaluate("assignWidget('info', document.getElementById('cell2'))")
+    page.wait_for_timeout(500)
+    
+    # 1. Click empty field (polygon) of House 4 in North Indian chart
+    page.evaluate("setGlobalChartStyle('north')")
+    page.evaluate("assignWidget('chart', document.getElementById('cell1'))")
+    page.wait_for_timeout(500)
+    h4_poly = page.locator("#cell1 polygon.house-cell[data-id='4']").first
+    assert h4_poly.count() > 0
+    h4_poly.dispatch_event("click")
+    page.wait_for_timeout(400)
+    info_text = page.locator("#cell2 #context-info-content").inner_text()
+    assert "House 4" in info_text
+    assert "Sukha Bhāva" in info_text or "Kṣetra" in info_text
+        
+    # 2. Click empty field (rect) of House in South Indian chart
+    page.evaluate("setGlobalChartStyle('south')")
+    page.evaluate("assignWidget('chart', document.getElementById('cell1'))")
+    page.wait_for_timeout(500)
+    south_house_cell = page.locator("#cell1 rect.house-cell").first
+    assert south_house_cell.count() > 0
+    h_id = south_house_cell.get_attribute("data-id")
+    south_house_cell.dispatch_event("click")
+    page.wait_for_timeout(400)
+    info_text = page.locator("#cell2 #context-info-content").inner_text()
+    assert f"House {h_id}" in info_text
+        
+    # 3. Click an independent house cusp number
+    cusp_el = page.locator("#cell1 g.interactive[data-type='house']").first
+    assert cusp_el.count() > 0
+    cusp_id = cusp_el.get_attribute("data-id")
+    cusp_el.dispatch_event("click")
+    page.wait_for_timeout(400)
+    info_text = page.locator("#cell2 #context-info-content").inner_text()
+    assert f"House {cusp_id}" in info_text
+

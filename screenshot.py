@@ -111,6 +111,18 @@ async def main():
                 await c1.screenshot(path="screenshot_yoga_judgment_widget.png")
                 print("Captured screenshot_yoga_judgment_widget.png")
 
+            # 13. House empty field click in North chart showing Context & Technical Info
+            await page.evaluate("setGlobalChartStyle('north')")
+            await page.evaluate("assignWidget('chart', document.getElementById('c1'))")
+            await page.evaluate("assignWidget('info', document.getElementById('c2'))")
+            await page.wait_for_timeout(800)
+            h4 = page.locator("#c1 polygon.house-cell[data-id='4']").first
+            if await h4.count() > 0:
+                await h4.dispatch_event("click")
+                await page.wait_for_timeout(600)
+                await page.screenshot(path="screenshot_house_click_context_info.png")
+                print("Captured screenshot_house_click_context_info.png")
+
         except Exception as e:
             print("Error:", e)
             
