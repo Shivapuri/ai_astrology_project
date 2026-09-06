@@ -363,8 +363,8 @@
             max-width: 98vw;
             max-height: 94vh;
             width: 820px;
-            height: 540px;
-            top: 70px;
+            height: 580px;
+            top: 60px;
             left: calc(50% - 410px);
             z-index: 10051;
             animation: modalFadeIn 0.18s ease-out;
@@ -935,6 +935,54 @@
         .text-gray { color: #7f8c8d; font-size: 0.85em; }
         .text-black-bold { color: #3d312a; font-weight: bold; }
 
+        /* Yoga Judgment Table (Kala Standard) */
+        .yoga-judgment-table {
+            border-collapse: collapse;
+            border: 2px solid #b86829;
+            width: 100%;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+        }
+        .yoga-judgment-table th, .yoga-judgment-table td {
+            padding: 5px 4px;
+            border-right: 1px solid #b86829;
+            border-bottom: 1px solid #e0c8b0;
+        }
+        .yoga-judgment-table th:last-child, .yoga-judgment-table td:last-child {
+            border-right: none;
+        }
+        .yoga-judgment-table .sec-header {
+            background: #fffdfa;
+            color: #1a4a82;
+            font-weight: bold;
+            font-size: 13px;
+            border-top: 2px solid #b86829;
+            border-bottom: 2px solid #b86829;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        .yoga-judgment-table .row-lbl {
+            color: #1a4a82;
+            font-weight: bold;
+            font-size: 13px;
+            width: 80px;
+            background: #fffdfa;
+        }
+        .yoga-judgment-table .val-pos {
+            color: #1a4a82;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+        .yoga-judgment-table .val-neg {
+            color: #a83232;
+            font-size: 12.5px;
+            font-weight: 500;
+        }
+        .yoga-judgment-table tbody tr:hover td {
+            background-color: #fdf6ec !important;
+        }
+
         /* Planetary Information Table */
         .planetary-info-table th {
             background: #eee5d3;
@@ -1466,6 +1514,7 @@
                 <button type="button" class="floating-nav-pill" id="nav-btn-bhava" onclick="openBhavaCuspsModal()">📐 Bhava Chalita Cusps</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-planet" onclick="openFloatingPlanetaryInfo()">✨ Planetary Info</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-shadbala" onclick="openFloatingShadbala()">⚖️ Shad Bala</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-yoga" onclick="openFloatingYogaJudgment()">⚖️ Yoga Judgment</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-ashtaka" onclick="openFloatingAshtakavarga()">📊 Ashtakavarga</button>
             </div>
 
@@ -1539,6 +1588,7 @@
                         <div class="kala-item star-item" onclick="assignKalaWidget('planetary-info')">• Planetary Info Table ★</div>
                         <div class="kala-item star-item" onclick="assignKalaWidget('dashas-timeline')">• Vimshottari Timeline ★</div>
                         <div class="kala-item" onclick="assignKalaWidget('shadbala-table')">• Shad Bala Details</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('yoga-judgment')">• Yoga Judgment (Ishta/Kashta) ★</div>
                         <div class="kala-item" onclick="assignKalaWidget('dignities')">• Dignities in Vargas</div>
                         <div class="kala-item" onclick="assignKalaWidget('avasthas-calc')">• Qualitative Avasthas</div>
                         <div class="kala-item" onclick="assignKalaWidget('ashtakavarga')">• Ashtakavarga & SAV (337)</div>
@@ -1559,6 +1609,10 @@
                         <button type="button" class="btn-kala-popup" onclick="openShodasaVargasModal()">
                             <strong>🏛️ ShodasaVargas</strong>
                             <small>16-in-1 Full divisional grid</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingYogaJudgment()">
+                            <strong>⚖️ Yoga Judgment Screen</strong>
+                            <small>Ishta, Subha & Dig Bala (Kala)</small>
                         </button>
                         <button type="button" class="btn-kala-popup" onclick="openFloatingAshtakavarga()">
                             <strong>🔢 AshtakaVarga Transit</strong>
@@ -1640,6 +1694,7 @@
         <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
         <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
+        <div class="menu-item" onclick="assignWidget('yoga-judgment')">⚖️ Yoga Judgment (Ishta/Kashta)</div>
         <!-- NEW MODULES REGISTERED -->
         <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
         <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
@@ -2330,6 +2385,37 @@
             </div>
         </div>
     </template>
+    <template id="tmpl-yoga-judgment">
+        <div class="widget-content" id="tab-yoga-judgment">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Yoga Judgment (Ishta/Kashta & Subha/Asubha Dig Bala)</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 4px; border-radius: 3px; font-weight: bold;">Kala System</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; display: flex; justify-content: center;">
+                <div class="scale-wrapper" style="width: 100%; max-width: 680px;">
+                    <table class="yoga-judgment-table" style="width: 100%; border-collapse: collapse; border: 2px solid #b86829; text-align: center; font-family: sans-serif; background: #ffffff;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #b86829; background: #fffdfa;">
+                                <th style="border-right: 1px solid #b86829; width: 85px; padding: 4px;"></th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Sun (Surya)">☉</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Moon (Chandra)">☽</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Mars (Mangala)">♂</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Mercury (Budha)">☿</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Jupiter (Guru)">♃</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Venus (Shukra)">♀</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Saturn (Shani)">♄</th>
+                                <th style="color: #1a4a82; font-size: 13px; font-weight: bold; padding: 4px;">Avg.</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
     <template id="tmpl-dashas-timeline">
         <div class="widget-content" id="widget-dashas-timeline">
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
@@ -2761,6 +2847,9 @@
             else if (widgetType === 'shadbala-table') {
                 updateShadbalaTableWidget();
             }
+            else if (widgetType === 'yoga-judgment') {
+                updateYogaJudgmentWidget(cell);
+            }
             else if (widgetType === 'nakshatras') {
                 updateNakshatraWidgetForCell(cell);
             }
@@ -2804,10 +2893,10 @@
 
                 // Mahadasha Master Row (Clickable accordion)
                 const trMD = document.createElement('tr');
-                trMD.className = 'md-row' + (isCurrentMD ? ' active-dasa-row' : '');
+                trMD.className = 'md-row tooltip-target' + (isCurrentMD ? ' active-dasa-row' : '');
                 trMD.style.cursor = 'pointer';
                 trMD.style.backgroundColor = isCurrentMD ? '#fdf6e2' : '#f5ede0';
-                trMD.title = "Click to expand/collapse Antardashas";
+                trMD.setAttribute('data-tooltip', `<strong>${md.planet} Mahādaśā (${md.years || ''} Years)</strong><br>• <strong>Period:</strong> ${md.start} to ${md.end}<br>• <strong>Role:</strong> Major life chapter governed by ${md.planet}. Click to expand/collapse Antardashas.`);
 
                 const currentBadge = isCurrentMD ? '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; margin-left:6px;">ACTIVE</span>' : '';
                 const arrow = isCurrentMD ? '▼ ' : '▶ ';
@@ -2829,9 +2918,10 @@
                     const isCurrentAD = (now >= adStart && now <= adEnd);
 
                     const trAD = document.createElement('tr');
-                    trAD.className = `ad-subrow md-group-${mdIdx}`;
+                    trAD.className = `ad-subrow md-group-${mdIdx} tooltip-target`;
                     trAD.style.display = isCurrentMD ? 'table-row' : 'none'; // Auto-expand current active Mahadasha
                     trAD.style.backgroundColor = isCurrentAD ? '#fef3c7' : '#fffdfa';
+                    trAD.setAttribute('data-tooltip', `<strong>${ad.period || ad.antardasha_lord} Antardaśā</strong><br>• <strong>Sub-period:</strong> ${ad.start_date || ad.start} to ${ad.end_date || ad.end}<br>• <strong>Influence:</strong> Secondary timing window delivering specific events through ${md.planet} and sub-lord.`);
 
                     const adBadge = isCurrentAD ? '<span class="badge" style="background:#f59e0b; color:#fff; font-size:9px;">CURRENT</span>' : '';
 
@@ -2864,6 +2954,7 @@
             const viewMode = viewSelect ? viewSelect.value : 'raw';
 
             const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"];
+            const signNames = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
             let grid = (viewMode === 'trikona') ? avData.trikona_shodhana :
                        (viewMode === 'ekadhipatya') ? avData.ekadhipatya_shodhana : avData.bav;
 
@@ -2875,12 +2966,19 @@
                 const rowSum = pts.reduce((a, b) => a + b, 0);
 
                 const tr = document.createElement('tr');
-                let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
-                pts.forEach(val => {
+                const pName = p === 'Lagna' ? 'Ascendant' : p;
+                const rowTip = `<strong>${pName} (${p.substring(0, 2)}) — Bhinnāṣṭakavarga (BAV)</strong><br>Benefic points (bindus) contributed by ${pName} across each sign (0-8 scale).`;
+                let html = `<td class="tooltip-target" data-tooltip="${rowTip}" style="cursor:help;"><strong>${p.substring(0, 2)}</strong></td>`;
+                
+                pts.forEach((val, signIdx) => {
+                    const signName = signNames[signIdx];
                     let color = val >= 5 ? '#15803d' : (val <= 3 ? '#b91c1c' : '#334155');
-                    html += `<td style="color:${color}; font-weight:${val >= 5 || val <= 3 ? 'bold' : 'normal'};">${val}</td>`;
+                    const cellTip = `<strong>${pName} in ${signName}: ${val} Bindus</strong><br>• <strong>Score:</strong> ${val} of 8 possible auspicious points.<br>• <strong>Impact:</strong> ${val >= 5 ? 'High support (above average 4). Transits here foster growth, smooth progress, and strength.' : (val <= 3 ? 'Low support (below average 4). Transits require extra discipline, patience, and effort.' : 'Moderate baseline support (neutral flow).')}`;
+                    html += `<td class="tooltip-target" data-tooltip="${cellTip}" style="color:${color}; font-weight:${val >= 5 || val <= 3 ? 'bold' : 'normal'}; cursor:help;">${val}</td>`;
                 });
-                html += `<td style="font-weight:bold; background:#fcfaf5;">${rowSum}</td>`;
+
+                const sumTip = `<strong>${pName} — Total BAV Score: ${rowSum}</strong><br>Total benefic bindus contributed across all 12 signs. Average across the zodiac is ~48-54 points.`;
+                html += `<td class="tooltip-target" data-tooltip="${sumTip}" style="font-weight:bold; background:#fcfaf5; cursor:help;">${rowSum}</td>`;
                 tr.innerHTML = html;
                 tbody.appendChild(tr);
             });
@@ -2894,12 +2992,22 @@
                 const cellSav = cell.querySelector(`.sav-${i}`);
                 if (cellSav) {
                     const v = sav[i] || 0;
+                    const signName = signNames[i];
                     cellSav.textContent = v;
                     cellSav.style.color = v >= 28 ? '#15803d' : (v <= 25 ? '#b91c1c' : '#4a3325');
+                    cellSav.className = `sav-${i} tooltip-target`;
+                    cellSav.style.cursor = 'help';
+                    cellSav.setAttribute('data-tooltip', `<strong>Sarvashtakavarga (SAV) — ${signName}: ${v} Bindus</strong><br>• <strong>Total:</strong> Combined benefic points from all 7 classical planets.<br>• <strong>Benchmark:</strong> Zodiac average is 28 points.<br>• <strong>Impact:</strong> ${v >= 28 ? 'Fortified sign (' + v + ' ≥ 28). Transits through ' + signName + ' produce fruitful, protective results.' : 'Challenged sign (' + v + ' < 28). Transits through ' + signName + ' require care and resilience.'}`);
                 }
             }
             const savTotEl = cell.querySelector('.sav-tot');
-            if (savTotEl) savTotEl.textContent = sav.reduce((a, b) => a + b, 0);
+            if (savTotEl) {
+                const totalSAV = sav.reduce((a, b) => a + b, 0);
+                savTotEl.textContent = totalSAV;
+                savTotEl.className = 'sav-tot tooltip-target';
+                savTotEl.style.cursor = 'help';
+                savTotEl.setAttribute('data-tooltip', `<strong>Total Sarvashtakavarga Score: ${totalSAV}</strong><br>Sum of all planetary bindus across all 12 signs (standard sum is 337).`);
+            }
 
             // Update Shodhya Pindas
             const pindaData = avData.shodhya_pindas || avData.sodhya_pindas;
@@ -2922,9 +3030,24 @@
                 const rEl = cell.querySelector('.val-rasi-pinda');
                 const gEl = cell.querySelector('.val-graha-pinda');
                 const yEl = cell.querySelector('.val-yoga-pinda');
-                if (rEl) rEl.textContent = rTotal !== undefined ? rTotal : '-';
-                if (gEl) gEl.textContent = gTotal !== undefined ? gTotal : '-';
-                if (yEl) yEl.textContent = yTotal !== undefined ? yTotal : '-';
+                if (rEl) {
+                    rEl.textContent = rTotal !== undefined ? rTotal : '-';
+                    rEl.className = 'val-rasi-pinda tooltip-target';
+                    rEl.style.cursor = 'help';
+                    rEl.setAttribute('data-tooltip', `<strong>Rāśi Piṇḍa (${rTotal})</strong><br>Spatial energy index after Trikona (triplicity) and Ekādhipatya (lordship) reductions. Measures purified zodiacal strength.`);
+                }
+                if (gEl) {
+                    gEl.textContent = gTotal !== undefined ? gTotal : '-';
+                    gEl.className = 'val-graha-pinda tooltip-target';
+                    gEl.style.cursor = 'help';
+                    gEl.setAttribute('data-tooltip', `<strong>Graha Piṇḍa (${gTotal})</strong><br>Planetary energy index weighted by each planet's cosmic multiplier. Measures purified planetary vitality.`);
+                }
+                if (yEl) {
+                    yEl.textContent = yTotal !== undefined ? yTotal : '-';
+                    yEl.className = 'val-yoga-pinda tooltip-target';
+                    yEl.style.cursor = 'help';
+                    yEl.setAttribute('data-tooltip', `<strong>Yoga Piṇḍa (${yTotal})</strong><br>Combined total of Rāśi Piṇḍa + Graha Piṇḍa. Primary indicator for transit timing and life endurance in classical Jyotish.`);
+                }
             }
         }
 
@@ -2948,13 +3071,22 @@
             schemes.forEach(sc => {
                 const scMap = vData[sc.key] || scores[sc.key] || scores[sc.altKey] || vData[sc.altKey] || {};
                 const tr = document.createElement('tr');
-                let html = `<td style="text-align: left;"><strong>${sc.label}</strong></td>`;
+                const scTip = `<strong>${sc.label}</strong><br>Evaluates planetary dignity across divisional harmonics on a 20-point scale (20 = maximum dignity).`;
+                let html = `<td class="tooltip-target" data-tooltip="${scTip}" style="text-align: left; cursor:help;"><strong>${sc.label}</strong></td>`;
 
                 planets.forEach(p => {
                     const rawVal = scMap[p];
                     const val = rawVal !== undefined ? Number(rawVal).toFixed(1) : '-';
-                    const color = (val !== '-' && Number(val) >= 15) ? '#15803d' : ((val !== '-' && Number(val) < 10) ? '#b91c1c' : '#334155');
-                    html += `<td style="color:${color}; font-weight:bold;">${val}</td>`;
+                    const numVal = Number(val);
+                    const color = (val !== '-' && numVal >= 15) ? '#15803d' : ((val !== '-' && numVal < 10) ? '#b91c1c' : '#334155');
+                    let pTip = '';
+                    if (val !== '-') {
+                        let quality = numVal >= 15 ? 'Ati-Pūrṇa (Excellent, 15-20). Highly dignified and noble across subtle divisions.' :
+                                      (numVal >= 10 ? 'Madhyama (Good / Moderate, 10-15). Capable, stable, and supportive.' :
+                                      'Alpa (Weak, <10). Strained dignity in divisional harmonics.');
+                        pTip = `<strong>${p} — ${sc.label}: ${val} / 20</strong><br>• <strong>Grade:</strong> ${quality}<br>• <strong>Systematic:</strong> Weighted composite score based on whether the planet occupies friendly, own, or exaltation signs in each chart of this group.`;
+                    }
+                    html += `<td class="tooltip-target" data-tooltip="${pTip}" style="color:${color}; font-weight:bold; cursor:help;">${val}</td>`;
                 });
 
                 tr.innerHTML = html;
@@ -2965,7 +3097,8 @@
             if (vData.vaisheshikamsa) {
                 const trHonor = document.createElement('tr');
                 trHonor.style.backgroundColor = '#fdf6e2';
-                let html = `<td style="text-align: left;"><strong>Vaisheshikamsa</strong></td>`;
+                const vTip = `<strong>Vaiśeṣikāṁśa Dignity Titles</strong><br>Honorific titles conferred when a planet occupies favorable dignity (own/exalted/moolatrikona) in multiple divisional charts.`;
+                let html = `<td class="tooltip-target" data-tooltip="${vTip}" style="text-align: left; cursor:help;"><strong>Vaisheshikamsa</strong></td>`;
 
                 planets.forEach(p => {
                     let title = '-';
@@ -2976,12 +3109,181 @@
                     } else if (vData.vaisheshikamsa.Shodasavarga && vData.vaisheshikamsa.Shodasavarga[p]) {
                         title = vData.vaisheshikamsa.Shodasavarga[p].honorific || '-';
                     }
-                    html += `<td><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:8px;">${title}</span></td>`;
+                    const honorTip = `<strong>${p} — Vaiśeṣikāṁśa Title: ${title}</strong><br>Conferred for exceptional dignity across multiple harmonic divisions. Bestows royal honor, lasting respect, and distinct capability.`;
+                    html += `<td class="tooltip-target" data-tooltip="${honorTip}" style="cursor:help;"><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:8px;">${title}</span></td>`;
                 });
 
                 trHonor.innerHTML = html;
                 tbody.appendChild(trHonor);
             }
+        }
+
+        function updateYogaJudgmentWidget(cell) {
+            const tbody = cell.querySelector('.yoga-judgment-table tbody') || cell.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.shadbala) return;
+            tbody.innerHTML = '';
+
+            const sb = currentChartData.shadbala;
+            const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+
+            // Extract values for all 7 planets
+            const rowData = {
+                'I': [], 'K': [], 'S': [], 'A': [], 'SD': [], 'AD': [],
+                '+': [], '-': [], 'IxSxSD': [], 'KxAxAD': [], 'Uccha': [], 'Cheshta': []
+            };
+
+            planets.forEach(p => {
+                const pData = sb[p] || {};
+                const uccha = pData.Uccha_Bala !== undefined ? pData.Uccha_Bala : 0.0;
+                const cheshta = pData.Cheshta_Bala !== undefined ? pData.Cheshta_Bala : 0.0;
+                const ishta = pData.Ishta_Phala !== undefined ? pData.Ishta_Phala : ((uccha + cheshta) / 2.0);
+                const kashta = pData.Kashta_Phala !== undefined ? pData.Kashta_Phala : (60.0 - ishta);
+                const subha = pData.Subha_Phala !== undefined ? pData.Subha_Phala : 0.0;
+                const asubha = pData.Asubha_Phala !== undefined ? pData.Asubha_Phala : (60.0 - subha);
+                const sd = pData.Dig_Bala !== undefined ? pData.Dig_Bala : 0.0;
+                const ad = Math.max(0.0, 60.0 - sd);
+                const plus = ishta + subha + sd;
+                const minus = kashta + asubha + ad;
+                const ix_sx_sd = (ishta * subha * sd) / 3600.0;
+                const kx_ax_ad = (kashta * asubha * ad) / 3600.0;
+
+                rowData['I'].push({ val: ishta, p, uccha, cheshta });
+                rowData['K'].push({ val: kashta, p, ishta });
+                rowData['S'].push({ val: subha, p });
+                rowData['A'].push({ val: asubha, p, subha });
+                rowData['SD'].push({ val: sd, p });
+                rowData['AD'].push({ val: ad, p, sd });
+                rowData['+'].push({ val: plus, p, ishta, subha, sd });
+                rowData['-'].push({ val: minus, p, kashta, asubha, ad });
+                rowData['IxSxSD'].push({ val: ix_sx_sd, p, ishta, subha, sd });
+                rowData['KxAxAD'].push({ val: kx_ax_ad, p, kashta, asubha, ad });
+                rowData['Uccha'].push({ val: uccha, p });
+                rowData['Cheshta'].push({ val: cheshta, p });
+            });
+
+            const sections = [
+                {
+                    title: "Ishta and Kashta",
+                    rows: [
+                        { key: "I", label: "I", isNeg: false },
+                        { key: "K", label: "K", isNeg: true }
+                    ]
+                },
+                {
+                    title: "Subha and Asubha",
+                    rows: [
+                        { key: "S", label: "S", isNeg: false },
+                        { key: "A", label: "A", isNeg: true }
+                    ]
+                },
+                {
+                    title: "Subha and Asubha Dig Bala",
+                    rows: [
+                        { key: "SD", label: "SD", isNeg: false },
+                        { key: "AD", label: "AD", isNeg: true },
+                        { key: "+", label: "+", isNeg: false },
+                        { key: "-", label: "-", isNeg: true },
+                        { key: "IxSxSD", label: "IxSxSD", isNeg: false },
+                        { key: "KxAxAD", label: "KxAxAD", isNeg: true },
+                        { key: "Uccha", label: "Uccha", isNeg: false },
+                        { key: "Cheshta", label: "Cheshta", isNeg: false }
+                    ]
+                }
+            ];
+
+            sections.forEach(sec => {
+                const trSec = document.createElement('tr');
+                trSec.innerHTML = `<td colspan="9" class="sec-header">${sec.title}</td>`;
+                tbody.appendChild(trSec);
+
+                sec.rows.forEach(r => {
+                    const tr = document.createElement('tr');
+                    let html = `<td class="row-lbl tooltip-target" data-tooltip="<strong>${r.label} Row</strong><br>Click or hover over individual values to see how each planet's score is formed.">${r.label}</td>`;
+
+                    const items = rowData[r.key];
+                    let sum = 0.0;
+
+                    items.forEach(item => {
+                        sum += item.val;
+                        const vStr = item.val.toFixed(1);
+                        const valClass = r.isNeg ? 'val-neg' : 'val-pos';
+                        let tooltip = '';
+
+                        if (r.key === 'I') {
+                            tooltip = `<strong>${item.p} — Ishta Phala (Auspicious Capacity): ${vStr}</strong><br>• <strong>Formula:</strong> (Uccha Bala ${item.uccha.toFixed(1)} + Cheshta Bala ${item.cheshta.toFixed(1)}) / 2<br>• <strong>Meaning:</strong> Measures the planet's capacity to give auspicious, beneficial results and blessings during its periods.`;
+                        } else if (r.key === 'K') {
+                            tooltip = `<strong>${item.p} — Kashta Phala (Inauspicious Capacity): ${vStr}</strong><br>• <strong>Formula:</strong> 60 - Ishta Phala (${item.ishta.toFixed(1)})<br>• <strong>Meaning:</strong> Measures the planet's propensity to produce struggles, delays, or difficult lessons during its periods.`;
+                        } else if (r.key === 'S') {
+                            tooltip = `<strong>${item.p} — Subha Phala (Benefic Nature): ${vStr}</strong><br>• <strong>Evaluation:</strong> Derived from the planet's dignity across the 7 divisional charts (Vargas).<br>• <strong>Meaning:</strong> Measures how purely helpful, benevolent, and supportive the planet behaves.`;
+                        } else if (r.key === 'A') {
+                            tooltip = `<strong>${item.p} — Asubha Phala (Malefic Nature): ${vStr}</strong><br>• <strong>Formula:</strong> 60 - Subha Phala (${item.subha.toFixed(1)})<br>• <strong>Meaning:</strong> Measures the planet's harshness, affliction, or karmic obstacles.`;
+                        } else if (r.key === 'SD') {
+                            tooltip = `<strong>${item.p} — Subha Dig Bala (Directional Strength): ${vStr} Virūpas</strong><br>• <strong>Evaluation:</strong> Standard Dig Bala from Shadbala.<br>• <strong>Meaning:</strong> Measures alignment with its optimal sky quadrant (e.g. 10th for Sun/Mars, 4th for Moon/Venus, 1st for Jup/Merc, 7th for Saturn). Direction gives environmental confidence.`;
+                        } else if (r.key === 'AD') {
+                            tooltip = `<strong>${item.p} — Asubha Dig Bala (Directional Weakness): ${vStr} Virūpas</strong><br>• <strong>Formula:</strong> 60 - Subha Dig Bala (${item.sd.toFixed(1)})<br>• <strong>Meaning:</strong> Measures lack of directional grounding or environmental disorientation.`;
+                        } else if (r.key === '+') {
+                            tooltip = `<strong>${item.p} — Total Auspicious Score (+): ${vStr}</strong><br>• <strong>Formula:</strong> Ishta (${item.ishta.toFixed(1)}) + Subha (${item.subha.toFixed(1)}) + Subha Dig Bala (${item.sd.toFixed(1)})<br>• <strong>Meaning:</strong> Synthesis of all three positive strength dimensions. A high positive score indicates strong capacity to manifest good fortune.`;
+                        } else if (r.key === '-') {
+                            tooltip = `<strong>${item.p} — Total Inauspicious Score (-): ${vStr}</strong><br>• <strong>Formula:</strong> Kashta (${item.kashta.toFixed(1)}) + Asubha (${item.asubha.toFixed(1)}) + Asubha Dig Bala (${item.ad.toFixed(1)})<br>• <strong>Meaning:</strong> Synthesis of all three negative/resistant dimensions. Reflects the level of karma, friction, or obstacles to overcome.`;
+                        } else if (r.key === 'IxSxSD') {
+                            tooltip = `<strong>${item.p} — Combined Auspicious Impact: ${vStr} Virūpas</strong><br>• <strong>Formula:</strong> (Ishta × Subha × Subha Dig Bala) / 3600<br>• <strong>Meaning:</strong> Scaled product of all three auspicious factors. A concentrated index representing pure auspicious power in action.`;
+                        } else if (r.key === 'KxAxAD') {
+                            tooltip = `<strong>${item.p} — Combined Inauspicious Impact: ${vStr} Virūpas</strong><br>• <strong>Formula:</strong> (Kashta × Asubha × Asubha Dig Bala) / 3600<br>• <strong>Meaning:</strong> Scaled product of all three difficulty factors. A concentrated index representing the net severity of difficult karma.`;
+                        } else if (r.key === 'Uccha') {
+                            tooltip = `<strong>${item.p} — Uccha Bala (Exaltation Strength): ${vStr} Virūpas</strong><br>• <strong>Evaluation:</strong> Distance from deep debilitation point towards deep exaltation (0 to 60 Virūpas).<br>• <strong>Meaning:</strong> Reflects dignity, self-respect, authority, and noble quality.`;
+                        } else if (r.key === 'Cheshta') {
+                            tooltip = `<strong>${item.p} — Cheshta Bala (Motional Strength): ${vStr} Virūpas</strong><br>• <strong>Evaluation:</strong> Speed, retrograde motion, and proximity to Earth (Sun uses Ayana, Moon uses Paksha).<br>• <strong>Meaning:</strong> Reflects determination, persistent effort, and drive to conquer objectives.`;
+                        }
+
+                        html += `<td class="${valClass} tooltip-target" data-tooltip="${tooltip}" style="cursor:help;">${vStr}</td>`;
+                    });
+
+                    const avgVal = (sum / items.length).toFixed(1);
+                    const avgClass = r.isNeg ? 'val-neg' : 'val-pos';
+                    const avgTooltip = `<strong>Average ${r.label}: ${avgVal}</strong><br>• Average across all 7 classical planets for ${r.label}. Serves as the chart baseline.`;
+                    html += `<td class="${avgClass} tooltip-target" data-tooltip="${avgTooltip}" style="font-weight: bold; cursor:help;">${avgVal}</td>`;
+
+                    tr.innerHTML = html;
+                    tbody.appendChild(tr);
+                });
+            });
+        }
+
+        function openFloatingYogaJudgment() {
+            closeKalaMenu();
+            const modal = document.getElementById('widgetMaximizeModal');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container || !currentChartData) return;
+
+            setActiveFloatingNav('nav-btn-yoga');
+            titleEl.textContent = currentChartData.subject_info.name + " — Yoga Judgment Screen (Ishta/Kashta & Subha/Asubha Dig Bala)";
+
+            container.innerHTML = `
+                <div class="scale-wrapper" style="width: 100%; max-width: 720px; margin: 0 auto; padding: 10px;">
+                    <table class="yoga-judgment-table" style="width: 100%; border-collapse: collapse; border: 2px solid #b86829; text-align: center; font-family: sans-serif; background: #ffffff;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #b86829; background: #fffdfa;">
+                                <th style="border-right: 1px solid #b86829; width: 85px; padding: 6px;"></th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Sun (Surya)">☉</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Moon (Chandra)">☽</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mars (Mangala)">♂</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mercury (Budha)">☿</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Jupiter (Guru)">♃</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Venus (Shukra)">♀</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Saturn (Shani)">♄</th>
+                                <th style="color: #1a4a82; font-size: 14px; font-weight: bold; padding: 6px;">Avg.</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            `;
+
+            updateYogaJudgmentWidget(container);
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
         function populatePlanetaryInfoTable(cell) {
@@ -3021,6 +3323,18 @@
                 return 'color: #4a3325;';
             }
 
+            const taraMeanings = {
+                1: "Janma (Birth): Core identity, mind, and physical vitality.",
+                2: "Sampat (Wealth): Material prosperity, resource growth, and financial ease.",
+                3: "Vipat (Danger): Obstacles, hazards, or unexpected friction to overcome.",
+                4: "Kshema (Well-being): Safety, comfort, health, and smooth flow.",
+                5: "Pratyak (Opposition): Testing of resolve, obstacles, and resistance.",
+                6: "Sadhana (Achievement): Focused effort, discipline, and milestone success.",
+                7: "Naidhana (Critical): Sensitive karmic junction; requires care and discernment.",
+                8: "Mitra (Friend): Harmonious allies, ease of communication, and support.",
+                9: "Parama Mitra (Supreme Friend): Unconditional cosmic support and best blessings."
+            };
+
             // 1. Lagna Row
             if (naks["Lagna"]) {
                 const lgNak = naks["Lagna"];
@@ -3029,16 +3343,16 @@
                 const lordSub = (lgNak.lord_sublord || 'Sa/Ve').replace('/', ' / ');
 
                 tbody.innerHTML += `<tr>
-                    <td><strong>Lagna</strong></td>
-                    <td>${formatDeg(d1_lagna.degree_0_to_30)}</td>
-                    <td>${d1_lagna.sign}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Ascendant (Lagna)</strong><br>Rising degree on the eastern horizon at birth. Defines the 1st house, body, and overall life path." style="cursor:help;"><strong>Lagna</strong></td>
+                    <td class="tooltip-target" data-tooltip="<strong>Lagna Degree: ${formatDeg(d1_lagna.degree_0_to_30)}</strong><br>Exact degree rising within ${d1_lagna.sign}." style="cursor:help;">${formatDeg(d1_lagna.degree_0_to_30)}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Lagna Sign: ${d1_lagna.sign}</strong><br>The rising sign setting the core lens of personality and vitality." style="cursor:help;">${d1_lagna.sign}</td>
                     <td style="color: #7f8c8d;">--</td>
-                    <td>${lgNak.nakshatra}</td>
-                    <td>${lgNak.pada}</td>
-                    <td>${lordSub}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Rising Nakshatra: ${lgNak.nakshatra}</strong><br>Sidereal equatorial lunar mansion rising on the eastern horizon." style="cursor:help;">${lgNak.nakshatra}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Pada ${lgNak.pada}</strong><br>Quarter (3°20') of the Nakshatra, mapping into the Navamsha (D9) chart." style="cursor:help;">${lgNak.pada}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Lord & Sublord: ${lordSub}</strong><br>Star lord colors primary nature; Sublord determines event fruition." style="cursor:help;">${lordSub}</td>
                     <td style="color: #7f8c8d;">--</td>
-                    <td><span class="badge" style="background:#eadecc; color:#5a4233; font-weight:600;">${tNum} (${tAbbr})</span></td>
-                    <td><span style="color:#64748b;">Direct</span></td>
+                    <td class="tooltip-target" data-tooltip="<strong>Lagna Tara: ${tNum} (${tAbbr})</strong><br>${taraMeanings[tNum] || 'Navatara baseline position.'}" style="cursor:help;"><span class="badge" style="background:#eadecc; color:#5a4233; font-weight:600;">${tNum} (${tAbbr})</span></td>
+                    <td class="tooltip-target" data-tooltip="<strong>Ascendant Motion: Direct</strong><br>The eastern horizon continuously moves forward with Earth's rotation." style="cursor:help;"><span style="color:#64748b;">Direct</span></td>
                 </tr>`;
             }
 
@@ -3053,16 +3367,21 @@
 
                 // Status Badge
                 let statusHtml = '<span style="color:#64748b;">Direct</span>';
+                let statusDesc = 'Direct (normal forward movement)';
                 if (isRetro && isCombust) {
                     statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span> <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Cb [C]</span>';
+                    statusDesc = 'Retrograde [R] (moves backward, high motional strength) and Combust [C] (close to Sun, outward expression absorbed inward)';
                 } else if (isRetro) {
                     statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span>';
+                    statusDesc = 'Retrograde [R] (orbit closest to Earth, moving backward against zodiac, high motional strength and persistent focus)';
                 } else if (isCombust) {
                     statusHtml = '<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Combust [C]</span>';
+                    statusDesc = 'Combust [C] (close conjunction with Sun; the soul absorbs outward worldly expression into inward spiritual realization)';
                 }
 
                 // Speed Display
                 let speedHtml = '--';
+                let speedDesc = 'Standard average daily speed';
                 let spdVal = null;
                 if (gD1.relative_speed_pct !== undefined) {
                     spdVal = Number(gD1.relative_speed_pct);
@@ -3076,9 +3395,13 @@
                     if (spdVal > 115) {
                         speedColor = '#15803d';
                         speedLabel = ' (Fast)';
+                        speedDesc = `Fast motion (${spdVal.toFixed(1)}% of mean speed). Indicates swift action, enthusiasm, and rapid results.`;
                     } else if (spdVal < 0) {
                         speedColor = '#b91c1c';
                         speedLabel = ' (Slow)';
+                        speedDesc = `Retrograde / negative speed (${spdVal.toFixed(1)}%). Indicates deep introspection, persistent effort, and unconventional methods.`;
+                    } else {
+                        speedDesc = `Normal daily motion (${spdVal.toFixed(1)}% of mean speed).`;
                     }
                     speedHtml = `<span style="color:${speedColor}; font-weight:bold;">${spdVal.toFixed(1)}%${speedLabel}</span>`;
                 }
@@ -3088,25 +3411,28 @@
                 if (graha === "Rahu" || graha === "Ketu") rawDig = '--';
                 const dignityStr = cleanDignity(rawDig);
                 const digStyle = getDignityStyle(dignityStr);
+                const digDesc = `<strong>${graha} Dignity: ${dignityStr}</strong><br>Derived from 5-fold compound relationship (Panchadha Sambandha) with host sign lord. Measures ease and confidence.`;
 
                 // Tara
                 const tNum = data.tara_number || data.tara || '-';
                 const tAbbr = taraAbbreviations[tNum] ? ` (${taraAbbreviations[tNum]})` : '';
+                const taraDesc = `<strong>Tara Bala: ${tNum}${tAbbr}</strong><br>${taraMeanings[tNum] || 'Distance in the 9-fold Navatara cycle measured from the natal Moon.'}`;
 
                 // Lord/Sublord format
                 const lordSub = (data.lord_sublord || '-').replace('/', ' / ');
+                const lsDesc = `<strong>Nakshatra Lord & KP Sublord: ${lordSub}</strong><br>• Star lord gives primary foundational quality.<br>• Sublord determines specific event timing and whether matters bear fruit.`;
 
                 tbody.innerHTML += `<tr>
-                    <td><strong>${graha}</strong></td>
-                    <td>${formatDeg(gD1.degree_0_to_30)}</td>
-                    <td>${gD1.sign}</td>
-                    <td style="${digStyle}">${dignityStr}</td>
-                    <td>${data.nakshatra}</td>
-                    <td>${data.pada}</td>
-                    <td>${lordSub}</td>
-                    <td>${speedHtml}</td>
-                    <td><span class="badge" style="background:#f5ede0; color:#4a3325; font-weight:600;">${tNum}${tAbbr}</span></td>
-                    <td>${statusHtml}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>${graha}</strong><br>Click to inspect details and highlights across all charts." style="cursor:help;"><strong>${graha}</strong></td>
+                    <td class="tooltip-target" data-tooltip="<strong>${graha} Position: ${formatDeg(gD1.degree_0_to_30)}</strong><br>Exact degree within ${gD1.sign}." style="cursor:help;">${formatDeg(gD1.degree_0_to_30)}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Sign: ${gD1.sign}</strong><br>Constellation occupied in the Tropical Zodiac." style="cursor:help;">${gD1.sign}</td>
+                    <td class="tooltip-target" data-tooltip="${digDesc}" style="${digStyle} cursor:help;">${dignityStr}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Nakshatra: ${data.nakshatra}</strong><br>Sidereal equatorial lunar mansion anchored to Galactic Center." style="cursor:help;">${data.nakshatra}</td>
+                    <td class="tooltip-target" data-tooltip="<strong>Pada ${data.pada}</strong><br>Quarter (3°20') of the Nakshatra, mapping into the Navamsha (D9) chart." style="cursor:help;">${data.pada}</td>
+                    <td class="tooltip-target" data-tooltip="${lsDesc}" style="cursor:help;">${lordSub}</td>
+                    <td class="tooltip-target" data-tooltip="${speedDesc}" style="cursor:help;">${speedHtml}</td>
+                    <td class="tooltip-target" data-tooltip="${taraDesc}" style="cursor:help;"><span class="badge" style="background:#f5ede0; color:#4a3325; font-weight:600;">${tNum}${tAbbr}</span></td>
+                    <td class="tooltip-target" data-tooltip="<strong>Status:</strong> ${statusDesc}" style="cursor:help;">${statusHtml}</td>
                 </tr>`;
             });
         }
@@ -3153,6 +3479,11 @@
             // Vimshopaka
             document.querySelectorAll('.grid-cell[data-widget="vimshopaka"]').forEach(cell => {
                 updateVimshopakaWidget(cell);
+            });
+
+            // Yoga Judgment
+            document.querySelectorAll('.grid-cell[data-widget="yoga-judgment"]').forEach(cell => {
+                updateYogaJudgmentWidget(cell);
             });
             
             // Dignities in Vargas
@@ -4357,13 +4688,35 @@
                 return `${d.toString().padStart(2, '0')} ${signs[sign_idx]} ${m.toString().padStart(2, '0')}'`;
             }
             
+            const HOUSE_THEMES = {
+                1: "Self, Physical Body, Vitality, Appearance, Disposition",
+                2: "Wealth, Speech, Family, Food, Early Childhood, Values",
+                3: "Courage, Siblings, Short Journeys, Communication, Effort",
+                4: "Mother, Home, Emotional Security, Vehicles, Inner Peace",
+                5: "Children, Intelligence, Creativity, Purva Punya (Past-life merit)",
+                6: "Health, Obstacles, Enemies, Daily Routine, Service, Debts",
+                7: "Partnership, Marriage, Business Relationships, Significant Other",
+                8: "Longevity, Transformation, Occult, Shared Assets, Deep Crises",
+                9: "Dharma, Father, Guru, Higher Knowledge, Long Journeys, Fortune",
+                10: "Career, Public Standing, Authority, Karma, Accomplishments",
+                11: "Gains, Hopes, Elder Siblings, Social Network, Aspirations",
+                12: "Moksha, Solitude, Foreign Lands, Expenses, Subconscious Mind"
+            };
+
             bhavas.forEach(b => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${b.house}</td>
-                                <td>${formatDegSign(b.start)}</td>
-                                <td>${formatDegSign(b.cusp)}</td>
-                                <td>${formatDegSign(b.end)}</td>
-                                <td>${b.planets.join(', ')}</td>`;
+                const theme = HOUSE_THEMES[b.house] || '';
+                const hTip = `<strong>House ${b.house} (${theme})</strong><br>• Campanus house system (equal divisions of the prime vertical).<br>• Click or inspect to see house ruler and occupants.`;
+                const startTip = `<strong>House ${b.house} Beginning: ${formatDegSign(b.start)}</strong><br>Initial border degree marking the entrance into House ${b.house}.`;
+                const cuspTip = `<strong>House ${b.house} Peak Cusp: ${formatDegSign(b.cusp)}</strong><br>Center of peak manifestation. Planets and transits closest to this degree strongly dominate this house.`;
+                const endTip = `<strong>House ${b.house} End: ${formatDegSign(b.end)}</strong><br>Terminal border transitioning into House ${b.house === 12 ? 1 : b.house + 1}.`;
+                const occTip = `<strong>Planets in House ${b.house}: ${b.planets.join(', ') || 'None'}</strong><br>${b.planets.length > 0 ? 'These planets directly act out their energies through the affairs of House ' + b.house + '.' : 'No occupying planets; results depend on the house lord and aspecting planets.'}`;
+
+                tr.innerHTML = `<td class="tooltip-target" data-tooltip="${hTip}" style="cursor:help;"><strong>${b.house}</strong></td>
+                                <td class="tooltip-target" data-tooltip="${startTip}" style="cursor:help;">${formatDegSign(b.start)}</td>
+                                <td class="tooltip-target" data-tooltip="${cuspTip}" style="cursor:help; font-weight:bold;">${formatDegSign(b.cusp)}</td>
+                                <td class="tooltip-target" data-tooltip="${endTip}" style="cursor:help;">${formatDegSign(b.end)}</td>
+                                <td class="tooltip-target" data-tooltip="${occTip}" style="cursor:help;">${b.planets.join(', ')}</td>`;
                 tbody.appendChild(tr);
             });
         }
@@ -4638,17 +4991,17 @@
 
             const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
             const avasthaTypes = [
-                { key: 'jagrat', label: 'Jagradādi' },
-                { key: 'bala', label: 'Bālādi' },
-                { key: 'deeptadi', label: 'Dīptādi' },
-                { key: 'lajjitadi', label: 'Lajjitādi' }
+                { key: 'jagrat', label: 'Jagradādi', desc: 'Alertness / Consciousness: Jagrata (Awake = 100%), Swapna (Dreaming = 50%), Sushupti (Sleeping = minimal).' },
+                { key: 'bala', label: 'Bālādi', desc: 'Age / Physical Vitality: Bāla (Infant = 25%), Kumāra (Youth = 50%), Yuva (Prime Adult = 100%), Vṛddha (Elder = minimal), Mṛta (Dormant = 0%).' },
+                { key: 'deeptadi', label: 'Dīptādi', desc: 'Dignity Radiance / Mental Mood: 9 moods from Dīpta (Exalted radiance) to Swastha (Content) to Kopa/Dina (Afflicted).' },
+                { key: 'lajjitadi', label: 'Lajjitādi', desc: 'Feeling States & Psychological Complexes: Garvita (Proud), Lajjita (Ashamed), Kshudhita (Starved), Kshobhita (Agitated), Mudita (Delighted), Trushita (Thirsty).' }
             ];
 
             const vargaGrahas = currentChartData.vargas[varga].grahas;
 
             avasthaTypes.forEach(avType => {
                 const tr = document.createElement('tr');
-                let htmlStr = `<td><strong>${avType.label}</strong></td>`;
+                let htmlStr = `<td class="tooltip-target" data-tooltip="<strong>${avType.label} Avasthas</strong><br>${avType.desc}" style="cursor:help;"><strong>${avType.label}</strong></td>`;
 
                 planets.forEach(p => {
                     if (!vargaGrahas[p] || !vargaGrahas[p].avasthas) {
@@ -4657,17 +5010,21 @@
                     }
                     const avData = vargaGrahas[p].avasthas[avType.key];
                     let stateStr = '-';
-                    let tooltip = '';
+                    let cellTip = '';
 
                     if (Array.isArray(avData)) {
                         stateStr = avData.length > 0 ? avData.map(a => a.state.split(' ')[0]).join(',<br/>') : '-';
-                        tooltip = avData.map(a => `${a.state}: ${a.condition}`).join(' | ');
+                        cellTip = `<strong>${p} — ${avType.label}</strong><br>` + avData.map(a => {
+                            let meaning = AVASHTHA_MEANINGS[a.state] || '';
+                            return `• <strong>${a.state}:</strong> ${a.condition}${meaning ? '<br><em>' + meaning + '</em>' : ''}`;
+                        }).join('<br>');
                     } else if (avData && avData.state) {
                         stateStr = avData.state.split(' ')[0];
-                        tooltip = avData.condition || '';
+                        let meaning = AVASHTHA_MEANINGS[avData.state] || '';
+                        cellTip = `<strong>${p} — ${avType.label}: ${avData.state}</strong><br>• <strong>Condition:</strong> ${avData.condition || ''}${meaning ? '<br>• <em>' + meaning + '</em>' : ''}`;
                     }
 
-                    htmlStr += `<td title="${tooltip}" style="cursor: help;">${stateStr}</td>`;
+                    htmlStr += `<td class="tooltip-target" data-tooltip="${cellTip}" style="cursor: help;">${stateStr}</td>`;
                 });
 
                 tr.innerHTML = htmlStr;
@@ -4835,14 +5192,19 @@
                 const d = grahas[p].dignity_breakdown;
                 
                 let digMeaning = DIGNITY_MEANINGS[d.final_dignity] || "";
-                let digTooltip = digMeaning ? `${p} is in ${d.final_dignity} in its current sign. ${digMeaning}` : "";
+                let pTip = `<strong>${p}</strong><br>Click to inspect across divisional charts.`;
+                let lordTip = `<strong>Sign Lord: ${d.sign_lord}</strong><br>Governs the zodiac sign currently occupied by ${p}.`;
+                let natTip = `<strong>Natural Relationship: ${d.natural_relationship}</strong><br>Naisargika Sambandha based on permanent planetary archetypes.`;
+                let tempTip = `<strong>Temporary Relationship: ${d.temporary_relationship}</strong><br>Tatkalika Sambandha based on house distance (friends in 2, 3, 4, 10, 11, 12; enemies in 1, 5, 6, 7, 8, 9).`;
+                let compTip = `<strong>Compound Relationship: ${d.compound_relationship}</strong><br>Panchadha Sambandha combining natural and temporary relationships.`;
+                let digTooltip = `<strong>${p} — Final Dignity: ${d.final_dignity}</strong><br>${digMeaning}`;
 
-                const rowHtml = `<td><strong>${p}</strong></td>
-                                <td>${d.sign_lord}</td>
-                                <td>${d.natural_relationship}</td>
-                                <td>${d.temporary_relationship}</td>
-                                <td>${d.compound_relationship}</td>
-                                <td title="${digTooltip}"><strong>${d.final_dignity}</strong></td>`;
+                const rowHtml = `<td class="tooltip-target" data-tooltip="${pTip}" style="cursor:help;"><strong>${p}</strong></td>
+                                <td class="tooltip-target" data-tooltip="${lordTip}" style="cursor:help;">${d.sign_lord}</td>
+                                <td class="tooltip-target" data-tooltip="${natTip}" style="cursor:help;">${d.natural_relationship}</td>
+                                <td class="tooltip-target" data-tooltip="${tempTip}" style="cursor:help;">${d.temporary_relationship}</td>
+                                <td class="tooltip-target" data-tooltip="${compTip}" style="cursor:help;">${d.compound_relationship}</td>
+                                <td class="tooltip-target" data-tooltip="${digTooltip}" style="cursor:help;"><strong>${d.final_dignity}</strong></td>`;
                 
                 if (tbody) {
                     const tr = document.createElement('tr');
@@ -4880,7 +5242,8 @@
             if (!aspects) return;
             
             const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
-            
+            const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+
             tables.forEach(table => {
                 const thead = table.querySelector('thead');
                 const tbody = table.querySelector('tbody');
@@ -4890,24 +5253,95 @@
                 
                 // Header Row
                 const trHead = document.createElement('tr');
-                trHead.innerHTML = '<th></th>' + columnsList.map(c => `<th>${c.toString().substring(0, 2)}</th>`).join('');
+                trHead.innerHTML = '<th></th>' + columnsList.map(c => {
+                    const colLabel = c.toString().substring(0, 2);
+                    const colFull = isHouse ? `House ${c}` : c;
+                    return `<th class="tooltip-target" data-tooltip="<strong>${colFull}</strong><br>Target receiving Graha Drishti aspects.">${colLabel}</th>`;
+                }).join('');
                 thead.appendChild(trHead);
                 
                 // Data Rows (Aspecting Planets)
                 aspectingPlanets.forEach(p => {
                     const tr = document.createElement('tr');
-                    let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
+                    const pData = currentChartData && currentChartData.vargas && currentChartData.vargas.D1 && currentChartData.vargas.D1.grahas && currentChartData.vargas.D1.grahas[p];
+                    const pSign = pData ? pData.sign : '';
+                    const pDeg = pData ? pData.degree_0_to_30 : null;
+                    const pLon = pData ? pData.longitude : 0;
+                    const pDegStr = pDeg !== null ? `${Math.floor(pDeg)}°${Math.round((pDeg - Math.floor(pDeg)) * 60)}'` : '';
+                    
+                    let html = `<td class="tooltip-target" data-tooltip="<strong>${p} (${pSign} ${pDegStr})</strong><br>Aspecting planet casting sight (Graha Drishti)."><strong>${p.substring(0, 2)}</strong></td>`;
                     
                     columnsList.forEach(c => {
                         const cKey = c.toString();
                         if (!isHouse && p === c) {
-                            html += `<td style="color:#a89f91;">--</td>`;
+                            html += `<td class="tooltip-target" data-tooltip="<strong>${p} — Self Position</strong><br>A planet resides here and cannot cast an external aspect onto itself." style="color:#a89f91; cursor:help;">--</td>`;
                         } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
-                            html += `<td style="color:#c0392b; font-weight:bold;">Y</td>`;
+                            const cData = currentChartData.vargas.D1.grahas && currentChartData.vargas.D1.grahas[c];
+                            const cSign = cData ? cData.sign : pSign;
+                            html += `<td class="tooltip-target" data-tooltip="<strong>Conjunction (Yuti): ${p} & ${c}</strong><br>• Both planets occupy <strong>${cSign}</strong>.<br>• In Vedic astrology, sharing a sign creates direct synthesis and intense mutual exchange of energies." style="color:#c0392b; font-weight:bold; cursor:help;">Y</td>`;
                         } else {
                             const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
                             if (entry && entry.raw > 0) {
-                                html += `<td>${Math.round(entry.raw)}</td>`;
+                                const rawRounded = Math.round(entry.raw);
+                                
+                                let cLon = 0;
+                                let targetName = '';
+                                let targetDesc = '';
+                                
+                                if (isHouse) {
+                                    targetName = `House ${c}`;
+                                    if (dataKey === 'equal_cusps') {
+                                        const ascLon = (currentChartData.vargas.D1.lagna && currentChartData.vargas.D1.lagna.longitude) || 0;
+                                        cLon = (ascLon + (c - 1) * 30.0) % 360.0;
+                                        const hSign = signsList[Math.floor(cLon / 30.0)];
+                                        const hDeg = (cLon % 30.0).toFixed(1);
+                                        targetDesc = `Equal House ${c} cusp (${hDeg}° ${hSign})`;
+                                    } else {
+                                        const cuspsList = (currentChartData.vargas.D1 && currentChartData.vargas.D1.cusps) || [];
+                                        const cuspObj = cuspsList[c - 1] || {};
+                                        cLon = cuspObj.longitude !== undefined ? cuspObj.longitude : (((currentChartData.vargas.D1.lagna?.longitude || 0) + (c - 1) * 30.0) % 360.0);
+                                        const hSign = cuspObj.sign || signsList[Math.floor(cLon / 30.0)];
+                                        const hDeg = cuspObj.degree_0_to_30 !== undefined ? cuspObj.degree_0_to_30.toFixed(1) : (cLon % 30.0).toFixed(1);
+                                        targetDesc = `Bhava Chalita Cusp ${c} (${hDeg}° ${hSign})`;
+                                    }
+                                } else {
+                                    targetName = c;
+                                    const cData = currentChartData.vargas.D1.grahas && currentChartData.vargas.D1.grahas[c];
+                                    cLon = cData ? cData.longitude : 0;
+                                    const cSign = cData ? cData.sign : '';
+                                    const cDeg = cData && cData.degree_0_to_30 !== undefined ? cData.degree_0_to_30.toFixed(1) : '';
+                                    targetDesc = `${c} (${cDeg}° ${cSign})`;
+                                }
+                                
+                                let diff = (cLon - pLon + 360.0) % 360.0;
+                                const housesAway = Math.floor(diff / 30.0) + 1;
+                                const degSep = Math.round(diff);
+                                
+                                let ruleDesc = '';
+                                if (housesAway === 7) {
+                                    ruleDesc = "7th House Opposition (all planets cast 100% full aspect onto the 7th house / opposite point).";
+                                } else if (p === 'Mars' && (housesAway === 4 || housesAway === 8)) {
+                                    ruleDesc = `Mars Special Full Aspect (${housesAway}th house Chaturasra/Randhra Drishti).`;
+                                } else if (p === 'Jupiter' && (housesAway === 5 || housesAway === 9)) {
+                                    ruleDesc = `Jupiter Special Full Aspect (${housesAway}th house Trikona Drishti).`;
+                                } else if (p === 'Saturn' && (housesAway === 3 || housesAway === 10)) {
+                                    ruleDesc = `Saturn Special Full Aspect (${housesAway}th house Upachaya Drishti).`;
+                                } else {
+                                    ruleDesc = `Partial Parashari angle based on ${degSep}° geometric separation.`;
+                                }
+                                
+                                let effectDesc = '';
+                                if (entry.plus > 0) {
+                                    effectDesc = `Contributes +${Math.round(entry.plus)} Virūpas of auspicious, protective light.`;
+                                } else if (entry.minus > 0) {
+                                    effectDesc = `Imposes -${Math.round(entry.minus)} Virūpas of challenging or frictional tension.`;
+                                } else {
+                                    effectDesc = `Aspect strength: ${rawRounded} Virūpas out of 60.`;
+                                }
+                                
+                                const cellTooltip = `<strong>${p} → ${targetName}: ${rawRounded} Virūpas</strong><br>• <strong>Target:</strong> ${targetDesc}<br>• <strong>Separation:</strong> ${degSep}° (${housesAway} houses away from ${p})<br>• <strong>Rule:</strong> ${ruleDesc}<br>• <strong>Effect:</strong> ${effectDesc}`;
+                                
+                                html += `<td class="tooltip-target" data-tooltip="${cellTooltip}" style="cursor:help;">${rawRounded}</td>`;
                             } else {
                                 html += `<td></td>`;
                             }
@@ -4920,11 +5354,13 @@
                 // Totals Row (+)
                 const trPlus = document.createElement('tr');
                 trPlus.className = 'total-row';
-                let plusHtml = `<td><strong style="color: #27ae60;">+</strong></td>`;
+                let plusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Benefic Aspect (+)</strong><br>Sum of supportive, harmonious aspectual rays received from benefics."><strong style="color: #27ae60;">+</strong></td>`;
                 columnsList.forEach(c => {
                     const cKey = c.toString();
                     const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
-                    plusHtml += `<td style="color: #27ae60; font-weight: bold;">${v > 0 ? v : ''}</td>`;
+                    const tgt = isHouse ? `House ${c}` : c;
+                    const tip = `<strong>${tgt} — Total Benefic Aspect (+)</strong><br>Receives a total of <strong>+${v} Virūpas</strong> of auspicious, protective aspectual rays from benefics.`;
+                    plusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: #27ae60; font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
                 });
                 trPlus.innerHTML = plusHtml;
                 tbody.appendChild(trPlus);
@@ -4932,11 +5368,13 @@
                 // Totals Row (-)
                 const trMinus = document.createElement('tr');
                 trMinus.className = 'total-row';
-                let minusHtml = `<td><strong style="color: #c0392b;">-</strong></td>`;
+                let minusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Malefic Aspect (-)</strong><br>Sum of stressful or frictional aspectual tension received from malefics."><strong style="color: #c0392b;">-</strong></td>`;
                 columnsList.forEach(c => {
                     const cKey = c.toString();
                     const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
-                    minusHtml += `<td style="color: #c0392b; font-weight: bold;">${v > 0 ? v : ''}</td>`;
+                    const tgt = isHouse ? `House ${c}` : c;
+                    const tip = `<strong>${tgt} — Total Malefic Aspect (-)</strong><br>Receives a total of <strong>-${v} Virūpas</strong> of challenging, frictional aspectual pressure from malefics.`;
+                    minusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: #c0392b; font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
                 });
                 trMinus.innerHTML = minusHtml;
                 tbody.appendChild(trMinus);
@@ -5137,7 +5575,26 @@
                         }
                     };
 
-                    let html = `<td><strong>${v.replace('D', '')}</strong></td>`;
+                    const vargaDescriptions = {
+                        'D1': 'Rāśi (Physical Existence & Baseline Life)',
+                        'D2': 'Horā (Wealth, Resources & Speech)',
+                        'D3': 'Drekkāṇa (Siblings, Courage & Vitality)',
+                        'D4': 'Chaturthāṁśa (Home, Fixed Property & Comfort)',
+                        'D7': 'Saptāṁśa (Children, Progeny & Creative Flow)',
+                        'D9': 'Navāṁśa (Dharma, Marriage, Inner Essence & Destiny)',
+                        'D10': 'Daśāṁśa (Career, Leadership & Social Impact)',
+                        'D12': 'Dvādaśāṁśa (Parents, Heritage & Ancestral Lineage)',
+                        'D16': 'Ṣoḍaśāṁśa (Vehicles, Pleasures & Heart Comfort)',
+                        'D20': 'Viṁśāṁśa (Spiritual Life, Devotion & Meditation)',
+                        'D24': 'Chaturviṁśāṁśa (Higher Education, Skill & Scholarship)',
+                        'D27': 'Saptaviṁśāṁśa (Subconscious Strengths & Vulnerabilities)',
+                        'D30': 'Triṁśāṁśa (Misfortune, Hidden Flaws & Health Trials)',
+                        'D40': 'Khavedāṁśa (Auspicious / Inauspicious Karmic Blessings)',
+                        'D45': 'Akṣavedāṁśa (Moral Character, Integrity & Purity)',
+                        'D60': 'Ṣaṣṭyāṁśa (Root Past-Life Karmas & Destiny Seeds)'
+                    };
+                    const vDesc = vargaDescriptions[v] || v;
+                    let html = `<td class="tooltip-target" data-tooltip="<strong>${v} — ${vDesc}</strong><br>Click to display this harmonic chart in the main window." style="cursor:help;"><strong>${v.replace('D', '')}</strong></td>`;
                     
                     const vData = (currentChartData && currentChartData.vargas) ? currentChartData.vargas[v] : null;
                     if (vData && vData.grahas) {
@@ -5151,12 +5608,7 @@
                                 const fullName = getFullName(abbrev);
                                 
                                 // Build tooltip
-                                tooltip = `Sign: ${vData.grahas[p].sign}\n`;
-                                tooltip += `Lord: ${d.sign_lord}\n`;
-                                tooltip += `Natural: ${d.natural_relationship}\n`;
-                                tooltip += `Temporary: ${d.temporary_relationship}\n`;
-                                tooltip += `Compound: ${d.compound_relationship}\n`;
-                                tooltip += `Final: ${d.final_dignity}`;
+                                tooltip = `<strong>${p} in ${v} (${vData.grahas[p].sign})</strong><br>• <strong>Dignity:</strong> ${fullName} (${abbrev})<br>• <strong>Host Lord:</strong> ${d.sign_lord}<br>• <strong>Natural Bond:</strong> ${d.natural_relationship}<br>• <strong>Temporary Position:</strong> ${d.temporary_relationship}<br>• <strong>Compound Relationship:</strong> ${d.compound_relationship}`;
                             }
                             
                             const abbrev = mapDig(digStr);
@@ -5170,7 +5622,7 @@
                             else if (abbrev === "E") color = "#e67e22";
                             else if (abbrev === "N") color = "#7f8c8d";
                             
-                            html += `<td class="tooltip-target" title="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
+                            html += `<td class="tooltip-target" data-tooltip="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
                         });
                     } else {
                         html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
@@ -5299,22 +5751,28 @@
                     });
                 });
 
-                const signCell = `<td style="font-weight: 700; color: #4a3325; background: #fcfaf5; text-align: left; padding: 5px 8px;">${SIGN_SYMBOLS[sign] || sign}</td>`;
+                const signTip = `<strong>${sign} (${mod.label})</strong><br>In Jaimini astrology, signs cast direct sight (Rāśi Dṛṣṭi) on other signs according to modality.`;
+                const modTip = `<strong>${mod.label} (${mod.type}) Sign</strong><br>${mod.label === 'Movable' ? 'Movable signs aspect all fixed signs except the one immediately adjacent to them.' : (mod.label === 'Fixed' ? 'Fixed signs aspect all movable signs except the one immediately adjacent to them.' : 'Dual signs aspect all other three dual signs.')}`;
+                const occTip = `<strong>Occupants in ${sign}: ${occupants.join(', ') || 'None'}</strong><br>${occupants.length > 0 ? 'These planets cast Rāśi Dṛṣṭi alongside the sign itself.' : 'No planets occupy ' + sign + '.'}`;
+                const aspTip = `<strong>Signs Aspected by ${sign}</strong><br>${aspects.join(', ')} receive the direct energetic influence of ${sign}.`;
+                const aspPlanetsTip = `<strong>Planets Aspected by ${sign}</strong><br>${aspectedPlanets.length > 0 ? aspectedPlanets.join(', ') + ' receive direct Rāśi Dṛṣṭi.' : 'No planets reside in the aspected signs.'}`;
+
+                const signCell = `<td class="tooltip-target" data-tooltip="${signTip}" style="font-weight: 700; color: #4a3325; background: #fcfaf5; text-align: left; padding: 5px 8px; cursor:help;">${SIGN_SYMBOLS[sign] || sign}</td>`;
                 const modBadge = `<span style="display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; color: ${mod.color}; background: ${mod.bg}; border: 1px solid ${mod.color}33;">${mod.label}</span>`;
-                const modCell = `<td style="padding: 4px 6px;">${modBadge}</td>`;
+                const modCell = `<td class="tooltip-target" data-tooltip="${modTip}" style="padding: 4px 6px; cursor:help;">${modBadge}</td>`;
                 
                 const occText = occupants.length > 0 
                     ? `<strong style="color: #2b1810;">${occupants.join(', ')}</strong>` 
                     : `<span style="color: #9ca3af;">—</span>`;
-                const occCell = `<td style="padding: 4px 6px; font-size: 11.5px;">${occText}</td>`;
+                const occCell = `<td class="tooltip-target" data-tooltip="${occTip}" style="padding: 4px 6px; font-size: 11.5px; cursor:help;">${occText}</td>`;
 
                 const aspSignsText = aspects.join(', ');
-                const aspCell = `<td style="padding: 4px 6px; font-size: 11.5px; color: #4b5563;">${aspSignsText}</td>`;
+                const aspCell = `<td class="tooltip-target" data-tooltip="${aspTip}" style="padding: 4px 6px; font-size: 11.5px; color: #4b5563; cursor:help;">${aspSignsText}</td>`;
 
                 const aspPlanetsText = aspectedPlanets.length > 0
                     ? `<strong style="color: #1e3a8a;">${aspectedPlanets.join(', ')}</strong>`
                     : `<span style="color: #9ca3af;">—</span>`;
-                const aspPlanetsCell = `<td style="padding: 4px 6px; font-size: 11.5px;">${aspPlanetsText}</td>`;
+                const aspPlanetsCell = `<td class="tooltip-target" data-tooltip="${aspPlanetsTip}" style="padding: 4px 6px; font-size: 11.5px; cursor:help;">${aspPlanetsText}</td>`;
 
                 tr.innerHTML = signCell + modCell + occCell + aspCell + aspPlanetsCell;
                 tbody.appendChild(tr);
@@ -5602,59 +6060,59 @@
             const rowsDef = [
                 // Sthana Bala
                 { type: "header", title: "Sthana Bala (Positional Strength)" },
-                { label: "Uccha Bala", key: "Uccha_Bala", decimals: 2 },
-                { label: "Saptavargaja Bala", key: "Saptavarga_Bala", decimals: 0 },
-                { label: "Ojhayugmarasyamsa Bala", key: "Ojhayugma_Bala", decimals: 0 },
-                { label: "Kendradi Bala", key: "Kendradi_Bala", decimals: 0 },
-                { label: "Drekkana Bala", key: "Drekkana_Bala", decimals: 0 },
-                { label: "Total Sthana Bala", key: "Sthana_Bala", decimals: 1, isSubtotal: true },
-                { label: "Required Sthana Bala", key: "Required_Sthana", decimals: 0, isRequired: true },
-                { label: "% of Required Sthana Bala", key: "Pct_Required_Sthana", decimals: 1, isPct: true },
+                { label: "Uccha Bala", key: "Uccha_Bala", decimals: 2, desc: "Exaltation Strength: Closeness to deep exaltation degree (max 60 Virūpas) vs deep debilitation (0 Virūpas)." },
+                { label: "Saptavargaja Bala", key: "Saptavarga_Bala", decimals: 0, desc: "Divisional Dignity Strength: Earned from friendly, own, or exaltation signs across the 7 root divisional charts (D1, D2, D3, D7, D9, D12, D30)." },
+                { label: "Ojhayugmarasyamsa Bala", key: "Ojhayugma_Bala", decimals: 0, desc: "Odd/Even Sign & Navamsha Strength: Male planets gain 15 Virūpas in odd/masculine signs; female planets in even/feminine signs." },
+                { label: "Kendradi Bala", key: "Kendradi_Bala", decimals: 0, desc: "House Angle Strength: Angular houses (1, 4, 7, 10) get 60 Virūpas; Succedent (2, 5, 8, 11) get 30; Cadent (3, 6, 9, 12) get 15." },
+                { label: "Drekkana Bala", key: "Drekkana_Bala", decimals: 0, desc: "Decanate Strength: 15 Virūpas awarded based on planet gender and the 1st, 2nd, or 3rd 10° segment of the sign occupied." },
+                { label: "Total Sthana Bala", key: "Sthana_Bala", decimals: 1, isSubtotal: true, desc: "Total Positional Strength: Sum of all 5 positional sub-strengths." },
+                { label: "Required Sthana Bala", key: "Required_Sthana", decimals: 0, isRequired: true, desc: "Parashara Minimum Positional Benchmark needed for effective functioning." },
+                { label: "% of Required Sthana Bala", key: "Pct_Required_Sthana", decimals: 1, isPct: true, desc: "Sufficiency ratio of Positional Strength (≥100% means fully satisfied)." },
                 
                 // Dig Bala
                 { type: "header", title: "Dig Bala (Directional Strength)" },
-                { label: "Total Dig Bala", key: "Dig_Bala", decimals: 2, isSubtotal: true },
-                { label: "Required Dig Bala", key: "Required_Dig", decimals: 0, isRequired: true },
-                { label: "% of Required Dig Bala", key: "Pct_Required_Dig", decimals: 1, isPct: true },
+                { label: "Total Dig Bala", key: "Dig_Bala", decimals: 2, isSubtotal: true, desc: "Directional Strength: Proximity to optimal sky quadrant (10th for Sun/Mars, 4th for Moon/Venus, 1st for Jup/Merc, 7th for Saturn). Max 60 Virūpas." },
+                { label: "Required Dig Bala", key: "Required_Dig", decimals: 0, isRequired: true, desc: "Parashara Minimum Directional Benchmark (35 Virūpas for all planets)." },
+                { label: "% of Required Dig Bala", key: "Pct_Required_Dig", decimals: 1, isPct: true, desc: "Sufficiency ratio of Directional Strength (≥100% means directional confidence)." },
                 
                 // Kaala Bala
                 { type: "header", title: "Kaala Bala (Time Strength)" },
-                { label: "Natonnata Bala", key: "Natonnata_Bala", decimals: 2 },
-                { label: "Paksha Bala", key: "Paksha_Bala", decimals: 2 },
-                { label: "Tribhaga Bala", key: "Tribhaga_Bala", decimals: 0 },
-                { label: "Varsha Bala", key: "Varsha_Bala", decimals: 0 },
-                { label: "Masa Bala", key: "Masa_Bala", decimals: 0 },
-                { label: "Dina Bala", key: "Dina_Bala", decimals: 0 },
-                { label: "Hora Bala", key: "Hora_Bala", decimals: 0 },
-                { label: "Total Kaala Bala", key: "Kala_Bala", decimals: 1, isSubtotal: true },
-                { label: "Required Kaala Bala", key: "Required_Kaala", decimals: 0, isRequired: true },
-                { label: "% of Required Kaala Bala", key: "Pct_Required_Kaala", decimals: 1, isPct: true },
+                { label: "Natonnata Bala", key: "Natonnata_Bala", decimals: 2, desc: "Day/Night Diurnal Strength: Sun, Jupiter, Venus strong by day; Moon, Mars, Saturn strong by night; Mercury always 60." },
+                { label: "Paksha Bala", key: "Paksha_Bala", decimals: 2, desc: "Lunar Fortnight Strength: Benefics strong during bright waxing Moon; malefics strong during dark waning Moon." },
+                { label: "Tribhaga Bala", key: "Tribhaga_Bala", decimals: 0, desc: "Three-Part Day/Night Strength: 60 Virūpas awarded to the specific planet ruling the 1/3 portion of day/night when birth occurred." },
+                { label: "Varsha Bala", key: "Varsha_Bala", decimals: 0, desc: "Year Lord Strength: 15 Virūpas awarded to the ruler of the astrological solar year." },
+                { label: "Masa Bala", key: "Masa_Bala", decimals: 0, desc: "Month Lord Strength: 30 Virūpas awarded to the ruler of the solar month (Sun's transit sign)." },
+                { label: "Dina Bala", key: "Dina_Bala", decimals: 0, desc: "Day Lord Strength: 45 Virūpas awarded to the ruler of the day of the week." },
+                { label: "Hora Bala", key: "Hora_Bala", decimals: 0, desc: "Hour Lord Strength: 60 Virūpas awarded to the ruler of the planetary hour of birth." },
+                { label: "Total Kaala Bala", key: "Kala_Bala", decimals: 1, isSubtotal: true, desc: "Total Temporal Strength: Sum of all time-based cosmic alignments." },
+                { label: "Required Kaala Bala", key: "Required_Kaala", decimals: 0, isRequired: true, desc: "Parashara Minimum Temporal Benchmark." },
+                { label: "% of Required Kaala Bala", key: "Pct_Required_Kaala", decimals: 1, isPct: true, desc: "Sufficiency ratio of Temporal Strength." },
                 
                 // Ayana Bala
                 { type: "header", title: "Ayana Bala (Declination Strength)" },
-                { label: "Total Ayana Bala", key: "Ayana_Bala", decimals: 2, isSubtotal: true },
-                { label: "Required Ayana Bala", key: "Required_Ayana", decimals: 0, isRequired: true },
-                { label: "% of Required Ayana Bala", key: "Pct_Required_Ayana", decimals: 1, isPct: true },
+                { label: "Total Ayana Bala", key: "Ayana_Bala", decimals: 2, isSubtotal: true, desc: "Declination Strength: Distance north or south of celestial equator. Sun, Mars, Jupiter favor North; Moon, Saturn favor South." },
+                { label: "Required Ayana Bala", key: "Required_Ayana", decimals: 0, isRequired: true, desc: "Parashara Minimum Declination Benchmark." },
+                { label: "% of Required Ayana Bala", key: "Pct_Required_Ayana", decimals: 1, isPct: true, desc: "Sufficiency ratio of Declination Strength." },
                 
                 // Cheshta Bala
                 { type: "header", title: "Cheshta Bala (Motional Strength)" },
-                { label: "Total Cheshta Bala", key: "Cheshta_Bala", decimals: 2, isSubtotal: true },
-                { label: "Required Cheshta Bala", key: "Required_Cheshta", decimals: 0, isRequired: true },
-                { label: "% of Required Cheshta Bala", key: "Pct_Required_Cheshta", decimals: 1, isPct: true },
+                { label: "Total Cheshta Bala", key: "Cheshta_Bala", decimals: 2, isSubtotal: true, desc: "Motional Strength: Measures orbital speed and retrograde motion. Slow or retrograde planets closest to Earth get up to 60 Virūpas." },
+                { label: "Required Cheshta Bala", key: "Required_Cheshta", decimals: 0, isRequired: true, desc: "Parashara Minimum Motional Benchmark." },
+                { label: "% of Required Cheshta Bala", key: "Pct_Required_Cheshta", decimals: 1, isPct: true, desc: "Sufficiency ratio of Motional Strength." },
                 
                 // Other Balas
                 { type: "header", title: "Other Balas" },
-                { label: "Naisargika Bala", key: "Naisargika_Bala", decimals: 2 },
-                { label: "Drig Bala", key: "Drik_Bala", decimals: 1 },
-                { label: "Yuddha Bala", key: "Yuddha_Bala", decimals: 0 },
+                { label: "Naisargika Bala", key: "Naisargika_Bala", decimals: 2, desc: "Natural Fixed Luminosity: Inherent cosmic brightness rank (Sun 60 > Moon 51.4 > Venus 42.9 > Jupiter 34.3 > Mercury 25.7 > Mars 17.1 > Saturn 8.6)." },
+                { label: "Drig Bala", key: "Drik_Bala", decimals: 1, desc: "Aspectual Strength (Drik Bala): Net balance of supportive benefic aspects (+) versus stressful malefic aspects (-) received." },
+                { label: "Yuddha Bala", key: "Yuddha_Bala", decimals: 0, desc: "Planetary War Strength: Bonus won or lost when two true planets are within 1° of celestial longitude." },
                 
                 // Final Summary & Rankings
                 { type: "header", title: "Summary & Rankings" },
-                { label: "Shad Bala Total", key: "Total_Virupas", decimals: 1, isGrandTotal: true },
-                { label: "Required Shad Bala", key: "Required_Total", decimals: 0, isRequired: true },
-                { label: "% of Required Shad Bala", key: "Pct_Required_Total", decimals: 1, isPct: true },
-                { label: "Shad Bala in Rupas", key: "Total_Rupas", decimals: 2, isGrandTotal: true },
-                { label: "Relative Rank", key: "Relative_Rank", decimals: 0, isRank: true }
+                { label: "Shad Bala Total", key: "Total_Virupas", decimals: 1, isGrandTotal: true, desc: "Grand Total Shadbala (in Virūpas): Sum of all 6 individual strength dimensions." },
+                { label: "Required Shad Bala", key: "Required_Total", decimals: 0, isRequired: true, desc: "Parashara Minimum Total Threshold needed for full operational capability." },
+                { label: "% of Required Shad Bala", key: "Pct_Required_Total", decimals: 1, isPct: true, desc: "Overall Sufficiency: Values ≥100% indicate the planet has enough cosmic power to manifest its promises." },
+                { label: "Shad Bala in Rupas", key: "Total_Rupas", decimals: 2, isGrandTotal: true, desc: "Shadbala in Rūpas: Total Virūpas divided by 60 (1 Rūpa = 60 Virūpas)." },
+                { label: "Relative Rank", key: "Relative_Rank", decimals: 0, isRank: true, desc: "Overall strength rank among the 7 classical planets (#1 = strongest)." }
             ];
             
             breakdownGrids.forEach(tbody => {
@@ -5668,7 +6126,7 @@
                         if (row.isGrandTotal) tr.className = "grandtotal-row";
                         else if (row.isSubtotal) tr.className = "subtotal-row";
                         
-                        let html = `<td>${row.label}</td>`;
+                        let html = `<td class="tooltip-target" data-tooltip="<strong>${row.label}</strong><br>${row.desc}" style="cursor:help;">${row.label}</td>`;
                         planetsOrder.forEach(p => {
                             const pData = sb[p] || {};
                             const val = pData[row.key];
@@ -5677,11 +6135,15 @@
                             } else if (row.isPct) {
                                 const numVal = Number(val);
                                 const colorCls = numVal < 100.0 ? "under-req" : "over-req";
-                                html += `<td><span class="pct-val ${colorCls}">${numVal.toFixed(row.decimals)}%</span></td>`;
+                                const tip = `<strong>${p} — ${row.label}: ${numVal.toFixed(row.decimals)}%</strong><br>• ${numVal >= 100 ? 'Meets or exceeds requirement (' + numVal.toFixed(1) + '% ≥ 100%).' : 'Below requirement (' + numVal.toFixed(1) + '% < 100%).'}<br>• ${row.desc}`;
+                                html += `<td class="tooltip-target" data-tooltip="${tip}" style="cursor:help;"><span class="pct-val ${colorCls}">${numVal.toFixed(row.decimals)}%</span></td>`;
                             } else if (row.isRank) {
-                                html += `<td><span class="rank-val">#${val}</span></td>`;
+                                const tip = `<strong>${p} — Rank #${val}</strong><br>Ranked #${val} out of 7 planets in overall Shadbala strength.`;
+                                html += `<td class="tooltip-target" data-tooltip="${tip}" style="cursor:help;"><span class="rank-val">#${val}</span></td>`;
                             } else {
-                                html += `<td>${Number(val).toFixed(row.decimals)}</td>`;
+                                const vFormatted = Number(val).toFixed(row.decimals);
+                                const tip = `<strong>${p} — ${row.label}: ${vFormatted}</strong><br>• ${row.desc}`;
+                                html += `<td class="tooltip-target" data-tooltip="${tip}" style="cursor:help;">${vFormatted}</td>`;
                             }
                         });
                         tr.innerHTML = html;
@@ -6145,43 +6607,73 @@
     </script>
     
     <!-- Global Custom Tooltip Engine -->
-    <div id="global-tooltip" style="position: absolute; display: none; background: #1f2937; color: #f9fafb; padding: 8px 12px; border-radius: 6px; font-size: 13px; font-weight: normal; max-width: 300px; z-index: 99999; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); pointer-events: none; line-height: 1.4; white-space: pre-wrap; font-family: sans-serif;"></div>
+    <div id="global-tooltip" style="position: absolute; display: none; background: rgba(26, 32, 44, 0.97); color: #f9fafb; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; font-weight: normal; max-width: 360px; z-index: 999999; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4), 0 8px 10px -6px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.18); pointer-events: none; line-height: 1.45; white-space: normal; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"></div>
     
     <script>
-        document.addEventListener('mouseover', function(e) {
-            const target = e.target.closest('.tooltip-target');
-            if (target) {
-                const tooltip = document.getElementById('global-tooltip');
-                const text = target.getAttribute('data-tooltip');
-                if (!text) return;
-                
-                tooltip.innerHTML = text.replace(/\n/g, '<br>');
-                tooltip.style.display = 'block';
-                
-                const rect = target.getBoundingClientRect();
+        (function() {
+            const tooltip = document.getElementById('global-tooltip');
+            let currentTarget = null;
+
+            function positionTooltip(el) {
+                if (!el || !tooltip) return;
+                const rect = el.getBoundingClientRect();
                 let top = rect.top + window.scrollY - tooltip.offsetHeight - 8;
                 let left = rect.left + window.scrollX + (rect.width / 2) - (tooltip.offsetWidth / 2);
                 
-                // Prevent going off screen
+                // Keep inside horizontal boundaries
                 if (left < 10) left = 10;
                 if (left + tooltip.offsetWidth > window.innerWidth - 10) {
                     left = window.innerWidth - tooltip.offsetWidth - 10;
                 }
+                // If top overflows above the visible viewport, flip below target
                 if (top < window.scrollY + 10) {
-                    top = rect.bottom + window.scrollY + 8; // flip to bottom
+                    top = rect.bottom + window.scrollY + 8;
                 }
                 
                 tooltip.style.top = top + 'px';
                 tooltip.style.left = left + 'px';
             }
-        });
-        
-        document.addEventListener('mouseout', function(e) {
-            const target = e.target.closest('.tooltip-target');
-            if (target) {
-                document.getElementById('global-tooltip').style.display = 'none';
-            }
-        });
+
+            document.addEventListener('mouseover', function(e) {
+                const target = e.target.closest('.tooltip-target, .has-tooltip, [data-tooltip], [data-hint], td[title], th[title]');
+                if (target) {
+                    currentTarget = target;
+                    // Stash and remove native title attribute to prevent double browser tooltips
+                    if (target.hasAttribute('title')) {
+                        const rawTitle = target.getAttribute('title');
+                        if (!target.hasAttribute('data-tooltip') && rawTitle) {
+                            target.setAttribute('data-tooltip', rawTitle);
+                        }
+                        target._stashedTitle = rawTitle;
+                        target.removeAttribute('title');
+                    }
+                    
+                    const text = target.getAttribute('data-tooltip') || target.getAttribute('data-hint');
+                    if (!text) return;
+                    
+                    tooltip.innerHTML = text.includes('<') ? text : text.replace(/\n/g, '<br>');
+                    tooltip.style.display = 'block';
+                    positionTooltip(target);
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (currentTarget && tooltip.style.display === 'block') {
+                    positionTooltip(currentTarget);
+                }
+            });
+
+            document.addEventListener('mouseout', function(e) {
+                const target = e.target.closest('.tooltip-target, .has-tooltip, [data-tooltip], [data-hint]');
+                if (target) {
+                    tooltip.style.display = 'none';
+                    if (target._stashedTitle) {
+                        target.setAttribute('title', target._stashedTitle);
+                    }
+                    currentTarget = null;
+                }
+            });
+        })();
     </script>
 </body>
 </html>

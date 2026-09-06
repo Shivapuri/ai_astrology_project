@@ -66,3 +66,40 @@ def test_nakshatras_widget_phase3_fields(page: Page):
     assert page.locator(".nakshatras-table tbody tr").count() >= 7
     text = page.locator(".nakshatras-table").inner_text()
     assert "%" in text  # relative speed percentage pill
+
+def test_yoga_judgment_widget_renders(page: Page):
+    init_page(page)
+    page.evaluate("assignWidget('yoga-judgment', document.getElementById('cell2'))")
+    page.wait_for_timeout(500)
+    assert page.locator(".yoga-judgment-table tbody tr").count() >= 12
+    text = page.locator(".yoga-judgment-table").inner_text()
+    assert "Ishta and Kashta" in text
+    assert "Subha and Asubha" in text
+    assert "Subha and Asubha Dig Bala" in text
+    assert "IxSxSD" in text
+    assert "KxAxAD" in text
+
+def test_floating_yoga_judgment_modal(page: Page):
+    init_page(page)
+    page.evaluate("openFloatingYogaJudgment()")
+    page.wait_for_timeout(500)
+    modal = page.locator("#widgetMaximizeModal")
+    assert modal.is_visible()
+    title = page.locator("#widgetMaximizeModalTitle").inner_text()
+    assert "Yoga Judgment" in title
+    assert page.locator("#widgetMaximizeContainer .yoga-judgment-table tbody tr").count() >= 12
+    # Close modal
+    page.evaluate("document.getElementById('widgetMaximizeModal').style.display = 'none'")
+
+def test_hover_tooltips_on_tables(page: Page):
+    init_page(page)
+    page.evaluate("assignWidget('yoga-judgment', document.getElementById('cell2'))")
+    page.wait_for_timeout(500)
+    # Hover over the first numeric cell in Yoga Judgment
+    first_cell = page.locator(".yoga-judgment-table tbody tr td.tooltip-target").first
+    first_cell.hover()
+    page.wait_for_timeout(300)
+    tooltip = page.locator("#global-tooltip")
+    assert tooltip.is_visible()
+    tip_text = tooltip.inner_text()
+    assert len(tip_text) > 10

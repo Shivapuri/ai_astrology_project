@@ -87,6 +87,30 @@ async def main():
             await page.keyboard.press("Escape")
             await page.wait_for_timeout(400)
 
+            # 11. Floating Yoga Judgment Screen (Kala Ishta/Kashta & Subha/Asubha Dig Bala)
+            await page.evaluate("openFloatingYogaJudgment()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_yoga_judgment.png")
+            print("Captured screenshot_yoga_judgment.png")
+
+            # Hover over a value cell in Yoga Judgment to show formula tooltip
+            cell = page.locator("#widgetMaximizeContainer .yoga-judgment-table td.val-pos").first
+            if await cell.count() > 0:
+                await cell.hover()
+                await page.wait_for_timeout(400)
+                await page.screenshot(path="screenshot_yoga_judgment_tooltip.png")
+                print("Captured screenshot_yoga_judgment_tooltip.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
+            # 12. Yoga Judgment widget in Grid cell
+            await page.evaluate("assignWidget('yoga-judgment', document.getElementById('c1'))")
+            await page.wait_for_timeout(600)
+            c1 = page.locator("#c1")
+            if await c1.count() > 0:
+                await c1.screenshot(path="screenshot_yoga_judgment_widget.png")
+                print("Captured screenshot_yoga_judgment_widget.png")
+
         except Exception as e:
             print("Error:", e)
             
