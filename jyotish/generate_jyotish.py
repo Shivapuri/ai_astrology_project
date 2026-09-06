@@ -479,6 +479,8 @@ def generate_kala_chart(
                 }
                 orb = combustion_orbs.get(p_name, 8.0)
                 is_combust = dist < orb
+            
+            p_data["is_combust"] = is_combust
                 
             is_retrograde = p_data.get("is_retrograde", False)
             malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
