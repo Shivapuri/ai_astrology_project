@@ -931,7 +931,7 @@
     </div>
     
     <!-- Context Menu for Widget Selection -->
-    <div id="widget-context-menu" style="display:none; position:absolute; background:white; border:1px solid #ccc; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10000; border-radius:4px; padding:5px 0; min-width:150px;">
+    <div id="widget-context-menu" style="display:none; position:absolute; background:white; border:1px solid #ccc; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10000; border-radius:4px; padding:5px 0; min-width:180px;">
         <div class="menu-item" onclick="assignWidget('chart')">Chart</div>
         <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
         <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
@@ -941,6 +941,11 @@
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
         <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
+        <!-- NEW MODULES REGISTERED -->
+        <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
+        <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
+        <div class="menu-item" onclick="assignWidget('vimshopaka')">⭐ Varga Vimshopaka (20pt)</div>
+        <div class="menu-item" onclick="assignWidget('nakshatras')">✨ Nakshatras & Speed</div>
         <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
     </div>
     
@@ -1619,6 +1624,135 @@
             </div>
         </div>
     </template>
+    <template id="tmpl-dashas-timeline">
+        <div class="widget-content" id="widget-dashas-timeline">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Vimshottari Dasa Timeline</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">120 Years</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="dasa-timeline-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Period</th>
+                                <th style="width: 25%;">Start Date</th>
+                                <th style="width: 25%;">End Date</th>
+                                <th style="width: 25%;">Age / Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="tmpl-ashtakavarga">
+        <div class="widget-content" id="widget-ashtakavarga">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Ashtakavarga (SAV & BAV)</span>
+                    <span id="savTotalBadge" style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">SAV: 337</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="av-view-select" onchange="updateAshtakavargaWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="raw" selected>Raw Bindus (BAV/SAV)</option>
+                        <option value="trikona">After Trikona Shodhana</option>
+                        <option value="ekadhipatya">After Ekadhipatya Shodhana</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="ashtakavarga-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Graha</th>
+                                <th>Ar</th><th>Ta</th><th>Ge</th><th>Cn</th>
+                                <th>Le</th><th>Vi</th><th>Li</th><th>Sc</th>
+                                <th>Sg</th><th>Cp</th><th>Aq</th><th>Pi</th>
+                                <th>Tot</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr style="background-color: #f7ede0; font-weight: bold;">
+                                <td>SAV</td>
+                                <td class="sav-0">0</td><td class="sav-1">0</td><td class="sav-2">0</td><td class="sav-3">0</td>
+                                <td class="sav-4">0</td><td class="sav-5">0</td><td class="sav-6">0</td><td class="sav-7">0</td>
+                                <td class="sav-8">0</td><td class="sav-9">0</td><td class="sav-10">0</td><td class="sav-11">0</td>
+                                <td class="sav-tot">337</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="shodhya-pindas-bar" style="margin-top: 6px; padding: 4px 8px; background: #fffdfa; border: 1px solid #e5dccb; border-radius: 4px; font-size: 11px; display: flex; justify-content: space-around;">
+                        <span><strong>Rasi Pinda:</strong> <span class="val-rasi-pinda">-</span></span>
+                        <span><strong>Graha Pinda:</strong> <span class="val-graha-pinda">-</span></span>
+                        <span><strong>Yoga Pinda:</strong> <span class="val-yoga-pinda" style="color:#d35400; font-weight:bold;">-</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="tmpl-vimshopaka">
+        <div class="widget-content" id="widget-vimshopaka">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Varga Vimshopaka Bala</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">Scale: 20</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="vimshopaka-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left;">Scheme</th>
+                                <th>Sun</th><th>Moon</th><th>Mars</th><th>Mercury</th>
+                                <th>Jupiter</th><th>Venus</th><th>Saturn</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="tmpl-nakshatras">
+        <div class="widget-content" id="widget-nakshatras">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Nakshatras & Speed</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">D1</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="nakshatras-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>Graha</th>
+                                <th>Deg</th>
+                                <th>Sign</th>
+                                <th>Nakshatra</th>
+                                <th>Pada</th>
+                                <th>Lord/Sub</th>
+                                <th>Tara</th>
+                                <th>Speed</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
 
     <script>
 
@@ -1746,6 +1880,15 @@
             else if (widgetType === 'nakshatras') {
                 updateNakshatraWidgetForCell(cell);
             }
+            else if (widgetType === 'dashas-timeline') {
+                updateDashaTimelineWidget(cell);
+            }
+            else if (widgetType === 'ashtakavarga') {
+                updateAshtakavargaWidget(cell);
+            }
+            else if (widgetType === 'vimshopaka') {
+                updateVimshopakaWidget(cell);
+            }
             else if (widgetType === 'info') {
                 refreshContextInfoForCell(cell);
             }
@@ -1758,27 +1901,262 @@
             updateShadbalaTable();
         }
 
+        function updateDashaTimelineWidget(cell) {
+            const tbody = cell.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.vimshottari_dasha) return;
+            tbody.innerHTML = '';
+
+            const dashaData = currentChartData.vimshottari_dasha;
+            const mds = dashaData.mahadashas || [];
+            const now = new Date();
+
+            mds.forEach((md, mdIdx) => {
+                const startDate = new Date(md.start);
+                const endDate = new Date(md.end);
+                const isCurrentMD = (now >= startDate && now <= endDate);
+
+                // Mahadasha Master Row (Clickable accordion)
+                const trMD = document.createElement('tr');
+                trMD.className = 'md-row' + (isCurrentMD ? ' active-dasa-row' : '');
+                trMD.style.cursor = 'pointer';
+                trMD.style.backgroundColor = isCurrentMD ? '#fdf6e2' : '#f5ede0';
+                trMD.title = "Click to expand/collapse Antardashas";
+
+                const currentBadge = isCurrentMD ? '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; margin-left:6px;">ACTIVE</span>' : '';
+                const arrow = isCurrentMD ? '▼ ' : '▶ ';
+
+                trMD.innerHTML = `
+                    <td><strong>${arrow}${md.planet} (${md.years || ''} yrs)</strong></td>
+                    <td><strong>${md.start}</strong></td>
+                    <td><strong>${md.end}</strong></td>
+                    <td>${currentBadge}</td>
+                `;
+
+                tbody.appendChild(trMD);
+
+                // Nested Container for Antardashas
+                const antardashas = md.antardashas || [];
+                antardashas.forEach(ad => {
+                    const adStart = new Date(ad.start_date || ad.start);
+                    const adEnd = new Date(ad.end_date || ad.end);
+                    const isCurrentAD = (now >= adStart && now <= adEnd);
+
+                    const trAD = document.createElement('tr');
+                    trAD.className = `ad-subrow md-group-${mdIdx}`;
+                    trAD.style.display = isCurrentMD ? 'table-row' : 'none'; // Auto-expand current active Mahadasha
+                    trAD.style.backgroundColor = isCurrentAD ? '#fef3c7' : '#fffdfa';
+
+                    const adBadge = isCurrentAD ? '<span class="badge" style="background:#f59e0b; color:#fff; font-size:9px;">CURRENT</span>' : '';
+
+                    trAD.innerHTML = `
+                        <td style="padding-left: 24px; color: #4a3325;">${ad.period || ad.antardasha_lord}</td>
+                        <td>${ad.start_date || ad.start} ${ad.start_time || ''}</td>
+                        <td>${ad.end_date || ad.end || ''}</td>
+                        <td>${adBadge}</td>
+                    `;
+                    tbody.appendChild(trAD);
+                });
+
+                // Click event to toggle accordion
+                trMD.addEventListener('click', () => {
+                    const subRows = tbody.querySelectorAll(`.md-group-${mdIdx}`);
+                    const isHidden = subRows[0] && subRows[0].style.display === 'none';
+                    subRows.forEach(r => r.style.display = isHidden ? 'table-row' : 'none');
+                    trMD.querySelector('td strong').textContent = (isHidden ? '▼ ' : '▶ ') + `${md.planet} (${md.years || ''} yrs)`;
+                });
+            });
+        }
+
+        function updateAshtakavargaWidget(cell) {
+            const tbody = cell.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.ashtakavarga) return;
+            tbody.innerHTML = '';
+
+            const avData = currentChartData.ashtakavarga;
+            const viewSelect = cell.querySelector('.av-view-select');
+            const viewMode = viewSelect ? viewSelect.value : 'raw';
+
+            const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"];
+            let grid = (viewMode === 'trikona') ? avData.trikona_shodhana :
+                       (viewMode === 'ekadhipatya') ? avData.ekadhipatya_shodhana : avData.bav;
+
+            if (!grid) grid = avData.bav;
+
+            planets.forEach(p => {
+                if (!grid[p]) return;
+                const pts = grid[p];
+                const rowSum = pts.reduce((a, b) => a + b, 0);
+
+                const tr = document.createElement('tr');
+                let html = `<td><strong>${p.substring(0, 2)}</strong></td>`;
+                pts.forEach(val => {
+                    let color = val >= 5 ? '#15803d' : (val <= 3 ? '#b91c1c' : '#334155');
+                    html += `<td style="color:${color}; font-weight:${val >= 5 || val <= 3 ? 'bold' : 'normal'};">${val}</td>`;
+                });
+                html += `<td style="font-weight:bold; background:#fcfaf5;">${rowSum}</td>`;
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+
+            // Populate SAV Row in tfoot
+            const sav = (viewMode === 'trikona' && avData.sarvashtakavarga && avData.sarvashtakavarga.trikona_shodhana) ? avData.sarvashtakavarga.trikona_shodhana :
+                        (viewMode === 'ekadhipatya' && avData.sarvashtakavarga && avData.sarvashtakavarga.ekadhipatya_shodhana) ? avData.sarvashtakavarga.ekadhipatya_shodhana :
+                        (avData.sav || (avData.sarvashtakavarga && avData.sarvashtakavarga.total_sav) || []);
+
+            for (let i = 0; i < 12; i++) {
+                const cellSav = cell.querySelector(`.sav-${i}`);
+                if (cellSav) {
+                    const v = sav[i] || 0;
+                    cellSav.textContent = v;
+                    cellSav.style.color = v >= 28 ? '#15803d' : (v <= 25 ? '#b91c1c' : '#4a3325');
+                }
+            }
+            const savTotEl = cell.querySelector('.sav-tot');
+            if (savTotEl) savTotEl.textContent = sav.reduce((a, b) => a + b, 0);
+
+            // Update Shodhya Pindas
+            const pindaData = avData.shodhya_pindas || avData.sodhya_pindas;
+            if (pindaData) {
+                let rTotal = pindaData.rasi_pinda_total;
+                let gTotal = pindaData.graha_pinda_total;
+                let yTotal = pindaData.yoga_pinda_total;
+                if (rTotal === undefined) {
+                    let r = 0, g = 0, y = 0, cnt = 0;
+                    for (const [k, v] of Object.entries(pindaData)) {
+                        if (v && typeof v === 'object' && v.rasi_pinda !== undefined) {
+                            r += v.rasi_pinda;
+                            g += v.graha_pinda;
+                            y += v.yoga_pinda;
+                            cnt++;
+                        }
+                    }
+                    if (cnt > 0) { rTotal = r; gTotal = g; yTotal = y; }
+                }
+                const rEl = cell.querySelector('.val-rasi-pinda');
+                const gEl = cell.querySelector('.val-graha-pinda');
+                const yEl = cell.querySelector('.val-yoga-pinda');
+                if (rEl) rEl.textContent = rTotal !== undefined ? rTotal : '-';
+                if (gEl) gEl.textContent = gTotal !== undefined ? gTotal : '-';
+                if (yEl) yEl.textContent = yTotal !== undefined ? yTotal : '-';
+            }
+        }
+
+        function updateVimshopakaWidget(cell) {
+            const tbody = cell.querySelector('tbody');
+            if (!tbody || !currentChartData) return;
+            const vData = currentChartData.vimshopaka || currentChartData.varga_vimshopaka;
+            if (!vData) return;
+            tbody.innerHTML = '';
+
+            const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+            const schemes = [
+                { key: "shadvarga", altKey: "Shadvarga", label: "Shadvarga (6 Charts)" },
+                { key: "saptavarga", altKey: "Saptavarga", label: "Saptavarga (7 Charts)" },
+                { key: "dasavarga", altKey: "Dasavarga", label: "Dasavarga (10 Charts)" },
+                { key: "shodashavarga", altKey: "Shodasavarga", label: "Shodashavarga (16 Charts)" }
+            ];
+
+            const scores = vData.scores || vData;
+
+            schemes.forEach(sc => {
+                const scMap = vData[sc.key] || scores[sc.key] || scores[sc.altKey] || vData[sc.altKey] || {};
+                const tr = document.createElement('tr');
+                let html = `<td style="text-align: left;"><strong>${sc.label}</strong></td>`;
+
+                planets.forEach(p => {
+                    const rawVal = scMap[p];
+                    const val = rawVal !== undefined ? Number(rawVal).toFixed(1) : '-';
+                    const color = (val !== '-' && Number(val) >= 15) ? '#15803d' : ((val !== '-' && Number(val) < 10) ? '#b91c1c' : '#334155');
+                    html += `<td style="color:${color}; font-weight:bold;">${val}</td>`;
+                });
+
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+
+            // Vaisheshikamsa Honorific Row
+            if (vData.vaisheshikamsa) {
+                const trHonor = document.createElement('tr');
+                trHonor.style.backgroundColor = '#fdf6e2';
+                let html = `<td style="text-align: left;"><strong>Vaisheshikamsa</strong></td>`;
+
+                planets.forEach(p => {
+                    let title = '-';
+                    if (typeof vData.vaisheshikamsa[p] === 'string') {
+                        title = vData.vaisheshikamsa[p];
+                    } else if (vData.vaisheshikamsa[p] && vData.vaisheshikamsa[p].honorific) {
+                        title = vData.vaisheshikamsa[p].honorific;
+                    } else if (vData.vaisheshikamsa.Shodasavarga && vData.vaisheshikamsa.Shodasavarga[p]) {
+                        title = vData.vaisheshikamsa.Shodasavarga[p].honorific || '-';
+                    }
+                    html += `<td><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:8px;">${title}</span></td>`;
+                });
+
+                trHonor.innerHTML = html;
+                tbody.appendChild(trHonor);
+            }
+        }
+
         function updateNakshatraWidgetForCell(cell) {
             const tbody = cell.querySelector('tbody');
             if (!tbody || !currentChartData || !currentChartData.nakshatras) return;
             tbody.innerHTML = '';
+
             const naks = currentChartData.nakshatras.grahas;
             const d1_grahas = currentChartData.vargas.D1.grahas;
             const d1_lagna = currentChartData.vargas.D1.lagna;
-            
+
             function formatDeg(deg_float) {
                 let d = Math.floor(deg_float);
                 let m = Math.round((deg_float - d) * 60);
                 if (m === 60) { d += 1; m = 0; }
                 return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
             }
-            
+
+            // Lagna Row
             if (naks["Lagna"]) {
-                tbody.innerHTML += `<tr><td><strong>Asc</strong></td><td>${formatDeg(d1_lagna.degree_0_to_30)}</td><td>${d1_lagna.sign}</td><td>${naks["Lagna"].nakshatra}</td><td>${naks["Lagna"].pada}</td></tr>`;
+                const lgNak = naks["Lagna"];
+                tbody.innerHTML += `<tr>
+                    <td><strong>Asc</strong></td>
+                    <td>${formatDeg(d1_lagna.degree_0_to_30)}</td>
+                    <td>${d1_lagna.sign}</td>
+                    <td>${lgNak.nakshatra}</td>
+                    <td>${lgNak.pada}</td>
+                    <td>${lgNak.lord_sublord || 'Sa/Ve'}</td>
+                    <td><span class="badge" style="background:#eadecc; color:#5a4233;">${lgNak.tara_number || lgNak.tara || 9}</span></td>
+                    <td>-</td>
+                </tr>`;
             }
+
+            // Grahas Rows
             for (const [graha, data] of Object.entries(naks)) {
-                if (graha === "Lagna" || !naks[graha] || !d1_grahas[graha]) continue;
-                tbody.innerHTML += `<tr><td><strong>${graha}</strong></td><td>${formatDeg(d1_grahas[graha].degree_0_to_30)}</td><td>${d1_grahas[graha].sign}</td><td>${naks[graha].nakshatra}</td><td>${naks[graha].pada}</td></tr>`;
+                if (graha === "Lagna" || !d1_grahas[graha]) continue;
+                const gD1 = d1_grahas[graha];
+                const isRetro = gD1.is_retrograde;
+                const retroTag = isRetro ? '<span style="color:#b91c1c; font-weight:bold;"> [R]</span>' : '';
+
+                // Speed Pill
+                let speedHtml = '-';
+                if (gD1.relative_speed_pct !== undefined) {
+                    const spd = Number(gD1.relative_speed_pct);
+                    const spdColor = spd < 0 ? '#b91c1c' : (spd > 100 ? '#15803d' : '#4a3325');
+                    speedHtml = `<span style="color:${spdColor}; font-weight:bold;">${spd.toFixed(1)}%</span>`;
+                } else if (gD1.relative_speed !== undefined && gD1.relative_speed !== '--') {
+                    const spd = parseFloat(gD1.relative_speed);
+                    const spdColor = spd < 0 ? '#b91c1c' : (spd > 100 ? '#15803d' : '#4a3325');
+                    speedHtml = `<span style="color:${spdColor}; font-weight:bold;">${spd.toFixed(1)}%</span>`;
+                }
+
+                tbody.innerHTML += `<tr>
+                    <td><strong>${graha}</strong>${retroTag}</td>
+                    <td>${formatDeg(gD1.degree_0_to_30)}</td>
+                    <td>${gD1.sign}</td>
+                    <td>${data.nakshatra}</td>
+                    <td>${data.pada}</td>
+                    <td>${data.lord_sublord || '-'}</td>
+                    <td><span class="badge" style="background:#f5ede0; color:#4a3325;">${data.tara_number || data.tara || '-'}</span></td>
+                    <td>${speedHtml}</td>
+                </tr>`;
             }
         }
 
@@ -1798,6 +2176,21 @@
             // Nakshatras
             document.querySelectorAll('.grid-cell[data-widget="nakshatras"]').forEach(cell => {
                 updateNakshatraWidgetForCell(cell);
+            });
+
+            // Dasha Timeline
+            document.querySelectorAll('.grid-cell[data-widget="dashas-timeline"]').forEach(cell => {
+                updateDashaTimelineWidget(cell);
+            });
+
+            // Ashtakavarga
+            document.querySelectorAll('.grid-cell[data-widget="ashtakavarga"]').forEach(cell => {
+                updateAshtakavargaWidget(cell);
+            });
+
+            // Vimshopaka
+            document.querySelectorAll('.grid-cell[data-widget="vimshopaka"]').forEach(cell => {
+                updateVimshopakaWidget(cell);
             });
             
             // Dignities in Vargas
@@ -2104,7 +2497,7 @@
                     label.style.fontWeight = 'bold';
                     label.style.fontSize = '13px';
                     label.style.color = '#4a3325';
-                    label.textContent = origSelect.classList.contains('matrix-type-select') ? 'Baseline Strength:' : 'Varga:';
+                    label.textContent = origSelect.classList.contains('matrix-type-select') ? 'Baseline Strength:' : (origSelect.classList.contains('av-view-select') ? 'View Mode:' : 'Varga:');
                     
                     const selectClone = origSelect.cloneNode(true);
                     selectClone.value = origSelect.value;

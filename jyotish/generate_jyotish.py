@@ -603,6 +603,7 @@ def generate_kala_chart(
     # Calculate Relative Speeds
     d1_speeds = {}
     d1_rel_speeds = {"Lagna": "--"}
+    d1_rel_speeds_pct = {}
     for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
         if p_name in ["Rahu", "Ketu"]:
             p_eq = swe.calc_ut(jd + 0.5, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)[0][0]
@@ -613,6 +614,7 @@ def generate_kala_chart(
             d1_speeds[p_name] = round(spd, 4)
             ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
             d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+            d1_rel_speeds_pct[p_name] = round(ratio, 2)
         else:
             p_id = planet_ids[p_name]
             res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
@@ -620,6 +622,7 @@ def generate_kala_chart(
             d1_speeds[p_name] = round(spd, 4)
             ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
             d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+            d1_rel_speeds_pct[p_name] = round(ratio, 2)
 
     # Calculate Navatara & Lord/Sublord for all entities
     moon_nak_idx = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"])
@@ -627,6 +630,7 @@ def generate_kala_chart(
         t_nak_idx = NAKSHATRAS.index(n_info["nakshatra"])
         tara_idx = ((t_nak_idx - moon_nak_idx) % 27 % 9) + 1
         n_info["tara"] = tara_idx
+        n_info["tara_number"] = tara_idx
         
         pos = n_info.get("sidereal_longitude") if ent_name == "Lagna" else n_info.get("sidereal_ra", 0.0)
         nak_fraction = (pos % (360.0 / 27.0)) / (360.0 / 27.0)
@@ -644,15 +648,18 @@ def generate_kala_chart(
             vargas_data["D1"]["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
             vargas_data["D1"]["grahas"][p_name]["pada"] = nakshatras_sidereal[p_name]["pada"]
             vargas_data["D1"]["grahas"][p_name]["tara"] = nakshatras_sidereal[p_name]["tara"]
+            vargas_data["D1"]["grahas"][p_name]["tara_number"] = nakshatras_sidereal[p_name]["tara"]
             vargas_data["D1"]["grahas"][p_name]["nakshatra_lord"] = nakshatras_sidereal[p_name]["nakshatra_lord"]
             vargas_data["D1"]["grahas"][p_name]["sub_lord"] = nakshatras_sidereal[p_name]["sub_lord"]
             vargas_data["D1"]["grahas"][p_name]["lord_sublord"] = nakshatras_sidereal[p_name]["lord_sublord"]
             vargas_data["D1"]["grahas"][p_name]["speed"] = d1_speeds.get(p_name, 0.0)
             vargas_data["D1"]["grahas"][p_name]["relative_speed"] = d1_rel_speeds.get(p_name, "--")
+            vargas_data["D1"]["grahas"][p_name]["relative_speed_pct"] = d1_rel_speeds_pct.get(p_name)
             
     vargas_data["D1"]["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
     vargas_data["D1"]["lagna"]["pada"] = nakshatras_sidereal["Lagna"]["pada"]
     vargas_data["D1"]["lagna"]["tara"] = nakshatras_sidereal["Lagna"]["tara"]
+    vargas_data["D1"]["lagna"]["tara_number"] = nakshatras_sidereal["Lagna"]["tara"]
     vargas_data["D1"]["lagna"]["nakshatra_lord"] = nakshatras_sidereal["Lagna"]["nakshatra_lord"]
     vargas_data["D1"]["lagna"]["sub_lord"] = nakshatras_sidereal["Lagna"]["sub_lord"]
     vargas_data["D1"]["lagna"]["lord_sublord"] = nakshatras_sidereal["Lagna"]["lord_sublord"]
@@ -754,6 +761,31 @@ def generate_kala_chart(
             v_asc
         )
 
+    ashtakavarga_data = ashtakavarga.calculate_ashtakavarga_engine({"vargas": vargas_data})
+    pindas = ashtakavarga_data.get('sodhya_pindas', {})
+    r_tot = sum(pindas[p]['rasi_pinda'] for p in pindas if isinstance(pindas[p], dict) and 'rasi_pinda' in pindas[p])
+    g_tot = sum(pindas[p]['graha_pinda'] for p in pindas if isinstance(pindas[p], dict) and 'graha_pinda' in pindas[p])
+    ashtakavarga_data['sav'] = ashtakavarga_data['sarvashtakavarga']['total_sav']
+    ashtakavarga_data['shodhya_pindas'] = {
+        **pindas,
+        'rasi_pinda_total': r_tot,
+        'graha_pinda_total': g_tot,
+        'yoga_pinda_total': r_tot + g_tot,
+    }
+
+    vimshopaka_data = vimshopaka.calculate_varga_vimshopaka_engine({"vargas": vargas_data})
+    vimshopaka_export = {
+        **vimshopaka_data,
+        "shadvarga": vimshopaka_data["scores"].get("Shadvarga", {}),
+        "saptavarga": vimshopaka_data["scores"].get("Saptavarga", {}),
+        "dasavarga": vimshopaka_data["scores"].get("Dasavarga", {}),
+        "shodashavarga": vimshopaka_data["scores"].get("Shodasavarga", {}),
+        "vaisheshikamsa": {
+            p: vimshopaka_data["vaisheshikamsa"].get("Shodasavarga", {}).get(p, {}).get("honorific", "-")
+            for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+        }
+    }
+
     vedic_context = {
 
         "subject_info": {
@@ -788,8 +820,9 @@ def generate_kala_chart(
         "varga_lajjitadi_net_modifiers": avasthas.calculate_varga_lajjitadi_net_modifiers(vargas_data),
         "advanced_aspects": varga_aspects["D1"],
         "varga_advanced_aspects": varga_aspects,
-        "ashtakavarga": ashtakavarga.calculate_ashtakavarga_engine({"vargas": vargas_data}),
-        "varga_vimshopaka": vimshopaka.calculate_varga_vimshopaka_engine({"vargas": vargas_data})
+        "ashtakavarga": ashtakavarga_data,
+        "varga_vimshopaka": vimshopaka_data,
+        "vimshopaka": vimshopaka_export
     }
     
     # 7. Write to file (only if requested)
