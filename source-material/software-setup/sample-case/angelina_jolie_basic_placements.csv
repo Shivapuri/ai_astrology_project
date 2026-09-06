@@ -1,0 +1,11 @@
+Entity,Symbol,Degree_Min,Sign,Dignity,Nakshatra,Pada,Lord_Sublord,Tara,Rel_Speed,Retrograde
+Lagna,Lg,28:53,Cancer,--,Pushya,2,Sa/Ve,9,--,False
+Sun,Su,13:25,Gemini,Enemy,Rohini,4,Mo/Ve,5,97.16%,False
+Moon,Mo,13:05,Aries,Enemy,Revati,2,Me/Ve,1,91.84%,False
+Mars,Ma,10:42,Aries,Moolatrikona,Revati,2,Me/Ve,1,141.61%,False
+Mercury,Me,22:19,Gemini,Own House,Mrigasira,3,Ma/Ke,6,-40.39%,True
+Jupiter,Ju,17:25,Aries,Neutral,Revati,4,Me/Ju,1,220.42%,False
+Venus,Ve,28:09,Cancer,Neutral,Pushya,3,Sa/Mo,9,105.49%,False
+Saturn,Sa,17:23,Cancer,Neutral,Punarvasu,3,Ju/Mo,8,344.36%,False
+Rahu,Ra,00:53,Sagittarius,--,Anuradha,2,Sa/Ve,9,-34.71%,True
+Ketu,Ke,00:53,Gemini,--,Krittika,4,Su/Ve,4,-34.71%,True

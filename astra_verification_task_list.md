@@ -1,33 +1,57 @@
-# Astra Verification & Refactoring Task List
+# Astra Precision Verification & Development Roadmap
 
-This tracker outlines the strict hierarchical approach we are taking to verify the engine, ensuring no higher-level calculation is debugged before its underlying foundation is rock-solid.
+This master roadmap outlines our step-by-step plan to verify and expand Astra's calculations against Ernst Wilhelm's Kala software ground-truth datasets. Every phase follows a strict Directed Acyclic Graph (DAG): lower astronomical foundations must be green before higher-level scoring systems are refined.
 
-## Phase 1: Architecture & Baseline Organization
-- [x] **Establish Hierarchy:** Create `calculation_hierarchy.md` to define the DAG (Ephemeris -> Vargas -> Aspects -> Balas -> Avasthas).
-- [x] **Consolidate Baseline Data:** Extract all image targets and compile them into `angelina_jolie_baselines.json`.
-- [x] **Directory Refactoring:** Moved flat scripts in `/jyotish/` into dedicated directories (`/jyotish/relationships/`, `/jyotish/aspects/`).
-- [x] **Dual-Level Documentation:** Ensured `relationships.md` contains plain-English explanations for users and strict mathematical constraints (like the degree limits and even varga reversals) for AI.
+---
 
-## Phase 2: Level 3 Verification (Dignities & Relationships)
-- [x] **Write Dignities Test:** Create `test_dignities.py` checking all 16 Vargas against the baseline CSV.
-- [x] **Fix Compound Friendship Logic:** Debug `relationships.py` (specifically `get_compound_relationship`) to fix the failing test.
-- [x] **Fix D1 vs Varga Distances:** Ensure Tatkalika (Temporary Friendship) is being calculated correctly for Vargas.
-- [x] **Fix Degree Limits:** Added 0-3° limit for Moon Debilitation and 0-15° limit for Mercury Debilitation.
-- [x] **Fix Varga Reversals:** Implemented Parashara "Reverse for Even Rasis" logic for D10 and D24 calculations.
+## 🏛️ Completed Foundation Phases
 
-## Phase 3: Level 4 Verification (Aspects/Drishti)
-- [x] **Write Drishti Test:** Build tests against `angelina_jolie_drishti_yuti.csv`.
-- [x] **Verify Rasi Drishti:** Ensure whole-sign aspects are firing correctly.
-- [x] **Verify Graha Drishti:** Fix the 0-60 Virupa calculations in `aspects.py`.
+### Phase 1: Architecture & Directory Refactoring
+- [x] **Calculation Hierarchy:** Created `calculation_hierarchy.md` defining the calculation order (Ephemeris -> Vargas -> Aspects -> Balas -> Avasthas -> Dashas).
+- [x] **Module Reorganization:** Moved core engines into modular directories (`/jyotish/relationships/`, `/jyotish/aspects/`, `/jyotish/shadbala/`, `/jyotish/avasthas/`).
+- [x] **Documentation Alignment:** Added plain-English definitions and mathematical specifications to companion `.md` files.
 
-## Phase 4: Level 5 Verification (Strengths/Shadbala)
-- [x] **Audit Shadbala Core:** Created `audit_shadbala.py` and implemented Ahargana Time Lords.
-- [x] **Verify Uccha Bala:** Test against `angelina_jolie_uccha.csv`.
-- [x] **Verify Dig Bala:** Test against `angelina_jolie_dig.csv`.
-- [x] **Verify Cheshta Bala:** Test against `angelina_jolie_cheshta.csv`.
+### Phase 2: Levels 3 & 4 (Dignities, Relationships & Aspects)
+- [x] **Dignities Test Suite:** Built `test_dignities.py` checking planetary dignities across all 16 Vargas.
+- [x] **Compound Friendship:** Calibrated Natural (*Naisargika*) and Temporary (*Tatkalika*) friendship logic in `relationships.py`.
+- [x] **Degree-Specific Debilitations:** Enforced 0-3° boundary for Moon and 0-15° boundary for Mercury debilitation.
+- [x] **Even Varga Reversals:** Implemented Parashari reverse counting for even signs in D10 and D24.
+- [x] **Drishti Verification:** Built `test_drishti.py` verifying Rasi Drishti and 0-60 Virupa Graha Drishti against Kala baselines.
 
-## Phase 5: Level 6 Verification (Avasthas)
-- [x] **Verify Ishta Phala:** Test against `angelina_jolie_ishta.csv`.
-- [x] **Verify Subha Phala:** Test against `angelina_jolie_subha.csv`.
-- [x] **Verify Lajjitadi Avasthas:** Use the fully nested JSON matrix to test the final addition/subtraction modifiers.
-- [x] **Verify Shayanadi Avasthas:** Ensure Nakshatra/Navamsa calculations yield correct Shayanadi states.
+---
+
+## 🚀 Active Roadmap: Precision Calibration & New Engines
+
+### Phase 3: Astronomical & Basic Placements Baseline (Level 1 & 2)
+*Dataset: `angelina_jolie_basic_placements.csv` (Extracted from `angelina_jolie_basic_printout.pdf`)*
+- [ ] **Test Core Coordinates:** Write unit test in `tests/test_basic_placements.py` verifying D1 planetary longitudes, signs, retrograde flags, and relative motion speeds.
+- [ ] **Test Nakshatras & Padas:** Verify that Dhruva Galactic Center tropical-to-sidereal equatorial conversion yields exact Nakshatra numbers (1-27) and Padas (1-4).
+- [ ] **Verify Campanus House Cusps:** Verify that house cusps match Kala within seconds of arc.
+
+### Phase 4: Shadbala Sub-Pillars Precision Calibration (Level 5)
+*Dataset: `angelina_jolie_shadbala_breakdown.csv` (Extracted from `angelina_jolie_shadbala.pdf`)*
+- [ ] **Comprehensive Sub-Pillar Tests:** Update `tests/test_shadbala.py` to assert all 35 sub-metrics (Sthana, Dig, Kaala, Ayana, Cheshta, Drik, Naisargika, Total Virupas, Rupas, and Relative Ranks).
+- [ ] **Calibrate Mercury Cheshta Bala:** Refine Mercury motional strength calculation in `jyotish/shadbala/shadbala.py` to eliminate the remaining 1.19 Virupa difference.
+- [ ] **Audit Saptavargaja Bala:** Ensure planetary strength contributions across the 7 primary Vargas match Kala exactly.
+
+### Phase 5: Vimshottari Dasa Full Cycle Timeline (Level 7)
+*Dataset: `angelina_jolie_vimshottari_antardasas.csv` (Extracted from `angelina_jolie_vimshottari_dasa_full.pdf`)*
+- [ ] **Timeline Test Suite:** Create `tests/test_vimshottari_timeline.py` testing all 9 Mahadashas and all 81 Antardashas over the 120-year cycle.
+- [ ] **Year-Length Precision:** Fine-tune the Dasha year constant (Saura 360-day vs. 365.2422 tropical year) so start dates match Kala down to the day.
+
+### Phase 6: Multi-Varga Avasthas Calibration (Level 6)
+*Datasets: `angelina_jolie_lajjitadi_varga_net_modifiers.csv` & `angelina_jolie_shayanadi_vargas.csv`*
+- [ ] **Quantitative Lajjitadi Matrix Refactor:** Update `jyotish/avasthas/quantitative.py` to consume the new `lajjita.py` qualitative rules and verify net modifier outputs across all 16 Vargas.
+- [ ] **Shayanadi Multi-Varga Engine:** Update `jyotish/avasthas/shayana.py` to dynamically support divisional chart inputs and test against all 1,296 state combinations across all 16 Vargas and 9 Mahadashas.
+
+### Phase 7: New Classical Engines Implementation
+*Datasets: `angelina_jolie_ashtakavarga_sarva.csv` & `angelina_jolie_varga_vimshopaka.csv`*
+- [ ] **Ashtakavarga Engine (`jyotish/ashtakavarga/`):**
+  - Implement 8-fold benefic point (*Bindu*) grid for all 7 planets + Lagna across all 12 signs.
+  - Implement *Trikona Shodhana* (reduction across trines).
+  - Implement *Ekadhipatya Shodhana* (reduction for signs with the same planetary lord).
+  - Test against `angelina_jolie_ashtakavarga_sarva.csv` (337 total points).
+- [ ] **Varga Vimshopaka Engine (`jyotish/vimshopaka/`):**
+  - Implement 20-point dignity scoring across Shadvarga, Saptavarga, Dasavarga, and Shodasavarga.
+  - Implement Vaisheshikamsa honorific classifications (*Kimsuka, Vyanjana, Uttama, Gopura, Nagapushpa, Kanduka*).
+  - Test against `angelina_jolie_varga_vimshopaka.csv`.

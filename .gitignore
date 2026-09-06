@@ -33,6 +33,9 @@ rag/chroma_modern_db/
 database/backups/
 !templates/*.html
 !source-material/sanskrit_texts/**
+!source-material/software-setup/sample-case/angelina-jolie-pdfs/**
+!source-material/software-setup/sample-case/*.csv
+!source-material/software-setup/sample-case/*.json
 source-material/sanskrit_texts/**/__pycache__/
 *.db
 *_database.json

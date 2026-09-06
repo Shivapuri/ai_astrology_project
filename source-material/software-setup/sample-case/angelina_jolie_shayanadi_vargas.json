@@ -1,0 +1,1618 @@
+{
+  "D1": {
+    "Me": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ke": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ve": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Su": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Mo": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Ma": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Ra": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ju": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Sa": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "12. Nidra- Slumbering"
+    }
+  },
+  "D2": {
+    "Me": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Ke": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ve": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Su": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Mo": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ma": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Ra": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Ju": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Sa": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "9. Bhojana- Eating"
+    }
+  },
+  "D3": {
+    "Me": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Ke": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Ve": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Su": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Mo": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ma": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ra": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ju": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Sa": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "2. Upavesha- Sitting"
+    }
+  },
+  "D4": {
+    "Me": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ke": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ve": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Su": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Mo": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ma": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ra": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ju": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Sa": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "6. Aagamana- Arriving"
+    }
+  },
+  "D7": {
+    "Me": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ke": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ve": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Su": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Mo": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ma": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ra": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ju": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Sa": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "6. Aagamana- Arriving"
+    }
+  },
+  "D9": {
+    "Me": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ke": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Ve": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Su": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Mo": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ma": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ra": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Ju": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Sa": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "8. Aagama- Aproaching"
+    }
+  },
+  "D10": {
+    "Me": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ke": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ve": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Su": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Mo": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Ma": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Ra": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Ju": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Sa": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "11. Kautuka- Eagerness"
+    }
+  },
+  "D12": {
+    "Me": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Ke": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ve": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Su": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Mo": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Ma": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ra": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ju": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Sa": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "5. Gamana- Departing"
+    }
+  },
+  "D16": {
+    "Me": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ke": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ve": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Su": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Mo": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Ma": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Ra": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ju": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Sa": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "12. Nidra- Slumbering"
+    }
+  },
+  "D20": {
+    "Me": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ke": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ve": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Su": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Mo": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ma": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ra": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ju": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Sa": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    }
+  },
+  "D24": {
+    "Me": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Ke": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Ve": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Su": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Mo": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ma": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Ra": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ju": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Sa": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "4. Prakaashana- Illuminating"
+    }
+  },
+  "D27": {
+    "Me": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ke": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Ve": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Su": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Mo": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ma": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ra": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Ju": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Sa": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "8. Aagama- Aproaching"
+    }
+  },
+  "D30": {
+    "Me": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ke": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ve": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Su": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Mo": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ma": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ra": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ju": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Sa": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    }
+  },
+  "D40": {
+    "Me": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Ke": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "7. Sabhaayaam- Congregating",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "7. Sabhaayaam- Congregating",
+      "Rahu": "7. Sabhaayaam- Congregating",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    },
+    "Ve": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "8. Aagama- Aproaching",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "8. Aagama- Aproaching",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "8. Aagama- Aproaching",
+      "Ketu": "8. Aagama- Aproaching"
+    },
+    "Su": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "9. Bhojana- Eating",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "9. Bhojana- Eating"
+    },
+    "Mo": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ma": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ra": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ju": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Sa": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "2. Upavesha- Sitting"
+    }
+  },
+  "D45": {
+    "Me": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "9. Bhojana- Eating",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "8. Aagama- Aproaching",
+      "Rahu": "9. Bhojana- Eating",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ke": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "9. Bhojana- Eating",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "9. Bhojana- Eating",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Ve": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "1. Shayana- Laying",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "10. Nrityalipsa- Desiring to Dance",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Su": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "2. Upavesha- Sitting",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "11. Kautuka- Eagerness",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Mo": {
+      "Sun": "5. Gamana- Departing",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "3. Netrapani- Guiding the Hand",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ma": {
+      "Sun": "6. Aagamana- Arriving",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ra": {
+      "Sun": "7. Sabhaayaam- Congregating",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "11. Kautuka- Eagerness",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Ju": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "12. Nidra- Slumbering",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "6. Aagamana- Arriving"
+    },
+    "Sa": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "1. Shayana- Laying",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "7. Sabhaayaam- Congregating",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "7. Sabhaayaam- Congregating"
+    }
+  },
+  "D60": {
+    "Me": {
+      "Sun": "8. Aagama- Aproaching",
+      "Moon": "10. Nrityalipsa- Desiring to Dance",
+      "Mars": "4. Prakaashana- Illuminating",
+      "Mercury": "2. Upavesha- Sitting",
+      "Jupiter": "12. Nidra- Slumbering",
+      "Venus": "10. Nrityalipsa- Desiring to Dance",
+      "Saturn": "10. Nrityalipsa- Desiring to Dance",
+      "Rahu": "10. Nrityalipsa- Desiring to Dance",
+      "Ketu": "10. Nrityalipsa- Desiring to Dance"
+    },
+    "Ke": {
+      "Sun": "9. Bhojana- Eating",
+      "Moon": "11. Kautuka- Eagerness",
+      "Mars": "5. Gamana- Departing",
+      "Mercury": "3. Netrapani- Guiding the Hand",
+      "Jupiter": "1. Shayana- Laying",
+      "Venus": "11. Kautuka- Eagerness",
+      "Saturn": "11. Kautuka- Eagerness",
+      "Rahu": "11. Kautuka- Eagerness",
+      "Ketu": "11. Kautuka- Eagerness"
+    },
+    "Ve": {
+      "Sun": "10. Nrityalipsa- Desiring to Dance",
+      "Moon": "12. Nidra- Slumbering",
+      "Mars": "6. Aagamana- Arriving",
+      "Mercury": "4. Prakaashana- Illuminating",
+      "Jupiter": "2. Upavesha- Sitting",
+      "Venus": "12. Nidra- Slumbering",
+      "Saturn": "12. Nidra- Slumbering",
+      "Rahu": "12. Nidra- Slumbering",
+      "Ketu": "12. Nidra- Slumbering"
+    },
+    "Su": {
+      "Sun": "11. Kautuka- Eagerness",
+      "Moon": "1. Shayana- Laying",
+      "Mars": "7. Sabhaayaam- Congregating",
+      "Mercury": "5. Gamana- Departing",
+      "Jupiter": "3. Netrapani- Guiding the Hand",
+      "Venus": "1. Shayana- Laying",
+      "Saturn": "1. Shayana- Laying",
+      "Rahu": "1. Shayana- Laying",
+      "Ketu": "1. Shayana- Laying"
+    },
+    "Mo": {
+      "Sun": "12. Nidra- Slumbering",
+      "Moon": "2. Upavesha- Sitting",
+      "Mars": "8. Aagama- Aproaching",
+      "Mercury": "6. Aagamana- Arriving",
+      "Jupiter": "4. Prakaashana- Illuminating",
+      "Venus": "2. Upavesha- Sitting",
+      "Saturn": "2. Upavesha- Sitting",
+      "Rahu": "2. Upavesha- Sitting",
+      "Ketu": "2. Upavesha- Sitting"
+    },
+    "Ma": {
+      "Sun": "1. Shayana- Laying",
+      "Moon": "3. Netrapani- Guiding the Hand",
+      "Mars": "9. Bhojana- Eating",
+      "Mercury": "7. Sabhaayaam- Congregating",
+      "Jupiter": "5. Gamana- Departing",
+      "Venus": "3. Netrapani- Guiding the Hand",
+      "Saturn": "3. Netrapani- Guiding the Hand",
+      "Rahu": "3. Netrapani- Guiding the Hand",
+      "Ketu": "3. Netrapani- Guiding the Hand"
+    },
+    "Ra": {
+      "Sun": "2. Upavesha- Sitting",
+      "Moon": "4. Prakaashana- Illuminating",
+      "Mars": "10. Nrityalipsa- Desiring to Dance",
+      "Mercury": "8. Aagama- Aproaching",
+      "Jupiter": "6. Aagamana- Arriving",
+      "Venus": "4. Prakaashana- Illuminating",
+      "Saturn": "4. Prakaashana- Illuminating",
+      "Rahu": "4. Prakaashana- Illuminating",
+      "Ketu": "4. Prakaashana- Illuminating"
+    },
+    "Ju": {
+      "Sun": "3. Netrapani- Guiding the Hand",
+      "Moon": "5. Gamana- Departing",
+      "Mars": "11. Kautuka- Eagerness",
+      "Mercury": "9. Bhojana- Eating",
+      "Jupiter": "7. Sabhaayaam- Congregating",
+      "Venus": "5. Gamana- Departing",
+      "Saturn": "5. Gamana- Departing",
+      "Rahu": "5. Gamana- Departing",
+      "Ketu": "5. Gamana- Departing"
+    },
+    "Sa": {
+      "Sun": "4. Prakaashana- Illuminating",
+      "Moon": "6. Aagamana- Arriving",
+      "Mars": "12. Nidra- Slumbering",
+      "Mercury": "10. Nrityalipsa- Desiring to Dance",
+      "Jupiter": "8. Aagama- Aproaching",
+      "Venus": "6. Aagamana- Arriving",
+      "Saturn": "6. Aagamana- Arriving",
+      "Rahu": "6. Aagamana- Arriving",
+      "Ketu": "6. Aagamana- Arriving"
+    }
+  }
+}
