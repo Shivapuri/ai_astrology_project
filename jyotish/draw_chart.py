@@ -124,33 +124,6 @@ sign_symbols = {
 
 signs_list = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
 
-NORTH_INDIAN_POLYGONS = [
-    # House 1: Center-top diamond
-    "200,0 100,100 200,200 300,100",
-    # House 2: Top-left upper triangle
-    "0,0 200,0 100,100",
-    # House 3: Top-left side triangle
-    "0,0 100,100 0,200",
-    # House 4: Center-left diamond
-    "100,100 0,200 100,300 200,200",
-    # House 5: Bottom-left side triangle
-    "0,200 100,300 0,400",
-    # House 6: Bottom-left lower triangle
-    "0,400 100,300 200,400",
-    # House 7: Center-bottom diamond
-    "200,200 100,300 200,400 300,300",
-    # House 8: Bottom-right lower triangle
-    "200,400 300,300 400,400",
-    # House 9: Bottom-right side triangle
-    "300,300 400,200 400,400",
-    # House 10: Center-right diamond
-    "200,200 300,100 400,200 300,300",
-    # House 11: Top-right side triangle
-    "300,100 400,0 400,200",
-    # House 12: Top-right upper triangle
-    "200,0 400,0 300,100",
-]
-
 def parse_varga_data(varga_data):
     items = []
     
@@ -361,12 +334,6 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
         cusps = [it for it in cell_items if it["type"] == "cusp"]
         
         c_dx, c_dy, s_dx, s_dy = quadrant_map[sign]
-
-        # Background rect for empty field / house click
-        rashi_house = (signs_list.index(sign) - anchor_index + 12) % 12 + 1
-        cell_house = cusps[0]["text"] if (root_planet == "Lagna" and cusps) else rashi_house
-        h_tooltip = f"House {cell_house} ({sign})"
-        svg += f'<rect class="interactive house-cell" data-type="house" data-id="{cell_house}" x="{x}" y="{y}" width="100" height="100" fill="rgba(0,0,0,0.001)" pointer-events="all" style="cursor: pointer;"><title>{h_tooltip}</title></rect>\n'
         
         # Draw Rasi Sign (Inner Corner)
         s_sym, s_col, _ = sign_symbols[sign]
@@ -467,14 +434,6 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         anchor_item = next((it for it in items if it["name"] == "Lagna"), None)
     anchor_sign = anchor_item["sign"] if anchor_item else "Aries"
     anchor_index = signs_list.index(anchor_sign)
-
-    # 12 Interactive House Polygons for empty field clicks
-    for h in range(12):
-        poly_pts = NORTH_INDIAN_POLYGONS[h]
-        h_num = h + 1
-        sign_name = signs_list[(anchor_index + h) % 12]
-        h_title = f"House {h_num} ({sign_name})"
-        svg += f'<polygon class="interactive house-cell" data-type="house" data-id="{h_num}" points="{poly_pts}" fill="rgba(0,0,0,0.001)" pointer-events="all" style="cursor: pointer;"><title>{h_title}</title></polygon>\n'
 
     ni_centers = [
         (200, 100), (100, 45),  (48, 100),  (100, 200),
@@ -586,17 +545,6 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
     svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
-    
-    # 12 Interactive House Polygons for empty field clicks
-    for h_idx in range(12):
-        poly_pts = NORTH_INDIAN_POLYGONS[h_idx]
-        h_num = h_idx + 1
-        bhava = bhavas[h_idx]
-        cusp_lon = bhava["cusp"]
-        sign_idx = int(cusp_lon // 30)
-        sign_name = signs_list[sign_idx]
-        h_title = f"House {h_num} ({sign_name})"
-        svg += f'<polygon class="interactive house-cell" data-type="house" data-id="{h_num}" points="{poly_pts}" fill="rgba(0,0,0,0.001)" pointer-events="all" style="cursor: pointer;"><title>{h_title}</title></polygon>\n'
     
     ni_centers = [
         (200, 100), (100, 45),  (48, 100),  (100, 200),

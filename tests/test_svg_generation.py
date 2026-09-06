@@ -28,7 +28,7 @@ def test_north_indian_svg():
     assert 'viewBox="-10 -10 420 420"' in svg_str
     assert 'background:transparent' in svg_str
 
-def test_south_indian_house_cells_and_multiple_cusps():
+def test_south_indian_multiple_cusps_separated():
     items = [
         {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 5, "minute": 10, "is_retrograde": False},
         {"type": "cusp", "text": "1", "sign": "Aries"},
@@ -37,15 +37,13 @@ def test_south_indian_house_cells_and_multiple_cusps():
     ]
     svg_str = generate_south_indian(items, varga_name="D1")
     
-    # Assert 12 background house cells exist
-    assert svg_str.count('class="interactive house-cell"') == 12
-    assert 'data-type="house"' in svg_str
-    
-    # Assert both cusp 2 and cusp 3 are rendered as independent interactive elements
+    # Assert both cusp 2 and cusp 3 are rendered as independent interactive elements with distinct data-ids
     assert '<g class="interactive" data-type="house" data-id="2"' in svg_str
     assert '<g class="interactive" data-type="house" data-id="3"' in svg_str
+    # Assert background is not cluttered with house-cell rects
+    assert 'class="interactive house-cell"' not in svg_str
 
-def test_north_indian_house_polygons_and_multiple_cusps():
+def test_north_indian_multiple_cusps_separated():
     items = [
         {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 5, "minute": 10, "is_retrograde": False},
         {"type": "cusp", "text": "1", "sign": "Aries"},
@@ -54,12 +52,9 @@ def test_north_indian_house_polygons_and_multiple_cusps():
     ]
     svg_str = generate_north_indian(items, varga_name="D1")
     
-    # Assert 12 interactive house polygons exist (Houses 1 to 12)
-    assert svg_str.count('class="interactive house-cell"') == 12
-    for h in range(1, 13):
-        assert f'data-type="house" data-id="{h}"' in svg_str
-        
     # Assert both cusp 2 and cusp 3 are rendered as independent interactive elements
     assert '<g class="interactive" data-type="house" data-id="2"' in svg_str
     assert '<g class="interactive" data-type="house" data-id="3"' in svg_str
+    # Assert background is not cluttered with house-cell polygons
+    assert 'class="interactive house-cell"' not in svg_str
 
