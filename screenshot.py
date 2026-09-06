@@ -48,6 +48,45 @@ async def main():
             await page.keyboard.press("Escape")
             await page.wait_for_timeout(400)
 
+            # 6. Tripod of Life Workspace
+            await page.evaluate("changeWorkspace('tripod-of-life')")
+            await page.wait_for_timeout(1000)
+            await page.screenshot(path="screenshot_tripod_of_life.png")
+            print("Captured screenshot_tripod_of_life.png")
+
+            # 7. 5-Fold Bhava Inspector in Context Info
+            await page.evaluate("assignWidget('info', document.getElementById('c3'))")
+            await page.evaluate("document.getElementById('context-info-content').innerHTML = renderBhavaInspectorHtml(10, 'D1')")
+            await page.wait_for_timeout(600)
+            c3 = page.locator("#c3")
+            if await c3.count() > 0:
+                await c3.screenshot(path="screenshot_bhava_inspector.png")
+                print("Captured screenshot_bhava_inspector.png")
+
+            # 8. 16-Varga Lajjitadi Net Modifiers Widget
+            await page.evaluate("assignWidget('varga-lajjitadi-modifiers', document.getElementById('c2'))")
+            await page.wait_for_timeout(600)
+            c2 = page.locator("#c2")
+            if await c2.count() > 0:
+                await c2.screenshot(path="screenshot_varga_lajjitadi.png")
+                print("Captured screenshot_varga_lajjitadi.png")
+
+            # 9. Rāśi Dṛṣṭi (Jaimini Sign Aspects) Widget
+            await page.evaluate("assignWidget('rashi-drishti', document.getElementById('c1'))")
+            await page.wait_for_timeout(600)
+            c1 = page.locator("#c1")
+            if await c1.count() > 0:
+                await c1.screenshot(path="screenshot_rashi_drishti.png")
+                print("Captured screenshot_rashi_drishti.png")
+
+            # 10. Floating Bhava Chalita Cusps Window (Non-blurry, draggable & resizable)
+            await page.evaluate("openBhavaCuspsModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_floating_bhava_chalita.png")
+            print("Captured screenshot_floating_bhava_chalita.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
         except Exception as e:
             print("Error:", e)
             

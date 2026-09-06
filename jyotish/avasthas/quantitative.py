@@ -146,8 +146,16 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 if p_give in s_cond:
                     active_states.append(s_name)
                     
-            # If Sun and Mercury are separated in current Varga, conjunction-induced Kshobhita is lifted
-            if varga_name in MERCURY_SEPARATED_CHARTS and p_recv == "Mercury" and p_give == "Sun":
+            # If Sun and Mercury or any conjoined planets are separated in current Varga, conjunction-induced Kshobhita is lifted
+            is_conjunct_d1 = (d1_grahas[p_give].get('sign') == d1_grahas[p_recv].get('sign'))
+            is_conjunct_varga = (grahas_data[p_give].get('sign') == grahas_data[p_recv].get('sign'))
+
+            if is_conjunct_d1 and not is_conjunct_varga:
+                s1_v = grahas_data[p_give].get('sign', '')
+                s2_v = grahas_data[p_recv].get('sign', '')
+                aspect_virupas = get_aspect(p_give, p_recv, l1, l2, s1_v, s2_v, lord1, lord2)
+                active_states = [s for s in active_states if "Kshobhita" not in s]
+            elif varga_name in MERCURY_SEPARATED_CHARTS and p_recv == "Mercury" and p_give == "Sun":
                 aspect_virupas = 0.0
                 active_states = [s for s in active_states if "Kshobhita" not in s]
 

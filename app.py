@@ -84,22 +84,33 @@ def get_chart(native_id):
         name_sound_value=native.get('name_sound_value', 0)
     )
     
-    # Generate SVGs for all vargas and all notation modes
+    # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
     svgs = {}
     modes = ["symbol", "english", "devanagari", "translit"]
+    roots = ["Lagna", "Moon", "Sun"]
     for v_name, v_data in chart_data["vargas"].items():
         parsed_items = draw_chart.parse_varga_data(v_data)
         svgs[v_name] = {}
         for m in modes:
+            roots_dict = {}
+            for r in roots:
+                roots_dict[r] = {
+                    "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=chart_data["astronomy"]["equatorial_ayanamsa_value"], root_planet=r),
+                    "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
+                    "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r)
+                }
+
             svgs[v_name][m] = {
-                "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=chart_data["astronomy"]["equatorial_ayanamsa_value"]),
-                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name),
-                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name)
+                "circular": roots_dict["Lagna"]["circular"],
+                "south": roots_dict["Lagna"]["south"],
+                "north": roots_dict["Lagna"]["north"],
+                "roots": roots_dict
             }
         # Default top-level shortcuts for backward compatibility
         svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
         svgs[v_name]["north"] = svgs[v_name]["symbol"]["north"]
         svgs[v_name]["circular"] = svgs[v_name]["symbol"]["circular"]
+        svgs[v_name]["roots"] = svgs[v_name]["symbol"]["roots"]
         
     return jsonify({
         "data": chart_data,

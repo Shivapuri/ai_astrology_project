@@ -256,13 +256,19 @@ def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
         positions.append((cx + 22, r2_y))
     return positions
 
-def generate_south_indian(items, mode="symbol", varga_name="D1"):
+def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
         "Capricorn": (0, 200), "Leo": (300, 200),
         "Sagittarius": (0, 300), "Scorpio": (100, 300), "Libra": (200, 300), "Virgo": (300, 300)
     }
+
+    anchor_item = next((it for it in items if it.get("name") == root_planet), None)
+    if not anchor_item:
+        anchor_item = next((it for it in items if it.get("name") == "Lagna"), None)
+    anchor_sign = anchor_item["sign"] if anchor_item else "Aries"
+    anchor_index = signs_list.index(anchor_sign)
 
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
@@ -281,8 +287,17 @@ def generate_south_indian(items, mode="symbol", varga_name="D1"):
     svg += '<line x1="300" y1="300" x2="400" y2="300" stroke="#5C4433" stroke-width="2"/>\n'
     
     # Center Chart Title
-    svg += f'<text x="200" y="190" font-family="sans-serif" font-size="18" font-weight="bold" fill="#4a3325" text-anchor="middle">{varga_name}</text>\n'
-    svg += f'<text x="200" y="215" font-family="sans-serif" font-size="13" fill="#8c7b64" text-anchor="middle">Tropical South Indian</text>\n'
+    chart_title = varga_name
+    chart_sub = "Tropical South Indian"
+    if root_planet == "Moon":
+        chart_title = f"{varga_name} Chandra Lagna"
+        chart_sub = "Moon as Ascendant (H1)"
+    elif root_planet == "Sun":
+        chart_title = f"{varga_name} Surya Lagna"
+        chart_sub = "Sun as Ascendant (H1)"
+
+    svg += f'<text x="200" y="190" font-family="sans-serif" font-size="17" font-weight="bold" fill="#4a3325" text-anchor="middle">{chart_title}</text>\n'
+    svg += f'<text x="200" y="215" font-family="sans-serif" font-size="12" fill="#8c7b64" text-anchor="middle">{chart_sub}</text>\n'
 
     items_by_sign = {s: [] for s in signs_list}
     for item in items:
@@ -324,24 +339,45 @@ def generate_south_indian(items, mode="symbol", varga_name="D1"):
         s_sym, s_col, _ = sign_symbols[sign]
         svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
+        # If this is anchor sign for non-Lagna root, draw the diagonal badge
+        if root_planet != "Lagna" and sign == anchor_sign:
+            badge_text = "CL" if root_planet == "Moon" else ("SL" if root_planet == "Sun" else "L")
+            svg += f'<line x1="{x}" y1="{y + 26}" x2="{x + 26}" y2="{y}" stroke="#C0392B" stroke-width="2.5" />\n'
+            svg += f'<rect x="{x + 2}" y="{y + 2}" width="22" height="14" rx="3" fill="#C0392B"/>\n'
+            svg += f'<text x="{x + 13}" y="{y + 9}" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">{badge_text}</text>\n'
+
         # Draw House Cusps (Outer Corner)
-        if cusps:
-            cusp_texts = [c["text"] for c in cusps]
-            cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
-            svg += f'<g class="interactive" data-type="house" data-id="{cusp_texts[0]}" style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
-            
-            if len(cusp_texts) > 3:
-                mid = len(cusp_texts) // 2
-                l1 = " ".join(cusp_texts[:mid])
-                l2 = " ".join(cusp_texts[mid:])
-                svg += f'<text x="{x + c_dx}" y="{y + c_dy - 6}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{l1}</text>\n'
-                svg += f'<text x="{x + c_dx}" y="{y + c_dy + 6}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{l2}</text>\n'
-            else:
-                svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+        if root_planet == "Lagna":
+            if cusps:
+                cusp_texts = [c["text"] for c in cusps]
+                cusp_tooltip = f"House Cusps: {', '.join(cusp_texts)} in {sign}"
+                svg += f'<g class="interactive" data-type="house" data-id="{cusp_texts[0]}" style="cursor: pointer;"><title>{cusp_tooltip}</title>\n'
                 
+                if len(cusp_texts) > 3:
+                    mid = len(cusp_texts) // 2
+                    l1 = " ".join(cusp_texts[:mid])
+                    l2 = " ".join(cusp_texts[mid:])
+                    svg += f'<text x="{x + c_dx}" y="{y + c_dy - 6}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{l1}</text>\n'
+                    svg += f'<text x="{x + c_dx}" y="{y + c_dy + 6}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{l2}</text>\n'
+                else:
+                    svg += f'<text x="{x + c_dx}" y="{y + c_dy}" font-family="sans-serif" font-size="12" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{" ".join(cusp_texts)}</text>\n'
+                    
+                svg += '</g>\n'
+        else:
+            # Whole Sign House number relative to anchor planet
+            h_num = (signs_list.index(sign) - anchor_index + 12) % 12 + 1
+            h_tooltip = f"House {h_num} from {root_planet} in {sign}"
+            is_kendra = h_num in [1, 4, 7, 10]
+            col = "#C0392B" if is_kendra else "#7D3C98"
+            bx = x + c_dx
+            by = y + c_dy
+            if sign == anchor_sign and c_dx < 50 and c_dy < 50:
+                bx += 16
+            svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
+            svg += f'<text x="{bx}" y="{by}" font-family="sans-serif" font-size="12" font-weight="bold" fill="{col}" text-anchor="middle" dominant-baseline="central">H{h_num}</text>\n'
             svg += '</g>\n'
 
-        positions = get_south_indian_positions(len(planets), x, y, has_cusps=bool(cusps))
+        positions = get_south_indian_positions(len(planets), x, y, has_cusps=bool(cusps or root_planet != "Lagna"))
         
         for idx, p in enumerate(planets):
             if idx >= len(positions):
@@ -373,13 +409,11 @@ def generate_south_indian(items, mode="symbol", varga_name="D1"):
                 svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
             svg += '</text>\n'
             svg += '</g>\n'
-            
-        # (Cusps are now drawn at the beginning of the cell block in the outer corner)
 
     svg += '</svg>\n'
     return svg
 
-def generate_north_indian(items, mode="symbol", varga_name="D1"):
+def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna"):
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
@@ -400,17 +434,25 @@ def generate_north_indian(items, mode="symbol", varga_name="D1"):
         (375, 255), (225, 200), (375, 145), (255, 25)
     ]
 
-    asc_item = next(it for it in items if it["name"] == "Lagna")
-    asc_sign = asc_item["sign"]
-    asc_index = signs_list.index(asc_sign)
+    anchor_item = next((it for it in items if it["name"] == root_planet), None)
+    if not anchor_item:
+        anchor_item = next((it for it in items if it["name"] == "Lagna"), None)
+    anchor_sign = anchor_item["sign"] if anchor_item else "Aries"
+    anchor_index = signs_list.index(anchor_sign)
+
+    # Header label in House 1 if non-Lagna root
+    if root_planet != "Lagna":
+        badge_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else root_planet)
+        svg += f'<text x="200" y="24" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C0392B" text-anchor="middle">{badge_title}</text>\n'
 
     items_by_house = [[] for _ in range(12)]
     
     for item in items:
         s_idx = signs_list.index(item["sign"])
-        h_idx = (s_idx - asc_index + 12) % 12
+        h_idx = (s_idx - anchor_index + 12) % 12
         if item.get("type") == "cusp":
-            items_by_house[h_idx].append(item)
+            if root_planet == "Lagna":
+                items_by_house[h_idx].append(item)
         else:
             items_by_house[h_idx].append({
                 "type": "planet",
@@ -421,7 +463,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1"):
             })
 
     for h in range(12):
-        s_idx = (asc_index + h) % 12
+        s_idx = (anchor_index + h) % 12
         sign = signs_list[s_idx]
         s_sym, s_col, _ = sign_symbols[sign]
         
@@ -551,7 +593,7 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
 
 import math
 
-def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
+def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna"):
     svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
     r_nak_outer = 200
@@ -559,6 +601,9 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
     r_rasi_inner = 155
     r_bhava_outer = 60
     r_bhava_inner = 45
+    
+    root_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else "Circular Chart")
+    svg += f'<title>{varga_name} {root_title}</title>\n'
     
     # Outer house circuits a little bit thinner
     circle_stroke = "0.7"
@@ -568,16 +613,18 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
     svg += f'<circle cx="0" cy="0" r="{r_bhava_outer}" fill="none" stroke="#27AE60" stroke-width="{circle_stroke}"/>\n'
     svg += f'<circle cx="0" cy="0" r="{r_bhava_inner}" fill="none" stroke="#000000" stroke-width="{circle_stroke}"/>\n'
     
-    asc_item = next((it for it in items if it["name"] == "Lagna"), None)
-    if asc_item:
-        asc_s_idx = signs_list.index(asc_item["sign"])
-        asc_lon = asc_s_idx * 30 + asc_item["degree"] + asc_item["minute"] / 60.0
+    anchor_item = next((it for it in items if it["name"] == root_planet), None)
+    if not anchor_item:
+        anchor_item = next((it for it in items if it["name"] == "Lagna"), None)
+    if anchor_item:
+        anchor_s_idx = signs_list.index(anchor_item["sign"])
+        anchor_lon = anchor_s_idx * 30 + anchor_item["degree"] + anchor_item["minute"] / 60.0
     else:
-        asc_s_idx = 0
-        asc_lon = 0
+        anchor_s_idx = 0
+        anchor_lon = 0
             
     def lon_to_angle(lon):
-        return 180 + asc_lon - lon
+        return 180 + anchor_lon - lon
 
     def polar_coords(r, angle_deg):
         rad = math.radians(angle_deg)
@@ -630,13 +677,12 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         s_sym, s_col, _ = sign_symbols[sign_name]
         svg += f'<text class="interactive" data-type="sign" data-id="{sign_name}" x="{lx}" y="{ly}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
-        
         # Bhava number label (Whole Sign)
-        bhava_num = (i - asc_s_idx + 12) % 12 + 1
+        bhava_num = (i - anchor_s_idx + 12) % 12 + 1
         bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
         svg += f'<text class="interactive" data-type="house" data-id="{bhava_num}" x="{bx}" y="{by}" font-size="9" fill="#2980B9" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{bhava_num}</text>\n'
 
-    # 4. House Cusps (Campanus lines in D1, clean grouped house numbers in each sign)
+    # 4. House Cusps (Campanus lines in D1, only for physical Lagna root)
     cusps = [it for it in items if it.get("type") == "cusp"]
     
     # Always draw Ascendant red arrow at 180 degrees
@@ -647,8 +693,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
     tx2, ty2 = polar_coords(r_rasi_inner - 6, 182)
     svg += f'<polygon points="{ax2},{ay2} {tx1},{ty1} {tx2},{ty2}" fill="#C0392B" />\n'
 
-    # In D1, draw lines ONLY for the 4 cardinal angle stations (1: Asc, 4: IC, 7: Dsc, 10: MC)
-    if varga_name == "D1" and cusps and len(cusps) >= 12:
+    # In D1, draw lines ONLY for the 4 cardinal angle stations (1: Asc, 4: IC, 7: Dsc, 10: MC) for Lagna root
+    if root_planet == "Lagna" and varga_name == "D1" and cusps and len(cusps) >= 12:
         for i in range(12):
             c = cusps[i]
             house_num = i + 1
@@ -666,8 +712,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
             
             svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#C0392B" stroke-width="1.0"/>\n'
 
-    # Draw cusp numbers clearly positioned within each sign sector without stacking
-    if cusps:
+    # Draw cusp numbers clearly positioned within each sign sector for Lagna root
+    if root_planet == "Lagna" and cusps:
         cusps_by_sign = {s: [] for s in signs_list}
         for c in cusps:
             if c.get("sign") in cusps_by_sign:
@@ -705,7 +751,6 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
                 
                 tooltip = f"House Cusp {house_num} in {sign_name}"
                 svg += f'<text class="interactive" data-type="house" data-id="{house_num}" x="{cx}" y="{cy}" font-size="{fs}" font-weight="{fw}" fill="{color}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;"><title>{tooltip}</title>{house_num}</text>\n'
-
 
     # 5. Planets (radially stacked)
     planets_to_draw = []
@@ -746,8 +791,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0):
         retro_badge = "R" if is_retro else ""
         s_sym, s_col, _ = sign_symbols[item["sign"]]
         
-        if p_name == "Lagna":
-            # Lagna is exactly at 180 degrees (left horizontal axis).
+        if p_name == root_planet:
+            # Anchor planet is exactly at 180 degrees (left horizontal axis).
             # Shift the angle slightly so the entire stack draws below the red arrow line.
             angle = (angle + 2.2) % 360
             

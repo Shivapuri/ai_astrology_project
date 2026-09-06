@@ -245,7 +245,7 @@
             justify-content: center;
             align-items: center;
             z-index: 2000;
-            backdrop-filter: blur(3px);
+            /* backdrop-filter blur removed to ensure background chart is always crystal clear */
         }
         .modal-card {
             background: #FAF5EB;
@@ -329,6 +329,209 @@
             font-size: 12px;
             margin-left: 8px;
             font-weight: bold;
+        }
+
+        /* Floating Table Window - non-blurry, transparent pass-through overlay, draggable & resizable */
+        .floating-overlay {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+            pointer-events: none !important;
+            z-index: 10050 !important;
+            display: none;
+            align-items: flex-start;
+            justify-content: flex-start;
+        }
+        .floating-window-card {
+            position: fixed;
+            pointer-events: auto;
+            background: #FAF5EB;
+            border: 1.5px solid #C4B59D;
+            border-radius: 12px;
+            box-shadow: 0 16px 40px rgba(44, 30, 20, 0.28), 0 2px 10px rgba(0, 0, 0, 0.12);
+            color: #3d312a;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            resize: both;
+            min-width: 360px;
+            min-height: 220px;
+            max-width: 98vw;
+            max-height: 94vh;
+            width: 820px;
+            height: 540px;
+            top: 70px;
+            left: calc(50% - 410px);
+            z-index: 10051;
+            animation: modalFadeIn 0.18s ease-out;
+        }
+        .floating-window-card.collapsed {
+            height: 44px !important;
+            min-height: 44px !important;
+            resize: none !important;
+        }
+        .floating-window-card.collapsed .floating-table-nav,
+        .floating-window-card.collapsed .floating-window-body,
+        .floating-window-card.collapsed .floating-window-footer {
+            display: none !important;
+        }
+        .floating-window-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F0E6D2;
+            border-bottom: 1.5px solid #D8CCB9;
+            padding: 8px 14px;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-select: none;
+            flex-shrink: 0;
+        }
+        .floating-window-header:active {
+            cursor: grabbing;
+        }
+        .floating-window-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+            flex: 1;
+        }
+        .floating-drag-grip {
+            color: #9C8570;
+            font-size: 16px;
+            line-height: 1;
+            cursor: grab;
+        }
+        .floating-window-title {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #4a3325;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .floating-window-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .floating-btn-tool {
+            background: #EAE0CE;
+            border: 1px solid #D2C4B0;
+            border-radius: 4px;
+            width: 26px;
+            height: 24px;
+            font-size: 13px;
+            color: #5c4333;
+            cursor: pointer;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: all 0.12s ease;
+        }
+        .floating-btn-tool:hover {
+            background: #DFD3BE;
+            color: #2c1e14;
+            border-color: #BBAA94;
+        }
+        .floating-btn-tool.danger:hover {
+            background: #d9534f;
+            color: #ffffff;
+            border-color: #c9302c;
+        }
+        .floating-table-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #FAF5EB;
+            border-bottom: 1px solid #E5DCCB;
+            padding: 6px 12px;
+            overflow-x: auto;
+            flex-shrink: 0;
+        }
+        .floating-nav-pill {
+            padding: 4px 11px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 12px;
+            background: #ECE3D2;
+            border: 1px solid #D8CCB9;
+            color: #5c4333;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.12s ease;
+        }
+        .floating-nav-pill:hover {
+            background: #DFD3BF;
+            color: #2c1e14;
+        }
+        .floating-nav-pill.active {
+            background: #d35400;
+            border-color: #b84300;
+            color: #ffffff;
+        }
+        .floating-window-body {
+            flex: 1;
+            overflow: auto;
+            padding: 10px 14px;
+            min-height: 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .floating-window-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            background: #F3EBDD;
+            border-top: 1px solid #E0D4C2;
+            font-size: 11px;
+            color: #7D6B5A;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .floating-window-hint {
+            font-size: 11px;
+            color: #8C7865;
+        }
+        .btn-close-floating {
+            background-color: #d35400;
+            color: white;
+            padding: 5px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            transition: background 0.12s ease;
+        }
+        .btn-close-floating:hover {
+            background-color: #b84300;
+        }
+        .floating-corner-grip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: nwse-resize;
+            color: #9C8570;
+            font-size: 14px;
+            line-height: 1;
+            user-select: none;
+        }
+        @media (max-width: 860px) {
+            .floating-window-card {
+                width: calc(100vw - 20px) !important;
+                left: 10px !important;
+            }
         }
     
         /* Split.js Layout CSS */
@@ -752,6 +955,78 @@
             background: #f7eedd;
         }
 
+        /* Varga Lajjitadi Net Modifiers Table */
+        .varga-lajjitadi-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 8px;
+            border: 1px solid #dcb594;
+            white-space: nowrap;
+        }
+        .varga-lajjitadi-table td {
+            padding: 4px 6px;
+            font-size: 11px;
+            border: 1px solid #e5dccb;
+            white-space: nowrap;
+        }
+        .varga-lajjitadi-table tr:hover td {
+            background: #f7eedd;
+        }
+
+        /* Rashi Drishti Table */
+        .rashi-drishti-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 8px;
+            border: 1px solid #dcb594;
+            white-space: nowrap;
+        }
+        .rashi-drishti-table td {
+            padding: 4px 6px;
+            font-size: 11.5px;
+            border: 1px solid #e5dccb;
+            white-space: nowrap;
+        }
+        .rashi-drishti-table tr:hover td {
+            background: #f7eedd;
+        }
+
+        /* 5-Fold Bhava Inspector Card */
+        .bhava-inspector-card {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 2px 6px rgba(74, 51, 37, 0.06);
+        }
+        .bhava-step {
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #e8dfcf;
+            font-size: 12px;
+            line-height: 1.45;
+        }
+        .bhava-step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .bhava-step-title {
+            font-weight: 700;
+            color: #78350f;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 2px;
+        }
+
         /* Kala 4-Column Context Menu Dialog */
         .kala-menu-card {
             background: #fffdfa;
@@ -992,9 +1267,10 @@
                 <label for="workspaceSelect" style="font-size:12px; font-weight:bold; color:#4a3325;">Workspace:</label>
                 <select id="workspaceSelect" onchange="changeWorkspace(this.value)" style="margin:0 4px; font-weight:600; border-color:#c98246; background:#fffcf8;" title="Astrological Workspaces">
                     <option value="core-predictive" selected>🌟 1. Core Predictive (D1 + D9 + Info + Dashas)</option>
-                    <option value="big-four">🏛️ 2. The Big Four (D1, D9, D10, D3)</option>
-                    <option value="strengths">⚖️ 3. Strengths & Avasthas</option>
-                    <option value="timing">📅 4. Timing & Cycles</option>
+                    <option value="tripod-of-life">🏛️ 2. Tripod of Life (Lagna, Moon, Sun)</option>
+                    <option value="big-four">🏛️ 3. The Big Four (D1, D9, D10, D3)</option>
+                    <option value="strengths">⚖️ 4. Strengths & Avasthas</option>
+                    <option value="timing">⏳ 5. Timing & Cycles</option>
                     <option value="custom">🛠️ Custom (Saved Grid)</option>
                 </select>
             </div>
@@ -1003,6 +1279,7 @@
                 <label for="layoutSelect" style="font-size:12px; font-weight:bold; color:#7f8c8d;">Grid:</label>
                 <select id="layoutSelect" onchange="changeLayout(this.value)" style="margin:0 4px;" title="Split.js Grid Geometry">
                     <option value="kala">Kala Layout (3x3)</option>
+                    <option value="tripod-of-life">Tripod of Life (3 Top + Table)</option>
                     <option value="core-predictive">Core Predictive (3-Pane)</option>
                     <option value="big-four">4-Quadrant (2x2)</option>
                     <option value="8cell">8-Cell Grid</option>
@@ -1169,16 +1446,39 @@
         </div>
     </div>
 
-    <!-- Table / Widget Maximize Modal Window -->
-    <div class="modal-overlay" id="widgetMaximizeModal" onclick="closeWidgetMaximizeModal(event)">
-        <div class="maximize-modal-card" style="max-width: 1200px; width: 95%; max-height: 92vh;" onclick="event.stopPropagation()">
-            <div class="modal-header" style="width: 100%;">
-                <h2 id="widgetMaximizeModalTitle">Data Table</h2>
-                <button type="button" class="modal-close-btn" onclick="closeWidgetMaximizeModal()">×</button>
+    <!-- Table / Widget Floating Utility Window -->
+    <div class="modal-overlay floating-overlay" id="widgetMaximizeModal" onclick="closeWidgetMaximizeModal(event)">
+        <div id="widgetMaximizeCard" class="floating-window-card" onclick="event.stopPropagation()">
+            <div id="widgetMaximizeHeader" class="floating-window-header" title="Drag to move window">
+                <div class="floating-window-title-wrap">
+                    <span class="floating-drag-grip" title="Drag to move">⠿</span>
+                    <h2 id="widgetMaximizeModalTitle" class="floating-window-title">Data Table</h2>
+                </div>
+                <div class="floating-window-actions">
+                    <button type="button" class="floating-btn-tool" onclick="resetFloatingWindowPosition()" title="Reset Position & Size">⌖</button>
+                    <button type="button" class="floating-btn-tool" id="widgetMaximizeCollapseBtn" onclick="toggleFloatingCollapse()" title="Minimize / Expand Window">−</button>
+                    <button type="button" class="floating-btn-tool danger modal-close-btn" onclick="closeWidgetMaximizeModal()" title="Close (Esc)">×</button>
+                </div>
             </div>
-            <div id="widgetMaximizeContainer" style="width: 100%; flex: 1; overflow: auto; padding: 10px 0;"></div>
-            <div style="margin-top: 15px; display: flex; justify-content: flex-end; width: 100%;">
-                <button type="button" onclick="closeWidgetMaximizeModal()" style="background-color: #d35400; color: white; padding: 8px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Close (Esc)</button>
+            
+            <!-- Quick Table Switcher Bar -->
+            <div class="floating-table-nav" id="floatingTableNav">
+                <button type="button" class="floating-nav-pill" id="nav-btn-bhava" onclick="openBhavaCuspsModal()">📐 Bhava Chalita Cusps</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-planet" onclick="openFloatingPlanetaryInfo()">✨ Planetary Info</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-shadbala" onclick="openFloatingShadbala()">⚖️ Shad Bala</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-ashtaka" onclick="openFloatingAshtakavarga()">📊 Ashtakavarga</button>
+            </div>
+
+            <!-- Body Container -->
+            <div id="widgetMaximizeContainer" class="floating-window-body"></div>
+
+            <!-- Window Footer with Resize Handle & Status -->
+            <div class="floating-window-footer" id="widgetMaximizeFooter">
+                <span class="floating-window-hint">Drag header to move • Drag corner ⇲ to resize</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" onclick="closeWidgetMaximizeModal()" class="btn-close-floating">Close (Esc)</button>
+                    <span class="floating-corner-grip" id="floatingCornerGrip" title="Drag to resize">⇲</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1199,11 +1499,12 @@
                 <div class="kala-column">
                     <div class="kala-column-title">1. CHARTS & HOUSES</div>
                     <div class="kala-column-list">
+                        <div class="kala-item" onclick="assignKalaPerspective('lagna')">• Ascendant / Lagna (Physical H1)</div>
+                        <div class="kala-item" onclick="assignKalaPerspective('chandra')">• Chandra Lagna (Moon=H1)</div>
+                        <div class="kala-item" onclick="assignKalaPerspective('surya')">• Surya Lagna (Sun=H1)</div>
                         <div class="kala-item" onclick="assignKalaChart('D1')">• D1 Rasi (Main Physical)</div>
                         <div class="kala-item" onclick="assignKalaWidget('aspects-bhava-chalita')">• Bhava-Chalita (Cusps)</div>
                         <div class="kala-item" onclick="assignKalaWidget('aspects-equal-houses')">• Equal Houses</div>
-                        <div class="kala-item" onclick="assignKalaPerspective('chandra')">• Chandra Lagna (Moon=H1)</div>
-                        <div class="kala-item" onclick="assignKalaPerspective('surya')">• Surya Lagna (Sun=H1)</div>
                         <div class="kala-item" onclick="assignKalaWidget('empty')" style="color:#b91c1c; margin-top:8px;">• [Clear Cell / Empty]</div>
                     </div>
                 </div>
@@ -1243,7 +1544,9 @@
                         <div class="kala-item" onclick="assignKalaWidget('ashtakavarga')">• Ashtakavarga & SAV (337)</div>
                         <div class="kala-item" onclick="assignKalaWidget('vimshopaka')">• Varga Vimshopaka (20pt)</div>
                         <div class="kala-item" onclick="assignKalaWidget('aspects-planets')">• Aspects - Planetary</div>
+                        <div class="kala-item" onclick="assignKalaWidget('rashi-drishti')">• Rāśi Dṛṣṭi (Sign Aspects)</div>
                         <div class="kala-item" onclick="assignKalaWidget('quant-matrices')">• Strength Matrices</div>
+                        <div class="kala-item" onclick="assignKalaWidget('varga-lajjitadi-modifiers')">• Varga Lajjitadi Net Modifiers</div>
                         <div class="kala-item" onclick="assignKalaWidget('nakshatras')">• Nakshatras & Speed</div>
                         <div class="kala-item" onclick="assignKalaWidget('info')">• Context & Technical Info</div>
                     </div>
@@ -1323,14 +1626,19 @@
     
     <!-- Context Menu for Widget Selection -->
     <div id="widget-context-menu" style="display:none; position:absolute; background:white; border:1px solid #ccc; box-shadow:0 4px 6px rgba(0,0,0,0.1); z-index:10000; border-radius:4px; padding:5px 0; min-width:180px;">
-        <div class="menu-item" onclick="assignWidget('chart')">Chart</div>
+        <div class="menu-item" onclick="assignWidget('chart', currentActiveCell, { root_planet: 'Lagna' })">Chart (Asc / Lagna)</div>
+        <div class="menu-item" onclick="assignWidget('chart', currentActiveCell, { root_planet: 'Moon' })">Chandra Lagna (Moon=H1)</div>
+        <div class="menu-item" onclick="assignWidget('chart', currentActiveCell, { root_planet: 'Sun' })">Surya Lagna (Sun=H1)</div>
+        <div style="border-top: 1px solid #e5dccb; margin: 3px 0;"></div>
         <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
         <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
         <div class="menu-item" onclick="assignWidget('avasthas-calc')">Qualitative Avasthas</div>
         <div class="menu-item" onclick="assignWidget('aspects-planets')">Aspects (Planets)</div>
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
+        <div class="menu-item" onclick="assignWidget('rashi-drishti')">Rāśi Dṛṣṭi (Sign Aspects)</div>
         <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
+        <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <!-- NEW MODULES REGISTERED -->
         <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
@@ -1853,24 +2161,31 @@
     <template id="tmpl-chart">
         <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
             <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
-                <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 5px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 140px;">
-                    <option value="D1" selected>D1 - Rāśi</option>
-                    <option value="D2">D2 - Horā</option>
-                    <option value="D3">D3 - Drekkāṇa</option>
-                    <option value="D4">D4 - Caturthāṁśa</option>
-                    <option value="D7">D7 - Saptāṁśa</option>
-                    <option value="D9">D9 - Navāṁśa</option>
-                    <option value="D10">D10 - Daśāṁśa</option>
-                    <option value="D12">D12 - Dvādaśāṁśa</option>
-                    <option value="D16">D16 - Ṣoḍaśāṁśa</option>
-                    <option value="D20">D20 - Viṁśāṁśa</option>
-                    <option value="D24">D24 - Caturviṁśāṁśa</option>
-                    <option value="D27">D27 - Saptaviṁśāṁśa</option>
-                    <option value="D30">D30 - Triṁśāṁśa</option>
-                    <option value="D40">D40 - Khavedāṁśa</option>
-                    <option value="D45">D45 - Akṣavedāṁśa</option>
-                    <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
-                </select>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 5px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 130px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <div class="chart-root-pill" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
+                        <button type="button" class="root-pill-btn active btn-root-lagna" onclick="switchWidgetRootPlanet(this, 'Lagna')" title="Ascendant / Lagna (Physical Ascendant H1)" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Asc (Lagna)</button>
+                        <button type="button" class="root-pill-btn btn-root-moon" onclick="switchWidgetRootPlanet(this, 'Moon')" title="Chandra Lagna (Moon as H1)" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Moon</button>
+                        <button type="button" class="root-pill-btn btn-root-sun" onclick="switchWidgetRootPlanet(this, 'Sun')" title="Surya Lagna (Sun as H1)" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Sun</button>
+                    </div>
+                </div>
                 <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 4px;">
                     <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
                     <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
@@ -2179,6 +2494,77 @@
         </div>
     </template>
 
+    <template id="tmpl-varga-lajjitadi-modifiers">
+        <div class="widget-content" id="widget-varga-lajjitadi" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Varga Lajjitadi Net Modifiers</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">16 Vargas</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper">
+                    <table class="varga-lajjitadi-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Varga</th>
+                                <th>Sun</th><th>Moon</th><th>Mars</th><th>Mercury</th>
+                                <th>Jupiter</th><th>Venus</th><th>Saturn</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tmpl-rashi-drishti">
+        <div class="widget-content" id="widget-rashi-drishti" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Rāśi Dṛṣṭi (Jaimini Sign Aspects)</span>
+                    <select class="varga-select" onchange="updateRashiDrishtiWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 110px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper">
+                    <table class="rashi-drishti-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Sign</th>
+                                <th>Modality</th>
+                                <th>Occupants</th>
+                                <th>Aspects Signs</th>
+                                <th>Aspected Planets</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script>
 
         let splitInstance = null;
@@ -2221,17 +2607,52 @@
             const layoutType = document.getElementById('layoutSelect').value;
             if (!layoutType) return;
             const cells = Array.from(document.querySelectorAll('.grid-cell')).map(c => {
-                return { id: c.id, widget: c.dataset.widget || 'empty' };
+                const vSel = c.querySelector('.varga-select');
+                return {
+                    id: c.id,
+                    widget: c.dataset.widget || 'empty',
+                    varga: vSel ? vSel.value : 'D1',
+                    root_planet: c.dataset.rootPlanet || 'Lagna'
+                };
             });
             localStorage.setItem('astra_layout_' + layoutType, JSON.stringify(cells));
             localStorage.setItem('astra_current_layout', layoutType);
         }
 
-        function assignWidget(widgetType, targetCell = null) {
+        function switchWidgetRootPlanet(btn, rootPlanet) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            cell.dataset.rootPlanet = rootPlanet;
+            
+            const toolbar = btn.closest('.chart-toolbar');
+            if (toolbar) {
+                toolbar.querySelectorAll('.root-pill-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                    b.style.color = '#6b5a4b';
+                });
+                btn.classList.add('active');
+                btn.style.background = '#fffdfa';
+                btn.style.color = '#4a3325';
+            }
+            
+            updateWidget(cell);
+            saveLayoutState();
+        }
+
+        function assignWidget(widgetType, targetCell = null, options = {}) {
             const cell = targetCell || currentActiveCell;
             if (!cell) return;
             
             cell.dataset.widget = widgetType;
+            if (options && options.root_planet) {
+                cell.dataset.rootPlanet = options.root_planet;
+            } else if (widgetType === 'chart') {
+                cell.dataset.rootPlanet = 'Lagna';
+            } else if (!cell.dataset.rootPlanet) {
+                cell.dataset.rootPlanet = 'Lagna';
+            }
+            
             const contentDiv = cell.querySelector('.grid-cell-content');
             contentDiv.innerHTML = '';
             
@@ -2245,6 +2666,11 @@
                         contentDiv.classList.remove('scrollable');
                     }
                 }
+            }
+
+            if (options && options.varga) {
+                const sel = cell.querySelector('.varga-select');
+                if (sel) sel.value = options.varga;
             }
             
             // Update the widget with current chart data
@@ -2275,8 +2701,38 @@
             if (widgetType === 'chart') {
                 const vargaSelect = cell.querySelector('.varga-select');
                 const varga = vargaSelect ? vargaSelect.value : 'D1';
+                const rootPlanet = cell.dataset.rootPlanet || 'Lagna';
+
+                // Sync toolbar root buttons if set programmatically
+                const toolbar = cell.querySelector('.chart-toolbar');
+                if (toolbar) {
+                    toolbar.querySelectorAll('.root-pill-btn').forEach(b => {
+                        const isMatch = (rootPlanet === 'Lagna' && b.classList.contains('btn-root-lagna')) ||
+                                        (rootPlanet === 'Moon' && b.classList.contains('btn-root-moon')) ||
+                                        (rootPlanet === 'Sun' && b.classList.contains('btn-root-sun'));
+                        if (isMatch) {
+                            b.classList.add('active');
+                            b.style.background = '#fffdfa';
+                            b.style.color = '#4a3325';
+                        } else {
+                            b.classList.remove('active');
+                            b.style.background = 'transparent';
+                            b.style.color = '#6b5a4b';
+                        }
+                    });
+                }
+
                 const vData = currentSvgs[varga];
-                const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+                const vSvgMode = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
+                
+                let vSvg = null;
+                if (vSvgMode) {
+                    if (vSvgMode.roots && vSvgMode.roots[rootPlanet]) {
+                        vSvg = vSvgMode.roots[rootPlanet];
+                    } else {
+                        vSvg = vSvgMode;
+                    }
+                }
                 
                 if (vSvg) {
                     const s = cell.querySelector('.svg-south');
@@ -2287,6 +2743,12 @@
                     if (c) c.innerHTML = vSvg.circular;
                 }
             } 
+            else if (widgetType === 'varga-lajjitadi-modifiers') {
+                updateVargaLajjitadiWidget(cell);
+            }
+            else if (widgetType === 'rashi-drishti') {
+                updateRashiDrishtiWidget(cell);
+            }
             else if (widgetType === 'quant-matrices') {
                 updateQuantMatricesTableForCell(cell);
             } 
@@ -2698,19 +3160,17 @@
             
             // Charts
             document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(cell => {
-                const vargaSelect = cell.querySelector('.varga-select');
-                const varga = vargaSelect ? vargaSelect.value : 'D1';
-                const vData = currentSvgs[varga];
-                const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
-                
-                if (vSvg) {
-                    const s = cell.querySelector('.svg-south');
-                    const n = cell.querySelector('.svg-north');
-                    const c = cell.querySelector('.svg-circular');
-                    if (s) s.innerHTML = vSvg.south;
-                    if (n) n.innerHTML = vSvg.north;
-                    if (c) c.innerHTML = vSvg.circular;
-                }
+                updateWidget(cell);
+            });
+
+            // Varga Lajjitadi Net Modifiers
+            document.querySelectorAll('.grid-cell[data-widget="varga-lajjitadi-modifiers"]').forEach(cell => {
+                updateVargaLajjitadiWidget(cell);
+            });
+
+            // Rashi Drishti
+            document.querySelectorAll('.grid-cell[data-widget="rashi-drishti"]').forEach(cell => {
+                updateRashiDrishtiWidget(cell);
             });
 
             // Qualitative Avasthas
@@ -2750,6 +3210,11 @@
             
             const container = document.getElementById('grid-container');
             container.innerHTML = '';
+            if (layoutType === 'tripod-of-life' || layoutType === '8cell' || layoutType === 'big-four') {
+                container.style.flexDirection = 'column';
+            } else {
+                container.style.flexDirection = 'row';
+            }
             
             if (layoutType === 'kala') {
                 container.innerHTML = `
@@ -2824,6 +3289,19 @@
                 `;
                 splitInstances.push(Split(['#c1', '#c2'], { sizes: [50, 50], minSize: [340, 340], gutterSize: 4 }));
                 
+            } else if (layoutType === 'tripod-of-life') {
+                container.innerHTML = `
+                    <div id="row-top" class="split-row" style="display:flex; height:58%; width:100%;">
+                        <div class="grid-cell" id="c1" style="height:100%;"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c2" style="height:100%;"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="c3" style="height:100%;"><div class="grid-cell-content"></div></div>
+                    </div>
+                    <div id="row-bot" class="split-row" style="display:flex; height:42%; width:100%;">
+                        <div class="grid-cell" id="c4" style="height:100%; width:100%; flex:1;"><div class="grid-cell-content" style="height:100%; width:100%;"></div></div>
+                    </div>
+                `;
+                splitInstances.push(Split(['#row-top', '#row-bot'], { direction: 'vertical', sizes: [58, 42], minSize: [200, 150], gutterSize: 5 }));
+                splitInstances.push(Split(['#c1', '#c2', '#c3'], { sizes: [33.33, 33.33, 33.34], minSize: [220, 220, 220], gutterSize: 5 }));
             } else if (layoutType === 'core-predictive') {
                 container.innerHTML = `
                     <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column;">
@@ -2869,7 +3347,7 @@
                         
                         savedCells.forEach(sc => {
                             const cell = document.getElementById(sc.id);
-                            if (cell) assignWidget(sc.widget, cell);
+                            if (cell) assignWidget(sc.widget, cell, { varga: sc.varga, root_planet: sc.root_planet });
                         });
                         
                         saveLayoutState = window._tempSave;
@@ -2887,6 +3365,11 @@
                     assignWidget('avasthas-calc', document.getElementById('cell5'));
                     assignWidget('dignities', document.getElementById('cell6'));
                     assignWidget('empty', document.getElementById('cell7'));
+                } else if (layoutType === 'tripod-of-life') {
+                    assignWidget('chart', document.getElementById('c1'), { varga: 'D1', root_planet: 'Lagna' });
+                    assignWidget('chart', document.getElementById('c2'), { varga: 'D1', root_planet: 'Moon' });
+                    assignWidget('chart', document.getElementById('c3'), { varga: 'D1', root_planet: 'Sun' });
+                    assignWidget('planetary-info', document.getElementById('c4'));
                 } else if (layoutType === 'core-predictive') {
                     assignWidget('chart', document.getElementById('cell1'));
                     assignWidget('planetary-info', document.getElementById('cell2'));
@@ -2950,6 +3433,13 @@
                 if (sel) sel.value = 'D9';
                 updateWidget(document.getElementById('cell3'));
                 assignWidget('dashas-timeline', document.getElementById('cell4'));
+            } else if (wsName === 'tripod-of-life') {
+                if (layoutSelect) layoutSelect.value = 'tripod-of-life';
+                changeLayout('tripod-of-life');
+                assignWidget('chart', document.getElementById('c1'), { varga: 'D1', root_planet: 'Lagna' });
+                assignWidget('chart', document.getElementById('c2'), { varga: 'D1', root_planet: 'Moon' });
+                assignWidget('chart', document.getElementById('c3'), { varga: 'D1', root_planet: 'Sun' });
+                assignWidget('planetary-info', document.getElementById('c4'));
             } else if (wsName === 'big-four') {
                 if (layoutSelect) layoutSelect.value = 'big-four';
                 changeLayout('big-four');
@@ -3009,12 +3499,8 @@
         function assignKalaChart(varga, perspective = null) {
             closeKalaMenu();
             if (!currentActiveCell) return;
-            assignWidget('chart', currentActiveCell);
-            const select = currentActiveCell.querySelector('.varga-select');
-            if (select && varga) {
-                select.value = varga;
-                updateWidget(currentActiveCell);
-            }
+            const rootPlanet = perspective || 'Lagna';
+            assignWidget('chart', currentActiveCell, { varga: varga, root_planet: rootPlanet });
         }
         
         function assignKalaWidget(widgetType) {
@@ -3026,12 +3512,10 @@
         function assignKalaPerspective(type) {
             closeKalaMenu();
             if (!currentActiveCell) return;
-            assignWidget('chart', currentActiveCell);
-            const select = currentActiveCell.querySelector('.varga-select');
-            if (select) {
-                select.value = 'D1';
-                updateWidget(currentActiveCell);
-            }
+            const rootPlanet = (type === 'chandra' || type === 'moon') ? 'Moon' : ((type === 'surya' || type === 'sun') ? 'Sun' : 'Lagna');
+            const vSel = currentActiveCell.querySelector('.varga-select');
+            const currentVarga = vSel ? vSel.value : 'D1';
+            assignWidget('chart', currentActiveCell, { varga: currentVarga, root_planet: rootPlanet });
         }
 
         function setGlobalChartStyle(style) {
@@ -3139,6 +3623,167 @@
             modal.style.display = 'flex';
         }
 
+        function setActiveFloatingNav(tabId) {
+            document.querySelectorAll('.floating-nav-pill').forEach(pill => pill.classList.remove('active'));
+            if (tabId) {
+                const btn = document.getElementById(tabId);
+                if (btn) btn.classList.add('active');
+            }
+        }
+
+        function resetFloatingWindowPosition() {
+            const card = document.getElementById('widgetMaximizeCard');
+            if (!card) return;
+            const defaultWidth = Math.min(820, window.innerWidth - 40);
+            const defaultHeight = Math.min(540, window.innerHeight - 80);
+            card.style.width = defaultWidth + 'px';
+            card.style.height = defaultHeight + 'px';
+            card.style.left = Math.max(20, Math.round((window.innerWidth - defaultWidth) / 2)) + 'px';
+            card.style.top = Math.max(40, Math.round((window.innerHeight - defaultHeight) / 2)) + 'px';
+            card.classList.remove('collapsed');
+            const collapseBtn = document.getElementById('widgetMaximizeCollapseBtn');
+            if (collapseBtn) collapseBtn.textContent = '−';
+        }
+
+        function toggleFloatingCollapse() {
+            const card = document.getElementById('widgetMaximizeCard');
+            const collapseBtn = document.getElementById('widgetMaximizeCollapseBtn');
+            if (!card) return;
+            const isCollapsed = card.classList.toggle('collapsed');
+            if (collapseBtn) collapseBtn.textContent = isCollapsed ? '+' : '−';
+        }
+
+        function initFloatingWindowDrag() {
+            const card = document.getElementById('widgetMaximizeCard');
+            const header = document.getElementById('widgetMaximizeHeader');
+            if (!card || !header) return;
+
+            let isDragging = false;
+            let startX = 0, startY = 0;
+            let origLeft = 0, origTop = 0;
+
+            function onPointerDown(e) {
+                if (e.button !== undefined && e.button !== 0) return;
+                if (e.target.closest('button, select, input, a, .floating-nav-pill')) return;
+
+                isDragging = true;
+                const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY);
+                startX = clientX;
+                startY = clientY;
+
+                const rect = card.getBoundingClientRect();
+                origLeft = rect.left;
+                origTop = rect.top;
+
+                card.style.left = origLeft + 'px';
+                card.style.top = origTop + 'px';
+                header.style.cursor = 'grabbing';
+
+                document.addEventListener('mousemove', onPointerMove);
+                document.addEventListener('mouseup', onPointerUp);
+                document.addEventListener('touchmove', onPointerMove, { passive: false });
+                document.addEventListener('touchend', onPointerUp);
+            }
+
+            function onPointerMove(e) {
+                if (!isDragging) return;
+                if (e.cancelable && e.type === 'touchmove') e.preventDefault();
+
+                const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY);
+
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                let newLeft = origLeft + dx;
+                let newTop = origTop + dy;
+
+                const maxLeft = window.innerWidth - 120;
+                const maxTop = window.innerHeight - 50;
+                newLeft = Math.max(10, Math.min(maxLeft, newLeft));
+                newTop = Math.max(10, Math.min(maxTop, newTop));
+
+                card.style.left = newLeft + 'px';
+                card.style.top = newTop + 'px';
+            }
+
+            function onPointerUp() {
+                if (!isDragging) return;
+                isDragging = false;
+                header.style.cursor = 'grab';
+                document.removeEventListener('mousemove', onPointerMove);
+                document.removeEventListener('mouseup', onPointerUp);
+                document.removeEventListener('touchmove', onPointerMove);
+                document.removeEventListener('touchend', onPointerUp);
+            }
+
+            header.addEventListener('mousedown', onPointerDown);
+            header.addEventListener('touchstart', onPointerDown, { passive: true });
+            header.addEventListener('dblclick', (e) => {
+                if (e.target.closest('button, select, input, a, .floating-nav-pill')) return;
+                toggleFloatingCollapse();
+            });
+        }
+
+        function initFloatingWindowResize() {
+            const card = document.getElementById('widgetMaximizeCard');
+            const grip = document.getElementById('floatingCornerGrip');
+            if (!card || !grip) return;
+
+            let isResizing = false;
+            let startX = 0, startY = 0;
+            let origWidth = 0, origHeight = 0;
+
+            function onResizeDown(e) {
+                if (e.button !== undefined && e.button !== 0) return;
+                isResizing = true;
+                const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY);
+                startX = clientX;
+                startY = clientY;
+
+                origWidth = card.offsetWidth;
+                origHeight = card.offsetHeight;
+
+                document.addEventListener('mousemove', onResizeMove);
+                document.addEventListener('mouseup', onResizeUp);
+                document.addEventListener('touchmove', onResizeMove, { passive: false });
+                document.addEventListener('touchend', onResizeUp);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function onResizeMove(e) {
+                if (!isResizing) return;
+                if (e.cancelable && e.type === 'touchmove') e.preventDefault();
+
+                const clientX = e.clientX !== undefined ? e.clientX : (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY !== undefined ? e.clientY : (e.touches && e.touches[0].clientY);
+
+                const dx = clientX - startX;
+                const dy = clientY - startY;
+
+                const newWidth = Math.max(360, Math.min(window.innerWidth - 20, origWidth + dx));
+                const newHeight = Math.max(220, Math.min(window.innerHeight - 20, origHeight + dy));
+
+                card.style.width = newWidth + 'px';
+                card.style.height = newHeight + 'px';
+            }
+
+            function onResizeUp() {
+                if (!isResizing) return;
+                isResizing = false;
+                document.removeEventListener('mousemove', onResizeMove);
+                document.removeEventListener('mouseup', onResizeUp);
+                document.removeEventListener('touchmove', onResizeMove);
+                document.removeEventListener('touchend', onResizeUp);
+            }
+
+            grip.addEventListener('mousedown', onResizeDown);
+            grip.addEventListener('touchstart', onResizeDown, { passive: false });
+        }
+
         function openFloatingPlanetaryInfo() {
             closeKalaMenu();
             const modal = document.getElementById('widgetMaximizeModal');
@@ -3146,6 +3791,7 @@
             const container = document.getElementById('widgetMaximizeContainer');
             if (!modal || !titleEl || !container) return;
             
+            setActiveFloatingNav('nav-btn-planet');
             titleEl.textContent = (currentChartData ? currentChartData.subject_info.name + " — " : "") + "Planetary Information Table";
             const tmpl = document.getElementById('tmpl-planetary-info');
             if (tmpl) {
@@ -3164,6 +3810,7 @@
             const container = document.getElementById('widgetMaximizeContainer');
             if (!modal || !titleEl || !container) return;
             
+            setActiveFloatingNav('nav-btn-ashtaka');
             titleEl.textContent = (currentChartData ? currentChartData.subject_info.name + " — " : "") + "AshtakaVarga Transit & Reductions (337 SAV)";
             const tmpl = document.getElementById('tmpl-ashtakavarga');
             if (tmpl) {
@@ -3182,6 +3829,7 @@
             const container = document.getElementById('widgetMaximizeContainer');
             if (!modal || !titleEl || !container) return;
             
+            setActiveFloatingNav('nav-btn-shadbala');
             titleEl.textContent = (currentChartData ? currentChartData.subject_info.name + " — " : "") + "Shad Bala Breakdown Details";
             const tmpl = document.getElementById('tmpl-shadbala-table');
             if (tmpl) {
@@ -3200,35 +3848,61 @@
             const container = document.getElementById('widgetMaximizeContainer');
             if (!modal || !titleEl || !container || !currentChartData) return;
             
+            setActiveFloatingNav('nav-btn-bhava');
             titleEl.textContent = currentChartData.subject_info.name + " — Bhava Chalita (12 Campanus Cusps)";
             const cusps = (currentChartData.vargas && currentChartData.vargas.D1 && currentChartData.vargas.D1.cusps) || [];
+            const bhavas = (currentChartData.vargas && currentChartData.vargas.D1 && currentChartData.vargas.D1.bhavas) || [];
             
             function formatDeg(deg_float) {
+                if (deg_float === undefined || deg_float === null) return "00:00";
                 let d = Math.floor(deg_float);
                 let m = Math.round((deg_float - d) * 60);
                 if (m === 60) { d += 1; m = 0; }
                 return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
             }
+
+            const signLords = {
+                'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+                'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+                'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+            };
+            const signGlyphs = {
+                'Aries': '♈', 'Taurus': '♉', 'Gemini': '♊', 'Cancer': '♋',
+                'Leo': '♌', 'Virgo': '♍', 'Libra': '♎', 'Scorpio': '♏',
+                'Sagittarius': '♐', 'Capricorn': '♑', 'Aquarius': '♒', 'Pisces': '♓'
+            };
             
             let html = `
                 <table class="dignity-grid" style="width:100%; border-collapse:collapse; font-size:13px; text-align:center;">
                     <thead>
                         <tr>
-                            <th>Bhava (House)</th>
-                            <th>Sign</th>
-                            <th>Degree : Minute</th>
-                            <th>Longitude</th>
+                            <th style="padding:7px 10px;">Bhava</th>
+                            <th style="padding:7px 10px;">Sign</th>
+                            <th style="padding:7px 10px;">Lord</th>
+                            <th style="padding:7px 10px;">Cusp (Deg:Min)</th>
+                            <th style="padding:7px 10px;">Longitude</th>
+                            <th style="padding:7px 10px;">Occupants (Campanus)</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
             cusps.forEach((c, idx) => {
+                const lord = signLords[c.sign] || '—';
+                const glyph = signGlyphs[c.sign] || '';
+                const bhavaData = bhavas[idx] || {};
+                const planets = (bhavaData.planets || []).filter(p => p !== 'Asc');
+                const planetsStr = planets.length > 0 
+                    ? planets.map(p => `<span style="display:inline-block; padding:2px 8px; margin:1px; background:#e8dfcf; border:1px solid #c8bcab; border-radius:10px; font-size:11px; font-weight:600; color:#3d2f25;">${p}</span>`).join(' ')
+                    : `<span style="color:#a89b8d;">—</span>`;
+                
                 html += `
                     <tr>
-                        <td><strong>House ${idx + 1}</strong></td>
-                        <td>${c.sign}</td>
-                        <td>${formatDeg(c.degree_0_to_30)}</td>
-                        <td>${c.longitude.toFixed(2)}°</td>
+                        <td style="padding:7px 10px;"><strong>House ${idx + 1}</strong></td>
+                        <td style="padding:7px 10px;"><span style="color:#d35400; font-weight:bold; margin-right:4px;">${glyph}</span>${c.sign}</td>
+                        <td style="padding:7px 10px; font-weight:600; color:#4a3325;">${lord}</td>
+                        <td style="padding:7px 10px; font-family:monospace; font-weight:600;">${formatDeg(c.degree_0_to_30)}</td>
+                        <td style="padding:7px 10px; font-family:monospace;">${c.longitude.toFixed(2)}°</td>
+                        <td style="padding:7px 10px;">${planetsStr}</td>
                     </tr>
                 `;
             });
@@ -3397,11 +4071,12 @@
                 container.appendChild(modalTableContainer);
             }
             
+            setActiveFloatingNav(null);
             modal.style.display = 'flex';
         }
         
         function closeWidgetMaximizeModal(e) {
-            if (!e || e.target === document.getElementById('widgetMaximizeModal') || e.target.classList.contains('modal-close-btn') || e.target.tagName === 'BUTTON') {
+            if (!e || e.target === document.getElementById('widgetMaximizeModal') || e.target.classList.contains('modal-close-btn') || e.target.classList.contains('btn-close-floating') || e.target.tagName === 'BUTTON') {
                 const m = document.getElementById('widgetMaximizeModal');
                 if (m) m.style.display = 'none';
             }
@@ -3423,11 +4098,18 @@
             const vSvg = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
             if (!vSvg) return;
             
+            const rootPlanet = cell.dataset.rootPlanet || 'Lagna';
+            let vSvgRoot = (vSvg.roots && vSvg.roots[rootPlanet]) ? vSvg.roots[rootPlanet] : vSvg;
+            
+            let rootSuffix = '';
+            if (rootPlanet === 'Moon') rootSuffix = ' — Chandra Lagna';
+            else if (rootPlanet === 'Sun') rootSuffix = ' — Surya Lagna';
+
             const typeLabel = (type === 'south') ? 'Tropical South Indian' : ((type === 'north') ? 'Tropical North Indian' : 'Circular');
             const subjectName = currentChartData && currentChartData.subject_info ? currentChartData.subject_info.name : '';
-            document.getElementById('maximizeModalTitle').innerText = `${subjectName} — ${typeLabel} (${varga})`;
+            document.getElementById('maximizeModalTitle').innerText = `${subjectName} — ${typeLabel} (${varga})${rootSuffix}`;
             
-            const markup = (type === 'south') ? vSvg.south : ((type === 'north') ? vSvg.north : vSvg.circular);
+            const markup = (type === 'south') ? vSvgRoot.south : ((type === 'north') ? vSvgRoot.north : vSvgRoot.circular);
             document.getElementById('maximizeChartContainer').innerHTML = markup;
             toggleSiSigns(showSiSigns);
             document.getElementById('maximizeModal').style.display = 'flex';
@@ -4499,6 +5181,356 @@
             });
         }
 
+        function updateVargaLajjitadiWidget(cell) {
+            if (!cell) return;
+            const tbody = cell.querySelector('.varga-lajjitadi-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            const vargasList = [
+                'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12', 
+                'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
+            ];
+            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+            const mods = (currentChartData && currentChartData.varga_lajjitadi_net_modifiers) ? currentChartData.varga_lajjitadi_net_modifiers : {};
+
+            vargasList.forEach(v => {
+                const tr = document.createElement('tr');
+                let html = `<td style="font-weight: 700; background-color: #fcfaf5; color: #4a3325; padding: 4px 8px;">${v}</td>`;
+                
+                const vMods = mods[v] || {};
+                planets.forEach(p => {
+                    const val = vMods[p];
+                    if (val !== undefined && val !== null) {
+                        const num = Number(val);
+                        const formatted = (num > 0 ? '+' : '') + num.toFixed(1);
+                        let style = 'font-size: 11.5px; font-family: monospace; padding: 4px 6px;';
+                        if (num > 0) {
+                            style += 'color: #1b5e20; font-weight: 700; background: #e8f5e9;';
+                        } else if (num < 0) {
+                            style += 'color: #c62828; font-weight: 700; background: #ffebee;';
+                        } else {
+                            style += 'color: #757575; font-weight: 500;';
+                        }
+                        const tooltip = `${p} in ${v}: ${formatted} Virūpas net Lajjitadi modifier`;
+                        html += `<td class="tooltip-target" data-tooltip="${tooltip}" title="${tooltip}" style="${style}">${formatted}</td>`;
+                    } else {
+                        html += `<td style="color: #9e9e9e; font-size: 11px;">-</td>`;
+                    }
+                });
+                tr.innerHTML = html;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateRashiDrishtiWidget(cell) {
+            if (!cell) return;
+            const tbody = cell.querySelector('.rashi-drishti-table tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+
+            const SIGNS = [
+                'Aries', 'Taurus', 'Gemini', 'Cancer',
+                'Leo', 'Virgo', 'Libra', 'Scorpio',
+                'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+            ];
+
+            const SIGN_SYMBOLS = {
+                'Aries': '♈ Aries', 'Taurus': '♉ Taurus', 'Gemini': '♊ Gemini', 'Cancer': '♋ Cancer',
+                'Leo': '♌ Leo', 'Virgo': '♍ Virgo', 'Libra': '♎ Libra', 'Scorpio': '♏ Scorpio',
+                'Sagittarius': '♐ Sagittarius', 'Capricorn': '♑ Capricorn', 'Aquarius': '♒ Aquarius', 'Pisces': '♓ Pisces'
+            };
+
+            const SIGN_MODALITY = {
+                'Aries': { type: 'Chara', label: 'Movable', color: '#b91c1c', bg: '#fee2e2' },
+                'Taurus': { type: 'Sthira', label: 'Fixed', color: '#1e40af', bg: '#dbeafe' },
+                'Gemini': { type: 'Dwisvabhava', label: 'Dual', color: '#065f46', bg: '#d1fae5' },
+                'Cancer': { type: 'Chara', label: 'Movable', color: '#b91c1c', bg: '#fee2e2' },
+                'Leo': { type: 'Sthira', label: 'Fixed', color: '#1e40af', bg: '#dbeafe' },
+                'Virgo': { type: 'Dwisvabhava', label: 'Dual', color: '#065f46', bg: '#d1fae5' },
+                'Libra': { type: 'Chara', label: 'Movable', color: '#b91c1c', bg: '#fee2e2' },
+                'Scorpio': { type: 'Sthira', label: 'Fixed', color: '#1e40af', bg: '#dbeafe' },
+                'Sagittarius': { type: 'Dwisvabhava', label: 'Dual', color: '#065f46', bg: '#d1fae5' },
+                'Capricorn': { type: 'Chara', label: 'Movable', color: '#b91c1c', bg: '#fee2e2' },
+                'Aquarius': { type: 'Sthira', label: 'Fixed', color: '#1e40af', bg: '#dbeafe' },
+                'Pisces': { type: 'Dwisvabhava', label: 'Dual', color: '#065f46', bg: '#d1fae5' }
+            };
+
+            const SIGN_ASPECTS = {
+                'Aries': ['Leo', 'Scorpio', 'Aquarius'],
+                'Taurus': ['Cancer', 'Libra', 'Capricorn'],
+                'Gemini': ['Virgo', 'Sagittarius', 'Pisces'],
+                'Cancer': ['Scorpio', 'Aquarius', 'Taurus'],
+                'Leo': ['Libra', 'Capricorn', 'Aries'],
+                'Virgo': ['Gemini', 'Sagittarius', 'Pisces'],
+                'Libra': ['Aquarius', 'Taurus', 'Leo'],
+                'Scorpio': ['Capricorn', 'Aries', 'Cancer'],
+                'Sagittarius': ['Gemini', 'Virgo', 'Pisces'],
+                'Capricorn': ['Taurus', 'Leo', 'Scorpio'],
+                'Aquarius': ['Aries', 'Cancer', 'Libra'],
+                'Pisces': ['Gemini', 'Virgo', 'Sagittarius']
+            };
+
+            const occupantsMap = {};
+            SIGNS.forEach(s => { occupantsMap[s] = []; });
+            if (currentChartData && currentChartData.vargas && currentChartData.vargas[varga]) {
+                const grahas = currentChartData.vargas[varga].grahas || {};
+                for (const [pName, pData] of Object.entries(grahas)) {
+                    if (pData.sign && occupantsMap[pData.sign]) {
+                        occupantsMap[pData.sign].push(pName);
+                    }
+                }
+            }
+
+            SIGNS.forEach(sign => {
+                const tr = document.createElement('tr');
+                const mod = SIGN_MODALITY[sign];
+                const aspects = SIGN_ASPECTS[sign] || [];
+                const occupants = occupantsMap[sign] || [];
+
+                const aspectedPlanets = [];
+                aspects.forEach(asSign => {
+                    const occ = occupantsMap[asSign] || [];
+                    occ.forEach(p => {
+                        aspectedPlanets.push(`${p} (${asSign.substring(0, 3)})`);
+                    });
+                });
+
+                const signCell = `<td style="font-weight: 700; color: #4a3325; background: #fcfaf5; text-align: left; padding: 5px 8px;">${SIGN_SYMBOLS[sign] || sign}</td>`;
+                const modBadge = `<span style="display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; color: ${mod.color}; background: ${mod.bg}; border: 1px solid ${mod.color}33;">${mod.label}</span>`;
+                const modCell = `<td style="padding: 4px 6px;">${modBadge}</td>`;
+                
+                const occText = occupants.length > 0 
+                    ? `<strong style="color: #2b1810;">${occupants.join(', ')}</strong>` 
+                    : `<span style="color: #9ca3af;">—</span>`;
+                const occCell = `<td style="padding: 4px 6px; font-size: 11.5px;">${occText}</td>`;
+
+                const aspSignsText = aspects.join(', ');
+                const aspCell = `<td style="padding: 4px 6px; font-size: 11.5px; color: #4b5563;">${aspSignsText}</td>`;
+
+                const aspPlanetsText = aspectedPlanets.length > 0
+                    ? `<strong style="color: #1e3a8a;">${aspectedPlanets.join(', ')}</strong>`
+                    : `<span style="color: #9ca3af;">—</span>`;
+                const aspPlanetsCell = `<td style="padding: 4px 6px; font-size: 11.5px;">${aspPlanetsText}</td>`;
+
+                tr.innerHTML = signCell + modCell + occCell + aspCell + aspPlanetsCell;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openVargaFromInspector(vargaKey) {
+            let chartCell = document.querySelector('.grid-cell.active-cell[data-widget="chart"]');
+            if (!chartCell) {
+                chartCell = document.querySelector('.grid-cell[data-widget="chart"]');
+            }
+            if (chartCell) {
+                const sel = chartCell.querySelector('.varga-select');
+                if (sel) {
+                    sel.value = vargaKey;
+                    updateWidget(chartCell);
+                }
+            }
+            document.querySelectorAll('.grid-cell[data-widget="info"]').forEach(ic => {
+                const s = ic.querySelector('.varga-select');
+                if (s) s.value = vargaKey;
+                refreshContextInfoForCell(ic);
+            });
+        }
+
+        function renderBhavaInspectorHtml(houseId, varga = 'D1', kbData = null) {
+            const houseNum = parseInt(String(houseId).replace(/[^0-9]/g, ''), 10) || 1;
+            const SIGNS = [
+                'Aries', 'Taurus', 'Gemini', 'Cancer',
+                'Leo', 'Virgo', 'Libra', 'Scorpio',
+                'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+            ];
+            
+            const SIGN_LORDS = {
+                'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+                'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+                'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+            };
+
+            const SIGN_ELEMENTS = {
+                'Aries': 'Fire (Agni)', 'Leo': 'Fire (Agni)', 'Sagittarius': 'Fire (Agni)',
+                'Taurus': 'Earth (Prithvi)', 'Virgo': 'Earth (Prithvi)', 'Capricorn': 'Earth (Prithvi)',
+                'Gemini': 'Air (Vayu)', 'Libra': 'Air (Vayu)', 'Aquarius': 'Air (Vayu)',
+                'Cancer': 'Water (Jala)', 'Scorpio': 'Water (Jala)', 'Pisces': 'Water (Jala)'
+            };
+
+            const SIGN_MODALITIES = {
+                'Aries': 'Movable (Chara)', 'Cancer': 'Movable (Chara)', 'Libra': 'Movable (Chara)', 'Capricorn': 'Movable (Chara)',
+                'Taurus': 'Fixed (Sthira)', 'Leo': 'Fixed (Sthira)', 'Scorpio': 'Fixed (Sthira)', 'Aquarius': 'Fixed (Sthira)',
+                'Gemini': 'Dual (Dwisvabhava)', 'Virgo': 'Dual (Dwisvabhava)', 'Sagittarius': 'Dual (Dwisvabhava)', 'Pisces': 'Dual (Dwisvabhava)'
+            };
+
+            const BHAVA_NAMES = {
+                1: { name: 'Tanu Bhāva', theme: 'Physical Self, Vitality & Appearance' },
+                2: { name: 'Dhana Bhāva', theme: 'Wealth, Speech, Family & Food' },
+                3: { name: 'Sahaja Bhāva', theme: 'Siblings, Courage & Initiative' },
+                4: { name: 'Sukha Bhāva', theme: 'Mother, Home, Vehicles & Inner Peace' },
+                5: { name: 'Putra Bhāva', theme: 'Children, Intelligence & Purva Punya' },
+                6: { name: 'Ari / Shatru Bhāva', theme: 'Obstacles, Health, Debts & Service' },
+                7: { name: 'Yuvati / Kalatra Bhāva', theme: 'Spouse, Partnership & Public Relations' },
+                8: { name: 'Randhra Bhāva', theme: 'Longevity, Transformation & Hidden Knowledge' },
+                9: { name: 'Dharma / Bhagya Bhāva', theme: 'Higher Wisdom, Fortune, Dharma & Guru' },
+                10: { name: 'Karma Bhāva', theme: 'Career, Status, Authority & Actions' },
+                11: { name: 'Lābha Bhāva', theme: 'Gains, Aspirations, Wealth & Community' },
+                12: { name: 'Vyaya Bhāva', theme: 'Liberation (Moksha), Solitude & Loss' }
+            };
+
+            const NATURAL_KARAKAS = {
+                1: 'Sun (Soul, Vitality, Self)',
+                2: 'Jupiter (Wealth), Mercury (Speech)',
+                3: 'Mars (Courage, Younger Siblings)',
+                4: 'Moon (Mother, Emotional Peace), Venus (Vehicles, Comfort)',
+                5: 'Jupiter (Children, Intelligence, Creativity)',
+                6: 'Mars (Competitiveness), Saturn (Disease, Hard Labor)',
+                7: 'Venus (Spouse, Romantic Partnership)',
+                8: 'Saturn (Longevity, Mortality, Vulnerabilities)',
+                9: 'Jupiter (Wisdom, Guru), Sun (Father, Cosmic Law)',
+                10: 'Sun (Authority), Mercury (Profession), Jupiter (Ethics), Saturn (Labor)',
+                11: 'Jupiter (Gains, Expansion, Elder Siblings)',
+                12: 'Saturn (Loss, Detachment), Ketu (Spiritual Emancipation)'
+            };
+
+            const ARUDHA_NAMES = {
+                1: 'AL (Ārūḍha Lagna)', 2: 'A2 (Dhana Pada)', 3: 'A3 (Bhrātri Pada)',
+                4: 'A4 (Mātṛ Pada)', 5: 'A5 (Putra Pada)', 6: 'A6 (Śatru Pada)',
+                7: 'A7 / A7 (Dāra Pada)', 8: 'A8 (Randhra Pada)', 9: 'A9 (Bhāgya Pada)',
+                10: 'A10 (Rājya Pada)', 11: 'A11 (Lābha Pada)', 12: 'UL (Upapada Lagna)'
+            };
+
+            const VARGA_MAPPING = {
+                1: { varga: 'D1', title: 'D1 (Rāśi)', desc: 'Physical Body & Overall Destiny' },
+                2: { varga: 'D2', title: 'D2 (Horā)', desc: 'Wealth, Sustenance & Liquid Assets' },
+                3: { varga: 'D3', title: 'D3 (Drekkāṇa)', desc: 'Siblings, Energy & Courage' },
+                4: { varga: 'D4', title: 'D4 (Caturthāṁśa)', desc: 'Fixed Assets, Real Estate & Home' },
+                5: { varga: 'D7', title: 'D7 (Saptāṁśa)', desc: 'Children & Creative Offspring' },
+                6: { varga: 'D30', title: 'D30 (Triṁśāṁśa)', desc: 'Adversities, Diseases & Enmity' },
+                7: { varga: 'D9', title: 'D9 (Navāṁśa)', desc: 'Spouse, Marriage & Dharma' },
+                8: { varga: 'D30', title: 'D30 (Triṁśāṁśa)', desc: 'Hidden Troubles, Arishta & Vulnerability' },
+                9: { varga: 'D9', title: 'D9 (Navāṁśa)', desc: 'Higher Dharma, Guru & Spiritual Path' },
+                10: { varga: 'D10', title: 'D10 (Daśāṁśa)', desc: 'Career, Professional Achievement & Power' },
+                11: { varga: 'D24', title: 'D24 (Caturviṁśāṁśa)', desc: 'Higher Learning, Knowledge & Gains' },
+                12: { varga: 'D12', title: 'D12 (Dvādaśāṁśa)', desc: 'Ancestral Lineage & Foreign Residence' }
+            };
+
+            const vData = (currentChartData && currentChartData.vargas) ? currentChartData.vargas[varga] : null;
+            const lagnaSign = (vData && vData.lagna && vData.lagna.sign) ? vData.lagna.sign : 'Aries';
+            const lagnaIdx = SIGNS.indexOf(lagnaSign);
+            const houseSignIdx = (lagnaIdx + houseNum - 1) % 12;
+            const houseSign = SIGNS[houseSignIdx];
+            const bhavaInfo = BHAVA_NAMES[houseNum] || { name: `House ${houseNum}`, theme: '' };
+
+            const occupants = [];
+            if (vData && vData.grahas) {
+                for (const [pName, pData] of Object.entries(vData.grahas)) {
+                    if (pData.sign === houseSign) {
+                        const deg = pData.degree_0_to_30 !== undefined ? ` (${pData.degree_0_to_30.toFixed(1)}°)` : '';
+                        occupants.push(`${pName}${deg}`);
+                    }
+                }
+            }
+
+            const lordName = SIGN_LORDS[houseSign] || 'Unknown';
+            let lordPlacement = 'Not found';
+            let lordDignity = '-';
+            let lordHouseNum = null;
+            if (vData && vData.grahas && vData.grahas[lordName]) {
+                const lg = vData.grahas[lordName];
+                const lordSignIdx = SIGNS.indexOf(lg.sign);
+                lordHouseNum = ((lordSignIdx - lagnaIdx + 12) % 12) + 1;
+                lordDignity = (lg.dignity_breakdown && lg.dignity_breakdown.final_dignity) ? lg.dignity_breakdown.final_dignity : (lg.dignity || 'Neutral');
+                const deg = lg.degree_0_to_30 !== undefined ? ` at ${lg.degree_0_to_30.toFixed(1)}°` : '';
+                lordPlacement = `House ${lordHouseNum} (${lg.sign}${deg})`;
+            }
+
+            let padaSign = 'Unknown';
+            let padaHouse = null;
+            if (vData && vData.grahas && vData.grahas[lordName]) {
+                const lg = vData.grahas[lordName];
+                const lordSignIdx = SIGNS.indexOf(lg.sign);
+                const dist = (lordSignIdx - houseSignIdx + 12) % 12;
+                let rawPadaIdx = (lordSignIdx + dist) % 12;
+                const offsetFromHouse = (rawPadaIdx - houseSignIdx + 12) % 12;
+                if (offsetFromHouse === 0 || offsetFromHouse === 6) {
+                    rawPadaIdx = (rawPadaIdx + 9) % 12;
+                }
+                padaSign = SIGNS[rawPadaIdx];
+                padaHouse = ((rawPadaIdx - lagnaIdx + 12) % 12) + 1;
+            }
+
+            const arudhaLabel = ARUDHA_NAMES[houseNum] || `A${houseNum}`;
+            const targetVarga = VARGA_MAPPING[houseNum] || { varga: 'D1', title: 'D1', desc: '' };
+
+            let html = `
+                <div class="bhava-inspector-card">
+                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1.5px solid #dcb594; padding-bottom: 5px;">
+                        <span style="font-size: 15px; font-weight: 800; color: #4a3325;">House ${houseNum} • ${bhavaInfo.name}</span>
+                        <span style="font-size: 11px; background: #eadecc; color: #4a3325; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
+                    </div>
+                    <div style="font-size: 11.5px; color: #6b5a4b; margin-bottom: 8px; font-style: italic;">
+                        ${bhavaInfo.theme}
+                    </div>
+
+                    <!-- Step 1: The Field -->
+                    <div class="bhava-step">
+                        <div class="bhava-step-title"><span>1. The Field (Kṣetra)</span></div>
+                        <div><strong>Sign:</strong> ${houseSign} (${SIGN_ELEMENTS[houseSign] || ''}, ${SIGN_MODALITIES[houseSign] || ''})</div>
+                        <div><strong>Occupants:</strong> ${occupants.length > 0 ? `<span style="color: #1b5e20; font-weight: 700;">${occupants.join(', ')}</span>` : '<span style="color: #8c7b64;">None (Empty House)</span>'}</div>
+                    </div>
+
+                    <!-- Step 2: The Lord -->
+                    <div class="bhava-step">
+                        <div class="bhava-step-title"><span>2. The Lord (Bhāveśa)</span></div>
+                        <div><strong>Ruler:</strong> <strong>${lordName}</strong></div>
+                        <div><strong>Placement:</strong> ${lordPlacement}</div>
+                        <div><strong>Dignity:</strong> <span style="font-weight: 600; color: #78350f;">${lordDignity}</span></div>
+                    </div>
+
+                    <!-- Step 3: Natural Karakas -->
+                    <div class="bhava-step">
+                        <div class="bhava-step-title"><span>3. Natural Karakas (Naisargika)</span></div>
+                        <div style="color: #374151;">${NATURAL_KARAKAS[houseNum] || '—'}</div>
+                    </div>
+
+                    <!-- Step 4: Arudha Pada -->
+                    <div class="bhava-step">
+                        <div class="bhava-step-title"><span>4. Ārūḍha Pada (Manifestation)</span></div>
+                        <div><strong>${arudhaLabel}:</strong> Falls in <strong>${padaSign}</strong> ${padaHouse ? `(House ${padaHouse})` : ''}</div>
+                    </div>
+
+                    <!-- Step 5: Corresponding Varga -->
+                    <div class="bhava-step">
+                        <div class="bhava-step-title"><span>5. Divisional Varga Link</span></div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+                            <div>
+                                <strong>${targetVarga.title}</strong>: <span style="font-size: 11px; color: #4b5563;">${targetVarga.desc}</span>
+                            </div>
+                            <button type="button" class="btn-open-varga" onclick="openVargaFromInspector('${targetVarga.varga}')" style="background: #78350f; color: #fffdfa; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                                Open ${targetVarga.varga} ↗
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (kbData && kbData.content) {
+                html += `
+                    <div style="margin-top: 10px; padding: 8px 10px; background: #fffdfa; border: 1px solid #e5dccb; border-radius: 6px;">
+                        <div style="font-size: 11px; font-weight: 700; color: #8c7b64; text-transform: uppercase; margin-bottom: 4px;">Parashari Classical Significance</div>
+                        <div class="kb-content" style="font-size: 12px; line-height: 1.45; color: #3d312a;">${kbData.content}</div>
+                    </div>
+                `;
+            }
+
+            return html;
+        }
+
         function updateNakshatraTable() {
             const info = currentChartData.astronomy;
             document.getElementById('ayanamsaName').innerText = `Ayanamsa: ${info.ayanamsa_name} (${info.equatorial_ayanamsa_value}°)`;
@@ -4937,8 +5969,10 @@
             }
         });
 
-        // Auto-load first chart on initial load if available
+        // Auto-load first chart on initial load if available & init floating window
         window.addEventListener('DOMContentLoaded', async () => {
+            initFloatingWindowDrag();
+            initFloatingWindowResize();
             await loadCountries();
             const select = document.getElementById('nativeSelect');
             if (select && select.options.length > 1) {
@@ -5070,15 +6104,7 @@
                     infoHtml += `<p>General knowledge base for ${id} will load here.</p>`;
                 }
             } else if (type === 'house') {
-                if (kbData) {
-                    infoHtml = `<h3>House ${id} - ${kbData.title || 'Bhava'}</h3>`;
-                    if (kbData.content) {
-                        infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
-                        infoHtml += `<div class="kb-content">${kbData.content}</div>`;
-                    }
-                } else {
-                    infoHtml += `<p>Details about house ${id} will load here.</p>`;
-                }
+                infoHtml = renderBhavaInspectorHtml(id, varga, kbData);
             } else if (type === 'nakshatra') {
                 if (kbData) {
                     infoHtml = `<h3>${id} (${kbData.number})</h3>`;

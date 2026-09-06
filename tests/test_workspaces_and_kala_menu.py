@@ -112,3 +112,80 @@ def test_shodasa_vargas_16_in_1_modal(page: Page):
     page.keyboard.press("Escape")
     page.wait_for_timeout(200)
     expect(modal).not_to_be_visible()
+
+def test_floating_bhava_chalita_window(page: Page):
+    init_page(page)
+    # Open Bhava Chalita Cusps floating table
+    page.evaluate("openBhavaCuspsModal()")
+    page.wait_for_timeout(300)
+    
+    modal = page.locator("#widgetMaximizeModal")
+    card = page.locator("#widgetMaximizeCard")
+    expect(modal).to_be_visible()
+    expect(card).to_be_visible()
+    
+    # 1. Verify No Blur on the background overlay
+    computed_blur = modal.evaluate("el => window.getComputedStyle(el).backdropFilter || window.getComputedStyle(el).webkitBackdropFilter")
+    assert computed_blur == "none" or computed_blur == "" or "blur" not in computed_blur, f"Overlay should not blur background, found: {computed_blur}"
+    
+    # 2. Verify Table content (12 Campanus cusps)
+    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Bhava Chalita")
+    rows = page.locator("#widgetMaximizeContainer table tbody tr")
+    assert rows.count() == 12, f"Expected 12 house rows, found {rows.count()}"
+    
+    # Verify columns: Bhava, Sign, Lord, Cusp, Longitude, Occupants
+    header_text = page.locator("#widgetMaximizeContainer table thead").inner_text()
+    assert "Bhava" in header_text
+    assert "Sign" in header_text
+    assert "Lord" in header_text
+    assert "Cusp" in header_text
+    assert "Occupants" in header_text
+    
+    # 3. Test Dragging: Drag header by 60px down and 80px right
+    header = page.locator("#widgetMaximizeHeader")
+    initial_pos = card.bounding_box()
+    assert initial_pos is not None
+    
+    header_box = header.bounding_box()
+    assert header_box is not None
+    start_x = header_box["x"] + header_box["width"] / 2
+    start_y = header_box["y"] + header_box["height"] / 2
+    
+    page.mouse.move(start_x, start_y)
+    page.mouse.down()
+    page.mouse.move(start_x + 80, start_y + 60, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(200)
+    
+    new_pos = card.bounding_box()
+    assert new_pos is not None
+    assert new_pos["x"] > initial_pos["x"], "Card should have moved to the right"
+    assert new_pos["y"] > initial_pos["y"], "Card should have moved downwards"
+    
+    # 4. Test Quick Tab Navigation: Switch to Planetary Info and back
+    page.locator("#nav-btn-planet").click()
+    page.wait_for_timeout(200)
+    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Planetary Information")
+    expect(page.locator("#widgetMaximizeContainer .planetary-info-table")).to_be_visible()
+    
+    # Switch back to Bhava Chalita
+    page.locator("#nav-btn-bhava").click()
+    page.wait_for_timeout(200)
+    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Bhava Chalita")
+    
+    # 5. Test Minimize / Collapse toggle
+    collapse_btn = page.locator("#widgetMaximizeCollapseBtn")
+    collapse_btn.click()
+    page.wait_for_timeout(150)
+    assert "collapsed" in (card.get_attribute("class") or "")
+    
+    # Expand again
+    collapse_btn.click()
+    page.wait_for_timeout(150)
+    assert "collapsed" not in (card.get_attribute("class") or "")
+    
+    # 6. Test Close with Escape key
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(200)
+    expect(modal).not_to_be_visible()
+
