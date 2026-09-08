@@ -123,6 +123,72 @@ async def main():
                 await page.screenshot(path="screenshot_house_click_context_info.png")
                 print("Captured screenshot_house_click_context_info.png")
 
+            # 14. South Indian Chart Center Views (Sign Matrix & Anatomy)
+            await page.evaluate("setGlobalChartStyle('south')")
+            await page.evaluate("assignWidget('chart', document.getElementById('c1'))")
+            await page.wait_for_timeout(600)
+            center = page.locator("#c1 .svg-south .si-center-container")
+            if await center.count() > 0:
+                # Cycle to 4x3 Matrix view
+                await center.click()
+                await page.wait_for_timeout(500)
+                await page.locator("#c1").screenshot(path="screenshot_south_center_matrix.png")
+                print("Captured screenshot_south_center_matrix.png")
+
+                # Cycle to Anatomy view
+                await center.click()
+                await page.wait_for_timeout(500)
+                await page.locator("#c1").screenshot(path="screenshot_south_center_anatomy.png")
+                print("Captured screenshot_south_center_anatomy.png")
+
+            # 15. Dedicated Sign Attributes & Anatomy Widget in Cell
+            await page.evaluate("assignWidget('sign-attributes', document.getElementById('c2'))")
+            await page.wait_for_timeout(600)
+            c2 = page.locator("#c2")
+            if await c2.count() > 0:
+                await c2.screenshot(path="screenshot_sign_attributes_widget.png")
+                print("Captured screenshot_sign_attributes_widget.png")
+
+                # Switch to Anatomy tab
+                anatomy_tab = page.locator("#c2 .sign-attr-pill-btn", has_text="Kalapurusha Anatomy")
+                if await anatomy_tab.count() > 0:
+                    await anatomy_tab.click()
+                    await page.wait_for_timeout(500)
+                    await c2.screenshot(path="screenshot_sign_attributes_anatomy.png")
+                    print("Captured screenshot_sign_attributes_anatomy.png")
+
+            # 16. Floating Sign Attributes Modal
+            await page.evaluate("openFloatingSignAttributes('D1')")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_floating_sign_attributes.png")
+            print("Captured screenshot_floating_sign_attributes.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
+            # 17. Export Astrological PDF Modal
+            await page.evaluate("openExportModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_export_modal.png")
+            print("Captured screenshot_export_modal.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
+            # 18. Settings Modal with Astrological PDF Export Option Card
+            await page.evaluate("openSettingsModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_settings_export.png")
+            print("Captured screenshot_settings_export.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
+            # 19. Kala Right-Click Menu with PDF Export Option
+            await page.evaluate("openKalaMenu(500, 200)")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_kala_menu_export.png")
+            print("Captured screenshot_kala_menu_export.png")
+            await page.keyboard.press("Escape")
+            await page.wait_for_timeout(400)
+
         except Exception as e:
             print("Error:", e)
             

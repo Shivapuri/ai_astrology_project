@@ -134,3 +134,82 @@ def test_click_house_cusp_numbers_in_charts(page: Page):
     info_text = page.locator("#cell2 #context-info-content").inner_text()
     assert f"House {s_id}" in info_text
 
+def test_sign_attributes_widget_renders(page: Page):
+    init_page(page)
+    page.evaluate("assignWidget('sign-attributes', document.getElementById('cell2'))")
+    page.wait_for_timeout(500)
+    assert page.locator("#cell2 .sign-attr-matrix-table").count() == 1
+    assert page.locator("#cell2 .sign-attr-matrix-table tbody tr").count() == 4
+    # Check that Fire, Earth, Air, Water are present
+    text = page.locator("#cell2 .sign-attr-matrix-table").inner_text()
+    assert "Fire" in text
+    assert "Earth" in text
+    assert "Air" in text
+    assert "Water" in text
+
+def test_sign_attributes_tabs_switching(page: Page):
+    init_page(page)
+    page.evaluate("assignWidget('sign-attributes', document.getElementById('cell2'))")
+    page.wait_for_timeout(500)
+
+    # 1. Switch to Kalapurusha Anatomy tab
+    anatomy_btn = page.locator("#cell2 .sign-attr-pill-btn", has_text="Kalapurusha Anatomy")
+    anatomy_btn.click()
+    page.wait_for_timeout(400)
+    assert page.locator("#cell2 .sign-attr-anatomy-table tbody tr").count() == 12
+    anat_text = page.locator("#cell2 .sign-attr-anatomy-table").inner_text()
+    assert "Head, Brain" in anat_text
+    assert "Feet, Toes" in anat_text
+
+    # 2. Switch to Polarity & Rising tab
+    polarity_btn = page.locator("#cell2 .sign-attr-pill-btn", has_text="Polarity & Rising")
+    polarity_btn.click()
+    page.wait_for_timeout(400)
+    pol_text = page.locator("#cell2 .sign-attr-content").inner_text()
+    assert "Active / Masculine / Day Signs" in pol_text
+    assert "Passive / Feminine / Night Signs" in pol_text
+    assert "Head-rising (Shirshodaya)" in pol_text
+
+def test_south_indian_center_cycling(page: Page):
+    init_page(page)
+    page.evaluate("setGlobalChartStyle('south')")
+    page.evaluate("assignWidget('chart', document.getElementById('cell1'))")
+    page.wait_for_timeout(500)
+
+    center = page.locator("#cell1 .svg-south .si-center-container")
+    assert center.count() == 1
+    assert center.get_attribute("data-view") == "title"
+
+    # Click to cycle to matrix view
+    center.click()
+    page.wait_for_timeout(300)
+    assert center.get_attribute("data-view") == "matrix"
+    matrix_view = page.locator("#cell1 .svg-south .si-view-matrix")
+    assert matrix_view.is_visible()
+
+    # Click to cycle to anatomy view
+    center.click()
+    page.wait_for_timeout(300)
+    assert center.get_attribute("data-view") == "anatomy"
+    anatomy_view = page.locator("#cell1 .svg-south .si-view-anatomy")
+    assert anatomy_view.is_visible()
+
+    # Click to cycle back to title view
+    center.click()
+    page.wait_for_timeout(300)
+    assert center.get_attribute("data-view") == "title"
+    title_view = page.locator("#cell1 .svg-south .si-view-title")
+    assert title_view.is_visible()
+
+def test_floating_sign_attributes(page: Page):
+    init_page(page)
+    page.evaluate("openFloatingSignAttributes('D1')")
+    page.wait_for_timeout(500)
+    modal = page.locator("#widgetMaximizeModal")
+    assert modal.is_visible()
+    assert "Sign Attributes & Anatomy" in page.locator("#widgetMaximizeModalTitle").inner_text()
+    assert page.locator("#floatingSignAttrContent .sign-attr-matrix-table").count() == 1
+    # Close modal
+    page.evaluate("document.getElementById('widgetMaximizeModal').style.display = 'none'")
+
+

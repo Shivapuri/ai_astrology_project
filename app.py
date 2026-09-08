@@ -1,9 +1,11 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import os
 import sys
+import io
 from jyotish import native_manager
 from jyotish import generate_jyotish
 from jyotish import draw_chart
+from jyotish import pdf_exporter
 import geonamescache
 from timezonefinder import TimezoneFinder
 from datetime import datetime
@@ -29,12 +31,7 @@ def index():
         
     return render_template('index.html', natives=natives, knowledge_base=knowledge_base)
 
-@app.route('/api/chart/<native_id>')
-def get_chart(native_id):
-    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
-    if not native:
-        return jsonify({"error": "Native not found"}), 404
-        
+def compute_chart_data(native):
     try:
         date_str = native.get('date', '2000-01-01')
         if date_str.startswith('-'):
@@ -71,7 +68,7 @@ def get_chart(native_id):
         except Exception:
             tz_offset = 0.0
 
-    chart_data = generate_jyotish.generate_kala_chart(
+    return generate_jyotish.generate_kala_chart(
         name=native['name'],
         year=year,
         month=month,
@@ -83,6 +80,14 @@ def get_chart(native_id):
         timezone_offset=tz_offset,
         name_sound_value=native.get('name_sound_value', 0)
     )
+
+@app.route('/api/chart/<native_id>')
+def get_chart(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+        
+    chart_data = compute_chart_data(native)
     
     # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
     svgs = {}
@@ -117,6 +122,53 @@ def get_chart(native_id):
         "svgs": svgs,
         "native": native
     })
+
+@app.route('/api/export_pdf', methods=['POST'])
+def export_pdf():
+    req_data = request.json or {}
+    native_id = req_data.get('native_id')
+    chart_data = req_data.get('chart_data')
+    options = req_data.get('options', {})
+
+    if not chart_data:
+        if not native_id:
+            return jsonify({"error": "No chart data or native_id provided"}), 400
+        native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+        if not native:
+            return jsonify({"error": "Native not found"}), 404
+        chart_data = compute_chart_data(native)
+
+    name = chart_data.get('subject_info', {}).get('name', 'Chart')
+    safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '_', '-')).rstrip().replace(' ', '_')
+    
+    try:
+        pdf_bytes = pdf_exporter.export_chart_pdf(chart_data, options)
+        return send_file(
+            io.BytesIO(pdf_bytes),
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=f"{safe_name}_Astra_Master_Plan.pdf"
+        )
+    except Exception as e:
+        return jsonify({"error": f"Failed to generate PDF: {str(e)}"}), 500
+
+@app.route('/api/export_preview', methods=['POST'])
+def export_preview():
+    req_data = request.json or {}
+    native_id = req_data.get('native_id')
+    chart_data = req_data.get('chart_data')
+    options = req_data.get('options', {})
+
+    if not chart_data:
+        if not native_id:
+            return "No chart data or native_id provided", 400
+        native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+        if not native:
+            return "Native not found", 404
+        chart_data = compute_chart_data(native)
+
+    html = pdf_exporter.generate_report_html(chart_data, options)
+    return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
 
 @app.route('/api/add_native', methods=['POST'])
 def add_native():

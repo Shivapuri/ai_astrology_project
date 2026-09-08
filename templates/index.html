@@ -331,6 +331,36 @@
             font-weight: bold;
         }
 
+        /* Small spinner for export status */
+        .spinner-small {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(37, 99, 235, 0.2);
+            border-top-color: #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media print {
+            .app-header, .toolbar, .workspace-selector, .modal-overlay, #btnExportPdf, button {
+                display: none !important;
+            }
+            body, .app-container, .workspace-container {
+                background: #ffffff !important;
+                color: #000000 !important;
+                height: auto !important;
+                overflow: visible !important;
+            }
+            .grid-cell {
+                border: 1px solid #cbd5e1 !important;
+                page-break-inside: avoid !important;
+            }
+        }
+
         /* Floating Table Window - non-blurry, transparent pass-through overlay, draggable & resizable */
         .floating-overlay {
             position: fixed !important;
@@ -1043,6 +1073,61 @@
             background: #f7eedd;
         }
 
+        /* Sign Attributes & Anatomy Widget */
+        .sign-attr-matrix-table {
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .sign-attr-matrix-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border: 1px solid #dcb594;
+            text-align: center;
+        }
+        .sign-attr-matrix-table td {
+            padding: 6px 8px;
+            font-size: 11.5px;
+            border: 1px solid #e5dccb;
+            vertical-align: top;
+            background: #fffdfa;
+        }
+        .sign-attr-matrix-table tr:hover td {
+            background: #fbf8f2;
+        }
+        .sign-attr-anatomy-table {
+            border-collapse: collapse;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        .sign-attr-anatomy-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border: 1px solid #dcb594;
+            text-align: left;
+        }
+        .sign-attr-anatomy-table td {
+            padding: 5px 8px;
+            font-size: 11px;
+            border: 1px solid #e5dccb;
+            vertical-align: middle;
+            background: #fffdfa;
+        }
+        .sign-attr-anatomy-table tr:hover td {
+            background: #fbf8f2;
+        }
+        .sign-attr-summary-card {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 6px;
+            padding: 8px 12px;
+            box-shadow: 0 1px 3px rgba(74, 51, 37, 0.04);
+        }
+
         /* 5-Fold Bhava Inspector Card */
         .bhava-inspector-card {
             background: #fffdfa;
@@ -1344,6 +1429,9 @@
             <button type="button" onclick="openShodasaVargasModal()" style="background-color: #6366f1; color: white; border: none; font-weight: bold; border-radius: 6px; padding: 7px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Open all 16 Divisional Charts (16-in-1)">
                 <span>🏛️</span> ShodasaVargas
             </button>
+            <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: bold; border-radius: 6px; padding: 7px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
+                <span>📄</span> Export PDF
+            </button>
             <button type="button" onclick="openSettingsModal()" style="background-color: transparent; color: #3d312a; border: 1px solid #d5c8b2;">
                 ⚙️ Settings
             </button>
@@ -1407,7 +1495,7 @@
                 <h4>Planet Notation Mode</h4>
                 
                 <div class="setting-option-card" onclick="document.getElementById('radio-symbol').click()">
-                    <input type="radio" id="radio-symbol" name="modalNotation" value="symbol" onchange="onModalNotationChange('symbol')">
+                    <input type="radio" id="radio-symbol" name="modalNotation" value="symbol" checked onchange="onModalNotationChange('symbol')">
                     <label for="radio-symbol">
                         <strong>Astronomical Symbols</strong>
                         <span class="setting-chip">☉ ☽ ♂ ☿ ♃ ♀ ♄ ☊ ☋ Asc</span>
@@ -1423,7 +1511,7 @@
                 </div>
                 
                 <div class="setting-option-card" onclick="document.getElementById('radio-devanagari').click()">
-                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" checked onchange="onModalNotationChange('devanagari')">
+                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" onchange="onModalNotationChange('devanagari')">
                     <label for="radio-devanagari">
                         <strong>Devanagari Script</strong>
                         <span class="setting-chip">सू चं मं बु गु शु श रा के ल</span>
@@ -1473,9 +1561,152 @@
                     </label>
                 </div>
             </div>
+
+            <div class="setting-section">
+                <h4>Astrological PDF Export</h4>
+                <div class="setting-option-card" onclick="closeSettingsModal(); openExportModal();" style="border-left: 3px solid #2563eb;">
+                    <span style="font-size: 18px; margin-right: 10px;">📄</span>
+                    <div>
+                        <strong>Configure & Export Master Plan (PDF)...</strong>
+                        <span class="setting-chip">A3 Landscape Master Sheet, A4 Dossier & print export</span>
+                    </div>
+                </div>
+            </div>
             
             <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
                 <button type="button" onclick="closeSettingsModal()" style="background-color: #d35400; color: white; padding: 9px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Chart PDF Modal Window -->
+    <div class="modal-overlay" id="exportPdfModal" onclick="closeExportModal(event)">
+        <div class="modal-card" style="max-width: 660px; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>📄 Export Astrological Master Plan (PDF)</h2>
+                <button type="button" class="modal-close-btn" onclick="closeExportModal()">×</button>
+            </div>
+            
+            <div class="setting-section">
+                <h4>1. Export Preset & Format</h4>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
+                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" checked onchange="onExportPresetChange('master_a3')">
+                    <label for="radio-export-a3" style="margin-left: 8px;">
+                        <strong>🌟 Master Astrological Plan (A3 Landscape) — Recommended</strong>
+                        <span class="setting-chip">D1 Hub + D9/D10/D7 Clusters + 16-Varga Vimśopaka Matrix (2 Pages)</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-a4').click()">
+                    <input type="radio" id="radio-export-a4" name="exportPreset" value="dossier_a4" onchange="onExportPresetChange('dossier_a4')">
+                    <label for="radio-export-a4" style="margin-left: 8px;">
+                        <strong>📑 Executive Analysis Dossier (A4 Multi-Page)</strong>
+                        <span class="setting-chip">Optimized for standard desktop printers & binders</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-view').click()">
+                    <input type="radio" id="radio-export-view" name="exportPreset" value="current_view" onchange="onExportPresetChange('current_view')">
+                    <label for="radio-export-view" style="margin-left: 8px;">
+                        <strong>🖥️ Current Active Workspace Layout</strong>
+                        <span class="setting-chip">Print or export exactly what is currently visible on screen</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportVisualOptions">
+                <h4>2. Chart Diagram Style & Notation</h4>
+                <div style="display: flex; gap: 12px; margin-top: 6px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 11px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Chart Style</label>
+                        <select id="exportChartStyle" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500; background: #fff;">
+                            <option value="north">North Indian (Diamond / BPHS)</option>
+                            <option value="south">South Indian (Fixed Square)</option>
+                            <option value="circular">Western Circular (Campanus)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 11px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Notation Mode</label>
+                        <select id="exportNotation" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500; background: #fff;">
+                            <option value="symbol">Astronomical Symbols (☉ ☽ ♂ ☿ ♃ ♀ ♄)</option>
+                            <option value="english">English Abbreviations (Su, Mo, Ma...)</option>
+                            <option value="devanagari">Devanagari Script (सू चं मं बु...)</option>
+                            <option value="translit">IAST Transliteration (Sū Ca Ma...)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportSectionsToggle">
+                <h4>3. Included Divisional Charts</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD1" checked> <strong>D1 Rāśi</strong> (Root Life & Tanu)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD9" checked> <strong>D9 Navāṃśa</strong> (Dharma & Swāṃśa)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD10" checked> <strong>D10 Daśāṃśa</strong> (Career & Status)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD7" checked> <strong>D7 Saptāṃśa</strong> (Progeny & Partners)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD2"> D2 Horā (Wealth)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD3"> D3 Drekkāṇa (Courage/Siblings)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD12"> D12 Dvādaśāṃśa (Lineage)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD24"> D24 Siddhāṃśa (Higher Learning)
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportTablesToggle">
+                <h4>4. Included Diagnostic Tables</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncPlacements" checked> Planetary Placements & Nakshatras
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncCusps" checked> Campanus Bhava Chalita Cusps
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncDignities" checked> 5-Fold Compound Dignities
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncAvasthas" checked> Qualitative & Lajjitādi Avasthās
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncYogaJudgment" checked> Strengths Matrix • Yoga Judgment
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncShadbala" checked> Ṣaḍbala Strength Breakdown Grid
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncDasha" checked> Vimśottarī Daśā Major Cycles
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncVimshopaka" checked> 16-Varga Viṃśopaka Scoring Matrix
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 14px; border-top: 1px solid #D5C8B2;">
+                <div id="exportStatusMsg" style="font-size: 12px; color: #2563eb; font-weight: 600; display: none; align-items: center; gap: 6px;">
+                    <span class="spinner-small"></span> <span>Rendering high-resolution vector PDF...</span>
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: auto;">
+                    <button type="button" onclick="closeExportModal()" style="background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer;">Cancel</button>
+                    <button type="button" onclick="triggerPdfExport(true)" style="background-color: #475569; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;" title="Open print-ready HTML preview in a new tab">👁️ Print Preview</button>
+                    <button type="button" id="btnDoExportPdf" onclick="triggerPdfExport(false)" style="background-color: #2563eb; color: white; padding: 8px 20px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">📥 Download PDF</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1595,6 +1826,7 @@
                         <div class="kala-item" onclick="assignKalaWidget('vimshopaka')">• Varga Vimshopaka (20pt)</div>
                         <div class="kala-item" onclick="assignKalaWidget('aspects-planets')">• Aspects - Planetary</div>
                         <div class="kala-item" onclick="assignKalaWidget('rashi-drishti')">• Rāśi Dṛṣṭi (Sign Aspects)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('sign-attributes')">• Sign Attributes & Anatomy</div>
                         <div class="kala-item" onclick="assignKalaWidget('quant-matrices')">• Strength Matrices</div>
                         <div class="kala-item" onclick="assignKalaWidget('varga-lajjitadi-modifiers')">• Varga Lajjitadi Net Modifiers</div>
                         <div class="kala-item" onclick="assignKalaWidget('nakshatras')">• Nakshatras & Speed</div>
@@ -1606,6 +1838,10 @@
                 <div class="kala-column">
                     <div class="kala-column-title">4. POP-UPS (FLOATING)</div>
                     <div class="kala-column-list popups-list">
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingSignAttributes()">
+                            <strong>Sign Attributes & Anatomy</strong>
+                            <small>4x3 Matrix, Varnas, Doshas & Limbs</small>
+                        </button>
                         <button type="button" class="btn-kala-popup" onclick="openShodasaVargasModal()">
                             <strong>🏛️ ShodasaVargas</strong>
                             <small>16-in-1 Full divisional grid</small>
@@ -1629,6 +1865,10 @@
                         <button type="button" class="btn-kala-popup" onclick="openBhavaCuspsModal()">
                             <strong>📐 Bhava Chalita Cusps</strong>
                             <small>12 Campanus Cusps Table</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="closeKalaMenu(); openExportModal();" style="border-left: 3px solid #2563eb;">
+                            <strong>📄 Export Astrological PDF Plan</strong>
+                            <small>A3 Master Sheet, A4 Dossier & Print</small>
                         </button>
                     </div>
                 </div>
@@ -1691,6 +1931,7 @@
         <div class="menu-item" onclick="assignWidget('aspects-equal-houses')">Aspects (Equal Houses)</div>
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
         <div class="menu-item" onclick="assignWidget('rashi-drishti')">Rāśi Dṛṣṭi (Sign Aspects)</div>
+        <div class="menu-item" onclick="assignWidget('sign-attributes')">Sign Attributes & Anatomy</div>
         <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
         <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
@@ -2173,15 +2414,20 @@
                         <option value="D60">D60</option>
                     </select>
                     <label style="font-size: 11px; color: #666; font-weight: bold;">Base:</label>
-                    <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 95px;">
-                        <option value="ShadBala">ShadBala</option>
-                        <option value="Ishta">Ishta</option>
-                        <option value="Subha">Subha</option>
-                        <option value="Cheshta">Cheshta</option>
-                        <option value="Uccha">Uccha</option>
-                        <option value="Dig">Dig</option>
-                        <option value="Drishti Yuti">Drishti Yuti</option>
-                        <option value="Veda">Veda</option>
+                    <select class="matrix-type-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 115px;">
+                        <optgroup label="Lajjitadi Avasthas">
+                            <option value="Drishti Yuti">Drishti Yuti</option>
+                            <option value="ShadBala" selected>ShadBala</option>
+                            <option value="Vimshopaka">Vimshopaka</option>
+                        </optgroup>
+                        <optgroup label="Yoga Judgment Balas">
+                            <option value="Ishta">Ishta</option>
+                            <option value="Subha">Subha</option>
+                            <option value="Cheshta">Cheshta</option>
+                            <option value="Uccha">Uccha</option>
+                            <option value="Dig">Dig</option>
+                            <option value="Veda">Veda</option>
+                        </optgroup>
                     </select>
                     <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
                 </div>
@@ -2242,6 +2488,7 @@
                     </div>
                 </div>
                 <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="hotkey-btn btn-south-matrix" onclick="cycleSouthCenterFromWidget(this)" title="Cycle South Indian Center: Title / 4x3 Sign Matrix / Anatomy" style="padding: 2px 6px; font-weight: bold; font-size: 11px;">Center [↺]</button>
                     <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
                     <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
                     <button type="button" class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')" title="Circular (C)">C</button>
@@ -2651,6 +2898,47 @@
         </div>
     </template>
 
+    <template id="tmpl-sign-attributes">
+        <div class="widget-content widget-sign-attributes" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap;">Sign Attributes & Anatomy</span>
+                    <select class="varga-select" onchange="updateSignAttributesWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 105px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <div class="sign-attr-pills" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
+                        <button type="button" class="sign-attr-pill-btn active" onclick="switchSignAttrTab(this, 'matrix')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Triad Matrix (4×3)</button>
+                        <button type="button" class="sign-attr-pill-btn" onclick="switchSignAttrTab(this, 'anatomy')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Kalapurusha Anatomy</button>
+                        <button type="button" class="sign-attr-pill-btn" onclick="switchSignAttrTab(this, 'polarity')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Polarity & Rising</button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <label style="font-size: 10.5px; font-weight: 600; color: #6b5a4b; display: flex; align-items: center; gap: 3px; cursor: pointer;" title="Include Lagna (Ascendant) in numeric counts">
+                        <input type="checkbox" class="chk-count-lagna" onchange="updateSignAttributesWidget(this.closest('.grid-cell'))" style="cursor: pointer;"/> + Lagna
+                    </label>
+                    <button type="button" class="btn-widget-maximize" title="Maximize View" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container sign-attr-content" style="padding: 8px; flex: 1; overflow: auto; background: #faf6ef;">
+            </div>
+        </div>
+    </template>
+
     <script>
 
         let splitInstance = null;
@@ -2834,6 +3122,9 @@
             }
             else if (widgetType === 'rashi-drishti') {
                 updateRashiDrishtiWidget(cell);
+            }
+            else if (widgetType === 'sign-attributes') {
+                updateSignAttributesWidget(cell);
             }
             else if (widgetType === 'quant-matrices') {
                 updateQuantMatricesTableForCell(cell);
@@ -3502,6 +3793,11 @@
             // Rashi Drishti
             document.querySelectorAll('.grid-cell[data-widget="rashi-drishti"]').forEach(cell => {
                 updateRashiDrishtiWidget(cell);
+            });
+
+            // Sign Attributes & Anatomy
+            document.querySelectorAll('.grid-cell[data-widget="sign-attributes"]').forEach(cell => {
+                updateSignAttributesWidget(cell);
             });
 
             // Qualitative Avasthas
@@ -4614,13 +4910,8 @@
         }
         
         
-        let currentNotation = "devanagari";
+        let currentNotation = localStorage.getItem('astra_notation') || "symbol";
         let showSiSigns = true;
-
-        function switchNotation(mode) {
-            currentNotation = mode;
-            updateSlot(1);
-        }
 
         function updateSlot(slot) {
             if (!currentSvgs) return;
@@ -4804,8 +5095,21 @@
                     if (pGive === pRecv) {
                         // Diagonal Cells (Giver == Receiver)
                         if (matrixType === 'Drishti Yuti') {
+                            const vimBase = data && data.vimshopaka_base !== undefined ? data.vimshopaka_base : (data && data.base !== null && data.base !== undefined ? data.base : null);
+                            const moolaFlag = data && data.has_moolatrikona_flag ? '*2' : '';
                             const asp = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
-                            if (asp > 0.001) {
+                            
+                            if (vimBase !== null && vimBase !== undefined) {
+                                td.innerHTML = `
+                                    <div class="quant-diagonal-stack" style="line-height: 1.1;">
+                                        <span style="font-size: 9px; color: #888; text-transform: uppercase;">Vimsho.</span>
+                                        <span class="text-black-bold" style="font-size: 12px;">${vimBase.toFixed(1)}${moolaFlag}</span>
+                                    </div>
+                                `;
+                                td.title = `${pRecv} Vimshopaka Dignity: ${vimBase.toFixed(1)}${moolaFlag}`;
+                                td.classList.add('has-tooltip');
+                                td.setAttribute('data-tooltip', td.title);
+                            } else if (asp > 0.001) {
                                 td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${asp.toFixed(1)}</span>`;
                                 td.title = `${pRecv} Self Aspect: ${asp.toFixed(1)} Virupas`;
                                 td.classList.add('has-tooltip');
@@ -4814,7 +5118,7 @@
                                 td.innerHTML = '';
                             }
                         } else if (data && data.base !== null && data.base !== undefined) {
-                            if (matrixType !== 'ShadBala' && data.base_negative !== null && data.base_negative !== undefined) {
+                            if (matrixType !== 'ShadBala' && matrixType !== 'Vimshopaka' && data.base_negative !== null && data.base_negative !== undefined) {
                                 // Stack three numbers: Base (Green), Difference (Black), Base Negative (Red)
                                 const diff = data.diff !== null && data.diff !== undefined ? data.diff : (data.base - data.base_negative);
                                 const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
@@ -4830,9 +5134,10 @@
                             } else {
                                 // Single data.base number (black, bold)
                                 const moolaFlag = data.has_moolatrikona_flag ? '*2' : '';
+                                const label = matrixType === 'Vimshopaka' ? 'Vimshopaka Dignity' : 'Starting Strength';
                                 td.innerHTML = `<span class="text-black-bold" style="font-size: 13px;">${data.base.toFixed(1)}${moolaFlag}</span>`;
                                 const netTotStr = data.net_total !== null && data.net_total !== undefined ? `. Final Net Total: ${data.net_total.toFixed(1)}` : '';
-                                td.title = `${pRecv} Starting Strength: ${data.base.toFixed(1)}${moolaFlag}${netTotStr}`;
+                                td.title = `${pRecv} ${label}: ${data.base.toFixed(1)}${moolaFlag}${netTotStr}`;
                             }
                             td.classList.add('has-tooltip');
                             td.setAttribute('data-tooltip', td.title);
@@ -5779,6 +6084,580 @@
             });
         }
 
+        // --- SIGN ATTRIBUTES, MATRIX (4x3), VARNAS, DOSHAS & KALAPURUSHA ANATOMY ---
+
+        const SIGN_ATTR_CONSTANTS = {
+            signs: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
+            signNumbers: {'Aries': 1, 'Taurus': 2, 'Gemini': 3, 'Cancer': 4, 'Leo': 5, 'Virgo': 6, 'Libra': 7, 'Scorpio': 8, 'Sagittarius': 9, 'Capricorn': 10, 'Aquarius': 11, 'Pisces': 12},
+            signAbbr: {'Aries': 'Ar', 'Taurus': 'Ta', 'Gemini': 'Ge', 'Cancer': 'Cn', 'Leo': 'Le', 'Virgo': 'Vi', 'Libra': 'Li', 'Scorpio': 'Sc', 'Sagittarius': 'Sg', 'Capricorn': 'Cp', 'Aquarius': 'Aq', 'Pisces': 'Pi'},
+            elementMap: {
+                'Aries': 'Fire', 'Leo': 'Fire', 'Sagittarius': 'Fire',
+                'Taurus': 'Earth', 'Virgo': 'Earth', 'Capricorn': 'Earth',
+                'Gemini': 'Air', 'Libra': 'Air', 'Aquarius': 'Air',
+                'Cancer': 'Water', 'Scorpio': 'Water', 'Pisces': 'Water'
+            },
+            mobilityMap: {
+                'Aries': 'Movable', 'Cancer': 'Movable', 'Libra': 'Movable', 'Capricorn': 'Movable',
+                'Taurus': 'Fixed', 'Leo': 'Fixed', 'Scorpio': 'Fixed', 'Aquarius': 'Fixed',
+                'Gemini': 'Dual', 'Virgo': 'Dual', 'Sagittarius': 'Dual', 'Pisces': 'Dual'
+            },
+            polarityMap: {
+                'Aries': 'Active', 'Gemini': 'Active', 'Leo': 'Active', 'Libra': 'Active', 'Sagittarius': 'Active', 'Aquarius': 'Active',
+                'Taurus': 'Passive', 'Cancer': 'Passive', 'Virgo': 'Passive', 'Scorpio': 'Passive', 'Capricorn': 'Passive', 'Pisces': 'Passive'
+            },
+            risingMap: {
+                'Gemini': 'Shirshodaya', 'Leo': 'Shirshodaya', 'Virgo': 'Shirshodaya', 'Libra': 'Shirshodaya', 'Scorpio': 'Shirshodaya', 'Aquarius': 'Shirshodaya',
+                'Aries': 'Prishtodaya', 'Taurus': 'Prishtodaya', 'Cancer': 'Prishtodaya', 'Sagittarius': 'Prishtodaya', 'Capricorn': 'Prishtodaya',
+                'Pisces': 'Ubhayodaya'
+            },
+            elementsMeta: {
+                'Fire': { sanskrit: 'Agni', varna: 'Kshatriya', varnaDesc: 'Leaders & Protectors (courage, executive action)', dosha: 'Pitta', doshaDesc: 'Metabolic fire & vitality', color: '#c0392b', bg: '#fdf2f0', icon: '' },
+                'Earth': { sanskrit: 'Prithvi', varna: 'Shudra', varnaDesc: 'Craftsmen & Builders (service, stability, craftsmanship)', dosha: 'Kapha', doshaDesc: 'Physical mass & endurance', color: '#795548', bg: '#f5f0eb', icon: '' },
+                'Air': { sanskrit: 'Vayu', varna: 'Vaishya', varnaDesc: 'Merchants & Communicators (commerce, trade, intellect)', dosha: 'Vata', doshaDesc: 'Nervous movement & curiosity', color: '#1976d2', bg: '#f0f7fe', icon: '' },
+                'Water': { sanskrit: 'Jala', varna: 'Brahmin', varnaDesc: 'Scholars & Counselors (teaching, wisdom, spirituality)', dosha: 'Kapha', doshaDesc: 'Fluids, lubrication & intuition', color: '#00897b', bg: '#eef8f7', icon: '' }
+            },
+            mobilityMeta: {
+                'Movable': { sanskrit: 'Chara', label: 'Movable (Initiatory)', nature: 'Outgoing, enterprising, initiatory, indicates sudden movement or change', color: '#b91c1c', icon: '' },
+                'Fixed': { sanskrit: 'Sthira', label: 'Fixed (Steadfast)', nature: 'Steadfast, resistant to sudden change, preserving the status quo', color: '#1e40af', icon: '' },
+                'Dual': { sanskrit: 'Dvisvabhava', label: 'Dual (Adaptable)', nature: 'Adaptable, flexible junction points balancing change and stability', color: '#065f46', icon: '' }
+            },
+            anatomy: [
+                { sign: 'Aries', num: 1, abbr: 'Ar', region: 'Head, Brain, Scalp & Eyes', organs: 'Cranium, cerebral hemispheres, optic nerves, facial motor control' },
+                { sign: 'Taurus', num: 2, abbr: 'Ta', region: 'Face, Neck, Throat & Vocal Cords', organs: 'Larynx, pharynx, vocal apparatus, thyroid, cervical vertebrae' },
+                { sign: 'Gemini', num: 3, abbr: 'Ge', region: 'Shoulders, Arms, Hands & Upper Chest', organs: 'Upper bronchial tubes, lungs, shoulders, collarbones, nervous coordination' },
+                { sign: 'Cancer', num: 4, abbr: 'Cn', region: 'Chest, Breasts, Stomach & Ribs', organs: 'Stomach lining, esophagus, diaphragm, thoracic ribcage, alimentary reception' },
+                { sign: 'Leo', num: 5, abbr: 'Le', region: 'Heart, Solar Plexus & Upper Back', organs: 'Cardiac muscle, aorta, solar plexus nerve cluster, spine and thoracic vertebrae' },
+                { sign: 'Virgo', num: 6, abbr: 'Vi', region: 'Navel, Small Intestines & Digestive Tract', organs: 'Abdominal digestive organs, duodenum, spleen, intestinal assimilation' },
+                { sign: 'Libra', num: 7, abbr: 'Li', region: 'Lower Abdomen, Lumbar & Kidneys', organs: 'Renal glands, kidneys, lumbar spine, urinary filtration and fluid balance' },
+                { sign: 'Scorpio', num: 8, abbr: 'Sc', region: 'Pelvis, Excretory & Reproductive', organs: 'Genitalia, prostate, ovaries, rectum, pelvic floor and reproductive seed' },
+                { sign: 'Sagittarius', num: 9, abbr: 'Sg', region: 'Hips, Thighs & Arterial System', organs: 'Femoral arteries, pelvic girdle, hips, sciatic nerves, locomotor drive' },
+                { sign: 'Capricorn', num: 10, abbr: 'Cp', region: 'Knees, Kneecaps & Skeletal Joints', organs: 'Patella, skeletal joint ligaments, cartilage, structural bone density' },
+                { sign: 'Aquarius', num: 11, abbr: 'Aq', region: 'Calves, Shins, Ankles & Skin', organs: 'Achilles tendons, shins, peripheral circulation, skin respiration' },
+                { sign: 'Pisces', num: 12, abbr: 'Pi', region: 'Feet, Toes & Lymphatics', organs: 'Tarsals, metatarsals, lymphatic fluid nodes, immune defense fluids' }
+            ]
+        };
+
+        const GRAHA_COLORS = {
+            'Sun': '#d35400', 'Moon': '#4a5568', 'Mars': '#c0392b', 'Mercury': '#1e824c',
+            'Jupiter': '#b7791f', 'Venus': '#8d6e63', 'Saturn': '#2c3e50', 'Rahu': '#5d6d7e',
+            'Ketu': '#34495e', 'Lagna': '#a93226'
+        };
+
+        const GRAHA_SHORT_NAMES = {
+            'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
+            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra',
+            'Ketu': 'Ke', 'Lagna': 'Asc'
+        };
+
+        window.cycleSouthCenter = function(container) {
+            if (!container) return;
+            const views = ['title', 'matrix', 'anatomy'];
+            let cur = container.dataset.view || 'title';
+            let next = views[(views.indexOf(cur) + 1) % views.length];
+            container.dataset.view = next;
+            container.querySelectorAll('.si-center-view').forEach(v => v.style.display = 'none');
+            const target = container.querySelector('.si-view-' + next);
+            if (target) target.style.display = '';
+        };
+
+        window.cycleSouthCenterFromWidget = function(btn) {
+            const widget = btn.closest('.widget-chart');
+            if (!widget) return;
+            const container = widget.querySelector('.svg-south .si-center-container');
+            if (container) {
+                window.cycleSouthCenter(container);
+            }
+        };
+
+        window.switchSignAttrTab = function(btn, tabName) {
+            const widget = btn.closest('.widget-sign-attributes');
+            if (!widget) return;
+            widget.querySelectorAll('.sign-attr-pill-btn').forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'transparent';
+                b.style.color = '#6b5a4b';
+            });
+            btn.classList.add('active');
+            btn.style.background = '#fffdfa';
+            btn.style.color = '#4a3325';
+            widget.dataset.activeTab = tabName;
+            updateSignAttributesWidget(btn.closest('.grid-cell'));
+        };
+
+        function calculateClientSignDistributions(varga = 'D1', countLagna = false) {
+            const signs = SIGN_ATTR_CONSTANTS.signs;
+            const occupants = {};
+            signs.forEach(s => { occupants[s] = []; });
+            let lagnaSign = 'Aries';
+            let lagnaDegStr = '0°00\'';
+
+            if (currentChartData && currentChartData.vargas && currentChartData.vargas[varga]) {
+                const vData = currentChartData.vargas[varga];
+                if (vData.lagna) {
+                    lagnaSign = vData.lagna.sign || 'Aries';
+                    const lDeg = vData.lagna.degree_0_to_30 || 0;
+                    lagnaDegStr = `${Math.floor(lDeg)}°${Math.round((lDeg % 1) * 60).toString().padStart(2, '0')}'`;
+                }
+                const grahas = vData.grahas || {};
+                const stdGrahas = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn', 'Rahu', 'Ketu'];
+                stdGrahas.forEach(pName => {
+                    if (grahas[pName] && grahas[pName].sign) {
+                        const s = grahas[pName].sign;
+                        const deg = grahas[pName].degree_0_to_30 || 0;
+                        const degStr = `${Math.floor(deg)}°${Math.round((deg % 1) * 60).toString().padStart(2, '0')}'`;
+                        if (occupants[s]) {
+                            occupants[s].push({
+                                name: pName,
+                                sign: s,
+                                deg: deg,
+                                degStr: degStr,
+                                isRetro: grahas[pName].is_retrograde || false
+                            });
+                        }
+                    }
+                });
+            }
+
+            // Groupings
+            const matrixRows = [
+                { element: 'Fire', signs: ['Aries', 'Leo', 'Sagittarius'] },
+                { element: 'Earth', signs: ['Capricorn', 'Taurus', 'Virgo'] },
+                { element: 'Air', signs: ['Libra', 'Aquarius', 'Gemini'] },
+                { element: 'Water', signs: ['Cancer', 'Scorpio', 'Pisces'] }
+            ];
+
+            const elementTotals = { 'Fire': 0, 'Earth': 0, 'Air': 0, 'Water': 0 };
+            const mobilityTotals = { 'Movable': 0, 'Fixed': 0, 'Dual': 0 };
+            const polarityTotals = { 'Active': 0, 'Passive': 0 };
+            const risingTotals = { 'Shirshodaya': 0, 'Prishtodaya': 0, 'Ubhayodaya': 0 };
+
+            signs.forEach(s => {
+                let cnt = occupants[s].length;
+                if (countLagna && s === lagnaSign) cnt += 1;
+                const elem = SIGN_ATTR_CONSTANTS.elementMap[s];
+                const mob = SIGN_ATTR_CONSTANTS.mobilityMap[s];
+                const pol = SIGN_ATTR_CONSTANTS.polarityMap[s];
+                const rise = SIGN_ATTR_CONSTANTS.risingMap[s];
+
+                elementTotals[elem] += cnt;
+                mobilityTotals[mob] += cnt;
+                polarityTotals[pol] += cnt;
+                risingTotals[rise] += cnt;
+            });
+
+            return {
+                varga: varga,
+                lagnaSign: lagnaSign,
+                lagnaDegStr: lagnaDegStr,
+                countLagna: countLagna,
+                occupants: occupants,
+                matrixRows: matrixRows,
+                elementTotals: elementTotals,
+                mobilityTotals: mobilityTotals,
+                polarityTotals: polarityTotals,
+                risingTotals: risingTotals,
+                totalPlanets: Object.values(elementTotals).reduce((a, b) => a + b, 0)
+            };
+        }
+
+        function renderSignAttributesHtml(varga = 'D1', activeTab = 'matrix', countLagna = false) {
+            const data = calculateClientSignDistributions(varga, countLagna);
+            const C = SIGN_ATTR_CONSTANTS;
+
+            // Helper to render clean planet badge without heavy drop-shadows
+            const renderPlanetBadge = (p) => {
+                const col = GRAHA_COLORS[p.name] || '#4a3325';
+                const abbr = GRAHA_SHORT_NAMES[p.name] || p.name.substring(0, 2);
+                const retro = p.isRetro ? ' <span style="color:#b45309; font-size:9.5px; font-weight:bold;">R</span>' : '';
+                const tip = `${p.name} at ${p.degStr} in ${p.sign}${p.isRetro ? ' [Retrograde]' : ''}`;
+                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#f4ece1; color:${col}; border:1px solid #d5c8b2; padding:1px 5px; border-radius:3px; font-size:10.5px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">${abbr}${retro}</span>`;
+            };
+
+            const renderLagnaBadge = (signName) => {
+                if (signName !== data.lagnaSign) return '';
+                const tip = `Ascendant (Lagna) at ${data.lagnaDegStr} in ${signName}`;
+                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#fdf2f0; color:#c0392b; border:1px solid #e5b8b2; padding:1px 5px; border-radius:3px; font-size:10.5px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">Asc</span>`;
+            };
+
+            let html = '';
+
+            if (activeTab === 'matrix') {
+                // TAB 1: SIMPLIFIED 4x3 MATRIX
+                html += `
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:#6b5a4b; padding:0 2px;">
+                        <span><strong>4×3 Sign Matrix:</strong> Distribution of grahas by Element and Mobility</span>
+                        <span>Total Grahas: <strong style="color:#4a3325; font-size:12px;">${data.totalPlanets}</strong></span>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="sign-attr-matrix-table" style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="width:20%; text-align:left; padding-left:8px;">Element</th>
+                                    <th style="width:24%;">Movable (Chara)</th>
+                                    <th style="width:24%;">Fixed (Sthira)</th>
+                                    <th style="width:24%;">Dual (Dvisvabhava)</th>
+                                    <th style="width:8%;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                data.matrixRows.forEach(rowDef => {
+                    const elem = rowDef.element;
+                    const meta = C.elementsMeta[elem];
+                    const eTot = data.elementTotals[elem];
+                    html += `<tr>`;
+                    html += `
+                        <td style="background:#faf7f2; text-align:left; padding:6px 8px;">
+                            <div style="font-weight:700; color:${meta.color}; font-size:12px;">${elem} (${meta.sanskrit})</div>
+                            <div style="font-size:10px; color:#7a6756;">${meta.varna} · ${meta.dosha}</div>
+                        </td>
+                    `;
+
+                    rowDef.signs.forEach(signName => {
+                        const occupantsList = data.occupants[signName] || [];
+                        const signAbbr = C.signAbbr[signName];
+                        const hasLagna = (signName === data.lagnaSign);
+                        const isHighlight = occupantsList.length > 0 || hasLagna;
+                        const cellBg = isHighlight ? '#ffffff' : '#faf8f5';
+
+                        let badgesHtml = occupantsList.map(renderPlanetBadge).join('');
+                        badgesHtml += renderLagnaBadge(signName);
+                        if (!badgesHtml) badgesHtml = `<span style="color:#a8a29e; font-size:11px;">—</span>`;
+
+                        const cellCount = occupantsList.length + (data.countLagna && hasLagna ? 1 : 0);
+                        const countBadge = cellCount > 0 ? `<span style="font-size:10px; font-weight:700; color:${meta.color}; margin-left:4px;">(${cellCount})</span>` : '';
+
+                        html += `
+                            <td style="background:${cellBg};">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; padding-bottom:2px; border-bottom:1px solid #f0e6d5;">
+                                    <span style="font-weight:700; color:#4a3325; font-size:11px;"><span style="color:#b59472; font-weight:800; margin-right:4px;">${signAbbr}</span>${signName}</span>
+                                    ${countBadge}
+                                </div>
+                                <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:20px;">
+                                    ${badgesHtml}
+                                </div>
+                            </td>
+                        `;
+                    });
+
+                    html += `
+                        <td style="background:#faf7f2; text-align:center; font-weight:bold; font-size:13px; color:${meta.color}; vertical-align:middle;">
+                            ${eTot}
+                        </td>
+                    `;
+                    html += `</tr>`;
+                });
+
+                html += `
+                            </tbody>
+                            <tfoot>
+                                <tr style="background:#eee5d3; font-weight:bold; color:#4a3325;">
+                                    <td style="padding:6px 8px; text-align:left;">Total</td>
+                                    <td style="text-align:center; font-size:12px; color:#b91c1c;">${data.mobilityTotals['Movable']}</td>
+                                    <td style="text-align:center; font-size:12px; color:#1e40af;">${data.mobilityTotals['Fixed']}</td>
+                                    <td style="text-align:center; font-size:12px; color:#065f46;">${data.mobilityTotals['Dual']}</td>
+                                    <td style="text-align:center; font-size:13px; color:#4a3325;">${data.totalPlanets}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Clean Single Summary Bar -->
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:11px; color:#5c4433; background:#fffdfa; border:1px solid #dcb594; border-radius:6px; padding:6px 10px; justify-content:space-between;">
+                        <div>
+                            <strong style="color:#78350f;">Polarity:</strong>
+                            Active (Odd): <strong style="color:#b45309;">${data.polarityTotals['Active']}</strong> ·
+                            Passive (Even): <strong style="color:#4b5563;">${data.polarityTotals['Passive']}</strong>
+                        </div>
+                        <div>
+                            <strong style="color:#78350f;">Social Roles (Varnas):</strong>
+                            Kshatriya (Fire): <strong>${data.elementTotals['Fire']}</strong> ·
+                            Shudra (Earth): <strong>${data.elementTotals['Earth']}</strong> ·
+                            Vaishya (Air): <strong>${data.elementTotals['Air']}</strong> ·
+                            Brahmin (Water): <strong>${data.elementTotals['Water']}</strong>
+                        </div>
+                    </div>
+                </div>
+                `;
+            } else if (activeTab === 'anatomy') {
+                // TAB 2: STREAMLINED 4-COLUMN KALAPURUSHA ANATOMY
+                let activeLimbsCount = 0;
+                let rowsHtml = '';
+
+                C.anatomy.forEach(item => {
+                    const occupantsList = data.occupants[item.sign] || [];
+                    const hasLagna = (item.sign === data.lagnaSign);
+                    const isActive = occupantsList.length > 0 || hasLagna;
+                    if (isActive) activeLimbsCount++;
+
+                    let occupantsBadges = occupantsList.map(renderPlanetBadge).join('');
+                    occupantsBadges += renderLagnaBadge(item.sign);
+                    if (!occupantsBadges) occupantsBadges = `<span style="color:#a8a29e; font-size:11px;">—</span>`;
+
+                    const countVal = occupantsList.length + (data.countLagna && hasLagna ? 1 : 0);
+                    const countStr = countVal > 0 ? `<strong style="color:#c0392b;">${countVal}</strong>` : `<span style="color:#a8a29e;">0</span>`;
+                    const rowBg = isActive ? '#fffdfa' : '#faf8f5';
+
+                    rowsHtml += `
+                        <tr style="background:${rowBg};">
+                            <td style="font-weight:700; color:#4a3325; white-space:nowrap; padding:5px 8px;">
+                                <span style="color:#b59472; font-weight:800; margin-right:4px;">${item.abbr}</span>${item.sign} <small style="color:#8c7b64; font-weight:normal;">(${item.num})</small>
+                            </td>
+                            <td style="padding:5px 8px;">
+                                <div style="font-weight:600; color:#4a3325; font-size:11px;">${item.region}</div>
+                                <div style="font-size:10px; color:#8c7b64; margin-top:1px;">${item.organs}</div>
+                            </td>
+                            <td style="padding:5px 8px;">
+                                <div style="display:flex; flex-wrap:wrap; align-items:center;">
+                                    ${occupantsBadges}
+                                </div>
+                            </td>
+                            <td style="text-align:center; font-size:12px; padding:5px 8px;">
+                                ${countStr}
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                <div style="display:flex; flex-direction:column; gap:8px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fffdfa; padding:5px 10px; border-radius:6px; border:1px solid #dcb594; font-size:11.5px;">
+                        <span><strong style="color:#78350f;">Kalapurusha Anatomy:</strong> 12 signs as cosmic human body limbs</span>
+                        <span style="font-weight:700; color:#4a3325;">Active: <span style="color:#c0392b;">${activeLimbsCount}/12</span> body regions (${data.totalPlanets} grahas)</span>
+                    </div>
+
+                    <div style="overflow-x:auto;">
+                        <table class="sign-attr-anatomy-table" style="width:100%; border-collapse:collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="width:20%; text-align:left; padding-left:8px;">Sign</th>
+                                    <th style="width:46%;">Body Region & Organs</th>
+                                    <th style="width:26%;">Planets</th>
+                                    <th style="width:8%; text-align:center;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rowsHtml}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                `;
+            } else if (activeTab === 'polarity') {
+                // TAB 3: CLEAN POLARITY & RISING
+                const activeSigns = ['Aries', 'Gemini', 'Leo', 'Libra', 'Sagittarius', 'Aquarius'];
+                const passiveSigns = ['Taurus', 'Cancer', 'Virgo', 'Scorpio', 'Capricorn', 'Pisces'];
+
+                let activePlanetsBadges = '';
+                let passivePlanetsBadges = '';
+                activeSigns.forEach(s => {
+                    activePlanetsBadges += (data.occupants[s] || []).map(renderPlanetBadge).join('');
+                    activePlanetsBadges += renderLagnaBadge(s);
+                });
+                passiveSigns.forEach(s => {
+                    passivePlanetsBadges += (data.occupants[s] || []).map(renderPlanetBadge).join('');
+                    passivePlanetsBadges += renderLagnaBadge(s);
+                });
+
+                const shirshoSigns = ['Gemini', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Aquarius'];
+                const prishtoSigns = ['Aries', 'Taurus', 'Cancer', 'Sagittarius', 'Capricorn'];
+                const ubhayaSigns = ['Pisces'];
+
+                let shirshoBadges = '';
+                let prishtoBadges = '';
+                let ubhayaBadges = '';
+                shirshoSigns.forEach(s => {
+                    shirshoBadges += (data.occupants[s] || []).map(renderPlanetBadge).join('');
+                    shirshoBadges += renderLagnaBadge(s);
+                });
+                prishtoSigns.forEach(s => {
+                    prishtoBadges += (data.occupants[s] || []).map(renderPlanetBadge).join('');
+                    prishtoBadges += renderLagnaBadge(s);
+                });
+                ubhayaSigns.forEach(s => {
+                    ubhayaBadges += (data.occupants[s] || []).map(renderPlanetBadge).join('');
+                    ubhayaBadges += renderLagnaBadge(s);
+                });
+
+                html += `
+                <div style="display:flex; flex-direction:column; gap:10px;">
+                    <!-- Polarity Section -->
+                    <div style="font-weight:bold; color:#78350f; font-size:12px;">1. Polarity & Gender (Active vs. Passive)</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+                        <div class="sign-attr-summary-card" style="border-top:3px solid #b45309;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <strong style="color:#b45309; font-size:12px;">Active / Masculine / Day Signs</strong>
+                                <span style="font-size:13px; font-weight:bold; color:#b45309;">${data.polarityTotals['Active']} grahas</span>
+                            </div>
+                            <div style="font-size:10.5px; color:#78350f; margin-bottom:6px;">
+                                <strong>Odd Signs (1, 3, 5, 7, 9, 11):</strong> Aries, Gemini, Leo, Libra, Sagittarius, Aquarius.<br>
+                                Extroverted, expressive, direct. Masculine planets (Sun, Mars, Jupiter) function with natural ease here.
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:22px;">
+                                ${activePlanetsBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                            </div>
+                        </div>
+
+                        <div class="sign-attr-summary-card" style="border-top:3px solid #4b5563;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+                                <strong style="color:#4b5563; font-size:12px;">Passive / Feminine / Night Signs</strong>
+                                <span style="font-size:13px; font-weight:bold; color:#4b5563;">${data.polarityTotals['Passive']} grahas</span>
+                            </div>
+                            <div style="font-size:10.5px; color:#374151; margin-bottom:6px;">
+                                <strong>Even Signs (2, 4, 6, 8, 10, 12):</strong> Taurus, Cancer, Virgo, Scorpio, Capricorn, Pisces.<br>
+                                Introverted, reflective, receptive. Feminine planets (Moon, Venus) feel more at home here.
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:22px;">
+                                ${passivePlanetsBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rising Orientation Section -->
+                    <div style="font-weight:bold; color:#78350f; font-size:12px; margin-top:4px;">2. Rising Orientation (Udaya)</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px;">
+                        <div class="sign-attr-summary-card" style="border-left:3px solid #059669;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                                <strong style="color:#059669; font-size:11.5px;">Head-rising (Shirshodaya)</strong>
+                                <span style="font-size:13px; font-weight:bold; color:#059669;">${data.risingTotals['Shirshodaya']}</span>
+                            </div>
+                            <div style="font-size:10px; color:#065f46; margin-bottom:4px;">
+                                <strong>Signs:</strong> Ge, Le, Vi, Li, Sc, Aq<br>
+                                Yields benefits early in life or beginning of planetary cycles (Dashas).
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center;">
+                                ${shirshoBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                            </div>
+                        </div>
+
+                        <div class="sign-attr-summary-card" style="border-left:3px solid #d97706;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                                <strong style="color:#d97706; font-size:11.5px;">Back-rising (Prishtodaya)</strong>
+                                <span style="font-size:13px; font-weight:bold; color:#d97706;">${data.risingTotals['Prishtodaya']}</span>
+                            </div>
+                            <div style="font-size:10px; color:#92400e; margin-bottom:4px;">
+                                <strong>Signs:</strong> Ar, Ta, Cn, Sg, Cp<br>
+                                Yields results through sustained effort, maturing later in life.
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center;">
+                                ${prishtoBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                            </div>
+                        </div>
+
+                        <div class="sign-attr-summary-card" style="border-left:3px solid #7c3aed;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                                <strong style="color:#7c3aed; font-size:11.5px;">Both-ways rising (Ubhayodaya)</strong>
+                                <span style="font-size:13px; font-weight:bold; color:#7c3aed;">${data.risingTotals['Ubhayodaya']}</span>
+                            </div>
+                            <div style="font-size:10px; color:#5b21b6; margin-bottom:4px;">
+                                <strong>Sign:</strong> Pisces (Meena)<br>
+                                Fruitful and adaptable throughout life.
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center;">
+                                ${ubhayaBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }
+
+            return html;
+        }
+
+        function updateSignAttributesWidget(cell) {
+            if (!cell) return;
+            const content = cell.querySelector('.sign-attr-content');
+            if (!content) return;
+
+            const vargaSelect = cell.querySelector('.varga-select');
+            const varga = vargaSelect ? vargaSelect.value : 'D1';
+
+            const widgetEl = cell.querySelector('.widget-sign-attributes');
+            const activeTab = widgetEl ? (widgetEl.dataset.activeTab || 'matrix') : 'matrix';
+
+            const chkLagna = cell.querySelector('.chk-count-lagna');
+            const countLagna = chkLagna ? chkLagna.checked : false;
+
+            content.innerHTML = renderSignAttributesHtml(varga, activeTab, countLagna);
+        }
+
+        window.openFloatingSignAttributes = function(varga = 'D1') {
+            const modal = document.getElementById('widgetMaximizeModal');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container) return;
+
+            const subjectName = currentChartData?.subject_info?.name || '';
+            titleEl.textContent = subjectName ? `${subjectName} — Sign Attributes & Anatomy (${varga})` : `Sign Attributes & Anatomy (${varga})`;
+
+            container.innerHTML = `
+                <div class="widget-sign-attributes" data-active-tab="matrix" style="display:flex; flex-direction:column; width:100%; height:100%;">
+                    <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:#f7f3eb; padding:6px 10px; border-radius:6px; border:1px solid #dcb594;">
+                        <label style="font-size:11.5px; font-weight:bold; color:#4a3325;">Varga:
+                            <select id="floatingSignAttrVargaSelect" onchange="renderFloatingSignAttributesContent()" style="margin-left:4px; padding:2px 6px; font-size:11px; border-radius:4px; border:1px solid #d5c8b2; background:#fffdfa; font-weight:600;">
+                                <option value="D1" ${varga === 'D1' ? 'selected' : ''}>D1 - Rāśi</option>
+                                <option value="D2" ${varga === 'D2' ? 'selected' : ''}>D2 - Horā</option>
+                                <option value="D3" ${varga === 'D3' ? 'selected' : ''}>D3 - Drekkāṇa</option>
+                                <option value="D4" ${varga === 'D4' ? 'selected' : ''}>D4 - Caturthāṁśa</option>
+                                <option value="D7" ${varga === 'D7' ? 'selected' : ''}>D7 - Saptāṁśa</option>
+                                <option value="D9" ${varga === 'D9' ? 'selected' : ''}>D9 - Navāṁśa</option>
+                                <option value="D10" ${varga === 'D10' ? 'selected' : ''}>D10 - Daśāṁśa</option>
+                                <option value="D12" ${varga === 'D12' ? 'selected' : ''}>D12 - Dvādaśāṁśa</option>
+                                <option value="D16" ${varga === 'D16' ? 'selected' : ''}>D16 - Ṣoḍaśāṁśa</option>
+                                <option value="D20" ${varga === 'D20' ? 'selected' : ''}>D20 - Viṁśāṁśa</option>
+                                <option value="D24" ${varga === 'D24' ? 'selected' : ''}>D24 - Caturviṁśāṁśa</option>
+                                <option value="D27" ${varga === 'D27' ? 'selected' : ''}>D27 - Saptaviṁśāṁśa</option>
+                                <option value="D30" ${varga === 'D30' ? 'selected' : ''}>D30 - Triṁśāṁśa</option>
+                                <option value="D40" ${varga === 'D40' ? 'selected' : ''}>D40 - Khavedāṁśa</option>
+                                <option value="D45" ${varga === 'D45' ? 'selected' : ''}>D45 - Akṣavedāṁśa</option>
+                                <option value="D60" ${varga === 'D60' ? 'selected' : ''}>D60 - Ṣaṣṭyāṁśa</option>
+                            </select>
+                        </label>
+                        <div class="sign-attr-pills" style="display:inline-flex; background:#eae1d1; border-radius:4px; padding:1px; gap:1px;">
+                            <button type="button" class="sign-attr-pill-btn active" onclick="switchFloatingSignAttrTab(this, 'matrix')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Triad Matrix (4×3)</button>
+                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'anatomy')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Kalapurusha Anatomy</button>
+                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'polarity')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Polarity & Rising</button>
+                        </div>
+                        <label style="font-size:11px; font-weight:600; color:#6b5a4b; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                            <input type="checkbox" id="floatingCountLagna" onchange="renderFloatingSignAttributesContent()" style="cursor:pointer;"/> + Lagna
+                        </label>
+                    </div>
+                    <div id="floatingSignAttrContent" style="overflow-y:auto; max-height:68vh; padding:4px;"></div>
+                </div>
+            `;
+
+            window.switchFloatingSignAttrTab = function(btn, tab) {
+                btn.closest('.sign-attr-pills').querySelectorAll('.sign-attr-pill-btn').forEach(b => {
+                    b.classList.remove('active');
+                    b.style.background = 'transparent';
+                    b.style.color = '#6b5a4b';
+                });
+                btn.classList.add('active');
+                btn.style.background = '#fffdfa';
+                btn.style.color = '#4a3325';
+                container.querySelector('.widget-sign-attributes').dataset.activeTab = tab;
+                window.renderFloatingSignAttributesContent();
+            };
+
+            window.renderFloatingSignAttributesContent = function() {
+                const vSel = document.getElementById('floatingSignAttrVargaSelect');
+                const v = vSel ? vSel.value : 'D1';
+                const tab = container.querySelector('.widget-sign-attributes')?.dataset?.activeTab || 'matrix';
+                const cLagna = document.getElementById('floatingCountLagna')?.checked || false;
+                const target = document.getElementById('floatingSignAttrContent');
+                if (target) {
+                    target.innerHTML = renderSignAttributesHtml(v, tab, cLagna);
+                }
+            };
+
+            window.renderFloatingSignAttributesContent();
+            modal.style.display = 'flex';
+        };
+
         function openVargaFromInspector(vargaKey) {
             let chartCell = document.querySelector('.grid-cell.active-cell[data-widget="chart"]');
             if (!chartCell) {
@@ -6360,8 +7239,10 @@
 
         function switchNotation(mode) {
             currentNotation = mode;
+            try { localStorage.setItem('astra_notation', mode); } catch(e){}
             updateSlot(1);
             updateSlot(2);
+            document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(updateWidget);
             if (currentMaximized) {
                 maximizeChart(currentMaximized.slot, currentMaximized.type);
             }
@@ -6379,6 +7260,161 @@
         function closeSettingsModal(e) {
             if (!e || e.target === document.getElementById('settingsModal') || e.target.classList.contains('modal-close-btn') || e.target.innerText === 'Done' || e.target.innerText === '×') {
                 document.getElementById('settingsModal').style.display = 'none';
+            }
+        }
+
+        function openExportModal() {
+            // Synchronize export modal state with current chart settings
+            const styleSel = document.getElementById('exportChartStyle');
+            const notSel = document.getElementById('exportNotation');
+            if (styleSel) {
+                let activeStyle = 'north';
+                if (document.getElementById('view-south')?.classList.contains('active')) activeStyle = 'south';
+                else if (document.getElementById('view-circular')?.classList.contains('active')) activeStyle = 'circular';
+                styleSel.value = activeStyle;
+            }
+            if (notSel && typeof currentNotation !== 'undefined') {
+                notSel.value = currentNotation;
+            }
+            const modal = document.getElementById('exportPdfModal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeExportModal(e) {
+            const modal = document.getElementById('exportPdfModal');
+            if (!modal) return;
+            if (!e || e.target === modal || e.target.classList.contains('modal-close-btn') || e.target.innerText === 'Cancel' || e.target.innerText === '×') {
+                modal.style.display = 'none';
+            }
+        }
+
+        function onExportPresetChange(preset) {
+            const secToggle = document.getElementById('exportSectionsToggle');
+            const tblToggle = document.getElementById('exportTablesToggle');
+            const visToggle = document.getElementById('exportVisualOptions');
+            if (preset === 'current_view') {
+                if (secToggle) secToggle.style.opacity = '0.5';
+                if (tblToggle) tblToggle.style.opacity = '0.5';
+                if (visToggle) visToggle.style.opacity = '0.5';
+            } else {
+                if (secToggle) secToggle.style.opacity = '1';
+                if (tblToggle) tblToggle.style.opacity = '1';
+                if (visToggle) visToggle.style.opacity = '1';
+            }
+        }
+
+        async function triggerPdfExport(previewOnly = false) {
+            if (!currentChartData) {
+                alert("Please load a birth chart first before exporting.");
+                return;
+            }
+
+            const preset = document.querySelector('input[name="exportPreset"]:checked')?.value || 'master_a3';
+            
+            // If current view selected and preview requested, open native print
+            if (preset === 'current_view' && previewOnly) {
+                closeExportModal();
+                window.print();
+                return;
+            }
+
+            const chartStyle = document.getElementById('exportChartStyle')?.value || 'north';
+            const notation = document.getElementById('exportNotation')?.value || 'symbol';
+            const pageSize = (preset === 'master_a3') ? 'A3' : 'A4';
+
+            const additionalVargas = [];
+            if (document.getElementById('expIncD2')?.checked) additionalVargas.push('D2');
+            if (document.getElementById('expIncD3')?.checked) additionalVargas.push('D3');
+            if (document.getElementById('expIncD12')?.checked) additionalVargas.push('D12');
+            if (document.getElementById('expIncD24')?.checked) additionalVargas.push('D24');
+
+            const options = {
+                preset: preset,
+                page_size: pageSize,
+                chart_style: chartStyle,
+                notation: notation,
+                include_d1: document.getElementById('expIncD1')?.checked ?? true,
+                include_d9: document.getElementById('expIncD9')?.checked ?? true,
+                include_d10: document.getElementById('expIncD10')?.checked ?? true,
+                include_d7: document.getElementById('expIncD7')?.checked ?? true,
+                include_placements: document.getElementById('expIncPlacements')?.checked ?? true,
+                include_cusps: document.getElementById('expIncCusps')?.checked ?? true,
+                include_dignities: document.getElementById('expIncDignities')?.checked ?? true,
+                include_avasthas: document.getElementById('expIncAvasthas')?.checked ?? true,
+                include_lajjitadi: document.getElementById('expIncAvasthas')?.checked ?? true,
+                include_yoga_judgment: document.getElementById('expIncYogaJudgment')?.checked ?? true,
+                include_shadbala: document.getElementById('expIncShadbala')?.checked ?? true,
+                include_dasha: document.getElementById('expIncDasha')?.checked ?? true,
+                include_vimshopaka: document.getElementById('expIncVimshopaka')?.checked ?? true,
+                additional_vargas: additionalVargas
+            };
+
+            const nativeId = document.getElementById('editNativeId')?.value || document.getElementById('nativeSelect')?.value;
+
+            const payload = {
+                native_id: nativeId,
+                chart_data: currentChartData,
+                options: options
+            };
+
+            const statusMsg = document.getElementById('exportStatusMsg');
+            const exportBtn = document.getElementById('btnDoExportPdf');
+
+            if (previewOnly) {
+                try {
+                    if (statusMsg) statusMsg.style.display = 'flex';
+                    const response = await fetch('/api/export_preview', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const html = await response.text();
+                    const previewWindow = window.open('', '_blank');
+                    if (previewWindow) {
+                        previewWindow.document.write(html);
+                        previewWindow.document.close();
+                    } else {
+                        alert('Pop-up blocked. Please allow pop-ups for this site to view the print preview.');
+                    }
+                } catch (err) {
+                    alert('Failed to generate print preview: ' + err);
+                } finally {
+                    if (statusMsg) statusMsg.style.display = 'none';
+                }
+            } else {
+                try {
+                    if (statusMsg) statusMsg.style.display = 'flex';
+                    if (exportBtn) exportBtn.disabled = true;
+                    
+                    const response = await fetch('/api/export_pdf', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errJson = await response.json();
+                        throw new Error(errJson.error || 'Server error generating PDF');
+                    }
+
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = url;
+                    const subjectName = (currentChartData.subject_info?.name || 'Chart').replace(/[^a-zA-Z0-9_-]/g, '_');
+                    a.download = `${subjectName}_Astra_Master_Plan.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    a.remove();
+                    closeExportModal();
+                } catch (err) {
+                    alert('PDF Export Error: ' + err.message);
+                } finally {
+                    if (statusMsg) statusMsg.style.display = 'none';
+                    if (exportBtn) exportBtn.disabled = false;
+                }
             }
         }
 
@@ -6419,6 +7455,8 @@
             if (e.key === 'Escape') {
                 const sm = document.getElementById('settingsModal');
                 if (sm) sm.style.display = 'none';
+                const em = document.getElementById('exportPdfModal');
+                if (em) em.style.display = 'none';
                 const mm = document.getElementById('maximizeModal');
                 if (mm) mm.style.display = 'none';
                 const wm = document.getElementById('widgetMaximizeModal');

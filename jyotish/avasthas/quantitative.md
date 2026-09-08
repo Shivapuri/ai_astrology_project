@@ -34,11 +34,13 @@ Every cell provides complete sub-values matching Kala software down to 0.1 preci
      - Top: Base Score (Green / Black)
      - Middle: Net Difference `Base - Base_Negative` (Bold Black, suffixed with `*2` if Mars in Moolatrikona)
      - Bottom: Negative Base Score (Red)
-     - *(Note: In ShadBala Mode, the diagonal displays a single bold black Base number with `*2` flag for Mars, as no negative base exists).*
+      - *(Note: In ShadBala Mode for D1, the diagonal displays a single bold black Base number with `*2` flag for Mars; in divisional charts ($V \ne \text{D1}$), the diagonal displays the planet's Vimshopaka dignity for that Varga's Parashari scheme).*
+      - *(Note: In Vimshopaka Mode, the diagonal displays the Parashari Vimshopaka dignity).*
+      - *(Note: In Drishti Yuti Mode, the diagonal displays the `Vimsho.` dignity score while keeping raw base None for D1 aspect summation).*
 
-   - **ShadBala Pull Rules:**
-     - Both positive and negative pulls pull the giving planet's full ShadBala base:
-       $$\text{Pull} = \text{Base}(p_{\text{give}}) \cdot \frac{\text{Aspect Virupas}}{60.0}$$
+   - **ShadBala & Vimshopaka Pull Rules:**
+      - Both positive and negative pulls pull the giving planet's baseline score:
+        $$\text{Pull} = \text{Base}(p_{\text{give}}) \cdot \frac{\text{Aspect Virupas}}{60.0}$$
 
 5. **Mars Moolatrikona & Dignity Rules:**
    - When Mars is in Aries (its Moolatrikona sign), a visual flag `*2` is attached to its diagonal difference/base.

@@ -63,8 +63,21 @@ EXCLUDED_FILES = {
     "va_text.txt",
     "transcript.txt",
     "build_vedic_astrology_epub_master.py",
+    "generate_agnidevi_learning_style_pdf.py",
+    "generate_first_house_pdf.py",
+    "generate_learning_style_pdf.py",
+    "build_full_epub.py",
+    "generate_epub.py",
+    "build_bphs_database.py",
+    "build_all_databases.py",
+    "build_kb_json.py",
+    "export_commits.py",
+    "Shivapuri_Learning_Style_Analysis.md",
     "angelina_jolie_shayanadi_vargas.json",
     "angelina_jolie_shayanadi_vargas.csv",
+    "analyze_learning_style.py",
+    "audit_shadbala.py",
+    "session_handoff.md",
 }
 
 EXCLUDED_EXTENSIONS = {
@@ -150,6 +163,14 @@ FILE_METADATA_REGISTRY = {
     "jyotish/draw_chart.py": (
         "Chart Visualization",
         "SVG chart diagram generator (North/South Indian styles, glyphs, dynamic house sizing)",
+    ),
+    "jyotish/pdf_exporter.py": (
+        "Report Generation",
+        "Publication-grade astrological PDF export engine (A3 Master Plan and A4 Dossier with vector SVGs)",
+    ),
+    "jyotish/pdf_exporter.md": (
+        "Architecture & Design",
+        "Architectural specification for the publication-grade PDF exporter",
     ),
     "jyotish/scripture_db.py": (
         "Scripture & Database",
@@ -262,6 +283,15 @@ FILE_METADATA_REGISTRY = {
         "Core Math Spec",
         "Drishti computation formulas and degree-based aspect weights",
     ),
+    # Sign Attributes & Kalapurusha
+    "jyotish/sign_attributes.py": (
+        "Core Math Engine",
+        "Sign distributions (Elements, Mobility, Polarity, Varnas, Doshas, Rising) and Kalapurusha anatomy",
+    ),
+    "jyotish/sign_attributes.md": (
+        "Core Math Spec",
+        "Mathematical specification and classical definitions for sign attributes and anatomy",
+    ),
     # Frontend UI
     "templates/index.html": (
         "Frontend UI",
@@ -311,6 +341,10 @@ FILE_METADATA_REGISTRY = {
     "tests/test_svg_generation.py": (
         "Verification Suite",
         "Unit tests validating SVG chart structure, viewBox, and transparency",
+    ),
+    "tests/test_sign_attributes.py": (
+        "Verification Suite",
+        "Unit tests validating sign attributes, matrix distributions, and Kalapurusha anatomy",
     ),
     "tests/test_ui_e2e.py": (
         "Verification Suite",

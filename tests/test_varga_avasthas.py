@@ -189,3 +189,65 @@ def test_varga_amsa_factor_bounds():
         for deg in [0.0, 0.001, 7.5, 14.999, 15.0, 22.5, 29.999]:
             amsa = get_varga_amsa_factor(deg, harmonic)
             assert 1 <= amsa <= 4, f"Amsa factor {amsa} out of [1, 4] for deg={deg}, harmonic={harmonic}"
+
+
+def test_swami_shivapuri_dynamic_varga_modifiers():
+    """
+    Verifies that calculate_varga_lajjitadi_net_modifiers produces dynamic, distinct,
+    chart-specific results for a second chart (Swami Shivapuri) and does not mirror Angelina Jolie.
+    """
+    sp_chart = generate_kala_chart(
+        name="Swami Shivapuri",
+        year=1983,
+        month=11,
+        day=10,
+        hour=22,
+        minute=20,
+        latitude=52.20296,
+        longitude=8.0448,
+        timezone_offset=1.0,
+    )
+    sp_modifiers = calculate_varga_lajjitadi_net_modifiers(sp_chart)
+    assert len(sp_modifiers) == 16, f"Expected 16 vargas in modifiers, got {len(sp_modifiers)}"
+
+    # Assert that Swami Shivapuri's modifiers are distinct from Angelina Jolie's baseline
+    # E.g. AJ D1 Sun is 18.0, whereas Shivapuri D1 Sun should be ~38.1
+    assert abs(sp_modifiers["D1"]["Sun"] - 38.1) <= 0.2, (
+        f"Swami Shivapuri D1 Sun expected ~38.1, got {sp_modifiers['D1']['Sun']}"
+    )
+    assert sp_modifiers["D1"]["Sun"] != 18.0, "Shivapuri modifiers should not match hardcoded AJ baseline"
+
+    # Verify D7 modifiers differ according to Saptavarga Vimshopaka
+    assert abs(sp_modifiers["D7"]["Sun"] - 33.7) <= 0.2, (
+        f"Swami Shivapuri D7 Sun expected ~33.7, got {sp_modifiers['D7']['Sun']}"
+    )
+
+
+def test_divisional_diagonal_starting_strength_not_frozen(aj_chart):
+    """
+    Verifies that divisional charts (e.g. D7 Saptamsa, D9 Navamsa) dynamically display
+    the planet's Vimshopaka dignity on the diagonal rather than being frozen to D1 ShadBala.
+    """
+    matrices_aj = aj_chart.get("avastha_matrix", {})
+    assert "D1" in matrices_aj and "D7" in matrices_aj and "D9" in matrices_aj
+
+    # In D1, ShadBala diagonal is Rasi ShadBala virupas (~450.7 for Sun)
+    d1_sun_base = matrices_aj["D1"]["ShadBala"]["Sun"]["Sun"]["base"]
+    assert abs(d1_sun_base - 450.7) <= 0.5, f"D1 Sun ShadBala base expected ~450.7, got {d1_sun_base}"
+
+    # In D7, diagonal base must be Saptavarga Vimshopaka dignity (9.1), NOT 450.7!
+    d7_sun_base = matrices_aj["D7"]["ShadBala"]["Sun"]["Sun"]["base"]
+    assert abs(d7_sun_base - 9.1) <= 0.2, f"D7 Sun base expected 9.1 (Vimsho.), got {d7_sun_base}"
+    assert d7_sun_base != d1_sun_base, "D7 diagonal base must not be frozen to D1 ShadBala!"
+
+    # In D9, diagonal base must be Shadvarga Vimshopaka dignity (7.6), NOT 450.7!
+    d9_sun_base = matrices_aj["D9"]["ShadBala"]["Sun"]["Sun"]["base"]
+    assert abs(d9_sun_base - 7.6) <= 0.2, f"D9 Sun base expected 7.6 (Vimsho.), got {d9_sun_base}"
+    assert d9_sun_base != d1_sun_base, "D9 diagonal base must not be frozen to D1 ShadBala!"
+
+    # Verify Vimshopaka baseline mode is available in avastha_matrices
+    assert "Vimshopaka" in matrices_aj["D1"], "Vimshopaka mode missing from D1 avastha_matrix"
+    assert "Vimshopaka" in matrices_aj["D7"], "Vimshopaka mode missing from D7 avastha_matrix"
+    assert matrices_aj["D1"]["Vimshopaka"]["Sun"]["Sun"]["base"] == 7.6
+    assert matrices_aj["D7"]["Vimshopaka"]["Sun"]["Sun"]["base"] == 9.1
+

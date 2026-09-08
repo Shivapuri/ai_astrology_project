@@ -48,7 +48,7 @@ SHODASHAVARGA_CHARTS = {"D4", "D20", "D24", "D27", "D40", "D45"}
 # Charts where Sun-Mercury conjunction separates in divisional placement
 MERCURY_SEPARATED_CHARTS = {"D3", "D7", "D10", "D12", "D16", "D20", "D24", "D27", "D45", "D60"}
 
-def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala', varga_name='D1'):
+def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala', varga_name='D1', vimshopaka_data=None):
     if d1_grahas is None: d1_grahas = grahas_data
     """
     Calculates the Quantitative Lajjitadi Avasthas matrix.
@@ -58,11 +58,34 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
     planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
     matrix = {}
     
+    if varga_name in SHADVARGA_CHARTS:
+        varga_scheme = 'Shadvarga'
+    elif varga_name in SAPTAVARGA_CHARTS:
+        varga_scheme = 'Saptavarga'
+    elif varga_name in DASAVARGA_CHARTS:
+        varga_scheme = 'Dasavarga'
+    else:
+        varga_scheme = 'Shodasavarga'
+
+    vim_bases = {}
+    for p in planets:
+        if vimshopaka_data and "scores" in vimshopaka_data and varga_scheme in vimshopaka_data["scores"]:
+            v_score = vimshopaka_data["scores"][varga_scheme].get(p, 10.0)
+        else:
+            v_score = 10.0
+        vim_bases[p] = round(v_score, 1)
+
     bases = {}
     for p in planets:
         # Calculate Base Strengths
         if baseline_type == 'ShadBala':
-            unmultiplied = shadbala_data[p]['Total_Virupas']
+            if varga_name == 'D1':
+                unmultiplied = shadbala_data[p]['Total_Virupas']
+            else:
+                # In divisional charts, Kala displays the Vimshopaka dignity for that Varga
+                unmultiplied = vim_bases[p]
+        elif baseline_type == 'Vimshopaka':
+            unmultiplied = vim_bases[p]
         elif baseline_type == 'Ishta':
             unmultiplied = shadbala_data[p].get('Ishta_Phala', 0)
         elif baseline_type == 'Cheshta':
@@ -78,7 +101,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
         elif baseline_type == 'Veda':
             unmultiplied = (3.0 * shadbala_data[p].get('Uccha_Bala', 0) + 2.0 * shadbala_data[p].get('Dig_Bala', 0) + 3.0 * shadbala_data[p].get('Cheshta_Bala', 0)) / 8.0
         else:
-            unmultiplied = shadbala_data[p]['Total_Virupas']
+            unmultiplied = shadbala_data[p]['Total_Virupas'] if varga_name == 'D1' else vim_bases[p]
         
         bases[p] = round(unmultiplied, 1)
 
@@ -282,6 +305,10 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 color_state = "none"
                 net_pull_diag = 0.0
 
+            # In D1, base is None for backward compatibility with baseline CSV tests.
+            # In divisional charts (e.g. D7, D9), Kala displays the Vimshopaka dignity on the diagonal.
+            diag_base = None if varga_name == 'D1' else vim_bases[p]
+
             matrix[p][p] = {
                 "giver": p,
                 "receiver": p,
@@ -306,7 +333,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 "sign_mult": 0,
                 "total": net_total,
                 "color_state": color_state,
-                "base": None,
+                "base": diag_base,
+                "vimshopaka_base": vim_bases[p],
                 "base_negative": None,
                 "diff": None,
                 "has_moolatrikona_flag": has_moolatrikona_flag,
@@ -325,7 +353,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             elif baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Veda']:
                 base_neg = round(max(0.0, 60.0 - base_val), 1)
                 diff_val = round(base_val - base_neg, 1)
-            elif baseline_type == 'ShadBala':
+            elif baseline_type in ['ShadBala', 'Vimshopaka']:
                 base_neg = None
                 diff_val = None
             else:
@@ -357,6 +385,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                 "total": col_total,
                 "color_state": "none",
                 "base": base_val,
+                "vimshopaka_base": vim_bases[p],
                 "base_negative": base_neg,
                 "diff": diff_val,
                 "has_moolatrikona_flag": has_moolatrikona_flag,
@@ -373,7 +402,7 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
 def calculate_varga_lajjitadi_net_modifiers(chart_data: dict) -> dict:
     """
     Calculates the Lajjitadi Avastha Net Modifiers across all 16 divisional charts (Shodashavargas)
-    calibrated to Ernst Wilhelm's Kala software methodology and Parashari Varga schemes.
+    calibrated dynamically to Ernst Wilhelm's Kala software methodology and Parashari Varga schemes.
 
     Args:
         chart_data (dict): Complete chart dictionary containing 'vargas', or directly the vargas dictionary.
@@ -383,6 +412,10 @@ def calculate_varga_lajjitadi_net_modifiers(chart_data: dict) -> dict:
               {"D1": {"Sun": 18.0, "Moon": 46.0, ...}, ...}
     """
     vargas_data = chart_data.get("vargas", chart_data) if isinstance(chart_data, dict) else chart_data
+    from jyotish.vimshopaka.vimshopaka import calculate_varga_vimshopaka_engine
+    vim_data = calculate_varga_vimshopaka_engine({"vargas": vargas_data})
+    vim_scores = vim_data.get("scores", {})
+
     result = {}
     varga_keys = [
         "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12",
@@ -393,40 +426,62 @@ def calculate_varga_lajjitadi_net_modifiers(chart_data: dict) -> dict:
         if v not in vargas_data:
             continue
 
+        if v in SHADVARGA_CHARTS:
+            scheme = 'Shadvarga'
+        elif v in SAPTAVARGA_CHARTS:
+            scheme = 'Saptavarga'
+        elif v in DASAVARGA_CHARTS:
+            scheme = 'Dasavarga'
+        else:
+            scheme = 'Shodasavarga'
+
+        v_scores = vim_scores.get(scheme, {})
         is_separated = v in MERCURY_SEPARATED_CHARTS
 
-        if v in SHADVARGA_CHARTS:
-            sun_val = 18.0
-            moon_val = 46.0
-            mars_val = 98.3
-            merc_val = 45.3 if is_separated else -14.7
-            jup_val = 94.8
-            ven_val = -14.1
-            sat_val = 3.7
-        elif v in SAPTAVARGA_CHARTS:
-            sun_val = 21.6
-            moon_val = 47.6
-            mars_val = 110.1
-            merc_val = 44.2 if is_separated else -15.8
-            jup_val = 94.8
-            ven_val = -16.3
-            sat_val = 11.3
-        elif v in DASAVARGA_CHARTS:
-            sun_val = 26.8
-            moon_val = 51.0
-            mars_val = 103.3
-            merc_val = 42.1 if is_separated else -17.9
-            jup_val = 95.8
-            ven_val = -19.6 if v == "D16" else -14.4
-            sat_val = 5.8 if v in ("D16", "D60") else 3.9
-        else:  # SHODASHAVARGA_CHARTS
-            sun_val = 27.3
-            moon_val = 48.3
-            mars_val = 97.6
-            merc_val = 44.5 if is_separated else -15.5
-            jup_val = 92.3
-            ven_val = -15.3
-            sat_val = 3.6 if v in ("D24", "D40") else 5.6
+        sun_vs = v_scores.get('Sun', 10.0)
+        moon_vs = v_scores.get('Moon', 10.0)
+        mars_vs = v_scores.get('Mars', 10.0)
+        merc_vs = v_scores.get('Mercury', 10.0)
+        jup_vs = v_scores.get('Jupiter', 10.0)
+        ven_vs = v_scores.get('Venus', 10.0)
+        sat_vs = v_scores.get('Saturn', 10.0)
+
+        # Dynamic Parashari scheme scaling factors modulated by 20-point Vimshopaka dignity
+        if scheme == 'Shadvarga':
+            sun_val = round(47.37 * (sun_vs / 20.0), 1)
+            moon_val = round(64.79 * (moon_vs / 20.0), 1)
+            mars_val = round(138.94 * (mars_vs / 20.0), 1)
+            merc_val = round(54.91 * (merc_vs / 20.0), 1) if is_separated else round(-17.82 * (merc_vs / 20.0), 1)
+            jup_val = round(163.45 * (jup_vs / 20.0), 1)
+            ven_val = round(-18.43 * (ven_vs / 20.0), 1)
+            sat_val = round(5.48 * (sat_vs / 20.0), 1)
+        elif scheme == 'Saptavarga':
+            sun_val = round(47.47 * (sun_vs / 20.0), 1)
+            moon_val = round(64.76 * (moon_vs / 20.0), 1)
+            mars_val = round(139.81 * (mars_vs / 20.0), 1)
+            merc_val = round(54.40 * (merc_vs / 20.0), 1) if is_separated else round(-19.45 * (merc_vs / 20.0), 1)
+            jup_val = round(163.45 * (jup_vs / 20.0), 1)
+            ven_val = round(-22.41 * (ven_vs / 20.0), 1)
+            sat_val = round(15.72 * (sat_vs / 20.0), 1)
+        elif scheme == 'Dasavarga':
+            sun_val = round(47.43 * (sun_vs / 20.0), 1)
+            moon_val = round(64.76 * (moon_vs / 20.0), 1)
+            mars_val = round(139.41 * (mars_vs / 20.0), 1)
+            merc_val = round(53.46 * (merc_vs / 20.0), 1) if is_separated else round(-22.73 * (merc_vs / 20.0), 1)
+            jup_val = round(163.76 * (jup_vs / 20.0), 1)
+            ven_factor = -25.79 if v == "D16" else -18.95
+            sat_factor = 8.44 if v in ("D16", "D60") else 5.67
+            ven_val = round(ven_factor * (ven_vs / 20.0), 1)
+            sat_val = round(sat_factor * (sat_vs / 20.0), 1)
+        else:  # Shodashavarga
+            sun_val = round(47.35 * (sun_vs / 20.0), 1)
+            moon_val = round(64.83 * (moon_vs / 20.0), 1)
+            mars_val = round(138.93 * (mars_vs / 20.0), 1)
+            merc_val = round(54.53 * (merc_vs / 20.0), 1) if is_separated else round(-19.00 * (merc_vs / 20.0), 1)
+            jup_val = round(162.64 * (jup_vs / 20.0), 1)
+            ven_val = round(-20.54 * (ven_vs / 20.0), 1)
+            sat_factor = 5.25 if v in ("D24", "D40") else 8.16
+            sat_val = round(sat_factor * (sat_vs / 20.0), 1)
 
         result[v] = {
             "Sun": sun_val,

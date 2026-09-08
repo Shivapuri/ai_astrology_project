@@ -12,6 +12,7 @@ import jyotish.avasthas as avasthas
 from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEAR_DAYS
 import jyotish.ashtakavarga as ashtakavarga
 import jyotish.vimshopaka as vimshopaka
+import jyotish.sign_attributes as sign_attributes
 
 try:
     import swisseph as swe
@@ -728,13 +729,26 @@ def generate_kala_chart(
 
 
     
-    # 6. Quantitative Lajjitadi Avasthas
+    # 6. Vimshopaka Bala (Varga Dignity Scores)
+    vimshopaka_data = vimshopaka.calculate_varga_vimshopaka_engine({"vargas": vargas_data})
+    vimshopaka_export = {
+        **vimshopaka_data,
+        "shadvarga": vimshopaka_data["scores"].get("Shadvarga", {}),
+        "saptavarga": vimshopaka_data["scores"].get("Saptavarga", {}),
+        "dasavarga": vimshopaka_data["scores"].get("Dasavarga", {}),
+        "shodashavarga": vimshopaka_data["scores"].get("Shodasavarga", {}),
+        "vaisheshikamsa": {
+            p: vimshopaka_data["vaisheshikamsa"].get("Shodasavarga", {}).get(p, {}).get("honorific", "-")
+            for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+        }
+    }
+
+    # 7. Quantitative Lajjitadi Avasthas
     from jyotish.avasthas.quantitative import calculate_avastha_matrix
-    
 
     avastha_matrices = {}
     planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-    baseline_types = ["ShadBala", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti", "Veda"]
+    baseline_types = ["ShadBala", "Vimshopaka", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti", "Veda"]
     
     for v_key in vargas_data.keys():
         avastha_matrices[v_key] = {}
@@ -744,7 +758,8 @@ def generate_kala_chart(
                 shadbala_data,
                 vargas_data["D1"]["grahas"],
                 baseline_type=baseline,
-                varga_name=v_key
+                varga_name=v_key,
+                vimshopaka_data=vimshopaka_data
             )
             v_matrix = {}
             for p_give in planets_list:
@@ -752,7 +767,7 @@ def generate_kala_chart(
                 for p_receive in planets_list:
                     v_matrix[p_give][p_receive] = avastha_results['matrix'][p_give][p_receive]
             avastha_matrices[v_key][baseline] = v_matrix
-    # 7. Advanced Graha Aspects across all Vargas
+    # 8. Advanced Graha Aspects across all Vargas
     varga_aspects = {}
     for v_key in vargas_data.keys():
         v_asc = vargas_data[v_key]["lagna"]["longitude"]
@@ -773,19 +788,6 @@ def generate_kala_chart(
         'rasi_pinda_total': r_tot,
         'graha_pinda_total': g_tot,
         'yoga_pinda_total': r_tot + g_tot,
-    }
-
-    vimshopaka_data = vimshopaka.calculate_varga_vimshopaka_engine({"vargas": vargas_data})
-    vimshopaka_export = {
-        **vimshopaka_data,
-        "shadvarga": vimshopaka_data["scores"].get("Shadvarga", {}),
-        "saptavarga": vimshopaka_data["scores"].get("Saptavarga", {}),
-        "dasavarga": vimshopaka_data["scores"].get("Dasavarga", {}),
-        "shodashavarga": vimshopaka_data["scores"].get("Shodasavarga", {}),
-        "vaisheshikamsa": {
-            p: vimshopaka_data["vaisheshikamsa"].get("Shodasavarga", {}).get(p, {}).get("honorific", "-")
-            for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-        }
     }
 
     vedic_context = {
@@ -824,7 +826,8 @@ def generate_kala_chart(
         "varga_advanced_aspects": varga_aspects,
         "ashtakavarga": ashtakavarga_data,
         "varga_vimshopaka": vimshopaka_data,
-        "vimshopaka": vimshopaka_export
+        "vimshopaka": vimshopaka_export,
+        "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()}
     }
     
     # 7. Write to file (only if requested)

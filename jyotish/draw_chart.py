@@ -256,6 +256,201 @@ def get_north_indian_positions(num_planets, cx, cy, has_cusps=False):
         positions.append((cx + 22, r2_y))
     return positions
 
+def generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode="symbol"):
+    planet_abbr = {
+        "Sun": "Su", "Moon": "Mo", "Mars": "Ma", "Mercury": "Me",
+        "Jupiter": "Ju", "Venus": "Ve", "Saturn": "Sa", "Rahu": "Ra", "Ketu": "Ke"
+    }
+    
+    # Sign breakdown
+    sign_data = {}
+    for s in signs_list:
+        planets = [it for it in items_by_sign[s] if it.get("type") == "planet" and it.get("name") != "Lagna"]
+        has_lagna = any(it.get("type") == "planet" and it.get("name") == "Lagna" for it in items_by_sign[s])
+        sign_data[s] = {
+            "planets": planets,
+            "has_lagna": has_lagna,
+            "count": len(planets)
+        }
+
+    matrix_defs = [
+        ("Fire", "#c0392b", [("Aries", "Ar"), ("Leo", "Le"), ("Sagittarius", "Sg")]),
+        ("Earth", "#795548", [("Capricorn", "Cp"), ("Taurus", "Ta"), ("Virgo", "Vi")]),
+        ("Air", "#1976d2", [("Libra", "Li"), ("Aquarius", "Aq"), ("Gemini", "Ge")]),
+        ("Water", "#00897b", [("Cancer", "Cn"), ("Scorpio", "Sc"), ("Pisces", "Pi")])
+    ]
+
+    row_totals = [sum(sign_data[s]["count"] for s, _ in signs) for _, _, signs in matrix_defs]
+    col_totals = [sum(sign_data[signs[c][0]]["count"] for _, _, signs in matrix_defs) for c in range(3)]
+    grand_total = sum(row_totals)
+
+    svg = '<g class="si-center-container" style="cursor: pointer;" onclick="if(window.cycleSouthCenter)window.cycleSouthCenter(this);" data-view="title">\n'
+    svg += '<rect x="100" y="100" width="200" height="200" fill="#fdfbf7" fill-opacity="0.01"/>\n'
+
+    # VIEW 1: TITLE
+    svg += '  <g class="si-center-view si-view-title">\n'
+    svg += f'    <text x="200" y="182" font-family="sans-serif" font-size="17" font-weight="bold" fill="#4a3325" text-anchor="middle">{chart_title}</text>\n'
+    svg += f'    <text x="200" y="206" font-family="sans-serif" font-size="12" fill="#8c7b64" text-anchor="middle">{chart_sub}</text>\n'
+    svg += '    <g transform="translate(134, 232)">\n'
+    svg += '      <rect x="0" y="0" width="132" height="22" rx="11" fill="#f7f3eb" stroke="#d5c8b2" stroke-width="1.2"/>\n'
+    svg += '      <text x="66" y="15" font-family="sans-serif" font-size="10" font-weight="bold" fill="#6b5a4b" text-anchor="middle">Sign Matrix [↺]</text>\n'
+    svg += '    </g>\n'
+    svg += '  </g>\n'
+
+    # VIEW 2: SIMPLISTIC 3x4 MATRIX (Matching user preference)
+    # Columns: C (Cardinal/Chara), F (Fixed/Sthira), M (Mutable/Dual)
+    # Rows: F (Fire), A (Air), E (Earth), W (Water)
+    svg += '  <g class="si-center-view si-view-matrix" style="display:none;">\n'
+    svg += '    <rect x="102" y="102" width="196" height="196" rx="4" fill="#fdfbf7" stroke="#d5c8b2" stroke-width="1"/>\n'
+    svg += '    <text x="112" y="121" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#6b5a4b" letter-spacing="0.5">SIGN MATRIX</text>\n'
+    svg += '    <text x="290" y="121" font-family="sans-serif" font-size="8" fill="#8c7b64" text-anchor="end">[↺ Anatomy]</text>\n'
+
+    # Mapping based on user example:
+    # Top headers: C, F, M
+    # Left headers: F (Fire), A (Air), E (Earth), W (Water)
+    matrix_defs = [
+        ("Fire", "F", "#c0392b", [("Aries", "Cardinal"), ("Leo", "Fixed"), ("Sagittarius", "Mutable")]),
+        ("Air", "A", "#d97706", [("Libra", "Cardinal"), ("Aquarius", "Fixed"), ("Gemini", "Mutable")]),
+        ("Earth", "E", "#2e7d32", [("Capricorn", "Cardinal"), ("Taurus", "Fixed"), ("Virgo", "Mutable")]),
+        ("Water", "W", "#1976d2", [("Cancer", "Cardinal"), ("Scorpio", "Fixed"), ("Pisces", "Mutable")])
+    ]
+
+    col_headers = [
+        ("C", "Cardinal / Movable (Chara): Aries, Libra, Capricorn, Cancer"),
+        ("F", "Fixed (Sthira): Leo, Aquarius, Taurus, Scorpio"),
+        ("M", "Mutable / Dual (Dvisvabhava): Sagittarius, Gemini, Virgo, Pisces")
+    ]
+
+    def get_planet_glyph(p_name):
+        info = planet_notations.get(p_name, {})
+        if mode == "devanagari":
+            return info.get("devanagari", p_name[:2])
+        elif mode == "english":
+            return info.get("english", p_name[:2])
+        else:
+            return info.get("symbol", p_name[:2])
+
+    lagna_glyph = "ल" if mode == "devanagari" else ("Asc" if mode == "english" else "AC")
+
+    col_xs = [149, 189, 229]
+    row_ys = [157, 183, 209, 235]
+    col_w = 40
+    row_h = 26
+
+    # 1. Top column headers: C, F, M
+    for c_idx, (col_letter, col_tip) in enumerate(col_headers):
+        cx = col_xs[c_idx] + col_w / 2
+        svg += f'    <g><title>{col_tip}</title><text x="{cx}" y="148" font-family="sans-serif" font-size="10" font-weight="bold" fill="#5c4433" text-anchor="middle" dominant-baseline="central">{col_letter}</text></g>\n'
+
+    # 2. Grid base background
+    svg += f'    <rect x="149" y="157" width="120" height="104" fill="#faf8f2"/>\n'
+
+    # 3. Cells and left row headers
+    for r_idx, (elem_name, elem_code, elem_color, signs) in enumerate(matrix_defs):
+        ry = row_ys[r_idx]
+        row_tip = f"{elem_name} (Agni/Vayu/Prithvi/Jala): {', '.join([s[0] for s in signs])}"
+        svg += f'    <g><title>{row_tip}</title><text x="139" y="{ry + row_h/2}" font-family="sans-serif" font-size="10" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{elem_code}</text></g>\n'
+
+        for c_idx, (s_name, s_quality) in enumerate(signs):
+            cx = col_xs[c_idx]
+            s_info = sign_data[s_name]
+            p_list = s_info["planets"]
+            has_l = s_info["has_lagna"]
+
+            # Highlight cell background if occupied
+            if p_list or has_l:
+                svg += f'    <rect x="{cx}" y="{ry}" width="{col_w}" height="{row_h}" fill="#ffffff"/>\n'
+
+            def render_tspan(glyph, p_n, base_sz):
+                if mode == "symbol" and p_n in ["Mars", "Venus"]:
+                    adj_sz = round(base_sz * 0.82, 1)
+                    sw = 0.55 if base_sz <= 10 else 0.7
+                    return f'<tspan font-size="{adj_sz}" stroke="{elem_color}" stroke-width="{sw}" paint-order="stroke fill">{glyph}</tspan>'
+                return f'<tspan font-size="{base_sz}">{glyph}</tspan>'
+
+            items_to_render = [(get_planet_glyph(p["name"]), p["name"]) for p in p_list]
+            if has_l:
+                items_to_render.append((lagna_glyph, "Lagna"))
+
+            p_details = [f"{p['name']} ({p['deg']}{' R' if p.get('is_retrograde') else ''})" for p in p_list]
+            if has_l:
+                p_details.append("Ascendant (AC)")
+            tooltip_str = f"{s_name} ({elem_name} / {s_quality}): {', '.join(p_details) if p_details else 'Empty'}"
+
+            center_x = cx + col_w / 2
+            center_y = ry + row_h / 2
+
+            if not items_to_render:
+                svg += f'    <g><title>{tooltip_str}</title><rect x="{cx}" y="{ry}" width="{col_w}" height="{row_h}" fill="transparent"/></g>\n'
+            elif len(items_to_render) == 1:
+                tspan_str = render_tspan(items_to_render[0][0], items_to_render[0][1], 11.5)
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+            elif len(items_to_render) == 2:
+                tspan_str = "  ".join([render_tspan(g, n, 10.5) for g, n in items_to_render])
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+            elif len(items_to_render) == 3:
+                tspan_str = " ".join([render_tspan(g, n, 9.5) for g, n in items_to_render])
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+            else:
+                mid = (len(items_to_render) + 1) // 2
+                line1 = " ".join([render_tspan(g, n, 8.5) for g, n in items_to_render[:mid]])
+                line2 = " ".join([render_tspan(g, n, 8.5) for g, n in items_to_render[mid:]])
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y - 5}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{line1}</text><text x="{center_x}" y="{center_y + 6}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{line2}</text></g>\n'
+
+    # 4. Grid lines
+    svg += f'    <line x1="189" y1="157" x2="189" y2="261" stroke="#d5c8b2" stroke-width="0.8"/>\n'
+    svg += f'    <line x1="229" y1="157" x2="229" y2="261" stroke="#d5c8b2" stroke-width="0.8"/>\n'
+    svg += f'    <line x1="149" y1="183" x2="269" y2="183" stroke="#d5c8b2" stroke-width="0.8"/>\n'
+    svg += f'    <line x1="149" y1="209" x2="269" y2="209" stroke="#d5c8b2" stroke-width="0.8"/>\n'
+    svg += f'    <line x1="149" y1="235" x2="269" y2="235" stroke="#d5c8b2" stroke-width="0.8"/>\n'
+    svg += f'    <rect x="149" y="157" width="120" height="104" fill="none" stroke="#b59472" stroke-width="1"/>\n'
+
+    svg += '    <text x="200" y="281" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to view Kalapurusha Anatomy ➔</text>\n'
+    svg += '  </g>\n'
+
+    # VIEW 3: KALAPURUSHA ANATOMY
+    from jyotish.sign_attributes import KALAPURUSHA_ANATOMY
+    svg += '  <g class="si-center-view si-view-anatomy" style="display:none;">\n'
+    svg += '    <rect x="102" y="102" width="196" height="196" rx="4" fill="#fdfbf7" stroke="#d5c8b2" stroke-width="1"/>\n'
+    svg += '    <rect x="102" y="102" width="196" height="18" rx="4" fill="#eae1d1"/>\n'
+    svg += '    <text x="108" y="115" font-family="sans-serif" font-size="9.5" font-weight="bold" fill="#4a3325">KALAPURUSHA ANATOMY</text>\n'
+    svg += '    <text x="292" y="115" font-family="sans-serif" font-size="9" fill="#8c7b64" text-anchor="end">[↺ Title]</text>\n'
+
+    active_regions = [item for item in KALAPURUSHA_ANATOMY if sign_data[item["sign"]]["count"] > 0 or sign_data[item["sign"]]["has_lagna"]]
+    if not active_regions:
+        active_regions = KALAPURUSHA_ANATOMY[:5]
+
+    y_anat = 124
+    row_anat_h = 24
+    for idx, item in enumerate(active_regions[:6]):
+        s_name = item["sign"]
+        s_info = sign_data[s_name]
+        p_list = s_info["planets"]
+        has_l = s_info["has_lagna"]
+        p_names = [planet_abbr.get(p["name"], p["name"][:2]) for p in p_list]
+        if has_l:
+            p_names.append("Asc")
+        p_str = ", ".join(p_names) if p_names else "—"
+        sign_abbr = sign_symbols[s_name][2]
+        
+        bg_a = "#ffffff" if idx % 2 == 0 else "#fcf9f4"
+        svg += f'    <rect x="104" y="{y_anat}" width="192" height="{row_anat_h}" fill="{bg_a}"/>\n'
+        tooltip = f"{item['sign']}: {item['organs']} — {p_str}"
+        svg += f'    <g><title>{tooltip}</title>\n'
+        svg += f'      <text x="108" y="{y_anat + 11}" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#4a3325"><tspan fill="#b59472">{sign_abbr}</tspan> {item["region"]}</text>\n'
+        svg += f'      <text x="108" y="{y_anat + 21}" font-family="sans-serif" font-size="7.5" fill="#6b5a4b">{p_str}</text>\n'
+        svg += f'      <text x="290" y="{y_anat + 16}" font-family="sans-serif" font-size="8.5" font-weight="bold" fill="#a93226" text-anchor="end">({len(p_list)})</text>\n'
+        svg += f'    </g>\n'
+        y_anat += row_anat_h
+
+    svg += f'    <rect x="102" y="268" width="196" height="16" fill="#eae1d1"/>\n'
+    svg += f'    <text x="200" y="280" font-family="sans-serif" font-size="8" font-weight="bold" fill="#4a3325" text-anchor="middle">Active: {len(active_regions)}/12 Body Limbs</text>\n'
+    svg += '    <text x="200" y="294" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to return to Title ➔</text>\n'
+    svg += '  </g>\n'
+
+    svg += '</g>\n'
+    return svg
+
 def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
@@ -269,6 +464,20 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
         anchor_item = next((it for it in items if it.get("name") == "Lagna"), None)
     anchor_sign = anchor_item["sign"] if anchor_item else "Aries"
     anchor_index = signs_list.index(anchor_sign)
+
+    # Populate items by sign first so center view can use distribution data
+    items_by_sign = {s: [] for s in signs_list}
+    for item in items:
+        if item.get("type") == "cusp":
+            items_by_sign[item["sign"]].append(item)
+        else:
+            items_by_sign[item["sign"]].append({
+                "type": "planet",
+                "name": item["name"],
+                "sign": item["sign"],
+                "deg": f"{item['degree']}°{item['minute']:02d}'",
+                "is_retrograde": item.get("is_retrograde", False)
+            })
 
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
@@ -286,7 +495,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     svg += '<line x1="0" y1="300" x2="100" y2="300" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="300" y1="300" x2="400" y2="300" stroke="#5C4433" stroke-width="2"/>\n'
     
-    # Center Chart Title
+    # Center Chart Interactive Area (Title / 4x3 Matrix / Anatomy)
     chart_title = varga_name
     chart_sub = "Tropical South Indian"
     if root_planet == "Moon":
@@ -296,21 +505,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
         chart_title = f"{varga_name} Surya Lagna"
         chart_sub = "Sun as Ascendant (H1)"
 
-    svg += f'<text x="200" y="190" font-family="sans-serif" font-size="17" font-weight="bold" fill="#4a3325" text-anchor="middle">{chart_title}</text>\n'
-    svg += f'<text x="200" y="215" font-family="sans-serif" font-size="12" fill="#8c7b64" text-anchor="middle">{chart_sub}</text>\n'
-
-    items_by_sign = {s: [] for s in signs_list}
-    for item in items:
-        if item.get("type") == "cusp":
-            items_by_sign[item["sign"]].append(item)
-        else:
-            items_by_sign[item["sign"]].append({
-                "type": "planet",
-                "name": item["name"],
-                "sign": item["sign"],
-                "deg": f"{item['degree']}°{item['minute']:02d}'",
-                "is_retrograde": item.get("is_retrograde", False)
-            })
+    svg += generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode=mode)
 
     # Quadrant Map: (cusp_dx, cusp_dy, sign_dx, sign_dy)
     quadrant_map = {
@@ -406,9 +601,13 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+            extra_stroke = ""
+            if mode == "symbol" and p["name"] in ["Mars", "Venus"]:
+                font_sz = "16"
+                extra_stroke = f' stroke="{info["color"]}" stroke-width="0.8" paint-order="stroke fill"'
             
             svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py - 2}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py - 2}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}"{extra_stroke} text-anchor="middle" dominant-baseline="central">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 15}" font-family="sans-serif" font-size="10" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
@@ -505,6 +704,11 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
                 deg_sz = "10"
                 retro_sz = "9"
+            
+            extra_stroke = ""
+            if mode == "symbol" and p["name"] in ["Mars", "Venus"]:
+                font_sz = "16"
+                extra_stroke = f' stroke="{info["color"]}" stroke-width="0.8" paint-order="stroke fill"'
                 
             dev_name = info.get('dev_full', '')
             is_retro = p.get("is_retrograde", False)
@@ -513,7 +717,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}"{extra_stroke}>{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 15}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
@@ -808,6 +1012,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         px, py = polar_coords(r_pl_base, angle)
 
         font_sz = 10 if p_name == "Lagna" else (13.5 if mode == "devanagari" else 13)
+        if mode == "symbol" and p_name in ["Mars", "Venus"]:
+            font_sz = "10.5"
         
         tooltip = f"{info.get('full_sa', p_name)} — {item['degree']}° {s_sym} {item['minute']:02d}'{retro_badge} {item['sign']}"
         svg += f'<g class="interactive" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'

@@ -97,7 +97,7 @@ def test_client_change_updates_chart(page: Page):
         select_locator.select_option(second_option_value)
         
         # Click Load
-        page.locator("button", has_text="Load").click()
+        page.locator("button[onclick='loadChart()']").click()
         
         # Wait for loading indicator to show then hide (or just wait a bit)
         page.wait_for_timeout(1500)
