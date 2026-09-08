@@ -56,3 +56,14 @@ def test_goebbels_chart_api(client):
         assert data['data']['vargas']['D1']['lagna']['sign'] == 'Leo'
         assert 'D1' in data['svgs']
 
+def test_mahaprabhuji_chart_api(client):
+    for endpoint in ['/api/chart/mahaprabhuji', '/api/chart/deep-narayan-mahaprabhuji']:
+        response = client.get(endpoint)
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['native']['name'] == 'Bhagwan Sri Deep Narayan Mahaprabhuji'
+        assert data['native']['date'] == '1828-11-07'
+        assert data['data']['vargas']['D1']['lagna']['sign'] == 'Libra'
+        assert 'D1' in data['svgs']
+
+

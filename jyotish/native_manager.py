@@ -117,9 +117,9 @@ def get_native_by_id(filepath: str, native_id: str) -> Optional[Dict[str, Any]]:
         n_id = str(n.get("id", "")).lower().strip()
         if n_name == clean_target or n_id == clean_target:
             return n
-        # Also check word match (e.g. 'goebbels' matches 'Joseph Goebbels')
+        # Also check substring / word matches (e.g. 'deep-narayan-mahaprabhuji' matches 'Bhagwan Sri Deep Narayan Mahaprabhuji')
         words = [w for w in n_name.replace("-", " ").split()]
-        if clean_target in words or clean_target == "".join(words):
+        if clean_target in words or clean_target in n_name or clean_target == "".join(words):
             return n
 
     return None
