@@ -33,3 +33,26 @@ def test_chart_api(client):
     assert "vargas" in data["data"]
     assert "D1" in data["svgs"]
     assert "south" in data["svgs"]["D1"]["symbol"]
+
+def test_shri_krishna_chart_api(client):
+    # Fetch by slug and UUID
+    for endpoint in ['/api/chart/shri-krishna', '/api/chart/8270c2da-98d0-4b39-89ac-a3f5a11ac2b0']:
+        response = client.get(endpoint)
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['native']['name'] == 'Shri Krishna'
+        assert data['native']['date'] == '-3227-07-19'
+        assert data['data']['vargas']['D1']['lagna']['sign'] == 'Pisces'
+        assert 'D1' in data['svgs']
+
+def test_goebbels_chart_api(client):
+    # Fetch by slug and full name slug
+    for endpoint in ['/api/chart/goebbels', '/api/chart/joseph-goebbels']:
+        response = client.get(endpoint)
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data['native']['name'] == 'Joseph Goebbels'
+        assert data['native']['date'] == '1897-10-29'
+        assert data['data']['vargas']['D1']['lagna']['sign'] == 'Leo'
+        assert 'D1' in data['svgs']
+

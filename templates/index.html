@@ -4849,6 +4849,10 @@
                 currentSvgs = result.svgs;
                 
                 if (result.native) {
+                    const nativeSelect = document.getElementById('nativeSelect');
+                    if (nativeSelect) {
+                        nativeSelect.value = result.native.id;
+                    }
                     document.getElementById('editNativeId').value = result.native.id;
                     document.getElementById('newName').value = result.native.name;
                     document.getElementById('newDate').value = result.native.date;

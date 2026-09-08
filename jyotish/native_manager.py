@@ -105,9 +105,23 @@ def load_natives(filepath: str) -> List[Dict[str, Any]]:
 
 def get_native_by_id(filepath: str, native_id: str) -> Optional[Dict[str, Any]]:
     natives = load_natives(filepath)
+    # 1. Exact ID match
     for n in natives:
         if n.get("id") == native_id:
             return n
+    
+    # 2. Case-insensitive slug / name match (e.g. 'goebbels', 'shri-krishna', 'krishna')
+    clean_target = str(native_id).lower().replace("-", " ").replace("_", " ").strip()
+    for n in natives:
+        n_name = n.get("name", "").lower().strip()
+        n_id = str(n.get("id", "")).lower().strip()
+        if n_name == clean_target or n_id == clean_target:
+            return n
+        # Also check word match (e.g. 'goebbels' matches 'Joseph Goebbels')
+        words = [w for w in n_name.replace("-", " ").split()]
+        if clean_target in words or clean_target == "".join(words):
+            return n
+
     return None
 
 def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_empty: bool = False) -> bool:
