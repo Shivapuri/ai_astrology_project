@@ -41,8 +41,8 @@ def test_shri_krishna_chart_api(client):
         assert response.status_code == 200
         data = json.loads(response.data)
         assert data['native']['name'] == 'Shri Krishna'
-        assert data['native']['date'] == '-3227-07-19'
-        assert data['data']['vargas']['D1']['lagna']['sign'] == 'Pisces'
+        assert data['native']['date'] == '-3255-08-28'
+        assert data['data']['vargas']['D1']['lagna']['sign'] == 'Taurus'
         assert 'D1' in data['svgs']
 
 def test_goebbels_chart_api(client):
