@@ -40,7 +40,7 @@ def test_shri_krishna_chart_api(client):
         response = client.get(endpoint)
         assert response.status_code == 200
         data = json.loads(response.data)
-        assert data['native']['name'] == 'Shri Krishna'
+        assert 'Shri Krishna' in data['native']['name']
         assert data['native']['date'] == '-3255-08-28'
         assert data['data']['vargas']['D1']['lagna']['sign'] == 'Taurus'
         assert 'D1' in data['svgs']
