@@ -80,6 +80,8 @@ EXCLUDED_FILES = {
     "analyze_learning_style.py",
     "audit_shadbala.py",
     "session_handoff.md",
+    "angelina_jolie_proof_catalog.md",
+    "build_proof_catalog.py",
 }
 
 EXCLUDED_EXTENSIONS = {
