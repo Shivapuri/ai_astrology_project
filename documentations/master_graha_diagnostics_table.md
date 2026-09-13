@@ -54,6 +54,49 @@ The widget toolbar contains an interactive **Varga selector dropdown**:
 
 ---
 
+## 💡 Interactive Hover Tooltips (Pedagogical Guidance)
+
+Every element across the Master Graha Diagnostics table is equipped with instant, learner-friendly hover tooltips. Technical astrological terminology is always paired with intuitive explanations and definitions in parentheses:
+
+1. **Table Headers (Column Guides):**
+   - Hovering any column header reveals its diagnostic definition, classical measurement units (e.g. Virūpas), and role in chart evaluation.
+2. **Graha & Kāraka:**
+   - **Planet Name:** Explains the graha's core archetype and psychological drive.
+   - **Motional Status Badges:** `[R]` explains Retrograde (*Vakra*) motion (optical proximity to Earth, maximum motional power / Cheṣṭa Bala, non-linear unconventional thinking). `[C]` explains Combustion (*Asta*) (proximity within solar orb, humility, internalizing self-worth).
+   - **Chara Kārakas:** Explains the soul role (e.g., `👑 AK` Ātmakāraka, `💼 AmK` Amātyakāraka), traverse degree, rank, and developmental life focus.
+3. **Placement & Role:**
+   - **Sign & Degrees:** Element, modality, and host sign lord (*dispositor*).
+   - **Whole Sign House:** Functional sphere of activity.
+   - **Campanus 3D Bhava Shift:** Explains when astronomical cusps diverge from whole-sign houses (outer social circumstances vs. inner psychological experience).
+   - **House Rulerships & Functional Badges:** Details domains managed, including `⭐ Yogakāraka`, `🛡️ Lagneśa`, `Māraka`, and `Bādhaka`.
+   - **Nakshatra:** Lunar mansion and Navāṁśa pada mapping.
+4. **Dignity (5-Fold Compound / *Panchadhā Maitrī*):**
+   - Explains the complete derivation: **Sign Lord host** + **Natural Relationship** (*Naisargika*) + **Temporary Relationship** (*Tātkālika*, based on 2, 3, 4, 10, 11, 12 house distance) = **5-Fold Compound Dignity** (*Panchadhā*).
+   - Details peak states: Exalted (*Uccha*), Moolatrikona (office of duty), Own Sign (*Svastha*), or Debilitated (*Neecha*).
+   - Provides an experiential summary of how the planet *feels* in that sign (e.g. feeling welcome and supported vs. unwelcome and stressed).
+   - For Rahu & Ketu: Explains why mathematical shadow nodes (*Chhāyā Grahas*) do not take direct 5-fold dignity and details their dispositor reflection.
+5. **Shadbala Power (6-Fold Potency):**
+   - **Total Virūpas & Rūpas:** Compares total points against classical minimum requirements (e.g. 390 Virūpas for the Sun).
+   - **Chart Ranking:** Identifies the planet's rank (#1 through #7) among physical grahas.
+   - **Capacity Assessment:** Categorizes engine stamina as *Abundant Surplus* (≥125%), *Adequate & Capable* (≥100%), *Mild Deficit* (85–99%), or *Significant Deficit* (<85%).
+   - **6 Classical Pillars:** Breaks down the exact virūpas earned across all six classical branches:
+     - *Sthāna Bala* (Positional: sign, exaltation, and divisional strength).
+     - *Dig Bala* (Directional: cardinal sky quadrant alignment).
+     - *Kāla Bala* (Temporal: time of day, lunar phase, season, hour, and era).
+     - *Cheṣṭa Bala* (Motional: orbital velocity, retrograde proximity, and brightness).
+     - *Naisargika Bala* (Natural: permanent intrinsic cosmic luminosity).
+     - *Dṛk Bala* (Aspectual: net supportive vs. obstructive aspect rays from other planets).
+6. **Lajjitādi Avasthās (Psychological Feeling States):**
+   - Explains the astronomical triggers and exact emotional states: *Mudita* (Delighted / supported), *Garvita* (Proud / confident), *Kshudhita* (Starved / lacking nourishment), *Kshobhita* (Agitated / conflicted), *Lajjita* (Ashamed / hesitant), and *Trushita* (Thirsty / craving).
+7. **Influences & Net Dṛṣṭi:**
+   - Breaks down conjunction companions (*Yuti*) and aspect rays (*Graha Drishti*) with positive (+) and negative (-) Virūpa values and net environmental weather.
+8. **Karmic Fruits (*Ishta* & *Kashta Phala*):**
+   - Clarifies *Ishta Phala* (auspicious capacity / sweet harvest) vs. *Kashta Phala* (arduous capacity / grit and character-building trials).
+9. **★ Vitality Score (1–10):**
+   - Details the 5-pillar composite weighting (Sign Dignity, Shadbala, Avasthā Mood, Environmental Weather, and Karmic Fruit).
+
+---
+
 ## 🔬 Sourcing & Verification
 
 1. **Textbook & Classical References:**

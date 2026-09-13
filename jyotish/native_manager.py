@@ -79,6 +79,103 @@ def recover_from_backups_or_mirror(filepath: str) -> List[Dict[str, Any]]:
 
     return recovered
 
+def parse_date_to_parts(date_str: Any) -> tuple:
+    """
+    Parses any date format into (year, month, day).
+    Supports:
+      - Standard DD/MM/YYYY, DD.MM.YYYY, DD-MM-YYYY
+      - ISO: YYYY-MM-DD, YYYY/MM/DD
+      - Astronomical BCE: -YYYY-MM-DD, -YYYY/MM/DD, DD/MM/-YYYY, DD-MM--YYYY
+      - Historical textual BCE: e.g. '28/08/3256 BCE'
+    """
+    if not date_str:
+        return 2000, 1, 1
+    
+    s = str(date_str).strip()
+    
+    # Check textual BCE
+    is_bce_text = False
+    if 'bce' in s.lower() or 'bc' in s.lower():
+        is_bce_text = True
+        s = s.lower().replace('bce', '').replace('bc', '').strip()
+        
+    # 1. Slashes: DD/MM/YYYY, YYYY/MM/DD, DD/MM/-YYYY
+    if '/' in s:
+        parts = [p.strip() for p in s.split('/')]
+        if len(parts) == 3:
+            p0 = parts[0]
+            # If p0 has 4 digits or magnitude > 31, it is YYYY/MM/DD
+            if len(p0.lstrip('-')) == 4 or abs(int(float(p0))) > 31:
+                year = int(p0)
+                month = int(parts[1])
+                day = int(parts[2])
+            else:
+                day = int(parts[0])
+                month = int(parts[1])
+                year = int(parts[2])
+            if is_bce_text and year > 0:
+                year = -(year - 1)  # 3256 BCE = -3255 astronomical
+            return year, month, day
+
+    # 2. Dots: DD.MM.YYYY
+    if '.' in s:
+        parts = [p.strip() for p in s.split('.')]
+        if len(parts) == 3:
+            p0 = parts[0]
+            if len(p0.lstrip('-')) == 4 or abs(int(float(p0))) > 31:
+                year = int(p0)
+                month = int(parts[1])
+                day = int(parts[2])
+            else:
+                day = int(parts[0])
+                month = int(parts[1])
+                year = int(parts[2])
+            if is_bce_text and year > 0:
+                year = -(year - 1)
+            return year, month, day
+
+    # 3. Dashes: YYYY-MM-DD, -YYYY-MM-DD, DD-MM-YYYY, DD-MM--YYYY
+    if '-' in s:
+        if s.startswith('-'):
+            # e.g. -3255-08-28
+            clean = s[1:]
+            parts = [p.strip() for p in clean.split('-')]
+            if len(parts) == 3:
+                year = -int(parts[0])
+                month = int(parts[1])
+                day = int(parts[2])
+                return year, month, day
+        else:
+            parts = [p.strip() for p in s.split('-')]
+            if len(parts) == 3:
+                p0 = parts[0]
+                if len(p0) == 4 or int(float(p0)) > 31:
+                    year = int(p0)
+                    month = int(parts[1])
+                    day = int(parts[2])
+                else:
+                    day = int(parts[0])
+                    month = int(parts[1])
+                    year = int(parts[2])
+                if is_bce_text and year > 0:
+                    year = -(year - 1)
+                return year, month, day
+
+    return 2000, 1, 1
+
+def to_standard_date(date_str: Any) -> str:
+    """
+    Standardizes any date representation into canonical DD/MM/YYYY format.
+    Preserves negative years for astronomical BCE dates: DD/MM/-YYYY.
+    """
+    if not date_str:
+        return "01/01/2000"
+    year, month, day = parse_date_to_parts(date_str)
+    if year < 0:
+        return f"{day:02d}/{month:02d}/{year}"
+    else:
+        return f"{day:02d}/{month:02d}/{year:04d}"
+
 def _read_jsonl(filepath: str) -> List[Dict[str, Any]]:
     natives = []
     if not os.path.exists(filepath):
@@ -94,13 +191,17 @@ def _read_jsonl(filepath: str) -> List[Dict[str, Any]]:
     return natives
 
 def load_natives(filepath: str) -> List[Dict[str, Any]]:
-    """Loads all natives with automatic self-healing and recovery."""
+    """Loads all natives with automatic self-healing, recovery, and standard DD/MM/YYYY formatting."""
     natives = _read_jsonl(filepath)
     if not natives:
         # File is missing or empty, attempt self-healing recovery
         recovered = recover_from_backups_or_mirror(filepath)
         if recovered:
-            return recovered
+            natives = recovered
+            
+    for n in natives:
+        if 'date' in n:
+            n['date'] = to_standard_date(n['date'])
     return natives
 
 def get_native_by_id(filepath: str, native_id: str) -> Optional[Dict[str, Any]]:
@@ -162,19 +263,20 @@ def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_emp
 
     return True
 
-def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0) -> Dict[str, Any]:
-    """Adds a new native with atomic safety."""
+def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0, notes: str = "") -> Dict[str, Any]:
+    """Adds a new native with atomic safety and standard DD/MM/YYYY date."""
     if not _acquire_lock(filepath):
         raise RuntimeError("Could not acquire lock to save native")
     try:
         natives = load_natives(filepath)
+        std_date = to_standard_date(date)
         new_native = {
             "v": 1,
             "id": str(uuid.uuid4()),
             "name": name,
             "type": "radix",
             "male": True,
-            "date": date,
+            "date": std_date,
             "time": time,
             "tz": tz,
             "tz_name": "",
@@ -189,8 +291,8 @@ def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon:
             "lat": float(lat),
             "lon": float(lon),
             "alt": 0.0,
-            "name_sound_value": name_sound_value,
-            "notes": "",
+            "name_sound_value": int(name_sound_value),
+            "notes": str(notes or ""),
             "modified_at": datetime.now().isoformat()
         }
         
@@ -201,7 +303,7 @@ def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon:
         _release_lock(filepath)
 
 def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any]) -> Optional[Dict[str, Any]]:
-    """Updates an existing native by ID with atomic safety."""
+    """Updates an existing native by ID with atomic safety and standard DD/MM/YYYY date."""
     if not _acquire_lock(filepath):
         raise RuntimeError("Could not acquire lock to update native")
     try:
@@ -212,6 +314,10 @@ def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any])
                 for k, v in updated_fields.items():
                     if k in ['lat', 'lon']:
                         n[k] = float(v)
+                    elif k == 'name_sound_value':
+                        n[k] = int(v)
+                    elif k == 'date':
+                        n[k] = to_standard_date(v)
                     else:
                         n[k] = v
                 n['modified_at'] = datetime.now().isoformat()

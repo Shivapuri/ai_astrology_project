@@ -222,7 +222,8 @@ def generate_kala_chart(
     name_sound_value: Optional[int] = None,
     output_filepath: Optional[str] = None,
     d10_mode: str = "reverse",
-    d24_mode: str = "reverse"
+    d24_mode: str = "reverse",
+    place: str = ""
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -240,8 +241,11 @@ def generate_kala_chart(
     # Calculate UTC JD by subtracting timezone offset (offset is in hours)
     jd = jd_local - (timezone_offset / 24.0)
     
-    # Format a date string for the output
-    birth_dt_str = f"{year:04d}-{month:02d}-{day:02d}T{hour:02d}:{minute:02d}:00"
+    # Format a standard DD/MM/YYYY date-time string for the output
+    if year < 0:
+        birth_dt_str = f"{day:02d}/{month:02d}/{year} {hour:02d}:{minute:02d}:00"
+    else:
+        birth_dt_str = f"{day:02d}/{month:02d}/{year:04d} {hour:02d}:{minute:02d}:00"
 
     # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
     flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED
@@ -819,7 +823,8 @@ def generate_kala_chart(
             "birth_datetime": birth_dt_str,
             "latitude": latitude,
             "longitude": longitude,
-            "timezone_offset": timezone_offset
+            "timezone_offset": timezone_offset,
+            "place": place
         },
         "calculation_settings": {
             "d10_mode": d10_mode,

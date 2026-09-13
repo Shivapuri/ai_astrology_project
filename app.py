@@ -33,19 +33,10 @@ def index():
 
 def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
     try:
-        date_str = native.get('date', '2000-01-01')
-        if date_str.startswith('-'):
-            parts = date_str[1:].split('-')
-            year = -int(parts[0])
-            month = int(parts[1])
-            day = int(parts[2])
-        else:
-            parts = date_str.split('-')
-            year = int(parts[0])
-            month = int(parts[1])
-            day = int(parts[2])
+        date_str = native.get('date', '01/01/2000')
+        year, month, day = native_manager.parse_date_to_parts(date_str)
             
-        time_parts = native.get('time', '12:00').split(':')
+        time_parts = str(native.get('time', '12:00')).split(':')
         hour = int(time_parts[0])
         minute = int(time_parts[1]) if len(time_parts) > 1 else 0
     except Exception:
@@ -80,7 +71,8 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
         timezone_offset=tz_offset,
         name_sound_value=native.get('name_sound_value', 0),
         d10_mode=d10_mode,
-        d24_mode=d24_mode
+        d24_mode=d24_mode,
+        place=native.get('place', '')
     )
 
 @app.route('/api/chart/<native_id>')
@@ -191,9 +183,17 @@ def add_native():
         data['tz'],
         place=data.get('place', 'Custom'),
         country=data.get('country', ''),
-        name_sound_value=int(data.get('name_sound_value', 0))
+        name_sound_value=int(data.get('name_sound_value', 0)),
+        notes=data.get('notes', '')
     )
     return jsonify(new_native)
+
+@app.route('/api/native/<native_id>')
+def get_native(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if native:
+        return jsonify(native)
+    return jsonify({"error": "Native not found"}), 404
 
 @app.route('/api/update_native/<native_id>', methods=['POST'])
 def update_native(native_id):
@@ -203,6 +203,14 @@ def update_native(native_id):
         return jsonify(updated)
     else:
         return jsonify({"error": "Native not found"}), 404
+
+@app.route('/api/delete_native/<native_id>', methods=['POST', 'DELETE'])
+def delete_native(native_id):
+    success = native_manager.delete_native(CHARTS_FILE, native_id)
+    if success:
+        return jsonify({"success": True, "id": native_id})
+    else:
+        return jsonify({"error": "Native not found or could not be deleted"}), 404
 
 @app.route('/api/countries')
 def get_countries():
@@ -237,8 +245,8 @@ def get_timezone():
         data = request.json
         lat = float(data['lat'])
         lon = float(data['lon'])
-        date_str = data['date']  # e.g., "1990-01-01" or "-3102-02-18"
-        time_str = data['time']  # e.g., "14:30"
+        date_str = str(data.get('date', '01/01/2000')).strip()
+        time_str = str(data.get('time', '12:00:00')).strip()
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"offset": "+00:00", "tz_name": "UTC", "error": f"Invalid input: {e}"})
         
@@ -248,17 +256,16 @@ def get_timezone():
         return jsonify({"offset": "+00:00", "tz_name": "UTC"})
         
     try:
-        # Parse date to datetime if possible, otherwise use a default for BCE to get rough offset
-        # Historical BCE offsets were purely LMT (Local Mean Time) anyway, 
-        # but let's try to parse the date to handle daylight saving if applicable.
-        if date_str.startswith('-'):
-            # It's BCE, daylight saving didn't exist, just use LMT or standard offset for that zone.
-            # We'll calculate a standard offset using a modern winter date to avoid DST.
+        year, month, day = native_manager.parse_date_to_parts(date_str)
+        if year < 1:
+            # Historical BCE offsets were purely LMT anyway, use modern date to avoid DST
             dt = datetime(2000, 1, 1, 12, 0)
         else:
-            parts = date_str.split('-')
             t_parts = time_str.split(':')
-            dt = datetime(int(parts[0]), int(parts[1]), int(parts[2]), int(t_parts[0]), int(t_parts[1]))
+            h = int(t_parts[0]) if len(t_parts) > 0 else 12
+            m = int(t_parts[1]) if len(t_parts) > 1 else 0
+            s = int(t_parts[2]) if len(t_parts) > 2 else 0
+            dt = datetime(year, month, day, h, m, s)
             
         tz = pytz.timezone(tz_name)
         localized = tz.localize(dt)

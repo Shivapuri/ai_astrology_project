@@ -86,6 +86,8 @@ EXCLUDED_FILES = {
     "screenshot_master_diag.py",
     "search_krishna_chart.py",
     "angelina_jolie_baselines.json",
+    "astra_verification_task_list.md",
+    "knowledge_base.json",
 }
 
 EXCLUDED_EXTENSIONS = {

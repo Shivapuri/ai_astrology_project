@@ -14,6 +14,26 @@ async def main():
             await page.evaluate("loadChart('angelina-jolie')")
             await page.wait_for_timeout(1500)
 
+            # Native Toolbar & Edit Modal verification
+            await page.locator(".top-toolbar").screenshot(path="screenshot_native_toolbar.png")
+            print("Captured screenshot_native_toolbar.png")
+
+            # Open Edit Modal
+            await page.evaluate("openEditModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_edit_native_modal.png")
+            print("Captured screenshot_edit_native_modal.png")
+            await page.locator("#addPersonModal .modal-close-btn").click()
+            await page.wait_for_timeout(300)
+
+            # Open Add Modal
+            await page.evaluate("openAddModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_add_native_modal.png")
+            print("Captured screenshot_add_native_modal.png")
+            await page.locator("#addPersonModal .modal-close-btn").click()
+            await page.wait_for_timeout(300)
+
             # 1. Core Predictive Workspace
             await page.evaluate("changeWorkspace('core-predictive')")
             await page.wait_for_timeout(1000)

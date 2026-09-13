@@ -193,3 +193,70 @@ def test_table_widget_maximize_modal(page: Page):
     page.keyboard.press("Escape")
     expect(modal).not_to_be_visible()
 
+def test_native_edit_modal_open_and_fields(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    
+    # Click Edit Native button in toolbar
+    edit_btn = page.locator("#btnEditNative")
+    expect(edit_btn).to_be_visible()
+    edit_btn.click()
+    page.wait_for_timeout(500)
+    
+    modal = page.locator("#addPersonModal")
+    expect(modal).to_be_visible()
+    expect(page.locator("#nativeModalTitle")).to_contain_text("Edit Person Details")
+    
+    # Verify date input has standard DD/MM/YYYY placeholder and format
+    date_input = page.locator("#newDate")
+    expect(date_input).to_be_visible()
+    date_val = date_input.input_value()
+    # Should match DD/MM/YYYY (e.g. 10/11/1983 or 04/06/1975)
+    assert "/" in date_val, f"Date value '{date_val}' should contain slashes (DD/MM/YYYY)"
+    
+    # Verify action buttons
+    expect(page.locator("#updateBtn")).to_be_visible()
+    expect(page.locator("#deleteNativeBtn")).to_be_visible()
+    expect(page.locator("#saveAsNewBtn")).to_be_visible()
+    
+    # Close modal
+    page.locator("#addPersonModal .modal-close-btn").click()
+    expect(modal).not_to_be_visible()
+
+def test_native_add_modal_open(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    
+    # Click + Add button
+    page.locator("button[onclick='openAddModal()']").click()
+    page.wait_for_timeout(300)
+    
+    modal = page.locator("#addPersonModal")
+    expect(modal).to_be_visible()
+    expect(page.locator("#nativeModalTitle")).to_contain_text("Add New Person")
+    
+    # Verify placeholder is DD/MM/YYYY
+    expect(page.locator("#newDate")).to_have_attribute("placeholder", "DD/MM/YYYY")
+    expect(page.locator("#updateBtn")).not_to_be_visible()
+    expect(page.locator("#deleteNativeBtn")).not_to_be_visible()
+    expect(page.locator("#saveAsNewBtn")).to_be_visible()
+    
+    # Close modal
+    page.locator("#addPersonModal .modal-close-btn").click()
+    expect(modal).not_to_be_visible()
+
+def test_native_select_dropdown_shows_dd_mm_yyyy(page: Page):
+    page.goto("http://127.0.0.1:5001/", wait_until="domcontentloaded")
+    page.wait_for_timeout(1000)
+    
+    # Check all options in nativeSelect
+    options_text = page.locator("#nativeSelect option").all_inner_texts()
+    # At least one person option with date in parentheses (DD/MM/YYYY)
+    person_options = [opt for opt in options_text if "(" in opt and ")" in opt]
+    assert len(person_options) > 0, "Should have person options in select"
+    for opt in person_options:
+        # e.g. "Shivapuri (10/11/1983)" or "Shri Krishna (28/08/-3255)"
+        date_part = opt.split("(")[-1].rstrip(")")
+        assert "/" in date_part, f"Dropdown option '{opt}' does not have DD/MM/YYYY standard format"
+
+

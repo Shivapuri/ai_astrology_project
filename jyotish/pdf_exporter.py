@@ -544,6 +544,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     tz_formatted = f"UTC{tz_sign}{abs(int(tz)):02d}:{int(abs(tz)%1*60):02d}"
     lat_str = f"{abs(lat):.4f}° {'N' if lat >= 0 else 'S'}"
     lon_str = f"{abs(lon):.4f}° {'E' if lon >= 0 else 'W'}"
+    place = subject.get("place", "")
+    place_str = f"{place} • " if place and place != "Custom" else ""
     
     astro = chart_data.get("astronomy", {})
     ayanamsa_name = astro.get("ayanamsa_name", "Dhruva Galactic Center (Middle of Mula)")
@@ -1404,7 +1406,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         <div class="native-title">{name}</div>
         <div class="native-meta">
           <span>📅 {birth_dt}</span>
-          <span>📍 {lat_str}, {lon_str}</span>
+          <span>📍 {place_str}{lat_str}, {lon_str}</span>
           <span>🌐 {tz_formatted}</span>
         </div>
       </div>

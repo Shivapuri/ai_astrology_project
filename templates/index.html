@@ -1638,6 +1638,9 @@
                     <button type="button" class="menu-bar-btn">📁 Native ▾</button>
                     <div class="menu-dropdown-menu">
                         <div class="menu-header-label">Person Management</div>
+                        <div class="menu-row" onclick="openEditModal()">
+                            <span>✏️ Edit Current Person...</span>
+                        </div>
                         <div class="menu-row" onclick="openAddModal()">
                             <span>➕ Add New Person...</span>
                         </div>
@@ -1805,12 +1808,13 @@
                 {% endfor %}
             </select>
             <button onclick="loadChart()" class="btn-primary" style="padding: 4px 11px; font-weight: 600;">Load</button>
+            <button type="button" id="btnEditNative" onclick="openEditModal()" class="btn-secondary" style="padding: 4px 9px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit selected or loaded person details">✏️ Edit</button>
             <button onclick="openAddModal()" style="padding: 4px 8px; font-size: 11px;">+ Add</button>
             <div id="loading" style="display:none; color: #3498db; font-size:12px;">Calculating...</div>
             
             <div style="border-left: 1px solid #d5c8b2; height: 18px; margin: 0 4px;"></div>
             
-            <span id="chartTitle">No Chart Loaded</span>
+            <span id="chartTitle" style="cursor:pointer;" onclick="openEditModal()" title="Click to edit person details">No Chart Loaded</span>
             <span id="chartSubtitle"></span>
         </div>
 
@@ -1821,29 +1825,66 @@
         </div>
     </div>
 
-    <!-- Add Person Modal -->
+    <!-- Add / Edit Person Modal -->
     <div class="modal-overlay" id="addPersonModal" onclick="if(event.target===this) this.style.display='none'">
-        <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-card" onclick="event.stopPropagation()" style="max-width: 520px; width: 90%;">
             <div class="modal-header">
-                <h2>Add / Edit Person</h2>
+                <h2 id="nativeModalTitle">Add / Edit Person</h2>
                 <button type="button" class="modal-close-btn" onclick="document.getElementById('addPersonModal').style.display='none'">×</button>
             </div>
             <div class="setting-section">
                 <input type="hidden" id="editNativeId" value="">
-                <input type="text" id="newName" placeholder="Name" required style="width:100%; box-sizing:border-box;">
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="text" id="newDate" placeholder="YYYY-MM-DD" required style="flex:1;">
-                    <input type="time" id="newTime" step="1" required style="flex:1;">
+                <div>
+                    <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Full Name</label>
+                    <input type="text" id="newName" placeholder="e.g. Swami Shivapuri" required style="width:100%; box-sizing:border-box;">
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
-                    <select id="countrySelect" onchange="loadCities()" style="flex:1;">
-                        <option value="">-- Country --</option>
-                    </select>
-                    <select id="citySelect" onchange="fetchTimezone()" style="flex:1;" disabled>
-                        <option value="">-- City --</option>
-                    </select>
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Date of Birth (DD/MM/YYYY)</label>
+                        <input type="text" id="newDate" placeholder="DD/MM/YYYY" required style="width:100%; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Time of Birth (HH:MM:SS)</label>
+                        <input type="time" id="newTime" step="1" required style="width:100%; box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <div style="flex:1.2;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">City / Place of Birth</label>
+                        <input type="text" id="newPlace" placeholder="e.g. Mathura, Los Angeles, Budapest" style="width:100%; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Country</label>
+                        <select id="countrySelect" onchange="loadCities()" style="width:100%; box-sizing:border-box;">
+                            <option value="">-- Country --</option>
+                        </select>
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Preset City</label>
+                        <select id="citySelect" onchange="fetchTimezone()" style="width:100%; box-sizing:border-box;" disabled>
+                            <option value="">-- City --</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px;">
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Latitude (Decimal)</label>
+                        <input type="number" id="newLat" placeholder="e.g. 52.2030" step="0.0001" required style="width:100%; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Longitude (Decimal)</label>
+                        <input type="number" id="newLon" placeholder="e.g. 8.0448" step="0.0001" required style="width:100%; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
+                            <label style="font-size:11px; font-weight:600; color:#4b5563; margin-bottom:0;">Timezone (±HH:MM)</label>
+                            <span onclick="detectTimezoneFromCoords()" style="cursor:pointer; color:#2563eb; font-size:10px; font-weight:600;" title="Auto-detect timezone from Lat/Lon and Date">⚡ Auto</span>
+                        </div>
+                        <input type="text" id="newTz" placeholder="+01:00" value="+00:00" required style="width:100%; box-sizing:border-box;">
+                    </div>
                 </div>
                 <div style="margin-top:10px;">
+                    <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Name Sound Value (Varnamashka)</label>
                     <select id="newNameSoundValue" style="width:100%; box-sizing:border-box;">
                         <option value="0">Auto-detect Sound (Varnamashka) from Name</option>
                         <option value="1">1: A, AA, K, CH, T, P, Y, SH, Q</option>
@@ -1853,15 +1894,18 @@
                         <option value="5">5: O, AU, NG, NY, N, M</option>
                     </select>
                 </div>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="number" id="newLat" placeholder="Lat" step="0.0001" required style="flex:1;">
-                    <input type="number" id="newLon" placeholder="Lon" step="0.0001" required style="flex:1;">
-                    <input type="text" id="newTz" placeholder="TZ (+00:00)" value="+00:00" required style="flex:1;">
+                <div style="margin-top:10px;">
+                    <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Notes / Rodden Rating / Biography</label>
+                    <textarea id="newNotes" rows="2" placeholder="Optional notes, Rodden rating, birth record source..." style="width:100%; box-sizing:border-box; resize:vertical; font-size:12px; font-family:inherit; padding:6px; border:1px solid #d1d5db; border-radius:4px;"></textarea>
                 </div>
             </div>
-            <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
-                <button onclick="saveNative(false)">Save as New</button>
-                <button onclick="saveNative(true)" id="updateBtn" style="display:none; background-color: #27ae60;">Update Selected</button>
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:20px;">
+                <button type="button" onclick="deleteCurrentNative()" id="deleteNativeBtn" style="display:none; background-color: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; padding: 6px 12px; border-radius: 4px; font-weight: 600; cursor: pointer;" title="Delete this native permanently">🗑️ Delete</button>
+                <div style="display:flex; gap:8px; margin-left:auto;">
+                    <button type="button" onclick="document.getElementById('addPersonModal').style.display='none'" style="background-color: #f3f4f6; color: #374151; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                    <button type="button" onclick="saveNative(false)" id="saveAsNewBtn" style="background-color: #e5e7eb; color: #1f2937; border: 1px solid #d1d5db; padding: 6px 12px; border-radius: 4px; cursor: pointer;">Save as New</button>
+                    <button type="button" onclick="saveNative(true)" id="updateBtn" style="display:none; background-color: #10b981; color: white; border: none; padding: 6px 14px; font-weight: 600; border-radius: 4px; cursor: pointer;">💾 Save Changes</button>
+                </div>
             </div>
         </div>
     </div>
@@ -3112,14 +3156,14 @@
                     <table class="master-diagnostic-table dignity-grid" style="width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
                         <thead>
                             <tr>
-                                <th style="width: 95px;">Graha & Kāraka</th>
-                                <th style="width: 125px;">Placement & Role</th>
-                                <th style="width: 110px;">Dignity (5-Fold)</th>
-                                <th style="width: 100px;">Shadbala Power</th>
-                                <th style="min-width: 220px;">Lajjitādi Avasthās (Mood & Nuances)</th>
-                                <th style="width: 175px;">Influences & Net Dṛṣṭi</th>
-                                <th style="width: 100px;">Karmic Fruit (I/K)</th>
-                                <th style="width: 115px; text-align: center;">★ Vitality Score (1–10)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Graha & Chara Kāraka</strong><br>• <strong>Graha:</strong> Planetary archetype with motion status ([R] Retrograde, [C] Combust).<br>• <strong>Chara Kāraka:</strong> Soul-level role assigned by longitudinal degree in sign (BPHS Ch. 32): Ātmakāraka (Soul), Amātyakāraka (Career), etc." style="width: 95px; cursor: help;">Graha & Kāraka</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Placement & Functional Role</strong><br>• <strong>Sign & House:</strong> Whole Sign house placement plus 3D Campanus Bhava shift.<br>• <strong>House Rulerships:</strong> Houses governed by this planet.<br>• <strong>Functional Titles:</strong> Yogakāraka (supreme benefic), Lagneśa (ascendant lord), Māraka (threshold), Bādhaka (karmic test)." style="width: 125px; cursor: help;">Placement & Role</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Panchadhā Maitrī (5-Fold Dignity)</strong><br>• Synthesized from permanent Natural Relationship (Naisargika) + chart-specific Temporary Relationship (Tātkālika) with the host sign lord.<br>• Dignities range from Exalted / Moolatrikona / Own Sign down to Bitter Enemy and Debilitated." style="width: 110px; cursor: help;">Dignity (5-Fold)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Shadbala Power (6-Fold Potency)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Rūpas, % of required minimum threshold, and relative chart rank (#1 to #7)." style="width: 100px; cursor: help;">Shadbala Power</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Lajjitādi Avasthās (Parashari Psychological Feeling States)</strong><br>• 6 Parashari states from BPHS Ch. 45: Delighted (Mudita), Proud (Garvita), Starved (Kshudhita), Agitated (Kshobhita), Ashamed (Lajjita), and Thirsty (Trushita).<br>• Governs the internal subjective feeling of how a planet experiences its life circumstances." style="min-width: 220px; cursor: help;">Lajjitādi Avasthās (Mood & Nuances)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Influences & Continuous Aspects</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign.<br>• <strong>Dṛṣṭi:</strong> Continuous geometrical glances in Virūpas (+ for benefic rays, - for malefic pressure).<br>• <strong>Net Badge:</strong> Overall environmental sky-light support vs pressure." style="width: 175px; cursor: help;">Influences & Net Dṛṣṭi</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Ishta & Kashta Phala (Karmic Harvest)</strong><br>• Classical Parashari balance of fruit on a 0 to 60 scale.<br>• <strong>Ishta:</strong> Auspicious capacity delivering sweet blessings and joy.<br>• <strong>Kashta:</strong> Arduous capacity bringing delays, grit, and character-building trials." style="width: 100px; cursor: help;">Karmic Fruit (I/K)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>5-Pillar Master Composite Vitality Score</strong><br>• Weighted synthesis (1.0 to 10.0) combining: (1) Sign Dignity, (2) Shadbala Stamina, (3) Avasthā Emotional Mood, (4) Environmental Aspects/Yuti, and (5) Karmic Fruit Balance." style="width: 115px; text-align: center; cursor: help;">★ Vitality Score (1–10)</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -4409,6 +4453,24 @@
             document.body.style.overflow = 'hidden';
         }
 
+        const DIGNITY_MEANINGS = {
+            "Exalted": "Operates at its absolute highest potential with royal honor, confidence, and uncontested clarity.",
+            "Moolatrikona": "Feels purposeful, duty-bound, and cheerful, working energetically on its primary cosmic mission.",
+            "Own Sign": "Master of its own household; secure, self-sufficient, and fully in control of its resources.",
+            "Own": "Master of its own household; secure, self-sufficient, and fully in control of its resources.",
+            "Great Friend's Sign": "Receives exceptional warmth, hospitality, and enthusiastic backing as an honored VIP guest.",
+            "Great Friend": "Receives exceptional warmth, hospitality, and enthusiastic backing as an honored VIP guest.",
+            "Friend's Sign": "Enjoys a peaceful, cordial, and cooperative environment.",
+            "Friend": "Enjoys a peaceful, cordial, and cooperative environment.",
+            "Neutral's Sign": "Receives standard, no-frills hospitality; self-reliant and matter-of-fact.",
+            "Neutral": "Receives standard, no-frills hospitality; self-reliant and matter-of-fact.",
+            "Enemy's Sign": "Feels unwelcome, stressed, and restricted; requires extra grit and effort to overcome environmental resistance.",
+            "Enemy": "Feels unwelcome, stressed, and restricted; requires extra grit and effort to overcome environmental resistance.",
+            "Great Enemy's Sign": "Faces intense friction, discomfort, and active opposition; high karmic resistance demands resilience.",
+            "Great Enemy": "Faces intense friction, discomfort, and active opposition; high karmic resistance demands resilience.",
+            "Debilitated": "Having hit rock bottom, outer worldly confidence is depleted, urging the native to cultivate humble, non-material inner strengths."
+        };
+
         function updateMasterDiagnosticWidget(cell) {
             if (!cell) {
                 cell = document.querySelector('.grid-cell[data-widget="master-diagnostic"]') ||
@@ -4484,6 +4546,48 @@
 
             const grahaOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
 
+            const grahaArchetypes = {
+                'Sun': '<strong>☉ Sun (Sūrya) — Soul & Vital Will</strong><br>• <strong>Core Nature:</strong> Soul essence (Ātman), self-identity, confidence, vital energy, authority, leadership, father, and dharmic purpose.',
+                'Moon': '<strong>☽ Moon (Chandra) — Mind & Feeling Consciousness</strong><br>• <strong>Core Nature:</strong> Mind (Manas), emotions, intuitive responsiveness, peace of heart, mother, and public connection.',
+                'Mars': '<strong>♂ Mars (Mangala) — Focused Drive & Courage</strong><br>• <strong>Core Nature:</strong> Courage, decisive physical action, engineering/technical logic, protective strength, brothers, and willpower.',
+                'Mercury': '<strong>☿ Mercury (Budha) — Discernment & Intellect</strong><br>• <strong>Core Nature:</strong> Intellect (Buddhi), analytical communication, speech, learning, commercial skill, and adaptability.',
+                'Jupiter': '<strong>♃ Jupiter (Guru) — Wisdom & Divine Grace</strong><br>• <strong>Core Nature:</strong> Higher wisdom, dharma, guru/counselors, spiritual expansion, optimism, ethics, wealth, and children.',
+                'Venus': '<strong>♀ Venus (Shukra) — Love, Beauty & Refinement</strong><br>• <strong>Core Nature:</strong> Devotion (Bhakti), relationships, aesthetic arts, diplomacy, life comforts, vehicles, and harmony.',
+                'Saturn': '<strong>♄ Saturn (Shani) — Endurance & Mastery of Time</strong><br>• <strong>Core Nature:</strong> Discipline, patience, hard labor, realism, organizational structure, humility, and karmic lessons.',
+                'Rahu': '<strong>☊ Rahu (North Node) — The Ambitious Catalyst</strong><br>• <strong>Core Nature:</strong> Future-oriented growth, worldly ambition, innovation, foreign connections, and intense drive for mastery.',
+                'Ketu': '<strong>☋ Ketu (South Node) — The Spiritual Liberator</strong><br>• <strong>Core Nature:</strong> Past-life mastery, spiritual detachment (Vairāgya), subtle perception, introspection, and ultimate liberation (Moksha).'
+            };
+
+            const signInfo = {
+                'Aries': { element: 'Fire', quality: 'Movable (Cardinal)', ruler: 'Mars' },
+                'Taurus': { element: 'Earth', quality: 'Fixed', ruler: 'Venus' },
+                'Gemini': { element: 'Air', quality: 'Dual (Mutable)', ruler: 'Mercury' },
+                'Cancer': { element: 'Water', quality: 'Movable (Cardinal)', ruler: 'Moon' },
+                'Leo': { element: 'Fire', quality: 'Fixed', ruler: 'Sun' },
+                'Virgo': { element: 'Earth', quality: 'Dual (Mutable)', ruler: 'Mercury' },
+                'Libra': { element: 'Air', quality: 'Movable (Cardinal)', ruler: 'Venus' },
+                'Scorpio': { element: 'Water', quality: 'Fixed', ruler: 'Mars' },
+                'Sagittarius': { element: 'Fire', quality: 'Dual (Mutable)', ruler: 'Jupiter' },
+                'Capricorn': { element: 'Earth', quality: 'Movable (Cardinal)', ruler: 'Saturn' },
+                'Aquarius': { element: 'Air', quality: 'Fixed', ruler: 'Saturn' },
+                'Pisces': { element: 'Water', quality: 'Dual (Mutable)', ruler: 'Jupiter' }
+            };
+
+            const houseMeanings = {
+                1: "House 1 (Tanū Bhāva): Self, vitality, appearance, perspective, and life foundation (Kendra / Dharma).",
+                2: "House 2 (Dhana Bhāva): Wealth, speech, family, resource acquisition, and values (Artha / Māraka).",
+                3: "House 3 (Sahaja Bhāva): Courage, siblings, willpower, fine skills, and enterprise (Upachaya / Kāma).",
+                4: "House 4 (Sukha Bhāva): Home, mother, emotional heart, inner peace, and real estate (Kendra / Moksha).",
+                5: "House 5 (Putra Bhāva): Intelligence, creativity, good karma (Purva Punya), children, and joy (Trikona / Dharma).",
+                6: "House 6 (Ari Bhāva): Overcoming obstacles, daily work, healing, enemies, and debts (Dusthāna / Upachaya).",
+                7: "House 7 (Yuvati Bhāva): Partnerships, marriage, one-on-one trade, and social contracts (Kendra / Kāma / Māraka).",
+                8: "House 8 (Randhra Bhāva): Transformation, longevity, secret knowledge, and deep changes (Dusthāna / Moksha).",
+                9: "House 9 (Bhāgya Bhāva): Higher dharma, divine grace, fortune, father, and spiritual wisdom (Trikona / Dharma).",
+                10: "House 10 (Karma Bhāva): Career, social status, leadership, public action, and honors (Kendra / Artha).",
+                11: "House 11 (Lābha Bhāva): Major gains, goals achieved, elder siblings, and social network (Upachaya / Kāma).",
+                12: "House 12 (Vyaya Bhāva): Solitude, spiritual liberation (Moksha), sleep, retreat, and expenses (Dusthāna / Moksha)."
+            };
+
             // 1. Lagna Row
             if (v_lagna && v_lagna.sign) {
                 const lgSign = v_lagna.sign;
@@ -4497,14 +4601,30 @@
                 grahaOrder.forEach(p => {
                     if (v_grahas[p] && v_grahas[p].sign === lgSign) lagnaConj.push(p);
                 });
+                const lgConjBadges = lagnaConj.map(cp => {
+                    const isBen = ['Jupiter', 'Venus'].includes(cp);
+                    const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
+                    const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
+                    const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
+                    const tip = `<strong>${cp} Conjunct Lagna (Ascendant)</strong><br>• Directly stamps its personality, constitution, and temperament onto the native's identity in ${varga}.`;
+                    return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${tip}">${cIcon} ${cp}</span>`;
+                }).join(', ');
                 const lagnaConjStr = lagnaConj.length > 0 
-                    ? `<div><span style="color:#64748b; font-size:10px; font-weight:bold;">YUTI:</span> <strong>${lagnaConj.join(', ')}</strong></div>` 
+                    ? `<div><span style="color:#64748b; font-size:10px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` 
                     : '<div style="color:#94a3b8; font-size:10.5px;">No planet on Lagna</div>';
+
+                const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The primary orientation point establishing physical constitution, personal perspective, and life foundation.`;
+                const lgPlacementTip = `<strong>Lagna: ${lgSign} ${lgDeg} (House 1)</strong><br>• <strong>Rising Sign:</strong> Core zodiac archetype of self-expression in ${varga}.<br>• <strong>Ascendant Lord:</strong> <strong>${lgLord}</strong> (Lagneśa).<br>• <strong>Nakshatra:</strong> ${lgNak}.`;
+                const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord}</strong><br>• Primary protector and steward of life, vitality, constitution, and longevity in this chart.`;
+                const lgPowerTip = `<strong>Ascendant Horizon</strong><br>• The Lagna is a spatial coordinate (eastern horizon), not a physical body with mass or speed, so it does not accumulate direct Shadbala. Its vitality is expressed through its ruler (${lgLord}).`;
+                const lgAvasthaTip = `<strong>Tanū Bhāva (Horizon Lens)</strong><br>• The ascendant acts as the gateway where planetary archetypes materialize into conscious experience.`;
+                const lgFruitTip = `<strong>Karmic Horizon</strong><br>• The Lagna distributes the fruits of its lord (${lgLord}) and occupying planets.`;
+                const lgAnchorTip = `<strong>Primary Anchor of Destiny</strong><br>• The fundamental reference point against which all other 11 houses are measured.`;
 
                 tbody.innerHTML += `
                     <tr style="background:#faf7f2; border-bottom: 2px solid #e5dccb;">
                         <td>
-                            <div style="display:flex; align-items:center; gap:6px;">
+                            <div class="tooltip-target" data-tooltip="${lagnaTip}" style="display:flex; align-items:center; gap:6px; cursor:help;">
                                 <span style="font-size:16px;">🌅</span>
                                 <div>
                                     <div style="display:flex; align-items:center; gap:4px;">
@@ -4516,28 +4636,30 @@
                             </div>
                         </td>
                         <td>
-                            <strong style="color:#1e293b;">${lgSign} ${lgDeg}</strong>
-                            <div style="font-size:10px; color:#64748b;">House 1 (Ascendant)</div>
-                            <div style="font-size:9.5px; color:#475569; margin-top:2px;">Lord: <strong>${lgLord}</strong></div>
-                            <div style="font-size:9.5px; color:#78716c; margin-top:1px;">${lgNak}</div>
+                            <div class="tooltip-target" data-tooltip="${lgPlacementTip}" style="cursor:help;">
+                                <strong style="color:#1e293b;">${lgSign} ${lgDeg}</strong>
+                                <div style="font-size:10px; color:#64748b;">House 1 (Ascendant)</div>
+                                <div style="font-size:9.5px; color:#475569; margin-top:2px;">Lord: <strong>${lgLord}</strong></div>
+                                <div style="font-size:9.5px; color:#78716c; margin-top:1px;">${lgNak}</div>
+                            </div>
                         </td>
                         <td>
-                            <span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:bold;">Lord: ${lgLord}</span>
+                            <span class="badge tooltip-target" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:bold; cursor:help;" data-tooltip="${lgLordTip}">Lord: ${lgLord}</span>
                         </td>
                         <td style="color:#94a3b8; font-size:11px;">
-                            — (Physical Horizon)
+                            <span class="tooltip-target" style="cursor:help;" data-tooltip="${lgPowerTip}">— (Physical Horizon)</span>
                         </td>
                         <td>
-                            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-size:10.5px; font-weight:600;">Core Lens of Destiny</span>
+                            <span class="badge tooltip-target" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-size:10.5px; font-weight:600; cursor:help;" data-tooltip="${lgAvasthaTip}">Core Lens of Destiny</span>
                         </td>
                         <td>
                             ${lagnaConjStr}
                         </td>
                         <td style="color:#94a3b8; font-size:11px;">
-                            —
+                            <span class="tooltip-target" style="cursor:help;" data-tooltip="${lgFruitTip}">—</span>
                         </td>
                         <td style="text-align: center;">
-                            <span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold;">Primary Anchor</span>
+                            <span class="badge tooltip-target" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold; cursor:help;" data-tooltip="${lgAnchorTip}">Primary Anchor</span>
                         </td>
                     </tr>
                 `;
@@ -4564,16 +4686,21 @@
                 const isCombust = !!gData.is_combust;
                 let statusBadges = '';
                 if (isRetro) {
-                    statusBadges += ' <span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold;" title="Retrograde [R]: high motional power, inward focus">[R]</span>';
+                    const rTip = `<strong>Retrograde [R] (Vakra Motion)</strong><br>• <strong>Motional Power:</strong> Apparent backward movement places ${graha} closest to Earth, largest, and brightest (high Cheṣṭa Bala).<br>• <strong>Psychological Meaning:</strong> Energy turns deeply introspective, non-linear, and unconventional; challenges standard norms and re-evaluates its significations.`;
+                    statusBadges += ` <span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${rTip}">[R]</span>`;
                 }
                 if (isCombust) {
-                    statusBadges += ' <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold;" title="Combust [C]: conjoined Sun, outward expression internalized">[C]</span>';
+                    const cTip = `<strong>Combust [C] (Asta)</strong><br>• <strong>Solar Proximity:</strong> Located within the blinding orb of the Sun.<br>• <strong>Psychological Meaning:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
+                    statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
                 }
 
-                // Cusp shift
-                let houseHtml = `House ${wHouse}`;
+                // Cusp shift & House Details
+                const hDesc = houseMeanings[wHouse] || `House ${wHouse}`;
+                const houseTooltip = `<strong>${hDesc}</strong><br>• Whole Sign house placement counted from Lagna in ${varga}.`;
+                let houseHtml = `<span class="tooltip-target" data-tooltip="${houseTooltip}" style="cursor:help;">House ${wHouse}</span>`;
                 if (cHouse !== wHouse) {
-                    houseHtml += ` <span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:10px; font-weight:bold;" title="Whole sign is House ${wHouse}, but 3D Campanus cusp shifts into Bhava ${cHouse}">➔ Bhava ${cHouse}</span>`;
+                    const shiftTip = `<strong>Campanus 3D Bhava Shift (➔ Bhava ${cHouse})</strong><br>• Whole sign is House ${wHouse}, but the 3D Campanus house cusp crosses into Bhava ${cHouse}.<br>• <strong>Interpretation:</strong> Outer circumstances follow House ${wHouse}, while internal psychological experience aligns with Bhava ${cHouse}.`;
+                    houseHtml += ` <span class="badge tooltip-target" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:10px; font-weight:bold; cursor:help;" data-tooltip="${shiftTip}">➔ Bhava ${cHouse}</span>`;
                 }
 
                 // Chara Karaka (Soul Role from D1)
@@ -4613,7 +4740,8 @@
                 let ruledHousesHtml = '';
                 let fnBadgesHtml = '';
                 if (fnRole && fnRole.ruled_houses && fnRole.ruled_houses.length > 0) {
-                    ruledHousesHtml = `<div style="font-size:9.5px; color:#475569; margin-top:2px;">Rules: <strong>${fnRole.ruled_houses_str}</strong></div>`;
+                    const ruledHousesTip = `<strong>House Rulership: ${fnRole.ruled_houses_str}</strong><br>• ${graha} owns and manages the affairs of House ${fnRole.ruled_houses.join(' and House ')}.<br>• Its placement and dignity directly govern the prosperity of these domains.`;
+                    ruledHousesHtml = `<div class="tooltip-target" data-tooltip="${ruledHousesTip}" style="font-size:9.5px; color:#475569; margin-top:2px; cursor:help;">Rules: <strong>${fnRole.ruled_houses_str}</strong></div>`;
                     
                     const bList = [];
                     if (fnRole.is_yogakaraka) {
@@ -4636,44 +4764,101 @@
                     }
                 }
 
+                // Placement Sign & Nakshatra Tooltips
+                const sMeta = signInfo[sign] || { element: '--', quality: '--', ruler: '--' };
+                const signTooltip = `<strong>${sign} ${deg} in ${varga}</strong><br>• <strong>Element:</strong> ${sMeta.element} | <strong>Modality:</strong> ${sMeta.quality}<br>• <strong>Sign Lord (Host):</strong> <strong>${sMeta.ruler}</strong>`;
+                const nakTooltip = `<strong>Nakshatra: ${nakStr}</strong><br>` + 
+                    (nakData ? `• <strong>Sidereal Lunar Mansion:</strong> Anchored to galactic center.<br>• <strong>Navāṁśa Pada:</strong> Pada ${nakData.pada} maps into D9 Navamsha.` : `• Divisional position in ${varga}.`);
+
                 // Dignity (5-fold)
                 let digBadge = '';
                 const isNode = (graha === 'Rahu' || graha === 'Ketu');
-                const signLord = (gData.dignity_breakdown && gData.dignity_breakdown.sign_lord) || signLords[sign] || '--';
-                const dig = gData.dignity_breakdown ? (gData.dignity_breakdown.final_dignity || '--') : '--';
+                const dBreak = gData.dignity_breakdown || {};
+                const signLord = dBreak.sign_lord || signLords[sign] || '--';
+                const natRel = dBreak.natural_relationship || 'Neutral';
+                const tempRel = dBreak.temporary_relationship || 'Neutral';
+                const compRel = dBreak.compound_relationship || 'Neutral';
+                const rawDig = dBreak.final_dignity || gData.dignity || '--';
+                const cleanDig = rawDig.replace("'s Sign", "").replace(" Sign", "").trim();
+                const digMeaning = DIGNITY_MEANINGS[rawDig] || DIGNITY_MEANINGS[cleanDig] || DIGNITY_MEANINGS[rawDig + "'s Sign"] || '';
 
                 if (isNode) {
-                    digBadge = `<span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;" title="Rahu & Ketu do not have 5-fold dignity; they act like the lord of their sign (Dispositor: ${signLord})">Reflects: ${signLord}</span>`;
+                    const nodeDigTip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
+                        `• <strong>Why No 5-Fold Dignity:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical body or own sign.<br>` +
+                        `• <strong>How Dignity Works:</strong> They act as reflection proxies, channeling the dignity, condition, and house lordship of their sign host (Dispositor: <strong>${signLord}</strong>) and conjunct planets.<br>` +
+                        `• <strong>Current Sign:</strong> Residing in ${sign}, mirroring ${signLord}'s state.`;
+                    digBadge = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; cursor:help;" data-tooltip="${nodeDigTip}">Reflects: ${signLord}</span>`;
                 } else {
-                    if (dig.includes('Exalt')) {
-                        digBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;">👑 Exalted</span>';
-                    } else if (dig.includes('Moola')) {
-                        digBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;">🏛️ Moolatrikona</span>';
-                    } else if (dig.includes('Own')) {
-                        digBadge = '<span class="badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;">🏡 Own Sign</span>';
-                    } else if (dig.includes('Great Friend')) {
-                        digBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;">🤝 Great Friend</span>';
-                    } else if (dig.includes('Friend')) {
-                        digBadge = '<span class="badge" style="background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;">🙂 Friend</span>';
-                    } else if (dig.includes('Neutral')) {
-                        digBadge = '<span class="badge" style="background:#f55f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;">⚖️ Neutral</span>';
-                    } else if (dig.includes('Great Enemy')) {
-                        digBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;">⚔️ Great Enemy</span>';
-                    } else if (dig.includes('Enemy')) {
-                        digBadge = '<span class="badge" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;">⚠️ Enemy</span>';
-                    } else if (dig.includes('Debilit')) {
-                        digBadge = '<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;">🔻 Debilitated</span>';
+                    let whyReason = '';
+                    if (rawDig.includes('Exalt')) {
+                        whyReason = `• <strong>Highest Elevation (Uccha):</strong> ${graha} reaches its peak coronation degrees in ${sign}. Operates with uncontested clarity, maximum dignity, and noble confidence.`;
+                    } else if (rawDig.includes('Moola')) {
+                        whyReason = `• <strong>Executive Office (Moolatrikona):</strong> ${graha} is in its prime mission degrees in ${sign}. Energetic, duty-bound, and happy working on its core purpose.`;
+                    } else if (rawDig.includes('Own')) {
+                        whyReason = `• <strong>Master of Own Domain (Svastha):</strong> ${graha} is the lord of ${sign}. It is fully at home, independent, secure, and has effortless command over its resources.`;
+                    } else if (rawDig.includes('Debilit')) {
+                        whyReason = `• <strong>Deepest Valley (Neecha):</strong> ${graha} sits directly opposite its exaltation point. Outer material ego is depleted, redirecting the native to build deep humility and inner non-material resilience.`;
                     } else {
-                        digBadge = `<span style="color:#78716c;">${dig}</span>`;
+                        whyReason = `• <strong>Sign Lord (Host):</strong> Governed by <strong>${signLord}</strong>.<br>` +
+                            `• <strong>Natural Bond (Naisargika):</strong> <em>${natRel}</em> (permanent archetypal relationship between ${graha} and ${signLord}).<br>` +
+                            `• <strong>Temporary Bond (Tātkālika):</strong> <em>${tempRel}</em> (based on chart house distance: planets in houses 2, 3, 4, 10, 11, 12 from each other are temporary friends; in houses 1, 5, 6, 7, 8, 9 are enemies).<br>` +
+                            `• <strong>5-Fold Synthesis (Panchadhā):</strong> ${natRel} + ${tempRel} ➔ <strong>${compRel} (${cleanDig})</strong>.`;
                     }
+
+                    const digTooltip = `<strong>👑 ${graha} Dignity in ${varga}: ${cleanDig}</strong><br>` +
+                        `${whyReason}<br><br>` +
+                        `• <strong>How it feels:</strong> ${digMeaning}`;
+
+                    let style = '';
+                    let icon = '';
+                    if (rawDig.includes('Exalt')) {
+                        icon = '👑 ';
+                        style = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
+                    } else if (rawDig.includes('Moola')) {
+                        icon = '🏛️ ';
+                        style = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
+                    } else if (rawDig.includes('Own')) {
+                        icon = '🏡 ';
+                        style = 'background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;';
+                    } else if (rawDig.includes('Great Friend')) {
+                        icon = '🤝 ';
+                        style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;';
+                    } else if (rawDig.includes('Friend')) {
+                        icon = '🙂 ';
+                        style = 'background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;';
+                    } else if (rawDig.includes('Neutral')) {
+                        icon = '⚖️ ';
+                        style = 'background:#f5f5f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;';
+                    } else if (rawDig.includes('Great Enemy')) {
+                        icon = '⚔️ ';
+                        style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;';
+                    } else if (rawDig.includes('Enemy')) {
+                        icon = '⚠️ ';
+                        style = 'background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;';
+                    } else if (rawDig.includes('Debilit')) {
+                        icon = '🔻 ';
+                        style = 'background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;';
+                    } else {
+                        style = 'color:#78716c;';
+                    }
+
+                    digBadge = `<span class="badge tooltip-target" style="${style} cursor:help;" data-tooltip="${digTooltip}">${icon}${cleanDig}</span>`;
                 }
 
                 // Shadbala Power
                 const sb = shadbala[graha];
                 let powerHtml = '<span style="color:#94a3b8;">—</span>';
-                if (sb) {
+                if (isNode) {
+                    const nodeSbTip = `<strong>⚡ ${graha} — Shadbala (Physical Potency)</strong><br>` +
+                        `• <strong>Why No Direct Score:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical mass, disc size, or orbital velocity.<br>` +
+                        `• <strong>How Strength Operates:</strong> They inherit raw stamina directly from their dispositor (<strong>${signLord}</strong>) and conjoining planets.`;
+                    powerHtml = `<span class="tooltip-target" style="color:#94a3b8; cursor:help;" data-tooltip="${nodeSbTip}">— (Chhāyā)</span>`;
+                } else if (sb) {
                     const rupas = sb.Total_Rupas ? sb.Total_Rupas.toFixed(2) + ' R' : '--';
-                    const pct = sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) + '%' : '--';
+                    const virupas = sb.Total_Virupas ? sb.Total_Virupas.toFixed(1) : '--';
+                    const reqVirupas = sb.Required_Total ? sb.Required_Total : '--';
+                    const pctVal = sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) : '--';
+                    const pct = pctVal + '%';
                     const rank = sb.Relative_Rank || '--';
                     const isHigh = (sb.Pct_Required_Total >= 115);
                     const isLow = (sb.Pct_Required_Total < 100);
@@ -4683,8 +4868,32 @@
                     else if (rank === 7) rankBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:10px;">Rank 7</span>`;
 
                     const pctColor = isHigh ? '#15803d' : (isLow ? '#b91c1c' : '#0369a1');
+
+                    let statusDesc = '';
+                    if (sb.Pct_Required_Total >= 125) {
+                        statusDesc = '<strong>🌟 Abundant Surplus:</strong> Significantly exceeds minimum requirements. The planet has abundant physical horsepower and stamina to deliver its promised results smoothly.';
+                    } else if (sb.Pct_Required_Total >= 100) {
+                        statusDesc = '<strong>🟢 Adequate & Capable:</strong> Meets baseline requirements (≥100%). It has steady, reliable operational capacity to fulfill its life responsibilities.';
+                    } else if (sb.Pct_Required_Total >= 85) {
+                        statusDesc = '<strong>🟡 Mild Deficit:</strong> Slightly below the classical threshold. Like an engine under heavy load, it requires patience and conscious effort to manifest.';
+                    } else {
+                        statusDesc = '<strong>🔴 Significant Deficit:</strong> Underpowered stamina (<85%). Even if placed well, it may struggle to sustain intense prolonged efforts alone without external help.';
+                    }
+
+                    const sbTooltip = `<strong>⚡ ${graha} — Shadbala (6-Fold Potency): ${rupas} (${pct})</strong><br>` +
+                        `• <strong>Chart Ranking:</strong> Rank #${rank} of 7 physical planets<br>` +
+                        `• <strong>Total Virūpas:</strong> ${virupas} / ${reqVirupas} required minimum (${pct})<br>` +
+                        `• <strong>Power Assessment:</strong> ${statusDesc}<br><br>` +
+                        `<strong>6 Classical Pillars of Strength (Virūpas):</strong><br>` +
+                        `• <strong>Sthāna Bala (Positional):</strong> ${sb.Sthana_Bala !== undefined ? sb.Sthana_Bala.toFixed(1) + 'v' : '--'} (dignity across signs and divisions)<br>` +
+                        `• <strong>Dig Bala (Directional):</strong> ${sb.Dig_Bala !== undefined ? sb.Dig_Bala.toFixed(1) + 'v' : '--'} (cardinal house quadrant alignment)<br>` +
+                        `• <strong>Kāla Bala (Temporal):</strong> ${(sb.Kala_Bala !== undefined ? sb.Kala_Bala : sb.Kaala_Bala) !== undefined ? (sb.Kala_Bala !== undefined ? sb.Kala_Bala : sb.Kaala_Bala).toFixed(1) + 'v' : '--'} (day/night, season, hour & era)<br>` +
+                        `• <strong>Cheṣṭa Bala (Motional):</strong> ${sb.Cheshta_Bala !== undefined ? sb.Cheshta_Bala.toFixed(1) + 'v' : '--'} (speed, retrograde motion & brightness)<br>` +
+                        `• <strong>Naisargika Bala (Natural):</strong> ${sb.Naisargika_Bala !== undefined ? sb.Naisargika_Bala.toFixed(1) + 'v' : '--'} (permanent cosmic luminosity)<br>` +
+                        `• <strong>Dṛk Bala (Aspectual):</strong> ${sb.Drik_Bala !== undefined ? (sb.Drik_Bala >= 0 ? '+' : '') + sb.Drik_Bala.toFixed(1) + 'v' : '--'} (net light from other planets)`;
+
                     powerHtml = `
-                        <div style="display:flex; flex-direction:column; gap:2px;">
+                        <div class="tooltip-target" data-tooltip="${sbTooltip}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
                                 <strong style="font-size:12px;">${rupas}</strong>
                                 ${rankBadge}
@@ -4698,9 +4907,15 @@
                 const avList = (gData.avasthas && gData.avasthas.lajjitadi) || [];
                 let avasthasHtml = '';
                 if (isNode) {
-                    avasthasHtml = '<span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:600;" title="Sage Parashara applies Lajjitādi Avasthās exclusively to the 7 physical Grahas. Rahu & Ketu act as instigators, not experiencers.">— (Chhāyā Catalyst)</span>';
+                    const nodeAvaTip = `<strong>Chhāyā Catalyst (Rahu / Ketu)</strong><br>` +
+                        `• <strong>Classical Citation:</strong> Sage Parashara applies the 6 Lajjitādi feeling states exclusively to the 7 physical Grahas.<br>` +
+                        `• <strong>Role:</strong> Nodes act as powerful external agitators and catalysts rather than feeling beings.`;
+                    avasthasHtml = `<span class="badge tooltip-target" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:600; cursor:help;" data-tooltip="${nodeAvaTip}">— (Chhāyā Catalyst)</span>`;
                 } else if (avList.length === 0) {
-                    avasthasHtml = '<span style="color:#a8a29e; font-style:italic;">Neutral (Unstirred)</span>';
+                    const neutralAvaTip = `<strong>Neutral (Unstirred Avasthā)</strong><br>` +
+                        `• ${graha} is not subjected to starving enemy rays or agitating conjunctions in ${varga}.<br>` +
+                        `• Operates in a peaceful, undisturbed baseline state.`;
+                    avasthasHtml = `<span class="tooltip-target" style="color:#a8a29e; font-style:italic; cursor:help;" data-tooltip="${neutralAvaTip}">Neutral (Unstirred)</span>`;
                 } else {
                     const badges = avList.map(item => {
                         const st = item.state || '';
@@ -4710,6 +4925,7 @@
                         let style = '';
                         let icon = '';
                         let nuanceNote = '';
+                        let feelingExp = '';
 
                         const causeGlyphs = {
                             'Sun': '☉', 'Moon': '☽', 'Mars': '♂', 'Mercury': '☿',
@@ -4733,24 +4949,34 @@
                         if (st.includes('Mudita')) {
                             icon = '🟢 +';
                             style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                            feelingExp = 'Delighted & Joyful: Feels cherished, welcomed, and generous. Delivers its gifts happily with enthusiastic support.';
                         } else if (st.includes('Garvita')) {
                             icon = '👑 +';
                             style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                            feelingExp = 'Proud & Noble: Full of royal dignity, self-confidence, and command. Operates with regal assurance.';
                         } else if (st.includes('Kshudhita')) {
                             icon = '🔴 -';
                             style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                            feelingExp = 'Starved & Depleted: Feels neglected, exhausted, or drained by enemy pressure. Struggles to find satisfaction or fuel.';
                         } else if (st.includes('Kshobhita')) {
                             icon = '🟠 -';
                             style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
+                            feelingExp = 'Agitated & Provoked: Feels shaken, impatient, or conflicted by harsh aspects or solar scorching.';
                         } else if (st.includes('Lajjita')) {
                             icon = '🟣 -';
                             style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
+                            feelingExp = 'Ashamed & Inhibited: Feels bashful, awkward, or self-conscious about asserting its true gifts.';
                         } else if (st.includes('Trushita')) {
                             icon = '💧 -';
                             style = 'background:#cffafe; color:#155e75; border:1px solid #67e8f9;';
+                            feelingExp = 'Thirsty & Yearning: Yearns for fulfillment that feels perpetually just out of reach.';
                         }
 
-                        return `<span class="avastha-badge-pill tooltip-target" style="${style}" data-tooltip="<strong>${st}</strong><br>• Condition: ${cond}<br>• Psychological feeling state." style="cursor:help;">${icon} ${label}${nuanceNote}</span>`;
+                        const avaTip = `<strong>${icon} ${st}</strong><br>` +
+                            `• <strong>Trigger Condition:</strong> ${cond}<br>` +
+                            `• <strong>Feeling State:</strong> ${feelingExp}`;
+
+                        return `<span class="avastha-badge-pill tooltip-target" style="${style} cursor:help;" data-tooltip="${avaTip}">${icon} ${label}${nuanceNote}</span>`;
                     });
                     avasthasHtml = `<div style="display:flex; flex-wrap:wrap; gap:3px;">${badges.join('')}</div>`;
                 }
@@ -4784,18 +5010,22 @@
                             const signChar = isPlus ? '+' : '-';
                             const tagColor = isPlus ? '#15803d' : '#b91c1c';
                             const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
-                            aspectList.push(`<span style="color:${tagColor}; font-weight:600;" title="${aspG} casts ${signChar}${rawV} virupas (${isPlus ? 'Subha/Benefic ray' : 'Asubha/Malefic pressure'})">${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`);
+                            const aspTip = `<strong>${aspG} Aspect: ${signChar}${rawV} Virūpas</strong><br>• <strong>Type:</strong> ${isPlus ? 'Subha Dṛṣṭi (Benefic protective light)' : 'Aśubha Dṛṣṭi (Challenging pressure)'}<br>• <strong>Intensity:</strong> ${rawV} / 60 Virūpas (60v = 100% full aspect glance).`;
+                            aspectList.push(`<span class="tooltip-target" style="color:${tagColor}; font-weight:600; cursor:help;" data-tooltip="${aspTip}">${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`);
                         }
                     });
                 }
 
                 let netDrishtiBadge = '';
                 if (netVal >= 12.0) {
-                    netDrishtiBadge = `<span class="badge" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px;" title="Benefic rays (+${plusVal}v) outweigh malefic pressure (-${minusVal}v)">🟢 Net Support (+${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>🟢 Net Benefic Support (+${Math.round(netVal)} Virūpas)</strong><br>• <strong>Benefic Sky-Light (+${plusVal}v):</strong> Gentle, supportive rays from friendly allies.<br>• <strong>Challenging Rays (-${minusVal}v):</strong> Friction from tough aspects.<br>• <strong>Atmosphere:</strong> Clear skies and encouraging weather predominate.`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${netTip}">🟢 Net Support (+${Math.round(netVal)}v)</span>`;
                 } else if (netVal <= -12.0) {
-                    netDrishtiBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px;" title="Malefic pressure (-${minusVal}v) outweighs benefic rays (+${plusVal}v)">🔴 Net Pressure (${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>🔴 Net Malefic Pressure (${Math.round(netVal)} Virūpas)</strong><br>• <strong>Challenging Pressure (-${minusVal}v):</strong> Heavy demands, delays, or friction from difficult aspects.<br>• <strong>Benefic Sky-Light (+${plusVal}v):</strong> Gentle support received.<br>• <strong>Atmosphere:</strong> High-resistance weather; demands extra discipline and mindful patience.`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${netTip}">🔴 Net Pressure (${Math.round(netVal)}v)</span>`;
                 } else {
-                    netDrishtiBadge = `<span class="badge" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px;" title="Benefic (+${plusVal}v) and malefic (-${minusVal}v) balanced">⚖️ Balanced (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>⚖️ Balanced Drishti (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Benefic Sky-Light (+${plusVal}v) vs Challenging Pressure (-${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental weather without extreme bias.`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${netTip}">⚖️ Balanced (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
                 }
 
                 let yutiHtml = '';
@@ -4805,7 +5035,9 @@
                         const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
                         const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
                         const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
-                        return `<span style="color:${cColor}; font-weight:600;">${cIcon} ${cp}</span>`;
+                        const nature = isBen ? 'Benefic ally: offers grace, diplomacy, and resources.' : (isMal ? 'Malefic pressure: introduces intensity, demands, or discipline.' : 'Neutral companion.');
+                        const yTip = `<strong>Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.<br>• ${nature}`;
+                        return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${yTip}">${cIcon} ${cp}</span>`;
                     }).join(', ');
                     yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
@@ -4824,21 +5056,37 @@
                 // Karmic Fruit (Ishta / Kashta)
                 let fruitHtml = '<span style="color:#94a3b8;">—</span>';
                 let fruitScore = null;
-                if (sb && sb.Ishta_Phala !== undefined && sb.Kashta_Phala !== undefined) {
+                if (isNode) {
+                    const nodeFruitTip = `<strong>⚡ ${graha} — Karmic Fruits</strong><br>` +
+                        `• <strong>Why No Ishta/Kashta:</strong> Rahu and Ketu are mathematical points without physical discs, so they do not produce direct Ishta/Kashta mathematical scores.<br>` +
+                        `• <strong>Fruit Fruition:</strong> Their harvest is channeled through their sign dispositor (<strong>${signLord}</strong>).`;
+                    fruitHtml = `<span class="tooltip-target" style="color:#94a3b8; cursor:help;" data-tooltip="${nodeFruitTip}">— (Chhāyā)</span>`;
+                } else if (sb && sb.Ishta_Phala !== undefined && sb.Kashta_Phala !== undefined) {
                     const ishta = Number(sb.Ishta_Phala).toFixed(1);
                     const kashta = Number(sb.Kashta_Phala).toFixed(1);
                     const diff = sb.Ishta_Phala - sb.Kashta_Phala;
                     fruitScore = Math.max(1.0, Math.min(10.0, (sb.Ishta_Phala / 60.0) * 10.0));
+
                     let balanceBadge = '';
+                    let fruitDesc = '';
                     if (diff >= 10.0) {
                         balanceBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:9.5px; font-weight:bold;">Sweet / Grace</span>';
+                        fruitDesc = '<strong>Sweet Harvest (Grace):</strong> Auspicious capacity heavily outweighs hardships. Periods of this planet tend to deliver joy and blessings with ease.';
                     } else if (diff <= -10.0) {
                         balanceBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold;">Difficult / Grit</span>';
+                        fruitDesc = '<strong>Arduous Harvest (Grit & Lessons):</strong> Kashta outweighs Ishta. Fruits require perseverance, overcoming resistance, and character-building trials.';
                     } else {
                         balanceBadge = '<span class="badge" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-size:9.5px; font-weight:bold;">Mixed / Neutral</span>';
+                        fruitDesc = '<strong>Balanced Harvest (Mixed):</strong> Even blend of sweet rewards and practical effort.';
                     }
+
+                    const fruitTooltip = `<strong>⚡ Karmic Fruits (Ishta & Kashta Phala)</strong><br>` +
+                        `• <strong>Ishta Phala (${ishta} / 60):</strong> Auspicious capacity (capacity to confer sweet blessings and joy).<br>` +
+                        `• <strong>Kashta Phala (${kashta} / 60):</strong> Arduous capacity (capacity for lessons, delays, and hard work).<br>` +
+                        `• <strong>Balance:</strong> ${fruitDesc}`;
+
                     fruitHtml = `
-                        <div style="display:flex; flex-direction:column; gap:2px;">
+                        <div class="tooltip-target" data-tooltip="${fruitTooltip}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                             <div style="font-size:10px;">
                                 <span style="color:#15803d; font-weight:bold;">I: ${ishta}</span> / 
                                 <span style="color:#b91c1c; font-weight:bold;">K: ${kashta}</span>
@@ -4851,7 +5099,7 @@
                 // 5-Pillar Master Composite Vitality Score (1.0 to 10.0)
                 // 1. Dignity Score
                 let dScore = 5.0;
-                const dLow = dig.toLowerCase();
+                const dLow = (rawDig || '').toLowerCase();
                 if (dLow.includes('exalt')) dScore = 10.0;
                 else if (dLow.includes('moola')) dScore = 9.0;
                 else if (dLow.includes('own')) dScore = 8.0;
@@ -4936,11 +5184,13 @@
                 }
 
                 const vitalityTooltip = `<strong>★ ${graha} Vitality in ${varga} (${compStr} / 10)</strong><br>` +
-                    `• <strong>Sign Dignity (${varga}):</strong> ${dScore.toFixed(1)}/10 (${dig})<br>` +
+                    `• <strong>Sign Dignity (${varga}):</strong> ${dScore.toFixed(1)}/10 (${cleanDig})<br>` +
                     `• <strong>Shadbala Power (Soul Base):</strong> ${sbScore !== null ? sbScore.toFixed(1) + '/10 (' + sb.Pct_Required_Total.toFixed(0) + '%)' : 'N/A'}<br>` +
                     `• <strong>Avasthā Mood (${varga}):</strong> ${avaScore.toFixed(1)}/10 (${avList.map(a => a.state.split(' ')[0]).join(', ') || 'Neutral'})<br>` +
                     `• <strong>Environment (${varga}):</strong> ${aspScore.toFixed(1)}/10 (Net ${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)<br>` +
                     `• <strong>Karmic Fruit:</strong> ${fruitScore !== null ? fruitScore.toFixed(1) + '/10 (Ishta ' + Number(sb.Ishta_Phala).toFixed(1) + ')' : 'N/A'}`;
+
+                const grahaTip = grahaArchetypes[graha] || `<strong>${graha}</strong>`;
 
                 tbody.innerHTML += `
                     <tr>
@@ -4949,7 +5199,7 @@
                                 <span style="font-size:16px; color:#1e293b;">${glyph}</span>
                                 <div>
                                     <div style="display:flex; align-items:center; gap:4px;">
-                                        <strong style="color:#1e293b; font-size:12.5px;">${graha}</strong>
+                                        <strong class="tooltip-target" data-tooltip="${grahaTip}" style="color:#1e293b; font-size:12.5px; cursor:help;">${graha}</strong>
                                         ${ckBadge}
                                     </div>
                                     <div>${statusBadges}</div>
@@ -4957,11 +5207,11 @@
                             </div>
                         </td>
                         <td>
-                            <strong style="color:#1e293b;">${sign} ${deg}</strong>
+                            <strong class="tooltip-target" data-tooltip="${signTooltip}" style="color:#1e293b; cursor:help;">${sign} ${deg}</strong>
                             <div style="font-size:10px; color:#64748b;">${houseHtml}</div>
                             ${ruledHousesHtml}
                             ${fnBadgesHtml}
-                            <div style="font-size:9.5px; color:#78716c; margin-top:2px;">${nakStr}</div>
+                            <div class="tooltip-target" data-tooltip="${nakTooltip}" style="font-size:9.5px; color:#78716c; margin-top:2px; cursor:help;">${nakStr}</div>
                         </td>
                         <td>
                             ${digBadge}
@@ -4980,7 +5230,7 @@
                         </td>
                         ${isNode ? `
                             <td style="text-align: center;">
-                                <span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold;" title="Chhāyā Graha: Operates through dispositor (${signLord}) and conjunct planets">— (Karmic Catalyst)</span>
+                                <span class="badge tooltip-target" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold; cursor:help;" data-tooltip="<strong>Chhāyā Graha (${graha})</strong><br>• Operates through dispositor (${signLord}) and conjunct planets rather than taking direct vitality ratings.">— (Karmic Catalyst)</span>
                             </td>
                         ` : `
                             <td style="text-align: center;">
@@ -6352,7 +6602,7 @@
                     }
                     document.getElementById('editNativeId').value = result.native.id;
                     document.getElementById('newName').value = result.native.name;
-                    document.getElementById('newDate').value = result.native.date;
+                    document.getElementById('newDate').value = formatToDDMMYYYY(result.native.date);
                     
                     // HTML time inputs often require HH:MM or HH:MM:SS format
                     // Ensure the loaded time fits, e.g. padding or slicing if needed
@@ -6367,6 +6617,12 @@
                         document.getElementById('newNameSoundValue').value = result.native.name_sound_value;
                     } else {
                         document.getElementById('newNameSoundValue').value = "0";
+                    }
+                    if (document.getElementById('newPlace')) {
+                        document.getElementById('newPlace').value = (result.native.place && result.native.place !== "Custom") ? result.native.place : "";
+                    }
+                    if (document.getElementById('newNotes')) {
+                        document.getElementById('newNotes').value = result.native.notes || "";
                     }
                     document.getElementById('updateBtn').style.display = 'inline-block';
                     
@@ -6391,7 +6647,17 @@
                 
                 // Update Titles
                 document.getElementById('chartTitle').innerText = `${currentChartData.subject_info.name} - Birth Chart`;
-                document.getElementById('chartSubtitle').innerText = `${currentChartData.subject_info.birth_datetime} | ${currentChartData.subject_info.latitude} N, ${currentChartData.subject_info.longitude} E`;
+                const latVal = parseFloat(currentChartData.subject_info.latitude);
+                const lonVal = parseFloat(currentChartData.subject_info.longitude);
+                const latDir = latVal >= 0 ? 'N' : 'S';
+                const lonDir = lonVal >= 0 ? 'E' : 'W';
+                const latStr = `${Math.abs(latVal).toFixed(4)}° ${latDir}`;
+                const lonStr = `${Math.abs(lonVal).toFixed(4)}° ${lonDir}`;
+                const pName = (result.native && result.native.place && result.native.place !== 'Custom') 
+                    ? result.native.place 
+                    : (currentChartData.subject_info.place && currentChartData.subject_info.place !== 'Custom' ? currentChartData.subject_info.place : '');
+                const pStr = pName ? `${pName} • ` : '';
+                document.getElementById('chartSubtitle').innerText = `${currentChartData.subject_info.birth_datetime} | ${pStr}${latStr}, ${lonStr}`;
                 
                 // Setup Split before updating widgets so they exist in DOM
                 setupSplit();
@@ -6998,18 +7264,6 @@
                 }
             });
         }
-
-        const DIGNITY_MEANINGS = {
-            "Exalted": "It operates at its absolute highest potential with royal honor, confidence, and uncontested clarity.",
-            "Moolatrikona": "It feels purposeful, duty-bound, and cheerful, working energetically on its primary mission.",
-            "Own Sign": "It is master of its own household, secure, self-sufficient, and fully in control of its resources.",
-            "Great Friend's Sign": "It receives exceptional warmth, hospitality, and enthusiastic support.",
-            "Friend's Sign": "It enjoys a peaceful, cooperative environment.",
-            "Neutral's Sign": "It receives standard, no-frills hospitality and relies on its own resources.",
-            "Enemy's Sign": "It feels unwelcome and stressed, requiring extra grit to overcome resistance.",
-            "Great Enemy's Sign": "It faces intense friction, discomfort, and active opposition.",
-            "Debilitated": "Having hit rock bottom, it feels vulnerable and inadequate in outer worldly matters, urging the native to build humble, non-material inner strengths."
-        };
 
         function updateDignityTable(varga) {
             const tbody = document.querySelector('#dignityTable tbody');
@@ -8583,31 +8837,238 @@
                 const tr = document.createElement("tr");
                 tr.innerHTML = `
                     <td><strong>${d.planet}</strong></td>
-                    <td>${d.start}</td>
-                    <td>${d.end}</td>
+                    <td>${formatToDDMMYYYY(d.start)}</td>
+                    <td>${formatToDDMMYYYY(d.end)}</td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
+        function formatToDDMMYYYY(dateStr) {
+            if (!dateStr) return '';
+            dateStr = String(dateStr).trim();
+            
+            // 1. Slashes
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split('/');
+                if (parts.length === 3) {
+                    if (parts[0].length === 4 || Math.abs(parseInt(parts[0], 10)) > 31) {
+                        const y = parts[0];
+                        const m = parts[1].padStart(2, '0');
+                        const d = parts[2].padStart(2, '0');
+                        return `${d}/${m}/${y}`;
+                    } else {
+                        const d = parts[0].padStart(2, '0');
+                        const m = parts[1].padStart(2, '0');
+                        const y = parts[2];
+                        return `${d}/${m}/${y}`;
+                    }
+                }
+            }
+            
+            // 2. Dots: DD.MM.YYYY
+            if (dateStr.includes('.')) {
+                const parts = dateStr.split('.');
+                if (parts.length === 3) {
+                    const d = parts[0].padStart(2, '0');
+                    const m = parts[1].padStart(2, '0');
+                    const y = parts[2];
+                    return `${d}/${m}/${y}`;
+                }
+            }
+            
+            // 3. Dashes: YYYY-MM-DD, -YYYY-MM-DD, DD-MM-YYYY
+            if (dateStr.includes('-')) {
+                const isBCE = dateStr.startsWith('-');
+                const clean = isBCE ? dateStr.substring(1) : dateStr;
+                const parts = clean.split('-');
+                if (parts.length === 3) {
+                    if (parts[0].length === 4 || parseInt(parts[0], 10) > 31) {
+                        const y = isBCE ? `-${parts[0]}` : parts[0];
+                        const m = parts[1].padStart(2, '0');
+                        const d = parts[2].padStart(2, '0');
+                        return `${d}/${m}/${y}`;
+                    } else {
+                        const d = parts[0].padStart(2, '0');
+                        const m = parts[1].padStart(2, '0');
+                        const y = isBCE ? `-${parts[2]}` : parts[2];
+                        return `${d}/${m}/${y}`;
+                    }
+                }
+            }
+            
+            return dateStr;
+        }
+
+        async function populateNativeForm(native) {
+            document.getElementById('editNativeId').value = native.id || '';
+            document.getElementById('newName').value = native.name || '';
+            document.getElementById('newDate').value = formatToDDMMYYYY(native.date);
+            
+            let tStr = native.time || '12:00:00';
+            if (tStr.length === 5) tStr += ":00";
+            document.getElementById('newTime').value = tStr;
+            
+            document.getElementById('newLat').value = (native.lat !== undefined && native.lat !== null) ? native.lat : '';
+            document.getElementById('newLon').value = (native.lon !== undefined && native.lon !== null) ? native.lon : '';
+            document.getElementById('newTz').value = native.tz || '+00:00';
+            document.getElementById('newNameSoundValue').value = native.name_sound_value !== undefined ? String(native.name_sound_value) : '0';
+            if (document.getElementById('newPlace')) {
+                document.getElementById('newPlace').value = (native.place && native.place !== 'Custom') ? native.place : '';
+            }
+            if (document.getElementById('newNotes')) {
+                document.getElementById('newNotes').value = native.notes || '';
+            }
+            
+            if (native.country) {
+                document.getElementById('countrySelect').value = native.country;
+                await loadCities();
+                if (native.place && native.place !== "Custom") {
+                    const citySelect = document.getElementById('citySelect');
+                    for (let i = 0; i < citySelect.options.length; i++) {
+                        if (citySelect.options[i].text === native.place) {
+                            citySelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                document.getElementById('countrySelect').value = "";
+                document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
+                document.getElementById('citySelect').disabled = true;
+            }
+        }
+
+        async function openEditModal() {
+            const select = document.getElementById('nativeSelect');
+            let nativeId = document.getElementById('editNativeId')?.value;
+            if (!nativeId && select && select.value) {
+                nativeId = select.value;
+            }
+            if (!nativeId && select && select.options.length > 1) {
+                nativeId = select.options[1].value;
+                select.value = nativeId;
+            }
+            if (!nativeId) {
+                alert("Please select or load a person first to edit.");
+                return;
+            }
+            
+            document.getElementById('nativeModalTitle').innerText = "✏️ Edit Person Details";
+            document.getElementById('updateBtn').style.display = 'inline-block';
+            document.getElementById('deleteNativeBtn').style.display = 'inline-block';
+            document.getElementById('saveAsNewBtn').style.display = 'inline-block';
+            document.getElementById('saveAsNewBtn').innerText = 'Save as Copy';
+            document.getElementById('saveAsNewBtn').style.backgroundColor = '#e5e7eb';
+            document.getElementById('saveAsNewBtn').style.color = '#1f2937';
+            
+            try {
+                const response = await fetch(`/api/native/${nativeId}`);
+                const native = await response.json();
+                if (native.error) {
+                    alert(native.error);
+                    return;
+                }
+                await populateNativeForm(native);
+                document.getElementById('addPersonModal').style.display = 'flex';
+            } catch (e) {
+                console.error("Failed to load native for editing", e);
+                alert("Could not load person details for editing.");
+            }
+        }
+
+        function openAddModal() {
+            document.getElementById('nativeModalTitle').innerText = "+ Add New Person";
+            document.getElementById('editNativeId').value = '';
+            document.getElementById('newName').value = '';
+            document.getElementById('newDate').value = '';
+            document.getElementById('newTime').value = '12:00:00';
+            document.getElementById('newLat').value = '';
+            document.getElementById('newLon').value = '';
+            document.getElementById('newTz').value = '+00:00';
+            document.getElementById('newNameSoundValue').value = '0';
+            if (document.getElementById('newPlace')) {
+                document.getElementById('newPlace').value = '';
+            }
+            if (document.getElementById('newNotes')) {
+                document.getElementById('newNotes').value = '';
+            }
+            document.getElementById('countrySelect').value = '';
+            document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
+            document.getElementById('citySelect').disabled = true;
+            document.getElementById('updateBtn').style.display = 'none';
+            document.getElementById('deleteNativeBtn').style.display = 'none';
+            document.getElementById('saveAsNewBtn').style.display = 'inline-block';
+            document.getElementById('saveAsNewBtn').innerText = 'Save Person';
+            document.getElementById('saveAsNewBtn').style.backgroundColor = '#2563eb';
+            document.getElementById('saveAsNewBtn').style.color = '#ffffff';
+            document.getElementById('addPersonModal').style.display = 'flex';
+        }
+
+        async function deleteCurrentNative() {
+            const id = document.getElementById('editNativeId').value;
+            const name = document.getElementById('newName').value || 'this person';
+            if (!id) {
+                alert("No person selected to delete.");
+                return;
+            }
+            if (!confirm(`Are you sure you want to delete "${name}" permanently?`)) {
+                return;
+            }
+            try {
+                const res = await fetch(`/api/delete_native/${id}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+                // Remove from select dropdown
+                const select = document.getElementById('nativeSelect');
+                for (let i = 0; i < select.options.length; i++) {
+                    if (select.options[i].value === id) {
+                        select.remove(i);
+                        break;
+                    }
+                }
+                document.getElementById('addPersonModal').style.display = 'none';
+                if (select.options.length > 1) {
+                    select.selectedIndex = 1;
+                    loadChart(select.value);
+                } else {
+                    document.getElementById('chartTitle').innerText = "No Chart Loaded";
+                    document.getElementById('chartSubtitle').innerText = "";
+                }
+            } catch (e) {
+                console.error("Failed to delete native", e);
+                alert("Failed to delete person.");
+            }
+        }
+
         async function saveNative(isUpdate) {
+            const placeInput = document.getElementById('newPlace');
             const cityEl = document.getElementById('citySelect');
-            const placeName = cityEl.selectedIndex > 0 ? cityEl.options[cityEl.selectedIndex].text : "Custom";
+            let placeName = placeInput ? placeInput.value.trim() : "";
+            if (!placeName) {
+                placeName = (cityEl && cityEl.selectedIndex > 0) ? cityEl.options[cityEl.selectedIndex].text : "Custom";
+            }
+            const rawDate = document.getElementById('newDate').value.trim();
+            const formattedDate = formatToDDMMYYYY(rawDate);
             
             const payload = {
-                name: document.getElementById('newName').value,
-                date: document.getElementById('newDate').value,
-                time: document.getElementById('newTime').value,
-                lat: document.getElementById('newLat').value,
-                lon: document.getElementById('newLon').value,
-                tz: document.getElementById('newTz').value,
+                name: document.getElementById('newName').value.trim(),
+                date: formattedDate,
+                time: document.getElementById('newTime').value.trim(),
+                lat: document.getElementById('newLat').value.trim(),
+                lon: document.getElementById('newLon').value.trim(),
+                tz: document.getElementById('newTz').value.trim(),
                 country: document.getElementById('countrySelect').value || "",
                 place: placeName,
-                name_sound_value: document.getElementById('newNameSoundValue').value
+                name_sound_value: document.getElementById('newNameSoundValue').value,
+                notes: document.getElementById('newNotes') ? document.getElementById('newNotes').value.trim() : ""
             };
             
             if (!payload.name || !payload.date || !payload.time || !payload.lat || !payload.lon || !payload.tz) {
-                alert("Please fill all fields");
+                alert("Please fill all required fields (Name, Date in DD/MM/YYYY, Time, Lat, Lon, Timezone)");
                 return;
             }
             
@@ -8633,11 +9094,12 @@
                 }
                 
                 const select = document.getElementById('nativeSelect');
+                const displayDate = formatToDDMMYYYY(newNative.date);
                 if (isUpdate) {
                     // Update option text
                     for (let i = 0; i < select.options.length; i++) {
                         if (select.options[i].value === newNative.id) {
-                            select.options[i].text = `${newNative.name} (${newNative.date})`;
+                            select.options[i].text = `${newNative.name} (${displayDate})`;
                             break;
                         }
                     }
@@ -8645,9 +9107,11 @@
                     // Add to select
                     const opt = document.createElement('option');
                     opt.value = newNative.id;
-                    opt.text = `${newNative.name} (${newNative.date})`;
+                    opt.text = `${newNative.name} (${displayDate})`;
                     select.appendChild(opt);
                 }
+                
+                document.getElementById('addPersonModal').style.display = 'none';
                 
                 // Select and load
                 select.value = newNative.id;
@@ -8657,22 +9121,6 @@
                 console.error(e);
                 alert("Failed to save native");
             }
-        }
-        
-        function openAddModal() {
-            document.getElementById('editNativeId').value = '';
-            document.getElementById('newName').value = '';
-            document.getElementById('newDate').value = '';
-            document.getElementById('newTime').value = '';
-            document.getElementById('newLat').value = '';
-            document.getElementById('newLon').value = '';
-            document.getElementById('newTz').value = '+00:00';
-            document.getElementById('newNameSoundValue').value = '0';
-            document.getElementById('countrySelect').value = '';
-            document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
-            document.getElementById('citySelect').disabled = true;
-            document.getElementById('updateBtn').style.display = 'none';
-            document.getElementById('addPersonModal').style.display = 'flex';
         }
 
         async function loadCountries() {
@@ -8726,8 +9174,11 @@
             const lon = opt.dataset.lon;
             document.getElementById('newLat').value = lat;
             document.getElementById('newLon').value = lon;
+            if (document.getElementById('newPlace')) {
+                document.getElementById('newPlace').value = opt.text;
+            }
             
-            const dateStr = document.getElementById('newDate').value || '2000-01-01';
+            const dateStr = document.getElementById('newDate').value || '01/01/2000';
             const timeStr = document.getElementById('newTime').value || '12:00:00';
             
             try {
@@ -8742,6 +9193,31 @@
                 }
             } catch (e) {
                 console.error("Failed to fetch timezone", e);
+            }
+        }
+
+        async function detectTimezoneFromCoords() {
+            const lat = document.getElementById('newLat').value.trim();
+            const lon = document.getElementById('newLon').value.trim();
+            if (!lat || !lon) {
+                alert("Please enter Latitude and Longitude first.");
+                return;
+            }
+            const dateStr = document.getElementById('newDate').value || '01/01/2000';
+            const timeStr = document.getElementById('newTime').value || '12:00:00';
+            try {
+                const response = await fetch('/api/timezone', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ lat, lon, date: dateStr, time: timeStr })
+                });
+                const res = await response.json();
+                if (res.offset) {
+                    document.getElementById('newTz').value = res.offset;
+                }
+            } catch (e) {
+                console.error("Failed to detect timezone", e);
+                alert("Could not detect timezone.");
             }
         }
         
