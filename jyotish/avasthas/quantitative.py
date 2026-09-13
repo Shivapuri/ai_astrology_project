@@ -434,24 +434,28 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                     net_pull = 0.0
                     color_state = "neutral"
             else:
+                scaled_aspect = round(aspect_virupas * (vim_bases[p_recv] / 20.0), 1) if varga_name != 'D1' else round(aspect_virupas, 1)
+                asp_ratio = (scaled_aspect / 60.0) if varga_name != 'D1' else (aspect_virupas / 60.0)
+                g_strength = shadbala_data[p_give]['Total_Virupas'] if baseline_type == 'ShadBala' else bases[p_give]
+
                 if has_pos:
-                    positive_pull = round(bases[p_give] * (aspect_virupas / 60.0), 1)
+                    positive_pull = round(g_strength * asp_ratio, 1)
                     
                 if has_neg:
                     if baseline_type == 'Ishta':
-                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * (aspect_virupas / 60.0)
+                        neg_calc = shadbala_data[p_give].get('Kashta_Phala', 0) * asp_ratio
                     elif baseline_type == 'Subha':
-                        neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * (aspect_virupas / 60.0)
+                        neg_calc = shadbala_data[p_give].get('Asubha_Phala', 0) * asp_ratio
                     elif baseline_type in ['Uccha', 'Dig', 'Cheshta', 'Veda']:
-                        neg_calc = max(0.0, 60.0 - bases[p_give]) * (aspect_virupas / 60.0)
+                        neg_calc = max(0.0, 60.0 - bases[p_give]) * asp_ratio
                     elif baseline_type == 'ShadBala':
-                        neg_calc = bases[p_give] * (aspect_virupas / 60.0)
+                        neg_calc = g_strength * asp_ratio
                     else:
-                        neg_calc = bases[p_give] * (aspect_virupas / 60.0)
+                        neg_calc = g_strength * asp_ratio
                     negative_pull = round(neg_calc, 1)
                     
                 if has_neutral:
-                    neutral_pull = round(bases[p_give] * (aspect_virupas / 60.0), 1)
+                    neutral_pull = round(g_strength * asp_ratio, 1)
 
                 isolated_positive = round(bases[p_recv] + positive_pull, 1) if has_pos else None
                 isolated_negative = round(bases[p_recv] - negative_pull, 1) if has_neg else None
