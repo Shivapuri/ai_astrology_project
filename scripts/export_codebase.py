@@ -49,6 +49,7 @@ EXCLUDED_DIRS = {
     ".gemini",
     "angelina-jolie-pdfs",
     "knowledge_base",
+    "lajjitadi_transcription",
 }
 
 EXCLUDED_FILES = {

@@ -13,6 +13,7 @@ from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEA
 import jyotish.ashtakavarga as ashtakavarga
 import jyotish.vimshopaka as vimshopaka
 import jyotish.sign_attributes as sign_attributes
+import jyotish.planetary_evaluation as planetary_evaluation
 
 try:
     import swisseph as swe
@@ -94,7 +95,7 @@ def get_sign(longitude: float) -> tuple[str, float]:
     deg_in_sign = longitude % 30
     return ZODIAC_SIGNS[sign_idx], round(deg_in_sign, 2)
 
-def calculate_varga_longitude(longitude: float, varga: str) -> float:
+def calculate_varga_longitude(longitude: float, varga: str, d10_mode: str = "reverse", d24_mode: str = "reverse") -> float:
     sign_idx = int(longitude // 30)
     deg = longitude % 30
     is_odd = (sign_idx % 2 == 0) # 0=Aries (odd), 1=Taurus (even)
@@ -146,7 +147,10 @@ def calculate_varga_longitude(longitude: float, varga: str) -> float:
         if is_odd:
             varga_sign = (sign_idx + div_index) % 12
         else:
-            varga_sign = (sign_idx + 8 - div_index) % 12
+            if d10_mode in ("direct", "contemporary", "forward"):
+                varga_sign = (sign_idx + 8 + div_index) % 12
+            else:
+                varga_sign = (sign_idx + 8 - div_index) % 12
         fraction = (deg % div_size) / div_size
         return (varga_sign * 30.0) + (fraction * 30.0)
         
@@ -171,7 +175,10 @@ def calculate_varga_longitude(longitude: float, varga: str) -> float:
         if is_odd:
             varga_sign = (4 + div_index) % 12
         else:
-            varga_sign = (3 - div_index) % 12
+            if d24_mode in ("direct", "contemporary", "forward"):
+                varga_sign = (3 + div_index) % 12
+            else:
+                varga_sign = (3 - div_index) % 12
         fraction = (deg % div_size) / div_size
         return (varga_sign * 30.0) + (fraction * 30.0)
         
@@ -212,7 +219,9 @@ def generate_kala_chart(
     longitude: float = -0.1278,
     timezone_offset: float = 1.0,
     name_sound_value: Optional[int] = None,
-    output_filepath: Optional[str] = None
+    output_filepath: Optional[str] = None,
+    d10_mode: str = "reverse",
+    d24_mode: str = "reverse"
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -289,7 +298,7 @@ def generate_kala_chart(
         }
         
         # Lagna
-        l_lon = calculate_varga_longitude(d1_longitudes["Lagna"], v_name)
+        l_lon = calculate_varga_longitude(d1_longitudes["Lagna"], v_name, d10_mode=d10_mode, d24_mode=d24_mode)
         l_sign, l_deg = get_sign(l_lon)
         vargas_data[v_name]["lagna"] = {
             "longitude": round(l_lon, 4),
@@ -299,7 +308,7 @@ def generate_kala_chart(
         
         # Planets
         for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
-            p_lon = calculate_varga_longitude(d1_longitudes[p_name], v_name)
+            p_lon = calculate_varga_longitude(d1_longitudes[p_name], v_name, d10_mode=d10_mode, d24_mode=d24_mode)
             p_sign, p_deg = get_sign(p_lon)
             vargas_data[v_name]["grahas"][p_name] = {
                 "longitude": round(p_lon, 4),
@@ -311,7 +320,7 @@ def generate_kala_chart(
         # Cusps (Bhava Chalita)
         v_cusps = []
         for c in cusps:
-            c_lon = calculate_varga_longitude(c, v_name)
+            c_lon = calculate_varga_longitude(c, v_name, d10_mode=d10_mode, d24_mode=d24_mode)
             v_cusps.append(c_lon)
             
         bhavas = []
@@ -799,6 +808,10 @@ def generate_kala_chart(
             "longitude": longitude,
             "timezone_offset": timezone_offset
         },
+        "calculation_settings": {
+            "d10_mode": d10_mode,
+            "d24_mode": d24_mode
+        },
         "astronomy": {
             "ayanamsa_name": "Dhruva Galactic Center (Middle of Mula)",
             "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
@@ -827,7 +840,8 @@ def generate_kala_chart(
         "ashtakavarga": ashtakavarga_data,
         "varga_vimshopaka": vimshopaka_data,
         "vimshopaka": vimshopaka_export,
-        "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()}
+        "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()},
+        "planetary_evaluation": planetary_evaluation.calculate_planetary_evaluation(vargas_data, shadbala_data)
     }
     
     # 7. Write to file (only if requested)

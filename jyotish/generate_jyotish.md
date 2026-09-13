@@ -52,7 +52,10 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
 *   **Lord & Sub-Lord:** Each Nakshatra's Vimshottari lord is divided into 9 unequal sub-divisions proportional to the Vimshottari dasha years (out of 120 years total), beginning with the lord of the nakshatra itself.
 *   **Relative Speed Ratio:** Instantaneous daily motion compared against mean motion:
     $$\text{Speed Ratio} = \left(\frac{\text{Instantaneous Motion}}{\text{Mean Motion}}\right) \times 100\%$$
-    For geocentric inner planets (Mercury, Venus), the mean motion is anchored to the Sun's geocentric mean rate ($0.9856^\circ/\text{day}$). For the Nodes, motion is computed over a 1-day interval centered on the birth coordinate.
+### E. Divisional Charts (Vargas) - Dasamsa (D10) Modes
+*   **Default (Kala Reverse for Even Signs):** Ernst Wilhelm's recommended setting in Kala (`Parashara - Reverse for Even Rasis *`). For even signs, the 10 divisions count in reverse (backward) starting from the 9th sign ($(\text{sign\_idx} + 8 - \text{div\_index}) \pmod{12}$).
+*   **Contemporary Direct (Vic DiCara / Traditional):** Slices count forward starting from the 9th sign ($(\text{sign\_idx} + 8 + \text{div\_index}) \pmod{12}$).
+*   **Parity:** Odd signs always progress forward from the sign itself in both systems ($(\text{sign\_idx} + \text{div\_index}) \pmod{12}$).
 
 ---
 

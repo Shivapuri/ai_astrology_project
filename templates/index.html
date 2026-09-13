@@ -1128,6 +1128,110 @@
             box-shadow: 0 1px 3px rgba(74, 51, 37, 0.04);
         }
 
+        /* Vic DiCara Planetary Evaluation & Scale */
+        .planetary-eval-table {
+            border-collapse: collapse;
+            width: 100%;
+            background: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 11.5px;
+        }
+        .planetary-eval-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-weight: bold;
+            padding: 6px 8px;
+            border: 1px solid #dcb594;
+            white-space: nowrap;
+            text-align: left;
+        }
+        .planetary-eval-table td {
+            padding: 5px 8px;
+            border: 1px solid #e5dccb;
+            vertical-align: middle;
+            color: #334155;
+        }
+        .planetary-eval-table tr:hover td {
+            background-color: #fbf8f2 !important;
+        }
+        .eval-scale-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+        .eval-scale-badge.positive {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        .eval-scale-badge.mixed {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fde68a;
+        }
+        .eval-scale-badge.negative {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .eval-quadrant-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10.5px;
+            font-weight: 600;
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        .eval-quadrant-pill.king {
+            background: #fef9c3;
+            color: #854d0e;
+            border-color: #fde047;
+        }
+        .eval-quadrant-pill.dictator {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #fca5a5;
+        }
+        .eval-quadrant-pill.friend {
+            background: #e0f2fe;
+            color: #0369a1;
+            border-color: #bae6fd;
+        }
+        .eval-quadrant-pill.bully {
+            background: #f3f4f6;
+            color: #4b5563;
+            border-color: #d1d5db;
+        }
+        .eval-master-card {
+            flex: 1;
+            min-width: 220px;
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 6px;
+            padding: 8px 10px;
+            box-shadow: 0 1px 3px rgba(74, 51, 37, 0.04);
+        }
+        .eval-calc-drawer {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 5px;
+            padding: 6px 10px;
+            margin: 4px 0;
+            font-family: monospace;
+            font-size: 11px;
+            color: #1e293b;
+            line-height: 1.4;
+        }
+
         /* 5-Fold Bhava Inspector Card */
         .bhava-inspector-card {
             background: #fffdfa;
@@ -1563,6 +1667,29 @@
             </div>
 
             <div class="setting-section">
+                <h4>Divisional Chart Calculations (Vargas)</h4>
+                <div style="margin-bottom: 8px; font-size: 11px; color: #6b5a4b;">
+                    Reckoning method for even signs (e.g. Taurus, Cancer, Virgo)
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-d10-reverse').click()">
+                    <input type="radio" id="radio-d10-reverse" name="modalD10Mode" value="reverse" checked onchange="setD10Mode('reverse')">
+                    <label for="radio-d10-reverse">
+                        <strong>D10: Kala Reverse for Even Signs (Ernst Wilhelm *)</strong>
+                        <span class="setting-chip">Counts backwards from 9th sign (Kala Software Default)</span>
+                    </label>
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-d10-direct').click()">
+                    <input type="radio" id="radio-d10-direct" name="modalD10Mode" value="direct" onchange="setD10Mode('direct')">
+                    <label for="radio-d10-direct">
+                        <strong>D10: Contemporary Forward (Vic DiCara / Traditional)</strong>
+                        <span class="setting-chip">Counts forward from 9th sign (Vic DiCara interpretation)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
                 <h4>Astrological PDF Export</h4>
                 <div class="setting-option-card" onclick="closeSettingsModal(); openExportModal();" style="border-left: 3px solid #2563eb;">
                     <span style="font-size: 18px; margin-right: 10px;">📄</span>
@@ -1747,6 +1874,7 @@
                 <button type="button" class="floating-nav-pill" id="nav-btn-shadbala" onclick="openFloatingShadbala()">⚖️ Shad Bala</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-yoga" onclick="openFloatingYogaJudgment()">⚖️ Yoga Judgment</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-ashtaka" onclick="openFloatingAshtakavarga()">📊 Ashtakavarga</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-evaluation" onclick="openFloatingPlanetaryEvaluation()">🌟 Vic DiCara Scale</button>
             </div>
 
             <!-- Body Container -->
@@ -1820,6 +1948,7 @@
                         <div class="kala-item star-item" onclick="assignKalaWidget('dashas-timeline')">• Vimshottari Timeline ★</div>
                         <div class="kala-item" onclick="assignKalaWidget('shadbala-table')">• Shad Bala Details</div>
                         <div class="kala-item star-item" onclick="assignKalaWidget('yoga-judgment')">• Yoga Judgment (Ishta/Kashta) ★</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('planetary-evaluation')">• Vic DiCara Scale (-100 to +100) ★</div>
                         <div class="kala-item" onclick="assignKalaWidget('dignities')">• Dignities in Vargas</div>
                         <div class="kala-item" onclick="assignKalaWidget('avasthas-calc')">• Qualitative Avasthas</div>
                         <div class="kala-item" onclick="assignKalaWidget('ashtakavarga')">• Ashtakavarga & SAV (337)</div>
@@ -1849,6 +1978,10 @@
                         <button type="button" class="btn-kala-popup" onclick="openFloatingYogaJudgment()">
                             <strong>⚖️ Yoga Judgment Screen</strong>
                             <small>Ishta, Subha & Dig Bala (Kala)</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingPlanetaryEvaluation()">
+                            <strong>🌟 Vic DiCara Scale</strong>
+                            <small>-100% to +100% & 4 Quadrants</small>
                         </button>
                         <button type="button" class="btn-kala-popup" onclick="openFloatingAshtakavarga()">
                             <strong>🔢 AshtakaVarga Transit</strong>
@@ -1936,6 +2069,7 @@
         <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <div class="menu-item" onclick="assignWidget('yoga-judgment')">⚖️ Yoga Judgment (Ishta/Kashta)</div>
+        <div class="menu-item" onclick="assignWidget('planetary-evaluation')">🌟 Vic DiCara Scale (-100 to +100)</div>
         <!-- NEW MODULES REGISTERED -->
         <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
         <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
@@ -2481,6 +2615,7 @@
                         <option value="D45">D45 - Akṣavedāṁśa</option>
                         <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
                     </select>
+                    <button type="button" class="btn-d10-toggle" onclick="toggleD10Mode()" title="Toggle D10 Calculation: Kala Reverse vs. Contemporary Forward" style="display:none; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; border: 1px solid #fcd34d; background: #fef3c7; color: #92400e; cursor: pointer; align-items: center; gap: 2px;">D10: Kala ↺</button>
                     <div class="chart-root-pill" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
                         <button type="button" class="root-pill-btn active btn-root-lagna" onclick="switchWidgetRootPlanet(this, 'Lagna')" title="Ascendant / Lagna (Physical Ascendant H1)" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Asc (Lagna)</button>
                         <button type="button" class="root-pill-btn btn-root-moon" onclick="switchWidgetRootPlanet(this, 'Moon')" title="Chandra Lagna (Moon as H1)" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Moon</button>
@@ -2655,6 +2790,48 @@
                                 <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Venus (Shukra)">♀</th>
                                 <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Saturn (Shani)">♄</th>
                                 <th style="color: #1a4a82; font-size: 13px; font-weight: bold; padding: 4px;">Avg.</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
+    <template id="tmpl-planetary-evaluation">
+        <div class="widget-content" id="widget-planetary-evaluation">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">🌟 Vic DiCara Planetary Evaluation & Scale</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">-100% to +100%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 11px; color: #4a3325; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;">
+                        <input type="checkbox" class="toggle-calc-trail" onchange="togglePlanetaryEvalTrail(this)">
+                        <span>Show Calculation Equations</span>
+                    </label>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; overflow-x: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <!-- 3 Master Anchors of Destiny (Lagna, Navamsha, Drekkana Lords - Phaladeepika 3.11) -->
+                    <div class="master-lords-banner"></div>
+
+                    <!-- Main Evaluation Table -->
+                    <table class="planetary-eval-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 110px;">Graha</th>
+                                <th style="width: 105px;">Scale Net</th>
+                                <th style="width: 125px;">Expression</th>
+                                <th style="width: 155px;">4-Quadrant Archetype</th>
+                                <th style="width: 95px;">Step 1: Shadvarga</th>
+                                <th style="width: 120px;">Step 2: Host Rescue</th>
+                                <th style="width: 110px;">Step 3: Drishti Rays</th>
+                                <th style="width: 115px;">Step 4: House Field</th>
+                                <th style="width: 105px;">Raw Strength</th>
+                                <th style="width: 65px; text-align: center;">Math</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -3034,7 +3211,7 @@
                 const tmpl = document.getElementById('tmpl-' + widgetType);
                 if (tmpl) {
                     contentDiv.appendChild(tmpl.content.cloneNode(true));
-                    if (widgetType === 'info') {
+                    if (widgetType === 'info' || widgetType === 'planetary-evaluation') {
                         contentDiv.classList.add('scrollable');
                     } else {
                         contentDiv.classList.remove('scrollable');
@@ -3096,6 +3273,23 @@
                     });
                 }
 
+                // Sync D10 calculation mode toggle button
+                const d10Btn = cell.querySelector('.btn-d10-toggle');
+                if (d10Btn) {
+                    if (varga === 'D10') {
+                        d10Btn.style.display = 'inline-flex';
+                        d10Btn.innerHTML = (currentD10Mode === 'direct') ? 'D10: Direct ➔' : 'D10: Kala ↺';
+                        d10Btn.title = (currentD10Mode === 'direct') 
+                            ? 'D10: Contemporary Forward (Vic DiCara). Click to switch to Kala Reverse.' 
+                            : 'D10: Kala Reverse for Even Signs (Ernst Wilhelm). Click to switch to Contemporary Forward.';
+                        d10Btn.style.background = (currentD10Mode === 'direct') ? '#e0f2fe' : '#fef3c7';
+                        d10Btn.style.color = (currentD10Mode === 'direct') ? '#0369a1' : '#92400e';
+                        d10Btn.style.borderColor = (currentD10Mode === 'direct') ? '#7dd3fc' : '#fcd34d';
+                    } else {
+                        d10Btn.style.display = 'none';
+                    }
+                }
+
                 const vData = currentSvgs[varga];
                 const vSvgMode = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
                 
@@ -3155,6 +3349,9 @@
             }
             else if (widgetType === 'vimshopaka') {
                 updateVimshopakaWidget(cell);
+            }
+            else if (widgetType === 'planetary-evaluation') {
+                updatePlanetaryEvaluationWidget(cell);
             }
             else if (widgetType === 'info') {
                 refreshContextInfoForCell(cell);
@@ -3577,6 +3774,275 @@
             document.body.style.overflow = 'hidden';
         }
 
+        function updatePlanetaryEvaluationWidget(cell) {
+            if (!currentChartData || !currentChartData.planetary_evaluation) return;
+            const evalData = currentChartData.planetary_evaluation;
+            const summary = evalData.summary || {};
+            const planets = evalData.planets || {};
+
+            // Render Master Lords Banner
+            const banner = cell.querySelector('.master-lords-banner');
+            if (banner && summary.master_lords) {
+                const ml = summary.master_lords;
+                const lagnaLord = ml.lagna_lord || {};
+                const navLord = ml.navamsha_lord || {};
+                const drekLord = ml.drekkana_lord || {};
+                const pred = summary.chart_predominance || {};
+
+                banner.innerHTML = `
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:8px; width:100%; margin-bottom:10px;">
+                        <div class="eval-master-card" style="border-left: 3px solid #2563eb;">
+                            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">🚩 Lagna Lord (D1) — Life Mastery</div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:3px;">
+                                <strong style="font-size:13.5px; color:#1e293b;">${lagnaLord.planet || '-'}</strong>
+                                <span class="eval-scale-badge ${lagnaLord.expression_class || 'mixed'}">${lagnaLord.scale_score >= 0 ? '+' : ''}${Number(lagnaLord.scale_score || 0).toFixed(1)}%</span>
+                            </div>
+                            <div style="font-size:11px; color:#0369a1; font-weight:600; margin-top:2px;">
+                                Rules ${lagnaLord.rising_sign || ''} Ascendant • in ${lagnaLord.placed_sign || ''}
+                            </div>
+                            <div style="font-size:10px; color:#475569; margin-top:2px;">${lagnaLord.governs || ''}</div>
+                        </div>
+
+                        <div class="eval-master-card" style="border-left: 3px solid #7c3aed;">
+                            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">☸️ Navamsha Lord (D9) — Soul Happiness</div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:3px;">
+                                <strong style="font-size:13.5px; color:#1e293b;">${navLord.planet || '-'}</strong>
+                                <span class="eval-scale-badge ${navLord.expression_class || 'mixed'}">${navLord.scale_score >= 0 ? '+' : ''}${Number(navLord.scale_score || 0).toFixed(1)}%</span>
+                            </div>
+                            <div style="font-size:11px; color:#6d28d9; font-weight:600; margin-top:2px;">
+                                Rules ${navLord.rising_sign || ''} D9 Lagna • in ${navLord.placed_sign || ''}
+                            </div>
+                            <div style="font-size:10px; color:#475569; margin-top:2px;">${navLord.governs || ''}</div>
+                        </div>
+
+                        <div class="eval-master-card" style="border-left: 3px solid #b45309;">
+                            <div style="font-size:10px; text-transform:uppercase; color:#64748b; font-weight:bold;">⚔️ Drekkana Lord (D3) — Worldly Courage</div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:3px;">
+                                <strong style="font-size:13.5px; color:#1e293b;">${drekLord.planet || '-'}</strong>
+                                <span class="eval-scale-badge ${drekLord.expression_class || 'mixed'}">${drekLord.scale_score >= 0 ? '+' : ''}${Number(drekLord.scale_score || 0).toFixed(1)}%</span>
+                            </div>
+                            <div style="font-size:11px; color:#b45309; font-weight:600; margin-top:2px;">
+                                Rules ${drekLord.rising_sign || ''} D3 Lagna • in ${drekLord.placed_sign || ''}
+                            </div>
+                            <div style="font-size:10px; color:#475569; margin-top:2px;">${drekLord.governs || ''}</div>
+                        </div>
+
+                        <div class="eval-master-card" style="border-left: 3px solid #16a34a; background:#f0fdf4;">
+                            <div style="font-size:10px; text-transform:uppercase; color:#166534; font-weight:bold;">📜 Shadvarga Predominance</div>
+                            <div style="font-size:12px; font-weight:bold; color:#14532d; margin-top:3px;">${pred.overall_status || 'Shadvarga Balance'}</div>
+                            <div style="font-size:10px; color:#166534; margin-top:2px;">${pred.meaning || ''}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Render Table Body
+            const tbody = cell.querySelector('.planetary-eval-table tbody') || cell.querySelector('tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            const showTrailAll = cell.querySelector('.toggle-calc-trail')?.checked || false;
+            const planetOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+            const cellPrefix = cell.id || ('eval-' + Math.floor(Math.random() * 10000));
+
+            planetOrder.forEach(p => {
+                const data = planets[p];
+                if (!data) return;
+
+                const score = Number(data.net_scale_score || 0);
+                const scoreSign = score >= 0 ? '+' : '';
+                const exprClass = data.expression_class || 'mixed';
+                const arch = data.archetype || {};
+                const archClass = arch.title.includes('King') ? 'king' : (arch.title.includes('Dictator') ? 'dictator' : (arch.title.includes('Friend') ? 'friend' : 'bully'));
+
+                // Tooltip for Shadvarga
+                const s1 = data.step1_shadvarga || {};
+                const vb = s1.varga_breakdown || {};
+                let shadvargaTip = `<strong>${p} Shadvarga Breakdown (Avg: ${s1.average_dignity_pct}%)</strong><br>`;
+                shadvargaTip += `• D1 Rashi: ${vb.D1?.sign || '-'} (${vb.D1?.dignity || '-'}, ${vb.D1?.score || 0}%)<br>`;
+                shadvargaTip += `• D2 Hora: ${vb.D2?.sign || '-'} (${vb.D2?.dignity || '-'}, ${vb.D2?.score || 0}%)<br>`;
+                shadvargaTip += `• D3 Drekkana: ${vb.D3?.sign || '-'} (${vb.D3?.dignity || '-'}, ${vb.D3?.score || 0}%)<br>`;
+                shadvargaTip += `• D9 Navamsha: ${vb.D9?.sign || '-'} (${vb.D9?.dignity || '-'}, ${vb.D9?.score || 0}%)<br>`;
+                shadvargaTip += `• D12 Dwadashamsha: ${vb.D12?.sign || '-'} (${vb.D12?.dignity || '-'}, ${vb.D12?.score || 0}%)<br>`;
+                shadvargaTip += `• D30 Trimshamsha: ${vb.D30?.sign || '-'} (${vb.D30?.dignity || '-'}, ${vb.D30?.score || 0}%)<br>`;
+                shadvargaTip += `<em>Centered Base Score: ${s1.base_centered_score >= 0 ? '+' : ''}${s1.base_centered_score}%</em>`;
+
+                // Tooltip for Host Rescue
+                const s2 = data.step2_host_rescue || {};
+                let hostTip = `<strong>Host (Dispositor) Anchor: ${s2.host_planet || '-'}</strong><br>`;
+                hostTip += `• Host Shadvarga Dignity: ${s2.host_dignity_pct || 0}%<br>`;
+                hostTip += `• Status: ${s2.rescue_status || '-'} (${s2.bonus_pct >= 0 ? '+' : ''}${s2.bonus_pct || 0}%)<br>`;
+                hostTip += `• ${s2.notes || ''}`;
+
+                // Tooltip for Aspects
+                const s3 = data.step3_aspects || {};
+                let aspectTip = `<strong>Drishti & Conjunction Rays (Net: ${s3.net_aspect_pct >= 0 ? '+' : ''}${s3.net_aspect_pct || 0}%)</strong><br>`;
+                if (s3.details && s3.details.length > 0) {
+                    s3.details.forEach(d => {
+                        aspectTip += `• ${d.source} ${d.type} (${d.power_pct}%): ${d.impact}<br>`;
+                    });
+                } else {
+                    aspectTip += `• No significant incoming rays.<br>`;
+                }
+
+                // Tooltip for House Field
+                const s4 = data.step4_house_field || {};
+                let houseTip = `<strong>House Field: ${s4.house_num}th House</strong><br>`;
+                houseTip += `• Type: ${s4.house_type || '-'}<br>`;
+                if (s4.kendra_rank) houseTip += `• Rank: ${s4.kendra_rank}<br>`;
+                if (s4.viparita_yoga) houseTip += `• Special Yoga: <strong>${s4.viparita_yoga}</strong><br>`;
+                houseTip += `• Bonus: ${s4.bonus_pct >= 0 ? '+' : ''}${s4.bonus_pct || 0}%<br>`;
+                houseTip += `• ${s4.notes || ''}`;
+
+                // Tooltip for Strength
+                const st = data.strength || {};
+                let strTip = `<strong>Planetary Strength (Virya)</strong><br>`;
+                strTip += `• Total Virupas: ${st.total_virupas || 0} V (Ratio: ${st.shadbala_ratio || 0}x required)<br>`;
+                strTip += `• Level: ${st.strength_level || '-'}<br>`;
+                if (st.motional_factors && st.motional_factors.length > 0) {
+                    strTip += `• Motional Factors: ${st.motional_factors.join(', ')}<br>`;
+                }
+
+                // Archetype Tooltip
+                const archTip = `<strong>Archetype: ${arch.title || '-'}</strong><br>• Dignity: ${arch.dignity_status || '-'}<br>• Strength: ${arch.strength_status || '-'}<br>• Meaning: ${arch.description || ''}`;
+
+                const drawerId = `${cellPrefix}-drawer-${p.toLowerCase()}`;
+
+                const tr = document.createElement('tr');
+                tr.className = 'eval-planet-row';
+                tr.dataset.planet = p;
+                tr.setAttribute('onclick', `if (!event.target.closest('button, a, input')) togglePlanetEvalRow('${drawerId}')`);
+                tr.style.cursor = 'pointer';
+                tr.title = 'Click to toggle step-by-step mathematical formula';
+                tr.innerHTML = `
+                    <td style="font-weight:bold; color:#1a4a82; white-space:nowrap;">
+                        <span style="font-size:14px;">${data.glyph || ''}</span> ${p}
+                        <span style="font-size:10px; color:#64748b; display:block;">${data.sign || ''} ${data.longitude || 0}°</span>
+                    </td>
+                    <td style="white-space:nowrap;">
+                        <span class="eval-scale-badge ${exprClass}" title="Net Score on -100% to +100% continuous spectrum">
+                            ${scoreSign}${score.toFixed(1)}%
+                        </span>
+                    </td>
+                    <td style="font-size:11px; white-space:nowrap;">
+                        <span style="font-weight:600; color:${exprClass === 'positive' ? '#166534' : (exprClass === 'negative' ? '#991b1b' : '#854d0e')};">
+                            ${(data.expression_mode || '').split('(')[0].trim()}
+                        </span>
+                        <div style="font-size:9.5px; color:#64748b;">${exprClass === 'positive' ? 'Constructive' : (exprClass === 'negative' ? 'Disruptive' : 'Balanced')}</div>
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${archTip}" style="cursor:help; white-space:nowrap;">
+                        <span class="eval-quadrant-pill ${archClass}">
+                            <span>${arch.icon || ''}</span> ${arch.title || '-'}
+                        </span>
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${shadvargaTip}" style="cursor:help; white-space:nowrap;">
+                        <strong>${s1.average_dignity_pct || 0}%</strong>
+                        <span style="font-size:9.5px; color:#64748b; display:block;">(${s1.base_centered_score >= 0 ? '+' : ''}${s1.base_centered_score || 0}%)</span>
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${hostTip}" style="cursor:help; white-space:nowrap;">
+                        <span>${s2.host_planet || '-'} (${s2.bonus_pct >= 0 ? '+' : ''}${s2.bonus_pct || 0}%)</span>
+                        <span style="font-size:9.5px; color:${(s2.bonus_pct || 0) > 10 ? '#166534' : ((s2.bonus_pct || 0) < 0 ? '#991b1b' : '#64748b')}; display:block;">
+                            ${(s2.rescue_status || '-').split('(')[0].trim()}
+                        </span>
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${aspectTip}" style="cursor:help; white-space:nowrap;">
+                        <strong style="color:${(s3.net_aspect_pct || 0) > 0 ? '#166534' : ((s3.net_aspect_pct || 0) < 0 ? '#991b1b' : '#334155')};">
+                            ${(s3.net_aspect_pct || 0) >= 0 ? '+' : ''}${s3.net_aspect_pct || 0}%
+                        </strong>
+                        <span style="font-size:9.5px; color:#64748b; display:block;">+${s3.benefic_rays_pct || 0}% / ${s3.malefic_pressure_pct || 0}%</span>
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${houseTip}" style="cursor:help; white-space:nowrap;">
+                        <span>H${s4.house_num || '-'} (${s4.bonus_pct >= 0 ? '+' : ''}${s4.bonus_pct || 0}%)</span>
+                        ${s4.viparita_yoga ? `<span style="font-size:9px; background:#fef3c7; color:#92400e; padding:1px 3px; border-radius:3px; font-weight:bold; display:block;">${s4.viparita_yoga.split('(')[0].trim()}</span>` : `<span style="font-size:9.5px; color:#64748b; display:block;">${(s4.house_type || '-').split('(')[0].trim()}</span>`}
+                    </td>
+                    <td class="tooltip-target" data-tooltip="${strTip}" style="cursor:help; white-space:nowrap;">
+                        <span>${st.total_virupas || 0} V</span>
+                        <span style="font-size:9.5px; font-weight:600; color:${st.strength_level === 'High Strength' ? '#15803d' : '#b91c1c'}; display:block;">
+                            ${st.shadbala_ratio || 0}x ${st.strength_level === 'High Strength' ? 'High' : 'Low'}
+                        </span>
+                    </td>
+                    <td style="text-align:center; white-space:nowrap;">
+                        <button type="button" class="btn-toggle-row-drawer" onclick="togglePlanetEvalRow('${drawerId}')" style="background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; font-size:10.5px; padding:2px 7px; cursor:pointer; color:#334155;" title="Toggle Step-by-Step Mathematical Formula">
+                            📐 Math
+                        </button>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+
+                // Calculation Trail Drawer Row
+                const trail = data.calculation_trail || {};
+                const trDrawer = document.createElement('tr');
+                trDrawer.id = drawerId;
+                trDrawer.className = 'eval-calc-drawer-row';
+                trDrawer.style.display = showTrailAll ? 'table-row' : 'none';
+                trDrawer.innerHTML = `
+                    <td colspan="10" style="padding: 8px 14px; background: #fdfbf7; border-bottom: 2px solid #dcb594;">
+                        <div class="eval-calc-drawer">
+                            <div style="font-weight: bold; color: #1e293b; margin-bottom: 5px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:4px;">
+                                <span style="font-size:12px;">📐 Step-by-Step Calculation for ${data.glyph || ''} ${p}:</span>
+                                <span style="font-size:10px; background:#e2e8f0; color:#475569; padding:2px 6px; border-radius:3px;">Vic DiCara Continuous Diagnostic Scale</span>
+                            </div>
+                            <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; font-family:monospace; font-size:11.5px; color:#0f172a; margin-bottom:6px; overflow-x:auto;">
+                                <strong>${trail.formula || ''}</strong>
+                            </div>
+                            <div style="font-family:sans-serif; font-size:11px; color:#475569; white-space:pre-line; line-height:1.5;">
+                                ${trail.human_readable || ''}
+                            </div>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(trDrawer);
+            });
+        }
+
+        function togglePlanetEvalRow(drawerId) {
+            const drawer = document.getElementById(drawerId);
+            if (!drawer) return;
+            drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'table-row' : 'none';
+        }
+
+        function togglePlanetaryEvalTrail(checkbox) {
+            const container = checkbox.closest('.widget-content') || document;
+            const drawers = container.querySelectorAll('.eval-calc-drawer-row');
+            drawers.forEach(d => {
+                d.style.display = checkbox.checked ? 'table-row' : 'none';
+            });
+        }
+
+        function openFloatingPlanetaryEvaluation() {
+            closeKalaMenu();
+            const modal = document.getElementById('widgetMaximizeModal');
+            const card = document.getElementById('widgetMaximizeCard');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container || !currentChartData) return;
+
+            resetFloatingWindowPosition();
+            if (card) {
+                const w = Math.min(1020, window.innerWidth - 40);
+                const h = Math.min(700, window.innerHeight - 60);
+                card.style.width = w + 'px';
+                card.style.height = h + 'px';
+                card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+                card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+            }
+
+            setActiveFloatingNav('nav-btn-evaluation');
+            const subjectName = (currentChartData.subject_info && currentChartData.subject_info.name) ? currentChartData.subject_info.name : 'Chart';
+            titleEl.textContent = subjectName + " — Planetary Evaluation & Positive-Negative Scale (Vic DiCara)";
+
+            const tmpl = document.getElementById('tmpl-planetary-evaluation');
+            if (tmpl) {
+                container.innerHTML = '';
+                container.appendChild(tmpl.content.cloneNode(true));
+                updatePlanetaryEvaluationWidget(container);
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
         function populatePlanetaryInfoTable(cell) {
             const tbody = cell.querySelector('tbody');
             if (!tbody || !currentChartData || !currentChartData.nakshatras) return;
@@ -3776,6 +4242,11 @@
             document.querySelectorAll('.grid-cell[data-widget="yoga-judgment"]').forEach(cell => {
                 updateYogaJudgmentWidget(cell);
             });
+
+            // Planetary Evaluation (Vic DiCara Scale)
+            document.querySelectorAll('.grid-cell[data-widget="planetary-evaluation"]').forEach(cell => {
+                updatePlanetaryEvaluationWidget(cell);
+            });
             
             // Dignities in Vargas
             updateVargaDignitiesTable();
@@ -3824,6 +4295,16 @@
             document.querySelectorAll('.grid-cell[data-widget="shadbala-table"]').forEach(cell => {
                 updateShadbalaTableWidget();
             });
+
+            // Update floating modal if active for planetary-evaluation
+            const modal = document.getElementById('widgetMaximizeModal');
+            if (modal && modal.style.display === 'flex') {
+                const navBtn = document.getElementById('nav-btn-evaluation');
+                if (navBtn && navBtn.classList.contains('active')) {
+                    const cont = document.getElementById('widgetMaximizeContainer');
+                    if (cont) updatePlanetaryEvaluationWidget(cont);
+                }
+            }
         }
 
         let splitInstances = [];
@@ -4829,6 +5310,46 @@
 
         let currentChartData = null;
         let currentSvgs = null;
+        let currentD10Mode = localStorage.getItem('astra_d10_mode') || "reverse";
+        let currentD24Mode = localStorage.getItem('astra_d24_mode') || "reverse";
+
+        async function setD10Mode(mode) {
+            if (currentD10Mode === mode) return;
+            currentD10Mode = mode;
+            localStorage.setItem('astra_d10_mode', currentD10Mode);
+            syncD10ModeUI();
+            await loadChart();
+        }
+
+        async function toggleD10Mode() {
+            const nextMode = (currentD10Mode === 'reverse') ? 'direct' : 'reverse';
+            await setD10Mode(nextMode);
+        }
+
+        function syncD10ModeUI() {
+            const radioRev = document.getElementById('radio-d10-reverse');
+            const radioDir = document.getElementById('radio-d10-direct');
+            if (radioRev && radioDir) {
+                if (currentD10Mode === 'direct') radioDir.checked = true;
+                else radioRev.checked = true;
+            }
+            document.querySelectorAll('.btn-d10-toggle').forEach(btn => {
+                const cell = btn.closest('.grid-cell');
+                const vargaSelect = cell ? cell.querySelector('.varga-select') : null;
+                if (vargaSelect && vargaSelect.value === 'D10') {
+                    btn.style.display = 'inline-flex';
+                    btn.innerHTML = (currentD10Mode === 'direct') ? 'D10: Direct ➔' : 'D10: Kala ↺';
+                    btn.title = (currentD10Mode === 'direct') 
+                        ? 'D10: Contemporary Forward (Vic DiCara). Click to switch to Kala Reverse.' 
+                        : 'D10: Kala Reverse for Even Signs (Ernst Wilhelm). Click to switch to Contemporary Forward.';
+                    btn.style.background = (currentD10Mode === 'direct') ? '#e0f2fe' : '#fef3c7';
+                    btn.style.color = (currentD10Mode === 'direct') ? '#0369a1' : '#92400e';
+                    btn.style.borderColor = (currentD10Mode === 'direct') ? '#7dd3fc' : '#fcd34d';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
 
         async function loadChart(nativeId = null) {
             const id = nativeId || document.getElementById('nativeSelect').value;
@@ -4837,7 +5358,7 @@
             document.getElementById('loading').style.display = 'block';
             
             try {
-                const response = await fetch(`/api/chart/${id}`);
+                const response = await fetch(`/api/chart/${id}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}`);
                 const result = await response.json();
                 
                 if (result.error) {
@@ -4900,6 +5421,7 @@
                 setupSplit();
                 // Update all widgets
                 updateAllWidgets();
+                syncD10ModeUI();
 
 
                 
@@ -5064,11 +5586,38 @@
             if (!tbody || !matrixSelect || !currentChartData) return;
             
             const varga = vargaSelect ? vargaSelect.value : 'D1';
-            const matrixType = matrixSelect.value;
+            let matrixType = matrixSelect ? matrixSelect.value : 'Drishti Yuti';
             
+            // In divisional charts (D2 to D60), classical Kala software evaluates Lajjitadi Avasthas via Drishti Yuti and ShadBala
+            if (varga !== 'D1') {
+                if (matrixType !== 'Drishti Yuti' && matrixType !== 'ShadBala') {
+                    matrixType = 'Drishti Yuti';
+                    if (matrixSelect) matrixSelect.value = 'Drishti Yuti';
+                }
+            }
+
+            if (matrixSelect) {
+                const optgroups = matrixSelect.querySelectorAll('optgroup');
+                optgroups.forEach(og => {
+                    if (og.label.startsWith('Yoga Judgment Balas')) {
+                        if (varga !== 'D1') {
+                            og.label = 'Yoga Judgment Balas (D1 Only)';
+                            og.querySelectorAll('option').forEach(opt => opt.disabled = true);
+                        } else {
+                            og.label = 'Yoga Judgment Balas';
+                            og.querySelectorAll('option').forEach(opt => opt.disabled = false);
+                        }
+                    }
+                });
+            }
+
             const titleEl = cell.querySelector('.quant-matrices-title');
             if (titleEl) {
-                titleEl.textContent = `${varga} - Strength Matrices`;
+                if (varga === 'D1') {
+                    titleEl.textContent = `${varga} - Strength Matrices`;
+                } else {
+                    titleEl.textContent = `${varga} - Strength Matrices (${matrixType})`;
+                }
             }
             
             tbody.innerHTML = '';
@@ -5151,30 +5700,38 @@
                     } else {
                         // Off-Diagonal Cells (Giver != Receiver)
                         if (matrixType === 'Drishti Yuti') {
-                            const val = data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0;
-                            if (val > 0.001) {
+                            const val = (data && data.pull !== undefined && data.pull !== null) ? data.pull : (data && data.aspect_virupas !== undefined ? data.aspect_virupas : 0);
+                            const posVal = (data && data.pos_pull !== undefined && data.pos_pull > 0) ? data.pos_pull : ((data && data.positive_pull !== undefined && data.positive_pull > 0) ? data.positive_pull : val);
+                            const negVal = (data && data.neg_pull !== undefined && data.neg_pull > 0) ? data.neg_pull : ((data && data.negative_pull !== undefined && data.negative_pull > 0) ? data.negative_pull : val);
+
+                            if (val > 0.001 || posVal > 0.001 || negVal > 0.001) {
                                 if (data.has_pos && data.has_neg) {
                                     // 2x2 Cell Splitting (Both Positive and Negative Exist Simultaneously)
                                     td.innerHTML = `
                                         <div class="quant-cell-split">
                                             <div class="quant-sub-col text-red">
-                                                <span>${val.toFixed(1)}</span>
+                                                <span>${negVal.toFixed(1)}</span>
                                             </div>
                                             <div class="quant-sub-col text-green">
-                                                <span>${val.toFixed(1)}</span>
+                                                <span>${posVal.toFixed(1)}</span>
                                             </div>
                                         </div>
                                     `;
-                                } else if (data.has_pos) {
-                                    td.innerHTML = `<span class="text-green">${val.toFixed(1)}</span>`;
-                                } else if (data.has_neg) {
-                                    td.innerHTML = `<span class="text-red">${val.toFixed(1)}</span>`;
-                                } else if (data.has_neutral) {
+                                    td.title = `${pGive} affects ${pRecv}: -${negVal.toFixed(1)} (Combustion) / +${posVal.toFixed(1)} (Delight)`;
+                                } else if (data.has_pos || data.color_state === 'positive') {
+                                    const displayVal = posVal > 0.001 ? posVal : val;
+                                    td.innerHTML = `<span class="text-green">${displayVal.toFixed(1)}</span>`;
+                                    td.title = `${pGive} delights ${pRecv}: +${displayVal.toFixed(1)} Virupas`;
+                                } else if (data.has_neg || data.color_state === 'negative') {
+                                    const displayVal = negVal > 0.001 ? negVal : val;
+                                    td.innerHTML = `<span class="text-red">${displayVal.toFixed(1)}</span>`;
+                                    td.title = `${pGive} starves/agitates ${pRecv}: -${displayVal.toFixed(1)} Virupas`;
+                                } else if (data.has_neutral || data.color_state === 'neutral') {
                                     td.innerHTML = `<span class="text-blue">${val.toFixed(1)}</span>`;
+                                    td.title = `${pGive} neutrally aspects ${pRecv}: ${val.toFixed(1)} Virupas`;
                                 } else {
                                     td.innerHTML = `<span class="text-gray">-</span>`;
                                 }
-                                td.title = `${pGive} aspects ${pRecv}: ${val.toFixed(1)} Virupas`;
                                 td.classList.add('has-tooltip');
                                 td.setAttribute('data-tooltip', td.title);
                             } else {
@@ -5268,8 +5825,9 @@
                     if (diagData && diagData.net_total !== undefined && diagData.net_total !== null) {
                         const val = diagData.net_total;
                         const isNeg = val < 0;
-                        tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${val.toFixed(1)}</span>`;
-                        tdFoot.title = `${pRecv} Final Net Total: ${val.toFixed(1)}`;
+                        const sign = val > 0 ? '+' : '';
+                        tdFoot.innerHTML = `<span style="color: ${isNeg ? '#c0392b' : '#222'}; font-weight: bold; font-size: 12px;">${sign}${val.toFixed(1)}</span>`;
+                        tdFoot.title = `${pRecv} Final Net Total: ${sign}${val.toFixed(1)}`;
                     } else {
                         tdFoot.innerHTML = '-';
                     }
@@ -7258,6 +7816,14 @@
             if (radio) radio.checked = true;
             const signCheck = document.getElementById('modalToggleSigns');
             if (signCheck) signCheck.checked = showSiSigns;
+            
+            const radioRev = document.getElementById('radio-d10-reverse');
+            const radioDir = document.getElementById('radio-d10-direct');
+            if (radioRev && radioDir) {
+                if (currentD10Mode === 'direct') radioDir.checked = true;
+                else radioRev.checked = true;
+            }
+            
             document.getElementById('settingsModal').style.display = 'flex';
         }
 

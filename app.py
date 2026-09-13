@@ -31,7 +31,7 @@ def index():
         
     return render_template('index.html', natives=natives, knowledge_base=knowledge_base)
 
-def compute_chart_data(native):
+def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
     try:
         date_str = native.get('date', '2000-01-01')
         if date_str.startswith('-'):
@@ -78,7 +78,9 @@ def compute_chart_data(native):
         latitude=float(native['lat']),
         longitude=float(native['lon']),
         timezone_offset=tz_offset,
-        name_sound_value=native.get('name_sound_value', 0)
+        name_sound_value=native.get('name_sound_value', 0),
+        d10_mode=d10_mode,
+        d24_mode=d24_mode
     )
 
 @app.route('/api/chart/<native_id>')
@@ -87,7 +89,9 @@ def get_chart(native_id):
     if not native:
         return jsonify({"error": "Native not found"}), 404
         
-    chart_data = compute_chart_data(native)
+    d10_mode = request.args.get('d10_mode', 'reverse')
+    d24_mode = request.args.get('d24_mode', 'reverse')
+    chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
     
     # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
     svgs = {}
@@ -136,7 +140,9 @@ def export_pdf():
         native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
         if not native:
             return jsonify({"error": "Native not found"}), 404
-        chart_data = compute_chart_data(native)
+        d10_mode = options.get('d10_mode', req_data.get('d10_mode', 'reverse'))
+        d24_mode = options.get('d24_mode', req_data.get('d24_mode', 'reverse'))
+        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
 
     name = chart_data.get('subject_info', {}).get('name', 'Chart')
     safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '_', '-')).rstrip().replace(' ', '_')
@@ -165,7 +171,9 @@ def export_preview():
         native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
         if not native:
             return "Native not found", 404
-        chart_data = compute_chart_data(native)
+        d10_mode = options.get('d10_mode', req_data.get('d10_mode', 'reverse'))
+        d24_mode = options.get('d24_mode', req_data.get('d24_mode', 'reverse'))
+        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
 
     html = pdf_exporter.generate_report_html(chart_data, options)
     return html, 200, {'Content-Type': 'text/html; charset=utf-8'}

@@ -68,11 +68,11 @@ Below is the complete mathematical definition for all 16 harmonic divisions impl
 | **D4** | 4 | **Chaturthamsa** | $7^\circ30'$ | **Parashari (1-4-7-10 Kendra)**:<br>• Slices 1 to 4 map to 1st, 4th ($+3$), 7th ($+6$), and 10th ($+9$) signs from root. |
 | **D7** | 7 | **Saptamsa** | $4^\circ17'08.57''$ | **Parashari Odd/Even Shift**:<br>• Odd signs: Count starts from root sign ($\text{sign\_idx}$)<br>• Even signs: Count starts from 7th sign ($(\text{sign\_idx} + 6) \pmod{12}$) |
 | **D9** | 9 | **Navamsa** | $3^\circ20'$ | **Parashari Elemental Quadriplicities**:<br>• Fire signs (Ar, Le, Sg) $\rightarrow$ Start from Aries ($0$)<br>• Earth signs (Ta, Vi, Cp) $\rightarrow$ Start from Capricorn ($9$)<br>• Air signs (Ge, Li, Aq) $\rightarrow$ Start from Libra ($6$)<br>• Water signs (Cn, Sc, Pi) $\rightarrow$ Start from Cancer ($3$) |
-| **D10** | 10 | **Dasamsa** | $3^\circ00'$ | **Parashari Odd/Even Shift**:<br>• Odd signs: Count starts from root sign ($\text{sign\_idx}$)<br>• Even signs: Count starts from 9th sign ($(\text{sign\_idx} + 8) \pmod{12}$) |
+| **D10** | 10 | **Dasamsa** | $3^\circ00'$ | **Parashari Odd/Even Shift**:<br>• Odd signs: Count starts from root sign ($\text{sign\_idx}$)<br>• Even signs (Kala Default): Count starts from 9th sign ($(\text{sign\_idx} + 8) \pmod{12}$) in **reverse** ($-\text{div\_index}$)<br>• Even signs (Contemporary / Vic DiCara): Count starts from 9th sign in **forward** ($+\text{div\_index}$) |
 | **D12** | 12 | **Dwadasamsa** | $2^\circ30'$ | **Consecutive Zodiac Progression**:<br>• Count starts from root sign ($\text{sign\_idx}$) and progresses continuously 1 through 12. |
 | **D16** | 16 | **Shodashamsa** | $1^\circ52'30''$ | **Modality Triplicities**:<br>• Moveable (Chara: 1, 4, 7, 10) $\rightarrow$ Start from Aries ($0$)<br>• Fixed (Sthira: 2, 5, 8, 11) $\rightarrow$ Start from Leo ($4$)<br>• Dual (Dvisvabhava: 3, 6, 9, 12) $\rightarrow$ Start from Sagittarius ($8$) |
 | **D20** | 20 | **Vimsamsa** | $1^\circ30'$ | **Modality Shift**:<br>• Moveable $\rightarrow$ Start from Aries ($0$)<br>• Fixed $\rightarrow$ Start from Sagittarius ($8$)<br>• Dual $\rightarrow$ Start from Leo ($4$) |
-| **D24** | 24 | **Chaturvimsamsa (Siddhamsa)** | $1^\circ15'$ | **Odd/Even Luminary Origins**:<br>• Odd signs: Start from Leo (Sun, $4$)<br>• Even signs: Start from Cancer (Moon, $3$) |
+| **D24** | 24 | **Chaturvimsamsa (Siddhamsa)** | $1^\circ15'$ | **Odd/Even Luminary Origins**:<br>• Odd signs: Start from Leo (Sun, $4$)<br>• Even signs (Kala Default): Start from Cancer (Moon, $3$) in **reverse** ($-\text{div\_index}$)<br>• Even signs (Contemporary): Start from Cancer in **forward** ($+\text{div\_index}$) |
 | **D27** | 27 | **Saptavimsamsa (Nakshatramsa / Bhamsa)** | $1^\circ06'40''$ | **Elemental Quadriplicities**:<br>• Fire signs $\rightarrow$ Start from Aries ($0$)<br>• Earth signs $\rightarrow$ Start from Cancer ($3$)<br>• Air signs $\rightarrow$ Start from Libra ($6$)<br>• Water signs $\rightarrow$ Start from Capricorn ($9$) |
 | **D30** | 30 | **Trimsamsa** | *Unequal Slices* | **Parashari Planetary Degree Bands**:<br>**Odd Signs**:<br>• $0^\circ-5^\circ$ ($5^\circ$ Mars) $\rightarrow$ Aries ($0$)<br>• $5^\circ-10^\circ$ ($5^\circ$ Saturn) $\rightarrow$ Aquarius ($10$)<br>• $10^\circ-18^\circ$ ($8^\circ$ Jupiter) $\rightarrow$ Sagittarius ($8$)<br>• $18^\circ-25^\circ$ ($7^\circ$ Mercury) $\rightarrow$ Gemini ($2$)<br>• $25^\circ-30^\circ$ ($5^\circ$ Venus) $\rightarrow$ Libra ($6$)<br>**Even Signs**:<br>• $0^\circ-5^\circ$ ($5^\circ$ Venus) $\rightarrow$ Taurus ($1$)<br>• $5^\circ-12^\circ$ ($7^\circ$ Mercury) $\rightarrow$ Virgo ($5$)<br>• $12^\circ-20^\circ$ ($8^\circ$ Jupiter) $\rightarrow$ Pisces ($11$)<br>• $20^\circ-25^\circ$ ($5^\circ$ Saturn) $\rightarrow$ Capricorn ($9$)<br>• $25^\circ-30^\circ$ ($5^\circ$ Mars) $\rightarrow$ Scorpio ($7$)<br>*Fractional degree is scaled proportionally within the active degree band.* |
 | **D40** | 40 | **Khavedamsa** | $0^\circ45'$ | **Odd/Even Polarities**:<br>• Odd signs: Start from Aries ($0$)<br>• Even signs: Start from Libra ($6$) |
@@ -115,3 +115,31 @@ The mathematical sum of Natural and Temporary relationships:
 
 ### D. Final Dignity (Sthana Bala / Avastha Foundation)
 The system checks against fixed dignities first (**Exaltation, Moolatrikona, Own Sign, Debilitation**). If none apply, it falls back to the compound relationship of the planet to its current Sign Lord. This resulting dignity (e.g., "Great Friend's Sign") is directly output in the UI to evaluate the strength and emotional disposition (Avastha) of the planet.
+
+---
+
+## 7. Mandatory Ground-Truth Verification Protocol (Side-by-Side Audit)
+
+To guarantee 100% mathematical fidelity with Ernst Wilhelm's Kala software, Astra enforces a strict, mandatory verification protocol for all divisional chart engines and UI tables:
+
+### A. Mandatory Test Suite Execution
+Any change to astronomical projection, sign mapping, planetary friendship (*Sambandha*), aspect computation (*Drishti*), or quantitative avastha scaling MUST pass the regression suite:
+```bash
+pytest tests/test_quantitative_avasthas.py tests/test_varga_lajjitadi_transcription.py
+```
+This verifies 100% equivalence across all 735 matrix cells across all 16 Parashari divisional charts (D1 to D60).
+
+### B. Mandatory Visual Side-by-Side Verification
+Before releasing or merging changes affecting the divisional charts or strength matrices:
+1. Run the headless visual proof generator:
+   ```bash
+   python /Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/scripts/generate_all_varga_proofs.py
+   ```
+2. Inspect the generated composite screenshots:
+   - Each composite displays the **Live Astra UI screenshot** on the left and the **transcribed Kala CSV ground-truth card** on the right.
+   - All cell values (Vimshopaka diagonal base, green positive pulls, red negative pulls, and bottom net totals) must be visually aligned with 0 discrepancies.
+3. Verify interactive review via the standalone proof viewer:
+   ```bash
+   open /Users/hajnaljanos/.gemini/antigravity-cli/brain/0617582a-440d-4ca6-9fcb-488d3631e240/astra_vargas_side_by_side_proof.html
+   ```
+
