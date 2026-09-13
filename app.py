@@ -10,6 +10,7 @@ import geonamescache
 from timezonefinder import TimezoneFinder
 from datetime import datetime
 import pytz
+import swisseph as swe
 
 gc = geonamescache.GeonamesCache()
 tf = TimezoneFinder()
@@ -31,18 +32,46 @@ def index():
         
     return render_template('index.html', natives=natives, knowledge_base=knowledge_base)
 
-def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
+def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0):
     try:
-        date_str = native.get('date', '01/01/2000')
+        date_str = str(date_override) if date_override else str(native.get('date', '01/01/2000'))
         year, month, day = native_manager.parse_date_to_parts(date_str)
             
-        time_parts = str(native.get('time', '12:00')).split(':')
-        hour = int(time_parts[0])
+        time_str = str(time_override) if time_override else str(native.get('time', '12:00'))
+        time_parts = time_str.split(':')
+        hour = int(time_parts[0]) if len(time_parts) > 0 else 12
         minute = int(time_parts[1]) if len(time_parts) > 1 else 0
+        second = int(float(time_parts[2])) if len(time_parts) > 2 else 0
     except Exception:
         year, month, day = 2000, 1, 1
-        hour, minute = 12, 0
+        hour, minute, second = 12, 0, 0
     
+    # Handle continuous astronomical time offset via Swiss Ephemeris
+    is_preview = bool(offset_seconds != 0 or time_override or date_override)
+    if offset_seconds != 0:
+        local_hf = hour + (minute / 60.0) + (second / 3600.0)
+        cal_flag = swe.JUL_CAL if (year < 1582 or (year == 1582 and month < 10) or (year == 1582 and month == 10 and day < 15)) else swe.GREG_CAL
+        jd_base = swe.julday(year, month, day, local_hf, cal_flag)
+        jd_shifted = jd_base + (float(offset_seconds) / 86400.0)
+        s_year, s_month, s_day, s_hf = swe.revjul(jd_shifted, cal_flag)
+        s_hour = int(s_hf)
+        rem_m = (s_hf - s_hour) * 60.0
+        s_minute = int(rem_m)
+        s_sec = int(round((rem_m - s_minute) * 60.0))
+        if s_sec >= 60:
+            s_sec -= 60
+            s_minute += 1
+        if s_minute >= 60:
+            s_minute -= 60
+            s_hour += 1
+        year, month, day, hour, minute, second = s_year, s_month, s_day, s_hour, s_minute, s_sec
+
+    preview_time_str = f"{hour:02d}:{minute:02d}:{second:02d}"
+    if year < 0:
+        preview_date_str = f"{day:02d}/{month:02d}/{year}"
+    else:
+        preview_date_str = f"{day:02d}/{month:02d}/{year:04d}"
+
     tz_str = str(native.get('tz', '+00:00'))
     try:
         tz_offset = float(tz_str)
@@ -59,13 +88,14 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
         except Exception:
             tz_offset = 0.0
 
-    return generate_jyotish.generate_kala_chart(
+    chart = generate_jyotish.generate_kala_chart(
         name=native['name'],
         year=year,
         month=month,
         day=day,
         hour=hour,
         minute=minute,
+        second=second,
         latitude=float(native['lat']),
         longitude=float(native['lon']),
         timezone_offset=tz_offset,
@@ -74,6 +104,13 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse"):
         d24_mode=d24_mode,
         place=native.get('place', '')
     )
+    chart["preview_info"] = {
+        "is_preview": is_preview,
+        "preview_time": preview_time_str,
+        "preview_date": preview_date_str,
+        "offset_seconds": offset_seconds
+    }
+    return chart
 
 @app.route('/api/chart/<native_id>')
 def get_chart(native_id):
@@ -83,7 +120,18 @@ def get_chart(native_id):
         
     d10_mode = request.args.get('d10_mode', 'reverse')
     d24_mode = request.args.get('d24_mode', 'reverse')
-    chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
+    offset_seconds = request.args.get('offset_seconds', default=0, type=int)
+    time_override = request.args.get('time')
+    date_override = request.args.get('date')
+
+    chart_data = compute_chart_data(
+        native,
+        d10_mode=d10_mode,
+        d24_mode=d24_mode,
+        date_override=date_override,
+        time_override=time_override,
+        offset_seconds=offset_seconds
+    )
     
     # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
     svgs = {}
@@ -113,10 +161,15 @@ def get_chart(native_id):
         svgs[v_name]["circular"] = svgs[v_name]["symbol"]["circular"]
         svgs[v_name]["roots"] = svgs[v_name]["symbol"]["roots"]
         
+    preview_info = chart_data.get("preview_info", {})
     return jsonify({
         "data": chart_data,
         "svgs": svgs,
-        "native": native
+        "native": native,
+        "is_preview": preview_info.get("is_preview", False),
+        "preview_time": preview_info.get("preview_time", native.get("time")),
+        "preview_date": preview_info.get("preview_date", native.get("date")),
+        "preview_offset_seconds": preview_info.get("offset_seconds", 0)
     })
 
 @app.route('/api/export_pdf', methods=['POST'])

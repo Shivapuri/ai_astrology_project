@@ -223,11 +223,12 @@ def generate_kala_chart(
     output_filepath: Optional[str] = None,
     d10_mode: str = "reverse",
     d24_mode: str = "reverse",
-    place: str = ""
+    place: str = "",
+    second: int = 0
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
-    local_hour_fraction = hour + minute / 60.0
+    local_hour_fraction = hour + (minute / 60.0) + (second / 3600.0)
     
     # Determine calendar flag
     # Use Julian calendar for dates before Oct 15, 1582
@@ -242,10 +243,11 @@ def generate_kala_chart(
     jd = jd_local - (timezone_offset / 24.0)
     
     # Format a standard DD/MM/YYYY date-time string for the output
+    sec_int = int(round(second))
     if year < 0:
-        birth_dt_str = f"{day:02d}/{month:02d}/{year} {hour:02d}:{minute:02d}:00"
+        birth_dt_str = f"{day:02d}/{month:02d}/{year} {hour:02d}:{minute:02d}:{sec_int:02d}"
     else:
-        birth_dt_str = f"{day:02d}/{month:02d}/{year:04d} {hour:02d}:{minute:02d}:00"
+        birth_dt_str = f"{day:02d}/{month:02d}/{year:04d} {hour:02d}:{minute:02d}:{sec_int:02d}"
 
     # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
     flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED

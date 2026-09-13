@@ -923,6 +923,129 @@
             border-color: #d35400;
         }
 
+        /* Birth Time Navigation Stepper */
+        .chart-time-stepper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fbf8f2;
+            border-top: 1px solid #e5dccb;
+            padding: 2px 4px;
+            font-size: 8.5px;
+            gap: 4px;
+            flex-shrink: 0;
+            user-select: none;
+            transition: opacity 0.2s ease, background-color 0.2s ease;
+            opacity: 0.35;
+            height: 28px;
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-wrap: nowrap;
+        }
+        .widget-chart:hover .chart-time-stepper,
+        .chart-time-stepper:hover,
+        .chart-time-stepper:focus-within,
+        .chart-time-stepper.is-preview-active {
+            opacity: 1;
+        }
+        .chart-time-stepper.is-preview-active {
+            background: #fffbeb;
+            border-top-color: #fde68a;
+        }
+        .stepper-btn-group {
+            display: inline-flex;
+            gap: 1px;
+            align-items: center;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+        }
+        .stepper-btn {
+            background: #fffdfa;
+            border: 1px solid #d5c8b2;
+            border-radius: 3px;
+            padding: 1px 2.5px;
+            font-size: 8px;
+            font-weight: 600;
+            color: #4a3325;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .stepper-btn:hover {
+            background: #f5ede0;
+            border-color: #bfa588;
+            color: #2c1e14;
+        }
+        .stepper-btn:active {
+            transform: scale(0.92);
+        }
+        .stepper-center-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+            flex-wrap: nowrap;
+        }
+        .stepper-clock {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 9.5px;
+            font-weight: 700;
+            color: #4a3325;
+            white-space: nowrap;
+        }
+        .stepper-offset-badge {
+            padding: 0 2px;
+            border-radius: 2px;
+            font-size: 7.5px;
+            font-weight: 600;
+            background: #e5e7eb;
+            color: #4b5563;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            line-height: 1.3;
+        }
+        .chart-time-stepper.is-preview-active .stepper-offset-badge {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            font-weight: 700;
+        }
+        .stepper-btn-reset {
+            padding: 1px 3px;
+            font-size: 8.5px;
+            font-weight: 700;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+            border-radius: 3px;
+            cursor: pointer;
+            line-height: 1.1;
+            white-space: nowrap;
+            transition: all 0.1s ease;
+        }
+        .stepper-btn-reset:hover {
+            background: #fecaca;
+            color: #7f1d1d;
+        }
+        .stepper-btn-save {
+            padding: 1px 3.5px;
+            font-size: 8.5px;
+            font-weight: 700;
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+            border-radius: 3px;
+            cursor: pointer;
+            line-height: 1.1;
+            white-space: nowrap;
+            transition: all 0.1s ease;
+        }
+        .stepper-btn-save:hover {
+            background: #bbf7d0;
+            color: #14532d;
+        }
+
         /* Application Menu Bar */
         .app-menubar {
             display: inline-flex;
@@ -2962,6 +3085,28 @@
             <div class="view-circular chart-view" style="flex:1; display:none; align-items:center; justify-content:center;">
                 <div class="chart-svg-container svg-circular" style="width:100%; height:100%;"></div>
             </div>
+            <div class="chart-time-stepper" tabindex="0" title="Birth Time Navigation (Hover or focus to adjust time)">
+                <div class="stepper-btn-group">
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-3600)" title="Step Back 1 Hour">-1h</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-1800)" title="Step Back 30 Minutes">-30</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-900)" title="Step Back 15 Minutes">-15</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-60)" title="Step Back 1 Minute">-1m</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-1)" title="Step Back 1 Second">-1s</button>
+                </div>
+                <div class="stepper-center-display">
+                    <span class="stepper-clock" title="Active Birth Time">12:00:00</span>
+                    <span class="stepper-offset-badge" title="Adjustment from saved birth time">Original</span>
+                    <button type="button" class="stepper-btn-reset" onclick="resetBirthTimePreview()" title="Revert to saved birth time" style="display:none;">↺</button>
+                </div>
+                <div class="stepper-btn-group">
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(1)" title="Step Forward 1 Second">+1s</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(60)" title="Step Forward 1 Minute">+1m</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(900)" title="Step Forward 15 Minutes">+15</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(1800)" title="Step Forward 30 Minutes">+30</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(3600)" title="Step Forward 1 Hour">+1h</button>
+                    <button type="button" class="stepper-btn-save" onclick="savePreviewedBirthTime()" title="Save this rectified time to database" style="display:none; margin-left:1px;">💾</button>
+                </div>
+            </div>
         </div>
     </template>
     
@@ -3684,6 +3829,7 @@
                     if (n) n.innerHTML = vSvg.north;
                     if (c) c.innerHTML = vSvg.circular;
                 }
+                if (typeof syncAllSteppersUI === 'function') syncAllSteppersUI();
             } 
             else if (widgetType === 'varga-lajjitadi-modifiers') {
                 updateVargaLajjitadiWidget(cell);
@@ -6596,6 +6742,10 @@
                 currentSvgs = result.svgs;
                 
                 if (result.native) {
+                    currentLoadedNative = result.native;
+                    activePreviewOffsetSeconds = 0;
+                    currentPreviewTime = result.preview_time || result.native.time;
+                    currentPreviewDate = result.preview_date || result.native.date;
                     const nativeSelect = document.getElementById('nativeSelect');
                     if (nativeSelect) {
                         nativeSelect.value = result.native.id;
@@ -6664,6 +6814,7 @@
                 // Update all widgets
                 updateAllWidgets();
                 syncD10ModeUI();
+                syncAllSteppersUI();
 
 
                 
@@ -6677,6 +6828,174 @@
             }
         }
         
+        let activePreviewOffsetSeconds = 0;
+        let currentLoadedNative = null;
+        let currentPreviewTime = null;
+        let currentPreviewDate = null;
+        let stepperAbortController = null;
+
+        function formatOffsetLabel(offsetSec) {
+            if (offsetSec === 0) return "Original";
+            const sign = offsetSec > 0 ? "+" : "-";
+            const absSec = Math.abs(offsetSec);
+            const h = Math.floor(absSec / 3600);
+            const m = Math.floor((absSec % 3600) / 60);
+            const s = absSec % 60;
+            if (h > 0) {
+                return `${sign}${h}h ${m}m ${s > 0 ? s + 's' : ''}`.trim();
+            } else if (m > 0) {
+                return `${sign}${m}m ${s > 0 ? s + 's' : ''}`.trim();
+            } else {
+                return `${sign}${s}s`;
+            }
+        }
+
+        function syncAllSteppersUI() {
+            const steppers = document.querySelectorAll('.chart-time-stepper');
+            const isPreview = (activePreviewOffsetSeconds !== 0);
+            const timeStr = currentPreviewTime || (currentLoadedNative ? currentLoadedNative.time : '12:00:00');
+            const offsetLabel = formatOffsetLabel(activePreviewOffsetSeconds);
+
+            steppers.forEach(stepper => {
+                if (isPreview) {
+                    stepper.classList.add('is-preview-active');
+                } else {
+                    stepper.classList.remove('is-preview-active');
+                }
+
+                const clockEl = stepper.querySelector('.stepper-clock');
+                if (clockEl) clockEl.textContent = timeStr;
+
+                const badgeEl = stepper.querySelector('.stepper-offset-badge');
+                if (badgeEl) badgeEl.textContent = offsetLabel;
+
+                const resetBtn = stepper.querySelector('.stepper-btn-reset');
+                if (resetBtn) resetBtn.style.display = isPreview ? 'inline-block' : 'none';
+
+                const saveBtn = stepper.querySelector('.stepper-btn-save');
+                if (saveBtn) saveBtn.style.display = isPreview ? 'inline-block' : 'none';
+            });
+
+            // Update top subtitle preview indicator
+            if (currentChartData && currentChartData.subject_info) {
+                const subEl = document.getElementById('chartSubtitle');
+                if (subEl) {
+                    const latVal = parseFloat(currentChartData.subject_info.latitude);
+                    const lonVal = parseFloat(currentChartData.subject_info.longitude);
+                    const latDir = latVal >= 0 ? 'N' : 'S';
+                    const lonDir = lonVal >= 0 ? 'E' : 'W';
+                    const latStr = `${Math.abs(latVal).toFixed(4)}° ${latDir}`;
+                    const lonStr = `${Math.abs(lonVal).toFixed(4)}° ${lonDir}`;
+                    const pName = (currentLoadedNative && currentLoadedNative.place && currentLoadedNative.place !== 'Custom') 
+                        ? currentLoadedNative.place 
+                        : (currentChartData.subject_info.place && currentChartData.subject_info.place !== 'Custom' ? currentChartData.subject_info.place : '');
+                    const pStr = pName ? `${pName} • ` : '';
+                    const prevTag = isPreview ? ` (PREVIEW: ${offsetLabel})` : '';
+                    subEl.innerText = `${currentChartData.subject_info.birth_datetime}${prevTag} | ${pStr}${latStr}, ${lonStr}`;
+                }
+            }
+        }
+
+        async function stepBirthTime(deltaSeconds) {
+            const nativeId = (currentLoadedNative && currentLoadedNative.id) || document.getElementById('nativeSelect')?.value;
+            if (!nativeId) return;
+
+            activePreviewOffsetSeconds += deltaSeconds;
+            await applyBirthTimeOffset(nativeId, activePreviewOffsetSeconds);
+        }
+
+        async function applyBirthTimeOffset(nativeId, offsetSeconds) {
+            if (stepperAbortController) {
+                try { stepperAbortController.abort(); } catch(e) {}
+            }
+            stepperAbortController = new AbortController();
+
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) loadingEl.style.display = 'block';
+
+            try {
+                const response = await fetch(
+                    `/api/chart/${nativeId}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}&offset_seconds=${offsetSeconds}`,
+                    { signal: stepperAbortController.signal }
+                );
+                const result = await response.json();
+                if (result.error) {
+                    console.error("Stepper calculation error:", result.error);
+                    return;
+                }
+
+                currentChartData = result.data;
+                currentSvgs = result.svgs;
+                currentPreviewTime = result.preview_time;
+                currentPreviewDate = result.preview_date;
+
+                updateAllWidgets();
+                syncAllSteppersUI();
+            } catch (e) {
+                if (e.name === 'AbortError') {
+                    // Suppress abort errors from rapid clicks
+                    return;
+                }
+                console.error("Failed to step birth time:", e);
+            } finally {
+                if (loadingEl) loadingEl.style.display = 'none';
+            }
+        }
+
+        async function resetBirthTimePreview() {
+            activePreviewOffsetSeconds = 0;
+            const nativeId = (currentLoadedNative && currentLoadedNative.id) || document.getElementById('nativeSelect')?.value;
+            if (nativeId) {
+                await loadChart(nativeId);
+            }
+        }
+
+        async function savePreviewedBirthTime() {
+            if (!currentLoadedNative || !currentPreviewTime) return;
+            const personName = currentLoadedNative.name || 'this person';
+            const offsetLabel = formatOffsetLabel(activePreviewOffsetSeconds);
+            const confirmed = window.confirm(
+                `Permanently save rectified birth time for ${personName}?\n\nNew Time: ${currentPreviewTime}\nNew Date: ${currentPreviewDate}\nAdjustment: ${offsetLabel}`
+            );
+            if (!confirmed) return;
+
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) loadingEl.style.display = 'block';
+            try {
+                const updatePayload = {
+                    name: currentLoadedNative.name,
+                    date: currentPreviewDate,
+                    time: currentPreviewTime,
+                    lat: currentLoadedNative.lat,
+                    lon: currentLoadedNative.lon,
+                    tz: currentLoadedNative.tz,
+                    place: currentLoadedNative.place || '',
+                    country: currentLoadedNative.country || '',
+                    notes: currentLoadedNative.notes || '',
+                    name_sound_value: currentLoadedNative.name_sound_value || 0
+                };
+
+                const res = await fetch(`/api/update_native/${currentLoadedNative.id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updatePayload)
+                });
+                const updated = await res.json();
+                if (updated.error) {
+                    alert("Failed to save: " + updated.error);
+                    return;
+                }
+
+                currentLoadedNative = updated;
+                activePreviewOffsetSeconds = 0;
+                await loadChart(updated.id);
+            } catch (err) {
+                console.error(err);
+                alert("Error saving rectified birth time.");
+            } finally {
+                if (loadingEl) loadingEl.style.display = 'none';
+            }
+        }
         
         let currentNotation = localStorage.getItem('astra_notation') || "symbol";
         let showSiSigns = true;
@@ -9474,7 +9793,7 @@
             toggleSiSigns(show);
         }
 
-        // Close any modal with Escape key
+        // Close any modal with Escape key & Handle Birth Time Stepper Hotkeys
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 const sm = document.getElementById('settingsModal');
@@ -9490,6 +9809,38 @@
                 const svm = document.getElementById('shodasaVargasModal');
                 if (svm) svm.style.display = 'none';
                 currentMaximized = null;
+                return;
+            }
+
+            // Birth Time Navigation Keyboard Shortcuts (when not editing an input)
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            const isInputActive = (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select');
+            if (!isInputActive) {
+                if (e.key === '[' && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    stepBirthTime(-60); // -1m
+                } else if (e.key === ']' && !e.shiftKey && !e.altKey && !e.ctrlKey && !e.metaKey) {
+                    e.preventDefault();
+                    stepBirthTime(60); // +1m
+                } else if (e.key === '[' && e.altKey) {
+                    e.preventDefault();
+                    stepBirthTime(-1); // -1s
+                } else if (e.key === ']' && e.altKey) {
+                    e.preventDefault();
+                    stepBirthTime(1); // +1s
+                } else if (e.key === '[' && e.shiftKey && !e.ctrlKey) {
+                    e.preventDefault();
+                    stepBirthTime(-1800); // -30m
+                } else if (e.key === ']' && e.shiftKey && !e.ctrlKey) {
+                    e.preventDefault();
+                    stepBirthTime(1800); // +30m
+                } else if (e.key === '{' || (e.key === '[' && e.shiftKey && e.ctrlKey)) {
+                    e.preventDefault();
+                    stepBirthTime(-3600); // -1h
+                } else if (e.key === '}' || (e.key === ']' && e.shiftKey && e.ctrlKey)) {
+                    e.preventDefault();
+                    stepBirthTime(3600); // +1h
+                }
             }
         });
 
