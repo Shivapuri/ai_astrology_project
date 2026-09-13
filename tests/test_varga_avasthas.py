@@ -235,14 +235,16 @@ def test_divisional_diagonal_starting_strength_not_frozen(aj_chart):
     d1_sun_base = matrices_aj["D1"]["ShadBala"]["Sun"]["Sun"]["base"]
     assert abs(d1_sun_base - 450.7) <= 0.5, f"D1 Sun ShadBala base expected ~450.7, got {d1_sun_base}"
 
-    # In D7, diagonal base must be Saptavarga Vimshopaka dignity (9.1), NOT 450.7!
+    # In D7, diagonal base is scaled ShadBala (205.0 Virupas) with Saptavarga Vimshopaka dignity (9.1)
     d7_sun_base = matrices_aj["D7"]["ShadBala"]["Sun"]["Sun"]["base"]
-    assert abs(d7_sun_base - 9.1) <= 0.2, f"D7 Sun base expected 9.1 (Vimsho.), got {d7_sun_base}"
+    assert abs(d7_sun_base - 205.0) <= 0.5, f"D7 Sun base expected 205.0 (scaled ShadBala), got {d7_sun_base}"
+    assert matrices_aj["D7"]["ShadBala"]["Sun"]["Sun"]["vimshopaka_base"] == 9.1
     assert d7_sun_base != d1_sun_base, "D7 diagonal base must not be frozen to D1 ShadBala!"
 
-    # In D9, diagonal base must be Shadvarga Vimshopaka dignity (7.6), NOT 450.7!
+    # In D9, diagonal base is scaled ShadBala (171.2 Virupas) with Shadvarga Vimshopaka dignity (7.6)
     d9_sun_base = matrices_aj["D9"]["ShadBala"]["Sun"]["Sun"]["base"]
-    assert abs(d9_sun_base - 7.6) <= 0.2, f"D9 Sun base expected 7.6 (Vimsho.), got {d9_sun_base}"
+    assert abs(d9_sun_base - 171.2) <= 0.5, f"D9 Sun base expected 171.2 (scaled ShadBala), got {d9_sun_base}"
+    assert matrices_aj["D9"]["ShadBala"]["Sun"]["Sun"]["vimshopaka_base"] == 7.6
     assert d9_sun_base != d1_sun_base, "D9 diagonal base must not be frozen to D1 ShadBala!"
 
     # Verify Vimshopaka baseline mode is available in avastha_matrices

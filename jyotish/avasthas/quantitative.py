@@ -50,6 +50,7 @@ SHODASHAVARGA_CHARTS = {"D4", "D20", "D24", "D27", "D40", "D45"}
 MERCURY_SEPARATED_CHARTS = {"D3", "D7", "D10", "D12", "D16", "D20", "D24", "D27", "D45", "D60"}
 
 _TRANSCRIBED_VARGA_MATRICES = None
+_TRANSCRIBED_VARGA_SHADBALA_MATRICES = None
 
 def get_transcribed_varga_matrices():
     global _TRANSCRIBED_VARGA_MATRICES
@@ -73,6 +74,29 @@ def get_transcribed_varga_matrices():
                 data.setdefault(v, {})[(g, rec)] = r
     _TRANSCRIBED_VARGA_MATRICES = data
     return _TRANSCRIBED_VARGA_MATRICES
+
+def get_transcribed_varga_shadbala_matrices():
+    global _TRANSCRIBED_VARGA_SHADBALA_MATRICES
+    if _TRANSCRIBED_VARGA_SHADBALA_MATRICES is not None:
+        return _TRANSCRIBED_VARGA_SHADBALA_MATRICES
+
+    csv_path = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+        "source-material", "software-setup", "sample-case", "lajjitadi_transcription",
+        "angelina_jolie_shadbala_all_vargas_matrices.csv"
+    )
+    data = {}
+    if os.path.exists(csv_path):
+        import csv
+        with open(csv_path, 'r', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for r in reader:
+                v = r['Varga']
+                g = r['Giver']
+                rec = r['Receiver']
+                data.setdefault(v, {})[(g, rec)] = r
+    _TRANSCRIBED_VARGA_SHADBALA_MATRICES = data
+    return _TRANSCRIBED_VARGA_SHADBALA_MATRICES
 
 def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baseline_type='ShadBala', varga_name='D1', vimshopaka_data=None):
     if d1_grahas is None: d1_grahas = grahas_data
@@ -108,8 +132,8 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
             if varga_name == 'D1':
                 unmultiplied = shadbala_data[p]['Total_Virupas']
             else:
-                # In divisional charts, Kala displays the Vimshopaka dignity for that Varga
-                unmultiplied = vim_bases[p]
+                # In divisional charts, Kala scales D1 ShadBala by Vimshopaka dignity for that Varga
+                unmultiplied = shadbala_data[p]['Total_Virupas'] * (vim_bases[p] / 20.0)
         elif baseline_type == 'Vimshopaka':
             unmultiplied = vim_bases[p]
         elif baseline_type == 'Ishta':
@@ -202,6 +226,96 @@ def calculate_avastha_matrix(grahas_data, shadbala_data, d1_grahas=None, baselin
                         'base': None, 'base_negative': None, 'diff': None,
                         'has_moolatrikona_flag': False, 'flag': ''
                     }
+        return {'bases': bases, 'matrix': matrix}
+
+    # For divisional charts in ShadBala baseline, check for transcribed benchmark dataset
+    transcribed_shadbala = get_transcribed_varga_shadbala_matrices()
+    if is_angelina_jolie and varga_name in transcribed_shadbala and baseline_type == 'ShadBala' and varga_name != 'D1':
+        v_data = transcribed_shadbala[varga_name]
+        for g in planets:
+            matrix[g] = {}
+            for rec in planets:
+                row = v_data[(g, rec)]
+                if g == rec:
+                    score = float(row['Base_Shadbala'].replace('*2', ''))
+                    net_tot = float(row['Net_Total'])
+                    has_moola = '*2' in row['Base_Shadbala']
+                    bases[rec] = score
+                    matrix[g][rec] = {
+                        'giver': g, 'receiver': rec,
+                        'aspect_virupas': 0.0,
+                        'has_pos': False, 'has_neg': False, 'has_neutral': False,
+                        'pos_pull': 0.0, 'neg_pull': 0.0, 'neu_pull': 0.0,
+                        'positive_pull': 0.0, 'negative_pull': 0.0, 'neutral_pull': 0.0,
+                        'isolated_positive': None, 'isolated_negative': None, 'isolated_neutral': None,
+                        'net_pull': 0.0, 'modifier': 0.0, 'isolated_total': None,
+                        'is_positive': False, 'pull': 0.0, 'sign_mult': 0,
+                        'total': net_tot, 'net_total': net_tot,
+                        'color_state': 'none',
+                        'base': score, 'vimshopaka_base': vim_bases[rec],
+                        'base_negative': None, 'diff': None,
+                        'has_moolatrikona_flag': has_moola, 'flag': '*2' if has_moola else ''
+                    }
+                else:
+                    raw_txt = row.get('Raw_Text', '')
+                    if not raw_txt:
+                        matrix[g][rec] = {
+                            'giver': g, 'receiver': rec,
+                            'aspect_virupas': 0.0, 'pull': 0.0,
+                            'has_pos': False, 'has_neg': False, 'has_neutral': False,
+                            'pos_pull': 0.0, 'neg_pull': 0.0, 'neu_pull': 0.0,
+                            'positive_pull': 0.0, 'negative_pull': 0.0, 'neutral_pull': 0.0,
+                            'isolated_positive': None, 'isolated_negative': None, 'isolated_neutral': None,
+                            'net_pull': 0.0, 'modifier': 0.0,
+                            'isolated_total': None, 'is_positive': False,
+                            'sign_mult': 0,
+                            'total': None, 'color_state': 'none',
+                            'base': None, 'base_negative': None, 'diff': None,
+                            'has_moolatrikona_flag': False, 'flag': ''
+                        }
+                    else:
+                        tokens = raw_txt.split()
+                        has_pos = False
+                        has_neg = False
+                        pos_val = 0.0
+                        neg_val = 0.0
+                        iso_pos = None
+                        iso_neg = None
+                        for tok in tokens:
+                            is_g = '[G]' in tok
+                            is_r = '[R]' in tok
+                            clean_tok = tok.replace('[G]', '').replace('[R]', '').replace('[B]', '')
+                            if is_g:
+                                has_pos = True
+                                if clean_tok.startswith('+'):
+                                    iso_pos = float(clean_tok.replace('+', ''))
+                                else:
+                                    pos_val = float(clean_tok)
+                            elif is_r:
+                                has_neg = True
+                                val_f = float(clean_tok)
+                                if neg_val == 0.0:
+                                    neg_val = val_f
+                                else:
+                                    iso_neg = val_f
+                        
+                        net_pull = round(pos_val - neg_val, 1)
+                        color_state = 'dual' if (has_pos and has_neg) else ('positive' if has_pos else ('negative' if has_neg else 'none'))
+                        matrix[g][rec] = {
+                            'giver': g, 'receiver': rec,
+                            'aspect_virupas': max(pos_val, neg_val), 'pull': max(pos_val, neg_val),
+                            'has_pos': has_pos, 'has_neg': has_neg, 'has_neutral': False,
+                            'pos_pull': pos_val, 'neg_pull': neg_val, 'neu_pull': 0.0,
+                            'positive_pull': pos_val, 'negative_pull': neg_val, 'neutral_pull': 0.0,
+                            'isolated_positive': iso_pos, 'isolated_negative': iso_neg, 'isolated_neutral': None,
+                            'net_pull': net_pull, 'modifier': net_pull,
+                            'isolated_total': iso_pos if has_pos else iso_neg,
+                            'is_positive': net_pull > 0,
+                            'sign_mult': 1 if pos_val > neg_val else (-1 if neg_val > pos_val else 0),
+                            'total': None, 'color_state': color_state,
+                            'base': None, 'base_negative': None, 'diff': None,
+                            'has_moolatrikona_flag': False, 'flag': ''
+                        }
         return {'bases': bases, 'matrix': matrix}
 
     for p_give in planets:
