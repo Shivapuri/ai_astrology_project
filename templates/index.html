@@ -922,7 +922,97 @@
             color: #fff;
             border-color: #d35400;
         }
-    
+
+        /* Application Menu Bar */
+        .app-menubar {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 6px;
+        }
+        .menu-item-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        .menu-bar-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            padding: 5px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #4a3325;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            transition: all 0.15s ease;
+            user-select: none;
+        }
+        .menu-bar-btn:hover, .menu-item-dropdown:hover .menu-bar-btn, .menu-item-dropdown.open .menu-bar-btn {
+            background: #f3ede2;
+            border-color: #d5c8b2;
+            color: #92400e;
+        }
+        .menu-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            min-width: 260px;
+            background: #ffffff;
+            border: 1px solid #d5c8b2;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px -5px rgba(74, 51, 37, 0.18), 0 8px 10px -6px rgba(74, 51, 37, 0.1);
+            padding: 6px 0;
+            z-index: 10050;
+            font-size: 12px;
+        }
+        .menu-item-dropdown:hover .menu-dropdown-menu,
+        .menu-item-dropdown.open .menu-dropdown-menu {
+            display: block;
+        }
+        .menu-dropdown-menu .menu-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            color: #3d2b1f;
+            cursor: pointer;
+            transition: background 0.1s ease, color 0.1s ease;
+            text-decoration: none;
+            user-select: none;
+        }
+        .menu-dropdown-menu .menu-row:hover {
+            background: #fdf5ea;
+            color: #b45309;
+        }
+        .menu-dropdown-menu .menu-row.active {
+            font-weight: bold;
+            color: #b45309;
+            background: #fffcf5;
+        }
+        .menu-dropdown-menu .menu-check {
+            font-weight: bold;
+            color: #d97706;
+            margin-left: 10px;
+            min-width: 14px;
+            text-align: right;
+        }
+        .menu-dropdown-menu .menu-separator {
+            height: 1px;
+            background: #eadecc;
+            margin: 5px 0;
+        }
+        .menu-dropdown-menu .menu-header-label {
+            padding: 5px 14px 2px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 700;
+            color: #8c7b64;
+        }
+
         /* Avasthas UI */
         
         
@@ -1031,6 +1121,37 @@
         }
         .planetary-info-table tr:hover td {
             background: #f7eedd;
+        }
+
+        /* Master Graha Diagnostic Table */
+        .master-diagnostic-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 5px 8px;
+            border: 1px solid #dcb594;
+            white-space: nowrap;
+        }
+        .master-diagnostic-table td {
+            padding: 4px 7px;
+            font-size: 11px;
+            border: 1px solid #e5dccb;
+            vertical-align: middle;
+        }
+        .master-diagnostic-table tr:hover td {
+            background: #fbf5ea;
+        }
+        .avastha-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            font-size: 9.5px;
+            font-weight: 600;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin: 1px 2px;
+            white-space: nowrap;
         }
 
         /* Varga Lajjitadi Net Modifiers Table */
@@ -1488,56 +1609,214 @@
 </head>
 <body>
     <div class="top-toolbar">
-        <div class="toolbar-left">
-            <h1>Astra</h1>
+        <div class="toolbar-left" style="display:flex; align-items:center; gap:6px;">
+            <h1 style="cursor: pointer; margin:0 8px 0 0; font-size:18px;" onclick="changeWorkspace('core-predictive')" title="Astra Vedic Astrology">Astra</h1>
+            
+            <!-- Hidden selects for script compatibility and programmatic access -->
+            <select id="workspaceSelect" onchange="changeWorkspace(this.value)" style="display:none;">
+                <option value="core-predictive" selected>🌟 1. Core Predictive (D1 + D9 + Diagnostics + Dignities + Vimshottari)</option>
+                <option value="tripod-of-life">🏛️ 2. Tripod of Life (Lagna, Moon, Sun)</option>
+                <option value="big-four">🏛️ 3. The Big Four (D1, D9, D10, D3)</option>
+                <option value="strengths">⚖️ 4. Strengths & Avasthas</option>
+                <option value="timing">⏳ 5. Timing & Cycles</option>
+                <option value="custom">🛠️ Custom (Saved Grid)</option>
+            </select>
+            <select id="layoutSelect" onchange="changeLayout(this.value)" style="display:none;">
+                <option value="kala">Kala Layout (3x3)</option>
+                <option value="tripod-of-life">Tripod of Life (3 Top + Table)</option>
+                <option value="core-predictive" selected>Core Predictive (D1 + D9 + Diagnostics + Dignities + Vimshottari)</option>
+                <option value="big-four">4-Quadrant (2x2)</option>
+                <option value="8cell">8-Cell Grid</option>
+                <option value="11cell">11-Cell Grid</option>
+                <option value="2chart">2 Charts Side-by-Side</option>
+            </select>
+
+            <!-- Application Menu Bar -->
+            <nav class="app-menubar" id="appMenuBar">
+                <!-- 1. Native / Person Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📁 Native ▾</button>
+                    <div class="menu-dropdown-menu">
+                        <div class="menu-header-label">Person Management</div>
+                        <div class="menu-row" onclick="openAddModal()">
+                            <span>➕ Add New Person...</span>
+                        </div>
+                        <div class="menu-row" onclick="openExportModal()">
+                            <span>📄 Export PDF Master Plan...</span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" onclick="openShodasaVargasModal()">
+                            <span>🏛️ ShodasaVargas (16-in-1)...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Workspaces Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">🌟 Workspaces ▾</button>
+                    <div class="menu-dropdown-menu" id="workspacesMenuDropdown">
+                        <div class="menu-header-label">Astrological Workspaces</div>
+                        <div class="menu-row active" data-ws="core-predictive" onclick="changeWorkspace('core-predictive')">
+                            <span>🌟 1. Core Predictive</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-ws="tripod-of-life" onclick="changeWorkspace('tripod-of-life')">
+                            <span>🏛️ 2. Tripod of Life</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="big-four" onclick="changeWorkspace('big-four')">
+                            <span>🏛️ 3. The Big Four (D1, D9, D10, D3)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="strengths" onclick="changeWorkspace('strengths')">
+                            <span>⚖️ 4. Strengths & Avasthas</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="timing" onclick="changeWorkspace('timing')">
+                            <span>⏳ 5. Timing & Cycles</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" data-ws="custom" onclick="changeWorkspace('custom')">
+                            <span>🛠️ Custom (Saved Grid)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Layout / Grid Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📐 Layout ▾</button>
+                    <div class="menu-dropdown-menu" id="layoutMenuDropdown">
+                        <div class="menu-header-label">Grid Geometries</div>
+                        <div class="menu-row active" data-grid="core-predictive" onclick="changeLayout('core-predictive')">
+                            <span>🌟 Core Predictive (5-Cell)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-grid="kala" onclick="changeLayout('kala')">
+                            <span>🏛️ Kala Layout (3x3)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="tripod-of-life" onclick="changeLayout('tripod-of-life')">
+                            <span>🏛️ Tripod of Life</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="big-four" onclick="changeLayout('big-four')">
+                            <span>🏛️ 4-Quadrant (2x2)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="8cell" onclick="changeLayout('8cell')">
+                            <span>🏛️ 8-Cell Grid</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="11cell" onclick="changeLayout('11cell')">
+                            <span>🏛️ 11-Cell Grid</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="2chart" onclick="changeLayout('2chart')">
+                            <span>🏛️ 2 Charts Side-by-Side</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" onclick="openShodasaVargasModal()">
+                            <span>🏛️ Open ShodasaVargas (16-in-1)...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Tables & Calculations Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📊 Tables ▾</button>
+                    <div class="menu-dropdown-menu">
+                        <div class="menu-header-label">Calculated Diagnostics</div>
+                        <div class="menu-row" onclick="openFloatingMasterDiagnostic()">
+                            <span style="font-weight:bold; color:#b45309;">★ Master Graha Diagnostics</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingPlanetaryInfo()">
+                            <span>✨ Planetary Info Table</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingShadbala()">
+                            <span>⚖️ Shad Bala Details</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingYogaJudgment()">
+                            <span>⚖️ Yoga Judgment (Ishta/Kashta)</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingAshtakavarga()">
+                            <span>📊 Ashtakavarga (SAV 337)</span>
+                        </div>
+                        <div class="menu-row" onclick="openBhavaCuspsModal()">
+                            <span>📐 Bhava Chalita Cusps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Settings Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">⚙️ Settings ▾</button>
+                    <div class="menu-dropdown-menu" id="settingsMenuDropdown">
+                        <div class="menu-header-label">Display Dialog</div>
+                        <div class="menu-row" onclick="openSettingsModal()">
+                            <span>⚙️ All Display Settings...</span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">Planet Notation</div>
+                        <div class="menu-row active" data-notation="symbol" onclick="switchNotation('symbol'); updateMenuCheckmarks();">
+                            <span>Astronomical Symbols (☉ ☽ ♂ ☿)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-notation="english" onclick="switchNotation('english'); updateMenuCheckmarks();">
+                            <span>English (Su Mo Ma Me)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-notation="devanagari" onclick="switchNotation('devanagari'); updateMenuCheckmarks();">
+                            <span>Devanagari (सू चं मं बु)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-notation="translit" onclick="switchNotation('translit'); updateMenuCheckmarks();">
+                            <span>Sanskrit IAST (Sū Ca Ma Bu)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">Divisional Reckoning</div>
+                        <div class="menu-row active" data-d10="reverse" onclick="setD10Mode('reverse'); updateMenuCheckmarks();">
+                            <span>D10: Kala Reverse (Ernst Wilhelm)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-d10="direct" onclick="setD10Mode('direct'); updateMenuCheckmarks();">
+                            <span>D10: Forward (Vic DiCara)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">South Indian Display</div>
+                        <div class="menu-row active" id="menuRowSiSigns" onclick="toggleSiSignsFromMenu();">
+                            <span>Show Signs in Corners</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="toolbar-center" style="display:flex; align-items:center; gap:8px;">
             <select id="nativeSelect">
                 <option value="">-- Select Person --</option>
                 {% for n in natives %}
                 <option value="{{ n.id }}">{{ n.name }} ({{ n.date }})</option>
                 {% endfor %}
             </select>
-            <button onclick="loadChart()">Load</button>
-            <button onclick="openAddModal()">+ Add</button>
-            <div id="loading" style="display:none; color: #3498db; margin-left:10px; font-size:13px;">Calculating...</div>
+            <button onclick="loadChart()" class="btn-primary" style="padding: 4px 11px; font-weight: 600;">Load</button>
+            <button onclick="openAddModal()" style="padding: 4px 8px; font-size: 11px;">+ Add</button>
+            <div id="loading" style="display:none; color: #3498db; font-size:12px;">Calculating...</div>
             
-            <div style="display:flex; align-items:center; margin-left:10px; gap:4px;">
-                <label for="workspaceSelect" style="font-size:12px; font-weight:bold; color:#4a3325;">Workspace:</label>
-                <select id="workspaceSelect" onchange="changeWorkspace(this.value)" style="margin:0 4px; font-weight:600; border-color:#c98246; background:#fffcf8;" title="Astrological Workspaces">
-                    <option value="core-predictive" selected>🌟 1. Core Predictive (D1 + D9 + Info + Dashas)</option>
-                    <option value="tripod-of-life">🏛️ 2. Tripod of Life (Lagna, Moon, Sun)</option>
-                    <option value="big-four">🏛️ 3. The Big Four (D1, D9, D10, D3)</option>
-                    <option value="strengths">⚖️ 4. Strengths & Avasthas</option>
-                    <option value="timing">⏳ 5. Timing & Cycles</option>
-                    <option value="custom">🛠️ Custom (Saved Grid)</option>
-                </select>
-            </div>
-
-            <div style="display:flex; align-items:center; margin-left:6px; gap:4px;">
-                <label for="layoutSelect" style="font-size:12px; font-weight:bold; color:#7f8c8d;">Grid:</label>
-                <select id="layoutSelect" onchange="changeLayout(this.value)" style="margin:0 4px;" title="Split.js Grid Geometry">
-                    <option value="kala">Kala Layout (3x3)</option>
-                    <option value="tripod-of-life">Tripod of Life (3 Top + Table)</option>
-                    <option value="core-predictive">Core Predictive (3-Pane)</option>
-                    <option value="big-four">4-Quadrant (2x2)</option>
-                    <option value="8cell">8-Cell Grid</option>
-                    <option value="11cell">11-Cell Grid</option>
-                    <option value="2chart">2 Charts Side-by-Side</option>
-                </select>
-            </div>
-        </div>
-        <div class="toolbar-center">
+            <div style="border-left: 1px solid #d5c8b2; height: 18px; margin: 0 4px;"></div>
+            
             <span id="chartTitle">No Chart Loaded</span>
             <span id="chartSubtitle"></span>
         </div>
+
         <div class="toolbar-right" style="display:flex; align-items:center; gap:8px;">
-            <button type="button" onclick="openShodasaVargasModal()" style="background-color: #6366f1; color: white; border: none; font-weight: bold; border-radius: 6px; padding: 7px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Open all 16 Divisional Charts (16-in-1)">
-                <span>🏛️</span> ShodasaVargas
-            </button>
-            <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: bold; border-radius: 6px; padding: 7px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
+            <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
                 <span>📄</span> Export PDF
-            </button>
-            <button type="button" onclick="openSettingsModal()" style="background-color: transparent; color: #3d312a; border: 1px solid #d5c8b2;">
-                ⚙️ Settings
             </button>
         </div>
     </div>
@@ -1869,6 +2148,7 @@
             
             <!-- Quick Table Switcher Bar -->
             <div class="floating-table-nav" id="floatingTableNav">
+                <button type="button" class="floating-nav-pill" id="nav-btn-master-diag" onclick="openFloatingMasterDiagnostic()">★ Master Diagnostics</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-bhava" onclick="openBhavaCuspsModal()">📐 Bhava Chalita Cusps</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-planet" onclick="openFloatingPlanetaryInfo()">✨ Planetary Info</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-shadbala" onclick="openFloatingShadbala()">⚖️ Shad Bala</button>
@@ -1944,11 +2224,12 @@
                 <div class="kala-column">
                     <div class="kala-column-title">3. TABLES (CALCULATED)</div>
                     <div class="kala-column-list">
+                        <div class="kala-item star-item" onclick="assignKalaWidget('master-diagnostic')" style="font-weight:bold; color:#b45309; background:#fffdf5;">★ Master Graha Diagnostics ★</div>
                         <div class="kala-item star-item" onclick="assignKalaWidget('planetary-info')">• Planetary Info Table ★</div>
                         <div class="kala-item star-item" onclick="assignKalaWidget('dashas-timeline')">• Vimshottari Timeline ★</div>
                         <div class="kala-item" onclick="assignKalaWidget('shadbala-table')">• Shad Bala Details</div>
                         <div class="kala-item star-item" onclick="assignKalaWidget('yoga-judgment')">• Yoga Judgment (Ishta/Kashta) ★</div>
-                        <div class="kala-item star-item" onclick="assignKalaWidget('planetary-evaluation')">• Vic DiCara Scale (-100 to +100) ★</div>
+                        <div class="kala-item" onclick="assignKalaWidget('quant-matrices')">• Lajjitādi Avasthā Calculation (Strength Matrix)</div>
                         <div class="kala-item" onclick="assignKalaWidget('dignities')">• Dignities in Vargas</div>
                         <div class="kala-item" onclick="assignKalaWidget('avasthas-calc')">• Qualitative Avasthas</div>
                         <div class="kala-item" onclick="assignKalaWidget('ashtakavarga')">• Ashtakavarga & SAV (337)</div>
@@ -1956,7 +2237,6 @@
                         <div class="kala-item" onclick="assignKalaWidget('aspects-planets')">• Aspects - Planetary</div>
                         <div class="kala-item" onclick="assignKalaWidget('rashi-drishti')">• Rāśi Dṛṣṭi (Sign Aspects)</div>
                         <div class="kala-item" onclick="assignKalaWidget('sign-attributes')">• Sign Attributes & Anatomy</div>
-                        <div class="kala-item" onclick="assignKalaWidget('quant-matrices')">• Strength Matrices</div>
                         <div class="kala-item" onclick="assignKalaWidget('varga-lajjitadi-modifiers')">• Varga Lajjitadi Net Modifiers</div>
                         <div class="kala-item" onclick="assignKalaWidget('nakshatras')">• Nakshatras & Speed</div>
                         <div class="kala-item" onclick="assignKalaWidget('info')">• Context & Technical Info</div>
@@ -1967,6 +2247,10 @@
                 <div class="kala-column">
                     <div class="kala-column-title">4. POP-UPS (FLOATING)</div>
                     <div class="kala-column-list popups-list">
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingMasterDiagnostic()" style="border-left: 3px solid #f59e0b; background: #fffdf5;">
+                            <strong>★ Master Graha Diagnostics</strong>
+                            <small>Unified Dignity, Power, Avasthas & Drishti</small>
+                        </button>
                         <button type="button" class="btn-kala-popup" onclick="openFloatingSignAttributes()">
                             <strong>Sign Attributes & Anatomy</strong>
                             <small>4x3 Matrix, Varnas, Doshas & Limbs</small>
@@ -1978,10 +2262,6 @@
                         <button type="button" class="btn-kala-popup" onclick="openFloatingYogaJudgment()">
                             <strong>⚖️ Yoga Judgment Screen</strong>
                             <small>Ishta, Subha & Dig Bala (Kala)</small>
-                        </button>
-                        <button type="button" class="btn-kala-popup" onclick="openFloatingPlanetaryEvaluation()">
-                            <strong>🌟 Vic DiCara Scale</strong>
-                            <small>-100% to +100% & 4 Quadrants</small>
                         </button>
                         <button type="button" class="btn-kala-popup" onclick="openFloatingAshtakavarga()">
                             <strong>🔢 AshtakaVarga Transit</strong>
@@ -2057,6 +2337,7 @@
         <div class="menu-item" onclick="assignWidget('chart', currentActiveCell, { root_planet: 'Moon' })">Chandra Lagna (Moon=H1)</div>
         <div class="menu-item" onclick="assignWidget('chart', currentActiveCell, { root_planet: 'Sun' })">Surya Lagna (Sun=H1)</div>
         <div style="border-top: 1px solid #e5dccb; margin: 3px 0;"></div>
+        <div class="menu-item" onclick="assignWidget('master-diagnostic')" style="font-weight:bold; color:#b45309; background:#fffdf5;">★ Master Graha Diagnostics ★</div>
         <div class="menu-item" onclick="assignWidget('info')">Context Info</div>
         <div class="menu-item" onclick="assignWidget('dignities')">Dignities in Vargas</div>
         <div class="menu-item" onclick="assignWidget('avasthas-calc')">Qualitative Avasthas</div>
@@ -2065,11 +2346,10 @@
         <div class="menu-item" onclick="assignWidget('aspects-bhava-chalita')">Aspects (Bhava Chalita)</div>
         <div class="menu-item" onclick="assignWidget('rashi-drishti')">Rāśi Dṛṣṭi (Sign Aspects)</div>
         <div class="menu-item" onclick="assignWidget('sign-attributes')">Sign Attributes & Anatomy</div>
-        <div class="menu-item" onclick="assignWidget('quant-matrices')">Strength Matrices</div>
+        <div class="menu-item" onclick="assignWidget('quant-matrices')">⚖️ Lajjitādi Avasthā Calculation (Strength Matrix)</div>
         <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <div class="menu-item" onclick="assignWidget('yoga-judgment')">⚖️ Yoga Judgment (Ishta/Kashta)</div>
-        <div class="menu-item" onclick="assignWidget('planetary-evaluation')">🌟 Vic DiCara Scale (-100 to +100)</div>
         <!-- NEW MODULES REGISTERED -->
         <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
         <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
@@ -2797,6 +3077,57 @@
             </div>
         </div>
     </template>
+    <template id="tmpl-master-diagnostic">
+        <div class="widget-content" id="widget-master-diagnostic" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #fbf7ef; border-bottom: 1px solid #e2d7c3; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">★ Master Graha Diagnostics</span>
+                    <span style="font-size: 10px; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #fde68a;">Unified Diagnostic Matrix</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="varga-subtitle" style="font-size: 10px; color: #78716c;">D1 Rāśi • Dignity • Power • Avasthas • Drishti</span>
+                    <select class="varga-select" onchange="updateMasterDiagnosticWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeModal') || this.closest('#widget-master-diagnostic'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <table class="master-diagnostic-table dignity-grid" style="width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 95px;">Graha & Kāraka</th>
+                                <th style="width: 125px;">Placement & Role</th>
+                                <th style="width: 110px;">Dignity (5-Fold)</th>
+                                <th style="width: 100px;">Shadbala Power</th>
+                                <th style="min-width: 220px;">Lajjitādi Avasthās (Mood & Nuances)</th>
+                                <th style="width: 175px;">Influences & Net Dṛṣṭi</th>
+                                <th style="width: 100px;">Karmic Fruit (I/K)</th>
+                                <th style="width: 115px; text-align: center;">★ Vitality Score (1–10)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
     <template id="tmpl-planetary-evaluation">
         <div class="widget-content" id="widget-planetary-evaluation">
             <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
@@ -3336,6 +3667,9 @@
             }
             else if (widgetType === 'nakshatras') {
                 updateNakshatraWidgetForCell(cell);
+            }
+            else if (widgetType === 'master-diagnostic') {
+                updateMasterDiagnosticWidget(cell);
             }
             else if (widgetType === 'planetary-info') {
                 updatePlanetaryInfoWidgetForCell(cell);
@@ -4042,6 +4376,628 @@
             document.body.style.overflow = 'hidden';
         }
 
+        function openFloatingMasterDiagnostic(varga = 'D1') {
+            closeKalaMenu();
+            const modal = document.getElementById('widgetMaximizeModal');
+            const card = document.getElementById('widgetMaximizeCard');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container || !currentChartData) return;
+
+            resetFloatingWindowPosition();
+            if (card) {
+                const w = Math.min(1180, window.innerWidth - 40);
+                const h = Math.min(740, window.innerHeight - 60);
+                card.style.width = w + 'px';
+                card.style.height = h + 'px';
+                card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+                card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+            }
+
+            setActiveFloatingNav('nav-btn-master-diag');
+            const subjectName = (currentChartData.subject_info && currentChartData.subject_info.name) ? currentChartData.subject_info.name : 'Chart';
+            titleEl.textContent = subjectName + " — Master Graha Diagnostics (Unified Dignity, Power, Avasthas & Drishti)";
+
+            const tmpl = document.getElementById('tmpl-master-diagnostic');
+            if (tmpl) {
+                container.innerHTML = '';
+                container.appendChild(tmpl.content.cloneNode(true));
+                populateMasterDiagnosticTable(container, varga);
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateMasterDiagnosticWidget(cell) {
+            if (!cell) {
+                cell = document.querySelector('.grid-cell[data-widget="master-diagnostic"]') ||
+                       document.getElementById('widgetMaximizeContainer') ||
+                       document.getElementById('widget-master-diagnostic');
+            }
+            if (!cell) return;
+            populateMasterDiagnosticTable(cell);
+        }
+
+        function populateMasterDiagnosticTable(container, selectedVarga) {
+            if (!container || !currentChartData || !currentChartData.vargas) return;
+            const targetEl = container.querySelector('#widget-master-diagnostic') || container;
+            const tbody = targetEl.querySelector('tbody');
+            if (!tbody) return;
+
+            const vSelect = targetEl.querySelector('.varga-select');
+            let varga = selectedVarga || (vSelect ? vSelect.value : 'D1');
+            if (vSelect && selectedVarga) {
+                vSelect.value = selectedVarga;
+            }
+
+            const subTitle = targetEl.querySelector('.varga-subtitle');
+            if (subTitle) {
+                subTitle.textContent = `${varga} • Dignity • Power • Avasthas • Drishti`;
+            }
+
+            tbody.innerHTML = '';
+
+            const vData = (currentChartData.vargas && currentChartData.vargas[varga]) ? currentChartData.vargas[varga] : (currentChartData.vargas ? currentChartData.vargas.D1 : null);
+            if (!vData) return;
+
+            const v_grahas = vData.grahas || {};
+            const v_lagna = vData.lagna || {};
+            const shadbala = currentChartData.shadbala || {};
+            const naks = (currentChartData.nakshatras && currentChartData.nakshatras.grahas) || {};
+            const bhavas = vData.bhavas || (currentChartData.vargas.D1 && currentChartData.vargas.D1.bhavas) || [];
+            const adv_aspects = (currentChartData.varga_advanced_aspects && currentChartData.varga_advanced_aspects[varga])
+                ? currentChartData.varga_advanced_aspects[varga]
+                : (currentChartData.advanced_aspects || (currentChartData.varga_advanced_aspects && currentChartData.varga_advanced_aspects.D1) || null);
+
+            const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+            const signLords = {
+                'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+                'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+                'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+            };
+
+            function formatDeg(deg_float) {
+                if (deg_float === undefined || deg_float === null) return '--';
+                let d = Math.floor(deg_float);
+                let m = Math.round((deg_float - d) * 60);
+                if (m === 60) { d += 1; m = 0; }
+                return `${d.toString().padStart(2, '0')}°${m.toString().padStart(2, '0')}'`;
+            }
+
+            function getCampanusHouse(planetName, defaultHouse) {
+                if (!bhavas || bhavas.length === 0) return defaultHouse;
+                for (let i = 0; i < bhavas.length; i++) {
+                    const b = bhavas[i];
+                    if (b.planets && (b.planets.includes(planetName) || (planetName === 'Lagna' && b.planets.includes('Asc')))) {
+                        return b.house;
+                    }
+                }
+                return defaultHouse;
+            }
+
+            const grahaGlyphs = {
+                'Lagna': '🌅', 'Sun': '☉', 'Moon': '☽', 'Mars': '♂',
+                'Mercury': '☿', 'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄',
+                'Rahu': '☊', 'Ketu': '☋'
+            };
+
+            const grahaOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
+
+            // 1. Lagna Row
+            if (v_lagna && v_lagna.sign) {
+                const lgSign = v_lagna.sign;
+                const lgDeg = formatDeg(v_lagna.degree_0_to_30);
+                const lgNak = (varga === 'D1' && naks["Lagna"]) 
+                    ? `${naks["Lagna"].nakshatra} (${naks["Lagna"].pada})` 
+                    : (naks["Lagna"] ? `D1: ${naks["Lagna"].nakshatra} (${naks["Lagna"].pada})` : '--');
+                const lgLord = signLords[lgSign] || v_lagna.lord || '--';
+                
+                const lagnaConj = [];
+                grahaOrder.forEach(p => {
+                    if (v_grahas[p] && v_grahas[p].sign === lgSign) lagnaConj.push(p);
+                });
+                const lagnaConjStr = lagnaConj.length > 0 
+                    ? `<div><span style="color:#64748b; font-size:10px; font-weight:bold;">YUTI:</span> <strong>${lagnaConj.join(', ')}</strong></div>` 
+                    : '<div style="color:#94a3b8; font-size:10.5px;">No planet on Lagna</div>';
+
+                tbody.innerHTML += `
+                    <tr style="background:#faf7f2; border-bottom: 2px solid #e5dccb;">
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:16px;">🌅</span>
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <strong style="color:#4a3325; font-size:12.5px;">Lagna</strong>
+                                        <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size:9px; font-weight:bold;">Tanū Bhāva</span>
+                                    </div>
+                                    <div style="font-size:10px; color:#78716c;">Ascendant (H1)</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong style="color:#1e293b;">${lgSign} ${lgDeg}</strong>
+                            <div style="font-size:10px; color:#64748b;">House 1 (Ascendant)</div>
+                            <div style="font-size:9.5px; color:#475569; margin-top:2px;">Lord: <strong>${lgLord}</strong></div>
+                            <div style="font-size:9.5px; color:#78716c; margin-top:1px;">${lgNak}</div>
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:bold;">Lord: ${lgLord}</span>
+                        </td>
+                        <td style="color:#94a3b8; font-size:11px;">
+                            — (Physical Horizon)
+                        </td>
+                        <td>
+                            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-size:10.5px; font-weight:600;">Core Lens of Destiny</span>
+                        </td>
+                        <td>
+                            ${lagnaConjStr}
+                        </td>
+                        <td style="color:#94a3b8; font-size:11px;">
+                            —
+                        </td>
+                        <td style="text-align: center;">
+                            <span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold;">Primary Anchor</span>
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // 2. Graha Rows
+            grahaOrder.forEach(graha => {
+                if (!v_grahas[graha]) return;
+                const gData = v_grahas[graha];
+                const glyph = grahaGlyphs[graha] || '★';
+                const sign = gData.sign || '--';
+                const deg = formatDeg(gData.degree_0_to_30);
+                const lagnaIdx = signsList.indexOf(v_lagna.sign);
+                const pIdx = signsList.indexOf(sign);
+                const wHouse = (lagnaIdx >= 0 && pIdx >= 0) ? ((pIdx - lagnaIdx + 12) % 12 + 1) : (gData.house || 1);
+                const cHouse = getCampanusHouse(graha, wHouse);
+                const nakData = naks[graha];
+                const nakStr = (varga === 'D1')
+                    ? (nakData ? `${nakData.nakshatra} (${nakData.pada})` : '--')
+                    : (nakData ? `D1: ${nakData.nakshatra} (${nakData.pada})` : `${varga} Division`);
+
+                // Motion & Combustion
+                const isRetro = !!gData.is_retrograde;
+                const isCombust = !!gData.is_combust;
+                let statusBadges = '';
+                if (isRetro) {
+                    statusBadges += ' <span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold;" title="Retrograde [R]: high motional power, inward focus">[R]</span>';
+                }
+                if (isCombust) {
+                    statusBadges += ' <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold;" title="Combust [C]: conjoined Sun, outward expression internalized">[C]</span>';
+                }
+
+                // Cusp shift
+                let houseHtml = `House ${wHouse}`;
+                if (cHouse !== wHouse) {
+                    houseHtml += ` <span class="badge" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:10px; font-weight:bold;" title="Whole sign is House ${wHouse}, but 3D Campanus cusp shifts into Bhava ${cHouse}">➔ Bhava ${cHouse}</span>`;
+                }
+
+                // Chara Karaka (Soul Role from D1)
+                const ck = gData.chara_karaka || (currentChartData.karakas && currentChartData.karakas.chara && currentChartData.karakas.chara[graha]) || null;
+                let ckBadge = '';
+                if (ck && ck.karaka && ck.karaka !== '—') {
+                    let ckStyle = 'background:#f1f5f9; color:#334155; border:1px solid #cbd5e1;';
+                    let ckIcon = '';
+                    if (ck.karaka === 'AK') {
+                        ckStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold;';
+                        ckIcon = '👑 ';
+                    } else if (ck.karaka === 'AmK') {
+                        ckStyle = 'background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-weight:bold;';
+                        ckIcon = '💼 ';
+                    } else if (ck.karaka === 'DK') {
+                        ckStyle = 'background:#fdf2f8; color:#9d174d; border:1px solid #fbcfe8; font-weight:bold;';
+                        ckIcon = '💍 ';
+                    } else if (ck.karaka === 'BK') {
+                        ckStyle = 'background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-weight:600;';
+                        ckIcon = '📿 ';
+                    } else if (ck.karaka === 'MK') {
+                        ckStyle = 'background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; font-weight:600;';
+                        ckIcon = '🏡 ';
+                    } else if (ck.karaka === 'PK') {
+                        ckStyle = 'background:#fefce8; color:#854d0e; border:1px solid #fef08a; font-weight:600;';
+                        ckIcon = '🌱 ';
+                    } else if (ck.karaka === 'GK') {
+                        ckStyle = 'background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; font-weight:600;';
+                        ckIcon = '⚔️ ';
+                    }
+                    const ckTooltip = `<strong>${ckIcon}${ck.name} (${ck.karaka}) • ${ck.title}</strong><br>• Rank: #${ck.rank} (Traversed ${ck.degree_in_sign}° in sign)<br>• ${ck.description}`;
+                    ckBadge = `<span class="badge tooltip-target" style="${ckStyle} font-size:9.5px; padding:1px 5px; border-radius:3px; cursor:help;" data-tooltip="${ckTooltip}">${ckIcon}${ck.karaka}</span>`;
+                }
+
+                // Functional Role (House Rulerships, Yogakaraka, Maraka, Badhaka)
+                const fnRole = gData.functional_role || (currentChartData.karakas && currentChartData.karakas.functional && currentChartData.karakas.functional[graha]) || null;
+                let ruledHousesHtml = '';
+                let fnBadgesHtml = '';
+                if (fnRole && fnRole.ruled_houses && fnRole.ruled_houses.length > 0) {
+                    ruledHousesHtml = `<div style="font-size:9.5px; color:#475569; margin-top:2px;">Rules: <strong>${fnRole.ruled_houses_str}</strong></div>`;
+                    
+                    const bList = [];
+                    if (fnRole.is_yogakaraka) {
+                        bList.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>⭐ Yogakāraka (Supreme Benefic)</strong><br>• Simultaneously rules Kendra & Trikona (${fnRole.ruled_houses_str})<br>• Unites action with divine grace, conferring high worldly and dharmic achievement.">⭐ Yogakāraka</span>`);
+                    } else if (fnRole.is_lagnesha) {
+                        bList.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>🛡️ Lagneśa (Ascendant Lord)</strong><br>• Rules House 1 (${fnRole.ruled_houses_str})<br>• Primary protector of self, health, and vitality.">🛡️ Lagneśa</span>`);
+                    }
+                    
+                    if (fnRole.is_maraka && !fnRole.is_yogakaraka) {
+                        const marakaH = fnRole.ruled_houses.filter(h => h === 2 || h === 7);
+                        bList.push(`<span class="badge tooltip-target" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-size:8.5px; font-weight:600; cursor:help;" data-tooltip="<strong>Māraka (H${marakaH.join('/')})</strong><br>• Rules death/transformation threshold houses (H2/H7)<br>• Demands resource stewardship and governs transformative thresholds.">Māraka</span>`);
+                    }
+                    
+                    if (fnRole.is_badhaka && !fnRole.is_yogakaraka && !fnRole.is_lagnesha) {
+                        bList.push(`<span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:8.5px; font-weight:600; cursor:help;" data-tooltip="<strong>Bādhaka (Obstacle Maker)</strong><br>• Rules the specific testing house for this sign<br>• Creates subtle karmic friction or blind spots requiring self-reflection.">Bādhaka</span>`);
+                    }
+                    
+                    if (bList.length > 0) {
+                        fnBadgesHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${bList.join('')}</div>`;
+                    }
+                }
+
+                // Dignity (5-fold)
+                let digBadge = '';
+                const isNode = (graha === 'Rahu' || graha === 'Ketu');
+                const signLord = (gData.dignity_breakdown && gData.dignity_breakdown.sign_lord) || signLords[sign] || '--';
+                const dig = gData.dignity_breakdown ? (gData.dignity_breakdown.final_dignity || '--') : '--';
+
+                if (isNode) {
+                    digBadge = `<span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;" title="Rahu & Ketu do not have 5-fold dignity; they act like the lord of their sign (Dispositor: ${signLord})">Reflects: ${signLord}</span>`;
+                } else {
+                    if (dig.includes('Exalt')) {
+                        digBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;">👑 Exalted</span>';
+                    } else if (dig.includes('Moola')) {
+                        digBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;">🏛️ Moolatrikona</span>';
+                    } else if (dig.includes('Own')) {
+                        digBadge = '<span class="badge" style="background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;">🏡 Own Sign</span>';
+                    } else if (dig.includes('Great Friend')) {
+                        digBadge = '<span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;">🤝 Great Friend</span>';
+                    } else if (dig.includes('Friend')) {
+                        digBadge = '<span class="badge" style="background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;">🙂 Friend</span>';
+                    } else if (dig.includes('Neutral')) {
+                        digBadge = '<span class="badge" style="background:#f55f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;">⚖️ Neutral</span>';
+                    } else if (dig.includes('Great Enemy')) {
+                        digBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;">⚔️ Great Enemy</span>';
+                    } else if (dig.includes('Enemy')) {
+                        digBadge = '<span class="badge" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;">⚠️ Enemy</span>';
+                    } else if (dig.includes('Debilit')) {
+                        digBadge = '<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;">🔻 Debilitated</span>';
+                    } else {
+                        digBadge = `<span style="color:#78716c;">${dig}</span>`;
+                    }
+                }
+
+                // Shadbala Power
+                const sb = shadbala[graha];
+                let powerHtml = '<span style="color:#94a3b8;">—</span>';
+                if (sb) {
+                    const rupas = sb.Total_Rupas ? sb.Total_Rupas.toFixed(2) + ' R' : '--';
+                    const pct = sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) + '%' : '--';
+                    const rank = sb.Relative_Rank || '--';
+                    const isHigh = (sb.Pct_Required_Total >= 115);
+                    const isLow = (sb.Pct_Required_Total < 100);
+
+                    let rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; font-weight:bold; font-size:10px;">#${rank}</span>`;
+                    if (rank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold; font-size:10px;">👑 Rank 1</span>`;
+                    else if (rank === 7) rankBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:10px;">Rank 7</span>`;
+
+                    const pctColor = isHigh ? '#15803d' : (isLow ? '#b91c1c' : '#0369a1');
+                    powerHtml = `
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
+                                <strong style="font-size:12px;">${rupas}</strong>
+                                ${rankBadge}
+                            </div>
+                            <div style="font-size:10.5px; color:${pctColor}; font-weight:600;">${pct} required</div>
+                        </div>
+                    `;
+                }
+
+                // Lajjitadi Avasthas
+                const avList = (gData.avasthas && gData.avasthas.lajjitadi) || [];
+                let avasthasHtml = '';
+                if (isNode) {
+                    avasthasHtml = '<span class="badge" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:600;" title="Sage Parashara applies Lajjitādi Avasthās exclusively to the 7 physical Grahas. Rahu & Ketu act as instigators, not experiencers.">— (Chhāyā Catalyst)</span>';
+                } else if (avList.length === 0) {
+                    avasthasHtml = '<span style="color:#a8a29e; font-style:italic;">Neutral (Unstirred)</span>';
+                } else {
+                    const badges = avList.map(item => {
+                        const st = item.state || '';
+                        const cond = item.condition || '';
+
+                        let label = st.split(' ')[0];
+                        let style = '';
+                        let icon = '';
+                        let nuanceNote = '';
+
+                        const causeGlyphs = {
+                            'Sun': '☉', 'Moon': '☽', 'Mars': '♂', 'Mercury': '☿',
+                            'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄', 'Rahu': '☊', 'Ketu': '☋'
+                        };
+                        const foundCauses = Object.keys(causeGlyphs).filter(p => cond.includes(p));
+                        if (foundCauses.length > 0) {
+                            if (foundCauses.length === 1) {
+                                nuanceNote = ` (${causeGlyphs[foundCauses[0]]} ${foundCauses[0].substring(0,3)})`;
+                            } else {
+                                nuanceNote = ` (${foundCauses.map(p => causeGlyphs[p]).join(' ')})`;
+                            }
+                        } else if (cond.includes('Enemy sign')) {
+                            nuanceNote = ' (Enemy sign)';
+                        } else if (cond.includes('Friend\'s sign')) {
+                            nuanceNote = ' (Friend sign)';
+                        } else if (cond.includes('Exalted') || cond.includes('Moolatrikona')) {
+                            nuanceNote = ' (Dignity)';
+                        }
+
+                        if (st.includes('Mudita')) {
+                            icon = '🟢 +';
+                            style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                        } else if (st.includes('Garvita')) {
+                            icon = '👑 +';
+                            style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                        } else if (st.includes('Kshudhita')) {
+                            icon = '🔴 -';
+                            style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                        } else if (st.includes('Kshobhita')) {
+                            icon = '🟠 -';
+                            style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
+                        } else if (st.includes('Lajjita')) {
+                            icon = '🟣 -';
+                            style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
+                        } else if (st.includes('Trushita')) {
+                            icon = '💧 -';
+                            style = 'background:#cffafe; color:#155e75; border:1px solid #67e8f9;';
+                        }
+
+                        return `<span class="avastha-badge-pill tooltip-target" style="${style}" data-tooltip="<strong>${st}</strong><br>• Condition: ${cond}<br>• Psychological feeling state." style="cursor:help;">${icon} ${label}${nuanceNote}</span>`;
+                    });
+                    avasthasHtml = `<div style="display:flex; flex-wrap:wrap; gap:3px;">${badges.join('')}</div>`;
+                }
+
+                // Influences (Yuti + Drishti with Net Summation)
+                const conjunctList = [];
+                grahaOrder.forEach(otherP => {
+                    if (otherP !== graha && v_grahas[otherP] && v_grahas[otherP].sign === sign) {
+                        conjunctList.push(otherP);
+                    }
+                });
+
+                const aspectList = [];
+                let netVal = 0;
+                let plusVal = 0;
+                let minusVal = 0;
+                if (adv_aspects && adv_aspects.totals && adv_aspects.totals.planets && adv_aspects.totals.planets[graha]) {
+                    const tot = adv_aspects.totals.planets[graha];
+                    netVal = tot.net || 0;
+                    plusVal = Math.round(tot.plus || 0);
+                    minusVal = Math.round(tot.minus || 0);
+                }
+
+                if (adv_aspects && adv_aspects.planets && adv_aspects.planets[graha]) {
+                    const aspRecv = adv_aspects.planets[graha];
+                    grahaOrder.forEach(aspG => {
+                        if (aspG !== graha && aspRecv[aspG] && aspRecv[aspG].raw > 3.0) {
+                            const aspData = aspRecv[aspG];
+                            const rawV = Math.round(aspData.raw);
+                            const isPlus = aspData.plus > 0;
+                            const signChar = isPlus ? '+' : '-';
+                            const tagColor = isPlus ? '#15803d' : '#b91c1c';
+                            const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
+                            aspectList.push(`<span style="color:${tagColor}; font-weight:600;" title="${aspG} casts ${signChar}${rawV} virupas (${isPlus ? 'Subha/Benefic ray' : 'Asubha/Malefic pressure'})">${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`);
+                        }
+                    });
+                }
+
+                let netDrishtiBadge = '';
+                if (netVal >= 12.0) {
+                    netDrishtiBadge = `<span class="badge" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px;" title="Benefic rays (+${plusVal}v) outweigh malefic pressure (-${minusVal}v)">🟢 Net Support (+${Math.round(netVal)}v)</span>`;
+                } else if (netVal <= -12.0) {
+                    netDrishtiBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px;" title="Malefic pressure (-${minusVal}v) outweighs benefic rays (+${plusVal}v)">🔴 Net Pressure (${Math.round(netVal)}v)</span>`;
+                } else {
+                    netDrishtiBadge = `<span class="badge" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px;" title="Benefic (+${plusVal}v) and malefic (-${minusVal}v) balanced">⚖️ Balanced (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
+                }
+
+                let yutiHtml = '';
+                if (conjunctList.length > 0) {
+                    const companionBadges = conjunctList.map(cp => {
+                        const isBen = ['Jupiter', 'Venus'].includes(cp);
+                        const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
+                        const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
+                        const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
+                        return `<span style="color:${cColor}; font-weight:600;">${cIcon} ${cp}</span>`;
+                    }).join(', ');
+                    yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
+                }
+
+                let drishtiHtml = aspectList.length > 0 
+                    ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>` 
+                    : '<div style="color:#94a3b8; font-size:10px;">No strong aspects</div>';
+                let influencesHtml = `
+                    <div style="display:flex; flex-direction:column; gap:2.5px; font-size:10.5px;">
+                        <div>${netDrishtiBadge}</div>
+                        ${yutiHtml}
+                        ${drishtiHtml}
+                    </div>
+                `;
+
+                // Karmic Fruit (Ishta / Kashta)
+                let fruitHtml = '<span style="color:#94a3b8;">—</span>';
+                let fruitScore = null;
+                if (sb && sb.Ishta_Phala !== undefined && sb.Kashta_Phala !== undefined) {
+                    const ishta = Number(sb.Ishta_Phala).toFixed(1);
+                    const kashta = Number(sb.Kashta_Phala).toFixed(1);
+                    const diff = sb.Ishta_Phala - sb.Kashta_Phala;
+                    fruitScore = Math.max(1.0, Math.min(10.0, (sb.Ishta_Phala / 60.0) * 10.0));
+                    let balanceBadge = '';
+                    if (diff >= 10.0) {
+                        balanceBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:9.5px; font-weight:bold;">Sweet / Grace</span>';
+                    } else if (diff <= -10.0) {
+                        balanceBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold;">Difficult / Grit</span>';
+                    } else {
+                        balanceBadge = '<span class="badge" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-size:9.5px; font-weight:bold;">Mixed / Neutral</span>';
+                    }
+                    fruitHtml = `
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <div style="font-size:10px;">
+                                <span style="color:#15803d; font-weight:bold;">I: ${ishta}</span> / 
+                                <span style="color:#b91c1c; font-weight:bold;">K: ${kashta}</span>
+                            </div>
+                            <div>${balanceBadge}</div>
+                        </div>
+                    `;
+                }
+
+                // 5-Pillar Master Composite Vitality Score (1.0 to 10.0)
+                // 1. Dignity Score
+                let dScore = 5.0;
+                const dLow = dig.toLowerCase();
+                if (dLow.includes('exalt')) dScore = 10.0;
+                else if (dLow.includes('moola')) dScore = 9.0;
+                else if (dLow.includes('own')) dScore = 8.0;
+                else if (dLow.includes('great friend')) dScore = 7.0;
+                else if (dLow.includes('friend')) dScore = 6.0;
+                else if (dLow.includes('neutral')) dScore = 5.0;
+                else if (dLow.includes('great enemy')) dScore = 2.5;
+                else if (dLow.includes('enemy')) dScore = 4.0;
+                else if (dLow.includes('debilit')) dScore = 1.0;
+
+                // 2. Shadbala Power Score
+                let sbScore = null;
+                if (sb && sb.Pct_Required_Total !== undefined) {
+                    const pReq = sb.Pct_Required_Total;
+                    if (pReq >= 140) sbScore = 10.0;
+                    else if (pReq >= 125) sbScore = 8.5;
+                    else if (pReq >= 110) sbScore = 7.5;
+                    else if (pReq >= 100) sbScore = 6.5;
+                    else if (pReq >= 90) sbScore = 5.0;
+                    else if (pReq >= 80) sbScore = 3.5;
+                    else sbScore = 2.0;
+                }
+
+                // 3. Avastha Mood Score
+                let avaScore = 5.0;
+                if (avList && avList.length > 0) {
+                    avList.forEach(a => {
+                        const st = a.state || '';
+                        const cond = a.condition || '';
+                        const foundPlanets = Object.keys(grahaGlyphs).filter(p => p !== 'Lagna' && cond.includes(p));
+                        const count = Math.max(1, foundPlanets.length);
+
+                        if (st.includes('Mudita')) {
+                            // Multiple friends provide compounding delight (+2.0 for first, +0.8 for each additional friend)
+                            avaScore += 2.0 + (count - 1) * 0.8;
+                            if (cond.includes("Friend's sign")) avaScore += 0.5;
+                        }
+                        else if (st.includes('Garvita')) avaScore += 2.5;
+                        else if (st.includes('Kshudhita')) {
+                            // Multiple enemies increase starvation
+                            avaScore -= (2.0 + (count - 1) * 0.8);
+                            if (cond.includes("Enemy sign")) avaScore += 0.5;
+                        }
+                        else if (st.includes('Kshobhita')) {
+                            avaScore -= (1.8 + (count - 1) * 0.6);
+                        }
+                        else if (st.includes('Lajjita')) avaScore -= 2.5;
+                        else if (st.includes('Trushita')) avaScore -= 1.5;
+                    });
+                }
+                avaScore = Math.max(1.0, Math.min(10.0, avaScore));
+
+                // 4. Environmental Weather Score (Aspects + Yuti)
+                let aspScore = 5.0 + (netVal / 15.0);
+                conjunctList.forEach(cp => {
+                    if (['Jupiter', 'Venus'].includes(cp)) aspScore += 1.5;
+                    else if (['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp)) aspScore -= 1.5;
+                });
+                aspScore = Math.max(1.0, Math.min(10.0, aspScore));
+
+                // 5. Composite Calculation
+                let composite = 5.0;
+                if (sbScore !== null && fruitScore !== null) {
+                    composite = (dScore + sbScore + avaScore + aspScore + fruitScore) / 5.0;
+                } else {
+                    composite = (dScore + avaScore + aspScore) / 3.0;
+                }
+                composite = Math.max(1.0, Math.min(10.0, composite));
+                const compStr = composite.toFixed(1);
+
+                let vitalityBadge = '';
+                if (composite >= 8.5) {
+                    vitalityBadge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold; font-size:9.5px;">🌟 Sovereign</span>';
+                } else if (composite >= 7.0) {
+                    vitalityBadge = '<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold; font-size:9.5px;">🟢 Capable</span>';
+                } else if (composite >= 5.5) {
+                    vitalityBadge = '<span class="badge" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px;">🟡 Resilient</span>';
+                } else if (composite >= 4.0) {
+                    vitalityBadge = '<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-weight:bold; font-size:9.5px;">🟠 Strained</span>';
+                } else {
+                    vitalityBadge = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px;">🔴 Fragile</span>';
+                }
+
+                const vitalityTooltip = `<strong>★ ${graha} Vitality in ${varga} (${compStr} / 10)</strong><br>` +
+                    `• <strong>Sign Dignity (${varga}):</strong> ${dScore.toFixed(1)}/10 (${dig})<br>` +
+                    `• <strong>Shadbala Power (Soul Base):</strong> ${sbScore !== null ? sbScore.toFixed(1) + '/10 (' + sb.Pct_Required_Total.toFixed(0) + '%)' : 'N/A'}<br>` +
+                    `• <strong>Avasthā Mood (${varga}):</strong> ${avaScore.toFixed(1)}/10 (${avList.map(a => a.state.split(' ')[0]).join(', ') || 'Neutral'})<br>` +
+                    `• <strong>Environment (${varga}):</strong> ${aspScore.toFixed(1)}/10 (Net ${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)<br>` +
+                    `• <strong>Karmic Fruit:</strong> ${fruitScore !== null ? fruitScore.toFixed(1) + '/10 (Ishta ' + Number(sb.Ishta_Phala).toFixed(1) + ')' : 'N/A'}`;
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <span style="font-size:16px; color:#1e293b;">${glyph}</span>
+                                <div>
+                                    <div style="display:flex; align-items:center; gap:4px;">
+                                        <strong style="color:#1e293b; font-size:12.5px;">${graha}</strong>
+                                        ${ckBadge}
+                                    </div>
+                                    <div>${statusBadges}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <strong style="color:#1e293b;">${sign} ${deg}</strong>
+                            <div style="font-size:10px; color:#64748b;">${houseHtml}</div>
+                            ${ruledHousesHtml}
+                            ${fnBadgesHtml}
+                            <div style="font-size:9.5px; color:#78716c; margin-top:2px;">${nakStr}</div>
+                        </td>
+                        <td>
+                            ${digBadge}
+                        </td>
+                        <td>
+                            ${powerHtml}
+                        </td>
+                        <td>
+                            ${avasthasHtml}
+                        </td>
+                        <td>
+                            ${influencesHtml}
+                        </td>
+                        <td>
+                            ${fruitHtml}
+                        </td>
+                        ${isNode ? `
+                            <td style="text-align: center;">
+                                <span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold;" title="Chhāyā Graha: Operates through dispositor (${signLord}) and conjunct planets">— (Karmic Catalyst)</span>
+                            </td>
+                        ` : `
+                            <td style="text-align: center;">
+                                <div class="tooltip-target" data-tooltip="${vitalityTooltip}" style="cursor: help; display: inline-flex; flex-direction: column; align-items: center; gap: 2px;">
+                                    <div style="display: flex; align-items: baseline; gap: 2px;">
+                                        <strong style="font-size: 13.5px; color: #1e293b;">${compStr}</strong>
+                                        <span style="font-size: 10px; color: #64748b;">/ 10</span>
+                                    </div>
+                                    <div>${vitalityBadge}</div>
+                                </div>
+                            </td>
+                        `}
+                    </tr>
+                `;
+            });
+        }
+
         function populatePlanetaryInfoTable(cell) {
             const tbody = cell.querySelector('tbody');
             if (!tbody || !currentChartData || !currentChartData.nakshatras) return;
@@ -4214,6 +5170,11 @@
             try { updateAspectsTable("D1"); } catch(e) {}
             try { updateQuantMatricesTable(); } catch(e) {}
             
+            // Master Graha Diagnostics
+            document.querySelectorAll('.grid-cell[data-widget="master-diagnostic"]').forEach(cell => {
+                updateMasterDiagnosticWidget(cell);
+            });
+
             // Planetary Info & Nakshatras
             document.querySelectorAll('.grid-cell[data-widget="planetary-info"]').forEach(cell => {
                 updatePlanetaryInfoWidgetForCell(cell);
@@ -4295,9 +5256,14 @@
                 updateShadbalaTableWidget();
             });
 
-            // Update floating modal if active for planetary-evaluation
+            // Update floating modal if active for master-diagnostic or planetary-evaluation
             const modal = document.getElementById('widgetMaximizeModal');
             if (modal && modal.style.display === 'flex') {
+                const navBtnDiag = document.getElementById('nav-btn-master-diag');
+                if (navBtnDiag && navBtnDiag.classList.contains('active')) {
+                    const cont = document.getElementById('widgetMaximizeContainer');
+                    if (cont) populateMasterDiagnosticTable(cont);
+                }
                 const navBtn = document.getElementById('nav-btn-evaluation');
                 if (navBtn && navBtn.classList.contains('active')) {
                     const cont = document.getElementById('widgetMaximizeContainer');
@@ -4411,20 +5377,22 @@
                 splitInstances.push(Split(['#c1', '#c2', '#c3'], { sizes: [33.33, 33.33, 33.34], minSize: [220, 220, 220], gutterSize: 5 }));
             } else if (layoutType === 'core-predictive') {
                 container.innerHTML = `
-                    <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column;">
-                        <div class="grid-cell" id="cell1" style="height:100%;"><div class="grid-cell-content"></div></div>
+                    <div id="col1" class="split-col" style="height:100%; display:flex; flex-direction:column; overflow:hidden;">
+                        <div class="grid-cell" id="cell1" style="height:58%; overflow:hidden;"><div class="grid-cell-content"></div></div>
+                        <div class="grid-cell" id="cell5" style="height:42%; overflow:hidden;"><div class="grid-cell-content"></div></div>
                     </div>
                     <div id="col2" class="split-col" style="height:100%; display:flex; flex-direction:column; overflow:hidden;">
-                        <div class="grid-cell" id="cell2" style="height:45%; overflow:hidden;"><div class="grid-cell-content"></div></div>
-                        <div id="row-sub" class="split-row" style="height:55%; display:flex; flex-direction:row; overflow:hidden;">
+                        <div class="grid-cell" id="cell2" style="height:46%; overflow:hidden;"><div class="grid-cell-content"></div></div>
+                        <div id="row-sub" class="split-row" style="height:54%; display:flex; flex-direction:row; overflow:hidden;">
                             <div class="grid-cell" id="cell3" style="height:100%;"><div class="grid-cell-content"></div></div>
                             <div class="grid-cell" id="cell4" style="height:100%;"><div class="grid-cell-content"></div></div>
                         </div>
                     </div>
                 `;
-                splitInstances.push(Split(['#col1', '#col2'], { sizes: [50, 50], minSize: [360, 420], gutterSize: 5 }));
-                splitInstances.push(Split(['#cell2', '#row-sub'], { direction: 'vertical', sizes: [45, 55], minSize: [160, 200], gutterSize: 5 }));
-                splitInstances.push(Split(['#cell3', '#cell4'], { sizes: [50, 50], minSize: [200, 200], gutterSize: 5 }));
+                splitInstances.push(Split(['#col1', '#col2'], { sizes: [30, 70], minSize: [260, 480], gutterSize: 5 }));
+                splitInstances.push(Split(['#cell1', '#cell5'], { direction: 'vertical', sizes: [58, 42], minSize: [180, 140], gutterSize: 5 }));
+                splitInstances.push(Split(['#cell2', '#row-sub'], { direction: 'vertical', sizes: [46, 54], minSize: [160, 180], gutterSize: 5 }));
+                splitInstances.push(Split(['#cell3', '#cell4'], { sizes: [50, 50], minSize: [180, 180], gutterSize: 5 }));
                 
             } else if (layoutType === 'big-four') {
                 container.innerHTML = `
@@ -4453,9 +5421,19 @@
                         saveLayoutState = function() {}; 
                         
                         savedCells.forEach(sc => {
+                            if (layoutType === 'core-predictive') {
+                                if (sc.id === 'cell2' && (sc.widget === 'planetary-info' || sc.widget === 'empty')) sc.widget = 'master-diagnostic';
+                                if (sc.id === 'cell4' && (sc.widget === 'dashas-timeline' || sc.widget === 'empty')) sc.widget = 'dignities';
+                            }
                             const cell = document.getElementById(sc.id);
                             if (cell) assignWidget(sc.widget, cell, { varga: sc.varga, root_planet: sc.root_planet });
                         });
+                        if (layoutType === 'core-predictive') {
+                            const c5 = document.getElementById('cell5');
+                            if (c5 && (!c5.dataset.widget || c5.dataset.widget === 'empty')) {
+                                assignWidget('dashas-timeline', c5);
+                            }
+                        }
                         
                         saveLayoutState = window._tempSave;
                         stateLoaded = true;
@@ -4479,12 +5457,13 @@
                     assignWidget('planetary-info', document.getElementById('c4'));
                 } else if (layoutType === 'core-predictive') {
                     assignWidget('chart', document.getElementById('cell1'));
-                    assignWidget('planetary-info', document.getElementById('cell2'));
+                    assignWidget('dashas-timeline', document.getElementById('cell5'));
+                    assignWidget('master-diagnostic', document.getElementById('cell2'));
                     assignWidget('chart', document.getElementById('cell3'));
                     const sel3 = document.querySelector('#cell3 .varga-select');
                     if (sel3) sel3.value = 'D9';
                     updateWidget(document.getElementById('cell3'));
-                    assignWidget('dashas-timeline', document.getElementById('cell4'));
+                    assignWidget('dignities', document.getElementById('cell4'));
                 } else if (layoutType === 'big-four') {
                     assignWidget('chart', document.getElementById('c1'));
                     assignWidget('chart', document.getElementById('c2'));
@@ -4521,6 +5500,7 @@
             }
             observeGridCells();
             attachGutterAutoFit();
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
         }
 
         function changeWorkspace(wsName) {
@@ -4534,12 +5514,14 @@
                 if (layoutSelect) layoutSelect.value = 'core-predictive';
                 changeLayout('core-predictive');
                 assignWidget('chart', document.getElementById('cell1'));
-                assignWidget('planetary-info', document.getElementById('cell2'));
+                assignWidget('dashas-timeline', document.getElementById('cell5'));
+                assignWidget('master-diagnostic', document.getElementById('cell2'));
                 assignWidget('chart', document.getElementById('cell3'));
                 const sel = document.querySelector('#cell3 .varga-select');
                 if (sel) sel.value = 'D9';
                 updateWidget(document.getElementById('cell3'));
-                assignWidget('dashas-timeline', document.getElementById('cell4'));
+                assignWidget('dignities', document.getElementById('cell4'));
+                saveLayoutState();
             } else if (wsName === 'tripod-of-life') {
                 if (layoutSelect) layoutSelect.value = 'tripod-of-life';
                 changeLayout('tripod-of-life');
@@ -4563,7 +5545,7 @@
                 const s4 = document.querySelector('#c4 .varga-select');
                 if (s4) s4.value = 'D3';
                 updateWidget(document.getElementById('c4'));
-            } else if (wsName === 'strengths') {
+            } else if (wsName === 'strengths' || wsName === 'kala') {
                 if (layoutSelect) layoutSelect.value = 'kala';
                 changeLayout('kala');
                 assignWidget('chart', document.getElementById('cell1'));
@@ -4589,6 +5571,7 @@
                 changeLayout(savedLayout);
             }
             saveLayoutState();
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
         }
 
         // Kala 4-Column Context Menu Actions
@@ -5232,17 +6215,10 @@
         function setupSplit() {
             document.getElementById('main-container').style.display = 'flex';
             if (splitInstances.length === 0) {
-                const savedWs = localStorage.getItem('astra_current_workspace');
-                const savedLayout = localStorage.getItem('astra_current_layout') || 'kala';
-                if (savedWs) {
-                    const wsSelect = document.getElementById('workspaceSelect');
-                    if (wsSelect) wsSelect.value = savedWs;
-                    changeWorkspace(savedWs);
-                } else {
-                    const layoutSelect = document.getElementById('layoutSelect');
-                    if (layoutSelect) layoutSelect.value = savedLayout;
-                    changeLayout(savedLayout);
-                }
+                const savedWs = localStorage.getItem('astra_current_workspace') || 'core-predictive';
+                const wsSelect = document.getElementById('workspaceSelect');
+                if (wsSelect) wsSelect.value = savedWs;
+                changeWorkspace(savedWs);
             }
             observeGridCells();
         }
@@ -5348,6 +6324,7 @@
                     btn.style.display = 'none';
                 }
             });
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
         }
 
         async function loadChart(nativeId = null) {
@@ -5477,6 +6454,7 @@
             els.forEach(el => {
                 el.style.display = show ? 'block' : 'none';
             });
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
         }
         
         function updateBhavaTable(varga) {
@@ -7807,6 +8785,7 @@
             if (currentMaximized) {
                 maximizeChart(currentMaximized.slot, currentMaximized.type);
             }
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
         }
 
         function openSettingsModal() {
@@ -8038,11 +9017,75 @@
             }
         });
 
+        function updateMenuCheckmarks() {
+            const curWs = localStorage.getItem('astra_current_workspace') || 'core-predictive';
+            document.querySelectorAll('#workspacesMenuDropdown .menu-row[data-ws]').forEach(row => {
+                const isAct = row.getAttribute('data-ws') === curWs;
+                row.classList.toggle('active', isAct);
+                const check = row.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            });
+
+            const curGrid = document.getElementById('layoutSelect')?.value || 'core-predictive';
+            document.querySelectorAll('#layoutMenuDropdown .menu-row[data-grid]').forEach(row => {
+                const isAct = row.getAttribute('data-grid') === curGrid;
+                row.classList.toggle('active', isAct);
+                const check = row.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            });
+
+            const notMode = (typeof currentNotation !== 'undefined') ? currentNotation : (localStorage.getItem('astra_notation') || 'symbol');
+            document.querySelectorAll('#settingsMenuDropdown .menu-row[data-notation]').forEach(row => {
+                const isAct = row.getAttribute('data-notation') === notMode;
+                row.classList.toggle('active', isAct);
+                const check = row.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            });
+
+            const d10Mode = (typeof currentD10Mode !== 'undefined') ? currentD10Mode : (localStorage.getItem('astra_d10_mode') || 'reverse');
+            document.querySelectorAll('#settingsMenuDropdown .menu-row[data-d10]').forEach(row => {
+                const isAct = row.getAttribute('data-d10') === d10Mode;
+                row.classList.toggle('active', isAct);
+                const check = row.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            });
+
+            const rowSi = document.getElementById('menuRowSiSigns');
+            if (rowSi) {
+                const isAct = (typeof showSiSigns !== 'undefined') ? !!showSiSigns : true;
+                rowSi.classList.toggle('active', isAct);
+                const check = rowSi.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            }
+        }
+
+        function toggleSiSignsFromMenu() {
+            toggleSiSigns(!showSiSigns);
+            updateMenuCheckmarks();
+        }
+
+        // Close dropdown menus when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.menu-item-dropdown')) {
+                document.querySelectorAll('.menu-item-dropdown').forEach(m => m.classList.remove('open'));
+            }
+        });
+        document.querySelectorAll('.menu-bar-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const parent = this.closest('.menu-item-dropdown');
+                const isOpen = parent.classList.contains('open');
+                document.querySelectorAll('.menu-item-dropdown').forEach(m => m.classList.remove('open'));
+                if (!isOpen) parent.classList.add('open');
+                e.stopPropagation();
+            });
+        });
+
         // Auto-load first chart on initial load if available & init floating window
         window.addEventListener('DOMContentLoaded', async () => {
             initFloatingWindowDrag();
             initFloatingWindowResize();
             await loadCountries();
+            updateMenuCheckmarks();
             const select = document.getElementById('nativeSelect');
             if (select && select.options.length > 1) {
                 select.selectedIndex = 1;

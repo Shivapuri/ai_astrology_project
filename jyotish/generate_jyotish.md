@@ -55,7 +55,9 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
 ### E. Divisional Charts (Vargas) - Dasamsa (D10) Modes
 *   **Default (Kala Reverse for Even Signs):** Ernst Wilhelm's recommended setting in Kala (`Parashara - Reverse for Even Rasis *`). For even signs, the 10 divisions count in reverse (backward) starting from the 9th sign ($(\text{sign\_idx} + 8 - \text{div\_index}) \pmod{12}$).
 *   **Contemporary Direct (Vic DiCara / Traditional):** Slices count forward starting from the 9th sign ($(\text{sign\_idx} + 8 + \text{div\_index}) \pmod{12}$).
-*   **Parity:** Odd signs always progress forward from the sign itself in both systems ($(\text{sign\_idx} + \text{div\_index}) \pmod{12}$).
+### F. Karakas & Parashari Functional Roles
+*   **Chara Karakas (7-Graha Scheme, BPHS Ch. 32):** Ranks the 7 classical physical planets (Sun through Saturn) by degree traversed in sign ($0^\circ \text{ to } 30^\circ$) in descending order to identify AK through DK. Calculated on D1 longitudes and preserved across all Vargas.
+*   **Functional Rulerships (BPHS Ch. 34):** Identifies house lords from Whole Sign Ascendant. Computes Yogakaraka (simultaneous lordship of Kendra and Trikona), Lagneśa, Māraka (H2/H7), and Bādhaka (Movable $\rightarrow$ H11, Fixed $\rightarrow$ H9, Dual $\rightarrow$ H7). Evaluated for D1 and dynamically for each Varga Lagna.
 
 ---
 

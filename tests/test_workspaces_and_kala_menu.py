@@ -45,19 +45,22 @@ def test_workspace_core_predictive(page: Page):
     page.evaluate("changeWorkspace('core-predictive')")
     page.wait_for_timeout(500)
     
-    # Verify 3-pane layout elements exist
+    # Verify 5-cell layout elements exist
     expect(page.locator("#col1 #cell1")).to_be_visible()
+    expect(page.locator("#col1 #cell5")).to_be_visible()
     expect(page.locator("#col2 #cell2")).to_be_visible()
     expect(page.locator("#cell3")).to_be_visible()
     expect(page.locator("#cell4")).to_be_visible()
     
-    # cell2 has planetary info
-    expect(page.locator("#cell2 .planetary-info-table")).to_be_visible()
+    # cell2 has master graha diagnostics table
+    expect(page.locator("#cell2 .master-diagnostic-table")).to_be_visible()
+    # cell5 has vimshottari timeline under Rasi
+    expect(page.locator("#cell5 .dasa-timeline-table")).to_be_visible()
     # cell3 has D9 chart
     d9_select = page.locator("#cell3 .varga-select")
     assert d9_select.input_value() == "D9"
-    # cell4 has dashas timeline
-    expect(page.locator("#cell4 .dasa-timeline-table")).to_be_visible()
+    # cell4 has dignities in vargas table
+    expect(page.locator("#cell4 #vargaDignitiesTable, #cell4 .dignity-grid")).to_be_visible()
 
 def test_workspace_big_four(page: Page):
     init_page(page)
@@ -188,4 +191,19 @@ def test_floating_bhava_chalita_window(page: Page):
     page.keyboard.press("Escape")
     page.wait_for_timeout(200)
     expect(modal).not_to_be_visible()
+
+def test_app_menu_bar(page: Page):
+    init_page(page)
+    
+    # Verify menubar exists
+    expect(page.locator("#appMenuBar")).to_be_visible()
+    expect(page.locator("#appMenuBar button:has-text('Native')")).to_be_visible()
+    expect(page.locator("#appMenuBar button:has-text('Workspaces')")).to_be_visible()
+    expect(page.locator("#appMenuBar button:has-text('Layout')")).to_be_visible()
+    expect(page.locator("#appMenuBar button:has-text('Tables')")).to_be_visible()
+    expect(page.locator("#appMenuBar button:has-text('Settings')")).to_be_visible()
+    
+    # Check Workspaces menu has Core Predictive checked
+    core_row = page.locator("#workspacesMenuDropdown .menu-row[data-ws='core-predictive']")
+    expect(core_row.locator(".menu-check")).to_contain_text("✓")
 

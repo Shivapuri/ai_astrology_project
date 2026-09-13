@@ -36,6 +36,10 @@ def page():
         pg.goto(FLASK_URL)
         pg.wait_for_timeout(1500)
 
+        # Switch to Kala layout where all three aspect matrix tables are mounted
+        pg.evaluate("changeLayout('kala')")
+        pg.wait_for_timeout(1000)
+
         # Load Angelina Jolie
         pg.evaluate(f"loadChart('{CHART_ID}')")
         pg.wait_for_timeout(2000)

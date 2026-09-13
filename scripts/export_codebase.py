@@ -82,6 +82,10 @@ EXCLUDED_FILES = {
     "session_handoff.md",
     "angelina_jolie_proof_catalog.md",
     "build_proof_catalog.py",
+    "screenshot.py",
+    "screenshot_master_diag.py",
+    "search_krishna_chart.py",
+    "angelina_jolie_baselines.json",
 }
 
 EXCLUDED_EXTENSIONS = {

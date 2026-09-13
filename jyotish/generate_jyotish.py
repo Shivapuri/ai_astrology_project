@@ -14,6 +14,7 @@ import jyotish.ashtakavarga as ashtakavarga
 import jyotish.vimshopaka as vimshopaka
 import jyotish.sign_attributes as sign_attributes
 import jyotish.planetary_evaluation as planetary_evaluation
+import jyotish.karakas as karakas
 
 try:
     import swisseph as swe
@@ -799,6 +800,18 @@ def generate_kala_chart(
         'yoga_pinda_total': r_tot + g_tot,
     }
 
+    # 9. Karakas (Chara & Naisargika) and Functional Roles (Yogakaraka, Maraka, Badhaka)
+    chara_karakas = karakas.calculate_chara_karakas(vargas_data["D1"]["grahas"])
+    functional_roles_d1 = karakas.calculate_functional_roles(vargas_data["D1"]["lagna"]["sign"])
+    varga_functional_roles = karakas.get_all_varga_functional_roles(vargas_data)
+
+    for v_name, v_data in vargas_data.items():
+        v_roles = varga_functional_roles.get(v_name, {})
+        for p_name, p_data in v_data["grahas"].items():
+            p_data["chara_karaka"] = chara_karakas.get(p_name, {})
+            p_data["functional_role"] = v_roles.get(p_name, {})
+            p_data["d1_functional_role"] = functional_roles_d1.get(p_name, {})
+
     vedic_context = {
 
         "subject_info": {
@@ -841,7 +854,13 @@ def generate_kala_chart(
         "varga_vimshopaka": vimshopaka_data,
         "vimshopaka": vimshopaka_export,
         "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()},
-        "planetary_evaluation": planetary_evaluation.calculate_planetary_evaluation(vargas_data, shadbala_data)
+        "planetary_evaluation": planetary_evaluation.calculate_planetary_evaluation(vargas_data, shadbala_data),
+        "karakas": {
+            "chara": chara_karakas,
+            "functional": functional_roles_d1,
+            "varga_functional": varga_functional_roles,
+            "naisargika": karakas.NAISARGIKA_KARAKAS
+        }
     }
     
     # 7. Write to file (only if requested)

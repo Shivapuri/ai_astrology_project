@@ -111,6 +111,8 @@ def test_client_change_updates_chart(page: Page):
 def test_16_shodashavargas_options(page: Page):
     page.goto("http://127.0.0.1:5001/")
     page.wait_for_timeout(1000)
+    page.evaluate("changeWorkspace('kala')")
+    page.wait_for_timeout(500)
     
     expected_vargas = [
         "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12",
@@ -150,6 +152,8 @@ def test_dignities_table_click_switches_chart(page: Page):
 def test_avasthas_calc_independent_varga_switch(page: Page):
     page.goto("http://127.0.0.1:5001/")
     page.wait_for_timeout(1000)
+    page.evaluate("changeWorkspace('kala')")
+    page.wait_for_timeout(500)
     page.locator("svg").first.wait_for(state="visible")
     
     chart_select = page.locator(".widget-chart .varga-select").first
