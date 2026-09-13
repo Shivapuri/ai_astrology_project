@@ -143,3 +143,35 @@ Before releasing or merging changes affecting the divisional charts or strength 
    open /Users/hajnaljanos/.gemini/antigravity-cli/brain/0617582a-440d-4ca6-9fcb-488d3631e240/astra_vargas_side_by_side_proof.html
    ```
 
+---
+
+## 8. Lajjitadi Avasthas (Base: ShadBala) Harmonic Scaling & Harmonization
+
+In Ernst Wilhelm's Kala software, when evaluating Lajjitadi Avasthas under the **ShadBala baseline** for harmonic divisional charts (D2 to D60):
+
+### A. Mathematical Scaling Formula
+Rather than freezing the starting strength to D1 ShadBala or displaying raw Vimshopaka points, Kala scales each planet's full D1 ShadBala by its Vimshopaka dignity in that harmonic chart:
+$$\text{Base}[p] = \text{round}\left(\text{ShadBala}_{\text{D1}}[p] \times \frac{\text{Vimshopaka}[p]}{20.0}, 1\right)$$
+
+### B. The Four Parashari Scheme Dignity Groups
+Planetary Vimshopaka dignities group naturally into the four classical Parashari varga schemes:
+1. **Shadvarga (6 charts: D1, D2, D3, D9, D12, D30)**: Jupiter dignity = 11.6/20 $\rightarrow$ Base 270.4. Total in D2 = **941.3**.
+2. **Saptavarga (7 charts: D7)**: Jupiter dignity = 11.6/20 $\rightarrow$ Base 270.4. Total in D7 = **941.3**.
+3. **Dasavarga (10 charts: D10, D16, D60)**: Jupiter dignity = 11.7/20 $\rightarrow$ Base 272.7. Total in D10 = **951.1**.
+4. **Shodashavarga (16 charts: D4, D20, D24, D27, D40, D45)**: Jupiter dignity = 11.35/20 $\rightarrow$ Base 264.6. Total in D40 = **917.0**.
+
+This mathematically proves why Jupiter totals **941.3 in Hora (D2)** and **917.0 in Khavedamsa (D40)**.
+
+### C. Dropdown Menu Configuration
+In the Strength Matrices widget (`.matrix-type-select`), the **Lajjitadi Avasthas** optgroup contains:
+* **Drishti Yuti**: Pure aspect Virūpas with Vimshopaka diagonal.
+* **ShadBala**: Scaled ShadBala dignity baseline with incoming aspect pulls.
+
+*(Note: The redundant "Vimshopaka" option was removed from this dropdown because Vimshopaka is a separate dedicated widget: `Varga Vimshopaka Bala`).*
+
+### D. Automated Test Suite & Visual Verification
+Run automated regression verification for ShadBala baseline across all 16 vargas:
+```bash
+pytest tests/test_varga_shadbala_transcription.py
+python /Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/scripts/generate_all_varga_shadbala_proofs.py
+```
