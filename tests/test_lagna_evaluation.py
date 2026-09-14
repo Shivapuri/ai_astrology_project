@@ -56,6 +56,45 @@ JOLIE_DOB = {
     "timezone_offset": -7.0  # PDT
 }
 
+# Vladimir Putin Chart coordinates
+PUTIN_DOB = {
+    "name": "Vladimir Putin",
+    "year": 1952,
+    "month": 10,
+    "day": 7,
+    "hour": 9,
+    "minute": 30,
+    "latitude": 59.9386,
+    "longitude": 30.3141,
+    "timezone_offset": 3.0  # MSK
+}
+
+# Mahatma Gandhi Chart coordinates
+GANDHI_DOB = {
+    "name": "Mahatma Gandhi",
+    "year": 1869,
+    "month": 10,
+    "day": 2,
+    "hour": 7,
+    "minute": 12,
+    "latitude": 21.6417,
+    "longitude": 69.6293,
+    "timezone_offset": 4.642  # LMT
+}
+
+# Barack Obama Chart coordinates
+OBAMA_DOB = {
+    "name": "Barack Obama",
+    "year": 1961,
+    "month": 8,
+    "day": 4,
+    "hour": 19,
+    "minute": 24,
+    "latitude": 21.3069,
+    "longitude": -157.8583,
+    "timezone_offset": -10.0  # HST
+}
+
 @pytest.fixture(scope="module")
 def trump_chart():
     return generate_kala_chart(**TRUMP_DOB)
@@ -67,6 +106,18 @@ def shivapuri_chart():
 @pytest.fixture(scope="module")
 def jolie_chart():
     return generate_kala_chart(**JOLIE_DOB)
+
+@pytest.fixture(scope="module")
+def putin_chart():
+    return generate_kala_chart(**PUTIN_DOB)
+
+@pytest.fixture(scope="module")
+def gandhi_chart():
+    return generate_kala_chart(**GANDHI_DOB)
+
+@pytest.fixture(scope="module")
+def obama_chart():
+    return generate_kala_chart(**OBAMA_DOB)
 
 
 def test_lagna_evaluation_presence_in_chart(trump_chart):
@@ -160,6 +211,67 @@ def test_jolie_lagna_evaluation(jolie_chart):
     assert len(audit["p3_occupants"]) > 0
     assert len(audit["p4_skylight"]) > 0
     assert len(audit["p5_enclosure"]) > 0
+
+
+def test_putin_lagna_evaluation(putin_chart):
+    """
+    Verify Vladimir Putin's Lagna diagnostic:
+    - Tropical Scorpio Lagna (Mars as Lord).
+    - Venus in House 1 (+0.7, aesthetic grace, personal charisma).
+    - Jupiter in House 7 casts direct aspect on Lagna (+0.6, Brihat Jataka 1.19).
+    - Mars in House 2 (Dhana Bhava, commercial/strategic assertiveness).
+    - Score lands solidly in 'Capable Vessel' (~7.2).
+    """
+    lagna_eval = putin_chart["planetary_evaluation"]["lagna_evaluation"]
+    assert lagna_eval["lagna_sign"] == "Scorpio"
+    assert lagna_eval["lord"]["name"] == "Mars"
+    assert lagna_eval["lord"]["house"] == 2
+    assert "Venus" in lagna_eval["occupants"]
+
+    score = lagna_eval["vitality_score"]
+    assert 6.8 <= score <= 7.6, f"Expected Putin vitality ~7.2, got {score}"
+    assert lagna_eval["vitality_tier"] == "Robust Horizon"
+    assert lagna_eval["archetype"] == "The Resilient Architect"
+
+
+def test_gandhi_lagna_evaluation(gandhi_chart):
+    """
+    Verify Mahatma Gandhi's Lagna diagnostic (07:12 LMT):
+    - Tropical Libra Lagna (Venus as Lord).
+    - Venus in Scorpio (enemy's sign) conjoined Mars, agitated (Kshobhita).
+    - Sun in House 1 (heat/friction).
+    - Harṣa Viparīta Rāja Yoga & Kemadruma Yoga reflect extreme asceticism, hunger fasts, and spiritual endurance.
+    - Score lands in 'Strained Horizon' (~4.6), 'The Contemplative Seeker'.
+    """
+    lagna_eval = gandhi_chart["planetary_evaluation"]["lagna_evaluation"]
+    assert lagna_eval["lagna_sign"] == "Libra"
+    assert lagna_eval["lord"]["name"] == "Venus"
+    assert "Sun" in lagna_eval["occupants"]
+
+    score = lagna_eval["vitality_score"]
+    assert 4.0 <= score <= 5.0, f"Expected Gandhi vitality ~4.6, got {score}"
+    assert lagna_eval["vitality_tier"] == "Strained Horizon"
+    assert lagna_eval["archetype"] == "The Contemplative Seeker"
+
+
+def test_obama_lagna_evaluation(obama_chart):
+    """
+    Verify Barack Obama's Lagna diagnostic:
+    - Tropical Aquarius Lagna (Saturn as Lord).
+    - Saturn in House 12 in own sign (Capricorn), retrograde (+0.3 motional power).
+    - Jupiter in House 1 (+1.0, Digbala, noble oratorical presence).
+    - Score lands in 'Robust Horizon' (~7.1), 'The Resilient Architect'.
+    """
+    lagna_eval = obama_chart["planetary_evaluation"]["lagna_evaluation"]
+    assert lagna_eval["lagna_sign"] == "Aquarius"
+    assert lagna_eval["lord"]["name"] == "Saturn"
+    assert lagna_eval["lord"]["house"] == 12
+    assert "Jupiter" in lagna_eval["occupants"]
+
+    score = lagna_eval["vitality_score"]
+    assert 6.7 <= score <= 7.5, f"Expected Obama vitality ~7.1, got {score}"
+    assert lagna_eval["vitality_tier"] == "Robust Horizon"
+    assert lagna_eval["archetype"] == "The Resilient Architect"
 
 
 def test_score_boundaries_and_tiers():

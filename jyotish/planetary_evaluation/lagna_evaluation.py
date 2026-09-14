@@ -476,7 +476,7 @@ def evaluate_lagna_vitality(
         v_class = "robust"
         archetype = "The Invincible Sovereign"
         verdict = "Supreme constitutional vitality and iron executive agency; chart yogas manifest with maximum real-world force."
-    elif vitality_score >= 7.3:
+    elif vitality_score >= 7.0:
         tier = "Robust Horizon"
         v_class = "robust"
         archetype = "The Resilient Architect"
