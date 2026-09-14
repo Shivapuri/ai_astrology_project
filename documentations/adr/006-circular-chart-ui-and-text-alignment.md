@@ -15,23 +15,32 @@ Furthermore, the Ascendant (Lagna) text ("Asc", "9°", "♌", "35'") was overlap
 ## Decision
 To ensure the circular chart always looks completely polished and matches the reference design, the following strict UI rules MUST be adhered to permanently:
 
-### 1. Radial Text Stacking (NO Rotation)
-- The text for each planet must form a vertical stack along an invisible radial line pointing towards the center of the chart.
+### 1. Radial Text Stacking (NO Rotation, Sign Glyph Omitted)
+- The text for each planet forms a vertical stack along an invisible radial line pointing towards the center of the chart.
 - The SVG `<text>` elements MUST remain completely upright (horizontal baseline). **Do not use `transform="rotate(...)"`** to turn the letters sideways.
-- The stacking order, reading from the outer edge (Rasi inner border) inward towards the center (House outer border), MUST be exactly:
-  1. **Planet Glyph** (e.g. ♂) - furthest out
-  2. **Degree** (e.g. 25°)
-  3. **Sign** (e.g. ♍)
-  4. **Minute** (e.g. 31') - closest to the center
+- The stacking order, reading from the outer edge (Rasi inner border) inward towards the center (House outer border), is simplified to 3 rows:
+  1. **Planet Glyph** (e.g. ♂) - furthest out (`r = r_rasi_inner - 9 = 146`)
+  2. **Degree** (e.g. 25°) - middle (`r = r_rasi_inner - 21 = 134`)
+  3. **Minute** (e.g. 31' or 31'R) - innermost (`r = r_rasi_inner - 32 = 123`)
+- The zodiac sign glyph is omitted from the planet stack because each planet is already located within its 30° zodiac sign segment on the wheel (which has its sign symbol clearly displayed in the outer ring). This saves over 20px of radial space.
 
-### 2. Ascendant (Lagna) Line and Spacing
+### 2. Ascendant (Lagna) Line and Clearance
 - A single, thin red line (`#C0392B`) is drawn for the Ascendant (House 1 Cusp) going from the inner house border to the inner sign border, capped with a red arrowhead.
-- To prevent the Ascendant text stack ("Asc", "9°", "♌", "35'") from overlapping this red line, the `angle` for the Lagna stack is slightly offset (e.g., `+2.2` degrees). This makes the text float perfectly above the line.
-- Because "Asc" is a wide string, its specific stacking radii must be spaced out more generously (e.g., `-5`, `-24`, `-35`, `-46` pixels from the border) compared to standard planets (which use `-10`, `-22`, `-32`, `-42`).
+- To prevent the Ascendant text stack ("Asc", "9°", "35'") from overlapping this red line or conjunct planets (e.g. Venus in Cancer), relaxation enforces `MIN_SEP = 6.0°` for Lagna, and offsets the text slightly below the horizontal axis (`182.5°`).
+
+### 3. Expanded Inner Aspect Circle & Graha Drishti
+- The inner circle is enlarged to `r_bhava_inner = 76` and `r_bhava_outer = 92` (providing a central aspect drawing diameter of 152px, a +185% area expansion).
+- Campanus house cusps are positioned at `r_bhava_outer + 12 = 104`, maintaining a safe 15+ pixel margin from the planet text stack.
+- Inside the inner circle ($r \le 76$), Parashara Graha Drishti chords with directional arrowheads connect aspecting and aspected planets:
+  - **Exalted / Benefic (Gold/Green)**: Uplifting blessings (`#D4AC0D` / `#27AE60`).
+  - **Malefic / Debilitated (Red)**: Pressure glances (`#C0392B`).
+  - **Neutral (Blue)**: Moderate glances (`#2980B9`).
+- **Interactive Focus & Toggle**: Clicking any planet isolates its incoming/outgoing aspects; clicking the center circle clears the filter or toggles aspect visibility.
 
 ## Justification
-These highly specific visual spacing rules are required to achieve the exact aesthetic cleanliness and readability of professional astrology software. Without these rules, the circular chart becomes a chaotic overlap of text and lines.
+These visual spacing and aspect rules achieve high aesthetic cleanliness, zero text overlap, and deep astrological clarity based on Parashara's teachings and Ernst Wilhelm's Kala methodology.
 
 ## Trade-offs
-- **Pros:** A beautiful, readable, professional-grade circular chart UI that exactly matches user expectations and reference material.
-- **Cons:** Introduces highly specific, hardcoded SVG radius values (`r_deg_base = r_rasi_inner - 26 if p_name == 'Lagna' else r_rasi_inner - 22`) which could require manual tweaking if the overall SVG canvas size changes in the future.
+- **Pros:** A beautiful, readable, professional-grade circular chart UI with clear planetary glance interactions and ample space.
+- **Cons:** Slightly smaller whole-sign house radial ring thickness (16px), which is still comfortably sized for house numbers (font size 9.5).
+

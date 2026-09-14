@@ -851,6 +851,39 @@
             opacity: 1 !important;
             filter: drop-shadow(0px 0px 5px rgba(211, 84, 0, 0.8));
         }
+
+        /* Circular Chart Aspect Lines & Interactive Center Circle */
+        .interactive-aspect {
+            transition: opacity 0.25s ease, stroke-width 0.25s ease;
+            cursor: pointer;
+        }
+        .interactive-aspect:hover {
+            stroke-width: 2.4px !important;
+            stroke-opacity: 1 !important;
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.35));
+        }
+        .aspects-filtered .interactive-aspect:not(.aspect-focused) {
+            opacity: 0.08 !important;
+        }
+        .aspects-filtered .interactive-aspect.aspect-focused {
+            opacity: 1 !important;
+            stroke-width: 2.2px !important;
+            filter: drop-shadow(0 0 3px rgba(41, 128, 185, 0.5));
+        }
+        .aspects-hidden .aspect-lines {
+            display: none !important;
+        }
+        .planet-focused text.glyph-symbol {
+            stroke: #F39C12 !important;
+            stroke-width: 4px !important;
+        }
+        .interactive-center-circle {
+            transition: fill 0.2s ease, fill-opacity 0.2s ease;
+        }
+        .interactive-center-circle:hover {
+            fill: #eee5d3 !important;
+            fill-opacity: 0.85 !important;
+        }
         
         .top-toolbar {
             width: 100%;
@@ -9922,6 +9955,47 @@
 
         // Interactive Elements Click Handler (Delegated to document to handle dynamic SVGs)
         document.addEventListener('click', (e) => {
+            // Handle clicking on circular chart center circle to toggle aspects or clear filter
+            const centerCircle = e.target.closest('.interactive-center-circle');
+            if (centerCircle) {
+                // Clear any global highlights on all SVGs
+                document.querySelectorAll('svg').forEach(s => s.classList.remove('highlight-mode'));
+                document.querySelectorAll('.interactive').forEach(n => {
+                    n.classList.remove('highlight-active', 'highlight-source');
+                });
+
+                const parentSvg = centerCircle.closest('svg');
+                if (parentSvg) {
+                    if (parentSvg.classList.contains('aspects-filtered')) {
+                        parentSvg.classList.remove('aspects-filtered');
+                        parentSvg.querySelectorAll('.interactive-aspect').forEach(l => l.classList.remove('aspect-focused'));
+                        parentSvg.querySelectorAll('.planet-glyph').forEach(g => g.classList.remove('planet-focused'));
+                    } else {
+                        parentSvg.classList.toggle('aspects-hidden');
+                    }
+                }
+                return;
+            }
+
+            // Handle clicking on an aspect chord directly
+            const aspectLine = e.target.closest('.interactive-aspect');
+            if (aspectLine) {
+                const fromP = aspectLine.getAttribute('data-from');
+                const toP = aspectLine.getAttribute('data-to');
+                const virupas = aspectLine.getAttribute('data-virupas');
+                const nature = aspectLine.getAttribute('data-nature');
+                const standaloneInfo = document.getElementById('context-info-content');
+                if (standaloneInfo) {
+                    standaloneInfo.innerHTML = `
+                        <h3>Graha Drishti Glance</h3>
+                        <div style="font-size: 14px; margin-bottom: 8px;"><strong>From:</strong> ${fromP} &nbsp; ➔ &nbsp; <strong>To:</strong> ${toP}</div>
+                        <p><strong>Glance Strength:</strong> ${virupas} / 60 Virupas</p>
+                        <p><strong>Dignity & Nature:</strong> ${nature}</p>
+                    `;
+                }
+                return;
+            }
+
             // Clear highlights if clicking anywhere in the chart container
             const chartContainer = e.target.closest('.grid-cell');
             if (chartContainer) {
@@ -9948,6 +10022,26 @@
             }
             
             if (type === 'planet') {
+                // Circular Chart Aspect Focus
+                const parentSvg = el.closest('svg');
+                if (parentSvg && parentSvg.querySelector('.aspect-lines')) {
+                    const isAlreadyFocused = el.classList.contains('planet-focused');
+                    parentSvg.querySelectorAll('.interactive-aspect').forEach(l => l.classList.remove('aspect-focused'));
+                    parentSvg.querySelectorAll('.planet-glyph').forEach(g => g.classList.remove('planet-focused'));
+                    
+                    if (isAlreadyFocused) {
+                        parentSvg.classList.remove('aspects-filtered');
+                    } else {
+                        parentSvg.classList.add('aspects-filtered');
+                        el.classList.add('planet-focused');
+                        parentSvg.querySelectorAll('.interactive-aspect').forEach(l => {
+                            if (l.getAttribute('data-from') === id || l.getAttribute('data-to') === id) {
+                                l.classList.add('aspect-focused');
+                            }
+                        });
+                    }
+                }
+
                 const mathData = currentChartData && currentChartData.vargas && currentChartData.vargas[clickedVarga] && currentChartData.vargas[clickedVarga].grahas[id];
                 
                 // Add highlights for Rashi Aspects
