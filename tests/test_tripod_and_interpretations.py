@@ -132,26 +132,16 @@ def test_tripod_of_life_workspace(page: Page):
     assert page.locator("#c2 .btn-root-moon").is_visible()
     assert page.locator("#c3 .btn-root-sun").is_visible()
 
-def test_varga_lajjitadi_modifiers_ui(page: Page):
+def test_varga_lajjitadi_removed_from_ui(page: Page):
     if not is_server_running():
         pytest.skip("Flask server is not running on port 5001")
     init_page(page)
 
-    page.evaluate("assignWidget('varga-lajjitadi-modifiers', document.getElementById('cell2'))")
-    page.wait_for_timeout(500)
-
-    # Check 16 rows for the 16 vargas
-    rows = page.locator("#cell2 .varga-lajjitadi-table tbody tr")
-    assert rows.count() == 16, f"Expected 16 varga rows, got {rows.count()}"
-
-    # Verify table headers
-    headers = page.locator("#cell2 .varga-lajjitadi-table thead th")
-    assert headers.count() == 8  # Varga + 7 planets
-    
-    table_text = page.locator("#cell2 .varga-lajjitadi-table").inner_text()
-    assert "D1" in table_text
-    assert "D3" in table_text
-    assert "D60" in table_text
+    # Verify template is completely removed
+    assert page.locator("#tmpl-varga-lajjitadi-modifiers").count() == 0
+    # Verify not present in Kala menu or context menu
+    assert page.locator(".kala-item:has-text('Varga Lajjitadi')").count() == 0
+    assert page.locator(".menu-item:has-text('Varga Lajjitadi')").count() == 0
 
 def test_rashi_drishti_ui(page: Page):
     if not is_server_running():

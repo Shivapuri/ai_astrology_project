@@ -32,14 +32,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree sixth sign)"
   campanus_cusp: "Sensitive 3D spatial focus point beneath the western horizon supporting the Descendant"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 30 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 25–26)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Directly Below the Western Horizon (Underground West / Supporting 7)"
+  solar_basis: "Support of Sunset"
+  axis_1: "- Disappearance (Vulnerability & Decline)"
+  axis_2: "+ Others (Adversarial Relationships)"
 ---
-
 # 🏛️ House 6: Ari Bhava (*The Sixth House / Adversity, Health & Service*)
 
 > **Astrological Archetype:** The Forge of Worldly Resilience—the clearing of accumulated karmic debt (*Rina*), the daily discipline of mundane labor, the defense of physiological health (*Roga*), and the courageous boundary enforcement (*Avajna*) required to conquer life's adversaries.  
@@ -49,21 +54,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Directly Below the Western Horizon (Underground West / Supporting 7)
+* **Solar Basis:** Upholds and supports the sunset (the descent of the Sun / others). Sunset carries two primary connotations: disappearance and other people.
+* **Foundational Dual Axes:** - Disappearance (Vulnerability & Decline) and + Others (Adversarial Relationships)
+
+#### 🖼️ The Visual Power Points Matrix (Support of Sunset)
+| 📉 -disappearance | ⚔️ + others |
+| :--- | :--- |
+| **Illness** (*injury; bodily diseases, acute physical ailments, and wounds breaking down vitality*) | **Enemies** (*thieves, rivals; opponents and competitors who actively try to take from you*) |
+| **Dread** (*anxiety, fear; psychological worry, anticipation of loss, and dread of crisis*) | **Conflict** (*struggles, weapons; disputes, arguments, litigation, and physical/tactical defense*) |
+| **Minorities** (*subordinates; overlooked, marginalized, servants, and subordinate workers*) | **Debts** (*servitude; financial and energetic obligations draining your resources to serve others*) |
+
+#### The Causal Rationale (Why House 6 Signifies What It Signifies)
+The 6th House (*Ari Bhava / Shatru Bhava*, house of enemies and disease) is the region of the sky situated directly underneath the western horizon. Just as the 2nd House supports the sunrise, the 6th House **supports the sunset**. Sunset carries two inescapable symbolic meanings: **disappearance** (the Sun's light fading away) and **other people** (the western realm of non-self).
+
+Supporting *disappearance* produces physical breakdown: **Illness** (*injury*)—infections, diseases, and acute bodily crises that erode vitality. Anticipating illness produces **Dread** (*anxiety, fear*)—chronic worry, anxiety, and fear of negative outcomes. It also represents **Minorities** (*subordinates*)—people who are socially overlooked, marginalized, or working in service and servitude.
+
+Engaging with *other people* in this setting produces friction: **Enemies** (*thieves, rivals*)—opponents and competitors trying to exploit your resources. Dealing with enemies sparks **Conflict** (*struggles, weapons*)—arguments, litigation, and defensive battles. Finally, it creates **Debts** (*servitude*)—burdensome obligations where your labor and wealth are diverted to pay off or serve others.
+
+### 1.2 The Everyday Analogy
 **The 6th House is the maintenance repair shop, the hospital emergency room, and the daily chore list of adult life.**
 
 Imagine buying a gleaming new sports car (1st House) and driving it home to a beautiful garage (4th House). No matter how proud you are of the vehicle, within a few months its engine oil darkens, its brake pads wear down, a tire catches a sharp nail on the road, and its windshield gets splattered with mud. If you refuse to check the oil, refuse to sweep the garage, and refuse to pay the mechanic because you think maintenance is beneath you, that multi-thousand-dollar automobile will sputter, stall, and break down on the side of the road.
 
 In astrology, the 6th House (*Ari Bhava*, the house of enemies, debts, and disease) represents that essential maintenance routine. It is washing the dishes, taking your medicine, flossing your teeth, budgeting to pay off credit card debt, managing difficult employees, and setting firm boundaries with toxic people who try to exploit your kindness. The 6th House is rarely glamorous, but it is the invisible shield that protects the rest of your life from falling into chaotic ruin.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 6th House is the universe's karmic ledger balancing station—the friction that burns off past-life debt through disciplined service and problem-solving.**
 
 In the sacred architecture of the birth chart, the 6th House sits directly below the western horizon. Just as the 2nd House (below the eastern horizon) structurally supports the self (*Swa*), the 6th House sits directly underneath the 7th house of the partner and open rival, structurally supporting the "other" at your expense.
 
 This house marks Step 6 on the 12-stage lifecycle ladder: **Purification through Struggle**. It governs your encounter with reality’s resistance: debts (*Rina*), acute pathogens (*Roga*), legal disputes, and open adversaries (*Shatru*). Crucially, the 6th House is both a **Dusthana** (house of suffering) and an **Upachaya** (house of growth). In youth, it feels like an exhausting mountain of unrewarded obligations. But as you mature, develop daily discipline, and steadily pay down your karmic balances, the 6th House transforms into an engine of unyielding resilience, tactical competence, and supreme competitive victory.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit titles for the 6th House emphasize acute friction, debt, wounds, and the vital power of defiance.**
 
 * **Ari, Ripu & Shatru (The Open Enemy):** *Ari* signifies one who opposes you; *Ripu* denotes a treacherous foe; *Shatru* means an active rival who seeks to overturn your position. In classical Vedic philosophy, the external enemy is merely an outer reflection of the six internal psychological enemies of the human heart (*Shad Ripus*): lust (*Kama*), anger (*Krodha*), greed (*Lobha*), delusion (*Moha*), arrogance (*Mada*), and envy (*Matsarya*).

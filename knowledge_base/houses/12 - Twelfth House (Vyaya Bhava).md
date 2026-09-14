@@ -31,14 +31,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree twelfth sign)"
   campanus_cusp: "Sensitive 3D spatial focus point directly above the eastern horizon eroding the Ascendant"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 36 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 34–36 & Twelfth House Masterclass)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Directly Above the Eastern Horizon (Sky just prior to Sunrise / Eroding 1)"
+  solar_basis: "Erosion of the East"
+  axis_1: "'-' Sunrise (Invisibility & Dissolution)"
+  axis_2: "'-' Self (Ego Surrender & Seclusion)"
 ---
-
 # 🏛️ House 12: Vyaya Bhava (*The Twelfth House / Dissolution & Liberation*)
 
 > **Astrological Archetype:** The Final Cosmic Horizon—the gentle dissolution of material form (*Kshaya*), the sacred surrender into deep sleep (*Sayana*), the foreign departure across distant oceans, and the ultimate return of the drop into the cosmic ocean of liberation (*Moksha*).  
@@ -48,21 +53,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Directly Above the Eastern Horizon (Sky just prior to Sunrise / Eroding 1)
+* **Solar Basis:** The sector immediately above the eastern horizon that erodes the dawn, dissolving the localized self back into the cosmic expanse.
+* **Foundational Dual Axes:** '-' Sunrise (Invisibility & Dissolution) and '-' Self (Ego Surrender & Seclusion)
+
+#### 🖼️ The Visual Power Points Matrix (Erosion of the East)
+| 🌌 '-'sunrise | 🧘 '-'self |
+| :--- | :--- |
+| **Invisible** (*abstract, unreal, spirit; intangible realms: dreams, spirits, astral planes, and the unmanifest*) | **Humility** (*isolation; dissolving the personal ego: meditative solitude, retreat, and quiet surrender*) |
+| **Unknown** (*alien, foreign; unfamiliar terrain: distant foreign lands, alien cultures, and foreign frontiers*) | **Enemies** (*detractors, critics; covert adversaries, secret detractors, and forces outside personal control*) |
+| **Decline** (*expense, loss; dissipation of material assets: expenses (Vyaya), financial outlays, and erosion*) | **Weakness** (*fatigue, giving up; physical depletion, fatigue, yielding control, and final liberation (Moksha)*) |
+
+#### The Causal Rationale (Why House 12 Signifies What It Signifies)
+The 12th House (*Vyaya Bhava*, house of loss, expense, and liberation) is the portion of the sky positioned directly above the eastern horizon. Just as the 8th House erodes the west, the 12th House **erodes the east**. Because the east represents the sunrise and the individual self, the 12th House operates as **the erosion of sunrise (invisibility)** and **the erosion of self (ego dissolution)**.
+
+Under *the erosion of sunrise*, daylight form dissolves into the **Invisible** (*abstract, unreal, spirit*)—the realm of dreams, sleep, the subconscious mind, and disembodied spirit. It governs the **Unknown** (*alien, foreign*)—foreign countries, alien cultures, and places far removed from your native culture. In the material ledger, it represents **Decline** (*expense, loss*)—expenses (*Vyaya*), financial outlays, and the natural dissipation of worldly holdings.
+
+Under *the erosion of self*, the demanding ego yields to **Humility** (*isolation*)—voluntary seclusion, spiritual ashrams, and restorative retreat from worldly clamor. Because individual control is minimized, one encounters **Enemies** (*detractors, critics*)—covert detractors, critics, and unseen entanglements. Ultimately, bodily energy softens into **Weakness** (*fatigue, giving up*)—fatigue, physical rest, and the final spiritual surrender that culminates in supreme liberation (*Moksha*).
+
+### 1.2 The Everyday Analogy
 **The 12th House is your cozy bed where you turn off the lights to fall into deep sleep, the silent mountain monastery far away from cell reception, and the international airport departures gate where you board a one-way flight across the ocean.**
 
 Imagine spending an entire glorious day exploring the world, earning wealth, and celebrating with friends (Houses 1 to 11). By late evening, your body is exhausted, your eyes are heavy, and you cannot handle another conversation, phone call, or business meeting. You kick off your shoes, retreat into a quiet, darkened room, lie down on a soft bed, pull up the blanket, and close your eyes. In that moment of surrender, all your bank accounts, titles, family arguments, and worldly ambitions completely vanish. You dissolve into peaceful, dreamless slumber.
 
 In astrology, the 12th House (*Vyaya Bhava*, the house of expenditure and liberation) is that sacred bedroom of the soul. While modern materialistic culture fears this house because it deals with "loss" and "expenses," classical Vedic wisdom recognizes the 12th House as the most sublime and liberating sector of the entire zodiac. It is the necessary letting go—the exhale without which you cannot take your next breath. It governs deep restorative sleep, silent spiritual meditation, charitable giving, foreign travels, and the final spiritual enlightenment (*Moksha*) where the ego dissolves back into pure consciousness.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 12th House is the universe's great recycling station—the systematic dismantling of temporary material attachments so consciousness can return to freedom.**
 
 In the celestial architecture of the sky, the 12th House sits directly above the eastern horizon. Just as the 8th house sits directly above the western horizon eroding the setting sun, the 12th House physically erodes the rising Ascendant. 
 
 This house marks Step 12 on the 12-stage lifecycle ladder: **Dissolution and Cosmic Reunion**. It governs what happens when a cycle finishes: expenditures (*Vyaya*), bodily erosion (*Kshaya*), hospital recovery, solitary retreat (*Bandhana*), and transcending the physical body. If you cling stubbornly to worldly control, the 12th House feels like painful loss, bankruptcy, or forced isolation. But if you practice voluntary surrender through meditation, charity, and detachment, the 12th House becomes an open doorway to boundless spiritual ecstasy.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit designations for the 12th House illuminate the profound processes of erosion, expenditure, bed comforts, and ultimate spiritual release.**
 
 * **Vyaya (Expenditure & Letting Go):** Derived from the prefix *vi* (apart, away) and the verbal root *i* (to go). *Vyaya* literally means "that which goes away," signifying spending, disbursement, loss of capital, and releasing attachments. In Sanskrit economics, you cannot purchase anything of value without *Vyaya*; it is the price paid for freedom.

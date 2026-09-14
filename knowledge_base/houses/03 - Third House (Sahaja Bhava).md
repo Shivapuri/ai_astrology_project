@@ -29,14 +29,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree third sign)"
   campanus_cusp: "Sensitive 3D spatial focus point beneath the western horizon"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 27 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 17–20)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Deep Underground on the Eastern Side (East-Below / Subterranean Self)"
+  solar_basis: "Feelings towards Self"
+  axis_1: "Motivators (Internal Drives)"
+  axis_2: "Expressors (Physical Execution)"
 ---
-
 # 🏛️ House 3: Sahaja Bhava (*The Third House / Courage & Enterprise*)
 
 > **Astrological Archetype:** The Forge of Courage and Self-Exertion—the kinetic willpower, adventurous curiosity, manual dexterity, and competitive grit through which the soul asserts its personal desire (*Kama*) upon the physical world.  
@@ -46,21 +51,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Deep Underground on the Eastern Side (East-Below / Subterranean Self)
+* **Solar Basis:** Combines deep subterranean internality (subconscious feelings and desires) with the eastern hemisphere of personal self and action.
+* **Foundational Dual Axes:** Motivators (Internal Drives) and Expressors (Physical Execution)
+
+#### 🖼️ The Visual Power Points Matrix (Feelings towards Self)
+| 🔥 motivators | 🛠️ expressors |
+| :--- | :--- |
+| **Decision** (*confidence, independence; choosing what you desire or reject; self-determination*) | **Strength** (*discipline; bodily stamina, muscular power, and disciplined willpower in action*) |
+| **Ambition** (*hunger, lust; the intense internal drive and yearning to attain objectives*) | **Skill** (*expertise; hands-on craftsmanship, artistic talent, and technical mastery*) |
+| **Self-Focus** (*self-worth, self-love; cultivating personal regard and instinctual self-preservation*) | **Contest** (*siblings, peers; competitive drive, rivalry, sparring partners, and peer testing*) |
+
+#### The Causal Rationale (Why House 3 Signifies What It Signifies)
+The 3rd House (*Sahaja Bhava*, house of siblings and courage) is situated deep underground, but remains on the eastern side of the heavens. Being deep underground means it governs the deep, private internal feelings of our psyche. Being on the eastern side means it focuses strictly on the individual self and physical action. Synthesizing these two yields the core root of the 3rd House: **Feelings towards Self**.
+
+This self-directed feeling divides into two streams: **motivators** (what drives you from within) and **expressors** (how you manifest that drive externally):
+1. Under *motivators*, the 3rd House rules **Decision** (*confidence, independence*)—the capacity to resolve what you want or reject, generating true autonomy. Next is **Ambition** (*hunger, lust*)—the raw passion and desire (*Kama*) to pursue goals. Third is **Self-Focus** (*self-worth, self-love*)—cultivating personal value and healthy self-preservation.
+2. Under *expressors*, internal resolve becomes reality through **Strength** (*discipline*)—bodily stamina, athletic vigor, and self-discipline—and **Skill** (*expertise*)—hands-on dexterity and craftsmanship. Finally, it brings **Contest** (*siblings, peers*)—the competitive arena where you test your strength and skill against brothers, sisters, and equal peers.
+
+### 1.2 The Everyday Analogy
 **The 3rd House is the training gym, the sparring ring, and the craftsman's workshop of your life.**
 
 Imagine having a strong body (1st House) and a refrigerator full of food with money in your bank account (2nd House), but you refuse to leave your living room. You never pick up a tool, you never learn to ride a bicycle, you never test your strength against an obstacle, and you back down in tears whenever someone disagrees with you. Without the courage to take risks, compete, and use your hands, all your potential remains completely dormant.
 
 In astrology, the 3rd House (*Sahaja Bhava*, the house of siblings and enterprise) represents your personal horsepower and fighting spirit. It is the grit that lets an athlete push through burning muscles, the daring of an entrepreneur launching a startup from their garage, and the playful rough-and-tumble between brothers on the living room rug that teaches a child how to handle conflict without falling apart emotionally.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 3rd House is the first awakening of personal desire (*Kama*)—the primal impulse to reach out, touch the world, explore, and shape reality through self-effort.**
 
 Once the infant is born (1st House) and fed by its family (2nd House), it learns to crawl, explore its immediate neighborhood, manipulate toys with its fingers, and test boundaries. 
 
 This house marks Step 3 on the 12-stage lifecycle ladder: **Exploration and Self-Assertion**. It transforms passive survival into active curiosity. It governs how you handle friction: Do you crumble when life gets difficult, or do you roll up your sleeves and find a solution? Because it is an *Upachaya* (growing) house, the skills, courage, and mental toughness governed by the 3rd House naturally improve and mature over time through repeated trial, error, and discipline.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit designations for the 3rd House reveal profound layers of brotherhood, endurance under friction, and heroic daring.**
 
 * **Sahaja (Born Together / Natural Born):** Formed from *saha* (together) and *ja* (born). It signifies those born alongside you—your siblings, brothers, sisters, and childhood peers. Psychologically, *sahaja* also means that which is innate, natural, and instinctual to your temperament.

@@ -33,14 +33,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree tenth sign)"
   campanus_cusp: "Sensitive 3D spatial focus point marking the exact astronomical Midheaven (Medium Coeli / MC)"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 34 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 32–33 & Tenth House Masterclass)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Midheaven / Zenith (Open Sky Overhead / Noon)"
+  solar_basis: "Open Sky"
+  axis_1: "Visibility (Public Sphere & Worldly Prominence)"
+  axis_2: "Wind (Action & Atmospheric Motion)"
 ---
-
 # 🏛️ House 10: Karma Bhava (*The Tenth House / Career & Public Status*)
 
 > **Astrological Archetype:** The Midday Zenith (*Vyoma*)—the highest visible point of the celestial vault, the executive authority of the king (*Rajya*), the mark you carve upon human civilization (*Karma*), and the enduring professional legacy of your life’s labor.  
@@ -50,21 +55,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Midheaven / Zenith (Open Sky Overhead / Noon)
+* **Solar Basis:** The peak of the sky where the Sun shines with maximum daylight exposure, directly visible to all creatures.
+* **Foundational Dual Axes:** Visibility (Public Sphere & Worldly Prominence) and Wind (Action & Atmospheric Motion)
+
+#### 🖼️ The Visual Power Points Matrix (Open Sky)
+| ☀️ visibility | 💨 wind |
+| :--- | :--- |
+| **Extroverse** (*male, public, society; public worldly life, masculine civic engagement, and societal visibility*) | **Action** (*purposeful labor, executive execution, and dynamic productive achievement (Karma)*) |
+| **Fame** (*status, career; worldly prominence, social rank, career prestige, and notoriety*) | **Movement** (*travel; physical transit, professional mobility, expeditions, and global travel*) |
+| **Influence** (*authority; leadership clout, executive power, governmental authority, and public impact*) | **Instability** (*dispersion, evaporation; atmospheric turbulence: aversion to static roots and rapid shifts*) |
+
+#### The Causal Rationale (Why House 10 Signifies What It Signifies)
+The 10th House (*Karma Bhava*, house of action and career) is the Midheaven—the zenith of the open sky directly above your head at midday. Because it is the highest, most exposed point of the heavens, its foundational qualities are **visibility** and **wind**.
+
+Under *visibility*, it rules the **Extroverse** (*male, public, society*)—the outward public arena of life and assertive civic engagement. Because everyone can see you at the top of the sky, it governs **Fame** (*status, career*)—your worldly status, public reputation, and professional career. And status naturally confers **Influence** (*authority*)—executive command, governmental leadership, and the power to direct others.
+
+Under *wind*, the high-altitude atmosphere is in constant, dynamic agitation. Hence, the 10th House rules **Action**—getting things done and building tangible results (*Karma*). It governs **Movement** (*travel*)—travelling across the world for your work. Because the wind never stays still, it also carries inherent **Instability** (*dispersion, evaporation*)—an aversion to static roots, requiring constant adjustment to maintain equilibrium at the top.
+
+### 1.2 The Everyday Analogy
 **The 10th House is the mountaintop summit, the corner executive office on the 50th floor, and the podium at a global press conference under blazing cameras.**
 
 Imagine a person who has trained diligently in private, developed brilliant ideas (5th House), and resolved their personal problems (6th House). At noon, they step out of their private home and climb to the very top of the public square. Every eye in the city is looking up at them. What they do next is broadcast to the entire world. They cannot hide behind excuses; they are judged strictly by the concrete results of their actions, their professional integrity, and how well they lead their community.
 
 In astrology, the 10th House (*Karma Bhava*, the house of worldly action and career) represents that highest midday summit. It sits at the very apex of the chart—the astronomical Midheaven (MC). While the bottom of the chart (4th House) is your private bedroom at midnight where you rest, the 10th House is high noon under the blazing sun. It is your career, your professional reputation, your public honors, your relationship with the government, and the tangible footprint you leave on human history.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 10th House is the individual soul fulfilling its cosmic responsibility to human society through tangible work and leadership.**
 
 In the cosmic journey of the soul (*Jiva*), personal spiritual realizations and private feelings are noble, but they remain incomplete until they are tested in the physical world. 
 
 This house marks Step 10 on the 12-stage lifecycle ladder: **Worldly Duty and Executive Culmination**. It is the supreme cardinal angle (*Kendra*) of the chart, governed by Vishnu, the cosmic sustainer who maintains cosmic order through tireless action. A person with a powerful 10th House cannot remain hidden; even if they try to live a quiet life, society repeatedly pulls them into leadership, placing responsibilities, titles, and public authority upon their shoulders.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit titles for the 10th House reveal a brilliant, step-by-step psychological progression from outward qualities to ultimate career legacy.**
 
 * **Vyoma (The High Midday Sky / Zenith):** Literally means the sky, the celestial vault, or the atmospheric apex. The 10th House is the exact astronomical Midheaven (*Medium Coeli* / MC)—the highest point the Sun reaches in its daily diurnal journey across the sky. Because it is the most exposed sector of the heavens, everything in the 10th House is completely visible to the public.

@@ -31,14 +31,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree second sign)"
   campanus_cusp: "Sensitive 3D spatial focus point beneath the eastern horizon"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 26 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 17–19)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Directly Below Eastern Horizon (East-Below / Supporting 1)"
+  solar_basis: "Supporting the Sunrise"
+  axis_1: "Pro-start (Supporting Foundations)"
+  axis_2: "Pro-visibility (Supporting Knowledge)"
 ---
-
 # 🏛️ House 2: Dhana Bhava (*The Second House / Sustenance & Wealth*)
 
 > **Astrological Archetype:** The Structural Bedrock of Survival—the accumulated reserves, nourishing food, domestic protectors (*Kutumba*), and vocal expression (*Vak*) that physically sustain and hold up the newly born individual.  
@@ -48,21 +53,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Directly Below Eastern Horizon (East-Below / Supporting 1)
+* **Solar Basis:** The subterranean sky immediately underneath the eastern horizon that physically holds up and sustains the sunrise.
+* **Foundational Dual Axes:** Pro-start (Supporting Foundations) and Pro-visibility (Supporting Knowledge)
+
+#### 🖼️ The Visual Power Points Matrix (Supporting the Sunrise)
+| 🌱 Pro-start | 🗣️ Pro-visibility |
+| :--- | :--- |
+| **Foundations** (*stability; solid groundwork and platform allowing new beginnings to stand*) | **Knowledge** (*speech, voice; illuminating reality and articulating truth through the voice*) |
+| **Family** (*supporters, friends; parents, ancestors, and caregivers who raise and hold you up*) | **Realism** (*practicality; pragmatic, grounded awareness seeing facts as they truly are*) |
+| **Wealth** (*health, nutrition; vital sustenance, wholesome food, shelter, and financial assets*) | — |
+
+#### The Causal Rationale (Why House 2 Signifies What It Signifies)
+The 2nd House (*Dhana Bhava*, house of wealth and resources) is the portion of the sky sitting directly beneath the eastern horizon. Because it sits right underneath the sunrise, its entire cosmic function is **supporting the sunrise**. Since the sunrise represents starting things and making things visible, the 2nd House is fundamentally **pro-starting** and **pro-visibility**.
+
+To be *pro-starting*, you need **Foundations** (*stability*)—solid structural groundwork so that whatever begins does not collapse. Your earliest human foundation is your **Family** (*supporters, friends*)—the parents and lineage who hold you up. To survive and grow, you need **Wealth** (*health, nutrition*)—which ancient astrology defines as direct sustenance: vital nutrition, wholesome food, shelter, and bodily wellness.
+
+To be *pro-visibility*, it governs **Knowledge** (*speech, voice*)—because knowledge brings hidden truths into the light, articulated through the mouth. Finally, it creates **Realism** (*practicality*)—a pragmatic, grounded mindset that deals with tangible facts rather than wishful fantasy.
+
+### 1.2 The Everyday Analogy
 **The 2nd House is the foundation under your house, the savings account in your bank, and the food stocked inside your kitchen pantry.**
 
 Imagine stepping out of your front door in the morning to conquer your day, but you have no money in your wallet, zero groceries in your refrigerator, and no safe home to return to at night. No matter how brilliant, confident, or ambitious your personality is (1st House), you cannot survive for more than a few days without food to eat, a roof over your head, and savings to cover basic emergency expenses.
 
 In astrology, the 2nd House sits physically beneath the eastern horizon, directly underneath the 1st House. Just as the concrete foundation beneath a skyscraper bears the entire structural weight of the building above it, the 2nd House is what holds you up in the physical world. It is the food on your plate, the savings in your vault, the early family that nurtured you, and the voice you use to state what you need.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 2nd House is the realm of "The Mine"—the material resources, personal boundaries, and survival buffers that keep consciousness embodied.**
 
 Once the soul (*Jiva*) takes birth in the 1st House, its immediate biological imperative is survival. A newborn infant cannot hunt, work, or defend itself; it is completely dependent upon external sustenance and a loving family to keep it alive. 
 
 This house marks Step 2 on the 12-stage lifecycle ladder: **Nourishment and Resource Building**. It dictates how you sustain your physical vessel. It establishes your psychological sense of safety: Do you believe the world is fundamentally abundant and supportive, or do you expect starvation, poverty, and abandonment? This early conditioning shapes your relationship with money, your core moral values, and how you feed yourself throughout adulthood.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit titles for the 2nd House illuminate the themes of protection, storage, family, and vocal vibration.**
 
 * **Dhana (Wealth & Capital):** Derived from the Sanskrit root *dha*, meaning "to place," "to establish," or "to hold." *Dhana* is not speculative income or windfall profit; it is foundational capital—the assets you own that provide firm standing in the world.

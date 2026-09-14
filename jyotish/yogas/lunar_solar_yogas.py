@@ -361,5 +361,150 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                 positive_factors=[f"Planets in 12th from Sun: {', '.join(planets_in_h12_s)}."],
                 breakers=[]
             ))
-            
+
+    # -------------------------------------------------------------
+    # 3. MAHABHAGYA YOGA (Supreme Fortune / Great Good Fortune)
+    # -------------------------------------------------------------
+    # Phaladeepika 6.10-11, BPHS 38.4-5
+    # Male: Day birth, Ascendant, Sun, Moon all in Odd (Male) signs
+    # Female: Night birth, Ascendant, Sun, Moon all in Even (Female) signs
+    d1 = chart.get("vargas", {}).get("D1", {})
+    lagna_sign = d1.get("lagna", {}).get("sign", "")
+    sun_sign = d1.get("grahas", {}).get("Sun", {}).get("sign", "")
+    moon_sign = d1.get("grahas", {}).get("Moon", {}).get("sign", "")
+    
+    ODD_SIGNS = {"Aries", "Gemini", "Leo", "Libra", "Sagittarius", "Aquarius"}
+    EVEN_SIGNS = {"Taurus", "Cancer", "Virgo", "Scorpio", "Capricorn", "Pisces"}
+    
+    is_day_birth = sun_house in (7, 8, 9, 10, 11, 12)
+    
+    is_male_mb = is_day_birth and (lagna_sign in ODD_SIGNS) and (sun_sign in ODD_SIGNS) and (moon_sign in ODD_SIGNS)
+    is_female_mb = (not is_day_birth) and (lagna_sign in EVEN_SIGNS) and (sun_sign in EVEN_SIGNS) and (moon_sign in EVEN_SIGNS)
+    
+    if is_male_mb:
+        detected.append(YogaInstance(
+            id="mahabhagya_yoga",
+            name="Mahābhāgya Yoga",
+            category=YogaCategory.SOLAR,
+            status=YogaStatus.PURE,
+            plausibility_score=92.0,
+            participating_planets=["Sun", "Moon"],
+            participating_houses=[sun_house, moon_house, 1],
+            scripture_ref="Phaladeepika 6.10-11, BPHS 38.4-5",
+            archetype="Supreme Good Fortune: Harmonious solar-lunar alignment in masculine signs under daylight, creating royal charisma and immense fortune.",
+            manifestation_effects=[
+                "Endows massive public renown, boundless fortune, generous disposition, and regal authority.",
+                "Grants robust vitality, long life, and spotless reputation; pleases the eyes of the public."
+            ],
+            positive_factors=[
+                f"Day birth with Ascendant ({lagna_sign}), Sun ({sun_sign}), and Moon ({moon_sign}) all in masculine (odd) signs."
+            ],
+            breakers=[]
+        ))
+    elif is_female_mb:
+        detected.append(YogaInstance(
+            id="mahabhagya_yoga",
+            name="Mahābhāgya Yoga",
+            category=YogaCategory.LUNAR,
+            status=YogaStatus.PURE,
+            plausibility_score=92.0,
+            participating_planets=["Sun", "Moon"],
+            participating_houses=[sun_house, moon_house, 1],
+            scripture_ref="Phaladeepika 6.10-11, BPHS 38.4-5",
+            archetype="Supreme Good Fortune: Harmonious lunar alignment in feminine signs during nighttime, creating graceful prosperity.",
+            manifestation_effects=[
+                "Endows profound virtue, high material prosperity, spotless character, and enduring good fortune.",
+                "Commands deep societal affection, domestic harmony, and longevity."
+            ],
+            positive_factors=[
+                f"Night birth with Ascendant ({lagna_sign}), Sun ({sun_sign}), and Moon ({moon_sign}) all in feminine (even) signs."
+            ],
+            breakers=[]
+        ))
+
+    # -------------------------------------------------------------
+    # 4. VARISHTHA, MADHYA, ADHAMA YOGAS (Solar-Lunar Angular Relationship)
+    # -------------------------------------------------------------
+    # Phaladeepika 6.14-15:
+    # Kendra (1, 4, 7, 10) from Sun -> Varishtha Yoga (Foremost / Superior)
+    # Panaphara (2, 5, 8, 11) from Sun -> Madhya Yoga (Moderate / Middling)
+    # Apoklima (3, 6, 9, 12) from Sun -> Adhama Yoga (Deficient / Interiorized)
+    SIGN_ORDER = {
+        "Aries": 1, "Taurus": 2, "Gemini": 3, "Cancer": 4,
+        "Leo": 5, "Virgo": 6, "Libra": 7, "Scorpio": 8,
+        "Sagittarius": 9, "Capricorn": 10, "Aquarius": 11, "Pisces": 12
+    }
+    s_idx = SIGN_ORDER.get(sun_sign, 0)
+    m_idx = SIGN_ORDER.get(moon_sign, 0)
+    
+    if s_idx > 0 and m_idx > 0:
+        moon_from_sun = ((m_idx - s_idx) % 12) + 1
+        
+        if moon_from_sun in (1, 4, 7, 10):
+            score = 85.0
+            pos = [f"Moon is in House/Sign {moon_from_sun} (Kendra) from Sun ({moon_sign} from {sun_sign})."]
+            breakers = []
+            if moon_from_sun == 7:
+                pos.append("Moon is 7th from Sun (Full Moon proximity / high Paksha Bala), conferring peak radiance and vitality.")
+                score += 5.0
+            detected.append(YogaInstance(
+                id="varishtha_yoga",
+                name="Variṣṭha Yoga",
+                category=YogaCategory.LUNAR,
+                status=YogaStatus.PURE,
+                plausibility_score=round(score, 1),
+                participating_planets=["Moon", "Sun"],
+                participating_houses=[moon_house, sun_house],
+                scripture_ref="Phaladeepika 6.14-15",
+                archetype="Foremost Angular Radiance: Moon in an angle (Kendra) from the Sun, magnifying wealth, reputation, and worldly influence.",
+                manifestation_effects=[
+                    "Abundant wealth, vehicles, fame, happiness, learning, and broad public stature.",
+                    "Significantly multiplies and accelerates the fruits of other positive yogas in the horoscope."
+                ],
+                positive_factors=pos,
+                breakers=breakers
+            ))
+        elif moon_from_sun in (2, 5, 8, 11):
+            detected.append(YogaInstance(
+                id="madhya_yoga",
+                name="Madhya Yoga",
+                category=YogaCategory.LUNAR,
+                status=YogaStatus.PURE,
+                plausibility_score=75.0,
+                participating_planets=["Moon", "Sun"],
+                participating_houses=[moon_house, sun_house],
+                scripture_ref="Phaladeepika 6.14-15",
+                archetype="Balanced Succedent Position: Moon in a Panaphara house from the Sun.",
+                manifestation_effects=[
+                    "Moderate wealth, steady fortune, and middling public recognition."
+                ],
+                positive_factors=[f"Moon is in House/Sign {moon_from_sun} (Panaphara) from Sun ({moon_sign} from {sun_sign})."],
+                breakers=[]
+            ))
+        elif moon_from_sun in (3, 6, 9, 12):
+            detected.append(YogaInstance(
+                id="adhama_yoga",
+                name="Adhama Yoga",
+                category=YogaCategory.LUNAR,
+                status=YogaStatus.STAINED,
+                plausibility_score=65.0,
+                participating_planets=["Moon", "Sun"],
+                participating_houses=[moon_house, sun_house],
+                scripture_ref="Phaladeepika 6.14-15",
+                archetype="Interiorized Cadent Position: Moon in an Apoklima house from the Sun, directing awareness away from external display.",
+                manifestation_effects=[
+                    "Meager material accumulation or disinterest in ostentatious wealth.",
+                    "Fosters inner contemplation, ascetic tendency, and quiet scholarship rather than flamboyant commercial display."
+                ],
+                positive_factors=[f"Moon is in House/Sign {moon_from_sun} (Apoklima) from Sun ({moon_sign} from {sun_sign})."],
+                breakers=[
+                    YogaBreakerDetail(
+                        factor="Cadent Separation from Sun",
+                        culprit_planet="Moon",
+                        description=f"Moon is cadent ({moon_from_sun}th) from Sun, reducing worldly drive and outward commercial pomp.",
+                        penalty=10.0
+                    )
+                ]
+            ))
+
     return detected

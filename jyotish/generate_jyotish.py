@@ -478,28 +478,58 @@ def generate_kala_chart(
             # Store what signs THIS planet aspects
             p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
                         
+            is_retrograde = p_data.get("is_retrograde", False)
+
             # Combustion (Physical phenomenon, so calculated strictly from D1 physical longitudes)
-            # Uses Parashari/Surya Siddhanta specific degree orbs for each planet.
+            # Uses Surya Siddhanta / Varaha Mihira specific degree orbs for each planet,
+            # in full alignment with "The Art and Science of Vedic Astrology" and Kala software parameters.
             is_combust = False
+            sun_dist = None
+            comb_orb = None
+            comb_severity = None
+            comb_range = None
             if p_name not in ["Sun", "Rahu", "Ketu"]:
                 sun_lon = d1_longitudes["Sun"]
                 p_lon_d1 = d1_longitudes[p_name]
                 dist = min((sun_lon - p_lon_d1) % 360, (p_lon_d1 - sun_lon) % 360)
+                sun_dist = round(dist, 4)
                 
-                combustion_orbs = {
-                    "Moon": 12.0,
-                    "Mars": 17.0,
-                    "Mercury": 14.0,
-                    "Jupiter": 11.0,
-                    "Venus": 10.0,
-                    "Saturn": 15.0
+                # Classical Surya Siddhanta orbs (with retrograde contraction per scripture)
+                if p_name == "Mercury":
+                    orb = 12.0 if is_retrograde else 14.0
+                elif p_name == "Venus":
+                    orb = 8.0 if is_retrograde else 10.0
+                elif p_name == "Moon":
+                    orb = 12.0
+                elif p_name == "Mars":
+                    orb = 17.0
+                elif p_name == "Jupiter":
+                    orb = 11.0
+                elif p_name == "Saturn":
+                    orb = 15.0
+                else:
+                    orb = 8.0
+                
+                comb_ranges = {
+                    "Moon": "12° - 15°",
+                    "Mars": "8° - 17°",
+                    "Mercury": "2° - 14°",
+                    "Jupiter": "8° - 11°",
+                    "Venus": "4° - 10°",
+                    "Saturn": "8° - 15°"
                 }
-                orb = combustion_orbs.get(p_name, 8.0)
+                comb_range = comb_ranges.get(p_name, f"{orb}°")
+                comb_orb = orb
                 is_combust = dist < orb
+                if is_combust:
+                    comb_severity = "Deep (< 3°)" if dist < 3.0 else "Moderate"
             
             p_data["is_combust"] = is_combust
+            p_data["sun_distance"] = sun_dist
+            p_data["combustion_orb"] = comb_orb
+            p_data["combustion_severity"] = comb_severity
+            p_data["combustion_range"] = comb_range
                 
-            is_retrograde = p_data.get("is_retrograde", False)
             malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
             is_conjunct_malefic = any(cp in malefics for cp in conjunct_planets)
             
@@ -509,6 +539,12 @@ def generate_kala_chart(
             lagna_idx = ZODIAC_SIGNS.index(lagna_sign)
             p_idx = ZODIAC_SIGNS.index(p_data["sign"])
             house_num = (p_idx - lagna_idx) % 12 + 1
+            
+            p_data["ruled_houses"] = [
+                (s_idx - lagna_idx) % 12 + 1
+                for s_idx, s_name in enumerate(ZODIAC_SIGNS)
+                if rel.SIGN_LORDS.get(s_name) == p_name
+            ]
             
             # Natural friends/enemies
             if p_name in ["Rahu", "Ketu"]:

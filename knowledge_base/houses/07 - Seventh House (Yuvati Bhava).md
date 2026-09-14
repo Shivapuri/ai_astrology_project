@@ -29,14 +29,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree seventh sign)"
   campanus_cusp: "Sensitive 3D spatial focus point marking the exact western horizon Descendant"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 31 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 27–28)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Western Horizon (West / Sunset)"
+  solar_basis: "Sunset"
+  axis_1: "Disappearance (Endings & Dispersion)"
+  axis_2: "Others (Partnership & Exchange)"
 ---
-
 # 🏛️ House 7: Yuvati Bhava (*The Seventh House / Partnership & Marriage*)
 
 > **Astrological Archetype:** The Western Sunset Horizon—the sacred mirror of the self (*Dvara*), the legal and spiritual covenant of marriage (*Kalatra*), the destination of worldly travel (*Asta*), and the diplomatic art of one-on-one negotiation.  
@@ -46,21 +51,47 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Western Horizon (West / Sunset)
+* **Solar Basis:** Where the Sun crosses below the horizon, marking departure, the completion of daytime, and the direct encounter with the non-self.
+* **Foundational Dual Axes:** Disappearance (Endings & Dispersion) and Others (Partnership & Exchange)
+
+#### 🖼️ The Visual Power Points Matrix (Sunset)
+| 🌅 Dis.appr. | 🤝 Others |
+| :--- | :--- |
+| **Endings** (*death; conclusions of major lifecycle chapters, separations, and physical departure*) | **Partners** (*marriage; formal committed one-on-one unions: spouse, intimate ally, and partner*) |
+| **Dispersion** (*travel; movement toward foreign destinations, displacement, and long journeys away*) | **Intercourse** (*cooperation; harmonious mutual rapport, cooperation, and intimate physical union*) |
+| — | **Exchange** (*commerce; contracts, commercial transactions, trade agreements, and negotiations*) |
+
+> 💡 **Observation:** *Important dynamic: But a planet here probably aspects the ascendant! When a planet occupies the 7th House, it gazes directly across the sky at the 1st House (Ascendant), frequently elevating public prominence and visibility rather than causing disappearance.*
+
+#### The Causal Rationale (Why House 7 Signifies What It Signifies)
+The 7th House (*Yuvati Bhava / Kalatra Bhava*, house of spouse and partnership) surrounds the western horizon, where the Sun sets. Sunset is the foundation of all 7th-house symbolism, embodying two great cosmic principles: **disappearance** and the **non-self (others)**.
+
+Under *disappearance*, the setting Sun signifies **Endings** (*death*)—the natural conclusion of cycles and the ultimate departure from physical incarnation. It also governs **Dispersion** (*travel*)—long-distance journeys, travel away from your home origin, and foreign relocation.
+
+Under *the non-self*, the setting of the self's Sun allows the other person to emerge. Hence, this is the paramount house of **Partners** (*marriage*)—marriage, spouses, and committed companions. It rules **Intercourse** (*cooperation*)—cooperative attunement, rapport, and intimate physical union. In worldly life, partner-attunement becomes **Exchange** (*commerce*)—business partnerships, trade deals, and commercial negotiation.
+
+*(Important Chart Dynamic: While the 7th House fundamentally represents sunset, any planet occupying the 7th House casts a full 7th-house aspect directly onto the 1st House (Ascendant), which often makes that planet's traits exceptionally visible and prominent in the personality.)*
+
+### 1.2 The Everyday Analogy
 **The 7th House is a clean, full-length mirror, a signed business contract, and the front door where you step out to meet another human being eye-to-eye.**
 
 Imagine standing alone in a vast room. You can look down at your hands, check your pockets, and admire your own strength all day (1st House). But you have zero idea what your face looks like, how your voice actually sounds to others, or how gentle or abrasive your presence is until another person walks through the door, stands opposite you, and reacts to you. 
 
 In astrology, the 7th House (*Yuvati Bhava*, the house of the partner) is that exact opposite point in the sky. Sitting precisely 180 degrees away from the rising Ascendant, the 7th House represents everyone who is "Not-You." It is your marriage spouse, your business partner, your contractual counterpart, and your open legal adversary. It is the inescapable cosmic mirror where you are forced to see your own unconscious projections reflected back in the eyes of another person.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 7th House is the dissolution of pure self-absorption—the evolutionary shift from "I" to "We."**
 
 In the celestial geometry of the heavens, the 1st House represents sunrise (*Udaya*), where heavenly bodies emerge into physical embodiment. The 7th House marks sunset (*Asta*), where heavenly bodies descend beneath the horizon, conclude their journey, and disappear from the sky. 
 
 This house marks Step 7 on the 12-stage lifecycle ladder: **Relational Union and Reciprocity**. It is the primary angular house of the air (*Vayu*) element, governing tactile connection, sexual attraction, compromise, and mutual respect. While an individual can conquer early challenges through sheer personal willpower (Houses 1 to 6), no human being can achieve complete worldly maturity without learning how to negotiate, share power, and honor sacred vows with a partner.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit titles for the 7th House emphasize sunset, destination, marital equality, and the front door of social life.**
 
 * **Asta (Sunset & The Final Destination):** Derived from the root *as*, meaning "to throw down," "to set," or "to disappear." *Asta* is the western horizon where planets conclude their daylight journey. Consequently, the 7th House signifies the destination of all journeys, the dematerialization of temporary efforts, and the ultimate completion of worldly endeavors.

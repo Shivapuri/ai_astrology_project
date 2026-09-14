@@ -29,14 +29,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree ninth sign)"
   campanus_cusp: "Sensitive 3D spatial focus point ascending toward the Midheaven zenith"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 33 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 27–31)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Upper Western Sky (Daylight Sky Above West / Action for Others)"
+  solar_basis: "Above (action) West (others)"
+  axis_1: "Values (Moral & Spiritual Framework)"
+  axis_2: "Integrity (Righteous Action & Fortune)"
 ---
-
 # 🏛️ House 9: Dharma Bhava (*The Ninth House / Higher Wisdom & Fortune*)
 
 > **Astrological Archetype:** The Mountaintop Sanctuary—the supreme reservoir of unearned cosmic fortune (*Bhagya*), the moral guidance of the living teacher (*Acharya*), the biological and spiritual father (*Pitri*), and the devotion to higher truth (*Dharma*).  
@@ -46,21 +51,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Upper Western Sky (Daylight Sky Above West / Action for Others)
+* **Solar Basis:** Combines the elevated daytime heavens (outward action, visibility) with the western hemisphere (orientation toward others and the universe).
+* **Foundational Dual Axes:** Values (Moral & Spiritual Framework) and Integrity (Righteous Action & Fortune)
+
+#### 🖼️ The Visual Power Points Matrix (Above (action) West (others))
+| 📜 values | ⚖️ integrity |
+| :--- | :--- |
+| **Philosophy** (*religion, ethics, morals; metaphysical worldviews, religious faith, and universal moral codes*) | **Good Deeds** (*responsibility, generosity; righteous action (Dharma), charity, and selfless civic duty*) |
+| **Education** (*source of above; higher learning, advanced academia, sacred scripture, and wisdom study*) | **Good Results** (*prosperity, fortune; karmic dividends: auspicious fortune (Bhagya), luck, and prosperity*) |
+| **Educators** (*teachers, elders, guides; gurus, spiritual teachers, university professors, and wise mentors*) | — |
+
+#### The Causal Rationale (Why House 9 Signifies What It Signifies)
+The 9th House (*Dharma Bhava / Bhagya Bhava*, house of purpose, grace, and fortune) is the elevated daytime quadrant above the west. Being high above the horizon means it governs dynamic worldly **action** and daylight visibility. Being on the western side means that action is dedicated outward toward **others** and the greater cosmic order. This sacred combination establishes the realm of **values** and **integrity**.
+
+Under *values*, the 9th House is the temple of **Philosophy** (*religion, ethics, morals*)—our spiritual outlook and ethical compass. Philosophy is nurtured through **Education** (*source of above*)—higher university studies, scripture, and deep wisdom. And wisdom is transmitted by **Educators** (*teachers, elders, guides*)—gurus, wise elders, fathers, and spiritual teachers.
+
+Under *integrity*, internal philosophy translates into action through **Good Deeds** (*responsibility, generosity*)—honorable conduct, generous charity, and living strictly in accordance with righteousness (*Dharma*). Because the universe operates on ethical reciprocity, good deeds inevitably produce **Good Results** (*prosperity, fortune*)—divine grace, extraordinary luck (*Bhagya*), and natural prosperity.
+
+### 1.2 The Everyday Analogy
 **The 9th House is the magnetic compass needle pointing toward True North, the high mountain university, and the protective hand of a loving father guiding your bicycle.**
 
 Imagine setting sail on a vast, dark ocean. You have a sturdy ship (1st House), a crew you trust (7th House), and an engine that works. But if you have no compass, no star charts, and no lighthouse to guide you, you will drift aimlessly until you crash against unseen rocks. Conversely, picture a traveler who possesses an accurate compass and a trusted captain: even when violent storms rage, they navigate the waves with calm confidence because they know exactly which direction leads home.
 
 In astrology, the 9th House (*Dharma Bhava*, the house of higher truth and fortune) is that cosmic compass. While the lower houses deal with daily survival, money, and personal ego, the 9th House connects you to the higher laws of the universe. It is the wisdom passed down by your father, the spiritual teacher who shows you how to live with honor, the sacred books that answer life’s deepest questions, and that uncanny "good luck" where the universe mysteriously steps in to protect you at the exact moment all hope seemed lost.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 9th House is the soul's surrender to higher cosmic law—the discovery that living in harmony with universal truth creates effortless grace.**
 
 In the journey of the soul (*Jiva*), humans spend immense energy struggling to get what they want through brute force (Houses 3 and 6). But in the 9th House, an individual awakens to a profound realization: you do not need to fight the universe when you are aligned with it. 
 
 This house marks Step 9 on the 12-stage lifecycle ladder: **Philosophical Awakening and Grace**. It sits high above the western horizon, ascending toward the midday zenith. It dictates your worldview: Do you believe life is a meaningless, cruel accident, or do you trust that existence is governed by divine intelligence and justice? A strong 9th House acts like an invisible celestial safety net: no matter what trials you face, doors open, wise mentors appear, and fortune (*Bhagya*) consistently rescues you.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit designations for the 9th House highlight living role models, virtuous sacrifices, ancestry, and past-life merit.**
 
 * **Dharma (Cosmic Law & Righteous Living):** Derived from the verbal root *dhri*, meaning "to uphold," "to sustain," or "to bear." *Dharma* is that which holds the cosmos together—the moral, ethical, and spiritual principles that prevent human society from degenerating into savagery. Living your *Dharma* means being authentic to your innate, God-given nature (*Swarupa*).

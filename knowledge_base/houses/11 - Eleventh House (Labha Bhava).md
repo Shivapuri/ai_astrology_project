@@ -27,14 +27,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree eleventh sign)"
   campanus_cusp: "Sensitive 3D spatial focus point descending from the Midheaven toward the eastern horizon"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 35 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 34–35 & Eleventh House Masterclass)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Upper Eastern Sky (Above East / Society Flows to Self)"
+  solar_basis: "Upper East: Benefits of Society"
+  axis_1: "Social (Community, Networking & Commercial Gain)"
+  axis_2: "Cultural (Arts, Talent & Shared Pleasure)"
 ---
-
 # 🏛️ House 11: Labha Bhava (*The Eleventh House / Gains & Fulfillment*)
 
 > **Astrological Archetype:** The Horn of Cosmic Plenty—the supreme harvest of professional career (*Labha*), the incoming tide of desirable luxuries (*Agamana*), the expansive circle of loyal allies (*Mitra*), and the total fulfillment of your greatest life aspirations.  
@@ -44,21 +49,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Upper Eastern Sky (Above East / Society Flows to Self)
+* **Solar Basis:** The overhead eastern quadrant where the vast resources and networks of public society flow down to benefit the individual self.
+* **Foundational Dual Axes:** Social (Community, Networking & Commercial Gain) and Cultural (Arts, Talent & Shared Pleasure)
+
+#### 🖼️ The Visual Power Points Matrix (Upper East: Benefits of Society)
+| 🌐 social | 🎭 cultural |
+| :--- | :--- |
+| **Community** (*contacts, networks; broad social networks, professional circles, clubs, and large assemblies*) | **Arts** (*entertainment; cultural recreation: concerts, celebrations, theater, and artistic entertainment*) |
+| **Socializing** (*friendship; camaraderie, group rapport, friendships, and harmonious peer alliances*) | **Talent** (*refinement; sophisticated abilities, cultural connoisseurship, and specialized prowess*) |
+| **Exchanging** (*gaining, profiting; commercial gain, recurring revenues, business profits, and financial rewards*) | **Enjoyment** (*pleasure; celebration, fulfilling personal desires, delight, and social happiness*) |
+
+#### The Causal Rationale (Why House 11 Signifies What It Signifies)
+The 11th House (*Labha Bhava*, house of gains and realization) is the quadrant of the sky positioned above the eastern horizon. Because it is above the horizon, it belongs to the public world; because it sits on the eastern side, its energy flows directly back into the self. Thus, the 11th House represents **the benefits that civilized society bestows upon the individual self**.
+
+These societal benefits divide into **social** rewards and **cultural** refinements:
+1. On the *social* side, civilization provides **Community** (*contacts, networks*)—broad networking opportunities, clubs, and vast organizations. Within these networks, we engage in **Socializing** (*friendship*)—making loyal friends and enjoying peer camaraderie. Furthermore, society enables **Exchanging** (*gaining, profiting*)—lucrative business transactions, financial profits, liquid revenues (*Labha*), and the realization of ambitious goals.
+2. On the *cultural* side, human society enriches us through the **Arts** (*entertainment*)—celebratory festivals, concerts, and theatrical entertainment. It cultivates **Talent** (*refinement*)—refined intellectual or artistic expertise that makes an individual admired within the community. Finally, it provides **Enjoyment** (*pleasure*)—the simple human joy of sharing laughter, festivities, and the sweet fruits of successful collective labor.
+
+### 1.2 The Everyday Analogy
 **The 11th House is the autumn harvest festival, the grand celebration banquet with all your friends, and the incoming flood of profits after your company’s public launch.**
 
 Imagine working for twenty years in an executive career (10th House). You poured your blood, sweat, and tears into building a groundbreaking enterprise. Finally, the day arrives: your product hits the global market, and the cash registers start ringing non-stop. Tens of thousands of loyal customers join your community, influential friends invite you to celebrate in a luxury villa overlooking the ocean, and every single goal you wrote in your private journal a decade ago is checked off as accomplished.
 
 In astrology, the 11th House (*Labha Bhava*, the house of gains and profit) represents that celebratory banquet. Sitting directly after the 10th House of career, the 11th House is the answer to the ultimate question: *"What do you actually GET from all your hard work?"* While the 2nd House represents the money you keep tucked away in your personal bank vault, the 11th House is the flowing river of revenue, your wide network of powerful friends, your eldest siblings who guide you, and the sheer joy of watching your biggest dreams come true.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 11th House is the expansion of personal achievement into collective abundance—the realization that true worldly success is shared with a community.**
 
 In the journey of human desire (*Kama*), an individual begins with childish, selfish desires (3rd House) and matures into committed partnership (7th House). 
 
 This house marks Step 11 on the 12-stage lifecycle ladder: **Collective Fruition and Abundance**. It sits high in the upper eastern sky—above the horizon, basking in clear sunlight. The 11th House governs your relationship with the collective tribe: your clubs, professional associations, social movements, and lifelong friendships. It proves that no human being becomes wealthy in isolation; our greatest fortunes flow through the goodwill, trust, and patronage of the community.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit titles for the 11th House emphasize incoming profit, desirable quality luxuries, accomplishment, and elder companionship.**
 
 * **Labha & Aya (Profit, Gains & Cash Inflows):** *Labha* literally means gain, profit, or acquisition. *Aya* denotes regular income, revenue streams, and financial returns on investment. While the 2nd House is stored capital, the 11th House is recurring cash flow.

@@ -83,15 +83,7 @@ async def main():
                 await c3.screenshot(path="screenshot_bhava_inspector.png")
                 print("Captured screenshot_bhava_inspector.png")
 
-            # 8. 16-Varga Lajjitadi Net Modifiers Widget
-            await page.evaluate("assignWidget('varga-lajjitadi-modifiers', document.getElementById('c2'))")
-            await page.wait_for_timeout(600)
-            c2 = page.locator("#c2")
-            if await c2.count() > 0:
-                await c2.screenshot(path="screenshot_varga_lajjitadi.png")
-                print("Captured screenshot_varga_lajjitadi.png")
-
-            # 9. Rāśi Dṛṣṭi (Jaimini Sign Aspects) Widget
+            # 8. Rāśi Dṛṣṭi (Jaimini Sign Aspects) Widget
             await page.evaluate("assignWidget('rashi-drishti', document.getElementById('c1'))")
             await page.wait_for_timeout(600)
             c1 = page.locator("#c1")

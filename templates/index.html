@@ -1310,25 +1310,6 @@
             white-space: nowrap;
         }
 
-        /* Varga Lajjitadi Net Modifiers Table */
-        .varga-lajjitadi-table th {
-            background: #eee5d3;
-            color: #4a3325;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 8px;
-            border: 1px solid #dcb594;
-            white-space: nowrap;
-        }
-        .varga-lajjitadi-table td {
-            padding: 4px 6px;
-            font-size: 11px;
-            border: 1px solid #e5dccb;
-            white-space: nowrap;
-        }
-        .varga-lajjitadi-table tr:hover td {
-            background: #f7eedd;
-        }
 
         /* Classical Yogas Table */
         .classical-yogas-table th {
@@ -2723,7 +2704,6 @@
                         <div class="kala-item" onclick="assignKalaWidget('aspects-planets')">• Aspects - Planetary</div>
                         <div class="kala-item" onclick="assignKalaWidget('rashi-drishti')">• Rāśi Dṛṣṭi (Sign Aspects)</div>
                         <div class="kala-item" onclick="assignKalaWidget('sign-attributes')">• Sign Attributes & Anatomy</div>
-                        <div class="kala-item" onclick="assignKalaWidget('varga-lajjitadi-modifiers')">• Varga Lajjitadi Net Modifiers</div>
                         <div class="kala-item" onclick="assignKalaWidget('nakshatras')">• Nakshatras & Speed</div>
                         <div class="kala-item" onclick="assignKalaWidget('info')">• Context & Technical Info</div>
                     </div>
@@ -2837,7 +2817,6 @@
         <div class="menu-item" onclick="assignWidget('rashi-drishti')">Rāśi Dṛṣṭi (Sign Aspects)</div>
         <div class="menu-item" onclick="assignWidget('sign-attributes')">Sign Attributes & Anatomy</div>
         <div class="menu-item" onclick="assignWidget('quant-matrices')">⚖️ Lajjitādi Avasthā Calculation (Strength Matrix)</div>
-        <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <div class="menu-item" onclick="assignWidget('yoga-judgment')">⚖️ Yoga Judgment (Ishta/Kashta)</div>
         <div class="menu-item" onclick="assignWidget('classical-yogas')" style="font-weight:bold; color:#b45309; background:#fffdf5;">👑 Classical Yogas & Breakers ★</div>
@@ -3897,32 +3876,6 @@
         </div>
     </template>
 
-    <template id="tmpl-varga-lajjitadi-modifiers">
-        <div class="widget-content" id="widget-varga-lajjitadi" style="display: flex; flex-direction: column; height: 100%;">
-            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Varga Lajjitadi Net Modifiers</span>
-                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">16 Vargas</span>
-                </div>
-                <button type="button" class="btn-widget-maximize" title="Maximize Table" onclick="maximizeTableFromWidget(this)">⛶</button>
-            </div>
-            <div class="responsive-table-container" style="padding: 4px; flex: 1; overflow: auto;">
-                <div class="scale-wrapper">
-                    <table class="varga-lajjitadi-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
-                        <thead>
-                            <tr>
-                                <th>Varga</th>
-                                <th>Sun</th><th>Moon</th><th>Mars</th><th>Mercury</th>
-                                <th>Jupiter</th><th>Venus</th><th>Saturn</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </template>
-
     <template id="tmpl-rashi-drishti">
         <div class="widget-content" id="widget-rashi-drishti" style="display: flex; flex-direction: column; height: 100%;">
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
@@ -4205,9 +4158,6 @@
                 }
                 if (typeof syncAllSteppersUI === 'function') syncAllSteppersUI();
             } 
-            else if (widgetType === 'varga-lajjitadi-modifiers') {
-                updateVargaLajjitadiWidget(cell);
-            }
             else if (widgetType === 'rashi-drishti') {
                 updateRashiDrishtiWidget(cell);
             }
@@ -5377,7 +5327,28 @@
                     statusBadges += ` <span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${rTip}">[R]</span>`;
                 }
                 if (isCombust) {
-                    const cTip = `<strong>Combust [C] (Asta)</strong><br>• <strong>Solar Proximity:</strong> Located within the blinding orb of the Sun.<br>• <strong>Psychological Meaning:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
+                    const sunDist = (gData.sun_distance !== undefined && gData.sun_distance !== null) ? Number(gData.sun_distance) : null;
+                    const combOrb = (gData.combustion_orb !== undefined && gData.combustion_orb !== null) ? Number(gData.combustion_orb) : null;
+                    const combRange = gData.combustion_range || (combOrb ? `${combOrb}°` : '--');
+                    const sevNote = (sunDist !== null && sunDist < 3.0) 
+                        ? '<strong>Deep Combustion (&lt; 3°):</strong> Severe. Planetary rays are incinerated; outer tangible expression is burned away.' 
+                        : '<strong>Moderate Combustion:</strong> Within solar orb. Outward worldly visibility is obscured by the Sun.';
+                    
+                    const fnRoleLocal = gData.functional_role || (currentChartData.karakas && currentChartData.karakas.functional && currentChartData.karakas.functional[graha]) || null;
+                    const rHousesLocal = (fnRoleLocal && fnRoleLocal.ruled_houses) || gData.ruled_houses || [];
+                    const rHousesText = rHousesLocal.length > 0 ? `Rules House ${rHousesLocal.join(' &amp; House ')}` : '';
+                    
+                    const dDeg = sunDist !== null ? Math.floor(sunDist) : 0;
+                    const dMin = sunDist !== null ? Math.round((sunDist - dDeg) * 60) : 0;
+                    const sunDistFormatted = sunDist !== null ? `${dDeg}° ${dMin.toString().padStart(2, '0')}' (${sunDist.toFixed(2)}°)` : '--';
+                    
+                    const cTip = `<strong>Combust [C] (Astangata / Asta)</strong><br>` +
+                        `• <strong>Distance to Sun:</strong> ${sunDistFormatted}<br>` +
+                        `• <strong>Combustion Orbit:</strong> ${combOrb !== null ? combOrb.toFixed(1) + '°' : '--'} threshold (Surya Siddhanta / Kala baseline)<br>` +
+                        `• <strong>Art &amp; Science Range:</strong> ${combRange} (Fish &amp; Kurczak: typical combustion window)<br>` +
+                        `• <strong>Severity:</strong> ${sevNote}<br>` +
+                        (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (Combust planets mainly weaken or harm the houses they rule)<br>` : '') +
+                        `• <strong>Core Teaching:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
                     statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
                 }
 
@@ -6014,18 +5985,79 @@
                 const isRetro = !!gD1.is_retrograde;
                 const isCombust = !!gD1.is_combust;
 
-                // Status Badge
+                // Status Badge & Rich Combustion / Motion Tooltip
                 let statusHtml = '<span style="color:#64748b;">Direct</span>';
-                let statusDesc = 'Direct (normal forward movement)';
-                if (isRetro && isCombust) {
+                let statusDesc = '<strong>Status: Direct Motion</strong><br>• Normal forward planetary progression along the zodiac.';
+
+                const sunDist = (gD1.sun_distance !== undefined && gD1.sun_distance !== null) ? Number(gD1.sun_distance) : null;
+                const combOrb = (gD1.combustion_orb !== undefined && gD1.combustion_orb !== null) ? Number(gD1.combustion_orb) : null;
+                const combRange = gD1.combustion_range || (combOrb ? `${combOrb}°` : '--');
+                const dDeg = sunDist !== null ? Math.floor(sunDist) : 0;
+                const dMin = sunDist !== null ? Math.round((sunDist - dDeg) * 60) : 0;
+                const sunDistFormatted = sunDist !== null ? `${dDeg}° ${dMin.toString().padStart(2, '0')}' (${sunDist.toFixed(2)}°)` : '--';
+
+                const fnRole = gD1.functional_role || (currentChartData.karakas && currentChartData.karakas.functional && currentChartData.karakas.functional[graha]) || null;
+                const rHouses = (fnRole && fnRole.ruled_houses) || gD1.ruled_houses || [];
+                const houseCombustDict = {
+                    1: "H1 (Tanū): Weakens physical constitution, vitality, and personal stamina.",
+                    2: "H2 (Dhana): Weaker family ties, resource friction, and strained speech.",
+                    3: "H3 (Sahaja): Challenges for younger siblings; friction in courage and self-effort.",
+                    4: "H4 (Sukha): Causes emotional distress, mother to suffer, or domestic unrest.",
+                    5: "H5 (Putra): Trouble or delays with children; creative and intellectual strain.",
+                    6: "H6 (Ari): Friction with subordinates/employees; weakened vitality and disease resistance.",
+                    7: "H7 (Yuvati): Problems in marriage and intimate partnerships; ego friction.",
+                    8: "H8 (Randhra): Strains longevity and vitality; chronic stressors and joint financial strain.",
+                    9: "H9 (Bhāgya): Harmful or difficult for father, spiritual mentors (Gurus), or higher dharma.",
+                    10: "H10 (Karma): Strained relations with bosses or authority figures; public status hurdles.",
+                    11: "H11 (Lābha): Difficult for elder siblings; friction in achieving public titles or major gains.",
+                    12: "H12 (Vyaya): Feelings of loss, solitude, retreat, or difficulty managing expenses."
+                };
+                let houseImpactLines = '';
+                if (rHouses.length > 0) {
+                    houseImpactLines = rHouses.map(h => houseCombustDict[h] ? `• <strong>${houseCombustDict[h]}</strong>` : `• <strong>House ${h} Lord:</strong> Domain requires ego sacrifice.`).join('<br>');
+                }
+
+                let combustSection = '';
+                if (isCombust && sunDist !== null) {
+                    const sevNote = (sunDist < 3.0) 
+                        ? '<strong>Deep Combustion (&lt; 3°):</strong> Severe. Planetary rays are incinerated; outer tangible expression is burned away.' 
+                        : '<strong>Moderate Combustion:</strong> Within solar orb. Worldly visibility is obscured by the Sun.';
+                    
+                    combustSection = `<strong>Status: Combust [C] (Astangata / Asta)</strong><br>` +
+                        `• <strong>Distance to Sun:</strong> ${sunDistFormatted} separation from Sun<br>` +
+                        `• <strong>Combustion Orbit:</strong> Within ${combOrb !== null ? combOrb.toFixed(1) + '°' : '--'} threshold (Surya Siddhanta baseline${isRetro ? ', contracted for Retrograde' : ''})<br>` +
+                        `• <strong>Art &amp; Science Range:</strong> ${combRange} (Fish &amp; Kurczak: typical combustion window)<br>` +
+                        `• <strong>Combustion State:</strong> ${sevNote}<br>` +
+                        (houseImpactLines ? `• <strong>Affected Ruled Houses (Art &amp; Science):</strong><br>${houseImpactLines}<br>` : '') +
+                        `• <strong>Core Principle:</strong> Combust planets mainly weaken or harm the houses they rule (particularly relationships and health/vitality), while outer ego pride is surrendered for inward spiritual depth.`;
+                }
+
+                let retroSection = '';
+                if (isRetro) {
+                    retroSection = `<strong>Retrograde [R] (Vakra Motion)</strong><br>` +
+                        `• <strong>Motional Power:</strong> Apparent backward movement places ${graha} closest to Earth (high Cheṣṭa Bala).<br>` +
+                        `• <strong>Psychological Meaning:</strong> Deeply introspective, non-linear, and unconventional; challenges standard norms and re-evaluates its significations.`;
+                }
+
+                if (graha === "Sun") {
+                    statusHtml = '<span style="color:#64748b;">Direct</span>';
+                    statusDesc = `<strong>Status: Direct Motion (Sun)</strong><br>• The Sun is the self-luminous King and soul of the solar system; cannot be combust.<br>• Moves in continuous direct motion across the ecliptic.`;
+                } else if (graha === "Rahu" || graha === "Ketu") {
+                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span>';
+                    statusDesc = `<strong>Status: Retrograde [R] (Shadow Node)</strong><br>• ${graha} is a mathematical intersection point of orbital planes (chaya graha); always retrograde.<br>• Immune to combustion because it has no physical body or light to be burned.`;
+                } else if (isRetro && isCombust) {
                     statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span> <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Cb [C]</span>';
-                    statusDesc = 'Retrograde [R] (moves backward, high motional strength) and Combust [C] (close to Sun, outward expression absorbed inward)';
+                    statusDesc = `${combustSection}<br><br>${retroSection}`;
                 } else if (isRetro) {
                     statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span>';
-                    statusDesc = 'Retrograde [R] (orbit closest to Earth, moving backward against zodiac, high motional strength and persistent focus)';
+                    const proxNote = (sunDist !== null && combOrb !== null) ? `<br>• <strong>Solar Separation:</strong> ${sunDistFormatted} — Safe outside combustion orb (${combOrb.toFixed(1)}°)` : '';
+                    statusDesc = `<strong>Status:</strong> ${retroSection}${proxNote}`;
                 } else if (isCombust) {
                     statusHtml = '<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Combust [C]</span>';
-                    statusDesc = 'Combust [C] (close conjunction with Sun; the soul absorbs outward worldly expression into inward spiritual realization)';
+                    statusDesc = combustSection;
+                } else {
+                    const proxNote = (sunDist !== null && combOrb !== null) ? `<br>• <strong>Distance to Sun:</strong> ${sunDistFormatted} — Safe outside combustion orb (${combOrb.toFixed(1)}°)` : '';
+                    statusDesc = `<strong>Status: Direct Motion</strong><br>• Normal forward planetary progression along the zodiac.${proxNote}`;
                 }
 
                 // Speed Display
@@ -6081,7 +6113,7 @@
                     <td class="tooltip-target" data-tooltip="${lsDesc}" style="cursor:help;">${lordSub}</td>
                     <td class="tooltip-target" data-tooltip="${speedDesc}" style="cursor:help;">${speedHtml}</td>
                     <td class="tooltip-target" data-tooltip="${taraDesc}" style="cursor:help;"><span class="badge" style="background:#f5ede0; color:#4a3325; font-weight:600;">${tNum}${tAbbr}</span></td>
-                    <td class="tooltip-target" data-tooltip="<strong>Status:</strong> ${statusDesc}" style="cursor:help;">${statusHtml}</td>
+                    <td class="tooltip-target" data-tooltip="${statusDesc}" style="cursor:help;">${statusHtml}</td>
                 </tr>`;
             });
         }
@@ -6156,11 +6188,6 @@
             // Charts
             document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(cell => {
                 updateWidget(cell);
-            });
-
-            // Varga Lajjitadi Net Modifiers
-            document.querySelectorAll('.grid-cell[data-widget="varga-lajjitadi-modifiers"]').forEach(cell => {
-                updateVargaLajjitadiWidget(cell);
             });
 
             // Rashi Drishti
@@ -8598,48 +8625,6 @@
                     tr.innerHTML = html;
                     tbody.appendChild(tr);
                 });
-            });
-        }
-
-        function updateVargaLajjitadiWidget(cell) {
-            if (!cell) return;
-            const tbody = cell.querySelector('.varga-lajjitadi-table tbody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            
-            const vargasList = [
-                'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12', 
-                'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
-            ];
-            const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-            const mods = (currentChartData && currentChartData.varga_lajjitadi_net_modifiers) ? currentChartData.varga_lajjitadi_net_modifiers : {};
-
-            vargasList.forEach(v => {
-                const tr = document.createElement('tr');
-                let html = `<td style="font-weight: 700; background-color: #fcfaf5; color: #4a3325; padding: 4px 8px;">${v}</td>`;
-                
-                const vMods = mods[v] || {};
-                planets.forEach(p => {
-                    const val = vMods[p];
-                    if (val !== undefined && val !== null) {
-                        const num = Number(val);
-                        const formatted = (num > 0 ? '+' : '') + num.toFixed(1);
-                        let style = 'font-size: 11.5px; font-family: monospace; padding: 4px 6px;';
-                        if (num > 0) {
-                            style += 'color: #1b5e20; font-weight: 700; background: #e8f5e9;';
-                        } else if (num < 0) {
-                            style += 'color: #c62828; font-weight: 700; background: #ffebee;';
-                        } else {
-                            style += 'color: #757575; font-weight: 500;';
-                        }
-                        const tooltip = `${p} in ${v}: ${formatted} Virūpas net Lajjitadi modifier`;
-                        html += `<td class="tooltip-target" data-tooltip="${tooltip}" title="${tooltip}" style="${style}">${formatted}</td>`;
-                    } else {
-                        html += `<td style="color: #9e9e9e; font-size: 11px;">-</td>`;
-                    }
-                });
-                tr.innerHTML = html;
-                tbody.appendChild(tr);
             });
         }
 

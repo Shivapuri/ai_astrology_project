@@ -28,14 +28,19 @@ astra_system_compatibility:
   whole_sign: "Primary structural container (1 Sign = 1 House, covering the entire 30-degree fifth sign)"
   campanus_cusp: "Sensitive 3D spatial focus point ascending toward the western horizon"
 source_materials:
+  - "Vic DiCara: Mercury in All Twelve Houses (Solar Mechanics & Core Power Points)"
   - "The Art and Science of Vedic Astrology (Ryan Kurczak & Richard Fish, Ch 7)"
   - "Introduction to Vedic Astrology: Lesson 29 (Ryan Kurczak)"
   - "The Twelve Bhavas Reference (Astra Engine / Ernst Wilhelm Kala Methodology)"
   - "Vic DiCara: Foundations of Phaladeepika (Ch 1, Verses 22–24)"
   - "Vic DiCara: Houses of Life Masterclasses (Evaluation, Prominence, and Systems)"
   - "Brihat Parashara Hora Shastra (BPHS)"
+vic_dicara_solar_architecture:
+  sky_sector: "Subterranean Western Sky (Underground West / Inner Flowing to Others)"
+  solar_basis: "West-Below - Inner ➔ Others"
+  axis_1: "Ideas (Intellectual Transmission)"
+  axis_2: "Feelings (Emotional Resonance)"
 ---
-
 # 🏛️ House 5: Putra Bhava (*The Fifth House / Intellect & Children*)
 
 > **Astrological Archetype:** The Forge of Creative Genius—the spark of higher discriminative intellect (*Buddhi*), the conception of physical and artistic offspring (*Putra*), and the auspicious treasure chest of accumulated past-life virtue (*Purva Punya*).  
@@ -45,21 +50,43 @@ source_materials:
 
 ## ⚡ 1. The Quick Essence (Plain-English Overview)
 
-### 1.1 The Everyday Analogy
+### 1.1 Sky Mechanics & Core Power Points (Vic DiCara's Visual Framework)
+
+**The twelve houses form a complete astronomical and solar wheel, where each house's fundamental nature emerges directly from its physical location in the sky relative to the Sun, horizon, and daylight.**
+
+* **Sky Orientation:** Subterranean Western Sky (Underground West / Inner Flowing to Others)
+* **Solar Basis:** Located underground (internal consciousness) but tilting toward the west (the realm of other people), marking the bridge where private thoughts flow outward.
+* **Foundational Dual Axes:** Ideas (Intellectual Transmission) and Feelings (Emotional Resonance)
+
+#### 🖼️ The Visual Power Points Matrix (West-Below - Inner ➔ Others)
+| 💡 ideas | 💖 feelings |
+| :--- | :--- |
+| **Intelligence** (*comprehension; discriminative intellect (Buddhi) and sharp pattern recognition*) | **Empathy** (*compassion, sympathy; sharing feelings with others: emotional attunement and resonance*) |
+| **Communication** (*language, symbols; encoding ideas into words, scripts, numbers, and concepts*) | **Love** (*affection; heartfelt romantic passion, emotional devotion, warmth, and joyful attraction*) |
+| **Expression** (*creativity, art; creative dissemination of mind: artistic invention and literature*) | **Children** (*productivity; biological and creative offspring: children, students, disciples, and legacy*) |
+
+#### The Causal Rationale (Why House 5 Signifies What It Signifies)
+The 5th House (*Putra Bhava*, house of children and intelligence) is still underground (internal, subjective consciousness), but it sits on the western side of the underworld, pointing directly toward the western horizon (other people). Therefore, the 5th House represents **the internal self moving outward toward others**.
+
+This outward movement flows along two channels: transmitting **ideas** (the intellect) and transmitting **feelings** (the heart):
+1. On the channel of *ideas*, the 5th House rules **Intelligence** (*comprehension*)—our discriminative intellect (*Buddhi*) to grasp complex truths and share them with the world. We share ideas through **Communication** (*language, symbols*)—words, codes, and writing. And we bring those ideas to life through **Expression** (*creativity, art*)—artistic creativity, entertainment, and drama.
+2. On the channel of *feelings*, the 5th House rules **Empathy** (*compassion, sympathy*)—resonating with the emotional states of others. When empathy deepens, it blossoms into **Love** (*affection*)—romantic affection and playful joy. And the ultimate physical manifestation of shared love and creative productivity is **Children** (*productivity*)—our progeny and students.
+
+### 1.2 The Everyday Analogy
 **The 5th House is the master painter’s canvas, the grandmaster’s chessboard, and the glowing nursery cradle where new life begins.**
 
 Imagine an individual who possesses a sturdy body (1st House), a secure home (4th House), and all the raw paint, brushes, and easels money can buy. Yet, they sit paralyzed before the blank canvas because they have zero imagination, no original ideas, and no creative vision. Conversely, picture an artist or strategic thinker whose mind radiates brilliant, novel concepts: with a few strokes of a brush, they create a breathtaking masterpiece, or with a single move on a chessboard, they anticipate five subsequent moves of their opponent and secure an effortless victory.
 
 In astrology, the 5th House (*Putra Bhava*, the house of children and intellect) represents that spark of divine genius. While the 3rd House rules manual dexterity, technical crafts, and copying instructions through repetition, the 5th House rules pure, spontaneous inspiration. It is the ability to conceive something that never existed before—whether a newborn child, an immortal symphony, an innovative scientific algorithm, or a brilliant life strategy that effortlessly transforms adversity into triumph.
 
-### 1.2 The Core Evolutionary Mechanism
+### 1.3 The Core Evolutionary Mechanism
 **The 5th House is the transition from feeling safe inside the self to expressing your unique creative sovereignty outward toward the world.**
 
 In the celestial architecture of the sky, the 4th House marks the subterranean midnight nadir—the hidden pool of private emotions. The 5th House begins the sky's upward climb toward the western horizon (the descendant / other people). Therefore, the 5th House represents the bubbling up of inner emotional feelings into visible, outward creative expression.
 
 This house marks Step 5 on the 12-stage lifecycle ladder: **Procreation and Intellectual Sovereignty**. It is the seat of **Buddhi** (higher discriminative intellect). When life presents an unexpected crisis, a weak 5th House leaves a person paralyzed, panicked, and incapable of finding a way forward. But a fortified 5th House acts like an internal strategic advisor: it immediately perceives the hidden solution, formulates an elegant plan, and navigates obstacles with fluid, playful confidence.
 
-### 1.3 Sanskrit Etymology & Classical Roots
+### 1.4 Sanskrit Etymology & Classical Roots
 **The classical Sanskrit designations for the 5th House illuminate themes of offspring, strategic foresight, memory, and royal authority.**
 
 * **Putra & Suta (Children & Offspring):** *Putra* traditionally signifies a child or son. In Vedic philosophy, *put* is a subtle hell realm of darkness and generational extinction; a *putra* is literally "one who delivers the ancestors from darkness" by continuing the sacred thread of life. *Suta* denotes that which has been pressed out, distilled, or brought forth into the physical world.
