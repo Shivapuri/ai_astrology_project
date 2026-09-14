@@ -5233,30 +5233,216 @@
                     ? `${naks["Lagna"].nakshatra} (${naks["Lagna"].pada})` 
                     : (naks["Lagna"] ? `D1: ${naks["Lagna"].nakshatra} (${naks["Lagna"].pada})` : '--');
                 const lgLord = signLords[lgSign] || v_lagna.lord || '--';
+                const lordGraha = v_grahas[lgLord] || {};
                 
+                // Lord Dignity & Styling
+                const dBreak = lordGraha.dignity_breakdown || {};
+                const lordDigRaw = dBreak.final_dignity || lordGraha.dignity || 'Neutral';
+                const cleanLordDig = lordDigRaw.replace("'s Sign", "").replace(" Sign", "").trim();
+                let lordDigColor = '#475569';
+                let lordDigBg = '#f8fafc';
+                let lordDigBorder = '#cbd5e1';
+                const lDigLow = lordDigRaw.toLowerCase();
+                if (lDigLow.includes('exalt') || lDigLow.includes('moolatrikona') || lDigLow.includes('own')) {
+                    lordDigColor = '#065f46'; lordDigBg = '#ecfdf5'; lordDigBorder = '#6ee7b7';
+                } else if (lDigLow.includes('great friend') || lDigLow.includes('friend')) {
+                    lordDigColor = '#15803d'; lordDigBg = '#f0fdf4'; lordDigBorder = '#86efac';
+                } else if (lDigLow.includes('great enemy') || lDigLow.includes('enemy')) {
+                    lordDigColor = '#b91c1c'; lordDigBg = '#fef2f2'; lordDigBorder = '#fca5a5';
+                } else if (lDigLow.includes('debilitat')) {
+                    lordDigColor = '#991b1b'; lordDigBg = '#fee2e2'; lordDigBorder = '#f87171';
+                }
+                
+                // Lord House Placement
+                const lagnaIdx = signsList.indexOf(lgSign);
+                const lordSign = lordGraha.sign || '';
+                const lordSignIdx = signsList.indexOf(lordSign);
+                const lordWHouse = (lagnaIdx >= 0 && lordSignIdx >= 0) ? ((lordSignIdx - lagnaIdx + 12) % 12 + 1) : 1;
+                const lordCHouse = getCampanusHouse(lgLord, lordWHouse);
+
+                // Lord Shadbala Power
+                const sbLord = shadbala[lgLord] || {};
+                const sbVir = (sbLord.Total_Virupas !== undefined) ? Number(sbLord.Total_Virupas).toFixed(1) : '--';
+                const sbPct = (sbLord.Pct_Required_Total !== undefined) ? Math.round(sbLord.Pct_Required_Total) : null;
+                const sbRank = sbLord.Relative_Rank !== undefined ? sbLord.Relative_Rank : null;
+                const ishta = (sbLord.Ishta_Phala !== undefined) ? Number(sbLord.Ishta_Phala).toFixed(1) : '--';
+                const kashta = (sbLord.Kashta_Phala !== undefined) ? Number(sbLord.Kashta_Phala).toFixed(1) : '--';
+
+                // Aspects on Cusp 1
+                const cuspTotals = adv_aspects && adv_aspects.totals && adv_aspects.totals.cusps ? (adv_aspects.totals.cusps[1] || adv_aspects.totals.cusps['1'] || {}) : {};
+                const c1Net = cuspTotals.net !== undefined ? Number(cuspTotals.net) : 0.0;
+                const c1Plus = cuspTotals.plus !== undefined ? Number(cuspTotals.plus) : 0.0;
+                const c1Minus = cuspTotals.minus !== undefined ? Number(cuspTotals.minus) : 0.0;
+                
+                // Special Cusp Aspects
+                const c1Indiv = adv_aspects && adv_aspects.cusps ? (adv_aspects.cusps[1] || adv_aspects.cusps['1'] || {}) : {};
+                const jupAspectVir = c1Indiv.Jupiter ? Number(c1Indiv.Jupiter.net || c1Indiv.Jupiter.plus || 0) : 0;
+                const lordAspectVir = c1Indiv[lgLord] ? Number(c1Indiv[lgLord].net || c1Indiv[lgLord].plus || 0) : 0;
+
+                // Occupants of H1
                 const lagnaConj = [];
                 grahaOrder.forEach(p => {
                     if (v_grahas[p] && v_grahas[p].sign === lgSign) lagnaConj.push(p);
                 });
                 const lgConjBadges = lagnaConj.map(cp => {
-                    const isBen = ['Jupiter', 'Venus'].includes(cp);
-                    const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
+                    const isBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(cp);
+                    const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(cp);
                     const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
                     const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
-                    const tip = `<strong>${cp} Conjunct Lagna (Ascendant)</strong><br>• Directly stamps its personality, constitution, and temperament onto the native's identity in ${varga}.`;
+                    const tip = `<strong>${cp} in House 1 (Ascendant)</strong><br>• Directly stamps its constitutional nature onto the physical body and personal perspective in ${varga}.`;
                     return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${tip}">${cIcon} ${cp}</span>`;
                 }).join(', ');
-                const lagnaConjStr = lagnaConj.length > 0 
-                    ? `<div><span style="color:#64748b; font-size:10px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` 
-                    : '<div style="color:#94a3b8; font-size:10.5px;">No planet on Lagna</div>';
 
-                const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The primary orientation point establishing physical constitution, personal perspective, and life foundation.`;
+                // Flanking Kartari around H1
+                const h2Sign = signsList[(lagnaIdx + 1) % 12];
+                const h12Sign = signsList[(lagnaIdx + 11) % 12];
+                const h2Occupants = grahaOrder.filter(p => v_grahas[p] && v_grahas[p].sign === h2Sign && !['Rahu', 'Ketu'].includes(p));
+                const h12Occupants = grahaOrder.filter(p => v_grahas[p] && v_grahas[p].sign === h12Sign && !['Rahu', 'Ketu'].includes(p));
+                const h2Bens = h2Occupants.filter(p => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p));
+                const h2Mals = h2Occupants.filter(p => ['Saturn', 'Mars', 'Sun'].includes(p));
+                const h12Bens = h12Occupants.filter(p => ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(p));
+                const h12Mals = h12Occupants.filter(p => ['Saturn', 'Mars', 'Sun'].includes(p));
+                let kartariBadge = '';
+                let kartariType = 'Neutral';
+                if (h2Bens.length > 0 && h12Bens.length > 0 && h2Mals.length === 0 && h12Mals.length === 0) {
+                    kartariType = 'Śubha Kartarī';
+                    kartariBadge = `<span class="badge tooltip-target" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>✨ Śubha Kartarī Yoga (Protective Hemming)</strong><br>• Benefics flank both H2 (${h2Bens.join(', ')}) and H12 (${h12Bens.join(', ')}), nurturing vitality and shielding destiny.">✨ Śubha Kartarī</span>`;
+                } else if (h2Mals.length > 0 && h12Mals.length > 0 && h2Bens.length === 0 && h12Bens.length === 0) {
+                    kartariType = 'Pāpa Kartarī';
+                    kartariBadge = `<span class="badge tooltip-target" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>⚔️ Pāpa Kartarī Yoga (Malefic Hemming)</strong><br>• Malefics flank both H2 (${h2Mals.join(', ')}) and H12 (${h12Mals.join(', ')}), pinching the personal field with chronic resistance.">⚔️ Pāpa Kartarī</span>`;
+                }
+
+                // -------------------------------------------------------------
+                // 5-Pillar Composite Lagna Vitality Score (1.0 - 10.0)
+                // -------------------------------------------------------------
+                let p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0;
+                // Pillar 1: Dignity & Muscle
+                if (lDigLow.includes('exalt')) p1 += 1.2;
+                else if (lDigLow.includes('moolatrikona')) p1 += 1.0;
+                else if (lDigLow.includes('own')) p1 += 0.8;
+                else if (lDigLow.includes('great friend')) p1 += 0.5;
+                else if (lDigLow.includes('friend')) p1 += 0.25;
+                else if (lDigLow.includes('great enemy')) p1 -= 0.8;
+                else if (lDigLow.includes('enemy')) p1 -= 0.4;
+                else if (lDigLow.includes('debilitat')) p1 -= 1.2;
+
+                if (sbPct !== null) {
+                    if (sbPct >= 130) p1 += 0.8;
+                    else if (sbPct >= 110) p1 += 0.5;
+                    else if (sbPct >= 100) p1 += 0.2;
+                    else if (sbPct >= 85) p1 -= 0.3;
+                    else p1 -= 0.7;
+                }
+                if (lordGraha.is_retrograde && ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(lgLord)) p1 += 0.3;
+                if (lordGraha.is_combust) p1 -= 0.4;
+
+                // Pillar 2: Field Placement
+                if (lordWHouse === 1) p2 += 1.5;
+                else if ([4, 7, 10].includes(lordWHouse)) p2 += 1.0;
+                else if (lordWHouse === 9) p2 += 1.2;
+                else if (lordWHouse === 5) p2 += 1.0;
+                else if (lordWHouse === 11) p2 += 0.8;
+                else if (lordWHouse === 3) p2 += 0.4;
+                else if (lordWHouse === 6) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
+                else if (lordWHouse === 8) p2 -= (lDigLow.includes('own') ? 0.0 : 1.2);
+                else if (lordWHouse === 12) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
+
+                // Pillar 3: Occupants of H1
+                lagnaConj.forEach(cp => {
+                    const cDig = (v_grahas[cp].dignity_breakdown ? v_grahas[cp].dignity_breakdown.final_dignity : '').toLowerCase();
+                    if (cp === 'Jupiter') p3 += 1.0;
+                    else if (cp === 'Venus') p3 += 0.7;
+                    else if (cp === 'Mercury') p3 += 0.6;
+                    else if (cp === 'Moon') p3 += 0.6;
+                    else if (cp === 'Mars') p3 += (cDig.includes('own') || cDig.includes('exalt') || ['Leo', 'Cancer'].includes(lgSign) ? 0.8 : -0.5);
+                    else if (cp === 'Saturn') p3 += (cDig.includes('own') || cDig.includes('exalt') ? 0.6 : -0.6);
+                    else if (cp === 'Sun' && cp !== lgLord) p3 -= 0.3;
+                    else if (cp === 'Rahu' || cp === 'Ketu') p3 -= 0.5;
+                });
+
+                // Pillar 4: Sky-Light (Cusp 1 Aspect)
+                if (c1Net >= 40.0) p4 += 0.8;
+                else if (c1Net >= 15.0) p4 += 0.4;
+                else if (c1Net <= -40.0) p4 -= 0.8;
+                else if (c1Net <= -15.0) p4 -= 0.4;
+                if (jupAspectVir > 15.0) p4 += 0.6;
+                if (lordAspectVir > 15.0) p4 += 0.6;
+
+                // Pillar 5: Enclosure
+                if (kartariType === 'Śubha Kartarī') p5 += 0.8;
+                else if (kartariType === 'Pāpa Kartarī') p5 -= 0.8;
+
+                let lagnaVitScore = Math.max(1.0, Math.min(10.0, 5.0 + p1 + p2 + p3 + p4 + p5));
+                lagnaVitScore = Math.round(lagnaVitScore * 10) / 10;
+
+                let lagnaTier = 'Capable Vessel';
+                let lagnaTierColor = '#1d4ed8';
+                let lagnaTierBg = '#eff6ff';
+                let lagnaTierBorder = '#93c5fd';
+                let lagnaVerdict = 'Sound, capable engine; achieves solid worldly success and actualizes yogas through deliberate effort.';
+                let lagnaArchetype = 'The Steady Navigator';
+
+                if (lagnaVitScore >= 8.8) {
+                    lagnaTier = 'Sovereign Citadel';
+                    lagnaTierColor = '#065f46'; lagnaTierBg = '#ecfdf5'; lagnaTierBorder = '#34d399';
+                    lagnaArchetype = 'The Invincible Sovereign';
+                    lagnaVerdict = 'Supreme constitutional vitality and iron executive agency; chart yogas manifest with maximum real-world force.';
+                } else if (lagnaVitScore >= 7.3) {
+                    lagnaTier = 'Robust Horizon';
+                    lagnaTierColor = '#15803d'; lagnaTierBg = '#f0fdf4'; lagnaTierBorder = '#86efac';
+                    lagnaArchetype = 'The Resilient Architect';
+                    lagnaVerdict = 'High resilience, healthy self-worth, and decisive drive; overcomes obstacles and readily activates auspicious yogas.';
+                } else if (lagnaVitScore >= 5.5) {
+                    lagnaTier = 'Capable Vessel';
+                    lagnaTierColor = '#1d4ed8'; lagnaTierBg = '#eff6ff'; lagnaTierBorder = '#93c5fd';
+                    lagnaArchetype = 'The Steady Navigator';
+                    lagnaVerdict = 'Sound, capable engine; achieves solid worldly success and actualizes yogas through continuous, deliberate effort.';
+                } else if (lagnaVitScore >= 4.0) {
+                    lagnaTier = 'Strained Horizon';
+                    lagnaTierColor = '#b45309'; lagnaTierBg = '#fffbeb'; lagnaTierBorder = '#fcd34d';
+                    lagnaArchetype = 'The Contemplative Seeker';
+                    lagnaVerdict = 'Vitality is sensitive or internalized; worldly yogas face delays or friction, requiring conscious pacing and health care.';
+                } else {
+                    lagnaTier = 'Vulnerable Horizon';
+                    lagnaTierColor = '#b91c1c'; lagnaTierBg = '#fef2f2'; lagnaTierBorder = '#fca5a5';
+                    lagnaArchetype = 'The Invalid in a Palace';
+                    lagnaVerdict = 'Compromised life engine; yogas struggle to manifest externally without significant health discipline, rest, or remedial support.';
+                }
+
+                // Cusp aspect badges
+                let cuspDrishtiBadge = '';
+                if (c1Net >= 15.0) {
+                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size:9px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Light</span>`;
+                } else if (c1Net <= -15.0) {
+                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pressure</span>`;
+                } else {
+                    cuspDrishtiBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:9px;">${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Neutral</span>`;
+                }
+                if (jupAspectVir > 15.0) {
+                    cuspDrishtiBadge += ` <span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold;" title="Jupiter casts direct aspect on Ascendant">🛡️ Guru Dṛṣṭi</span>`;
+                }
+                if (lordAspectVir > 15.0) {
+                    cuspDrishtiBadge += ` <span class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:9px; font-weight:bold;" title="Lagneśa aspects its own rising sign">👑 Lagneśa Dṛṣṭi</span>`;
+                }
+
+                const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The foundational engine and reference frame against which all 12 houses and yogas manifest.`;
                 const lgPlacementTip = `<strong>Lagna: ${lgSign} ${lgDeg} (House 1)</strong><br>• <strong>Rising Sign:</strong> Core zodiac archetype of self-expression in ${varga}.<br>• <strong>Ascendant Lord:</strong> <strong>${lgLord}</strong> (Lagneśa).<br>• <strong>Nakshatra:</strong> ${lgNak}.`;
-                const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord}</strong><br>• Primary protector and steward of life, vitality, constitution, and longevity in this chart.`;
-                const lgPowerTip = `<strong>Ascendant Horizon</strong><br>• The Lagna is a spatial coordinate (eastern horizon), not a physical body with mass or speed, so it does not accumulate direct Shadbala. Its vitality is expressed through its ruler (${lgLord}).`;
-                const lgAvasthaTip = `<strong>Tanū Bhāva (Horizon Lens)</strong><br>• The ascendant acts as the gateway where planetary archetypes materialize into conscious experience.`;
-                const lgFruitTip = `<strong>Karmic Horizon</strong><br>• The Lagna distributes the fruits of its lord (${lgLord}) and occupying planets.`;
-                const lgAnchorTip = `<strong>Primary Anchor of Destiny</strong><br>• The fundamental reference point against which all other 11 houses are measured.`;
+                const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord} [${cleanLordDig}]</strong><br>• <strong>5-Fold Dignity:</strong> ${lordDigRaw} in ${lordSign} (${lordWHouse}th house from Lagna).<br>• <strong>Core Teaching:</strong> The Lagna Lord is the captain of the ship. When the captain is dignified and comfortable, the native possesses strong confidence and unshakeable direction.`;
+                const lgPowerTip = `<strong>Lagna Vitality & Muscle Engine</strong><br>• <strong>Captain's Shadbala:</strong> ${sbVir} Virūpas (${sbPct !== null ? sbPct + '%' : '--'} of required, Rank #${sbRank || '--'}).<br>• <strong>Horizon Sky-Light:</strong> Net ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas (Benefic: +${c1Plus.toFixed(1)}, Malefic: -${c1Minus.toFixed(1)}).<br>• <strong>Interpretation:</strong> Evaluates if the captain has the raw physical stamina to steer the life path.`;
+                const lgAvasthaTip = `<strong>Lagneśa Field & State</strong><br>• <strong>House Field:</strong> Placed in Whole Sign House ${lordWHouse}${lordCHouse !== lordWHouse ? ' (Campanus Bhava ' + lordCHouse + ')' : ''}.<br>• <strong>Field Quality:</strong> ${lordWHouse === 1 ? 'Own House (Supreme autonomy)' : [4,7,10].includes(lordWHouse) ? 'Kendra (Pillar of action)' : [5,9].includes(lordWHouse) ? 'Trikona (Triangle of divine grace)' : [3,11].includes(lordWHouse) ? 'Upachaya (Growth through effort)' : 'Dusthāna (Obstacles/solitude)'}.<br>• <strong>Lord Dignity:</strong> ${cleanLordDig}.`;
+                const lgInfluencesTip = `<strong>Horizon Influences & Aspects</strong><br>• <strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lagnaConj.join(', ') : 'None (clean horizon)'}.<br>• <strong>Net Dṛṣṭi:</strong> ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas.<br>• <strong>Enclosure:</strong> ${kartariType} (H2: ${h2Occupants.join(', ') || 'empty'} • H12: ${h12Occupants.join(', ') || 'empty'}).`;
+                const lgFruitTip = `<strong>Lagneśa Karmic Fruit (I/K)</strong><br>• <strong>Ishta Phala:</strong> ${ishta} (capacity to produce sweet, auspicious outcomes).<br>• <strong>Kashta Phala:</strong> ${kashta} (capacity to endure arduous trials).`;
+                const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>` +
+                    `• <strong>Archetype:</strong> ${lagnaArchetype}<br>` +
+                    `• <strong>Verdict:</strong> ${lagnaVerdict}<br><br>` +
+                    `<strong>5-Pillar Score Breakdown:</strong><br>` +
+                    `• Base Score: 5.0 (Neutral baseline)<br>` +
+                    `• <strong>1. Captain (${lgLord}):</strong> ${p1 >= 0 ? '+' : ''}${p1.toFixed(2)} pts (${cleanLordDig}, ${sbVir} Vir)<br>` +
+                    `• <strong>2. Field Placement:</strong> ${p2 >= 0 ? '+' : ''}${p2.toFixed(2)} pts (H${lordWHouse})<br>` +
+                    `• <strong>3. Occupants (H1):</strong> ${p3 >= 0 ? '+' : ''}${p3.toFixed(2)} pts (${lagnaConj.join(', ') || 'none'})<br>` +
+                    `• <strong>4. Sky-Light (Drishti):</strong> ${p4 >= 0 ? '+' : ''}${p4.toFixed(2)} pts (${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir)<br>` +
+                    `• <strong>5. Enclosure (Kartari):</strong> ${p5 >= 0 ? '+' : ''}${p5.toFixed(2)} pts (${kartariType})<br><br>` +
+                    `<em>Core Teaching (Ryan Kurczak & Vic DiCara):</em> If the Lagna is weak, auspicious yogas cannot manifest—like an invalid in a golden palace. When the Lagna is strong, the native readily turns chart potential into tangible reality.`;
 
                 tbody.innerHTML += `
                     <tr style="background:#faf7f2; border-bottom: 2px solid #e5dccb;">
@@ -5281,22 +5467,37 @@
                             </div>
                         </td>
                         <td>
-                            <span class="badge tooltip-target" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; font-weight:bold; cursor:help;" data-tooltip="${lgLordTip}">Lord: ${lgLord}</span>
-                        </td>
-                        <td style="color:#94a3b8; font-size:11px;">
-                            <span class="tooltip-target" style="cursor:help;" data-tooltip="${lgPowerTip}">— (Physical Horizon)</span>
+                            <span class="badge tooltip-target" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; cursor:help;" data-tooltip="${lgLordTip}">Lord: ${lgLord} [${cleanLordDig}]</span>
                         </td>
                         <td>
-                            <span class="badge tooltip-target" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-size:10.5px; font-weight:600; cursor:help;" data-tooltip="${lgAvasthaTip}">Core Lens of Destiny</span>
+                            <div class="tooltip-target" data-tooltip="${lgPowerTip}" style="cursor:help;">
+                                <strong>${sbVir} Vir</strong> <span style="font-size:10px; color:${sbPct >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'})</span>
+                                <div style="font-size:9.5px; color:#64748b;">${sbRank ? 'Rank #' + sbRank : ''} • Cusp: ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir</div>
+                            </div>
                         </td>
                         <td>
-                            ${lagnaConjStr}
+                            <div class="tooltip-target" data-tooltip="${lgAvasthaTip}" style="cursor:help;">
+                                <span class="badge" style="background:#eef2ff; color:#3730a3; border:1px solid #c7d2fe; font-size:10px; font-weight:bold;">Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' ➔ B' + lordCHouse : ''}</span>
+                                <div style="font-size:9.5px; color:#64748b; margin-top:2px;">${cleanLordDig} in ${lordSign || '--'}</div>
+                            </div>
                         </td>
-                        <td style="color:#94a3b8; font-size:11px;">
-                            <span class="tooltip-target" style="cursor:help;" data-tooltip="${lgFruitTip}">—</span>
+                        <td>
+                            <div class="tooltip-target" data-tooltip="${lgInfluencesTip}" style="cursor:help;">
+                                ${lagnaConj.length > 0 ? `<div><span style="color:#64748b; font-size:10px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` : '<div style="color:#94a3b8; font-size:10px;">Clean Horizon</div>'}
+                                <div style="margin-top:2px; display:flex; flex-wrap:wrap; gap:3px;">${cuspDrishtiBadge} ${kartariBadge}</div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="tooltip-target" data-tooltip="${lgFruitTip}" style="cursor:help; font-size:11px;">
+                                <div><strong style="color:#15803d;">I:</strong> ${ishta}</div>
+                                <div><strong style="color:#b91c1c;">K:</strong> ${kashta}</div>
+                            </div>
                         </td>
                         <td style="text-align: center;">
-                            <span class="badge tooltip-target" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:10px; font-weight:bold; cursor:help;" data-tooltip="${lgAnchorTip}">Primary Anchor</span>
+                            <div class="tooltip-target" data-tooltip="${lgVitalityTip}" style="cursor:help; display:inline-block;">
+                                <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:10.5px; font-weight:bold; padding:3px 8px;">★ ${lagnaVitScore.toFixed(1)} • ${lagnaTier}</span>
+                                <div style="font-size:9px; color:#64748b; margin-top:2px;">${lagnaArchetype}</div>
+                            </div>
                         </td>
                     </tr>
                 `;

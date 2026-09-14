@@ -906,7 +906,7 @@ def generate_kala_chart(
         "varga_vimshopaka": vimshopaka_data,
         "vimshopaka": vimshopaka_export,
         "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()},
-        "planetary_evaluation": planetary_evaluation.calculate_planetary_evaluation(vargas_data, shadbala_data),
+        "planetary_evaluation": planetary_evaluation.calculate_planetary_evaluation(vargas_data, shadbala_data, varga_aspects.get("D1")),
         "karakas": {
             "chara": chara_karakas,
             "functional": functional_roles_d1,

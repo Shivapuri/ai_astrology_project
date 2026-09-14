@@ -18,6 +18,7 @@ from typing import Dict, List, Any, Optional
 import math
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
+from jyotish.planetary_evaluation.lagna_evaluation import evaluate_lagna_vitality
 
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -102,7 +103,8 @@ def clamp(val: float, min_val: float, max_val: float) -> float:
 
 def calculate_planetary_evaluation(
     vargas_data: Dict[str, Any],
-    shadbala_data: Optional[Dict[str, Any]] = None
+    shadbala_data: Optional[Dict[str, Any]] = None,
+    advanced_aspects: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Main evaluation engine. Calculates Vic DiCara's continuous Positive-to-Negative Scale,
@@ -718,11 +720,14 @@ def calculate_planetary_evaluation(
         overall_pred = "Madhyamsha (Balanced Divisional Distribution)"
         overall_meaning = "Dynamic mixture of opportunities and worldly responsibilities."
 
+    lagna_eval = evaluate_lagna_vitality(vargas_data, shadbala_data, advanced_aspects, "D1")
+
     return {
         "summary": {
             "title": "Vic DiCara's Planetary Evaluation & Positive-to-Negative Scale",
             "subtitle": "Continuous diagnostic spectrum (-100% to +100%) and 4-Quadrant Archetypes (Phaladeepika Chapters 3 & 4)",
             "master_lords": master_lords,
+            "lagna_evaluation": lagna_eval,
             "chart_predominance": {
                 "auspicious_count": auspicious_count,
                 "hostile_count": hostile_count,
@@ -730,5 +735,6 @@ def calculate_planetary_evaluation(
                 "meaning": overall_meaning
             }
         },
+        "lagna_evaluation": lagna_eval,
         "planets": planets_result
     }

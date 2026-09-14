@@ -5,5 +5,6 @@ and detailed step-by-step mathematical calculation trace.
 """
 
 from .planetary_evaluation import calculate_planetary_evaluation
+from .lagna_evaluation import evaluate_lagna_vitality
 
-__all__ = ["calculate_planetary_evaluation"]
+__all__ = ["calculate_planetary_evaluation", "evaluate_lagna_vitality"]
