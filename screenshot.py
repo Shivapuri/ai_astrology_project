@@ -205,9 +205,21 @@ async def main():
             await page.evaluate("openKalaMenu(500, 200)")
             await page.wait_for_timeout(600)
             await page.screenshot(path="screenshot_kala_menu_export.png")
-            print("Captured screenshot_kala_menu_export.png")
+            # 20. Floating Classical Yogas Modal (Parashara & Mantreshwara)
+            await page.evaluate("openFloatingClassicalYogas()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_classical_yogas_modal.png")
+            print("Captured screenshot_classical_yogas_modal.png")
             await page.keyboard.press("Escape")
             await page.wait_for_timeout(400)
+
+            # 21. Classical Yogas Table Widget in Workspace Cell
+            await page.evaluate("assignWidget('classical-yogas', document.getElementById('cell2'))")
+            await page.wait_for_timeout(600)
+            cell2 = page.locator("#cell2")
+            if await cell2.count() > 0:
+                await cell2.screenshot(path="screenshot_classical_yogas_cell.png")
+                print("Captured screenshot_classical_yogas_cell.png")
 
         except Exception as e:
             print("Error:", e)

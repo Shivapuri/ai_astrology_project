@@ -17,6 +17,7 @@ rag/chroma_astrology_db/
 rag/chroma_jyotish_db/
 rag/chroma_structural_db/
 rag/chroma_modern_db/
+scratch/
 
 
 # Prevent large media, binary files, and generated databases from bloating Git repo

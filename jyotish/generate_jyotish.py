@@ -818,6 +818,15 @@ def generate_kala_chart(
             p_data["functional_role"] = v_roles.get(p_name, {})
             p_data["d1_functional_role"] = functional_roles_d1.get(p_name, {})
 
+    # 10. Classical Yogas & Yoga Breaker Audit
+    from jyotish.yogas import detect_all_yogas
+    yogas_data = detect_all_yogas({
+        "vargas": vargas_data,
+        "shadbala": shadbala_data,
+        "advanced_aspects": varga_aspects["D1"],
+        "nakshatras": {"grahas": nakshatras_sidereal},
+    })
+
     vedic_context = {
 
         "subject_info": {
@@ -867,7 +876,8 @@ def generate_kala_chart(
             "functional": functional_roles_d1,
             "varga_functional": varga_functional_roles,
             "naisargika": karakas.NAISARGIKA_KARAKAS
-        }
+        },
+        "yogas": yogas_data
     }
     
     # 7. Write to file (only if requested)

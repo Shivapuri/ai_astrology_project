@@ -42,6 +42,8 @@ def test_generate_report_html(sample_chart):
     assert "D7 Saptāṃśa" in html
     assert "16-Varga Dignity" in html
     assert "Strengths Matrix • Yoga Judgment" in html
+    assert "Classical Yogas" in html
+    assert "Yoga Bhanga" in html
 
 def test_export_chart_pdf(sample_chart):
     options = {

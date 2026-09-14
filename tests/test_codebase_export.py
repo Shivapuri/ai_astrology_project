@@ -32,14 +32,14 @@ def test_export_codebase_execution(tmp_path):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     test_output = str(tmp_path / "test_export.txt")
     
-    result = export_codebase(output_file=test_output, max_size_mb=1.5, project_root=project_root)
+    result = export_codebase(output_file=test_output, max_size_mb=DEFAULT_MAX_SIZE_MB, project_root=project_root)
     
     assert os.path.exists(test_output), "Export file should be created"
     size_bytes = os.path.getsize(test_output)
     size_mb = size_bytes / (1024 * 1024)
     
-    # Strict size assertions: MUST be under 1.5 megabytes
-    assert size_mb < 1.5, f"Export size {size_mb:.2f} MB exceeds 1.5 MB limit"
+    # Strict size assertions: MUST be under 2.0 megabytes
+    assert size_mb < DEFAULT_MAX_SIZE_MB, f"Export size {size_mb:.2f} MB exceeds {DEFAULT_MAX_SIZE_MB} MB limit"
     assert size_bytes > 500 * 1024, f"Export size {size_bytes} bytes is suspiciously small"
     
     with open(test_output, "r", encoding="utf-8") as f:

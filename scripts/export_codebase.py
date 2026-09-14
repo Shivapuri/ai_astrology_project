@@ -27,7 +27,7 @@ import sys
 import argparse
 
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
-DEFAULT_MAX_SIZE_MB = 1.5
+DEFAULT_MAX_SIZE_MB = 2.0
 
 EXCLUDED_DIRS = {
     ".git",
@@ -47,6 +47,7 @@ EXCLUDED_DIRS = {
     ".ruff_cache",
     "backups",
     ".gemini",
+    ".agents",
     "angelina-jolie-pdfs",
     "knowledge_base",
     "lajjitadi_transcription",

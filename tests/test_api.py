@@ -31,6 +31,8 @@ def test_chart_api(client):
     assert "data" in data
     assert "svgs" in data
     assert "vargas" in data["data"]
+    assert "yogas" in data["data"]
+    assert "summary" in data["data"]["yogas"]
     assert "D1" in data["svgs"]
     assert "south" in data["svgs"]["D1"]["symbol"]
 

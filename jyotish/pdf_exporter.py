@@ -512,6 +512,111 @@ def render_yoga_judgment_table(shadbala_data: Dict[str, Any], notation: str = "s
     """
 
 
+def render_classical_yogas_section(yogas_data: Dict[str, Any], notation: str = "symbol") -> str:
+    """Renders the Classical Yogas and Yoga Bhanga (Cancellation & Breaker) Audit table."""
+    if not yogas_data or not yogas_data.get("yogas"):
+        return ""
+        
+    yogas = yogas_data.get("yogas", [])
+    summary = yogas_data.get("summary", {})
+    
+    rows = []
+    for y in yogas:
+        status_str = y.get("status", "Pure & Eminent")
+        score = float(y.get("plausibility_score", 0.0))
+        
+        if "Pure" in status_str:
+            badge_cls = "yoga-pure"
+            bar_color = "#15803d"
+        elif "Stained" in status_str:
+            badge_cls = "yoga-stained"
+            bar_color = "#b45309"
+        elif "Rescued" in status_str:
+            badge_cls = "yoga-rescued"
+            bar_color = "#4338ca"
+        else:
+            badge_cls = "yoga-broken"
+            bar_color = "#991b1b"
+            
+        planets = y.get("participating_planets", [])
+        planet_spans = " ".join([f'<span class="planet-badge">{get_planet_glyph(p, notation)} {p}</span>' for p in planets])
+        
+        houses = y.get("participating_houses", [])
+        houses_str = ", ".join([f"H{h}" for h in houses if h > 0]) or "-"
+        
+        breakers = y.get("breakers", [])
+        breaker_items = []
+        for b in breakers:
+            factor = b.get("factor", "")
+            penalty = b.get("penalty", 0.0)
+            desc = b.get("description", "")
+            breaker_items.append(f'<div class="yoga-breaker-item"><strong>⚠️ {factor} (-{penalty:.0f}%):</strong> {desc}</div>')
+        breaker_html = "".join(breaker_items) if breaker_items else '<span style="color:#15803d; font-size:6.5pt; font-weight:600;">✓ Pristine • Zero Saboteurs</span>'
+        
+        pos_factors = y.get("positive_factors", [])
+        pos_html = "".join([f'<div class="yoga-pos-item">✓ {pf}</div>' for pf in pos_factors[:2]]) if pos_factors else ''
+        
+        effects = y.get("manifestation_effects", [])
+        effects_str = " ".join(effects[:2]) if effects else y.get("archetype", "")
+        
+        rows.append(f"""
+        <tr>
+            <td style="font-weight:700; color:#4a3325;">
+                <div style="font-size:7.5pt;">{y.get('name', '-')}</div>
+                <div style="font-size:6pt; color:#7c6853;">{y.get('category', '-')} • {y.get('scripture_ref', '')}</div>
+            </td>
+            <td><span class="badge {badge_cls}">{status_str}</span></td>
+            <td>
+                <div style="display:flex; align-items:center; gap:4px;">
+                    <div class="prog-bar" style="width:34px;"><span class="prog-fill" style="width:{score}%; background:{bar_color};"></span></div>
+                    <strong class="mono" style="font-size:7pt; color:{bar_color};">{score:.1f}%</strong>
+                </div>
+            </td>
+            <td>{planet_spans}<br><span style="font-size:6.2pt; color:#64748b;">Houses: {houses_str}</span></td>
+            <td style="font-size:6.8pt; line-height:1.25; color:#334155;">
+                <div style="font-weight:600; color:#1e293b; margin-bottom:2px;">{y.get('archetype', '')}</div>
+                <div style="color:#475569;">{effects_str}</div>
+                {pos_html}
+            </td>
+            <td style="font-size:6.3pt; line-height:1.2;">
+                {breaker_html}
+            </td>
+        </tr>
+        """)
+        
+    return f"""
+    <div class="card full-width" style="margin-top:6px;">
+        <div class="card-header">
+            <h3>👑 Classical Yogas & Yoga Bhanga (Cancellation & Breaker) Audit</h3>
+            <span class="card-sub">
+                Total: {yogas_data.get('total_count', len(yogas))} • 
+                <span class="badge yoga-pure" style="margin:0 2px;">Pure: {summary.get('pure', 0)}</span>
+                <span class="badge yoga-stained" style="margin:0 2px;">Stained: {summary.get('stained', 0)}</span>
+                <span class="badge yoga-rescued" style="margin:0 2px;">Rescued: {summary.get('rescued', 0)}</span>
+                <span class="badge yoga-broken" style="margin:0 2px;">Broken: {summary.get('broken', 0)}</span>
+            </span>
+        </div>
+        <div class="card-body">
+            <table class="data-table" style="font-size:7pt;">
+                <thead>
+                    <tr>
+                        <th style="width:18%;">Yoga Combination & Source</th>
+                        <th style="width:12%;">Status</th>
+                        <th style="width:10%;">Plausibility</th>
+                        <th style="width:14%;">Grahas & Houses</th>
+                        <th style="width:26%;">Archetype & Worldly Manifestation</th>
+                        <th style="width:20%;">Yoga Breaker (Bhanga) Audit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {''.join(rows)}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+
 def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str, Any]] = None) -> str:
     """Generates the complete, self-contained publication-grade HTML report."""
     opts = options or {}
@@ -532,6 +637,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     include_yoga_judgment = opts.get("include_yoga_judgment", True)
     include_dasha = opts.get("include_dasha", True)
     include_vimshopaka = opts.get("include_vimshopaka", True)
+    include_yogas = opts.get("include_yogas", True)
     additional_vargas = opts.get("additional_vargas", [])
     
     subject = chart_data.get("subject_info", {})
@@ -722,6 +828,9 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     # 8. Build Strengths Matrix • Yoga Judgment Table
     yoga_judgment_html = render_yoga_judgment_table(shadbala_data, notation) if (include_yoga_judgment and shadbala_data) else ""
 
+    # 8b. Build Classical Yogas & Yoga Bhanga Audit
+    yogas_data = chart_data.get("yogas", {})
+    yogas_html = render_classical_yogas_section(yogas_data, notation) if (include_yogas and yogas_data) else ""
 
     # 9. Build Divisional Clusters (D9, D10, D7)
     vargas_cards = []
@@ -1255,6 +1364,14 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 
   .badge.active-dasha {{ background: #d35400; color: #ffffff; }}
 
+  /* Classical Yoga Badges & Breakers */
+  .badge.yoga-pure {{ background: #dcfce7; color: #166534; border: 1px solid #86efac; }}
+  .badge.yoga-stained {{ background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }}
+  .badge.yoga-rescued {{ background: #e0e7ff; color: #4338ca; border: 1px solid #c7d2fe; }}
+  .badge.yoga-broken {{ background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }}
+  .yoga-breaker-item {{ margin-bottom: 2px; color: #991b1b; }}
+  .yoga-pos-item {{ margin-top: 2px; color: #15803d; font-size: 6.2pt; }}
+
   .planet-badge {{
     font-weight: 600;
     color: #4a3325;
@@ -1622,6 +1739,36 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 
   </div>
   ''' if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else ''}
+
+  {f'''
+  <!-- PAGE 3: CLASSICAL YOGAS & YOGA BHANGA AUDIT -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Page 3 Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Classical Yogas & Yoga Bhanga Audit</div>
+        <div class="native-meta">
+          <span>9 Classical Parāśari Categories</span>
+          <span>Trishādaya Intrusion Audit</span>
+          <span>Nīca Bhaṅga 6-Fold Redemption</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Classical Scriptural Authority</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">BPHS Ch. 34-42, 75 • Phaladeepika Ch. 6-7</span>
+      </div>
+    </div>
+
+    <!-- Classical Yogas Master Table -->
+    {yogas_html}
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page 3: Classical Yogas & Plausibility Audit • Report Generated for {name}
+    </div>
+
+  </div>
+  ''' if (include_yogas and yogas_html) else ''}
 
 </body>
 </html>

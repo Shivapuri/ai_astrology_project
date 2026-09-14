@@ -1330,6 +1330,30 @@
             background: #f7eedd;
         }
 
+        /* Classical Yogas Table */
+        .classical-yogas-table th {
+            background: #eee5d3;
+            color: #4a3325;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 8px;
+            border: 1px solid #dcb594;
+            white-space: nowrap;
+        }
+        .classical-yogas-table td {
+            padding: 6px 8px;
+            font-size: 11px;
+            border: 1px solid #e5dccb;
+            background: #fffdfa;
+        }
+        .classical-yogas-table tr:hover td {
+            background: #fbf5ea;
+        }
+        .badge-yoga-pure { background: #dcfce7 !important; color: #15803d !important; border: 1px solid #86efac !important; }
+        .badge-yoga-stained { background: #fef3c7 !important; color: #b45309 !important; border: 1px solid #fde68a !important; }
+        .badge-yoga-rescued { background: #e0e7ff !important; color: #4338ca !important; border: 1px solid #c7d2fe !important; }
+        .badge-yoga-broken { background: #fee2e2 !important; color: #991b1b !important; border: 1px solid #fca5a5 !important; }
+
         /* Rashi Drishti Table */
         .rashi-drishti-table th {
             background: #eee5d3;
@@ -1539,6 +1563,263 @@
             align-items: center;
             gap: 5px;
             margin-bottom: 2px;
+        }
+
+        /* Obsidian-Style YAML Properties Card ("In the Beginning") */
+        .astra-props-card {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(74, 51, 37, 0.05);
+        }
+        .astra-props-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .astra-props-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: #4a3325;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .astra-props-archetype {
+            font-size: 11.5px;
+            color: #78350f;
+            font-weight: 600;
+            font-style: italic;
+            margin-bottom: 8px;
+            line-height: 1.35;
+        }
+        .astra-props-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 8px;
+        }
+        .prop-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 10.5px;
+            font-weight: 700;
+            border: 1px solid transparent;
+        }
+        .badge-dharma { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        .badge-artha { background: #dcfce7; color: #166534; border-color: #bbf7d0; }
+        .badge-kama { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+        .badge-moksha { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
+        .badge-kendra { background: #eef2ff; color: #312e81; border-color: #e0e7ff; }
+        .badge-trikona { background: #fef9c3; color: #854d0e; border-color: #fef08a; }
+        .badge-neutral { background: #f5ede0; color: #5a4638; border-color: #e2d7c5; }
+        .badge-guna { background: #f3e8ff; color: #6b21a8; border-color: #e9d5ff; }
+        .badge-element { background: #ffedd5; color: #9a3412; border-color: #fed7aa; }
+        .badge-exalted { background: #d1fae5; color: #065f46; border-color: #a7f3d0; }
+        .badge-debilitated { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+        .badge-moola { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+        
+        .astra-props-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 4px 10px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #4a3325;
+            border-top: 1px dashed #e8dfcf;
+            padding-top: 8px;
+        }
+        .astra-prop-item {
+            display: flex;
+            gap: 4px;
+        }
+        .astra-prop-key {
+            font-weight: 700;
+            color: #8c7b64;
+            min-width: 65px;
+            flex-shrink: 0;
+        }
+        .astra-prop-val {
+            color: #2b231d;
+            flex: 1;
+        }
+        .raw-yaml-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #8c7b64;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 2px 4px;
+            border-radius: 3px;
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .raw-yaml-toggle-btn:hover {
+            background: #eadecc;
+            color: #4a3325;
+        }
+        .raw-yaml-block {
+            display: none;
+            margin-top: 8px;
+            padding: 8px 10px;
+            background: #231c16;
+            color: #f7f3eb;
+            border-radius: 5px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 10px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            border: 1px solid #4a3325;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        /* Astra Context Info Tab Navigation ("Tap Design") */
+        .astra-tab-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            border-bottom: 2px solid #dcb594;
+            margin-bottom: 10px;
+            padding-bottom: 2px;
+        }
+        .astra-tab-btn {
+            background: #f5ede0;
+            border: 1px solid #e2d7c5;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            padding: 5px 9px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #6b5a4b;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            user-select: none;
+        }
+        .astra-tab-btn:hover {
+            background: #ede2d1;
+            color: #3b281c;
+        }
+        .astra-tab-btn.active {
+            background: #78350f;
+            color: #fffdfa;
+            border-color: #78350f;
+            box-shadow: 0 -1px 3px rgba(120, 53, 15, 0.2);
+        }
+        .astra-tab-pane {
+            display: none;
+            animation: fadeIn 0.15s ease-out;
+        }
+        .astra-tab-pane.active {
+            display: block;
+        }
+        .lagna-highlight-box {
+            background: #fffbeb;
+            border: 1.5px solid #f59e0b;
+            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Dignity / Condition Continuum Component */
+        .dignity-continuum-card {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 14px 0 16px 0;
+            box-shadow: 0 2px 6px rgba(74, 51, 37, 0.05);
+        }
+        .continuum-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #78350f;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px dashed #e8dfcf;
+            padding-bottom: 6px;
+        }
+        .continuum-track {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .continuum-tier {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e5dccb;
+            border-left-width: 5px;
+            background: #ffffff;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .continuum-tier:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 5px rgba(74, 51, 37, 0.08);
+        }
+        .continuum-tier.tier-high {
+            border-left-color: #16a34a;
+            background: linear-gradient(to right, #f0fdf4 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-moderate {
+            border-left-color: #0284c7;
+            background: linear-gradient(to right, #f0f9ff 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-neutral {
+            border-left-color: #d97706;
+            background: linear-gradient(to right, #fffbeb 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-low {
+            border-left-color: #ea580c;
+            background: linear-gradient(to right, #fff7ed 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-afflicted {
+            border-left-color: #dc2626;
+            background: linear-gradient(to right, #fef2f2 0%, #fffdfa 45%);
+        }
+        .tier-header {
+            font-size: 12px;
+            font-weight: 800;
+            color: #4a3325;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            line-height: 1.35;
+        }
+        .tier-desc {
+            font-size: 11.5px;
+            line-height: 1.45;
+            color: #554438;
+        }
+
+        .kb-content pre {
+            background: #231c16;
+            color: #f7f3eb;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.45;
+            overflow-x: auto;
+            white-space: pre;
+            border: 1px solid #4a3325;
+        }
+        .kb-content code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         }
 
         /* Kala 4-Column Context Menu Dialog */
@@ -2355,6 +2636,7 @@
                 <button type="button" class="floating-nav-pill" id="nav-btn-yoga" onclick="openFloatingYogaJudgment()">⚖️ Yoga Judgment</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-ashtaka" onclick="openFloatingAshtakavarga()">📊 Ashtakavarga</button>
                 <button type="button" class="floating-nav-pill" id="nav-btn-evaluation" onclick="openFloatingPlanetaryEvaluation()">🌟 Vic DiCara Scale</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-classical-yogas" onclick="openFloatingClassicalYogas()">👑 Classical Yogas</button>
             </div>
 
             <!-- Body Container -->
@@ -2550,6 +2832,8 @@
         <div class="menu-item" onclick="assignWidget('varga-lajjitadi-modifiers')">Varga Lajjitadi Modifiers</div>
         <div class="menu-item" onclick="assignWidget('shadbala-table')">Shad Bala Breakdown</div>
         <div class="menu-item" onclick="assignWidget('yoga-judgment')">⚖️ Yoga Judgment (Ishta/Kashta)</div>
+        <div class="menu-item" onclick="assignWidget('classical-yogas')" style="font-weight:bold; color:#b45309; background:#fffdf5;">👑 Classical Yogas & Breakers ★</div>
+        <div class="menu-item" onclick="assignWidget('planetary-evaluation')">🌟 Vic DiCara Scale</div>
         <!-- NEW MODULES REGISTERED -->
         <div class="menu-item" onclick="assignWidget('dashas-timeline')">📅 Vimshottari Timeline (81)</div>
         <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
@@ -3392,6 +3676,55 @@
             </div>
         </div>
     </template>
+    <template id="tmpl-classical-yogas">
+        <div class="widget-content" id="widget-classical-yogas" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #fbf7ef; border-bottom: 1px solid #e2d7c3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">👑 Classical Yogas & Yoga Bhanga Audit</span>
+                    <span class="yoga-summary-badges" style="display: flex; gap: 4px; font-size: 10px;"></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <select class="yoga-category-filter" onchange="filterClassicalYogas(this)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="all" selected>All Categories (9)</option>
+                        <option value="Pancha Mahapurusha">Pancha Mahāpuruṣa</option>
+                        <option value="Raja Yoga">Rāja Yogas</option>
+                        <option value="Dhana (Wealth)">Dhana (Wealth)</option>
+                        <option value="Daridrya (Depletion)">Dāridrya (Leakage)</option>
+                        <option value="Chandra (Lunar)">Chandra (Lunar)</option>
+                        <option value="Ravi (Solar)">Ravi (Solar)</option>
+                        <option value="Parivartana (Exchange)">Parivartana (Exchanges)</option>
+                        <option value="Viparita Raja (Reversal)">Viparīta Rāja</option>
+                        <option value="Kartari (Flanking)">Kartarī (Flanking)</option>
+                    </select>
+                    <select class="yoga-status-filter" onchange="filterClassicalYogas(this)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="Pure">Pure & Eminent</option>
+                        <option value="Stained">Stained / Challenged</option>
+                        <option value="Rescued">Rescued (Neecha Bhanga)</option>
+                        <option value="Broken">Broken (Yoga Bhanga)</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <table class="classical-yogas-table dignity-grid" style="width: 100%; min-width: 950px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">Yoga & Classical Source</th>
+                                <th style="width: 120px;">Status & Quality</th>
+                                <th style="width: 130px;">Plausibility Score</th>
+                                <th style="width: 130px;">Grahas & Houses</th>
+                                <th style="min-width: 260px;">Archetype & Worldly Manifestation</th>
+                                <th style="min-width: 220px;">Yoga Breakers (Bhanga Audit)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>
     <template id="tmpl-dashas-timeline">
         <div class="widget-content" id="widget-dashas-timeline">
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
@@ -3763,7 +4096,7 @@
                 const tmpl = document.getElementById('tmpl-' + widgetType);
                 if (tmpl) {
                     contentDiv.appendChild(tmpl.content.cloneNode(true));
-                    if (widgetType === 'info' || widgetType === 'planetary-evaluation') {
+                    if (widgetType === 'info' || widgetType === 'planetary-evaluation' || widgetType === 'classical-yogas') {
                         contentDiv.classList.add('scrollable');
                     } else {
                         contentDiv.classList.remove('scrollable');
@@ -3908,6 +4241,9 @@
             }
             else if (widgetType === 'planetary-evaluation') {
                 updatePlanetaryEvaluationWidget(cell);
+            }
+            else if (widgetType === 'classical-yogas') {
+                updateClassicalYogasWidget(cell);
             }
             else if (widgetType === 'info') {
                 refreshContextInfoForCell(cell);
@@ -4564,6 +4900,170 @@
             drawers.forEach(d => {
                 d.style.display = checkbox.checked ? 'table-row' : 'none';
             });
+        }
+
+        function openFloatingClassicalYogas() {
+            closeKalaMenu();
+            const modal = document.getElementById('widgetMaximizeModal');
+            const card = document.getElementById('widgetMaximizeCard');
+            const titleEl = document.getElementById('widgetMaximizeModalTitle');
+            const container = document.getElementById('widgetMaximizeContainer');
+            if (!modal || !titleEl || !container || !currentChartData) return;
+
+            resetFloatingWindowPosition();
+            if (card) {
+                const w = Math.min(1180, window.innerWidth - 40);
+                const h = Math.min(740, window.innerHeight - 60);
+                card.style.width = w + 'px';
+                card.style.height = h + 'px';
+                card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+                card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+            }
+
+            setActiveFloatingNav('nav-btn-classical-yogas');
+            const subjectName = (currentChartData.subject_info && currentChartData.subject_info.name) ? currentChartData.subject_info.name : 'Chart';
+            titleEl.textContent = subjectName + " — Classical Yogas & Yoga Bhanga Audit (Parāśara & Mantreśvara)";
+
+            const tmpl = document.getElementById('tmpl-classical-yogas');
+            if (tmpl) {
+                container.innerHTML = '';
+                container.appendChild(tmpl.content.cloneNode(true));
+                updateClassicalYogasWidget(container);
+            }
+
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function updateClassicalYogasWidget(cell) {
+            if (!cell) {
+                cell = document.querySelector('.grid-cell[data-widget="classical-yogas"]') ||
+                       document.getElementById('widgetMaximizeContainer') ||
+                       document.getElementById('widget-classical-yogas');
+            }
+            if (!cell || !currentChartData || !currentChartData.yogas) return;
+            populateClassicalYogasTable(cell);
+        }
+
+        function populateClassicalYogasTable(container) {
+            const targetEl = container.querySelector('#widget-classical-yogas') || container;
+            const tbody = targetEl.querySelector('tbody');
+            if (!tbody || !currentChartData || !currentChartData.yogas) return;
+
+            const yogasData = currentChartData.yogas;
+            const allYogas = yogasData.yogas || [];
+            const summary = yogasData.summary || { pure: 0, stained: 0, rescued: 0, broken: 0 };
+
+            const summaryContainer = targetEl.querySelector('.yoga-summary-badges');
+            if (summaryContainer) {
+                summaryContainer.innerHTML = `
+                    <span class="badge badge-yoga-pure" style="font-size:10px; padding:2px 6px;">Pure: ${summary.pure || 0}</span>
+                    <span class="badge badge-yoga-stained" style="font-size:10px; padding:2px 6px;">Stained: ${summary.stained || 0}</span>
+                    <span class="badge badge-yoga-rescued" style="font-size:10px; padding:2px 6px;">Rescued: ${summary.rescued || 0}</span>
+                    <span class="badge badge-yoga-broken" style="font-size:10px; padding:2px 6px;">Broken: ${summary.broken || 0}</span>
+                `;
+            }
+
+            const catSelect = targetEl.querySelector('.yoga-category-filter');
+            const statusSelect = targetEl.querySelector('.yoga-status-filter');
+            const catFilter = catSelect ? catSelect.value : 'all';
+            const statusFilter = statusSelect ? statusSelect.value : 'all';
+
+            tbody.innerHTML = '';
+
+            const filtered = allYogas.filter(y => {
+                if (catFilter !== 'all' && y.category !== catFilter) return false;
+                if (statusFilter !== 'all') {
+                    if (statusFilter === 'Pure' && !y.status.includes('Pure')) return false;
+                    if (statusFilter === 'Stained' && !y.status.includes('Stained')) return false;
+                    if (statusFilter === 'Rescued' && !y.status.includes('Rescued')) return false;
+                    if (statusFilter === 'Broken' && !y.status.includes('Broken')) return false;
+                }
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding:20px; color:#78716c; font-style:italic;">No yogas match the selected filter criteria.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(y => {
+                const tr = document.createElement('tr');
+                
+                let statusBadgeClass = 'badge-yoga-pure';
+                let barColor = '#16a34a';
+                if (y.status.includes('Stained')) {
+                    statusBadgeClass = 'badge-yoga-stained';
+                    barColor = '#d97706';
+                } else if (y.status.includes('Rescued')) {
+                    statusBadgeClass = 'badge-yoga-rescued';
+                    barColor = '#4f46e5';
+                } else if (y.status.includes('Broken')) {
+                    statusBadgeClass = 'badge-yoga-broken';
+                    barColor = '#dc2626';
+                }
+
+                const planetsHtml = (y.participating_planets || []).map(p => `<span class="planet-badge" style="display:inline-flex; align-items:center; gap:2px; font-weight:600; color:#4a3325; background:#f7f2ea; border:1px solid #e5dccb; border-radius:3px; padding:1px 4px; margin:1px;">${p}</span>`).join(' ');
+                const housesStr = (y.participating_houses || []).filter(h => h > 0).map(h => `H${h}`).join(', ') || '-';
+
+                let breakersHtml = '<span style="color:#16a34a; font-weight:600; font-size:11px;">✓ Pristine (No Breakers)</span>';
+                if (y.breakers && y.breakers.length > 0) {
+                    breakersHtml = y.breakers.map(b => `
+                        <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:4px; padding:3px 6px; margin-bottom:3px; font-size:10.5px;">
+                            <div style="font-weight:700; color:#991b1b;">⚠️ ${b.factor} (-${Math.round(b.penalty)}%)</div>
+                            <div style="color:#475569; font-size:10px;">${b.description}</div>
+                        </div>
+                    `).join('');
+                }
+
+                let positiveHtml = '';
+                if (y.positive_factors && y.positive_factors.length > 0) {
+                    positiveHtml = y.positive_factors.slice(0, 2).map(pf => `
+                        <div style="color:#166534; font-size:10px; margin-top:2px;">✓ ${pf}</div>
+                    `).join('');
+                }
+
+                const effectsStr = (y.manifestation_effects || []).join(' ') || '';
+
+                tr.innerHTML = `
+                    <td style="vertical-align:top;">
+                        <div style="font-weight:700; color:#4a3325; font-size:12px;">${y.name}</div>
+                        <div style="font-size:10.5px; color:#78716c; margin-top:2px;">${y.category}</div>
+                        <div style="font-size:9.5px; color:#b45309; margin-top:1px;">📜 ${y.scripture_ref || ''}</div>
+                    </td>
+                    <td style="vertical-align:top;">
+                        <span class="badge ${statusBadgeClass}" style="display:inline-block; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:4px; white-space:nowrap;">${y.status}</span>
+                    </td>
+                    <td style="vertical-align:top;">
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <div style="flex:1; height:8px; background:#e2e8f0; border-radius:4px; overflow:hidden; min-width:45px;">
+                                <div style="width:${y.plausibility_score}%; height:100%; background:${barColor}; border-radius:4px;"></div>
+                            </div>
+                            <span style="font-weight:700; font-size:11.5px; color:${barColor}; font-family:monospace;">${y.plausibility_score}%</span>
+                        </div>
+                    </td>
+                    <td style="vertical-align:top;">
+                        <div>${planetsHtml}</div>
+                        <div style="font-size:10px; color:#64748b; margin-top:3px;"><strong>Houses:</strong> ${housesStr}</div>
+                    </td>
+                    <td style="vertical-align:top;">
+                        <div style="font-weight:600; color:#1e293b; font-size:11.5px; margin-bottom:3px;">${y.archetype || ''}</div>
+                        <div style="color:#475569; font-size:11px; line-height:1.35;">${effectsStr}</div>
+                        ${positiveHtml}
+                    </td>
+                    <td style="vertical-align:top;">
+                        ${breakersHtml}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterClassicalYogas(el) {
+            const container = el.closest('.grid-cell') || el.closest('#widgetMaximizeModal') || el.closest('#widget-classical-yogas');
+            if (container) {
+                populateClassicalYogasTable(container);
+            }
         }
 
         function openFloatingPlanetaryEvaluation() {
@@ -5636,6 +6136,11 @@
             document.querySelectorAll('.grid-cell[data-widget="planetary-evaluation"]').forEach(cell => {
                 updatePlanetaryEvaluationWidget(cell);
             });
+
+            // Classical Yogas & Yoga Bhanga Audit
+            document.querySelectorAll('.grid-cell[data-widget="classical-yogas"]').forEach(cell => {
+                updateClassicalYogasWidget(cell);
+            });
             
             // Dignities in Vargas
             updateVargaDignitiesTable();
@@ -5697,6 +6202,11 @@
                 if (navBtn && navBtn.classList.contains('active')) {
                     const cont = document.getElementById('widgetMaximizeContainer');
                     if (cont) updatePlanetaryEvaluationWidget(cont);
+                }
+                const navBtnYogas = document.getElementById('nav-btn-classical-yogas');
+                if (navBtnYogas && navBtnYogas.classList.contains('active')) {
+                    const cont = document.getElementById('widgetMaximizeContainer');
+                    if (cont) updateClassicalYogasWidget(cont);
                 }
             }
         }
@@ -8822,6 +9332,146 @@
             });
         }
 
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function toggleRawYaml(btn) {
+            const card = btn.closest('.astra-props-card');
+            if (!card) return;
+            const block = card.querySelector('.raw-yaml-block');
+            if (!block) return;
+            if (block.style.display === 'block') {
+                block.style.display = 'none';
+                btn.innerHTML = '▾ Show Raw YAML';
+            } else {
+                block.style.display = 'block';
+                btn.innerHTML = '▴ Hide Raw YAML';
+            }
+        }
+
+        function switchContextInfoTab(containerUid, tabKey) {
+            const container = document.getElementById(containerUid);
+            if (!container) return;
+            
+            const btns = container.querySelectorAll('.astra-tab-btn');
+            btns.forEach(b => {
+                if (b.getAttribute('data-tab') === tabKey) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+
+            const panes = container.querySelectorAll('.astra-tab-pane');
+            panes.forEach(p => {
+                if (p.getAttribute('data-tab-pane') === tabKey) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+
+            window._lastContextTab = tabKey;
+        }
+
+        function renderYamlPropertiesHeader(type, kbData) {
+            if (!kbData || !kbData.properties) return '';
+            const p = kbData.properties;
+            const rawYaml = kbData.raw_yaml || '';
+
+            let badgesHtml = '';
+            let gridHtml = '';
+
+            if (type === 'house') {
+                if (p.purushartha) {
+                    let pClass = 'badge-neutral';
+                    const pl = p.purushartha.toLowerCase();
+                    if (pl.includes('dharma')) pClass = 'badge-dharma';
+                    else if (pl.includes('artha')) pClass = 'badge-artha';
+                    else if (pl.includes('kama')) pClass = 'badge-kama';
+                    else if (pl.includes('moksha')) pClass = 'badge-moksha';
+                    badgesHtml += `<span class="prop-badge ${pClass}">📿 ${escapeHtml(p.purushartha.split(' - ')[0])}</span>`;
+                }
+
+                if (Array.isArray(p.structural_classifications)) {
+                    p.structural_classifications.forEach(sc => {
+                        let cClass = 'badge-neutral';
+                        const scl = sc.toLowerCase();
+                        if (scl.includes('kendra')) cClass = 'badge-kendra';
+                        else if (scl.includes('trikona')) cClass = 'badge-trikona';
+                        badgesHtml += `<span class="prop-badge ${cClass}">🏛️ ${escapeHtml(sc.split(' (')[0])}</span>`;
+                    });
+                }
+
+                if (p.natural_sign) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Sign / Lord:</span><span class="astra-prop-val">${escapeHtml(p.natural_sign)} (${escapeHtml(p.natural_ruler || '')})</span></div>`;
+                }
+                if (Array.isArray(p.sthira_karakas) && p.sthira_karakas.length > 0) {
+                    const karakas = p.sthira_karakas.map(k => typeof k === 'object' ? `${k.planet}` : k).join(', ');
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Kārakas:</span><span class="astra-prop-val">${escapeHtml(karakas)}</span></div>`;
+                }
+                if (Array.isArray(p.kalapurusha_anatomy) && p.kalapurusha_anatomy.length > 0) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Anatomy:</span><span class="astra-prop-val">${escapeHtml(p.kalapurusha_anatomy.slice(0, 2).join(', '))}</span></div>`;
+                }
+                if (p.astra_system_compatibility) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">System:</span><span class="astra-prop-val">Whole Sign Container + Campanus Cusp</span></div>`;
+                }
+            } else if (type === 'planet') {
+                if (p.guna) badgesHtml += `<span class="prop-badge badge-guna">🧘 ${escapeHtml(p.guna.split(' (')[0])}</span>`;
+                if (p.element) badgesHtml += `<span class="prop-badge badge-element">🔥 ${escapeHtml(p.element.split(' (')[0])}</span>`;
+                if (p.caste) badgesHtml += `<span class="prop-badge badge-neutral">🛡️ ${escapeHtml(p.caste.split(' (')[0])}</span>`;
+                if (p.gender) badgesHtml += `<span class="prop-badge badge-neutral">⚤ ${escapeHtml(p.gender)}</span>`;
+
+                if (p.exaltation_sign) badgesHtml += `<span class="prop-badge badge-exalted">⬆ Exalted: ${escapeHtml(p.exaltation_sign)}</span>`;
+                if (p.debilitation_sign) badgesHtml += `<span class="prop-badge badge-debilitated">⬇ Debilitated: ${escapeHtml(p.debilitation_sign)}</span>`;
+                if (p.moolatrikona) badgesHtml += `<span class="prop-badge badge-moola">⚖ Moolatrikona: ${escapeHtml(p.moolatrikona)}</span>`;
+
+                if (Array.isArray(p.natural_karaka) && p.natural_karaka.length > 0) {
+                    const karakas = p.natural_karaka.slice(0, 3).map(k => k.split(' (')[0]).join(', ');
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Kārakas:</span><span class="astra-prop-val">${escapeHtml(karakas)}</span></div>`;
+                }
+                if (p.ruling_sign) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Rulership:</span><span class="astra-prop-val">${escapeHtml(p.ruling_sign)}</span></div>`;
+                }
+                if (p.dosha) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Dosha:</span><span class="astra-prop-val">${escapeHtml(p.dosha.split(' (')[0])}</span></div>`;
+                }
+                if (Array.isArray(p.body_parts) && p.body_parts.length > 0) {
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Body:</span><span class="astra-prop-val">${escapeHtml(p.body_parts.slice(0, 2).join(', '))}</span></div>`;
+                }
+                if (p.gemstone || p.day) {
+                    const gems = [p.gemstone ? `Gem: ${p.gemstone}` : '', p.day ? `Day: ${p.day}` : ''].filter(Boolean).join(' | ');
+                    gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">Upāya:</span><span class="astra-prop-val">${escapeHtml(gems)}</span></div>`;
+                }
+            }
+
+            const headerTitle = type === 'house'
+                ? `House ${p.house_number || kbData.number} • ${escapeHtml(p.sanskrit_name || kbData.sanskrit_name || '')}`
+                : `${escapeHtml(kbData.name || p.planet || '')} (${escapeHtml(p.sanskrit_name || kbData.sanskrit_name || '')})`;
+
+            const archetypeText = p.archetype || kbData.archetype || kbData.title || '';
+
+            return `
+                <div class="astra-props-card">
+                    <div class="astra-props-header">
+                        <div class="astra-props-title">🏷️ ${headerTitle}</div>
+                        <button type="button" class="raw-yaml-toggle-btn" onclick="toggleRawYaml(this)">▾ Show Raw YAML</button>
+                    </div>
+                    ${archetypeText ? `<div class="astra-props-archetype">"${escapeHtml(archetypeText)}"</div>` : ''}
+                    ${badgesHtml ? `<div class="astra-props-badges">${badgesHtml}</div>` : ''}
+                    ${gridHtml ? `<div class="astra-props-grid">${gridHtml}</div>` : ''}
+                    ${rawYaml ? `<div class="raw-yaml-block">${escapeHtml(rawYaml)}</div>` : ''}
+                </div>
+            `;
+        }
+
         function renderBhavaInspectorHtml(houseId, varga = 'D1', kbData = null) {
             const houseNum = parseInt(String(houseId).replace(/[^0-9]/g, ''), 10) || 1;
             const SIGNS = [
@@ -8882,7 +9532,7 @@
             const ARUDHA_NAMES = {
                 1: 'AL (Ārūḍha Lagna)', 2: 'A2 (Dhana Pada)', 3: 'A3 (Bhrātri Pada)',
                 4: 'A4 (Mātṛ Pada)', 5: 'A5 (Putra Pada)', 6: 'A6 (Śatru Pada)',
-                7: 'A7 / A7 (Dāra Pada)', 8: 'A8 (Randhra Pada)', 9: 'A9 (Bhāgya Pada)',
+                7: 'A7 (Dāra Pada)', 8: 'A8 (Randhra Pada)', 9: 'A9 (Bhāgya Pada)',
                 10: 'A10 (Rājya Pada)', 11: 'A11 (Lābha Pada)', 12: 'UL (Upapada Lagna)'
             };
 
@@ -8949,10 +9599,27 @@
             const arudhaLabel = ARUDHA_NAMES[houseNum] || `A${houseNum}`;
             const targetVarga = VARGA_MAPPING[houseNum] || { varga: 'D1', title: 'D1', desc: '' };
 
-            let html = `
+            const containerUid = 'bhava-tabs-' + houseNum + '-' + Math.random().toString(36).substr(2, 6);
+            const validTabs = ['live', 'essence', 'condition', 'manifestations', 'diagnosis', 'remedies'];
+            const defaultTab = (window._lastContextTab && validTabs.includes(window._lastContextTab)) ? window._lastContextTab : 'live';
+
+            const propsHeader = renderYamlPropertiesHeader('house', kbData);
+
+            const tabsNav = `
+                <div class="astra-tab-bar">
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')">📊 Live Chart</button>
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')">⚡ Essence & Roots</button>
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'condition' ? 'active' : ''}" data-tab="condition" onclick="switchContextInfoTab('${containerUid}', 'condition')">⚖️ Condition</button>
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'manifestations' ? 'active' : ''}" data-tab="manifestations" onclick="switchContextInfoTab('${containerUid}', 'manifestations')">💼 Arenas</button>
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'diagnosis' ? 'active' : ''}" data-tab="diagnosis" onclick="switchContextInfoTab('${containerUid}', 'diagnosis')">🔗 Diagnosis</button>
+                    <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')">🪔 Remedies</button>
+                </div>
+            `;
+
+            const liveInspectorHtml = `
                 <div class="bhava-inspector-card">
                     <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1.5px solid #dcb594; padding-bottom: 5px;">
-                        <span style="font-size: 15px; font-weight: 800; color: #4a3325;">House ${houseNum} • ${bhavaInfo.name}</span>
+                        <span style="font-size: 14px; font-weight: 800; color: #4a3325;">House ${houseNum} • ${bhavaInfo.name}</span>
                         <span style="font-size: 11px; background: #eadecc; color: #4a3325; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
                     </div>
                     <div style="font-size: 11.5px; color: #6b5a4b; margin-bottom: 8px; font-style: italic;">
@@ -9001,16 +9668,37 @@
                 </div>
             `;
 
-            if (kbData && kbData.content) {
-                html += `
-                    <div style="margin-top: 10px; padding: 8px 10px; background: #fffdfa; border: 1px solid #e5dccb; border-radius: 6px;">
-                        <div style="font-size: 11px; font-weight: 700; color: #8c7b64; text-transform: uppercase; margin-bottom: 4px;">Parashari Classical Significance</div>
-                        <div class="kb-content" style="font-size: 12px; line-height: 1.45; color: #3d312a;">${kbData.content}</div>
-                    </div>
-                `;
-            }
+            const tabs = (kbData && kbData.tabs) ? kbData.tabs : {};
+            const essenceContent = tabs.essence || (kbData ? kbData.content : '<p>No textbook data available.</p>');
+            const conditionContent = tabs.condition || '<p>Condition details will appear here.</p>';
+            const manifestationsContent = tabs.manifestations || '<p>Manifestations details will appear here.</p>';
+            const diagnosisContent = tabs.diagnosis || '<p>Diagnosis details will appear here.</p>';
+            const remediesContent = tabs.remedies || '<p>Remedies details will appear here.</p>';
 
-            return html;
+            return `
+                <div id="${containerUid}" class="astra-context-container">
+                    ${propsHeader}
+                    ${tabsNav}
+                    <div class="astra-tab-pane ${defaultTab === 'live' ? 'active' : ''}" data-tab-pane="live">
+                        ${liveInspectorHtml}
+                    </div>
+                    <div class="astra-tab-pane ${defaultTab === 'essence' ? 'active' : ''}" data-tab-pane="essence">
+                        <div class="kb-content">${essenceContent}</div>
+                    </div>
+                    <div class="astra-tab-pane ${defaultTab === 'condition' ? 'active' : ''}" data-tab-pane="condition">
+                        <div class="kb-content">${conditionContent}</div>
+                    </div>
+                    <div class="astra-tab-pane ${defaultTab === 'manifestations' ? 'active' : ''}" data-tab-pane="manifestations">
+                        <div class="kb-content">${manifestationsContent}</div>
+                    </div>
+                    <div class="astra-tab-pane ${defaultTab === 'diagnosis' ? 'active' : ''}" data-tab-pane="diagnosis">
+                        <div class="kb-content">${diagnosisContent}</div>
+                    </div>
+                    <div class="astra-tab-pane ${defaultTab === 'remedies' ? 'active' : ''}" data-tab-pane="remedies">
+                        <div class="kb-content">${remediesContent}</div>
+                    </div>
+                </div>
+            `;
         }
 
         function updateNakshatraTable() {
@@ -10115,29 +10803,163 @@
             
             if (type === 'planet') {
                 const mathData = currentChartData && currentChartData.vargas && currentChartData.vargas[varga] && currentChartData.vargas[varga].grahas[id];
-                
-                if (kbData) {
-                    infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
-                    infoHtml += `<div style="font-size: 13px; margin-bottom: 10px;"><i>${kbData.title}</i></div>`;
+                const vData = currentChartData && currentChartData.vargas ? currentChartData.vargas[varga] : null;
+                const lagnaSign = (vData && vData.lagna && vData.lagna.sign) ? vData.lagna.sign : 'Aries';
+
+                const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+                const PLANET_SIGNS = {
+                    'Sun': ['Leo'],
+                    'Moon': ['Cancer'],
+                    'Mars': ['Aries', 'Scorpio'],
+                    'Mercury': ['Gemini', 'Virgo'],
+                    'Jupiter': ['Sagittarius', 'Pisces'],
+                    'Venus': ['Taurus', 'Libra'],
+                    'Saturn': ['Capricorn', 'Aquarius'],
+                    'Rahu': ['Aquarius'],
+                    'Ketu': ['Scorpio']
+                };
+
+                const ruledHouses = [];
+                if (PLANET_SIGNS[id]) {
+                    const lagnaIdx = SIGNS.indexOf(lagnaSign);
+                    PLANET_SIGNS[id].forEach(s => {
+                        const sIdx = SIGNS.indexOf(s);
+                        if (sIdx !== -1 && lagnaIdx !== -1) {
+                            const hNum = ((sIdx - lagnaIdx + 12) % 12) + 1;
+                            ruledHouses.push(`House ${hNum} (${s})`);
+                        }
+                    });
                 }
-                
-                if (mathData) {
-                    infoHtml += `<p><strong>Degree in ${varga}:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
-                    infoHtml += `<p><strong>Sign:</strong> ${mathData.sign}</p>`;
+
+                if (kbData && kbData.properties) {
+                    const containerUid = 'planet-tabs-' + id + '-' + Math.random().toString(36).substr(2, 6);
+                    const validTabs = ['live', 'essence', 'psychology', 'dignity', 'realworld', 'lagnas', 'remedies'];
+                    const defaultTab = (window._lastContextTab && validTabs.includes(window._lastContextTab)) ? window._lastContextTab : 'live';
+
+                    const propsHeader = renderYamlPropertiesHeader('planet', kbData);
+
+                    const tabsNav = `
+                        <div class="astra-tab-bar">
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')">🪐 Live Chart</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')">⚡ Essence</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'psychology' ? 'active' : ''}" data-tab="psychology" onclick="switchContextInfoTab('${containerUid}', 'psychology')">🧠 Psychology</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'dignity' ? 'active' : ''}" data-tab="dignity" onclick="switchContextInfoTab('${containerUid}', 'dignity')">⚖️ Dignity</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'realworld' ? 'active' : ''}" data-tab="realworld" onclick="switchContextInfoTab('${containerUid}', 'realworld')">💼 Real-World</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'lagnas' ? 'active' : ''}" data-tab="lagnas" onclick="switchContextInfoTab('${containerUid}', 'lagnas')">👑 12 Lagnas</button>
+                            <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')">🪔 Remedies</button>
+                        </div>
+                    `;
+
+                    let liveCardHtml = `
+                        <div class="bhava-inspector-card">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1.5px solid #dcb594; padding-bottom: 5px;">
+                                <span style="font-size: 14px; font-weight: 800; color: #4a3325;">${escapeHtml(id)} • Live Placement</span>
+                                <span style="font-size: 11px; background: #eadecc; color: #4a3325; padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
+                            </div>
+                    `;
+
+                    if (mathData) {
+                        const nakData = currentChartData && currentChartData.nakshatras && currentChartData.nakshatras.grahas[id];
+                        const dignityStr = (mathData.dignity_breakdown && mathData.dignity_breakdown.final_dignity) ? mathData.dignity_breakdown.final_dignity : (mathData.dignity || 'Neutral');
+                        
+                        liveCardHtml += `
+                            <div class="bhava-step">
+                                <div class="bhava-step-title"><span>1. Position & Motion</span></div>
+                                <div><strong>Sign:</strong> ${mathData.sign} at <strong>${mathData.degree_0_to_30.toFixed(2)}°</strong></div>
+                                ${nakData ? `<div><strong>Nakshatra:</strong> ${nakData.nakshatra} (Pada ${nakData.pada})</div>` : ''}
+                            </div>
+                            <div class="bhava-step">
+                                <div class="bhava-step-title"><span>2. Dignity in ${varga}</span></div>
+                                <div><strong>Status:</strong> <span style="font-weight: 700; color: #78350f;">${dignityStr}</span></div>
+                            </div>
+                        `;
+                    }
+
+                    if (ruledHouses.length > 0) {
+                        liveCardHtml += `
+                            <div class="bhava-step">
+                                <div class="bhava-step-title"><span>3. Role for ${lagnaSign} Ascendant</span></div>
+                                <div><strong>Lord of:</strong> <span style="color: #1b5e20; font-weight: 700;">${ruledHouses.join(' & ')}</span></div>
+                            </div>
+                        `;
+                    }
+
+                    liveCardHtml += `</div>`;
+
+                    const tabs = (kbData && kbData.tabs) ? kbData.tabs : {};
+                    const essenceContent = tabs.essence || (kbData ? kbData.content : '<p>No textbook data available.</p>');
+                    const psychologyContent = tabs.psychology || '<p>Psychology details will appear here.</p>';
+                    const dignityContent = tabs.dignity || '<p>Dignity details will appear here.</p>';
+                    const realworldContent = tabs.realworld || '<p>Real-world details will appear here.</p>';
                     
-                    const nakData = currentChartData && currentChartData.nakshatras && currentChartData.nakshatras.grahas[id];
-                    if (nakData) {
-                        infoHtml += `<p><strong>Nakshatra:</strong> ${nakData.nakshatra} (Pada ${nakData.pada})</p>`;
+                    let lagnasContent = tabs.lagnas || '<p>Ascendant details will appear here.</p>';
+                    if (lagnaSign && tabs.lagnas) {
+                        const highlightBanner = `
+                            <div class="lagna-highlight-box">
+                                <div style="font-weight: 800; font-size: 12px; color: #92400e; margin-bottom: 2px;">
+                                    👑 Native's Rising Sign: ${lagnaSign} Ascendant
+                                </div>
+                                <div style="font-size: 11.5px; color: #78350f;">
+                                    For this chart, ${escapeHtml(id)} governs <strong>${ruledHouses.join(' & ')}</strong>.
+                                </div>
+                            </div>
+                        `;
+                        lagnasContent = highlightBanner + lagnasContent;
+                    }
+
+                    const remediesContent = tabs.remedies || '<p>Remedies details will appear here.</p>';
+
+                    infoHtml = `
+                        <div id="${containerUid}" class="astra-context-container">
+                            ${propsHeader}
+                            ${tabsNav}
+                            <div class="astra-tab-pane ${defaultTab === 'live' ? 'active' : ''}" data-tab-pane="live">
+                                ${liveCardHtml}
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'essence' ? 'active' : ''}" data-tab-pane="essence">
+                                <div class="kb-content">${essenceContent}</div>
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'psychology' ? 'active' : ''}" data-tab-pane="psychology">
+                                <div class="kb-content">${psychologyContent}</div>
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'dignity' ? 'active' : ''}" data-tab-pane="dignity">
+                                <div class="kb-content">${dignityContent}</div>
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'realworld' ? 'active' : ''}" data-tab-pane="realworld">
+                                <div class="kb-content">${realworldContent}</div>
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'lagnas' ? 'active' : ''}" data-tab-pane="lagnas">
+                                <div class="kb-content">${lagnasContent}</div>
+                            </div>
+                            <div class="astra-tab-pane ${defaultTab === 'remedies' ? 'active' : ''}" data-tab-pane="remedies">
+                                <div class="kb-content">${remediesContent}</div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    if (kbData) {
+                        infoHtml = `<h3>${id} (${kbData.sanskrit_name})</h3>`;
+                        infoHtml += `<div style="font-size: 13px; margin-bottom: 10px;"><i>${kbData.title}</i></div>`;
                     }
                     
-                    if (mathData.dignity_breakdown && mathData.dignity_breakdown.final_dignity) {
-                        infoHtml += `<p><strong>Dignity in ${varga}:</strong> ${mathData.dignity_breakdown.final_dignity}</p>`;
+                    if (mathData) {
+                        infoHtml += `<p><strong>Degree in ${varga}:</strong> ${mathData.degree_0_to_30.toFixed(2)}°</p>`;
+                        infoHtml += `<p><strong>Sign:</strong> ${mathData.sign}</p>`;
+                        
+                        const nakData = currentChartData && currentChartData.nakshatras && currentChartData.nakshatras.grahas[id];
+                        if (nakData) {
+                            infoHtml += `<p><strong>Nakshatra:</strong> ${nakData.nakshatra} (Pada ${nakData.pada})</p>`;
+                        }
+                        
+                        if (mathData.dignity_breakdown && mathData.dignity_breakdown.final_dignity) {
+                            infoHtml += `<p><strong>Dignity in ${varga}:</strong> ${mathData.dignity_breakdown.final_dignity}</p>`;
+                        }
                     }
-                }
-                
-                if (kbData && kbData.content) {
-                    infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
-                    infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                    
+                    if (kbData && kbData.content) {
+                        infoHtml += `<hr style="border: 0; border-top: 1px solid #e5dccb; margin: 15px 0;">`;
+                        infoHtml += `<div class="kb-content">${kbData.content}</div>`;
+                    }
                 }
             } else if (type === 'sign') {
                 if (kbData) {

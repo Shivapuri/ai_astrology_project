@@ -59,6 +59,13 @@ If you are modifying `generate_jyotish.py`, you must strictly observe the follow
 *   **Chara Karakas (7-Graha Scheme, BPHS Ch. 32):** Ranks the 7 classical physical planets (Sun through Saturn) by degree traversed in sign ($0^\circ \text{ to } 30^\circ$) in descending order to identify AK through DK. Calculated on D1 longitudes and preserved across all Vargas.
 *   **Functional Rulerships (BPHS Ch. 34):** Identifies house lords from Whole Sign Ascendant. Computes Yogakaraka (simultaneous lordship of Kendra and Trikona), Lagneśa, Māraka (H2/H7), and Bādhaka (Movable $\rightarrow$ H11, Fixed $\rightarrow$ H9, Dual $\rightarrow$ H7). Evaluated for D1 and dynamically for each Varga Lagna.
 
+### G. Classical Yogas & Yoga Breaker Audit (BPHS & Phaladeepika)
+*   **Subsystem Integration:** Delegated to `jyotish/yogas/` and orchestrated via `detect_all_yogas`.
+*   **Scope:** Scans 9 distinct categories (Pancha Mahapurusha, Raja Yogas, Dhana, Daridrya, Lunar, Solar, Parivartana, Viparita Raja, and Kartari).
+*   **Yoga Breakers (*Yoga Bhanga*):** Audits Trishadaya lord intrusions (11th > 6th > 3rd), deep combustion (< 8°/3°), unredeemed debility, host dispositor collapse, dusthana entrapment, and low Shadbala.
+*   **Cancellation of Fall (*Neecha Bhanga*):** Evaluates classical 6-condition redemption rules (Lord in Kendra, Exaltation Lord in Kendra, Mutual Kendra with Moon/Lagna, etc.).
+*   **Plausibility & Status:** Computes a continuous 0–100% Plausibility Score and categorizes each yoga into 4 discrete operational tiers: `Pure & Eminent`, `Stained / Challenged`, `Rescued`, or `Broken`.
+
 ---
 
 ## 3. Textual Grounding & Quotations (MANDATORY)
