@@ -2,14 +2,15 @@
 Unit and regression tests for the Lagna (Ascendant) Vitality & Strength Diagnostic Engine.
 Validates:
 1. 5 Classical Diagnostic Pillars:
-   - Pillar 1: Lagna Lord (Lagneśa) Dignity, Shadbala Muscle, Motion, and Combustion.
-   - Pillar 2: Lagna Lord Field Placement (Kendra/Trikona vs Dusthāna).
+   - Pillar 1: Lagna Lord (Lagneśa) Dignity, Sthana Bala, Shadbala Muscle & Rank, Lajjitādi Feeling States, Conjunctions, Motion, and Combustion.
+   - Pillar 2: Lagna Lord Field Placement (Kendra/Trikona vs Dusthāna) & Digbala Leverage.
    - Pillar 3: 1st House Occupants (Benefic armor vs Malefic stress/grit).
-   - Pillar 4: Sky-Light (Aspects on Cusp 1 / Bhava Dṛṣṭi, Jupiter protective ray, Lord aspect).
+   - Pillar 4: Sky-Light (Aspects on Cusp 1 / Bhava Dṛṣṭi, Jupiter protective ray) & 1st House Karaka Factor (Sun).
    - Pillar 5: Enclosure (Śubha Kartarī vs Pāpa Kartarī around House 1).
 2. Clamped vitality score range (1.0 to 10.0) and tier archetypes.
-3. Integration with generate_kala_chart and planetary_evaluation payload.
-4. Edge-case resilience (missing shadbala, aspects, or empty data).
+3. Realistic contrast between outward executive powerhouses (Trump) and contemplative, internalized charts (Shivapuri).
+4. Integration with generate_kala_chart and planetary_evaluation payload.
+5. Edge-case resilience (missing shadbala, aspects, or empty data).
 """
 
 import pytest
@@ -29,6 +30,19 @@ TRUMP_DOB = {
     "timezone_offset": -4.0  # EDT
 }
 
+# Swami Shivapuri Chart coordinates
+SHIVAPURI_DOB = {
+    "name": "Swami Shivapuri",
+    "year": 1983,
+    "month": 11,
+    "day": 10,
+    "hour": 22,
+    "minute": 20,
+    "latitude": 52.20296,
+    "longitude": 8.0448,
+    "timezone_offset": 1.0  # CET
+}
+
 # Angelina Jolie Chart coordinates
 JOLIE_DOB = {
     "name": "Angelina Jolie",
@@ -45,6 +59,10 @@ JOLIE_DOB = {
 @pytest.fixture(scope="module")
 def trump_chart():
     return generate_kala_chart(**TRUMP_DOB)
+
+@pytest.fixture(scope="module")
+def shivapuri_chart():
+    return generate_kala_chart(**SHIVAPURI_DOB)
 
 @pytest.fixture(scope="module")
 def jolie_chart():
@@ -71,8 +89,8 @@ def test_trump_lagna_evaluation(trump_chart):
     - Tropical Leo Lagna (Sun as Lord).
     - Mars in House 1 (conjoined Regulus / Lagna, giving Yogakāraka/commanding grit).
     - Sun in House 11 (Lābha Bhāva).
-    - Rank #1 Sun Shadbala with abundant surplus.
-    - Vitality Tier should be 'Robust Horizon' or 'Sovereign Citadel' (score >= 7.3).
+    - Rank #1 Sun Shadbala with abundant surplus (153%).
+    - Vitality Tier should be 'Sovereign Citadel' (score >= 8.8).
     """
     lagna_eval = trump_chart["planetary_evaluation"]["lagna_evaluation"]
     assert lagna_eval["lagna_sign"] == "Leo"
@@ -83,24 +101,50 @@ def test_trump_lagna_evaluation(trump_chart):
     # Score checks
     score = lagna_eval["vitality_score"]
     assert 1.0 <= score <= 10.0
-    assert score >= 7.3, f"Expected Trump's Lagna vitality to be >= 7.3, got {score}"
-    assert lagna_eval["vitality_tier"] in ["Robust Horizon", "Sovereign Citadel"]
+    assert score >= 8.8, f"Expected Trump's Lagna vitality to be >= 8.8, got {score}"
+    assert lagna_eval["vitality_tier"] == "Sovereign Citadel"
     assert lagna_eval["vitality_class"] == "robust"
+
+
+def test_shivapuri_lagna_evaluation(shivapuri_chart, trump_chart):
+    """
+    Verify Swami Shivapuri's Lagna diagnostic:
+    - Tropical Leo Lagna (Sun as Lord & Karaka).
+    - Sun in House 4 (Sukha / Moksha Bhāva, midnight IC nadir, low Digbala).
+    - Sun is Starved by Saturn (Kshudhita Avastha) and conjoined with malefic Saturn.
+    - Sun has 81.2% Shadbala (Rank #7 of 7).
+    - Score lands in 'Strained Horizon' (~5.1), 'The Contemplative Seeker'.
+    - Significant realistic gap between Trump (>8.8) and Shivapuri (~5.1) (> 3.5 pts).
+    """
+    lagna_eval = shivapuri_chart["planetary_evaluation"]["lagna_evaluation"]
+    assert lagna_eval["lagna_sign"] == "Leo"
+    assert lagna_eval["lord"]["name"] == "Sun"
+    assert lagna_eval["lord"]["house"] == 4
+
+    score = lagna_eval["vitality_score"]
+    trump_score = trump_chart["planetary_evaluation"]["lagna_evaluation"]["vitality_score"]
+
+    assert 4.5 <= score <= 5.8, f"Expected Shivapuri vitality ~5.1, got {score}"
+    assert lagna_eval["vitality_tier"] == "Strained Horizon"
+    assert lagna_eval["archetype"] == "The Contemplative Seeker"
+    assert (trump_score - score) >= 3.5, f"Expected gap >= 3.5 points between Trump and Shivapuri, got {trump_score - score}"
 
 
 def test_jolie_lagna_evaluation(jolie_chart):
     """
     Verify Angelina Jolie's Lagna diagnostic:
     - Tropical Cancer Lagna (Moon as Lord).
-    - Score is within valid bounds.
-    - All 5 pillar scores exist and sum to raw score before clamping.
+    - Moon in House 10 (Karma Bhāva action pillar).
+    - Venus and Saturn in House 1.
+    - Score is within 'Capable Vessel' range (~6.7).
     """
     lagna_eval = jolie_chart["planetary_evaluation"]["lagna_evaluation"]
     assert lagna_eval["lagna_sign"] == "Cancer"
     assert lagna_eval["lord"]["name"] == "Moon"
 
     score = lagna_eval["vitality_score"]
-    assert 1.0 <= score <= 10.0
+    assert 6.0 <= score <= 7.5, f"Expected Jolie vitality ~6.7, got {score}"
+    assert lagna_eval["vitality_tier"] == "Capable Vessel"
 
     pillars = lagna_eval["pillar_scores"]
     assert "pillar_1_captain" in pillars
@@ -128,7 +172,6 @@ def test_score_boundaries_and_tiers():
         (2.5, "Vulnerable Horizon", "The Invalid in a Palace"),
     ]
     for score_val, expected_tier, expected_archetype in tier_thresholds:
-        # Mock minimal vargas
         mock_vargas = {
             "D1": {
                 "lagna": {"sign": "Aries", "degree_0_to_30": 15.0, "nakshatra": "Bharani", "pada": 1},
@@ -147,7 +190,6 @@ def test_graceful_null_handling():
     assert evaluate_lagna_vitality({}) == {}
     assert evaluate_lagna_vitality({"D1": {}}) == {}
 
-    # Partial data: vargas provided without shadbala or aspects
     minimal_vargas = {
         "D1": {
             "lagna": {"sign": "Taurus", "degree_0_to_30": 10.0},

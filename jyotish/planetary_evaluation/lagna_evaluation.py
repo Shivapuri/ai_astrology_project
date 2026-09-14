@@ -133,27 +133,108 @@ def evaluate_lagna_vitality(
         p1_score -= 1.2
         p1_notes.append("Lord Debilitated (-1.2): Low constitutional confidence or self-sabotage.")
 
-    # Shadbala Muscle of Lord
+    # Sthana Bala (Positional Foundation)
     sb_lord = shadbala_data.get(lord, {}) if shadbala_data else {}
+    sthana_pct = float(sb_lord.get("Pct_Required_Sthana", 100.0))
+    if sthana_pct >= 110.0:
+        p1_score += 0.3
+        p1_notes.append(f"Lord Solid Positional Strength (+0.3): Sthana Bala {sthana_pct:.0f}% provides firm anchorage.")
+
+    # Shadbala Muscle & Rank of Lord
     sb_virupas = float(sb_lord.get("Total_Virupas", 0.0))
     sb_pct = float(sb_lord.get("Pct_Required_Total", 100.0))
     sb_rank = int(sb_lord.get("Relative_Rank", 4))
 
     if sb_pct >= 130.0:
-        p1_score += 0.8
-        p1_notes.append(f"Lord Shadbala Surplus (+0.8): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) gives immense kinetic stamina.")
+        if sb_rank == 1:
+            p1_score += 1.0
+            p1_notes.append(f"Lord Shadbala Champion (+1.0): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #1) gives supreme kinetic stamina.")
+        elif sb_rank == 2:
+            p1_score += 0.8
+            p1_notes.append(f"Lord Shadbala Rank #2 (+0.8): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%) gives major kinetic horsepower.")
+        else:
+            p1_score += 0.6
+            p1_notes.append(f"Lord Shadbala Surplus (+0.6): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%) gives abundant stamina.")
     elif sb_pct >= 110.0:
-        p1_score += 0.5
-        p1_notes.append(f"Lord Shadbala Capable (+0.5): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) provides healthy strength.")
+        p1_score += 0.4
+        p1_notes.append(f"Lord Shadbala Capable (+0.4): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) provides healthy strength.")
     elif sb_pct >= 100.0:
         p1_score += 0.2
         p1_notes.append(f"Lord Shadbala Adequate (+0.2): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) meets minimum requirements.")
     elif sb_pct >= 85.0:
-        p1_score -= 0.3
-        p1_notes.append(f"Lord Shadbala Mild Deficit (-0.3): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) requires conscious energy conservation.")
+        p1_score -= 0.4
+        p1_notes.append(f"Lord Shadbala Mild Deficit (-0.4): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) requires conscious energy conservation.")
     elif sb_virupas > 0:
-        p1_score -= 0.7
-        p1_notes.append(f"Lord Shadbala Deficit (-0.7): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) indicates low physical stamina.")
+        if sb_rank == 7:
+            p1_score -= 0.9
+            p1_notes.append(f"Lord Shadbala Severe Deficit (-0.9): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #7 of 7) gives an underpowered physical engine prone to fatigue.")
+        elif sb_rank == 6:
+            p1_score -= 0.7
+            p1_notes.append(f"Lord Shadbala Deficit (-0.7): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) indicates low physical stamina.")
+        else:
+            p1_score -= 0.5
+            p1_notes.append(f"Lord Shadbala Deficit (-0.5): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%).")
+
+    # Lajjitādi Avasthā (Feeling States of the Captain)
+    lord_avasthas = lord_data.get("avasthas", {})
+    lajjitadi_list = lord_avasthas.get("lajjitadi", [])
+    is_starved = False
+    starved_saturn = False
+    is_delighted = False
+    is_proud = False
+    is_ashamed = False
+    is_agitated = False
+
+    for item in lajjitadi_list:
+        st = item.get("state", "").lower()
+        cond = item.get("condition", "").lower()
+        if "kshudhita" in st or "starved" in st:
+            is_starved = True
+            if "saturn" in cond:
+                starved_saturn = True
+        if "mudita" in st or "delighted" in st:
+            is_delighted = True
+        if "garvita" in st or "proud" in st:
+            is_proud = True
+        if "lajjita" in st or "ashamed" in st:
+            is_ashamed = True
+        if "kshobhita" in st or "agitated" in st:
+            is_agitated = True
+
+    if is_proud:
+        p1_score += 0.6
+        p1_notes.append("Lord Proud (Garvita) (+0.6): Radiant self-respect and inspiring initiative.")
+    if is_delighted:
+        p1_score += 0.4
+        p1_notes.append("Lord Delighted (Mudita) (+0.4): Receptive, encouraged, and cheered on by friendly allies.")
+    if is_starved:
+        if starved_saturn:
+            p1_score -= 0.8
+            p1_notes.append("Lord Starved by Saturn (Kshudhita) (-0.8): Painful inner critic, self-doubt, and persistent feeling of limitation or delay.")
+        else:
+            p1_score -= 0.5
+            p1_notes.append("Lord Starved (Kshudhita) (-0.5): Starved of essential emotional resources by enemies.")
+    if is_ashamed:
+        p1_score -= 0.8
+        p1_notes.append("Lord Ashamed (Lajjita) (-0.8): Shamed in action, fearful of judgment or unworthiness.")
+    if is_agitated:
+        p1_score -= 0.5
+        p1_notes.append("Lord Agitated (Kshobhita) (-0.5): Internal agitation and friction from cruel planetary influences.")
+
+    # Deeptādi / Direct Conjunction with Malefics
+    deeptadi = lord_avasthas.get("deeptadi", {})
+    d_state = deeptadi.get("state", "").lower()
+    d_cond = deeptadi.get("condition", "")
+    if "vikala" in d_state or "mutilated" in d_state:
+        if "saturn" in d_cond.lower():
+            p1_score -= 0.4
+            p1_notes.append(f"Lord Conjoined Saturn (Deeptādi Vikala) (-0.4): Direct contact with the Great Taskmaster imposes heavy duties, coldness, and sober pacing.")
+        elif "rahu" in d_cond.lower() or "ketu" in d_cond.lower():
+            p1_score -= 0.2
+            p1_notes.append(f"Lord with Nodal Influence ({d_cond}) (-0.2): Restless intensity or eccentric self-projection.")
+        else:
+            p1_score -= 0.3
+            p1_notes.append(f"Lord Conjoined Malefic ({d_cond}) (-0.3).")
 
     # Motion & Combustion
     is_retro = bool(lord_data.get("is_retrograde", False))
@@ -173,26 +254,35 @@ def evaluate_lagna_vitality(
             p1_notes.append(f"Lord Mildly Combust (-0.3): Within {sun_dist:.1f}° of Sun; internalizes self-confidence.")
 
     # -------------------------------------------------------------------------
-    # PILLAR 2: The Captain's Field Placement (Max +/- 2.0 pts)
+    # PILLAR 2: The Captain's Field Placement & Directional Leverage (Max +/- 2.0 pts)
     # -------------------------------------------------------------------------
     is_own_sign_in_house = "own" in dignity_lower
 
     if lord_house == 1:
         p2_score += 1.5
         p2_notes.append("Lord in House 1 (+1.5): Supreme self-anchoring, autonomy, and vital independence.")
-    elif lord_house in (4, 7, 10):
+    elif lord_house == 10:
+        p2_score += 1.2
+        p2_notes.append("Lord in House 10 (Karma Bhāva) (+1.2): Zenith of public action, executive honors, and social visibility.")
+    elif lord_house == 4:
+        if lord == "Sun":
+            p2_score += 0.4
+            p2_notes.append("Sun in House 4 (Sukha / Midnight Nadir) (+0.4): Deep interior peace and meditative sanctuary; vital energy is introspective rather than outward.")
+        else:
+            p2_score += 0.8
+            p2_notes.append("Lord in Kendra Bandhu (H4) (+0.8): Deep emotional security, domestic sanctuary, and supportive foundation.")
+    elif lord_house == 7:
+        p2_score += 0.7
+        p2_notes.append("Lord in Kendra Yuvati (H7) (+0.7): Societal engagement and relationship mirror.")
+    elif lord_house == 11:
         p2_score += 1.0
-        h_name = {4: "Bandhu (H4)", 7: "Yuvati (H7)", 10: "Karma (H10)"}[lord_house]
-        p2_notes.append(f"Lord in Kendra {h_name} (+1.0): Dynamic action pillar; strong capacity to manifest karma.")
+        p2_notes.append("Lord in House 11 (Lābha / Mega-gains) (+1.0): Goal actualization, massive worldly returns, and expansive network power.")
     elif lord_house == 9:
         p2_score += 1.2
         p2_notes.append("Lord in House 9 (Dharma / Bhāgya) (+1.2): Divine grace, higher ethics, and natural fortune.")
     elif lord_house == 5:
         p2_score += 1.0
         p2_notes.append("Lord in House 5 (Buddhi / Putra) (+1.0): Creative intelligence and past-life merit.")
-    elif lord_house == 11:
-        p2_score += 0.8
-        p2_notes.append("Lord in House 11 (Lābha) (+0.8): Goal realization, worldly profit, and large social reach.")
     elif lord_house == 3:
         p2_score += 0.4
         p2_notes.append("Lord in House 3 (Sahaja / Upachaya) (+0.4): Courage and progressive improvement through grit.")
@@ -214,6 +304,15 @@ def evaluate_lagna_vitality(
         else:
             p2_score -= 0.8
             p2_notes.append("Lord in House 12 (Dusthāna) (-0.8): Vitality dissipated into solitude, expenses, or detachment from worldly competition.")
+
+    # Digbala (Directional Strength) Leverage of Lord
+    sb_dig_pct = float(sb_lord.get("Pct_Required_Dig", 100.0))
+    if sb_dig_pct >= 120.0:
+        p2_score += 0.3
+        p2_notes.append(f"Lord High Directional Strength (+0.3): Digbala {sb_dig_pct:.0f}% aligns executive agency with its ideal quadrant.")
+    elif sb_dig_pct < 35.0:
+        p2_score -= 0.3
+        p2_notes.append(f"Lord Directional Deficit (-0.3): Digbala {sb_dig_pct:.0f}% places the captain away from its natural compass point.")
 
     # -------------------------------------------------------------------------
     # PILLAR 3: Occupants of the 1st House (Bhavastha Grahas) (Max +/- 1.8 pts)
@@ -267,7 +366,7 @@ def evaluate_lagna_vitality(
                 p3_notes.append("Ketu in House 1 (-0.5): Dissociation from physical needs, ascetic detachment, and enigmatic self-expression.")
 
     # -------------------------------------------------------------------------
-    # PILLAR 4: Sky-Light (Aspects on Cusp 1 / Bhava Dṛṣṭi) (Max +/- 1.5 pts)
+    # PILLAR 4: Sky-Light & The Karaka Factor (Max +/- 1.8 pts)
     # -------------------------------------------------------------------------
     cusp1_net = 0.0
     cusp1_plus = 0.0
@@ -316,6 +415,32 @@ def evaluate_lagna_vitality(
     if has_lord_drishti:
         p4_score += 0.6
         p4_notes.append(f"Lagna Lord's Aspect (+0.6): {lord} gazes directly upon its own rising sign, unconditionally shielding life vitality.")
+
+    # The Karaka Factor: The Sun as Naisargika Karaka of House 1 / Vitality (Vic DiCara 3-Point Rule)
+    sun_data = grahas.get("Sun", {})
+    sb_sun = shadbala_data.get("Sun", {}) if shadbala_data else {}
+    sun_pct = float(sb_sun.get("Pct_Required_Total", 100.0))
+    sun_rank = int(sb_sun.get("Relative_Rank", 4))
+    sun_laj = sun_data.get("avasthas", {}).get("lajjitadi", [])
+    sun_starved_saturn = any("starved" in x.get("state", "").lower() and "saturn" in x.get("condition", "").lower() for x in sun_laj)
+    sun_starved = any("starved" in x.get("state", "").lower() or "kshudhita" in x.get("state", "").lower() for x in sun_laj)
+
+    if lord == "Sun":
+        # Leo Lagna: Lord IS the Karaka of Vitality
+        if sun_starved_saturn and sun_pct < 85.0:
+            p4_score -= 0.5
+            p4_notes.append(f"Double-Affliction to Lord & Karaka Sun (-0.5): For Leo Lagna, Sun is both Captain and Vitality Karaka. Starvation by Saturn and low Shadbala ({sun_pct:.0f}%, Rank #{sun_rank}) compound constitutional fatigue.")
+        elif sun_pct >= 130.0 and not sun_starved:
+            p4_score += 0.5
+            p4_notes.append(f"Double-Solar Radiance (+0.5): For Leo Lagna, Sun is both Lord and Vitality Karaka. Peak Shadbala ({sun_pct:.0f}%, Rank #1) delivers double vitality and royal charisma.")
+    else:
+        # Other Lagnas
+        if sun_starved_saturn or sun_pct < 85.0:
+            p4_score -= 0.3
+            p4_notes.append(f"Afflicted Vitality Karaka (Sun) (-0.3): Universal life force suffers from fatigue ({sun_pct:.0f}%) or starvation.")
+        elif sun_pct >= 115.0 and not sun_starved:
+            p4_score += 0.3
+            p4_notes.append(f"Healthy Vitality Karaka (Sun) (+0.3): Universal life force is strong ({sun_pct:.0f}%), supporting bodily health.")
 
     # -------------------------------------------------------------------------
     # PILLAR 5: Environmental Enclosure (Kartarī Yoga) (Max +/- 1.0 pt)

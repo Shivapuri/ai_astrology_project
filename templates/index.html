@@ -5315,79 +5315,142 @@
                 // -------------------------------------------------------------
                 // 5-Pillar Composite Lagna Vitality Score (1.0 - 10.0)
                 // -------------------------------------------------------------
+                const backendLagna = (varga === 'D1' && currentChartData.planetary_evaluation && currentChartData.planetary_evaluation.lagna_evaluation)
+                    ? currentChartData.planetary_evaluation.lagna_evaluation
+                    : null;
+
                 let p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0;
-                // Pillar 1: Dignity & Muscle
-                if (lDigLow.includes('exalt')) p1 += 1.2;
-                else if (lDigLow.includes('moolatrikona')) p1 += 1.0;
-                else if (lDigLow.includes('own')) p1 += 0.8;
-                else if (lDigLow.includes('great friend')) p1 += 0.5;
-                else if (lDigLow.includes('friend')) p1 += 0.25;
-                else if (lDigLow.includes('great enemy')) p1 -= 0.8;
-                else if (lDigLow.includes('enemy')) p1 -= 0.4;
-                else if (lDigLow.includes('debilitat')) p1 -= 1.2;
-
-                if (sbPct !== null) {
-                    if (sbPct >= 130) p1 += 0.8;
-                    else if (sbPct >= 110) p1 += 0.5;
-                    else if (sbPct >= 100) p1 += 0.2;
-                    else if (sbPct >= 85) p1 -= 0.3;
-                    else p1 -= 0.7;
-                }
-                if (lordGraha.is_retrograde && ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(lgLord)) p1 += 0.3;
-                if (lordGraha.is_combust) p1 -= 0.4;
-
-                // Pillar 2: Field Placement
-                if (lordWHouse === 1) p2 += 1.5;
-                else if ([4, 7, 10].includes(lordWHouse)) p2 += 1.0;
-                else if (lordWHouse === 9) p2 += 1.2;
-                else if (lordWHouse === 5) p2 += 1.0;
-                else if (lordWHouse === 11) p2 += 0.8;
-                else if (lordWHouse === 3) p2 += 0.4;
-                else if (lordWHouse === 6) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
-                else if (lordWHouse === 8) p2 -= (lDigLow.includes('own') ? 0.0 : 1.2);
-                else if (lordWHouse === 12) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
-
-                // Pillar 3: Occupants of H1
-                lagnaConj.forEach(cp => {
-                    const cDig = (v_grahas[cp].dignity_breakdown ? v_grahas[cp].dignity_breakdown.final_dignity : '').toLowerCase();
-                    if (cp === 'Jupiter') p3 += 1.0;
-                    else if (cp === 'Venus') p3 += 0.7;
-                    else if (cp === 'Mercury') p3 += 0.6;
-                    else if (cp === 'Moon') p3 += 0.6;
-                    else if (cp === 'Mars') p3 += (cDig.includes('own') || cDig.includes('exalt') || ['Leo', 'Cancer'].includes(lgSign) ? 0.8 : -0.5);
-                    else if (cp === 'Saturn') p3 += (cDig.includes('own') || cDig.includes('exalt') ? 0.6 : -0.6);
-                    else if (cp === 'Sun' && cp !== lgLord) p3 -= 0.3;
-                    else if (cp === 'Rahu' || cp === 'Ketu') p3 -= 0.5;
-                });
-
-                // Pillar 4: Sky-Light (Cusp 1 Aspect)
-                if (c1Net >= 40.0) p4 += 0.8;
-                else if (c1Net >= 15.0) p4 += 0.4;
-                else if (c1Net <= -40.0) p4 -= 0.8;
-                else if (c1Net <= -15.0) p4 -= 0.4;
-                if (jupAspectVir > 15.0) p4 += 0.6;
-                if (lordAspectVir > 15.0) p4 += 0.6;
-
-                // Pillar 5: Enclosure
-                if (kartariType === 'Śubha Kartarī') p5 += 0.8;
-                else if (kartariType === 'Pāpa Kartarī') p5 -= 0.8;
-
-                let lagnaVitScore = Math.max(1.0, Math.min(10.0, 5.0 + p1 + p2 + p3 + p4 + p5));
-                lagnaVitScore = Math.round(lagnaVitScore * 10) / 10;
-
+                let lagnaVitScore = 5.0;
                 let lagnaTier = 'Capable Vessel';
                 let lagnaTierColor = '#1d4ed8';
                 let lagnaTierBg = '#eff6ff';
                 let lagnaTierBorder = '#93c5fd';
-                let lagnaVerdict = 'Sound, capable engine; achieves solid worldly success and actualizes yogas through deliberate effort.';
                 let lagnaArchetype = 'The Steady Navigator';
+                let lagnaVerdict = 'Sound, capable engine; achieves solid worldly success and actualizes yogas through deliberate effort.';
+
+                if (backendLagna) {
+                    lagnaVitScore = backendLagna.vitality_score;
+                    lagnaTier = backendLagna.vitality_tier;
+                    lagnaArchetype = backendLagna.archetype;
+                    lagnaVerdict = backendLagna.verdict;
+                    if (backendLagna.pillar_scores) {
+                        p1 = backendLagna.pillar_scores.pillar_1_captain || 0;
+                        p2 = backendLagna.pillar_scores.pillar_2_field || 0;
+                        p3 = backendLagna.pillar_scores.pillar_3_occupants || 0;
+                        p4 = backendLagna.pillar_scores.pillar_4_skylight || 0;
+                        p5 = backendLagna.pillar_scores.pillar_5_enclosure || 0;
+                    }
+                } else {
+                    // Fallback calculation for divisional vargas or offline mode
+                    // Pillar 1: Dignity & Muscle & Mood
+                    if (lDigLow.includes('exalt')) p1 += 1.2;
+                    else if (lDigLow.includes('moolatrikona')) p1 += 1.0;
+                    else if (lDigLow.includes('own')) p1 += 0.8;
+                    else if (lDigLow.includes('great friend')) p1 += 0.5;
+                    else if (lDigLow.includes('friend')) p1 += 0.25;
+                    else if (lDigLow.includes('great enemy')) p1 -= 0.8;
+                    else if (lDigLow.includes('enemy')) p1 -= 0.4;
+                    else if (lDigLow.includes('debilitat')) p1 -= 1.2;
+
+                    const lSt = (sbLord && sbLord.Pct_Required_Sthana !== undefined) ? sbLord.Pct_Required_Sthana : 100;
+                    if (lSt >= 110) p1 += 0.3;
+
+                    if (sbPct !== null) {
+                        if (sbPct >= 130) p1 += (sbRank === 1 ? 1.0 : (sbRank === 2 ? 0.8 : 0.6));
+                        else if (sbPct >= 110) p1 += 0.4;
+                        else if (sbPct >= 100) p1 += 0.2;
+                        else if (sbPct >= 85) p1 -= 0.4;
+                        else p1 -= (sbRank === 7 ? 0.9 : 0.6);
+                    }
+
+                    const lAvasthas = (lordGraha.avasthas && lordGraha.avasthas.lajjitadi) || [];
+                    const isStarved = lAvasthas.some(x => (x.state || '').toLowerCase().includes('starved') || (x.state || '').toLowerCase().includes('kshudhita'));
+                    const starvedBySaturn = lAvasthas.some(x => ((x.state || '').toLowerCase().includes('starved') || (x.state || '').toLowerCase().includes('kshudhita')) && (x.condition || '').toLowerCase().includes('saturn'));
+                    const isDelighted = lAvasthas.some(x => (x.state || '').toLowerCase().includes('delighted') || (x.state || '').toLowerCase().includes('mudita'));
+                    const isProud = lAvasthas.some(x => (x.state || '').toLowerCase().includes('proud') || (x.state || '').toLowerCase().includes('garvita'));
+                    const isAshamed = lAvasthas.some(x => (x.state || '').toLowerCase().includes('ashamed') || (x.state || '').toLowerCase().includes('lajjita'));
+                    const isAgitated = lAvasthas.some(x => (x.state || '').toLowerCase().includes('agitated') || (x.state || '').toLowerCase().includes('kshobhita'));
+
+                    if (isProud) p1 += 0.6;
+                    if (isDelighted) p1 += 0.4;
+                    if (isStarved) p1 -= (starvedBySaturn ? 0.8 : 0.5);
+                    if (isAshamed) p1 -= 0.8;
+                    if (isAgitated) p1 -= 0.5;
+
+                    const dState = (lordGraha.avasthas && lordGraha.avasthas.deeptadi && lordGraha.avasthas.deeptadi.state || '').toLowerCase();
+                    const dCond = (lordGraha.avasthas && lordGraha.avasthas.deeptadi && lordGraha.avasthas.deeptadi.condition || '').toLowerCase();
+                    if (dState.includes('vikala')) {
+                        p1 -= (dCond.includes('saturn') ? 0.4 : 0.3);
+                    }
+
+                    if (lordGraha.is_retrograde && ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(lgLord)) p1 += 0.3;
+                    if (lordGraha.is_combust) p1 -= 0.4;
+
+                    // Pillar 2: Field Placement
+                    if (lordWHouse === 1) p2 += 1.5;
+                    else if (lordWHouse === 10) p2 += 1.2;
+                    else if (lordWHouse === 4) p2 += (lgLord === 'Sun' ? 0.4 : 0.8);
+                    else if (lordWHouse === 11) p2 += 1.0;
+                    else if (lordWHouse === 9) p2 += 1.2;
+                    else if (lordWHouse === 5) p2 += 1.0;
+                    else if (lordWHouse === 7) p2 += 0.7;
+                    else if (lordWHouse === 3) p2 += 0.4;
+                    else if (lordWHouse === 6) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
+                    else if (lordWHouse === 8) p2 -= (lDigLow.includes('own') ? 0.0 : 1.2);
+                    else if (lordWHouse === 12) p2 -= (lDigLow.includes('own') ? 0.0 : 0.8);
+
+                    const lDigBalaPct = (sbLord && sbLord.Pct_Required_Dig !== undefined) ? sbLord.Pct_Required_Dig : 100;
+                    if (lDigBalaPct >= 120) p2 += 0.3;
+                    else if (lDigBalaPct < 35) p2 -= 0.3;
+
+                    // Pillar 3: Occupants of H1
+                    lagnaConj.forEach(cp => {
+                        const cDig = (v_grahas[cp].dignity_breakdown ? v_grahas[cp].dignity_breakdown.final_dignity : '').toLowerCase();
+                        if (cp === 'Jupiter') p3 += 1.0;
+                        else if (cp === 'Venus') p3 += 0.7;
+                        else if (cp === 'Mercury') p3 += 0.6;
+                        else if (cp === 'Moon') p3 += 0.6;
+                        else if (cp === 'Mars') p3 += (cDig.includes('own') || cDig.includes('exalt') || ['Leo', 'Cancer'].includes(lgSign) ? 0.8 : -0.5);
+                        else if (cp === 'Saturn') p3 += (cDig.includes('own') || cDig.includes('exalt') ? 0.6 : -0.6);
+                        else if (cp === 'Sun' && cp !== lgLord) p3 -= 0.3;
+                        else if (cp === 'Rahu' || cp === 'Ketu') p3 -= 0.5;
+                    });
+
+                    // Pillar 4: Sky-Light & Karaka
+                    if (c1Net >= 40.0) p4 += 0.8;
+                    else if (c1Net >= 15.0) p4 += 0.4;
+                    else if (c1Net <= -40.0) p4 -= 0.8;
+                    else if (c1Net <= -15.0) p4 -= 0.4;
+                    if (jupAspectVir > 15.0) p4 += 0.6;
+                    if (lordAspectVir > 15.0) p4 += 0.6;
+
+                    // Karaka Sun Factor
+                    const sunSb = (shadbala && shadbala.Sun) || {};
+                    const sunSbPct = sunSb.Pct_Required_Total !== undefined ? sunSb.Pct_Required_Total : 100;
+                    const sunAvasthas = (v_grahas.Sun && v_grahas.Sun.avasthas && v_grahas.Sun.avasthas.lajjitadi) || [];
+                    const sunStarvedSaturn = sunAvasthas.some(x => ((x.state || '').toLowerCase().includes('starved') || (x.state || '').toLowerCase().includes('kshudhita')) && (x.condition || '').toLowerCase().includes('saturn'));
+                    if (lgLord === 'Sun') {
+                        if (sunStarvedSaturn && sunSbPct < 85) p4 -= 0.5;
+                        else if (sunSbPct >= 130 && !sunStarvedSaturn) p4 += 0.5;
+                    } else {
+                        if (sunStarvedSaturn || sunSbPct < 85) p4 -= 0.3;
+                        else if (sunSbPct >= 115 && !sunStarvedSaturn) p4 += 0.3;
+                    }
+
+                    // Pillar 5: Enclosure
+                    if (kartariType === 'Śubha Kartarī') p5 += 0.8;
+                    else if (kartariType === 'Pāpa Kartarī') p5 -= 0.8;
+
+                    lagnaVitScore = Math.max(1.0, Math.min(10.0, 5.0 + p1 + p2 + p3 + p4 + p5));
+                    lagnaVitScore = Math.round(lagnaVitScore * 10) / 10;
+                }
 
                 if (lagnaVitScore >= 8.8) {
                     lagnaTier = 'Sovereign Citadel';
                     lagnaTierColor = '#065f46'; lagnaTierBg = '#ecfdf5'; lagnaTierBorder = '#34d399';
                     lagnaArchetype = 'The Invincible Sovereign';
                     lagnaVerdict = 'Supreme constitutional vitality and iron executive agency; chart yogas manifest with maximum real-world force.';
-                } else if (lagnaVitScore >= 7.3) {
+                } else if (lagnaVitScore >= 7.0) {
                     lagnaTier = 'Robust Horizon';
                     lagnaTierColor = '#15803d'; lagnaTierBg = '#f0fdf4'; lagnaTierBorder = '#86efac';
                     lagnaArchetype = 'The Resilient Architect';
@@ -5401,7 +5464,7 @@
                     lagnaTier = 'Strained Horizon';
                     lagnaTierColor = '#b45309'; lagnaTierBg = '#fffbeb'; lagnaTierBorder = '#fcd34d';
                     lagnaArchetype = 'The Contemplative Seeker';
-                    lagnaVerdict = 'Vitality is sensitive or internalized; worldly yogas face delays or friction, requiring conscious pacing and health care.';
+                    lagnaVerdict = 'Vitality is sensitive, internalized, or introverted; outer worldly empire-building faces fatigue or friction from Saturn, channeling energy into deep contemplation, spiritual tapas, and scholarship.';
                 } else {
                     lagnaTier = 'Vulnerable Horizon';
                     lagnaTierColor = '#b91c1c'; lagnaTierBg = '#fef2f2'; lagnaTierBorder = '#fca5a5';
@@ -5432,16 +5495,31 @@
                 const lgAvasthaTip = `<strong>Lagneśa Field & State</strong><br>• <strong>House Field:</strong> Placed in Whole Sign House ${lordWHouse}${lordCHouse !== lordWHouse ? ' (Campanus Bhava ' + lordCHouse + ')' : ''}.<br>• <strong>Field Quality:</strong> ${lordWHouse === 1 ? 'Own House (Supreme autonomy)' : [4,7,10].includes(lordWHouse) ? 'Kendra (Pillar of action)' : [5,9].includes(lordWHouse) ? 'Trikona (Triangle of divine grace)' : [3,11].includes(lordWHouse) ? 'Upachaya (Growth through effort)' : 'Dusthāna (Obstacles/solitude)'}.<br>• <strong>Lord Dignity:</strong> ${cleanLordDig}.`;
                 const lgInfluencesTip = `<strong>Horizon Influences & Aspects</strong><br>• <strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lagnaConj.join(', ') : 'None (clean horizon)'}.<br>• <strong>Net Dṛṣṭi:</strong> ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas.<br>• <strong>Enclosure:</strong> ${kartariType} (H2: ${h2Occupants.join(', ') || 'empty'} • H12: ${h12Occupants.join(', ') || 'empty'}).`;
                 const lgFruitTip = `<strong>Lagneśa Karmic Fruit (I/K)</strong><br>• <strong>Ishta Phala:</strong> ${ishta} (capacity to produce sweet, auspicious outcomes).<br>• <strong>Kashta Phala:</strong> ${kashta} (capacity to endure arduous trials).`;
+                
+                let auditListHtml = '';
+                if (backendLagna && backendLagna.audit_trail) {
+                    const at = backendLagna.audit_trail;
+                    auditListHtml = `<strong>5-Pillar Score Breakdown:</strong><br>` +
+                        `• Base Score: 5.0 (Neutral baseline)<br>` +
+                        `• <strong>1. Captain (${lgLord}):</strong> ${p1 >= 0 ? '+' : ''}${p1.toFixed(2)} pts<br>&nbsp;&nbsp;→ ${at.p1_captain.join('<br>&nbsp;&nbsp;→ ')}<br>` +
+                        `• <strong>2. Field Placement:</strong> ${p2 >= 0 ? '+' : ''}${p2.toFixed(2)} pts<br>&nbsp;&nbsp;→ ${at.p2_field.join('<br>&nbsp;&nbsp;→ ')}<br>` +
+                        `• <strong>3. Occupants (H1):</strong> ${p3 >= 0 ? '+' : ''}${p3.toFixed(2)} pts<br>&nbsp;&nbsp;→ ${at.p3_occupants.join('<br>&nbsp;&nbsp;→ ')}<br>` +
+                        `• <strong>4. Sky-Light & Karaka:</strong> ${p4 >= 0 ? '+' : ''}${p4.toFixed(2)} pts<br>&nbsp;&nbsp;→ ${at.p4_skylight.join('<br>&nbsp;&nbsp;→ ')}<br>` +
+                        `• <strong>5. Enclosure (Kartarī):</strong> ${p5 >= 0 ? '+' : ''}${p5.toFixed(2)} pts<br>&nbsp;&nbsp;→ ${at.p5_enclosure.join('<br>&nbsp;&nbsp;→ ')}<br><br>`;
+                } else {
+                    auditListHtml = `<strong>5-Pillar Score Breakdown:</strong><br>` +
+                        `• Base Score: 5.0 (Neutral baseline)<br>` +
+                        `• <strong>1. Captain (${lgLord}):</strong> ${p1 >= 0 ? '+' : ''}${p1.toFixed(2)} pts (${cleanLordDig}, ${sbVir} Vir)<br>` +
+                        `• <strong>2. Field Placement:</strong> ${p2 >= 0 ? '+' : ''}${p2.toFixed(2)} pts (H${lordWHouse})<br>` +
+                        `• <strong>3. Occupants (H1):</strong> ${p3 >= 0 ? '+' : ''}${p3.toFixed(2)} pts (${lagnaConj.join(', ') || 'none'})<br>` +
+                        `• <strong>4. Sky-Light & Karaka:</strong> ${p4 >= 0 ? '+' : ''}${p4.toFixed(2)} pts (${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir)<br>` +
+                        `• <strong>5. Enclosure (Kartarī):</strong> ${p5 >= 0 ? '+' : ''}${p5.toFixed(2)} pts (${kartariType})<br><br>`;
+                }
+
                 const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>` +
                     `• <strong>Archetype:</strong> ${lagnaArchetype}<br>` +
                     `• <strong>Verdict:</strong> ${lagnaVerdict}<br><br>` +
-                    `<strong>5-Pillar Score Breakdown:</strong><br>` +
-                    `• Base Score: 5.0 (Neutral baseline)<br>` +
-                    `• <strong>1. Captain (${lgLord}):</strong> ${p1 >= 0 ? '+' : ''}${p1.toFixed(2)} pts (${cleanLordDig}, ${sbVir} Vir)<br>` +
-                    `• <strong>2. Field Placement:</strong> ${p2 >= 0 ? '+' : ''}${p2.toFixed(2)} pts (H${lordWHouse})<br>` +
-                    `• <strong>3. Occupants (H1):</strong> ${p3 >= 0 ? '+' : ''}${p3.toFixed(2)} pts (${lagnaConj.join(', ') || 'none'})<br>` +
-                    `• <strong>4. Sky-Light (Drishti):</strong> ${p4 >= 0 ? '+' : ''}${p4.toFixed(2)} pts (${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir)<br>` +
-                    `• <strong>5. Enclosure (Kartari):</strong> ${p5 >= 0 ? '+' : ''}${p5.toFixed(2)} pts (${kartariType})<br><br>` +
+                    auditListHtml +
                     `<em>Core Teaching (Ryan Kurczak & Vic DiCara):</em> If the Lagna is weak, auspicious yogas cannot manifest—like an invalid in a golden palace. When the Lagna is strong, the native readily turns chart potential into tangible reality.`;
 
                 tbody.innerHTML += `
