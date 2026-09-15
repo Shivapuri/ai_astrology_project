@@ -617,6 +617,859 @@ def render_classical_yogas_section(yogas_data: Dict[str, Any], notation: str = "
     """
 
 
+SIGNS_LIST = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+GRAHA_GLYPHS_MAP = {
+    'Lagna': '🌅', 'Sun': '☉', 'Moon': '☽', 'Mars': '♂',
+    'Mercury': '☿', 'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄',
+    'Rahu': '☊', 'Ketu': '☋'
+}
+
+
+def get_campanus_house_num(planet_name: str, default_house: int, bhavas: list) -> int:
+    """Finds the Campanus house number for a planet or Lagna from bhavas list."""
+    if not bhavas:
+        return default_house
+    for b in bhavas:
+        pls = b.get("planets", [])
+        if planet_name in pls or (planet_name == "Lagna" and "Asc" in pls):
+            return b.get("house", default_house)
+    return default_house
+
+
+def render_lagna_vitality_card(chart_data: Dict[str, Any], varga: str = "D1") -> str:
+    """Renders the executive Lagna Vitality Architecture card with 5-pillar composite scoring."""
+    v_data = chart_data.get("vargas", {}).get(varga, chart_data.get("vargas", {}).get("D1", {}))
+    v_lagna = v_data.get("lagna", {})
+    lg_sign = v_lagna.get("sign", "-")
+    lg_deg = v_lagna.get("degree_0_to_30", 0.0)
+    lg_lord = SIGN_LORDS.get(lg_sign, v_lagna.get("lord", "-"))
+    
+    naks = chart_data.get("nakshatras", {}).get("grahas", {})
+    lg_nak = naks.get("Lagna", {})
+    nak_str = f"{lg_nak.get('nakshatra', '-')} (Pada {lg_nak.get('pada', '-')})" if lg_nak else "-"
+    
+    pe = chart_data.get("planetary_evaluation", {})
+    lagna_eval = pe.get("lagna_evaluation", {}) if varga == "D1" else {}
+    
+    vit_score = lagna_eval.get("vitality_score", 5.0)
+    vit_tier = lagna_eval.get("vitality_tier", "Capable Vessel")
+    archetype = lagna_eval.get("archetype", "The Steady Navigator")
+    verdict = lagna_eval.get("verdict", "Sound, capable engine; actualizes chart potentials through deliberate effort.")
+    pillar_scores = lagna_eval.get("pillar_scores", {})
+    audit_trail = lagna_eval.get("audit_trail", {})
+    
+    # Tier colors
+    if vit_score >= 8.8:
+        t_bg = "#ecfdf5"; t_col = "#065f46"; t_bdr = "#34d399"
+    elif vit_score >= 7.0:
+        t_bg = "#f0fdf4"; t_col = "#15803d"; t_bdr = "#86efac"
+    elif vit_score >= 5.5:
+        t_bg = "#eff6ff"; t_col = "#1d4ed8"; t_bdr = "#93c5fd"
+    elif vit_score >= 4.0:
+        t_bg = "#fffbeb"; t_col = "#b45309"; t_bdr = "#fcd34d"
+    else:
+        t_bg = "#fef2f2"; t_col = "#b91c1c"; t_bdr = "#fca5a5"
+        
+    p1 = pillar_scores.get("pillar_1_captain", 0.0)
+    p2 = pillar_scores.get("pillar_2_field", 0.0)
+    p3 = pillar_scores.get("pillar_3_occupants", 0.0)
+    p4 = pillar_scores.get("pillar_4_skylight", 0.0)
+    p5 = pillar_scores.get("pillar_5_enclosure", 0.0)
+    
+    p1_items = audit_trail.get("p1_captain", ["Captain evaluation baseline"])[:2]
+    p2_items = audit_trail.get("p2_field", ["Field evaluation baseline"])[:2]
+    p3_items = audit_trail.get("p3_occupants", ["Occupants evaluation baseline"])[:1]
+    p4_items = audit_trail.get("p4_skylight", ["Sky-light evaluation baseline"])[:2]
+    p5_items = audit_trail.get("p5_enclosure", ["Enclosure evaluation baseline"])[:1]
+
+    def fmt_pts(val):
+        return f"+{val:.2f}" if val > 0 else f"{val:.2f}"
+
+    return f"""
+    <div class="card" style="margin-bottom:8px; border:1.5px solid #dcb594; background:#fffdfa;">
+        <div class="card-header" style="background:#f5ece0; padding:5px 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14pt;">🌅</span>
+                <div>
+                    <h3 style="font-size:9pt; margin:0; color:#4a3325;">Lagna (Ascendant / Tanū Bhāva) • Horizon Vitality Architecture</h3>
+                    <span style="font-size:6.8pt; color:#7c6853;">Rising Sign: <strong>{lg_sign} {format_deg_short(lg_deg)}</strong> • Lagneśa: <strong>{lg_lord}</strong> • Nakshatra: <strong>{nak_str}</strong></span>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:{t_bg}; color:{t_col}; border:1.5px solid {t_bdr}; padding:3px 10px; border-radius:4px; font-weight:bold; font-size:9.5pt;">
+                    ★ {vit_score:.1f} / 10 • {vit_tier}
+                </span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:6px 10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1.6fr; gap:10px; align-items:start;">
+                <!-- Left: Archetype & Verdict -->
+                <div style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.5pt; margin-bottom:2px;">👑 Archetype: {archetype}</div>
+                    <div style="font-size:6.8pt; color:#475569; line-height:1.3; margin-bottom:4px;">{verdict}</div>
+                    <div style="font-size:6.2pt; color:#7c6853; border-top:1px solid #e5dccb; padding-top:3px; font-style:italic;">
+                        Core Principle: If the Lagna is underpowered, even brilliant yogas struggle to manifest—like a king bedridden in a golden palace. When Lagna is robust, the native turns celestial potential into worldly reality.
+                    </div>
+                </div>
+                <!-- Right: 5-Pillar Score Grid -->
+                <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:4px; text-align:center;">
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:3px; padding:3px 2px;">
+                        <div style="font-size:5.8pt; color:#64748b; font-weight:600; text-transform:uppercase;">1. Captain</div>
+                        <div style="font-size:8pt; font-weight:bold; color:{'#15803d' if p1 >= 0 else '#b91c1c'};">{fmt_pts(p1)}</div>
+                        <div style="font-size:5.5pt; color:#475569; line-height:1.1; margin-top:1px;">{p1_items[0] if p1_items else '-'}</div>
+                    </div>
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:3px; padding:3px 2px;">
+                        <div style="font-size:5.8pt; color:#64748b; font-weight:600; text-transform:uppercase;">2. Field</div>
+                        <div style="font-size:8pt; font-weight:bold; color:{'#15803d' if p2 >= 0 else '#b91c1c'};">{fmt_pts(p2)}</div>
+                        <div style="font-size:5.5pt; color:#475569; line-height:1.1; margin-top:1px;">{p2_items[0] if p2_items else '-'}</div>
+                    </div>
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:3px; padding:3px 2px;">
+                        <div style="font-size:5.8pt; color:#64748b; font-weight:600; text-transform:uppercase;">3. Occupants</div>
+                        <div style="font-size:8pt; font-weight:bold; color:{'#15803d' if p3 >= 0 else '#b91c1c'};">{fmt_pts(p3)}</div>
+                        <div style="font-size:5.5pt; color:#475569; line-height:1.1; margin-top:1px;">{p3_items[0] if p3_items else 'Clean H1'}</div>
+                    </div>
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:3px; padding:3px 2px;">
+                        <div style="font-size:5.8pt; color:#64748b; font-weight:600; text-transform:uppercase;">4. Sky-Light</div>
+                        <div style="font-size:8pt; font-weight:bold; color:{'#15803d' if p4 >= 0 else '#b91c1c'};">{fmt_pts(p4)}</div>
+                        <div style="font-size:5.5pt; color:#475569; line-height:1.1; margin-top:1px;">{p4_items[0] if p4_items else '-'}</div>
+                    </div>
+                    <div style="background:#fff; border:1px solid #e2e8f0; border-radius:3px; padding:3px 2px;">
+                        <div style="font-size:5.8pt; color:#64748b; font-weight:600; text-transform:uppercase;">5. Enclosure</div>
+                        <div style="font-size:8pt; font-weight:bold; color:{'#15803d' if p5 >= 0 else '#b91c1c'};">{fmt_pts(p5)}</div>
+                        <div style="font-size:5.5pt; color:#475569; line-height:1.1; margin-top:1px;">{p5_items[0] if p5_items else 'Unencumbered'}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str = "D1", notation: str = "symbol") -> str:
+    """Renders the comprehensive Master Graha Diagnostics Table matching front-end software with inline decoded tooltips."""
+    v_data = chart_data.get("vargas", {}).get(varga, chart_data.get("vargas", {}).get("D1", {}))
+    v_grahas = v_data.get("grahas", {})
+    v_lagna = v_data.get("lagna", {})
+    shadbala = chart_data.get("shadbala", {})
+    bhavas = v_data.get("bhavas", [])
+    naks = chart_data.get("nakshatras", {}).get("grahas", {})
+    adv_aspects = chart_data.get("varga_advanced_aspects", {}).get(varga, chart_data.get("advanced_aspects", {}))
+    pe = chart_data.get("planetary_evaluation", {})
+
+    tbody_rows = []
+
+    # 1. LAGNA ROW
+    if v_lagna and v_lagna.get("sign"):
+        lg_sign = v_lagna.get("sign", "-")
+        lg_deg = format_deg_short(v_lagna.get("degree_0_to_30", 0.0))
+        lg_nak_data = naks.get("Lagna", {})
+        lg_nak_str = f"{lg_nak_data.get('nakshatra', '-')} ({lg_nak_data.get('pada', '-')})" if lg_nak_data else "-"
+        lg_lord = SIGN_LORDS.get(lg_sign, v_lagna.get("lord", "-"))
+        lord_graha = v_grahas.get(lg_lord, {})
+        
+        # Lord dignity
+        d_break = lord_graha.get("dignity_breakdown", {})
+        lord_dig_raw = d_break.get("final_dignity", lord_graha.get("dignity", "Neutral"))
+        clean_lord_dig = lord_dig_raw.replace("'s Sign", "").replace(" Sign", "").strip()
+        
+        # Lord placement
+        lagna_idx = SIGNS_LIST.index(lg_sign) if lg_sign in SIGNS_LIST else 0
+        lord_sign = lord_graha.get("sign", "")
+        lord_sign_idx = SIGNS_LIST.index(lord_sign) if lord_sign in SIGNS_LIST else 0
+        lord_w_house = ((lord_sign_idx - lagna_idx + 12) % 12 + 1) if (lg_sign in SIGNS_LIST and lord_sign in SIGNS_LIST) else 1
+        lord_c_house = get_campanus_house_num(lg_lord, lord_w_house, bhavas)
+        
+        # Lord Shadbala & Cusp Sky-Light
+        sb_lord = shadbala.get(lg_lord, {})
+        sb_vir = f"{sb_lord.get('Total_Virupas', 0.0):.1f}" if "Total_Virupas" in sb_lord else "-"
+        sb_pct = int(round(sb_lord.get("Pct_Required_Total", 0.0))) if "Pct_Required_Total" in sb_lord else None
+        sb_rank = sb_lord.get("Relative_Rank", "-")
+        
+        # Cusp 1 Aspects
+        cusp_totals = adv_aspects.get("totals", {}).get("cusps", {}).get(1, adv_aspects.get("totals", {}).get("cusps", {}).get("1", {}))
+        c1_net = float(cusp_totals.get("net", 0.0))
+        c1_indiv = adv_aspects.get("cusps", {}).get(1, adv_aspects.get("cusps", {}).get("1", {}))
+        jup_aspect = float(c1_indiv.get("Jupiter", {}).get("net", c1_indiv.get("Jupiter", {}).get("plus", 0.0)))
+        lord_aspect = float(c1_indiv.get(lg_lord, {}).get("net", c1_indiv.get(lg_lord, {}).get("plus", 0.0)))
+        
+        # Occupants in H1
+        h1_occupants = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == lg_sign]
+        occ_spans = []
+        for p in h1_occupants:
+            glyph = GRAHA_GLYPHS_MAP.get(p, "")
+            is_ben = p in ["Jupiter", "Venus", "Mercury", "Moon"]
+            col = "#15803d" if is_ben else "#b91c1c"
+            occ_spans.append(f"<span style='color:{col}; font-weight:600;'>{glyph} {p}</span>")
+        occ_html = ", ".join(occ_spans) if occ_spans else "<span style='color:#94a3b8;'>Clean Horizon</span>"
+        
+        # Flanking Kartari
+        h2_sign = SIGNS_LIST[(lagna_idx + 1) % 12]
+        h12_sign = SIGNS_LIST[(lagna_idx + 11) % 12]
+        h2_occ = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == h2_sign and p not in ["Rahu", "Ketu"]]
+        h12_occ = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == h12_sign and p not in ["Rahu", "Ketu"]]
+        h2_ben = [p for p in h2_occ if p in ["Jupiter", "Venus", "Mercury", "Moon"]]
+        h2_mal = [p for p in h2_occ if p in ["Saturn", "Mars", "Sun"]]
+        h12_ben = [p for p in h12_occ if p in ["Jupiter", "Venus", "Mercury", "Moon"]]
+        h12_mal = [p for p in h12_occ if p in ["Saturn", "Mars", "Sun"]]
+        
+        kartari_badge = ""
+        if h2_ben and h12_ben and not h2_mal and not h12_mal:
+            kartari_badge = '<span class="badge exalt" style="font-size:5.5pt; margin-left:2px;">✨ Śubha Kartarī</span>'
+        elif h2_mal and h12_mal and not h2_ben and not h12_ben:
+            kartari_badge = '<span class="badge debil" style="font-size:5.5pt; margin-left:2px;">⚔️ Pāpa Kartarī</span>'
+            
+        # Cusp net badge
+        if c1_net >= 15.0:
+            c1_badge = f'<span class="badge exalt">+{c1_net:.1f}v Net Light</span>'
+        elif c1_net <= -15.0:
+            c1_badge = f'<span class="badge debil">{c1_net:.1f}v Net Pressure</span>'
+        else:
+            c1_badge = f'<span class="badge neutral">{"+" if c1_net >= 0 else ""}{c1_net:.1f}v Neutral</span>'
+        if jup_aspect > 15.0:
+            c1_badge += ' <span class="badge exalt" style="font-size:5.5pt;">🛡️ Guru Dṛṣṭi</span>'
+        if lord_aspect > 15.0:
+            c1_badge += ' <span class="badge own" style="font-size:5.5pt;">👑 Lagneśa Dṛṣṭi</span>'
+            
+        # Ishta / Kashta
+        ishta = f"{sb_lord.get('Ishta_Phala', 0.0):.1f}" if "Ishta_Phala" in sb_lord else "-"
+        kashta = f"{sb_lord.get('Kashta_Phala', 0.0):.1f}" if "Kashta_Phala" in sb_lord else "-"
+        
+        # Lagna Vitality Score
+        lagna_eval = pe.get("lagna_evaluation", {}) if varga == "D1" else {}
+        lagna_vit = lagna_eval.get("vitality_score", 5.0)
+        lagna_tier = lagna_eval.get("vitality_tier", "Capable Vessel")
+        lagna_arch = lagna_eval.get("archetype", "The Steady Navigator")
+        
+        if lagna_vit >= 8.8:
+            l_t_bg = "#ecfdf5"; l_t_col = "#065f46"
+        elif lagna_vit >= 7.0:
+            l_t_bg = "#f0fdf4"; l_t_col = "#15803d"
+        elif lagna_vit >= 5.5:
+            l_t_bg = "#eff6ff"; l_t_col = "#1d4ed8"
+        elif lagna_vit >= 4.0:
+            l_t_bg = "#fffbeb"; l_t_col = "#b45309"
+        else:
+            l_t_bg = "#fef2f2"; l_t_col = "#b91c1c"
+            
+        shift_html = f"<span class='badge' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5.5pt;'>➔ B{lord_c_house}</span>" if lord_c_house != lord_w_house else ""
+
+        tbody_rows.append(f"""
+        <tr style="background:#faf7f2; border-bottom:2px solid #dcb594; font-weight:500;">
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                <div style="display:flex; align-items:center; gap:3px;">
+                    <span style="font-size:10pt;">🌅</span>
+                    <div>
+                        <strong style="color:#4a3325; font-size:7.5pt;">Lagna</strong>
+                        <div style="font-size:5.8pt; color:#64748b;">Tanū Bhāva (H1)</div>
+                    </div>
+                </div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                <strong style="color:#1e293b; font-size:7.2pt;">{lg_sign} {lg_deg}</strong>
+                <div style="font-size:5.8pt; color:#64748b;">House 1 (Ascendant)</div>
+                <div style="font-size:5.8pt; color:#475569;">Lord: <strong>{lg_lord}</strong></div>
+                <div style="font-size:5.5pt; color:#78716c;">{lg_nak_str}</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594; text-align:center;">
+                <div>{dignity_badge(clean_lord_dig)}</div>
+                <div style="font-size:5.8pt; color:#64748b; margin-top:1px;">Captain: {lg_lord}</div>
+                <div style="font-size:5.2pt; color:#78716c;">{d_break.get('compound_relationship', clean_lord_dig)}</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                <div style="font-size:7pt; font-weight:bold;">{sb_vir} Vir <span style="font-size:6pt; color:{'#15803d' if (sb_pct or 0) >= 100 else '#b91c1c'}; font-weight:600;">({sb_pct}% req)</span></div>
+                <div style="font-size:5.8pt; color:#64748b;">Rank #{sb_rank} • Captain stamina</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                <div style="font-size:6.5pt; font-weight:600; color:#3730a3;">Lord in H{lord_w_house} {shift_html}</div>
+                <div style="font-size:5.8pt; color:#64748b; margin-top:1px;">in {lord_sign} ({clean_lord_dig})</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                <div style="font-size:6pt; margin-bottom:1.5px;"><strong>YUTI:</strong> {occ_html}</div>
+                <div style="display:flex; flex-wrap:wrap; gap:2px;">{c1_badge} {kartari_badge}</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594; font-size:6.5pt;">
+                <div><strong style="color:#15803d;">I:</strong> {ishta}</div>
+                <div><strong style="color:#b91c1c;">K:</strong> {kashta}</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594; text-align:center;">
+                <span style="display:inline-block; background:{l_t_bg}; color:{l_t_col}; border:1px solid {l_t_col}44; font-size:6.8pt; font-weight:bold; padding:1.5px 4px; border-radius:3px;">
+                    ★ {lagna_vit:.1f} • {lagna_tier}
+                </span>
+                <div style="font-size:5.5pt; color:#64748b; margin-top:1px;">{lagna_arch}</div>
+            </td>
+        </tr>
+        """)
+
+    # 2. PLANETARY ROWS (Sun through Ketu)
+    for p in PLANETS_ORDER:
+        if p not in v_grahas:
+            continue
+        g = v_grahas[p]
+        glyph = GRAHA_GLYPHS_MAP.get(p, get_planet_glyph(p, notation))
+        sign = g.get("sign", "-")
+        deg = format_deg_short(g.get("degree_0_to_30", 0.0))
+        
+        # Whole sign house
+        lg_idx = SIGNS_LIST.index(v_lagna.get("sign", "Aries")) if v_lagna.get("sign") in SIGNS_LIST else 0
+        p_idx = SIGNS_LIST.index(sign) if sign in SIGNS_LIST else 0
+        w_house = ((p_idx - lg_idx + 12) % 12 + 1) if (v_lagna.get("sign") in SIGNS_LIST and sign in SIGNS_LIST) else 1
+        c_house = get_campanus_house_num(p, w_house, bhavas)
+        shift_badge = f"<span class='badge' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5.5pt;'>➔ B{c_house}</span>" if c_house != w_house else ""
+        
+        # Chara Karaka
+        ck_data = g.get("chara_karaka") or chart_data.get("karakas", {}).get("chara", {}).get(p, {})
+        ck_tag = ck_data.get("karaka", "—")
+        ck_badge = ""
+        if ck_tag and ck_tag != "—":
+            ck_badge = f"<span class='badge' style='background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:5.8pt; font-weight:bold;'>👑 {ck_tag}</span>"
+            
+        # Motional Badges
+        mot_badges = []
+        if g.get("is_retrograde"):
+            mot_badges.append("<span class='badge debil' style='font-size:5.5pt;'>[R] Vakra (Ret.)</span>")
+        if g.get("is_combust"):
+            s_dist = g.get("sun_distance")
+            s_dist_str = f" {s_dist:.1f}°" if s_dist is not None else ""
+            mot_badges.append(f"<span class='badge' style='background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:5.5pt;'>[C] Asta{s_dist_str}</span>")
+        mot_html = " ".join(mot_badges)
+        
+        # Functional Role
+        fn_role = g.get("functional_role") or chart_data.get("karakas", {}).get("functional", {}).get(p, {})
+        ruled_str = fn_role.get("ruled_houses_str", "")
+        ruled_html = f"<div style='font-size:5.8pt; color:#475569;'>Rules: <strong>{ruled_str}</strong></div>" if ruled_str else ""
+        
+        fn_badges = []
+        if fn_role.get("is_yogakaraka"):
+            fn_badges.append("<span class='badge' style='background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:5.5pt; font-weight:bold;'>⭐ Yogakāraka</span>")
+        elif fn_role.get("is_lagnesha"):
+            fn_badges.append("<span class='badge own' style='font-size:5.5pt; font-weight:bold;'>🛡️ Lagneśa</span>")
+        if fn_role.get("is_maraka") and not fn_role.get("is_yogakaraka"):
+            fn_badges.append("<span class='badge neutral' style='font-size:5.5pt;'>Māraka</span>")
+        if fn_role.get("is_badhaka") and not fn_role.get("is_yogakaraka") and not fn_role.get("is_lagnesha"):
+            fn_badges.append("<span class='badge' style='background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:5.5pt;'>Bādhaka</span>")
+        fn_badges_html = f"<div style='display:flex; flex-wrap:wrap; gap:1.5px; margin-top:1px;'>{''.join(fn_badges)}</div>" if fn_badges else ""
+        
+        # Nakshatra
+        p_nak_data = naks.get(p, {})
+        nak_str = f"{p_nak_data.get('nakshatra', '-')} ({p_nak_data.get('pada', '-')})" if p_nak_data else "-"
+        
+        # Dignity (5-fold)
+        is_node = p in ["Rahu", "Ketu"]
+        d_break = g.get("dignity_breakdown", {})
+        sign_lord = d_break.get("sign_lord", SIGN_LORDS.get(sign, "-"))
+        raw_dig = d_break.get("final_dignity", g.get("dignity", "Neutral"))
+        clean_dig = raw_dig.replace("'s Sign", "").replace(" Sign", "").strip()
+        
+        if is_node:
+            dig_cell_html = f"""
+            <div style="text-align:center;">
+                <span class="badge neutral" style="font-weight:600; font-size:6.2pt;">Reflects: {sign_lord}</span>
+                <div style="font-size:5.2pt; color:#64748b; margin-top:1px;">Chhāyā Proxy</div>
+            </div>
+            """
+        else:
+            nat_rel = d_break.get("natural_relationship", "-")
+            temp_rel = d_break.get("temporary_relationship", "-")
+            dig_cell_html = f"""
+            <div style="text-align:center;">
+                {dignity_badge(clean_dig)}
+                <div style="font-size:5.2pt; color:#64748b; margin-top:1px;">Host: {sign_lord}</div>
+                <div style="font-size:5pt; color:#78716c;">Nat: {nat_rel[:3]} • Tmp: {temp_rel[:3]}</div>
+            </div>
+            """
+            
+        # Shadbala Power
+        sb = shadbala.get(p, {})
+        if is_node:
+            power_cell_html = "<div style='color:#94a3b8; font-size:6pt; text-align:center;'>—<br><span style='font-size:5.2pt;'>(Chhāyā)</span></div>"
+        elif sb:
+            rupas = f"{sb.get('Total_Rupas', 0.0):.2f} R" if "Total_Rupas" in sb else "-"
+            virupas = f"{sb.get('Total_Virupas', 0.0):.1f}v" if "Total_Virupas" in sb else "-"
+            req_vir = f"{sb.get('Required_Total', 0.0):.0f}v" if "Required_Total" in sb else "-"
+            pct_val = float(sb.get("Pct_Required_Total", 0.0))
+            rank = sb.get("Relative_Rank", "-")
+            
+            pct_col = "#15803d" if pct_val >= 100.0 else "#b91c1c"
+            rank_badge = f"<span class='badge {'exalt' if rank == 1 else 'neutral'}' style='font-size:5.5pt; font-weight:bold;'>{'👑 ' if rank == 1 else ''}#{rank}</span>"
+            
+            cap_desc = "Abundant" if pct_val >= 125 else ("Capable" if pct_val >= 100 else ("Mild Deficit" if pct_val >= 85 else "Deficit"))
+            power_cell_html = f"""
+            <div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="font-size:6.8pt;">{virupas}</strong>
+                    {rank_badge}
+                </div>
+                <div style="font-size:5.8pt; color:{pct_col}; font-weight:bold;">{pct_val:.0f}% of {req_vir}</div>
+                <div style="font-size:5.2pt; color:#64748b;">{cap_desc} stamina</div>
+            </div>
+            """
+        else:
+            power_cell_html = "<div style='color:#94a3b8; font-size:6pt;'>-</div>"
+            
+        # Lajjitadi Avasthas
+        av_list = g.get("avasthas", {}).get("lajjitadi", [])
+        if is_node:
+            avasthas_cell_html = "<span style='color:#94a3b8; font-size:5.8pt;'>— (Catalyst)</span>"
+        elif not av_list:
+            avasthas_cell_html = "<span style='color:#a8a29e; font-style:italic; font-size:6pt;'>Neutral (Unstirred)</span>"
+        else:
+            badges = []
+            for item in av_list:
+                st = item.get("state", "") if isinstance(item, dict) else str(item)
+                cond = item.get("condition", "") if isinstance(item, dict) else ""
+                
+                # Cause note
+                cause_note = ""
+                for cp in CLASSICAL_PLANETS + ["Rahu", "Ketu"]:
+                    if cp in cond:
+                        glyph_c = GRAHA_GLYPHS_MAP.get(cp, cp[:2])
+                        cause_note = f" ({glyph_c})"
+                        break
+                if not cause_note:
+                    if "Enemy sign" in cond: cause_note = " (Enm. sign)"
+                    elif "Friend's sign" in cond: cause_note = " (Frn. sign)"
+                    
+                s_lower = st.lower()
+                if "mudita" in s_lower or "delight" in s_lower:
+                    badges.append(f"<span class='badge state-delighted' style='font-size:5.5pt;'>🟢 Mudita{cause_note}</span>")
+                elif "garvita" in s_lower or "proud" in s_lower:
+                    badges.append(f"<span class='badge state-proud' style='font-size:5.5pt;'>👑 Garvita{cause_note}</span>")
+                elif "kshudhita" in s_lower or "starv" in s_lower:
+                    badges.append(f"<span class='badge state-starved' style='font-size:5.5pt;'>🔴 Kshudhita{cause_note}</span>")
+                elif "kshobhita" in s_lower or "agitat" in s_lower:
+                    badges.append(f"<span class='badge state-agitated' style='font-size:5.5pt;'>🟠 Kshobhita{cause_note}</span>")
+                elif "lajjita" in s_lower or "ashamed" in s_lower:
+                    badges.append(f"<span class='badge state-ashamed' style='font-size:5.5pt;'>🟣 Lajjita{cause_note}</span>")
+                elif "trushita" in s_lower or "thirst" in s_lower:
+                    badges.append(f"<span class='badge state-thirsty' style='font-size:5.5pt;'>💧 Trushita{cause_note}</span>")
+            avasthas_cell_html = f"<div style='display:flex; flex-direction:column; gap:1.5px;'>{''.join(badges)}</div>"
+            
+        # Influences & Net Drishti
+        conjuncts = [other for other in PLANETS_ORDER if other != p and v_grahas.get(other, {}).get("sign") == sign]
+        asp_rec = adv_aspects.get("planets", {}).get(p, {})
+        tot_rec = adv_aspects.get("totals", {}).get("planets", {}).get(p, {})
+        net_val = float(tot_rec.get("net", 0.0))
+        
+        # Net pill
+        if net_val >= 12.0:
+            net_pill = f"<span class='badge exalt' style='font-size:5.5pt; font-weight:bold;'>🟢 Net Support (+{net_val:.0f}v)</span>"
+        elif net_val <= -12.0:
+            net_pill = f"<span class='badge debil' style='font-size:5.5pt; font-weight:bold;'>🔴 Net Pressure ({net_val:.0f}v)</span>"
+        else:
+            net_pill = f"<span class='badge neutral' style='font-size:5.5pt; font-weight:600;'>⚖️ Balanced ({'+' if net_val >= 0 else ''}{net_val:.0f}v)</span>"
+            
+        # Conjunctions
+        conj_spans = []
+        for cp in conjuncts:
+            c_glyph = GRAHA_GLYPHS_MAP.get(cp, "")
+            is_b = cp in ["Jupiter", "Venus"]
+            is_m = cp in ["Saturn", "Mars", "Rahu", "Ketu"]
+            c_col = "#15803d" if is_b else ("#b91c1c" if is_m else "#475569")
+            conj_spans.append(f"<span style='color:{c_col}; font-weight:600;'>{c_glyph} {cp[:2]}</span>")
+        yuti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>YUTI:</strong> {' '.join(conj_spans)}</div>" if conj_spans else ""
+        
+        # Aspects
+        asp_spans = []
+        for asp_p in PLANETS_ORDER:
+            if asp_p != p and asp_p in asp_rec and asp_rec[asp_p].get("raw", 0.0) > 4.0:
+                a_data = asp_rec[asp_p]
+                raw_v = int(round(a_data.get("raw", 0.0)))
+                is_p = a_data.get("plus", 0.0) > 0
+                sign_ch = "+" if is_p else "-"
+                a_col = "#15803d" if is_p else "#b91c1c"
+                a_glyph = GRAHA_GLYPHS_MAP.get(asp_p, asp_p[:2])
+                asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{sign_ch}{raw_v}v ({a_glyph})</span>")
+        drishti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>DRISHTI:</strong> {' '.join(asp_spans[:3])}</div>" if asp_spans else ""
+        
+        influences_cell_html = f"""
+        <div style="display:flex; flex-direction:column; gap:1.5px;">
+            <div>{net_pill}</div>
+            {yuti_html}
+            {drishti_html}
+        </div>
+        """
+        
+        # Karmic Fruit (Ishta / Kashta)
+        if is_node:
+            fruit_cell_html = "<div style='color:#94a3b8; font-size:6pt; text-align:center;'>—<br><span style='font-size:5.2pt;'>(Chhāyā)</span></div>"
+        elif sb and "Ishta_Phala" in sb and "Kashta_Phala" in sb:
+            ishta_f = float(sb.get("Ishta_Phala", 0.0))
+            kashta_f = float(sb.get("Kashta_Phala", 0.0))
+            diff = ishta_f - kashta_f
+            if diff >= 10.0:
+                b_badge = "<span class='badge exalt' style='font-size:5.2pt;'>Sweet / Grace</span>"
+            elif diff <= -10.0:
+                b_badge = "<span class='badge debil' style='font-size:5.2pt;'>Arduous / Grit</span>"
+            else:
+                b_badge = "<span class='badge neutral' style='font-size:5.2pt;'>Balanced</span>"
+            fruit_cell_html = f"""
+            <div style="font-size:6.2pt;">
+                <div><strong style="color:#15803d;">I:</strong> {ishta_f:.1f} / <strong style="color:#b91c1c;">K:</strong> {kashta_f:.1f}</div>
+                <div style="margin-top:1px;">{b_badge}</div>
+            </div>
+            """
+        else:
+            fruit_cell_html = "<div style='color:#94a3b8; font-size:6pt;'>-</div>"
+            
+        # 5-Pillar Vitality Composite Score (1.0 to 10.0)
+        # 1. Dignity
+        d_score = 5.0
+        d_low = clean_dig.lower()
+        if "exalt" in d_low: d_score = 10.0
+        elif "moola" in d_low: d_score = 9.0
+        elif "own" in d_low: d_score = 8.0
+        elif "great friend" in d_low: d_score = 7.0
+        elif "friend" in d_low: d_score = 6.0
+        elif "neutral" in d_low: d_score = 5.0
+        elif "great enemy" in d_low: d_score = 2.5
+        elif "enemy" in d_low: d_score = 4.0
+        elif "debilit" in d_low: d_score = 1.0
+        
+        # 2. Shadbala
+        sb_score = None
+        if sb and "Pct_Required_Total" in sb:
+            p_req = float(sb["Pct_Required_Total"])
+            if p_req >= 140: sb_score = 10.0
+            elif p_req >= 125: sb_score = 8.5
+            elif p_req >= 110: sb_score = 7.5
+            elif p_req >= 100: sb_score = 6.5
+            elif p_req >= 90: sb_score = 5.0
+            elif p_req >= 80: sb_score = 3.5
+            else: sb_score = 2.0
+            
+        # 3. Avastha
+        ava_score = 5.0
+        if av_list:
+            for a in av_list:
+                st = a.get("state", "") if isinstance(a, dict) else str(a)
+                s_l = st.lower()
+                if "mudita" in s_l: ava_score += 2.0
+                elif "garvita" in s_l: ava_score += 2.5
+                elif "kshudhita" in s_l: ava_score -= 2.0
+                elif "kshobhita" in s_l: ava_score -= 1.8
+                elif "lajjita" in s_l: ava_score -= 2.5
+                elif "trushita" in s_l: ava_score -= 1.5
+        ava_score = max(1.0, min(10.0, ava_score))
+        
+        # 4. Aspect / Weather
+        asp_score = 5.0 + (net_val / 15.0)
+        for cp in conjuncts:
+            if cp in ["Jupiter", "Venus"]: asp_score += 1.5
+            elif cp in ["Saturn", "Mars", "Rahu", "Ketu"]: asp_score -= 1.5
+        asp_score = max(1.0, min(10.0, asp_score))
+        
+        # 5. Karmic Fruit
+        fruit_score = max(1.0, min(10.0, (float(sb.get("Ishta_Phala", 30.0)) / 60.0) * 10.0)) if (sb and "Ishta_Phala" in sb) else None
+        
+        # Composite
+        if is_node:
+            vitality_cell_html = "<div style='color:#94a3b8; font-size:6pt; text-align:center;'>—<br><span style='font-size:5.2pt;'>(Catalyst)</span></div>"
+        else:
+            if sb_score is not None and fruit_score is not None:
+                composite = (d_score + sb_score + ava_score + asp_score + fruit_score) / 5.0
+            else:
+                composite = (d_score + ava_score + asp_score) / 3.0
+            composite = max(1.0, min(10.0, composite))
+            
+            if composite >= 8.5:
+                v_bg = "#fef3c7"; v_col = "#92400e"; v_tier = "🌟 Sovereign"
+            elif composite >= 7.0:
+                v_bg = "#dcfce7"; v_col = "#15803d"; v_tier = "🟢 Capable"
+            elif composite >= 5.5:
+                v_bg = "#fef9c3"; v_col = "#854d0e"; v_tier = "🟡 Resilient"
+            elif composite >= 4.0:
+                v_bg = "#ffedd5"; v_col = "#9a3412"; v_tier = "🟠 Strained"
+            else:
+                v_bg = "#fee2e2"; v_col = "#991b1b"; v_tier = "🔴 Fragile"
+                
+            vitality_cell_html = f"""
+            <div style="text-align:center;">
+                <div style="font-size:8pt; font-weight:bold; color:#1e293b;">{composite:.1f} <span style="font-size:5.8pt; color:#64748b;">/ 10</span></div>
+                <span style="display:inline-block; background:{v_bg}; color:{v_col}; border:1px solid {v_col}44; font-size:5.5pt; font-weight:bold; padding:1px 4px; border-radius:3px; margin-top:1px;">{v_tier}</span>
+            </div>
+            """
+            
+        tbody_rows.append(f"""
+        <tr>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                <div style="display:flex; align-items:center; gap:3px;">
+                    <span style="font-size:9.5pt; color:#1e293b;">{glyph}</span>
+                    <div>
+                        <div style="display:flex; align-items:center; gap:2px;">
+                            <strong style="color:#1e293b; font-size:7.2pt;">{p}</strong>
+                            {ck_badge}
+                        </div>
+                        <div>{mot_html}</div>
+                    </div>
+                </div>
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                <strong style="color:#1e293b; font-size:7pt;">{sign} {deg}</strong>
+                <div style="font-size:5.8pt; color:#64748b;">House {w_house} {shift_badge}</div>
+                {ruled_html}
+                {fn_badges_html}
+                <div style="font-size:5.5pt; color:#78716c; margin-top:1px;">{nak_str}</div>
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {dig_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {power_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {avasthas_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {influences_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {fruit_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {vitality_cell_html}
+            </td>
+        </tr>
+        """)
+
+    return f"""
+    <div class="card full-width" style="margin-bottom:8px; border:1px solid #dcb594;">
+        <div class="card-header" style="background:#eee5d3; padding:4px 8px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dcb594;">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:10pt;">★</span>
+                <h3 style="font-size:8.5pt; font-weight:700; color:#4a3325; margin:0;">Master Graha Diagnostics • Unified Planetary Matrix ({varga})</h3>
+            </div>
+            <span class="card-sub" style="font-size:6.5pt; color:#7c6853;">
+                Synthesizing Pañcadhā Dignity • Ṣaḍbala Stamina • Lajjitādi Feelings • Aspect Weather • Karmic Fruit
+            </span>
+        </div>
+        <div class="card-body" style="padding:2px;">
+            <table class="data-table" style="width:100%; border-collapse:collapse; font-size:6.5pt; line-height:1.2;">
+                <thead>
+                    <tr>
+                        <th style="width:13%;">Graha & Kāraka</th>
+                        <th style="width:14%;">Placement & Role</th>
+                        <th style="width:12%;">Dignity (5-Fold)</th>
+                        <th style="width:12%;">Ṣaḍbala Power</th>
+                        <th style="width:15%;">Lajjitādi Feelings</th>
+                        <th style="width:16%;">Influences & Dṛṣṭi</th>
+                        <th style="width:8%;">Karmic Fruit</th>
+                        <th style="width:10%;">★ Vitality</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {''.join(tbody_rows)}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    """
+
+
+def render_diagnostic_key_section() -> str:
+    """Renders the comprehensive Master Astrological Diagnostic Key decoding all tooltips in plain English."""
+    return """
+    <div class="card full-width" style="border:1px solid #dcb594; margin-bottom:8px;">
+        <div class="card-header" style="background:#4a3325; color:#fffdfa; padding:6px 12px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:12pt;">📖</span>
+                <div>
+                    <h3 style="color:#fdf6e2; font-size:9pt; margin:0;">Master Astrological Diagnostic Key & Pedagogical Reference Guide</h3>
+                    <span style="color:#e5dccb; font-size:6.8pt;">Decoding Hidden Principles, Classical Metrics, Feeling States & Synthesis Formulas for Readers</span>
+                </div>
+            </div>
+            <span style="font-size:6.5pt; color:#e5a03b; font-weight:bold; text-transform:uppercase;">Self-Contained Interpretive Key</span>
+        </div>
+        <div class="card-body" style="padding:8px 10px; background:#fffdfa;">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;">
+                
+                <!-- Card 1: Chara Karakas -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>👑</span> 1. The 7 Chara Kārakas (Soul Signifiers)
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        In Parāśara astrology (BPHS Ch. 32), planets are assigned temporal roles based on who has traveled furthest in their sign:
+                        <ul style="margin:3px 0 0 12px; padding:0;">
+                            <li><strong>👑 AK (Ātmakāraka / Soul King):</strong> Highest degree; signifies soul mission, spiritual evolution, and core lessons.</li>
+                            <li><strong>💼 AmK (Amātyakāraka / Minister):</strong> 2nd highest; career agency, intellect, and social contribution.</li>
+                            <li><strong>📿 BK (Bhrātṛkāraka / Guide):</strong> 3rd highest; gurus, mentors, teachers, and courageous brothers.</li>
+                            <li><strong>🏡 MK (Mātṛkāraka / Mother):</strong> 4th highest; emotional roots, mother, home, and sanctuary.</li>
+                            <li><strong>🌱 PK (Putrakāraka / Intellect):</strong> 5th highest; children, creative genius, and intelligence.</li>
+                            <li><strong>⚔️ GK (Jñātikāraka / Obstacles):</strong> 6th highest; trials, rivals, illness, and friction building grit.</li>
+                            <li><strong>💍 DK (Dārakāraka / Spouse):</strong> Lowest degree; one-on-one partnerships and marital reflection.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card 2: Motional Dynamics -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>⚡</span> 2. Motional Dynamics: Retrograde & Combustion
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Special astronomical conditions modifying planetary behavior:
+                        <div style="margin-top:3px;">
+                            <strong>[R] Retrograde (Vakra Motion):</strong> Apparent backward motion occurs when a planet is closest to Earth, largest, and brightest. Grants maximum motional power (<em>Cheṣṭa Bala</em>). Energy turns introspective, non-linear, and unconventional; challenges standard norms and re-evaluates significations.
+                        </div>
+                        <div style="margin-top:4px;">
+                            <strong>[C] Combustion (Astangata / Asta):</strong> Proximity within the solar orb. The planet's outward tangible expression is humbled and absorbed by the solar ego, urging the native to seek self-worth internally rather than from external validation. Combust planets primarily weaken the houses they rule.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: 5-Fold Dignity -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>⚖️</span> 3. Pañcadhā Maitrī (5-Fold Dignity)
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Determines how comfortable and welcomed a planet feels in its host sign:
+                        <div style="margin-top:2px;">
+                            <strong>Natural Bond (Naisargika):</strong> Permanent friendship between planetary archetypes (e.g. Sun and Mars are natural friends).
+                        </div>
+                        <div style="margin-top:2px;">
+                            <strong>Temporary Bond (Tātkālika):</strong> Distance in the chart (planets in houses 2, 3, 4, 10, 11, 12 from each other are temporary friends; in 1, 5, 6, 7, 8, 9 are enemies).
+                        </div>
+                        <div style="margin-top:2px;">
+                            <strong>5-Fold Synthesis:</strong> Yields 9 dignity levels: Exalted (<em>Uccha</em>), Moolatrikona, Own Sign (<em>Svastha</em>), Great Friend, Friend, Neutral, Enemy, Great Enemy, and Debilitated (<em>Neecha</em>).
+                        </div>
+                        <div style="margin-top:2px; font-style:italic; color:#78716c;">
+                            Rahu & Ketu act as reflection proxies (Chhāyā Grahas), mirroring their dispositor host lord.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Lajjitadi Avasthas -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🌿</span> 4. The 6 Lajjitādi Avasthās (Feelings)
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Sage Parāśara reveals that planets experience psychological moods:
+                        <ul style="margin:2px 0 0 12px; padding:0;">
+                            <li><strong>🟢 Mudita (Delighted):</strong> Welcomed in friend's sign or aspected by friends; generous and enthusiastic.</li>
+                            <li><strong>👑 Garvita (Proud):</strong> Exalted or in own sign; full of regal dignity and confident command.</li>
+                            <li><strong>🔴 Kshudhita (Starved):</strong> In enemy sign or pressed by enemy rays; feels drained, struggling for nourishment.</li>
+                            <li><strong>🟠 Kshobhita (Agitated):</strong> Conjoined by Sun/malefics or harsh glances; impatient, conflicted, or provoked.</li>
+                            <li><strong>🟣 Lajjita (Ashamed):</strong> In 5th/8th house with nodes or malefics; self-conscious or hesitant.</li>
+                            <li><strong>💧 Trushita (Thirsty):</strong> In water sign aspected by enemy without benefic help; craving fulfillment.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Card 5: Shadbala Power -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🏋️</span> 5. Ṣaḍbala (6-Fold Potency) vs Feelings
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        <strong>Engine Stamina vs Emotional Morale:</strong>
+                        <div style="margin-top:2px;">
+                            • <strong>Ṣaḍbala</strong> is the raw physical horsepower of a car (muscle, capacity to work). Measured in Virūpas (60 Virūpas = 1 Rūpa).
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Parāśara 100% Minimum:</strong> Sun (390v), Moon (360v), Mars (300v), Mercury (420v), Jupiter (390v), Venus (330v), Saturn (300v).
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Stamina Tiers:</strong> Abundant Surplus (≥125%), Adequate (≥100%), Mild Deficit (85–99%), Severe Deficit (<85%).
+                        </div>
+                        <div style="margin-top:2px; font-style:italic; color:#78716c;">
+                            A planet can have high Ṣaḍbala (strong engine) but feel starved in Lajjitādi Avasthā (depleted driver morale). Both must be examined together.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 6: Drishti & Aspect Weather -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🌦️</span> 6. Net Dṛṣṭi & Environmental Weather
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Continuous Graha Dṛṣṭi measures the exact aspectual light received:
+                        <div style="margin-top:2px;">
+                            • <strong>🟢 Net Benefic Support (+Virūpas):</strong> Friendly, protective sky-light from Jupiter and Venus. Calms resistance, opens opportunities, and fosters ease.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>🔴 Net Malefic Pressure (-Virūpas):</strong> Challenging aspect rays from Saturn and Mars. Introduces discipline, friction, delays, or intense focus.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Conjunctions (YUTI):</strong> Living in the same room; planets directly share each other's elemental nature.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 7: Karmic Fruits (I/K) -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🍎</span> 7. Karmic Fruits: Iṣṭa & Kaṣṭa Phala
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Measures the inherent flavor of a planet's karmic harvest (0 to 60 scale):
+                        <div style="margin-top:2px;">
+                            • <strong>Iṣṭa Phala:</strong> Auspicious capacity. Derived from exaltation strength (Uccha) and motional strength (Cheṣṭa). Produces sweet blessings, joy, and smooth fruition.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Kaṣṭa Phala:</strong> Arduous capacity (60 - Iṣṭa). Demands grit, perseverance, overcoming tests, and character-building trials.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Balance:</strong> High Iṣṭa brings grace; high Kaṣṭa yields wisdom forged through discipline.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 8: Vitality Score -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>⭐</span> 8. ★ Composite Vitality Score (1–10)
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Synthesizes all 5 diagnostic pillars into a single actionable rating:
+                        <div style="margin-top:2px;">
+                            <strong>5 Pillars:</strong> Sign Dignity (1-10) + Ṣaḍbala Capacity (1-10) + Avasthā Mood (1-10) + Aspect Weather (1-10) + Karmic Fruit (1-10).
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>🌟 Sovereign (8.5–10):</strong> Uncontested strength; manifests results with royal authority.
+                        </div>
+                        <div style="margin-top:1px;">
+                            • <strong>🟢 Capable (7.0–8.4):</strong> Healthy self-worth, resilient, activates yogas easily.
+                        </div>
+                        <div style="margin-top:1px;">
+                            • <strong>🟡 Resilient (5.5–6.9):</strong> Reliable vessel; succeeds through deliberate effort.
+                        </div>
+                        <div style="margin-top:1px;">
+                            • <strong>🟠 Strained (4.0–5.4):</strong> Energy is sensitive or internalized; requires patience.
+                        </div>
+                        <div style="margin-top:1px;">
+                            • <strong>🔴 Fragile (<4.0):</strong> Prone to fatigue; benefits from conscious remediation.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 9: Whole Signs vs Campanus -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>🏛️</span> 9. Whole Signs vs 3D Campanus Cusps
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Ernst Wilhelm's Kala methodology uses both perspectives in harmony:
+                        <div style="margin-top:2px;">
+                            • <strong>Whole Sign Houses (Rāśis):</strong> Outer societal roles, archetypal life arenas, and house rulerships (what society sees you do).
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>3D Campanus Cusps (Bhāvas):</strong> Exact astronomical division of local space. Reveals where a planet physically fell relative to the horizon at your birth.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Bhāva Shifts (➔ Bhāva X):</strong> When a planet crosses into an adjacent Campanus house, its inner psychological feeling aligns with that Bhāva while outer circumstances follow the Whole Sign.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    """
+
+
 def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str, Any]] = None) -> str:
     """Generates the complete, self-contained publication-grade HTML report."""
     opts = options or {}
@@ -638,6 +1491,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     include_dasha = opts.get("include_dasha", True)
     include_vimshopaka = opts.get("include_vimshopaka", True)
     include_yogas = opts.get("include_yogas", True)
+    include_master_diagnostics = opts.get("include_master_diagnostics", True)
+    include_diagnostic_key = opts.get("include_diagnostic_key", True)
     additional_vargas = opts.get("additional_vargas", [])
     
     subject = chart_data.get("subject_info", {})
@@ -1094,6 +1949,13 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         </div>
         """
 
+    # 11. Build Master Graha Diagnostics & Horizon Vitality
+    lagna_vitality_card_html = render_lagna_vitality_card(chart_data, "D1") if include_master_diagnostics else ""
+    master_diagnostics_table_html = render_master_graha_diagnostics_table(chart_data, "D1", notation) if include_master_diagnostics else ""
+
+    # 12. Build Master Astrological Diagnostic Key
+    diagnostic_key_html = render_diagnostic_key_section() if include_diagnostic_key else ""
+
     # Assemble Full HTML
     html_content = f"""<!DOCTYPE html>
 <html lang="en">
@@ -1221,11 +2083,27 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     margin-bottom: 8px;
   }}
 
+  .layout-2col {{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }}
+
   .layout-vargas {{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     margin-bottom: 8px;
+  }}
+
+  .key-card {{
+    background: #fcfaf5;
+    border: 1px solid #e5dccb;
+    border-radius: 4px;
+    padding: 6px 8px;
+    page-break-inside: avoid;
+    break-inside: avoid;
   }}
 
   .column {{
@@ -1514,7 +2392,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 </head>
 <body>
 
-  <!-- PAGE 1: D1 RASI MASTER DIAGNOSTIC -->
+  <!-- PAGE 1: D1 RASI ROOT ARCHITECTURE -->
   <div class="page-container avoid-break">
     
     <!-- Master Header Banner -->
@@ -1540,10 +2418,10 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
       </div>
     </div>
 
-    <!-- 3-Column Core Predictive Architecture -->
-    <div class="layout-3col">
+    <!-- 2-Column Core Architecture -->
+    <div class="layout-2col">
       
-      <!-- COLUMN 1: D1 Chart, Campanus Cusps & Vimshottari Dasha -->
+      <!-- COLUMN 1: D1 Chart & Campanus Cusps -->
       <div class="column">
         {f'''
         <div class="card chart-card">
@@ -1575,6 +2453,62 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
           </div>
         </div>
         ''' if include_cusps else ''}
+      </div>
+
+      <!-- COLUMN 2: Placements, 5-Fold Dignities & Vimshottari Dasha -->
+      <div class="column">
+        {f'''
+        <div class="card">
+          <div class="card-header">
+            <h3>🌟 Planetary Placements & Nakshatras</h3>
+            <span class="card-sub">Sidereal Nakshatras & Pada</span>
+          </div>
+          <div class="card-body">
+            <table class="data-table compact">
+              <thead>
+                <tr>
+                  <th>Graha</th>
+                  <th>Sign</th>
+                  <th>Degree</th>
+                  <th>Mot</th>
+                  <th>Nakshatra (Pada)</th>
+                  <th>Ruler</th>
+                  <th>House</th>
+                </tr>
+              </thead>
+              <tbody>
+                {placements_html}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        ''' if include_placements else ''}
+
+        {f'''
+        <div class="card">
+          <div class="card-header">
+            <h3>⚖️ Pañcadhā Sambandha (5-Fold Dignities)</h3>
+            <span class="card-sub">Natural + Temporal Relationship</span>
+          </div>
+          <div class="card-body">
+            <table class="data-table compact">
+              <thead>
+                <tr>
+                  <th>Graha</th>
+                  <th>Sign Lord</th>
+                  <th>Natural</th>
+                  <th>Temporal</th>
+                  <th>Compound</th>
+                  <th>Final Dignity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {dignities_html}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        ''' if include_dignities else ''}
 
         {f'''
         <div class="card">
@@ -1602,61 +2536,107 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         ''' if include_dasha else ''}
       </div>
 
-      <!-- COLUMN 2: Placements, Dignities, Qualitative Avasthas & Yoga Judgment -->
+    </div>
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page 1: Root Rāśi Chart & Core Astronomy • Report Generated for {name}
+    </div>
+
+  </div>
+
+  {f'''
+  <!-- PAGE 2: MASTER GRAHA DIAGNOSTICS & HORIZON VITALITY -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Page 2 Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Master Graha Diagnostics & Horizon Vitality</div>
+        <div class="native-meta">
+          <span>5-Pillar Horizon Vitality</span>
+          <span>Pañcadhā Maitrī</span>
+          <span>Ṣaḍbala Virūpas & Rank</span>
+          <span>Lajjitādi Feelings</span>
+          <span>Net Dṛṣṭi Weather</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Executive Multi-Dimensional Synthesis</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Dynamic Swiss Ephemeris Computation</span>
+      </div>
+    </div>
+
+    <!-- Executive Lagna Vitality Architecture Card -->
+    {lagna_vitality_card_html}
+
+    <!-- Master Graha Diagnostics Unified Matrix Table -->
+    {master_diagnostics_table_html}
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page 2: Master Graha Diagnostics & Horizon Vitality • Report Generated for {name}
+    </div>
+
+  </div>
+  ''' if include_master_diagnostics else ''}
+
+  {f'''
+  <!-- PAGE 3: DIVISIONAL ARCHITECTURE (VARGAS) -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Page 3 Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Divisional Architecture (Vargas)</div>
+        <div class="native-meta">
+          <span>Soul Trajectory (D9 Navāṃśa)</span>
+          <span>Career & Great Status (D10 Daśāṃśa)</span>
+          <span>Progeny & Relationships (D7 Saptāṃśa)</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">16-in-1 Shodashavarga Precision Analysis</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Campanus House Cusps & Equal Divisions</span>
+      </div>
+    </div>
+
+    <!-- Vargas Modular Cards (D9, D10, D7) -->
+    <div class="layout-vargas">
+      {vargas_cards_html}
+    </div>
+
+    <!-- 16-Varga Vimshopaka Dignity Matrix -->
+    {vimshopaka_matrix_html}
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page 3: Divisional Architecture & 16-Varga Viṃśopaka Scoring • Report Generated for {name}
+    </div>
+
+  </div>
+  ''' if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else ''}
+
+  {f'''
+  <!-- PAGE 4: DEEP PLANETARY STRENGTHS (ṢAḌBALA & QUALITATIVE AVASTHĀS) -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Page 4 Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Deep Planetary Strengths & Potencies</div>
+        <div class="native-meta">
+          <span>Ṣaḍbala 6-Fold Potency Grid</span>
+          <span>Qualitative & Lajjitādi Avasthās</span>
+          <span>Kala Yoga Judgment Matrix</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Mathematical Engine Foundations</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Parashara Virūpas & Threshold Ratios</span>
+      </div>
+    </div>
+
+    <div class="layout-2col">
+      <!-- Left Column: Qualitative Avasthas & Yoga Judgment -->
       <div class="column">
-        {f'''
-        <div class="card">
-          <div class="card-header">
-            <h3>🌟 Planetary Placements & Nakshatras</h3>
-            <span class="card-sub">Sidereal Nakshatras & Pada</span>
-          </div>
-          <div class="card-body">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Graha</th>
-                  <th>Sign</th>
-                  <th>Degree</th>
-                  <th>Mot</th>
-                  <th>Nakshatra (Pada)</th>
-                  <th>Ruler</th>
-                  <th>House</th>
-                </tr>
-              </thead>
-              <tbody>
-                {placements_html}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ''' if include_placements else ''}
-
-        {f'''
-        <div class="card">
-          <div class="card-header">
-            <h3>⚖️ Pañcadhā Sambandha (5-Fold Dignities)</h3>
-            <span class="card-sub">Natural + Temporal Relationship</span>
-          </div>
-          <div class="card-body">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Graha</th>
-                  <th>Sign Lord</th>
-                  <th>Natural</th>
-                  <th>Temporal</th>
-                  <th>Compound</th>
-                  <th>Final Dignity</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dignities_html}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        ''' if include_dignities else ''}
-
         {f'''
         <div class="card">
           <div class="card-header">
@@ -1682,7 +2662,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         ''' if include_yoga_judgment else ''}
       </div>
 
-      <!-- COLUMN 3: Shadbala Strength Breakdown Grid -->
+      <!-- Right Column: Shadbala Strength Breakdown Grid -->
       <div class="column">
         {f'''
         <div class="card">
@@ -1696,55 +2676,20 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         </div>
         ''' if include_shadbala else ''}
       </div>
-
     </div>
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 1: Root Rāśi Chart & Core Diagnostics • Report Generated for {name}
+      Astra Precision Astrological Computation • Page 4: Deep Planetary Strengths & Potency Matrix • Report Generated for {name}
     </div>
 
   </div>
+  ''' if (include_shadbala or include_avasthas or include_yoga_judgment) else ''}
 
   {f'''
-  <!-- PAGE 2: DIVISIONAL ARCHITECTURE (VARGAS) -->
+  <!-- PAGE 5: CLASSICAL YOGAS & YOGA BHANGA AUDIT -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 2 Header Banner -->
-    <div class="master-header">
-      <div class="header-left">
-        <div class="native-title">{name} • Divisional Architecture (Vargas)</div>
-        <div class="native-meta">
-          <span>Soul Trajectory (D9)</span>
-          <span>Career & Great Status (D10)</span>
-          <span>Progeny & Relationships (D7)</span>
-        </div>
-      </div>
-      <div class="header-right">
-        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">16-in-1 Shodashavarga Precision Analysis</span>
-        <span style="font-size: 6.5pt; color: #e5dccb;">Campanus House Cusps & Equal Divisions</span>
-      </div>
-    </div>
-
-    <!-- Vargas Modular Cards (D9, D10, D7) -->
-    <div class="layout-vargas">
-      {vargas_cards_html}
-    </div>
-
-    <!-- 16-Varga Vimshopaka Dignity Matrix -->
-    {vimshopaka_matrix_html}
-
-    <div class="footer-note">
-      Astra Precision Astrological Computation • Page 2: Divisional Architecture & 16-Varga Viṃśopaka Scoring • Report Generated for {name}
-    </div>
-
-  </div>
-  ''' if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else ''}
-
-  {f'''
-  <!-- PAGE 3: CLASSICAL YOGAS & YOGA BHANGA AUDIT -->
-  <div class="page-container page-break avoid-break">
-    
-    <!-- Page 3 Header Banner -->
+    <!-- Page 5 Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Classical Yogas & Yoga Bhanga Audit</div>
@@ -1764,11 +2709,41 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     {yogas_html}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 3: Classical Yogas & Plausibility Audit • Report Generated for {name}
+      Astra Precision Astrological Computation • Page 5: Classical Yogas & Plausibility Audit • Report Generated for {name}
     </div>
 
   </div>
   ''' if (include_yogas and yogas_html) else ''}
+
+  {f'''
+  <!-- PAGE 6: MASTER ASTROLOGICAL DIAGNOSTIC KEY -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Page 6 Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Astrological Diagnostic Key & Pedagogical Guide</div>
+        <div class="native-meta">
+          <span>Decoded Tooltips & Inline Badges</span>
+          <span>Psychological Feeling States</span>
+          <span>Synthesis Formulas for Readers</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Self-Contained Reader Reference</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Kala Integrated Methodology Manual</span>
+      </div>
+    </div>
+
+    <!-- Master Diagnostic Key (9 Educational Cards) -->
+    {diagnostic_key_html}
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page 6: Master Astrological Diagnostic Key & Reference Guide • Report Generated for {name}
+    </div>
+
+  </div>
+  ''' if (include_diagnostic_key and diagnostic_key_html) else ''}
 
 </body>
 </html>

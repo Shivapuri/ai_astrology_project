@@ -51,6 +51,7 @@ EXCLUDED_DIRS = {
     "angelina-jolie-pdfs",
     "knowledge_base",
     "lajjitadi_transcription",
+    "ascendant_reports",
 }
 
 EXCLUDED_FILES = {
