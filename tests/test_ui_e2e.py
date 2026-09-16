@@ -322,4 +322,80 @@ def test_biwheel_chart_ui_interaction(page: Page):
     expect(chart_widget.locator('.svg-biwheel svg')).to_be_visible()
 
 
+def test_chart_maximize_floating_window_and_aspects(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    page.evaluate("changeWorkspace('core-predictive')")
+    page.wait_for_timeout(500)
+    page.locator("svg").first.wait_for(state="visible")
 
+    # Click circular view button 'C' and maximize
+    chart_cell = page.locator('.grid-cell[data-widget="chart"]').first
+    chart_cell.locator('.btn-circular').click()
+    page.wait_for_timeout(300)
+    chart_cell.locator('.btn-widget-maximize').click()
+    page.wait_for_timeout(500)
+
+    modal = page.locator("#maximizeModal")
+    expect(modal).to_be_visible()
+
+    card = page.locator("#maximizeChartCard")
+    expect(card).to_be_visible()
+    expect(page.locator("#maximizeChartHeader")).to_be_visible()
+    expect(page.locator("#maximizeModalTitle")).to_contain_text("Circular")
+
+    # Check zoom controls
+    zoom_label = page.locator("#maximizeZoomLabel")
+    expect(zoom_label).to_contain_text("100%")
+
+    # Click zoom in '+'
+    page.locator('#maximizeChartHeader button[title="Zoom In"]').click()
+    page.wait_for_timeout(200)
+    expect(zoom_label).to_contain_text("115%")
+
+    # Reset zoom
+    zoom_label.click()
+    page.wait_for_timeout(200)
+    expect(zoom_label).to_contain_text("100%")
+
+    # Check aspects hidden by default
+    max_svg = page.locator("#maximizeChartContainer svg")
+    expect(max_svg).to_have_class(re.compile(r"aspects-hidden"))
+
+    # Toggle aspects with dedicated button
+    aspect_btn = page.locator("#maximizeToggleAspectsBtn")
+    expect(aspect_btn).to_be_visible()
+    expect(aspect_btn).to_contain_text("OFF")
+
+    aspect_btn.click()
+    page.wait_for_timeout(200)
+    expect(max_svg).not_to_have_class(re.compile(r"aspects-hidden"))
+    expect(aspect_btn).to_contain_text("ON")
+
+    # Test dragging the header to move window via drag grip
+    drag_grip = page.locator("#maximizeChartHeader .floating-drag-grip")
+    box_before = card.bounding_box()
+    drag_grip.hover()
+    page.mouse.down()
+    page.mouse.move(box_before["x"] + 80, box_before["y"] + 20, steps=5)
+    page.mouse.up()
+    page.wait_for_timeout(200)
+    box_after = card.bounding_box()
+    assert box_after["x"] != box_before["x"] or box_after["y"] != box_before["y"], "Window should have moved after dragging header"
+
+    # Test reset position & size button
+    reset_btn = page.locator('#maximizeChartHeader button[title="Reset Position & Size"]')
+    expect(reset_btn).to_be_visible()
+    reset_btn.click()
+    page.wait_for_timeout(200)
+    box_reset = card.bounding_box()
+    assert box_reset["x"] == box_before["x"] or box_reset["y"] == box_before["y"], "Window position should reset"
+
+    # Verify corner resize grip is present
+    grip = page.locator("#maximizeCornerGrip")
+    expect(grip).to_be_visible()
+
+    # Close with Escape key
+    page.keyboard.press("Escape")
+    page.wait_for_timeout(300)
+    expect(modal).not_to_be_visible()

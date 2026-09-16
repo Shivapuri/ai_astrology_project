@@ -835,10 +835,13 @@ from jyotish.relationships.relationships import (
 )
 
 def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna"):
-    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
     # SVG Defs for Aspect Arrowheads (Benefic/Exalted/Malefic/Neutral)
     svg += '<defs>\n'
+    svg += '  <style>\n'
+    svg += '    .aspects-hidden:not(.aspects-filtered) .aspect-lines { display: none; }\n'
+    svg += '  </style>\n'
     svg += '  <marker id="arrow-benefic" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#27AE60"/></marker>\n'
     svg += '  <marker id="arrow-exalted" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D4AC0D"/></marker>\n'
     svg += '  <marker id="arrow-malefic" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C0392B"/></marker>\n'
@@ -1049,7 +1052,14 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
             p1 = planets_to_draw[i]
             p2 = planets_to_draw[(i+1) % len(planets_to_draw)]
             
-            min_sep = 9.5 if (p1["is_lagna"] or p2["is_lagna"]) else 7.5
+            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
+            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
+            if p1["is_lagna"] or p2["is_lagna"]:
+                min_sep = 14.5
+            elif is_wide1 or is_wide2:
+                min_sep = 12.0
+            else:
+                min_sep = 10.0
             a1 = p1["draw_angle"] % 360
             a2 = p2["draw_angle"] % 360
             diff = (a2 - a1) % 360
@@ -1149,14 +1159,14 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         
         # 1. Minute text
         mx, my = polar_coords(r_min_base, angle)
-        svg += f'<text x="{mx}" y="{my}" font-size="6.5" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{retro_badge}</text>\n'
+        svg += f'<text x="{mx}" y="{my}" font-size="6.0" stroke="#F7F3EB" stroke-width="1.0" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
 
         # 2. Degree text
         dx, dy = polar_coords(r_deg_base, angle)
-        svg += f'<text x="{dx}" y="{dy}" font-size="7.5" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+        svg += f'<text x="{dx}" y="{dy}" font-size="7.0" stroke="#F7F3EB" stroke-width="1.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
 
         # 3. Planet Glyph (Drawn on top with protective halo)
-        svg += f'<text class="glyph-symbol" x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        svg += f'<text class="glyph-symbol" x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         
         svg += f'</g>\n'
         
@@ -1194,10 +1204,13 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
     """
     from jyotish.generate_jyotish import calculate_varga_longitude
 
-    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
     # SVG Defs for Aspect Arrowheads & Golden Vargottama Glow
     svg += '<defs>\n'
+    svg += '  <style>\n'
+    svg += '    .aspects-hidden:not(.aspects-filtered) .aspect-lines { display: none; }\n'
+    svg += '  </style>\n'
     svg += '  <marker id="arrow-benefic" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#27AE60"/></marker>\n'
     svg += '  <marker id="arrow-exalted" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D4AC0D"/></marker>\n'
     svg += '  <marker id="arrow-malefic" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#C0392B"/></marker>\n'
@@ -1454,12 +1467,19 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
             p["draw_angle"] = 188.0
 
     # Relaxation for overlap in Inner Ring with red Ascendant arrow barrier [172.5°, 187.5°]
-    for _ in range(40):
+    for _ in range(60):
         inner_planets.sort(key=lambda p: (p["draw_angle"] % 360))
         for i in range(len(inner_planets)):
             p1 = inner_planets[i]
             p2 = inner_planets[(i+1) % len(inner_planets)]
-            min_sep = 10.0 if (p1["is_lagna"] or p2["is_lagna"]) else 8.0
+            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
+            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
+            if p1["is_lagna"] or p2["is_lagna"]:
+                min_sep = 15.0
+            elif is_wide1 or is_wide2:
+                min_sep = 13.0
+            else:
+                min_sep = 10.5
             a1 = p1["draw_angle"] % 360
             a2 = p2["draw_angle"] % 360
             diff = (a2 - a1) % 360
@@ -1471,18 +1491,25 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         # Red Ascendant arrow obstacle barrier at 180°
         for p in inner_planets:
             ang = p["draw_angle"] % 360
-            if 172.5 <= ang < 180.0:
-                p["draw_angle"] = 172.0
-            elif 180.0 <= ang < 187.5:
-                p["draw_angle"] = 188.0
+            if 172.0 <= ang < 180.0:
+                p["draw_angle"] = 171.0
+            elif 180.0 <= ang < 188.0:
+                p["draw_angle"] = 189.0
 
     # Relaxation for overlap in Outer Ring
-    for _ in range(40):
+    for _ in range(60):
         outer_planets.sort(key=lambda p: (p["draw_angle"] % 360))
         for i in range(len(outer_planets)):
             p1 = outer_planets[i]
             p2 = outer_planets[(i+1) % len(outer_planets)]
-            min_sep = 9.5 if (p1["is_lagna"] or p2["is_lagna"]) else 7.5
+            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
+            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
+            if p1["is_lagna"] or p2["is_lagna"]:
+                min_sep = 15.0
+            elif is_wide1 or is_wide2:
+                min_sep = 13.5
+            else:
+                min_sep = 11.0
             a1 = p1["draw_angle"] % 360
             a2 = p2["draw_angle"] % 360
             diff = (a2 - a1) % 360
@@ -1601,19 +1628,20 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         x2_in, y2_in = polar_coords(138, ang)
         svg += f'<line class="radial-alignment-ray inner-ray-inner" data-planet="{p_name}" data-varga="{inner_name}" x1="{x1_in}" y1="{y1_in}" x2="{x2_in}" y2="{y2_in}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.65"><title>{tip}</title></line>\n'
         # Gap across Zodiac band (r = 138 to 164 is invisible)
-        # Segment 2: Pointer emerging on outer side of zodiac band (r = 164 to 172) with arrow pointing outward
+        # Segment 2: Pointer emerging on outer side of zodiac band (r = 164 to 170.5) with arrow pointing outward
         x1_out, y1_out = polar_coords(164, ang)
-        x2_out, y2_out = polar_coords(172, ang)
+        x2_out, y2_out = polar_coords(170.5, ang)
         svg += f'<line class="radial-alignment-ray inner-ray-outer" data-planet="{p_name}" data-varga="{inner_name}" x1="{x1_out}" y1="{y1_out}" x2="{x2_out}" y2="{y2_out}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.75" marker-end="url(#arrow-pointer-in)"><title>{tip}</title></line>\n'
 
     for p in outer_planets:
         ang = p["true_angle"]
         p_name = p["item"]["name"]
         p_col = planet_notations.get(p_name, {}).get("color", "#795548")
-        x1, y1 = polar_coords(181, ang)
-        x2, y2 = polar_coords(205, ang)
+        # Outer outward pointer at the outermost rim so it never overlays any text or symbols
+        x1, y1 = polar_coords(204, ang)
+        x2, y2 = polar_coords(208.5, ang)
         tip = f"{outer_name} {p_name} True Degree Alignment ({p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']})"
-        svg += f'<line class="radial-alignment-ray outer-ray" data-planet="{p_name}" data-varga="{outer_name}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.65" marker-end="url(#arrow-pointer-out)"><title>{tip}</title></line>\n'
+        svg += f'<line class="radial-alignment-ray outer-ray" data-planet="{p_name}" data-varga="{outer_name}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.8" marker-end="url(#arrow-pointer-out)"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
     # Radial Positions for stacking
@@ -1621,10 +1649,10 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
     r_in_deg = 98
     r_in_pl = 115
 
-    r_out_pl = 175
-    r_out_deg = 185
-    r_out_min = 194
-    r_out_sign = 201
+    r_out_pl = 172
+    r_out_deg = 181
+    r_out_min = 190
+    r_out_sign = 199
 
     # 5. Vargottama Highlights: Golden Beams & Halos connecting same-sign positions
     svg += '<g class="vargottama-highlights">\n'
@@ -1672,14 +1700,14 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
 
         # Minute text
         mx, my = polar_coords(r_in_min, angle)
-        svg += f'<text x="{mx}" y="{my}" font-size="6.0" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{retro_badge}</text>\n'
+        svg += f'<text x="{mx}" y="{my}" font-size="5.8" stroke="#F7F3EB" stroke-width="1.0" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
 
         # Degree text
         dx, dy = polar_coords(r_in_deg, angle)
-        svg += f'<text x="{dx}" y="{dy}" font-size="7.0" stroke="#F7F3EB" stroke-width="1.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+        svg += f'<text x="{dx}" y="{dy}" font-size="6.8" stroke="#F7F3EB" stroke-width="1.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
 
         # Planet Glyph
-        svg += f'<text class="glyph-symbol" x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        svg += f'<text class="glyph-symbol" x="{px}" y="{py}" font-size="{font_sz}" stroke="#F7F3EB" stroke-width="2.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         svg += '</g>\n'
     svg += '</g>\n'
 
@@ -1697,9 +1725,11 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         is_retro = item.get("is_retrograde", False)
         retro_badge = "R" if is_retro else ""
         
-        px, py = polar_coords(r_out_pl, angle)
+        # Lagna is a 3-letter label ('Asc'), slightly inset to prevent touching degree numbers
+        pl_r = (r_out_pl - 1.5) if p_name == "Lagna" else r_out_pl
+        px, py = polar_coords(pl_r, angle)
 
-        font_sz = 9.0 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
+        font_sz = 7.8 if p_name == "Lagna" else (11.5 if mode == "devanagari" else 11.0)
         if mode == "symbol" and p_name in ["Mars", "Venus"]:
             font_sz = "9.5"
             
@@ -1717,18 +1747,18 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
 
         # Minute text
         mx, my = polar_coords(r_out_min, angle)
-        svg += f'<text x="{mx}" y="{my}" font-size="5.5" stroke="#FAF6F0" stroke-width="1.6" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{retro_badge}</text>\n'
+        svg += f'<text x="{mx}" y="{my}" font-size="5.2" stroke="#FAF6F0" stroke-width="0.8" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
 
         # Degree text
         dx, dy = polar_coords(r_out_deg, angle)
-        svg += f'<text x="{dx}" y="{dy}" font-size="6.5" stroke="#FAF6F0" stroke-width="1.6" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+        svg += f'<text x="{dx}" y="{dy}" font-size="6.2" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
 
         # Planet Glyph
-        svg += f'<text class="glyph-symbol outer-glyph" x="{px}" y="{py}" font-size="{font_sz}" stroke="#FAF6F0" stroke-width="2.5" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        svg += f'<text class="glyph-symbol outer-glyph" x="{px}" y="{py}" font-size="{font_sz}" stroke="#FAF6F0" stroke-width="2.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         
         # Divisional Sign Glyph in outer ring (so user immediately sees which sign outer planet occupies)
         sx, sy = polar_coords(r_out_sign, angle)
-        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="7.5" stroke="#FAF6F0" stroke-width="1.8" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="6.5" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
         
         svg += '</g>\n'
     svg += '</g>\n'
