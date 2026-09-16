@@ -144,14 +144,15 @@ def get_chart_svg(
     chart_style: str = "north",
     notation: str = "symbol",
     width: int = 330,
-    height: int = 330
+    height: int = 330,
+    biwheel_outer: str = "D9"
 ) -> str:
     """Generates clean, embedded SVG string for a given varga."""
     v_data = chart_data.get("vargas", {}).get(varga_key)
-    if not v_data:
+    if not v_data and chart_style != "biwheel":
         return f"<div style='width:{width}px; height:{height}px; display:flex; align-items:center; justify-content:center; background:#f1f5f9; color:#64748b;'>{varga_key} Data Unavailable</div>"
     
-    items = draw_chart.parse_varga_data(v_data)
+    items = draw_chart.parse_varga_data(v_data) if v_data else []
     v_title = VARGA_TITLES.get(varga_key, varga_key)
     
     if chart_style == "south":
@@ -159,11 +160,29 @@ def get_chart_svg(
     elif chart_style == "circular":
         ayanamsa = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0.0)
         svg = draw_chart.generate_circular_chart(items, mode=notation, varga_name=v_title, ayanamsha=ayanamsa)
+    elif chart_style == "biwheel":
+        inner_k = "D1"
+        outer_k = biwheel_outer if varga_key == "D1" else varga_key
+        inner_v = chart_data.get("vargas", {}).get(inner_k, {})
+        outer_v = chart_data.get("vargas", {}).get(outer_k, chart_data.get("vargas", {}).get("D9", {}))
+        inner_items = draw_chart.parse_varga_data(inner_v) if inner_v else []
+        outer_items = draw_chart.parse_varga_data(outer_v) if outer_v else []
+        ayanamsa = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0.0)
+        svg = draw_chart.generate_biwheel_chart(
+            inner_items=inner_items,
+            outer_items=outer_items,
+            inner_name=inner_k,
+            outer_name=outer_k,
+            mode=notation,
+            ayanamsha=ayanamsa,
+            root_planet="Lagna"
+        )
     else:
         svg = draw_chart.generate_north_indian(items, mode=notation, varga_name=v_title)
         
     svg_clean = svg.replace('width="100%"', f'width="{width}"').replace('height="100%"', f'height="{height}"')
     return svg_clean
+
 
 
 def get_atmakaraka_info(chart_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -634,6 +653,224 @@ def get_campanus_house_num(planet_name: str, default_house: int, bhavas: list) -
         if planet_name in pls or (planet_name == "Lagna" and "Asc" in pls):
             return b.get("house", default_house)
     return default_house
+
+
+def render_harmonic_biwheel_section(
+    chart_data: Dict[str, Any],
+    outer_varga: str = "D9",
+    notation: str = "symbol",
+    svg_size: int = 355
+) -> str:
+    """
+    Renders the dedicated Harmonic Bi-Wheel Architecture section.
+    Displays:
+    1. Concentric dual-wheel vector SVG (D1 Natal + Outer Varga).
+    2. Interactive visual reading key decoding the concentric rings and golden Vargottama rays.
+    3. Harmonic Cross-Chart Alignment Matrix (Lagna + 9 Grahas with Natal placement,
+       harmonic divisional degree, sector slice/pada, whole-sign overlay bhava, and dignity badge).
+    4. Subtle Soul Destiny & Vargottama Fortification Synthesis (Swāṃśa, Kārakāṃśa, Vargottama stability).
+    5. Kala Epistemological Principle explaining concentric harmonic frequencies in plain English.
+    """
+    inner_k = "D1"
+    outer_k = outer_varga or "D9"
+    outer_title = VARGA_TITLES.get(outer_k, f"{outer_k} Harmonic Chart")
+    
+    inner_v = chart_data.get("vargas", {}).get(inner_k, {})
+    outer_v = chart_data.get("vargas", {}).get(outer_k, {})
+    
+    inner_items = draw_chart.parse_varga_data(inner_v) if inner_v else []
+    outer_items = draw_chart.parse_varga_data(outer_v) if outer_v else []
+    ayanamsa = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0.0)
+    
+    biwheel_svg_raw = draw_chart.generate_biwheel_chart(
+        inner_items=inner_items,
+        outer_items=outer_items,
+        inner_name=inner_k,
+        outer_name=outer_k,
+        mode=notation,
+        ayanamsha=ayanamsa,
+        root_planet="Lagna"
+    )
+    biwheel_svg_clean = biwheel_svg_raw.replace('width="100%"', f'width="{svg_size}"').replace('height="100%"', f'height="{svg_size}"')
+    
+    harmonic_map = {
+        "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D7": 7, "D9": 9, "D10": 10,
+        "D12": 12, "D16": 16, "D20": 20, "D24": 24, "D27": 27, "D30": 30,
+        "D40": 40, "D45": 45, "D60": 60
+    }
+    harmonic_n = harmonic_map.get(outer_k, 9)
+    if outer_k.startswith("D") and outer_k[1:].isdigit():
+        harmonic_n = int(outer_k[1:])
+    slice_span = 30.0 / harmonic_n
+    
+    d1_lagna = inner_v.get("lagna", {})
+    d1_lagna_sign = d1_lagna.get("sign", "Aries")
+    d1_lagna_idx = SIGNS_LIST.index(d1_lagna_sign) if d1_lagna_sign in SIGNS_LIST else 0
+    bhavas = inner_v.get("bhavas", [])
+    
+    d1_grahas = inner_v.get("grahas", {})
+    out_grahas = outer_v.get("grahas", {})
+    out_lagna = outer_v.get("lagna", {})
+    
+    vargottamas = get_vargottama_planets(chart_data) if outer_k == "D9" else [p for p in PLANETS_ORDER if d1_grahas.get(p, {}).get("sign") == out_grahas.get(p, {}).get("sign")]
+    ak_info = get_atmakaraka_info(chart_data)
+    
+    rows_html = []
+    
+    # 1. Lagna row
+    if d1_lagna and d1_lagna.get("sign"):
+        in_s = d1_lagna.get("sign", "-")
+        in_d = d1_lagna.get("degree_0_to_30", 0.0)
+        out_s = out_lagna.get("sign", "-")
+        out_d = out_lagna.get("degree_0_to_30", 0.0)
+        is_varg = (in_s == out_s and in_s != "-")
+        pada_idx = min(harmonic_n, max(1, int(in_d / slice_span) + 1))
+        out_s_idx = SIGNS_LIST.index(out_s) if out_s in SIGNS_LIST else 0
+        overlay_house = ((out_s_idx - d1_lagna_idx + 12) % 12) + 1
+        
+        varg_badge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-weight:700;">🌟 Vargottama</span>' if is_varg else '<span class="badge badge-neutral">Swāṃśa</span>'
+        
+        rows_html.append(f"""
+        <tr style="background:#fcf8f2; font-weight:600;">
+            <td><strong>Asc Lagna</strong></td>
+            <td><strong>{in_s}</strong> <span class="mono">{format_deg_short(in_d)}</span> <span class="badge badge-neutral" style="font-size:6pt;">H1</span></td>
+            <td><strong>{out_s}</strong> <span class="mono">{format_deg_short(out_d)}</span></td>
+            <td>Pāda {pada_idx}/{harmonic_n}</td>
+            <td>Bhava {overlay_house}</td>
+            <td>{varg_badge}</td>
+        </tr>
+        """)
+        
+    for p in PLANETS_ORDER:
+        if p not in d1_grahas:
+            continue
+        g_in = d1_grahas[p]
+        g_out = out_grahas.get(p, {})
+        glyph = get_planet_glyph(p, notation)
+        
+        in_s = g_in.get("sign", "-")
+        in_d = g_in.get("degree_0_to_30", 0.0)
+        out_s = g_out.get("sign", "-")
+        out_d = g_out.get("degree_0_to_30", 0.0)
+        
+        in_s_idx = SIGNS_LIST.index(in_s) if in_s in SIGNS_LIST else 0
+        w_house = ((in_s_idx - d1_lagna_idx + 12) % 12) + 1
+        c_house = get_campanus_house_num(p, w_house, bhavas)
+        
+        pada_idx = min(harmonic_n, max(1, int(in_d / slice_span) + 1))
+        out_s_idx = SIGNS_LIST.index(out_s) if out_s in SIGNS_LIST else 0
+        overlay_house = ((out_s_idx - d1_lagna_idx + 12) % 12) + 1
+        
+        is_varg = (in_s == out_s and in_s != "-")
+        out_dig = g_out.get("dignity_breakdown", {}).get("final_dignity", g_out.get("dignity", "-"))
+        
+        if is_varg:
+            varg_badge = '<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; font-weight:700;">🌟 Vargottama</span>'
+        else:
+            varg_badge = dignity_badge(out_dig)
+            
+        rows_html.append(f"""
+        <tr>
+            <td>{glyph} {p}</td>
+            <td>{in_s} <span class="mono">{format_deg_short(in_d)}</span> <span class="badge badge-neutral" style="font-size:6pt;">H{c_house}</span></td>
+            <td><strong>{out_s}</strong> <span class="mono">{format_deg_short(out_d)}</span></td>
+            <td>Pāda {pada_idx}/{harmonic_n}</td>
+            <td>Bhava {overlay_house}</td>
+            <td>{varg_badge}</td>
+        </tr>
+        """)
+        
+    varg_str = ", ".join(vargottamas) if vargottamas else "None"
+    ak_planet = ak_info.get("planet", "-")
+    ak_sign = ak_info.get("karakamsa", "-")
+    d9_lagna_sign = out_lagna.get("sign", "-")
+    d9_lagna_lord = SIGN_LORDS.get(d9_lagna_sign, "-")
+    
+    html = f"""
+    <div class="layout-2col" style="align-items: stretch; margin-bottom: 8px;">
+        <!-- COLUMN 1: BI-WHEEL SVG & LEGEND -->
+        <div class="column" style="display: flex; flex-direction: column; gap: 6px;">
+            <div class="card chart-card" style="padding: 6px; display: flex; justify-content: center; align-items: center; background: #ffffff;">
+                <div style="width:{svg_size}px; height:{svg_size}px; display:flex; align-items:center; justify-content:center;">
+                    {biwheel_svg_clean}
+                </div>
+            </div>
+            <div class="key-card" style="font-size: 6.8pt; line-height: 1.35; padding: 6px 10px; background: #fdfbf7; border: 1px solid #e5dccb;">
+                <div style="font-weight: 700; color: #4a3325; margin-bottom: 3px; font-size: 7.2pt; display: flex; justify-content: space-between;">
+                    <span>Concentric Dual-Wheel Visual Reading Key</span>
+                    <span style="color:#d35400;">{inner_k} (Inner) ➔ {outer_k} (Outer)</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 4px;">
+                    <div><strong style="color: #795548;">• Inner Ring (r=62–138):</strong> Root Physical Chart (D1 Rāśi) • Signs, Planets & Campanus Cusps</div>
+                    <div><strong style="color: #27ae60;">• Middle Ring (r=138–164):</strong> 30° Sign Subdivided into {harmonic_n} Harmonic Slices (Signs)</div>
+                    <div><strong style="color: #2980b9;">• Outer Ring (r=164–206):</strong> Subtle Soul Destiny ({outer_k}) • Radially Anchored Planets</div>
+                    <div><strong style="color: #d4ac0d;">• Golden Rays (🌟):</strong> Radiant Vargottama Alignment (Identical Sign in Root & Soul)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: ALIGNMENT MATRIX & METHODOLOGY -->
+        <div class="column" style="display: flex; flex-direction: column; gap: 6px;">
+            <!-- Harmonic Alignment Table -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🏛️ Harmonic Alignment Matrix</h3>
+                    <span class="card-sub">{inner_k} Physical ➔ {outer_k} Harmonic Projections</span>
+                </div>
+                <div class="card-body">
+                    <table class="data-table compact">
+                        <thead>
+                            <tr>
+                                <th>Graha</th>
+                                <th>D1 Physical</th>
+                                <th>{outer_k} Harmonic</th>
+                                <th>Sector</th>
+                                <th>Overlay</th>
+                                <th>Fortification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {''.join(rows_html)}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Subtle Soul Destiny & Vargottama Synthesis Card -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>🌟 Subtle Soul Destiny & Vargottama Synthesis</h3>
+                    <span class="card-sub">Higher Consciousness Architecture</span>
+                </div>
+                <div class="card-body" style="padding: 6px 8px; font-size: 7pt; line-height: 1.35; color: #4a3325;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 4px;">
+                        <div style="background: #fdfbf7; padding: 4px 6px; border-radius: 4px; border: 1px solid #ebd9c8;">
+                            <strong>Swāṃśa (Soul Sign):</strong> {d9_lagna_sign} (Lord: <em>{d9_lagna_lord}</em>)<br>
+                            <span style="color: #64748b; font-size: 6.5pt;">The fundamental character, core archetype, and instinctive dharma of the soul.</span>
+                        </div>
+                        <div style="background: #fdfbf7; padding: 4px 6px; border-radius: 4px; border: 1px solid #ebd9c8;">
+                            <strong>Kārakāṃśa (Soul Mission):</strong> {ak_sign} (AK: <em>{ak_planet}</em>)<br>
+                            <span style="color: #64748b; font-size: 6.5pt;">The ultimate lesson and evolutionary ambition chosen by the Ātman (soul) in this life.</span>
+                        </div>
+                    </div>
+                    <div style="background: #fdfbf7; padding: 4px 6px; border-radius: 4px; border: 1px solid #ebd9c8;">
+                        <strong>Vargottama Grahas:</strong> <span style="font-weight: 700; color: #b45309;">{varg_str}</span><br>
+                        <span style="color: #64748b; font-size: 6.5pt;">Planets occupying the identical sign in both the root tree (D1) and fruit (D9). They possess exceptional mental stability, unyielding focus, and the power to effortlessly convert inner intentions into tangible physical results.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pedagogical Explanation Card -->
+            <div class="key-card" style="padding: 6px 8px; font-size: 6.8pt; line-height: 1.35; background: #faf6f0; border-left: 3px solid #d35400;">
+                <strong style="color: #d35400;">📖 Kala Integrated Methodology • Why a Concentric Bi-Wheel?</strong>
+                <p style="margin: 2px 0 0 0; color: #4a3325;">
+                    In Ernst Wilhelm's Kala methodology, divisional charts (Vargas) are harmonic frequencies rather than separate skies. The inner wheel is the <em>tree trunk</em> (physical body, immediate environment, and action). The outer wheel is the <em>subtle fruit</em> ({outer_k}), revealing what that tree actually yields in character, relationships, and soul destiny. Dividing each 30° Tropical sign into exact harmonic segments reveals how physical actions crystallize into spiritual destiny.
+                </p>
+            </div>
+        </div>
+    </div>
+    """
+    return html
 
 
 def render_lagna_vitality_card(chart_data: Dict[str, Any], varga: str = "D1") -> str:
@@ -1493,6 +1730,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     include_yogas = opts.get("include_yogas", True)
     include_master_diagnostics = opts.get("include_master_diagnostics", True)
     include_diagnostic_key = opts.get("include_diagnostic_key", True)
+    biwheel_outer = opts.get("biwheel_outer", "D9")
+    include_biwheel = opts.get("include_biwheel", True if (opts.get("preset") == "master_dossier_a4" or chart_style == "biwheel") else False)
     additional_vargas = opts.get("additional_vargas", [])
     
     subject = chart_data.get("subject_info", {})
@@ -1534,9 +1773,10 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     css_page_size = "A3 landscape" if is_a3 else "A4 portrait"
     d1_svg_size = 310 if is_a3 else 260
     varga_svg_size = 220 if is_a3 else 175
+    biwheel_svg_size = 400 if is_a3 else 355
 
     # 1. Generate D1 SVG
-    d1_svg = get_chart_svg("D1", chart_data, chart_style, notation, width=d1_svg_size, height=d1_svg_size) if include_d1 else ""
+    d1_svg = get_chart_svg("D1", chart_data, chart_style, notation, width=d1_svg_size, height=d1_svg_size, biwheel_outer=biwheel_outer) if include_d1 else ""
     
     # 2. Build D1 Campanus Cusps Table
     cusps_rows = []
@@ -1953,8 +2193,27 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     lagna_vitality_card_html = render_lagna_vitality_card(chart_data, "D1") if include_master_diagnostics else ""
     master_diagnostics_table_html = render_master_graha_diagnostics_table(chart_data, "D1", notation) if include_master_diagnostics else ""
 
-    # 12. Build Master Astrological Diagnostic Key
+    # 12. Build Harmonic Bi-Wheel Section
+    harmonic_biwheel_html = render_harmonic_biwheel_section(chart_data, outer_varga=biwheel_outer, notation=notation, svg_size=biwheel_svg_size) if include_biwheel else ""
+
+    # 13. Build Master Astrological Diagnostic Key
     diagnostic_key_html = render_diagnostic_key_section() if include_diagnostic_key else ""
+
+    # Calculate dynamic sequential page numbers for footer notes
+    cur_p = 1
+    p_d1_num = cur_p; cur_p += 1
+    p_biwheel_num = cur_p if (include_biwheel and harmonic_biwheel_html) else 0
+    if p_biwheel_num: cur_p += 1
+    p_diag_num = cur_p if include_master_diagnostics else 0
+    if p_diag_num: cur_p += 1
+    p_vargas_num = cur_p if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else 0
+    if p_vargas_num: cur_p += 1
+    p_strengths_num = cur_p if (include_shadbala or include_avasthas or include_yoga_judgment) else 0
+    if p_strengths_num: cur_p += 1
+    p_yogas_num = cur_p if (include_yogas and yogas_html) else 0
+    if p_yogas_num: cur_p += 1
+    p_key_num = cur_p if (include_diagnostic_key and diagnostic_key_html) else 0
+    if p_key_num: cur_p += 1
 
     # Assemble Full HTML
     html_content = f"""<!DOCTYPE html>
@@ -2540,16 +2799,46 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     </div>
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 1: Root Rāśi Chart & Core Astronomy • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_d1_num}: Root Rāśi Chart & Core Astronomy • Report Generated for {name}
     </div>
 
   </div>
 
   {f'''
-  <!-- PAGE 2: MASTER GRAHA DIAGNOSTICS & HORIZON VITALITY -->
+  <!-- HARMONIC BI-WHEEL ARCHITECTURE (CONCENTRIC DUAL-WHEEL & CROSS-VARGA OVERLAY) -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 2 Header Banner -->
+    <!-- Harmonic Bi-Wheel Header Banner -->
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Harmonic Bi-Wheel Architecture</div>
+        <div class="native-meta">
+          <span>D1 Root Natal (Physical Reality) ➔ {biwheel_outer} Harmonic Overlay</span>
+          <span>Concentric Dual-Wheel Projection</span>
+          <span>Tropical Rāśis & Campanus Bhavas</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">{ayanamsa_name}</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Vic DiCara & Ernst Wilhelm Kala Harmonic Calibration</span>
+      </div>
+    </div>
+
+    <!-- Harmonic Bi-Wheel Section Grid -->
+    {harmonic_biwheel_html}
+
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page {p_biwheel_num}: Harmonic Bi-Wheel Architecture & Cross-Varga Overlay • Report Generated for {name}
+    </div>
+
+  </div>
+  ''' if (include_biwheel and harmonic_biwheel_html) else ''}
+
+  {f'''
+  <!-- MASTER GRAHA DIAGNOSTICS & HORIZON VITALITY -->
+  <div class="page-container page-break avoid-break">
+    
+    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Master Graha Diagnostics & Horizon Vitality</div>
@@ -2574,17 +2863,17 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     {master_diagnostics_table_html}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 2: Master Graha Diagnostics & Horizon Vitality • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_diag_num}: Master Graha Diagnostics & Horizon Vitality • Report Generated for {name}
     </div>
 
   </div>
   ''' if include_master_diagnostics else ''}
 
   {f'''
-  <!-- PAGE 3: DIVISIONAL ARCHITECTURE (VARGAS) -->
+  <!-- DIVISIONAL ARCHITECTURE (VARGAS) -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 3 Header Banner -->
+    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Divisional Architecture (Vargas)</div>
@@ -2609,17 +2898,17 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     {vimshopaka_matrix_html}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 3: Divisional Architecture & 16-Varga Viṃśopaka Scoring • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_vargas_num}: Divisional Architecture & 16-Varga Viṃśopaka Scoring • Report Generated for {name}
     </div>
 
   </div>
   ''' if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else ''}
 
   {f'''
-  <!-- PAGE 4: DEEP PLANETARY STRENGTHS (ṢAḌBALA & QUALITATIVE AVASTHĀS) -->
+  <!-- DEEP PLANETARY STRENGTHS (ṢAḌBALA & QUALITATIVE AVASTHĀS) -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 4 Header Banner -->
+    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Deep Planetary Strengths & Potencies</div>
@@ -2680,17 +2969,17 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     ''' if include_shadbala else ''}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 4: Deep Planetary Strengths & Potency Matrix • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_strengths_num}: Deep Planetary Strengths & Potency Matrix • Report Generated for {name}
     </div>
 
   </div>
   ''' if (include_shadbala or include_avasthas or include_yoga_judgment) else ''}
 
   {f'''
-  <!-- PAGE 5: CLASSICAL YOGAS & YOGA BHANGA AUDIT -->
+  <!-- CLASSICAL YOGAS & YOGA BHANGA AUDIT -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 5 Header Banner -->
+    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Classical Yogas & Yoga Bhanga Audit</div>
@@ -2710,17 +2999,17 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     {yogas_html}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 5: Classical Yogas & Plausibility Audit • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_yogas_num}: Classical Yogas & Plausibility Audit • Report Generated for {name}
     </div>
 
   </div>
   ''' if (include_yogas and yogas_html) else ''}
 
   {f'''
-  <!-- PAGE 6: MASTER ASTROLOGICAL DIAGNOSTIC KEY -->
+  <!-- MASTER ASTROLOGICAL DIAGNOSTIC KEY -->
   <div class="page-container page-break avoid-break">
     
-    <!-- Page 6 Header Banner -->
+    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • Astrological Diagnostic Key & Pedagogical Guide</div>
@@ -2740,7 +3029,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     {diagnostic_key_html}
 
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page 6: Master Astrological Diagnostic Key & Reference Guide • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_key_num}: Master Astrological Diagnostic Key & Reference Guide • Report Generated for {name}
     </div>
 
   </div>

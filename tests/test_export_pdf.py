@@ -109,3 +109,37 @@ def test_api_export_pdf_endpoint():
     assert response.content_type == "application/pdf"
     assert response.data.startswith(b"%PDF-")
     assert "attachment" in response.headers.get("Content-Disposition", "")
+
+
+def test_generate_report_html_with_biwheel(sample_chart):
+    options = {
+        "preset": "master_dossier_a4",
+        "page_size": "A4",
+        "chart_style": "biwheel",
+        "notation": "symbol",
+        "include_biwheel": True,
+        "biwheel_outer": "D9",
+        "include_master_diagnostics": True,
+        "include_diagnostic_key": True
+    }
+    html = generate_report_html(sample_chart, options)
+    assert "Harmonic Bi-Wheel Architecture" in html
+    assert "Harmonic Alignment Matrix" in html
+    assert "🌟 Vargottama" in html
+    assert "viewBox=\"-210 -210 420 420\"" in html
+
+
+def test_export_chart_pdf_biwheel(sample_chart):
+    options = {
+        "preset": "master_dossier_a4",
+        "page_size": "A4",
+        "chart_style": "biwheel",
+        "notation": "symbol",
+        "include_biwheel": True,
+        "biwheel_outer": "D9"
+    }
+    pdf_bytes = export_chart_pdf(sample_chart, options)
+    assert isinstance(pdf_bytes, bytes)
+    assert pdf_bytes.startswith(b"%PDF-")
+    assert len(pdf_bytes) > 50000
+
