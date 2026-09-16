@@ -834,6 +834,74 @@ from jyotish.relationships.relationships import (
     get_temporary_relationship, SIGN_LORDS
 )
 
+def relax_planet_angles(planets, has_ascendant_barrier=True, is_outer=False):
+    """
+    Relaxes planet draw angles around a 360-degree circle to eliminate overlaps
+    while strictly preserving their monotonic angular order (planets never swap relative order).
+    """
+    if not planets or len(planets) <= 1:
+        return
+
+    # Pre-offset Lagna away from red arrow at 180° if needed
+    for p in planets:
+        if p.get("is_lagna") and abs((p["draw_angle"] % 360) - 180.0) < 8.0:
+            p["draw_angle"] = 188.0
+
+    # Sort strictly by true_angle once to lock in the true astronomical cyclic order
+    planets.sort(key=lambda p: (p["true_angle"] % 360))
+    n = len(planets)
+
+    # Unwrap angles into continuous 1D monotonic space
+    unwrapped = [planets[0]["true_angle"] % 360]
+    for i in range(1, n):
+        diff = (planets[i]["true_angle"] - unwrapped[-1]) % 360
+        unwrapped.append(unwrapped[-1] + diff)
+
+    pos = list(unwrapped)
+    orig = list(unwrapped)
+
+    for _ in range(80):
+        # Enforce minimum separation between adjacent planets cyclically
+        for i in range(n):
+            next_i = (i + 1) % n
+            p1 = planets[i]
+            p2 = planets[next_i]
+            is_wide1 = p1.get("is_lagna", False) or p1["item"].get("is_retrograde", False)
+            is_wide2 = p2.get("is_lagna", False) or p2["item"].get("is_retrograde", False)
+            if p1.get("is_lagna", False) or p2.get("is_lagna", False):
+                min_sep = 11.5
+            elif is_wide1 or is_wide2:
+                min_sep = 8.6 if is_outer else 8.2
+            else:
+                min_sep = 7.2 if is_outer else 6.8
+
+            d = (pos[next_i] - pos[i]) if next_i > i else (pos[0] + 360.0 - pos[i])
+            if d < min_sep:
+                push = (min_sep - d) * 0.5
+                pos[i] -= push
+                if next_i > i:
+                    pos[next_i] += push
+                else:
+                    pos[0] += push
+                    for k in range(1, n):
+                        pos[k] += push
+
+        # Restoring spring towards true angle to prevent artificial house drift
+        for i in range(n):
+            pos[i] += (orig[i] - pos[i]) * 0.08
+
+        # Ascendant barrier zone [172.5, 187.5]
+        if has_ascendant_barrier:
+            for i in range(n):
+                ang = pos[i] % 360
+                if 172.5 <= ang < 180.0:
+                    pos[i] -= (ang - 172.0)
+                elif 180.0 <= ang < 187.5:
+                    pos[i] += (188.0 - ang)
+
+    for i in range(n):
+        planets[i]["draw_angle"] = pos[i] % 360
+
 def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna"):
     svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
@@ -1040,41 +1108,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
                 else:
                     dignity_map[p_name] = "Neutral"
 
-    # Pre-offset Lagna away from red arrow at 180°
-    for p in planets_to_draw:
-        if p["is_lagna"] and abs((p["draw_angle"] % 360) - 180.0) < 8.0:
-            p["draw_angle"] = 188.0
-
-    # Relaxation for overlap (MIN_SEP degrees) with red arrow obstacle barrier
-    for _ in range(40):
-        planets_to_draw.sort(key=lambda p: (p["draw_angle"] % 360))
-        for i in range(len(planets_to_draw)):
-            p1 = planets_to_draw[i]
-            p2 = planets_to_draw[(i+1) % len(planets_to_draw)]
-            
-            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
-            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
-            if p1["is_lagna"] or p2["is_lagna"]:
-                min_sep = 14.5
-            elif is_wide1 or is_wide2:
-                min_sep = 12.0
-            else:
-                min_sep = 10.0
-            a1 = p1["draw_angle"] % 360
-            a2 = p2["draw_angle"] % 360
-            diff = (a2 - a1) % 360
-            if diff < min_sep:
-                push = (min_sep - diff) / 2.0
-                p1["draw_angle"] -= push
-                p2["draw_angle"] += push
-
-        # Keep all text clear of the red Ascendant arrow line at 180° [172.5°, 187.5°]
-        for p in planets_to_draw:
-            ang = p["draw_angle"] % 360
-            if 172.5 <= ang < 180.0:
-                p["draw_angle"] = 172.0
-            elif 180.0 <= ang < 187.5:
-                p["draw_angle"] = 188.0
+    # Relaxation for overlap with strictly preserved cyclic order
+    relax_planet_angles(planets_to_draw, has_ascendant_barrier=True, is_outer=False)
 
     # 6. Graha Drishti (Planetary Aspect Chords with Directional Dignity Arrows)
     svg += '<g class="aspect-lines">\n'
@@ -1461,62 +1496,9 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
                 else:
                     dignity_map[p_name] = "Neutral"
 
-    # Pre-offset Lagna away from red arrow at 180°
-    for p in inner_planets:
-        if p["is_lagna"] and abs((p["draw_angle"] % 360) - 180.0) < 8.0:
-            p["draw_angle"] = 188.0
-
-    # Relaxation for overlap in Inner Ring with red Ascendant arrow barrier [172.5°, 187.5°]
-    for _ in range(60):
-        inner_planets.sort(key=lambda p: (p["draw_angle"] % 360))
-        for i in range(len(inner_planets)):
-            p1 = inner_planets[i]
-            p2 = inner_planets[(i+1) % len(inner_planets)]
-            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
-            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
-            if p1["is_lagna"] or p2["is_lagna"]:
-                min_sep = 15.0
-            elif is_wide1 or is_wide2:
-                min_sep = 13.0
-            else:
-                min_sep = 10.5
-            a1 = p1["draw_angle"] % 360
-            a2 = p2["draw_angle"] % 360
-            diff = (a2 - a1) % 360
-            if diff < min_sep:
-                push = (min_sep - diff) / 2.0
-                p1["draw_angle"] -= push
-                p2["draw_angle"] += push
-
-        # Red Ascendant arrow obstacle barrier at 180°
-        for p in inner_planets:
-            ang = p["draw_angle"] % 360
-            if 172.0 <= ang < 180.0:
-                p["draw_angle"] = 171.0
-            elif 180.0 <= ang < 188.0:
-                p["draw_angle"] = 189.0
-
-    # Relaxation for overlap in Outer Ring
-    for _ in range(60):
-        outer_planets.sort(key=lambda p: (p["draw_angle"] % 360))
-        for i in range(len(outer_planets)):
-            p1 = outer_planets[i]
-            p2 = outer_planets[(i+1) % len(outer_planets)]
-            is_wide1 = p1["is_lagna"] or p1["item"].get("is_retrograde", False)
-            is_wide2 = p2["is_lagna"] or p2["item"].get("is_retrograde", False)
-            if p1["is_lagna"] or p2["is_lagna"]:
-                min_sep = 15.0
-            elif is_wide1 or is_wide2:
-                min_sep = 13.5
-            else:
-                min_sep = 11.0
-            a1 = p1["draw_angle"] % 360
-            a2 = p2["draw_angle"] % 360
-            diff = (a2 - a1) % 360
-            if diff < min_sep:
-                push = (min_sep - diff) / 2.0
-                p1["draw_angle"] -= push
-                p2["draw_angle"] += push
+    # Relaxation for overlap with strictly preserved cyclic order
+    relax_planet_angles(inner_planets, has_ascendant_barrier=True, is_outer=False)
+    relax_planet_angles(outer_planets, has_ascendant_barrier=False, is_outer=True)
 
     # 4. Graha Drishti (Planetary Aspect Chords in Center Circle)
     svg += '<g class="aspect-lines">\n'
@@ -1615,18 +1597,29 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
                 svg += f'<line class="interactive-aspect cross-aspect" data-from="{name_from}" data-from-varga="{outer_name}" data-to="{name_to}" data-to-varga="{inner_name}" data-virupas="{round(virupas, 1)}" data-nature="{aspect_nature}" x1="{x1}" y1="{y1}" x2="{x2_arr}" y2="{y2_arr}" stroke="{col}" stroke-width="1.1" stroke-dasharray="3,2" marker-end="{marker}" stroke-opacity="0.8"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
-    # 4c. Radial Degree Alignment Projection Rays (Behind text glyphs & symbols)
+    # 4c. Radial Degree Alignment Projection Rays, Leader Lines & Alignment Dots
     # Invisible inside the zodiac sign band (r = 138 to 164)
     svg += '<g class="radial-projection-rays" opacity="0.85">\n'
     for p in inner_planets:
         ang = p["true_angle"]
+        draw_ang = p["draw_angle"]
         p_name = p["item"]["name"]
         p_col = planet_notations.get(p_name, {}).get("color", "#795548")
         tip = f"{inner_name} {p_name} True Degree Alignment ({p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']})"
+        
+        # Connection leader line from displaced planet glyph (r = 118, draw_angle) to start of true ray (r = 122, true_angle)
+        ang_diff = abs((draw_ang - ang + 180.0) % 360.0 - 180.0)
+        if ang_diff > 1.2:
+            lx1, ly1 = polar_coords(118, draw_ang)
+            lx2, ly2 = polar_coords(122, ang)
+            svg += f'<line class="radial-alignment-leader inner-leader" data-planet="{p_name}" x1="{lx1}" y1="{ly1}" x2="{lx2}" y2="{ly2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"><title>{tip}</title></line>\n'
+
         # Segment 1: Inner pointer from planet perimeter to inner border of zodiac band (r = 122 to 138)
         x1_in, y1_in = polar_coords(122, ang)
         x2_in, y2_in = polar_coords(138, ang)
         svg += f'<line class="radial-alignment-ray inner-ray-inner" data-planet="{p_name}" data-varga="{inner_name}" x1="{x1_in}" y1="{y1_in}" x2="{x2_in}" y2="{y2_in}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.65"><title>{tip}</title></line>\n'
+        # Alignment dot on the inner border of the zodiac ring (r = 138)
+        svg += f'<circle class="radial-alignment-dot inner-dot" data-planet="{p_name}" cx="{x2_in}" cy="{y2_in}" r="1.8" fill="{p_col}" stroke="#FFFFFF" stroke-width="0.3"><title>{tip}</title></circle>\n'
         # Gap across Zodiac band (r = 138 to 164 is invisible)
         # Segment 2: Pointer emerging on outer side of zodiac band (r = 164 to 170.5) with arrow pointing outward
         x1_out, y1_out = polar_coords(164, ang)
@@ -1635,13 +1628,32 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
 
     for p in outer_planets:
         ang = p["true_angle"]
+        draw_ang = p["draw_angle"]
         p_name = p["item"]["name"]
         p_col = planet_notations.get(p_name, {}).get("color", "#795548")
-        # Outer outward pointer at the outermost rim so it never overlays any text or symbols
-        x1, y1 = polar_coords(204, ang)
-        x2, y2 = polar_coords(208.5, ang)
         tip = f"{outer_name} {p_name} True Degree Alignment ({p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']})"
-        svg += f'<line class="radial-alignment-ray outer-ray" data-planet="{p_name}" data-varga="{outer_name}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.8" marker-end="url(#arrow-pointer-out)"><title>{tip}</title></line>\n'
+        
+        # Connection leader line from displaced outer planet glyph (r = 171, draw_angle) to start of ray (r = 168.5, true_angle)
+        ang_diff = abs((draw_ang - ang + 180.0) % 360.0 - 180.0)
+        if ang_diff > 1.2:
+            lx1, ly1 = polar_coords(171, draw_ang)
+            lx2, ly2 = polar_coords(168.5, ang)
+            svg += f'<line class="radial-alignment-leader outer-leader" data-planet="{p_name}" x1="{lx1}" y1="{ly1}" x2="{lx2}" y2="{ly2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"><title>{tip}</title></line>\n'
+            # Outer rim leader line from outer sign glyph (r = 201) to outer rim ray (r = 204)
+            ox1, oy1 = polar_coords(201, draw_ang)
+            ox2, oy2 = polar_coords(204, ang)
+            svg += f'<line class="radial-alignment-leader outer-leader-rim" data-planet="{p_name}" x1="{ox1}" y1="{oy1}" x2="{ox2}" y2="{oy2}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"><title>{tip}</title></line>\n'
+
+        # Segment continuing from near outer planet perimeter (r = 168.5) inward to the outer border of the zodiac band (r = 164)
+        x1_to_zodiac, y1_to_zodiac = polar_coords(168.5, ang)
+        x2_to_zodiac, y2_to_zodiac = polar_coords(164, ang)
+        svg += f'<line class="radial-alignment-ray outer-ray outer-ray-in" data-planet="{p_name}" data-varga="{outer_name}" x1="{x1_to_zodiac}" y1="{y1_to_zodiac}" x2="{x2_to_zodiac}" y2="{y2_to_zodiac}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.75" marker-end="url(#arrow-pointer-in)"><title>{tip}</title></line>\n'
+        # Alignment dot on the outer border of the zodiac ring (r = 164)
+        svg += f'<circle class="radial-alignment-dot outer-dot" data-planet="{p_name}" cx="{x2_to_zodiac}" cy="{y2_to_zodiac}" r="1.8" fill="{p_col}" stroke="#FFFFFF" stroke-width="0.3"><title>{tip}</title></circle>\n'
+        # Outer outward pointer at the outermost rim (r = 204 to 208.5) so it never overlays any text or symbols
+        x1_rim, y1_rim = polar_coords(204, ang)
+        x2_rim, y2_rim = polar_coords(208.5, ang)
+        svg += f'<line class="radial-alignment-ray outer-ray outer-ray-rim" data-planet="{p_name}" data-varga="{outer_name}" x1="{x1_rim}" y1="{y1_rim}" x2="{x2_rim}" y2="{y2_rim}" stroke="{p_col}" stroke-width="0.75" stroke-dasharray="2,2" opacity="0.8" marker-end="url(#arrow-pointer-out)"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
     # Radial Positions for stacking
@@ -1653,23 +1665,6 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
     r_out_deg = 181
     r_out_min = 190
     r_out_sign = 199
-
-    # 5. Vargottama Highlights: Golden Beams & Halos connecting same-sign positions
-    svg += '<g class="vargottama-highlights">\n'
-    for p_name in vargottama_planets:
-        in_p = inner_planets_dict.get(p_name)
-        out_p = outer_planets_dict.get(p_name)
-        if not in_p or not out_p:
-            continue
-        px_in, py_in = polar_coords(r_in_pl, in_p["draw_angle"])
-        px_out, py_out = polar_coords(r_out_pl, out_p["draw_angle"])
-        
-        # Golden radial connecting beam passing through matching subdivision slice
-        svg += f'<line class="vargottama-beam" x1="{px_in}" y1="{py_in}" x2="{px_out}" y2="{py_out}" stroke="#F39C12" stroke-width="2.5" stroke-linecap="round" opacity="0.8"><title>{p_name} is Vargottama in {in_p["sign"]}</title></line>\n'
-        # Halos around inner and outer glyphs
-        svg += f'<circle class="vargottama-halo" cx="{px_in}" cy="{py_in}" r="11" fill="#F39C12" fill-opacity="0.15" stroke="#F39C12" stroke-width="1.4" stroke-dasharray="2,2"/>\n'
-        svg += f'<circle class="vargottama-halo" cx="{px_out}" cy="{py_out}" r="11" fill="#F39C12" fill-opacity="0.15" stroke="#F39C12" stroke-width="1.4" stroke-dasharray="2,2"/>\n'
-    svg += '</g>\n'
 
     # 6. Inner Ring: Natal Planets (D1)
     svg += '<g class="inner-planets-group">\n'
@@ -1690,13 +1685,11 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         if mode == "symbol" and p_name in ["Mars", "Venus"]:
             font_sz = "10.0"
         
-        is_varg = p_name in vargottama_planets
-        varg_badge = " — ★ Vargottama" if is_varg else ""
         dignity_str = dignity_map.get(p_name, "")
         dignity_tag = f" [{dignity_str}]" if dignity_str else ""
-        tooltip = f"Natal ({inner_name}) {info.get('full_sa', p_name)}{dignity_tag} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}{varg_badge}"
+        tooltip = f"Natal ({inner_name}) {info.get('full_sa', p_name)}{dignity_tag} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}"
         
-        svg += f'<g class="interactive planet-glyph inner-planet{" vargottama" if is_varg else ""}" data-type="planet" data-varga="{inner_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+        svg += f'<g class="interactive planet-glyph inner-planet" data-type="planet" data-varga="{inner_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
         # Minute text
         mx, my = polar_coords(r_in_min, angle)
@@ -1733,17 +1726,14 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         if mode == "symbol" and p_name in ["Mars", "Venus"]:
             font_sz = "9.5"
             
-        is_varg = p_name in vargottama_planets
-        varg_badge = " — ★ Vargottama" if is_varg else ""
-        
         # Natal House alignment
         d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
-        tooltip = f"{outer_name} {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{retro_badge} (Natal House {d1_house}){varg_badge}"
+        tooltip = f"{outer_name} {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{retro_badge} (Natal House {d1_house})"
         
         # Divisional Sign symbol and color for outer planet
         s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
         
-        svg += f'<g class="interactive planet-glyph outer-planet{" vargottama" if is_varg else ""}" data-type="planet" data-varga="{outer_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+        svg += f'<g class="interactive planet-glyph outer-planet" data-type="planet" data-varga="{outer_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
         # Minute text
         mx, my = polar_coords(r_out_min, angle)

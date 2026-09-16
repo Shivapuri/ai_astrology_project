@@ -134,11 +134,13 @@ def test_biwheel_chart_svg_structure():
     assert 'class="interactive planet-glyph outer-planet' in svg_str
     assert 'class="outer-sign-glyph"' in svg_str # Divisional sign tag on outer planets
     
-    # 5. Instant Vargottama Indicator for Sun (in Gemini for both D1 and D9)
-    assert 'class="vargottama-beam"' in svg_str
-    assert 'class="vargottama-halo"' in svg_str
-    assert 'Sun is Vargottama in Gemini' in svg_str
-    assert '★ Vargottama' in svg_str
+    # 5. Radial Alignment Dots & Rays (Inner border r=138, Outer border r=164)
+    assert 'class="radial-alignment-dot inner-dot"' in svg_str
+    assert 'class="radial-alignment-dot outer-dot"' in svg_str
+    assert 'outer-ray-in' in svg_str
+    assert 'outer-ray' in svg_str
+    assert 'vargottama-beam' not in svg_str
+    assert 'vargottama-halo' not in svg_str
     
     # 6. Natal House alignment in outer planet tooltip
     # D9 Saturn in Aquarius with D1 Lagna in Leo -> Aquarius is 7th sign from Leo -> Natal House 7
@@ -216,10 +218,10 @@ def test_biwheel_dahmer_zodiac_alignment():
     # Outer Lagna in Pisces
     assert "D9 Lagna in Pisces 25° 00' (Natal House 6)" in svg
     # Outer Jupiter & Ketu in Capricorn
-    assert "D9 Guru in Capricorn 18° 53'R (Natal House 4) — ★ Vargottama" in svg
+    assert "D9 Guru in Capricorn 18° 53'R (Natal House 4)" in svg
     assert "D9 Ketu in Capricorn 21° 34'R (Natal House 4)" in svg
-    # Vargottama beam for Jupiter in Capricorn
-    assert "Jupiter is Vargottama in Capricorn" in svg
+    # Absence of vargottama beam
+    assert "vargottama-beam" not in svg
     # Harmonic subdivision ticks along the border
     assert 'class="harmonic-subdivision-tick"' in svg
 

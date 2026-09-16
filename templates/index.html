@@ -2865,7 +2865,7 @@
             </div>
             <div id="maximizeChartContainer" class="maximize-chart-container"></div>
             <div class="floating-window-footer" id="maximizeChartFooter" style="padding: 6px 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #D8CCB9; background: #F5EEDB; font-size: 11px; color: #7f6e5d;">
-                <span class="floating-window-hint">Drag header to move • Wheel or +/− to zoom • Drag corner ⇲ to resize</span>
+                <span class="floating-window-hint">Drag header to move • Wheel to zoom • Shift+Drag, Wheel-Click, or Shift+Wheel to pan • Drag ⇲ to resize</span>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <button type="button" onclick="closeMaximizeModal()" class="btn-close-floating" style="padding: 3px 12px; font-size: 11px;">Close (Esc)</button>
                     <span class="floating-corner-grip" id="maximizeCornerGrip" title="Drag to resize">⇲</span>
@@ -11328,6 +11328,8 @@
         
         let currentMaximized = null; // { slot, type }
         let maximizeChartZoom = 1.0;
+        let maximizeChartPanX = 0;
+        let maximizeChartPanY = 0;
         let maximizeChartPositionInitialized = false;
 
         function resetMaximizeChartPosition() {
@@ -11349,13 +11351,15 @@
 
         function resetMaximizeZoom() {
             maximizeChartZoom = 1.0;
+            maximizeChartPanX = 0;
+            maximizeChartPanY = 0;
             applyMaximizeChartZoom();
         }
 
         function applyMaximizeChartZoom() {
             const svg = document.querySelector('#maximizeChartContainer svg');
             if (svg) {
-                svg.style.transform = `scale(${maximizeChartZoom})`;
+                svg.style.transform = `translate(${maximizeChartPanX}px, ${maximizeChartPanY}px) scale(${maximizeChartZoom})`;
             }
             const label = document.getElementById('maximizeZoomLabel');
             if (label) {
@@ -11516,16 +11520,88 @@
 
             grip.addEventListener('mousedown', onResizeDown);
             grip.addEventListener('touchstart', onResizeDown, { passive: false });
+        }
 
-            // Wheel-to-zoom on the chart container
+        function initMaximizeChartPan() {
             const container = document.getElementById('maximizeChartContainer');
-            if (container) {
-                container.addEventListener('wheel', (e) => {
+            if (!container) return;
+
+            let isPanning = false;
+            let startX = 0, startY = 0;
+            let origPanX = 0, origPanY = 0;
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Shift') {
+                    container.style.cursor = 'grab';
+                }
+            });
+            window.addEventListener('keyup', (e) => {
+                if (e.key === 'Shift' && !isPanning) {
+                    container.style.cursor = (maximizeChartZoom > 1.05) ? 'grab' : 'default';
+                }
+            });
+
+            container.addEventListener('mousedown', (e) => {
+                if (e.target.closest('button, select, input, a')) return;
+                const isInteractive = e.target.closest('.interactive, .interactive-aspect, text, .glyph-symbol');
+                const isMiddle = (e.button === 1);
+                const isShiftLeft = (e.button === 0 && e.shiftKey);
+                const isBgDrag = (e.button === 0 && (!isInteractive || maximizeChartZoom > 1.05));
+
+                if (isMiddle || isShiftLeft || isBgDrag) {
+                    isPanning = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    origPanX = maximizeChartPanX;
+                    origPanY = maximizeChartPanY;
+                    container.style.cursor = 'grabbing';
                     e.preventDefault();
+
+                    function onPanMove(ev) {
+                        if (!isPanning) return;
+                        const dx = ev.clientX - startX;
+                        const dy = ev.clientY - startY;
+                        maximizeChartPanX = origPanX + dx;
+                        maximizeChartPanY = origPanY + dy;
+                        applyMaximizeChartZoom();
+                    }
+
+                    function onPanUp() {
+                        if (!isPanning) return;
+                        isPanning = false;
+                        container.style.cursor = (e.shiftKey || maximizeChartZoom > 1.05) ? 'grab' : 'default';
+                        document.removeEventListener('mousemove', onPanMove);
+                        document.removeEventListener('mouseup', onPanUp);
+                    }
+
+                    document.addEventListener('mousemove', onPanMove);
+                    document.addEventListener('mouseup', onPanUp);
+                }
+            });
+
+            // Wheel event:
+            // - Holding Shift: Pan horizontally
+            // - Holding Alt/Ctrl: Pan
+            // - Normal wheel: Zoom in/out
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    maximizeChartPanX -= (e.deltaY || e.deltaX) * 0.8;
+                    applyMaximizeChartZoom();
+                } else if (e.altKey || e.ctrlKey) {
+                    maximizeChartPanX -= (e.deltaX || 0) * 0.8;
+                    maximizeChartPanY -= (e.deltaY || 0) * 0.8;
+                    applyMaximizeChartZoom();
+                } else {
                     const delta = e.deltaY < 0 ? 0.08 : -0.08;
                     zoomMaximizeChart(delta);
-                }, { passive: false });
-            }
+                }
+            }, { passive: false });
+
+            container.addEventListener('dblclick', (e) => {
+                if (e.target.closest('button, .interactive')) return;
+                resetMaximizeZoom();
+            });
         }
 
         function maximizeChart(slot, type) {
@@ -11919,6 +11995,7 @@
             initFloatingWindowResize();
             initMaximizeChartDrag();
             initMaximizeChartResize();
+            initMaximizeChartPan();
             await loadCountries();
             updateMenuCheckmarks();
             const select = document.getElementById('nativeSelect');
