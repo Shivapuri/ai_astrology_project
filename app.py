@@ -22,7 +22,8 @@ import json
 
 @app.route('/')
 def index():
-    natives = native_manager.load_natives(CHARTS_FILE)
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    dropdown_natives = [n for n in all_natives if n.get('in_dropdown', True) is not False]
     kb_path = os.path.join(os.path.dirname(__file__), "jyotish", "knowledge_base.json")
     try:
         with open(kb_path, 'r', encoding='utf-8') as f:
@@ -30,7 +31,7 @@ def index():
     except Exception as e:
         knowledge_base = {}
         
-    return render_template('index.html', natives=natives, knowledge_base=knowledge_base)
+    return render_template('index.html', natives=dropdown_natives, all_natives=all_natives, knowledge_base=knowledge_base)
 
 def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0):
     try:
@@ -137,28 +138,37 @@ def get_chart(native_id):
     svgs = {}
     modes = ["symbol", "english", "devanagari", "translit"]
     roots = ["Lagna", "Moon", "Sun"]
+    d1_items = draw_chart.parse_varga_data(chart_data["vargas"]["D1"]) if "D1" in chart_data["vargas"] else []
+    d9_items = draw_chart.parse_varga_data(chart_data["vargas"]["D9"]) if "D9" in chart_data["vargas"] else d1_items
+    ayan_val = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0)
+
     for v_name, v_data in chart_data["vargas"].items():
         parsed_items = draw_chart.parse_varga_data(v_data)
+        outer_items = d9_items if v_name == "D1" else parsed_items
+        outer_lbl = "D9" if v_name == "D1" else v_name
         svgs[v_name] = {}
         for m in modes:
             roots_dict = {}
             for r in roots:
                 roots_dict[r] = {
-                    "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=chart_data["astronomy"]["equatorial_ayanamsa_value"], root_planet=r),
+                    "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=ayan_val, root_planet=r),
                     "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
-                    "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r)
+                    "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
+                    "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r)
                 }
 
             svgs[v_name][m] = {
                 "circular": roots_dict["Lagna"]["circular"],
                 "south": roots_dict["Lagna"]["south"],
                 "north": roots_dict["Lagna"]["north"],
+                "biwheel": roots_dict["Lagna"]["biwheel"],
                 "roots": roots_dict
             }
         # Default top-level shortcuts for backward compatibility
         svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
         svgs[v_name]["north"] = svgs[v_name]["symbol"]["north"]
         svgs[v_name]["circular"] = svgs[v_name]["symbol"]["circular"]
+        svgs[v_name]["biwheel"] = svgs[v_name]["symbol"]["biwheel"]
         svgs[v_name]["roots"] = svgs[v_name]["symbol"]["roots"]
         
     preview_info = chart_data.get("preview_info", {})
@@ -170,6 +180,55 @@ def get_chart(native_id):
         "preview_time": preview_info.get("preview_time", native.get("time")),
         "preview_date": preview_info.get("preview_date", native.get("date")),
         "preview_offset_seconds": preview_info.get("offset_seconds", 0)
+    })
+
+@app.route('/api/chart/<native_id>/biwheel')
+def get_chart_biwheel(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+        
+    inner = request.args.get('inner', 'D1')
+    outer = request.args.get('outer', 'D9')
+    mode = request.args.get('mode', 'symbol')
+    root = request.args.get('root', 'Lagna')
+    d10_mode = request.args.get('d10_mode', 'reverse')
+    d24_mode = request.args.get('d24_mode', 'reverse')
+    offset_seconds = request.args.get('offset_seconds', default=0, type=int)
+    time_override = request.args.get('time')
+    date_override = request.args.get('date')
+
+    chart_data = compute_chart_data(
+        native,
+        d10_mode=d10_mode,
+        d24_mode=d24_mode,
+        date_override=date_override,
+        time_override=time_override,
+        offset_seconds=offset_seconds
+    )
+    vargas = chart_data.get("vargas", {})
+    inner_v = vargas.get(inner, vargas.get("D1", {}))
+    outer_v = vargas.get(outer, vargas.get("D9", vargas.get("D1", {})))
+    
+    inner_items = draw_chart.parse_varga_data(inner_v) if inner_v else []
+    outer_items = draw_chart.parse_varga_data(outer_v) if outer_v else []
+    ayan = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0)
+    
+    biwheel_svg = draw_chart.generate_biwheel_chart(
+        inner_items=inner_items,
+        outer_items=outer_items,
+        inner_name=inner,
+        outer_name=outer,
+        mode=mode,
+        ayanamsha=ayan,
+        root_planet=root
+    )
+    return jsonify({
+        "svg": biwheel_svg,
+        "inner": inner,
+        "outer": outer,
+        "mode": mode,
+        "root": root
     })
 
 @app.route('/api/export_pdf', methods=['POST'])
@@ -223,6 +282,11 @@ def export_preview():
     html = pdf_exporter.generate_report_html(chart_data, options)
     return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
 
+@app.route('/api/natives')
+def get_natives():
+    natives = native_manager.load_natives(CHARTS_FILE)
+    return jsonify(natives)
+
 @app.route('/api/add_native', methods=['POST'])
 def add_native():
     data = request.json
@@ -237,7 +301,9 @@ def add_native():
         place=data.get('place', 'Custom'),
         country=data.get('country', ''),
         name_sound_value=int(data.get('name_sound_value', 0)),
-        notes=data.get('notes', '')
+        notes=data.get('notes', ''),
+        category=data.get('category', 'General'),
+        in_dropdown=data.get('in_dropdown', True)
     )
     return jsonify(new_native)
 
@@ -246,6 +312,13 @@ def get_native(native_id):
     native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
     if native:
         return jsonify(native)
+    return jsonify({"error": "Native not found"}), 404
+
+@app.route('/api/native/<native_id>/toggle_dropdown', methods=['POST'])
+def toggle_native_dropdown(native_id):
+    new_val = native_manager.toggle_in_dropdown(CHARTS_FILE, native_id)
+    if new_val is not None:
+        return jsonify({"success": True, "id": native_id, "in_dropdown": new_val})
     return jsonify({"error": "Native not found"}), 404
 
 @app.route('/api/update_native/<native_id>', methods=['POST'])

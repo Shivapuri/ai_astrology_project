@@ -91,21 +91,19 @@ def test_client_change_updates_chart(page: Page):
     select_locator = page.locator("#nativeSelect")
     options_count = select_locator.locator("option").count()
     
-    if options_count >= 3:
-        # Select the next client (index 2)
-        second_option_value = select_locator.locator("option").nth(2).get_attribute("value")
-        select_locator.select_option(second_option_value)
-        
-        # Click Load
+    current_val = select_locator.input_value()
+    diff_val = None
+    for i in range(options_count):
+        opt_val = select_locator.locator("option").nth(i).get_attribute("value")
+        if opt_val and opt_val != current_val and opt_val != "__open_chart_dialog__":
+            diff_val = opt_val
+            break
+
+    if diff_val:
+        select_locator.select_option(diff_val)
         page.locator("button[onclick='loadChart()']").click()
-        
-        # Wait for loading indicator to show then hide (or just wait a bit)
-        page.wait_for_timeout(1500)
-        
-        # Grab the HTML content again
+        page.wait_for_timeout(2000)
         new_svg_html = chart_widget.locator('.svg-south').inner_html()
-        
-        # The chart should have updated, so the SVGs should be different
         assert initial_svg_html != new_svg_html, "Chart SVG did not update after loading a new client!"
 
 def test_16_shodashavargas_options(page: Page):
@@ -132,6 +130,8 @@ def test_16_shodashavargas_options(page: Page):
 def test_dignities_table_click_switches_chart(page: Page):
     page.goto("http://127.0.0.1:5001/")
     page.wait_for_timeout(1000)
+    page.evaluate("changeWorkspace('core-predictive')")
+    page.wait_for_timeout(500)
     page.locator("svg").first.wait_for(state="visible")
     
     # Find row 9 in Dignities table and click it
@@ -176,6 +176,8 @@ def test_avasthas_calc_independent_varga_switch(page: Page):
 def test_table_widget_maximize_modal(page: Page):
     page.goto("http://127.0.0.1:5001/")
     page.wait_for_timeout(1000)
+    page.evaluate("changeWorkspace('core-predictive')")
+    page.wait_for_timeout(500)
     page.locator("svg").first.wait_for(state="visible")
 
     # Find Dignities widget and click maximize button
@@ -252,11 +254,72 @@ def test_native_select_dropdown_shows_dd_mm_yyyy(page: Page):
     # Check all options in nativeSelect
     options_text = page.locator("#nativeSelect option").all_inner_texts()
     # At least one person option with date in parentheses (DD/MM/YYYY)
-    person_options = [opt for opt in options_text if "(" in opt and ")" in opt]
+    person_options = [opt for opt in options_text if "(" in opt and ")" in opt and not opt.startswith("──")]
     assert len(person_options) > 0, "Should have person options in select"
     for opt in person_options:
         # e.g. "Shivapuri (10/11/1983)" or "Shri Krishna (28/08/-3255)"
         date_part = opt.split("(")[-1].rstrip(")")
         assert "/" in date_part, f"Dropdown option '{opt}' does not have DD/MM/YYYY standard format"
+
+
+def test_biwheel_chart_ui_interaction(page: Page):
+    page.goto("http://127.0.0.1:5001/")
+    page.wait_for_timeout(1000)
+    
+    # Locate first chart widget
+    chart_widget = page.locator('.grid-cell[data-widget="chart"]').first
+    expect(chart_widget).to_be_visible()
+    
+    # 1. Click Bi-Wheel button 'B'
+    biwheel_btn = chart_widget.locator('.btn-biwheel')
+    expect(biwheel_btn).to_be_visible()
+    biwheel_btn.click()
+    page.wait_for_timeout(500)
+    
+    # 2. View-biwheel is active and outer dropdown is visible
+    expect(chart_widget.locator('.view-biwheel')).to_have_class(re.compile(r"active"))
+    expect(chart_widget.locator('.biwheel-outer-controls')).to_be_visible()
+    
+    # 3. SVG is rendered inside .svg-biwheel
+    svg_biwheel = chart_widget.locator('.svg-biwheel svg')
+    expect(svg_biwheel).to_be_visible()
+    
+    # 4. Verify D1 and D9 elements exist in biwheel SVG
+    expect(svg_biwheel.locator('[data-varga="D1"]').first).to_be_visible()
+    expect(svg_biwheel.locator('[data-varga="D9"]').first).to_be_visible()
+    
+    # 5. Switch outer dropdown to D10
+    outer_sel = chart_widget.locator('.biwheel-outer-select')
+    outer_sel.select_option("D10")
+    page.wait_for_timeout(500)
+    
+    # Verify updated SVG now has D10 outer varga
+    expect(chart_widget.locator('.svg-biwheel svg [data-varga="D10"]').first).to_be_visible()
+    
+    # 6. Test hotkey 'c' to switch to Circular
+    page.keyboard.press("c")
+    page.wait_for_timeout(300)
+    expect(chart_widget.locator('.view-circular')).to_have_class(re.compile(r"active"))
+    expect(chart_widget.locator('.biwheel-outer-controls')).not_to_be_visible()
+    
+    # 7. Test hotkey 'b' to switch back to Bi-Wheel
+    page.keyboard.press("b")
+    page.wait_for_timeout(300)
+    expect(chart_widget.locator('.view-biwheel')).to_have_class(re.compile(r"active"))
+    expect(chart_widget.locator('.biwheel-outer-controls')).to_be_visible()
+
+    # 8. Verify radial projection rays and harmonic subdivision ticks
+    expect(chart_widget.locator('.svg-biwheel svg .radial-projection-rays')).to_be_visible()
+    expect(chart_widget.locator('.svg-biwheel svg .inner-ray-outer').first).to_be_visible()
+    expect(chart_widget.locator('.svg-biwheel svg .outer-ray').first).to_be_visible()
+    expect(chart_widget.locator('.svg-biwheel svg .harmonic-subdivision-tick').first).to_be_visible()
+
+    # 9. Test inner dropdown change (switch inner to D9)
+    inner_sel = chart_widget.locator('.varga-select')
+    inner_sel.select_option("D9")
+    page.wait_for_timeout(600)
+    expect(inner_sel).to_have_value("D9")
+    expect(chart_widget.locator('.svg-biwheel svg')).to_be_visible()
+
 
 

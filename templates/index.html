@@ -262,6 +262,141 @@
             from { opacity: 0; transform: translateY(-15px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
+        /* Open Chart Library Modal Styles */
+        .open-chart-modal-card {
+            max-width: 860px !important;
+            width: 92% !important;
+            max-height: 86vh !important;
+            display: flex !important;
+            flex-direction: column !important;
+            padding: 20px 24px !important;
+            box-sizing: border-box !important;
+        }
+        .chart-count-badge {
+            font-size: 11px;
+            background: #e2e8f0;
+            color: #475569;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .open-chart-pills {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+            margin-bottom: 8px;
+        }
+        .open-chart-pill {
+            background: #f1f5f9;
+            color: #475569;
+            border: 1px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 4px 10px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.15s ease;
+        }
+        .open-chart-pill:hover {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .open-chart-pill.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #2563eb;
+        }
+        .open-chart-list {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #d5c8b2;
+            border-radius: 8px;
+            background: #ffffff;
+            min-height: 320px;
+            max-height: 480px;
+        }
+        .open-chart-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background-color 0.12s ease;
+        }
+        .open-chart-row:last-child {
+            border-bottom: none;
+        }
+        .open-chart-row:hover {
+            background-color: #f8fafc;
+        }
+        .open-chart-row.selected {
+            background-color: #eff6ff;
+            border-left: 4px solid #2563eb;
+        }
+        .open-chart-row.is-active-loaded {
+            background-color: #ecfdf5;
+        }
+        .chart-category-tag {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-right: 6px;
+        }
+        .chart-cat-criminals {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .chart-cat-spiritual {
+            background: #f3e8ff;
+            color: #6b21a8;
+            border: 1px solid #d8b4fe;
+        }
+        .chart-cat-historical {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+        .chart-cat-personal {
+            background: #e0e7ff;
+            color: #3730a3;
+            border: 1px solid #c7d2fe;
+        }
+        .chart-cat-general {
+            background: #f1f5f9;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+        }
+        .pin-toggle-btn {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 3px 7px;
+            font-size: 11px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            color: #64748b;
+            transition: all 0.15s ease;
+        }
+        .pin-toggle-btn:hover {
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+        .pin-toggle-btn.is-pinned {
+            background: #fef3c7;
+            border-color: #fcd34d;
+            color: #92400e;
+            font-weight: 600;
+        }
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -883,6 +1018,40 @@
         .interactive-center-circle:hover {
             fill: #eee5d3 !important;
             fill-opacity: 0.85 !important;
+        }
+
+        /* Harmonic Bi-Wheel Styling */
+        .vargottama-beam {
+            transition: stroke-width 0.25s ease, opacity 0.25s ease;
+            cursor: pointer;
+        }
+        .vargottama-beam:hover {
+            stroke-width: 4.5px !important;
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 5px #F39C12);
+        }
+        .vargottama-halo {
+            pointer-events: none;
+        }
+        .outer-glyph {
+            filter: drop-shadow(0 0 1px rgba(140, 123, 100, 0.4));
+        }
+        .interactive-aspect.cross-aspect {
+            transition: stroke-width 0.2s ease, stroke-opacity 0.2s ease;
+        }
+        .interactive-aspect.cross-aspect:hover {
+            stroke-width: 2.2px !important;
+            stroke-opacity: 1 !important;
+            filter: drop-shadow(0 0 3px rgba(142, 68, 173, 0.6));
+        }
+        .biwheel-outer-controls {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            background: #efebe1;
+            padding: 1px 4px;
+            border-radius: 4px;
+            border: 1px solid #d5c8b2;
         }
         
         .top-toolbar {
@@ -2055,7 +2224,12 @@
                 <div class="menu-item-dropdown">
                     <button type="button" class="menu-bar-btn">📁 Native ▾</button>
                     <div class="menu-dropdown-menu">
-                        <div class="menu-header-label">Person Management</div>
+                        <div class="menu-header-label">Chart Management</div>
+                        <div class="menu-row" onclick="openChartModal()">
+                            <span>📂 Open Chart...</span>
+                            <span style="font-size:10px; color:#6b7280; margin-left:auto; padding-left:12px;">Ctrl+O</span>
+                        </div>
+                        <div class="menu-separator"></div>
                         <div class="menu-row" onclick="openEditModal()">
                             <span>✏️ Edit Current Person...</span>
                         </div>
@@ -2222,11 +2396,15 @@
         </div>
 
         <div class="toolbar-center" style="display:flex; align-items:center; gap:8px;">
-            <select id="nativeSelect">
+            <button type="button" id="btnOpenChartModal" onclick="openChartModal()" class="btn-secondary" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: #f8fafc; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Open chart library / search all charts (Ctrl+O / ⌘O)">
+                <span>📂</span> Open...
+            </button>
+            <select id="nativeSelect" onchange="if(this.value==='__open_chart_dialog__'){openChartModal(); this.selectedIndex=0;}">
                 <option value="">-- Select Person --</option>
                 {% for n in natives %}
                 <option value="{{ n.id }}">{{ n.name }} ({{ n.date }})</option>
                 {% endfor %}
+                <option value="__open_chart_dialog__">── 📂 Open Chart... (Ctrl+O) ──</option>
             </select>
             <button onclick="loadChart()" class="btn-primary" style="padding: 4px 11px; font-weight: 600;">Load</button>
             <button type="button" id="btnEditNative" onclick="openEditModal()" class="btn-secondary" style="padding: 4px 9px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit selected or loaded person details">✏️ Edit</button>
@@ -2243,6 +2421,59 @@
             <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
                 <span>📄</span> Export PDF
             </button>
+        </div>
+    </div>
+
+    <!-- Open Chart Library Modal -->
+    <div class="modal-overlay" id="openChartModal" onclick="if(event.target===this) closeOpenChartModal()">
+        <div class="modal-card open-chart-modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h2 style="margin:0; font-size:19px; display:flex; align-items:center; gap:6px;">📂 Open Astrological Chart</h2>
+                    <span id="openChartTotalBadge" class="chart-count-badge">0 charts</span>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeOpenChartModal()">×</button>
+            </div>
+
+            <!-- Search bar -->
+            <div style="position:relative; margin-bottom: 10px;">
+                <input type="text" id="openChartSearchInput" placeholder="🔍 Search by name, city, country, category, notes... (Press Enter to open)" 
+                       oninput="filterOpenChartsList()" onkeydown="handleOpenChartKeydown(event)"
+                       style="width: 100%; box-sizing: border-box; padding: 8px 12px 8px 32px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; outline: none; background:#ffffff;">
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:13px; color:#9ca3af; pointer-events:none;">🔍</span>
+                <button type="button" onclick="clearOpenChartSearch()" id="clearOpenChartSearchBtn" 
+                        style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#9ca3af; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="open-chart-pills" id="openChartPillsContainer">
+                <button type="button" class="open-chart-pill active" data-cat="all" onclick="setOpenChartCategory('all')">All (<span id="catCountAll">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="dropdown" onclick="setOpenChartCategory('dropdown')">📌 In Top Dropdown (<span id="catCountDropdown">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Personal" onclick="setOpenChartCategory('Personal')">👤 Personal (<span id="catCountPersonal">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Spiritual" onclick="setOpenChartCategory('Spiritual')">🕉️ Spiritual (<span id="catCountSpiritual">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Historical" onclick="setOpenChartCategory('Historical')">🏛️ Historical (<span id="catCountHistorical">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Criminals" onclick="setOpenChartCategory('Criminals')">⚠️ Criminals (<span id="catCountCriminals">0</span>)</button>
+            </div>
+
+            <!-- Charts List View -->
+            <div class="open-chart-list" id="openChartListContainer" tabindex="0">
+                <!-- Dynamically rendered by JavaScript -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #e5dccb;">
+                <div style="font-size: 11px; color: #6b7280; display:flex; align-items:center; gap:8px;">
+                    <span>💡 <b>Enter</b>: Open selected</span>
+                    <span>•</span>
+                    <span><b>↑/↓</b>: Navigate</span>
+                    <span>•</span>
+                    <span><b>📌</b>: Pin/unpin from top dropdown</span>
+                </div>
+                <div style="display:flex; gap: 8px;">
+                    <button type="button" onclick="openAddModalFromLibrary()" style="background:#f3f4f6; color:#1f2937; border:1px solid #d1d5db; padding:5px 12px; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer;">+ Add New Person</button>
+                    <button type="button" onclick="closeOpenChartModal()" style="background:#e5e7eb; color:#374151; border:1px solid #d1d5db; padding:5px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Close (Esc)</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -2318,6 +2549,24 @@
                 <div style="margin-top:10px;">
                     <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Notes / Rodden Rating / Biography</label>
                     <textarea id="newNotes" rows="2" placeholder="Optional notes, Rodden rating, birth record source..." style="width:100%; box-sizing:border-box; resize:vertical; font-size:12px; font-family:inherit; padding:6px; border:1px solid #d1d5db; border-radius:4px;"></textarea>
+                </div>
+                <div style="display:flex; gap:10px; margin-top:10px; align-items:flex-end;">
+                    <div style="flex:1;">
+                        <label style="font-size:11px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Category / Section</label>
+                        <select id="newCategory" style="width:100%; box-sizing:border-box;">
+                            <option value="General">General</option>
+                            <option value="Personal">Personal / Family</option>
+                            <option value="Spiritual">Spiritual & Sacred</option>
+                            <option value="Historical">Historical & Political</option>
+                            <option value="Criminals">Criminals & Forensic</option>
+                        </select>
+                    </div>
+                    <div style="flex:1; padding-bottom:6px;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:12px; font-weight:600; color:#374151; margin:0;">
+                            <input type="checkbox" id="newInDropdown" checked style="cursor:pointer; width:16px; height:16px;">
+                            <span>📌 Show in Top Dropdown</span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:20px;">
@@ -2461,19 +2710,19 @@
             <div class="setting-section">
                 <h4>1. Export Preset & Format</h4>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
-                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" checked onchange="onExportPresetChange('master_a3')">
-                    <label for="radio-export-a3" style="margin-left: 8px;">
-                        <strong>🌟 Master Astrological Plan (A3 Landscape) — Recommended</strong>
-                        <span class="setting-chip">D1 Hub + D9/D10/D7 Clusters + 16-Varga Vimśopaka Matrix (2 Pages)</span>
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-dossier-a4').click()">
+                    <input type="radio" id="radio-export-dossier-a4" name="exportPreset" value="master_dossier_a4" checked onchange="onExportPresetChange('master_dossier_a4')">
+                    <label for="radio-export-dossier-a4" style="margin-left: 8px;">
+                        <strong>🌟 Complete Master Astrological Dossier (A4 Multi-Page) — Recommended</strong>
+                        <span class="setting-chip">Root D1 + Master Graha Diagnostics + D9 Navāṃśa & Vargas + 16-Varga Matrix + Classical Yogas + Decoded Tooltips Reference Key (6 Pages)</span>
                     </label>
                 </div>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-export-a4').click()">
-                    <input type="radio" id="radio-export-a4" name="exportPreset" value="dossier_a4" onchange="onExportPresetChange('dossier_a4')">
-                    <label for="radio-export-a4" style="margin-left: 8px;">
-                        <strong>📑 Executive Analysis Dossier (A4 Multi-Page)</strong>
-                        <span class="setting-chip">Optimized for standard desktop printers & binders</span>
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
+                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" onchange="onExportPresetChange('master_a3')">
+                    <label for="radio-export-a3" style="margin-left: 8px;">
+                        <strong>📑 Master Astrological Plan (A3 Landscape)</strong>
+                        <span class="setting-chip">Wide-Format Spread: D1 Hub + D9/D10/D7 Clusters + 16-Varga Vimśopaka Matrix</span>
                     </label>
                 </div>
                 
@@ -2495,6 +2744,7 @@
                             <option value="north">North Indian (Diamond / BPHS)</option>
                             <option value="south">South Indian (Fixed Square)</option>
                             <option value="circular">Western Circular (Campanus)</option>
+                            <option value="biwheel">Harmonic Bi-Wheel (D1 + Outer Varga)</option>
                         </select>
                     </div>
                     <div style="flex: 1;">
@@ -2542,6 +2792,15 @@
             <div class="setting-section" id="exportTablesToggle">
                 <h4>4. Included Diagnostic Tables</h4>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncMasterDiagnostics" checked> <strong>Master Graha Diagnostics & Lagna</strong>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncDiagnosticKey" checked> <strong>Master Diagnostic Key (Decoded Tooltips)</strong>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncYogas" checked> <strong>Classical Yogas & Breakers Audit</strong>
+                    </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncPlacements" checked> Planetary Placements & Nakshatras
                     </label>
@@ -2772,6 +3031,10 @@
                     <input type="radio" name="kalaGlobalStyle" value="circular" onchange="setGlobalChartStyle('circular')">
                     ( ) Round Wheel
                 </label>
+                <label class="kala-radio">
+                    <input type="radio" name="kalaGlobalStyle" value="biwheel" onchange="setGlobalChartStyle('biwheel')">
+                    ( ) Harmonic Bi-Wheel
+                </label>
             </div>
         </div>
     </div>
@@ -2789,6 +3052,7 @@
                         <button type="button" class="hotkey-btn active shodasa-btn-south" onclick="switchShodasaStyle('south')">South</button>
                         <button type="button" class="hotkey-btn shodasa-btn-north" onclick="switchShodasaStyle('north')">North</button>
                         <button type="button" class="hotkey-btn shodasa-btn-circular" onclick="switchShodasaStyle('circular')">Circular</button>
+                        <button type="button" class="hotkey-btn shodasa-btn-biwheel" onclick="switchShodasaStyle('biwheel')">Bi-Wheel</button>
                     </div>
                     <button type="button" class="modal-close-btn" onclick="closeShodasaVargasModal()">×</button>
                 </div>
@@ -3347,6 +3611,7 @@
         <div class="widget-chart" style="display:flex; flex-direction:column; height:100%;">
             <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
                 <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="biwheel-inner-label" style="display:none; font-size:10px; font-weight:bold; color:#795548;">Inner:</span>
                     <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 5px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 130px;">
                         <option value="D1" selected>D1 - Rāśi</option>
                         <option value="D2">D2 - Horā</option>
@@ -3365,6 +3630,26 @@
                         <option value="D45">D45 - Akṣavedāṁśa</option>
                         <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
                     </select>
+                    <div class="biwheel-outer-controls" style="display:none; align-items:center; gap:2px;">
+                        <span style="font-size:10px; font-weight:bold; color:#795548;">Outer:</span>
+                        <select class="biwheel-outer-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                            <option value="D9" selected>D9 - Navāṁśa</option>
+                            <option value="D10">D10 - Daśāṁśa</option>
+                            <option value="D7">D7 - Saptāṁśa</option>
+                            <option value="D12">D12 - Dvādaśāṁśa</option>
+                            <option value="D2">D2 - Horā</option>
+                            <option value="D3">D3 - Drekkāṇa</option>
+                            <option value="D4">D4 - Caturthāṁśa</option>
+                            <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                            <option value="D20">D20 - Viṁśāṁśa</option>
+                            <option value="D24">D24 - Caturviṁśāṁśa</option>
+                            <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                            <option value="D30">D30 - Triṁśāṁśa</option>
+                            <option value="D40">D40 - Khavedāṁśa</option>
+                            <option value="D45">D45 - Akṣavedāṁśa</option>
+                            <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                        </select>
+                    </div>
                     <button type="button" class="btn-d10-toggle" onclick="toggleD10Mode()" title="Toggle D10 Calculation: Kala Reverse vs. Contemporary Forward" style="display:none; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; border: 1px solid #fcd34d; background: #fef3c7; color: #92400e; cursor: pointer; align-items: center; gap: 2px;">D10: Kala ↺</button>
                     <div class="chart-root-pill" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
                         <button type="button" class="root-pill-btn active btn-root-lagna" onclick="switchWidgetRootPlanet(this, 'Lagna')" title="Ascendant / Lagna (Physical Ascendant H1)" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Asc (Lagna)</button>
@@ -3377,6 +3662,7 @@
                     <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
                     <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
                     <button type="button" class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')" title="Circular (C)">C</button>
+                    <button type="button" class="hotkey-btn btn-biwheel" onclick="switchWidgetChartType(this, 'biwheel')" title="Harmonic Bi-Wheel (B)">B</button>
                     <button type="button" class="btn-widget-maximize" title="Maximize Chart (Full Screen)" onclick="maximizeChartFromWidget(this)">⛶</button>
                 </div>
             </div>
@@ -3388,6 +3674,9 @@
             </div>
             <div class="view-circular chart-view" style="flex:1; display:none; align-items:center; justify-content:center;">
                 <div class="chart-svg-container svg-circular" style="width:100%; height:100%;"></div>
+            </div>
+            <div class="view-biwheel chart-view" style="flex:1; display:none; align-items:center; justify-content:center;">
+                <div class="chart-svg-container svg-biwheel" style="width:100%; height:100%;"></div>
             </div>
             <div class="chart-time-stepper" tabindex="0" title="Birth Time Navigation (Hover or focus to adjust time)">
                 <div class="stepper-btn-group">
@@ -3963,7 +4252,7 @@
     </template>
 
     <script>
-
+        let allSavedNatives = {{ all_natives | tojson if all_natives is defined else [] }};
         let splitInstance = null;
         let infoSplitInstance = null;
 
@@ -4005,10 +4294,17 @@
             if (!layoutType) return;
             const cells = Array.from(document.querySelectorAll('.grid-cell')).map(c => {
                 const vSel = c.querySelector('.varga-select');
+                const outerSel = c.querySelector('.biwheel-outer-select');
+                let chartStyle = 'south';
+                if (c.querySelector('.view-north.active')) chartStyle = 'north';
+                else if (c.querySelector('.view-circular.active')) chartStyle = 'circular';
+                else if (c.querySelector('.view-biwheel.active')) chartStyle = 'biwheel';
                 return {
                     id: c.id,
                     widget: c.dataset.widget || 'empty',
                     varga: vSel ? vSel.value : 'D1',
+                    biwheel_outer: outerSel ? outerSel.value : 'D9',
+                    chart_style: chartStyle,
                     root_planet: c.dataset.rootPlanet || 'Lagna'
                 };
             });
@@ -4069,6 +4365,14 @@
                 const sel = cell.querySelector('.varga-select');
                 if (sel) sel.value = options.varga;
             }
+            if (options && options.biwheel_outer) {
+                const outerSel = cell.querySelector('.biwheel-outer-select');
+                if (outerSel) outerSel.value = options.biwheel_outer;
+            }
+            if (options && options.chart_style) {
+                const btn = cell.querySelector('.btn-' + options.chart_style);
+                if (btn) switchWidgetChartType(btn, options.chart_style);
+            }
             
             // Update the widget with current chart data
             updateWidget(cell);
@@ -4084,10 +4388,28 @@
             widget.querySelectorAll('.hotkey-btn').forEach(b => b.classList.remove('active'));
             
             const targetView = widget.querySelector('.view-' + type);
-            targetView.style.display = 'flex';
-            targetView.classList.add('active');
+            if (targetView) {
+                targetView.style.display = 'flex';
+                targetView.classList.add('active');
+            }
             
             btn.classList.add('active');
+
+            // Toggle Bi-Wheel secondary outer dropdown & inner label
+            const biwheelControls = widget.querySelector('.biwheel-outer-controls');
+            const biwheelInnerLabel = widget.querySelector('.biwheel-inner-label');
+            if (biwheelControls) {
+                biwheelControls.style.display = (type === 'biwheel') ? 'inline-flex' : 'none';
+            }
+            if (biwheelInnerLabel) {
+                biwheelInnerLabel.style.display = (type === 'biwheel') ? 'inline' : 'none';
+            }
+
+            const cell = widget.closest('.grid-cell');
+            if (cell) {
+                updateWidget(cell);
+                saveLayoutState();
+            }
         }
         
         function updateWidget(cell) {
@@ -4152,9 +4474,61 @@
                     const s = cell.querySelector('.svg-south');
                     const n = cell.querySelector('.svg-north');
                     const c = cell.querySelector('.svg-circular');
+                    const b = cell.querySelector('.svg-biwheel');
                     if (s) s.innerHTML = vSvg.south;
                     if (n) n.innerHTML = vSvg.north;
                     if (c) c.innerHTML = vSvg.circular;
+                    if (b) {
+                        const outerSelect = cell.querySelector('.biwheel-outer-select');
+                        const outerVarga = outerSelect ? outerSelect.value : 'D9';
+                        const innerVarga = varga || 'D1';
+
+                        const innerLabel = cell.querySelector('.biwheel-inner-label');
+                        const biwheelControls = cell.querySelector('.biwheel-outer-controls');
+                        const isBiwheelActive = cell.querySelector('.view-biwheel.active') !== null;
+                        if (innerLabel) innerLabel.style.display = isBiwheelActive ? 'inline' : 'none';
+                        if (biwheelControls) biwheelControls.style.display = isBiwheelActive ? 'inline-flex' : 'none';
+
+                        if (innerVarga === 'D1') {
+                            let biwheelMarkup = null;
+                            if (currentSvgs[outerVarga]) {
+                                const outData = currentSvgs[outerVarga];
+                                const outSvgMode = (outData && outData[currentNotation]) ? outData[currentNotation] : outData;
+                                const outSvgRoot = (outSvgMode && outSvgMode.roots && outSvgMode.roots[rootPlanet]) ? outSvgMode.roots[rootPlanet] : outSvgMode;
+                                if (outSvgRoot && outSvgRoot.biwheel) {
+                                    biwheelMarkup = outSvgRoot.biwheel;
+                                }
+                            }
+                            if (!biwheelMarkup) {
+                                biwheelMarkup = vSvg.biwheel || vSvg.circular;
+                            }
+                            b.innerHTML = biwheelMarkup;
+                        } else {
+                            // Dynamic biwheel fetch for any custom inner and outer combination
+                            const natId = (typeof currentLoadedNative !== 'undefined' && currentLoadedNative && currentLoadedNative.id) || document.getElementById('nativeSelect')?.value || '';
+                            const offsetSec = (typeof currentTimeStepperOffset !== 'undefined') ? currentTimeStepperOffset : 0;
+                            const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${offsetSec}`;
+                            if (window.biwheelDynamicCache && window.biwheelDynamicCache[cacheKey]) {
+                                b.innerHTML = window.biwheelDynamicCache[cacheKey];
+                            } else if (natId) {
+                                if (!window.biwheelDynamicCache) window.biwheelDynamicCache = {};
+                                const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&offset_seconds=${offsetSec}`;
+                                fetch(url)
+                                    .then(res => res.json())
+                                    .then(data => {
+                                        if (data && data.svg) {
+                                            window.biwheelDynamicCache[cacheKey] = data.svg;
+                                            const currInner = cell.querySelector('.varga-select')?.value;
+                                            const currOuter = cell.querySelector('.biwheel-outer-select')?.value;
+                                            if (currInner === innerVarga && currOuter === outerVarga) {
+                                                b.innerHTML = data.svg;
+                                            }
+                                        }
+                                    })
+                                    .catch(err => console.error("Error fetching custom biwheel:", err));
+                            }
+                        }
+                    }
                 }
                 if (typeof syncAllSteppersUI === 'function') syncAllSteppersUI();
             } 
@@ -7434,6 +7808,7 @@
             let type = 'south';
             if (cell.querySelector('.view-north.active')) type = 'north';
             else if (cell.querySelector('.view-circular.active')) type = 'circular';
+            else if (cell.querySelector('.view-biwheel.active')) type = 'biwheel';
             
             if (!currentSvgs || !currentSvgs[varga]) return;
             
@@ -7448,11 +7823,35 @@
             if (rootPlanet === 'Moon') rootSuffix = ' — Chandra Lagna';
             else if (rootPlanet === 'Sun') rootSuffix = ' — Surya Lagna';
 
-            const typeLabel = (type === 'south') ? 'Tropical South Indian' : ((type === 'north') ? 'Tropical North Indian' : 'Circular');
+            const typeLabel = (type === 'south') ? 'Tropical South Indian' : ((type === 'north') ? 'Tropical North Indian' : ((type === 'biwheel') ? 'Harmonic Bi-Wheel' : 'Circular'));
             const subjectName = currentChartData && currentChartData.subject_info ? currentChartData.subject_info.name : '';
-            document.getElementById('maximizeModalTitle').innerText = `${subjectName} — ${typeLabel} (${varga})${rootSuffix}`;
             
-            const markup = (type === 'south') ? vSvgRoot.south : ((type === 'north') ? vSvgRoot.north : vSvgRoot.circular);
+            let markup = null;
+            if (type === 'south') {
+                markup = vSvgRoot.south;
+            } else if (type === 'north') {
+                markup = vSvgRoot.north;
+            } else if (type === 'circular') {
+                markup = vSvgRoot.circular;
+            } else if (type === 'biwheel') {
+                const outerSelect = cell.querySelector('.biwheel-outer-select');
+                const outerVarga = outerSelect ? outerSelect.value : 'D9';
+                document.getElementById('maximizeModalTitle').innerText = `${subjectName} — Harmonic Bi-Wheel (${varga} + ${outerVarga})${rootSuffix}`;
+                const cellSvg = cell.querySelector('.svg-biwheel svg');
+                if (cellSvg) {
+                    markup = cell.querySelector('.svg-biwheel').innerHTML;
+                } else if (currentSvgs[outerVarga]) {
+                    const outData = currentSvgs[outerVarga];
+                    const outSvgMode = (outData && outData[currentNotation]) ? outData[currentNotation] : outData;
+                    const outSvgRoot = (outSvgMode && outSvgMode.roots && outSvgMode.roots[rootPlanet]) ? outSvgMode.roots[rootPlanet] : outSvgMode;
+                    if (outSvgRoot && outSvgRoot.biwheel) markup = outSvgRoot.biwheel;
+                }
+                if (!markup) markup = vSvgRoot.biwheel || vSvgRoot.circular;
+            }
+            if (type !== 'biwheel') {
+                document.getElementById('maximizeModalTitle').innerText = `${subjectName} — ${typeLabel} (${varga})${rootSuffix}`;
+            }
+            
             document.getElementById('maximizeChartContainer').innerHTML = markup;
             toggleSiSigns(showSiSigns);
             document.getElementById('maximizeModal').style.display = 'flex';
@@ -7507,32 +7906,38 @@
                 });
             });
             
-            // Hotkeys for South/North
+            // Hotkeys for South/North/Circular/Biwheel
             window.addEventListener('keydown', (e) => {
                 if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
                 if (e.key.toLowerCase() === 's') switchChartType('south');
                 if (e.key.toLowerCase() === 'n') switchChartType('north');
                 if (e.key.toLowerCase() === 'c') switchChartType('circular');
+                if (e.key.toLowerCase() === 'b') switchChartType('biwheel');
             });
         }
 
         function switchChartType(type) {
-            document.getElementById('view-south').classList.remove('active');
-            document.getElementById('view-north').classList.remove('active');
-            if (document.getElementById('view-circular')) document.getElementById('view-circular').classList.remove('active');
-            document.getElementById('btn-south').classList.remove('active');
-            document.getElementById('btn-north').classList.remove('active');
-            if (document.getElementById('btn-circular')) document.getElementById('btn-circular').classList.remove('active');
+            document.getElementById('view-south')?.classList.remove('active');
+            document.getElementById('view-north')?.classList.remove('active');
+            document.getElementById('view-circular')?.classList.remove('active');
+            document.getElementById('view-biwheel')?.classList.remove('active');
+            document.getElementById('btn-south')?.classList.remove('active');
+            document.getElementById('btn-north')?.classList.remove('active');
+            document.getElementById('btn-circular')?.classList.remove('active');
+            document.getElementById('btn-biwheel')?.classList.remove('active');
             
             if (type === 'south') {
-                document.getElementById('view-south').classList.add('active');
-                document.getElementById('btn-south').classList.add('active');
+                document.getElementById('view-south')?.classList.add('active');
+                document.getElementById('btn-south')?.classList.add('active');
             } else if (type === 'north') {
-                document.getElementById('view-north').classList.add('active');
-                document.getElementById('btn-north').classList.add('active');
+                document.getElementById('view-north')?.classList.add('active');
+                document.getElementById('btn-north')?.classList.add('active');
             } else if (type === 'circular') {
-                document.getElementById('view-circular').classList.add('active');
-                document.getElementById('btn-circular').classList.add('active');
+                document.getElementById('view-circular')?.classList.add('active');
+                document.getElementById('btn-circular')?.classList.add('active');
+            } else if (type === 'biwheel') {
+                document.getElementById('view-biwheel')?.classList.add('active');
+                document.getElementById('btn-biwheel')?.classList.add('active');
             }
         }
 
@@ -7605,6 +8010,20 @@
                     currentPreviewDate = result.preview_date || result.native.date;
                     const nativeSelect = document.getElementById('nativeSelect');
                     if (nativeSelect) {
+                        let opt = Array.from(nativeSelect.options).find(o => o.value === result.native.id);
+                        if (!opt) {
+                            opt = document.createElement('option');
+                            opt.value = result.native.id;
+                            const isPinned = (result.native.in_dropdown !== false);
+                            const pinPrefix = isPinned ? '' : '📁 ';
+                            opt.text = `${pinPrefix}${result.native.name} (${formatToDDMMYYYY(result.native.date)})`;
+                            const openOpt = nativeSelect.querySelector('option[value="__open_chart_dialog__"]');
+                            if (openOpt) {
+                                nativeSelect.insertBefore(opt, openOpt);
+                            } else {
+                                nativeSelect.appendChild(opt);
+                            }
+                        }
                         nativeSelect.value = result.native.id;
                     }
                     document.getElementById('editNativeId').value = result.native.id;
@@ -10231,6 +10650,12 @@
             if (document.getElementById('newNotes')) {
                 document.getElementById('newNotes').value = native.notes || '';
             }
+            if (document.getElementById('newCategory')) {
+                document.getElementById('newCategory').value = native.category || 'General';
+            }
+            if (document.getElementById('newInDropdown')) {
+                document.getElementById('newInDropdown').checked = (native.in_dropdown !== false);
+            }
             
             if (native.country) {
                 document.getElementById('countrySelect').value = native.country;
@@ -10254,14 +10679,14 @@
         async function openEditModal() {
             const select = document.getElementById('nativeSelect');
             let nativeId = document.getElementById('editNativeId')?.value;
-            if (!nativeId && select && select.value) {
+            if (!nativeId && select && select.value && select.value !== '__open_chart_dialog__') {
                 nativeId = select.value;
             }
             if (!nativeId && select && select.options.length > 1) {
                 nativeId = select.options[1].value;
                 select.value = nativeId;
             }
-            if (!nativeId) {
+            if (!nativeId || nativeId === '__open_chart_dialog__') {
                 alert("Please select or load a person first to edit.");
                 return;
             }
@@ -10305,6 +10730,12 @@
             if (document.getElementById('newNotes')) {
                 document.getElementById('newNotes').value = '';
             }
+            if (document.getElementById('newCategory')) {
+                document.getElementById('newCategory').value = 'General';
+            }
+            if (document.getElementById('newInDropdown')) {
+                document.getElementById('newInDropdown').checked = true;
+            }
             document.getElementById('countrySelect').value = '';
             document.getElementById('citySelect').innerHTML = '<option value="">-- City --</option>';
             document.getElementById('citySelect').disabled = true;
@@ -10334,16 +10765,15 @@
                     alert(data.error);
                     return;
                 }
-                // Remove from select dropdown
-                const select = document.getElementById('nativeSelect');
-                for (let i = 0; i < select.options.length; i++) {
-                    if (select.options[i].value === id) {
-                        select.remove(i);
-                        break;
-                    }
+                // Remove from allSavedNatives
+                allSavedNatives = allSavedNatives.filter(n => n.id !== id);
+                syncNativeSelectOptions();
+                if (document.getElementById('openChartModal')?.style.display === 'flex') {
+                    filterOpenChartsList();
                 }
                 document.getElementById('addPersonModal').style.display = 'none';
-                if (select.options.length > 1) {
+                const select = document.getElementById('nativeSelect');
+                if (select.options.length > 1 && select.options[1].value !== '__open_chart_dialog__') {
                     select.selectedIndex = 1;
                     loadChart(select.value);
                 } else {
@@ -10376,7 +10806,9 @@
                 country: document.getElementById('countrySelect').value || "",
                 place: placeName,
                 name_sound_value: document.getElementById('newNameSoundValue').value,
-                notes: document.getElementById('newNotes') ? document.getElementById('newNotes').value.trim() : ""
+                notes: document.getElementById('newNotes') ? document.getElementById('newNotes').value.trim() : "",
+                category: document.getElementById('newCategory') ? document.getElementById('newCategory').value : "General",
+                in_dropdown: document.getElementById('newInDropdown') ? document.getElementById('newInDropdown').checked : true
             };
             
             if (!payload.name || !payload.date || !payload.time || !payload.lat || !payload.lon || !payload.tz) {
@@ -10405,28 +10837,22 @@
                     return;
                 }
                 
-                const select = document.getElementById('nativeSelect');
-                const displayDate = formatToDDMMYYYY(newNative.date);
-                if (isUpdate) {
-                    // Update option text
-                    for (let i = 0; i < select.options.length; i++) {
-                        if (select.options[i].value === newNative.id) {
-                            select.options[i].text = `${newNative.name} (${displayDate})`;
-                            break;
-                        }
-                    }
+                // Update local allSavedNatives cache
+                const existingIdx = allSavedNatives.findIndex(n => n.id === newNative.id);
+                if (existingIdx >= 0) {
+                    allSavedNatives[existingIdx] = newNative;
                 } else {
-                    // Add to select
-                    const opt = document.createElement('option');
-                    opt.value = newNative.id;
-                    opt.text = `${newNative.name} (${displayDate})`;
-                    select.appendChild(opt);
+                    allSavedNatives.push(newNative);
+                }
+                
+                syncNativeSelectOptions();
+                if (document.getElementById('openChartModal')?.style.display === 'flex') {
+                    filterOpenChartsList();
                 }
                 
                 document.getElementById('addPersonModal').style.display = 'none';
                 
                 // Select and load
-                select.value = newNative.id;
                 loadChart(newNative.id);
                 
             } catch (e) {
@@ -10434,6 +10860,351 @@
                 alert("Failed to save native");
             }
         }
+
+        // ==========================================
+        // Open Chart Library & Modal Management
+        // ==========================================
+        let currentOpenChartCategory = 'all';
+        let highlightedOpenChartIndex = 0;
+        let filteredOpenCharts = [];
+
+        async function fetchAllNativesFromServer() {
+            try {
+                const res = await fetch('/api/natives');
+                if (res.ok) {
+                    allSavedNatives = await res.json();
+                }
+            } catch (err) {
+                console.error("Failed to fetch natives from server:", err);
+            }
+        }
+
+        async function openChartModal() {
+            if (!allSavedNatives || allSavedNatives.length === 0) {
+                await fetchAllNativesFromServer();
+            }
+            const modal = document.getElementById('openChartModal');
+            if (!modal) return;
+            modal.style.display = 'flex';
+            
+            const searchInput = document.getElementById('openChartSearchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                setTimeout(() => searchInput.focus(), 50);
+            }
+            currentOpenChartCategory = 'all';
+            updateOpenChartCategoryPills();
+            filterOpenChartsList();
+        }
+
+        function closeOpenChartModal() {
+            const modal = document.getElementById('openChartModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function openAddModalFromLibrary() {
+            closeOpenChartModal();
+            openAddModal();
+        }
+
+        function setOpenChartCategory(cat) {
+            currentOpenChartCategory = cat;
+            updateOpenChartCategoryPills();
+            filterOpenChartsList();
+        }
+
+        function updateOpenChartCategoryPills() {
+            const pills = document.querySelectorAll('.open-chart-pill');
+            pills.forEach(p => {
+                if (p.getAttribute('data-cat') === currentOpenChartCategory) {
+                    p.classList.add('active');
+                } else {
+                    p.classList.remove('active');
+                }
+            });
+        }
+
+        function clearOpenChartSearch() {
+            const input = document.getElementById('openChartSearchInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+                filterOpenChartsList();
+            }
+        }
+
+        function filterOpenChartsList() {
+            const searchInput = document.getElementById('openChartSearchInput');
+            const clearBtn = document.getElementById('clearOpenChartSearchBtn');
+            const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
+            if (clearBtn) {
+                clearBtn.style.display = query.length > 0 ? 'block' : 'none';
+            }
+
+            updateCategoryPillCounts();
+
+            filteredOpenCharts = allSavedNatives.filter(n => {
+                if (currentOpenChartCategory === 'dropdown') {
+                    if (n.in_dropdown === false) return false;
+                } else if (currentOpenChartCategory !== 'all') {
+                    const nCat = (n.category || 'General').toLowerCase();
+                    if (nCat !== currentOpenChartCategory.toLowerCase()) return false;
+                }
+
+                if (!query) return true;
+                const matchName = (n.name || '').toLowerCase().includes(query);
+                const matchPlace = (n.place || '').toLowerCase().includes(query);
+                const matchCountry = (n.country || '').toLowerCase().includes(query);
+                const matchDate = (n.date || '').toLowerCase().includes(query);
+                const matchNotes = (n.notes || '').toLowerCase().includes(query);
+                const matchCat = (n.category || '').toLowerCase().includes(query);
+                return matchName || matchPlace || matchCountry || matchDate || matchNotes || matchCat;
+            });
+
+            highlightedOpenChartIndex = 0;
+            renderOpenChartList();
+        }
+
+        function updateCategoryPillCounts() {
+            const countAll = allSavedNatives.length;
+            const countDropdown = allSavedNatives.filter(n => n.in_dropdown !== false).length;
+            const countPersonal = allSavedNatives.filter(n => ['personal', 'general'].includes((n.category || 'general').toLowerCase())).length;
+            const countSpiritual = allSavedNatives.filter(n => (n.category || '').toLowerCase() === 'spiritual').length;
+            const countHistorical = allSavedNatives.filter(n => (n.category || '').toLowerCase() === 'historical').length;
+            const countCriminals = allSavedNatives.filter(n => (n.category || '').toLowerCase() === 'criminals').length;
+
+            const elAll = document.getElementById('catCountAll');
+            const elDrop = document.getElementById('catCountDropdown');
+            const elPers = document.getElementById('catCountPersonal');
+            const elSpir = document.getElementById('catCountSpiritual');
+            const elHist = document.getElementById('catCountHistorical');
+            const elCrim = document.getElementById('catCountCriminals');
+            const elBadge = document.getElementById('openChartTotalBadge');
+
+            if (elAll) elAll.innerText = countAll;
+            if (elDrop) elDrop.innerText = countDropdown;
+            if (elPers) elPers.innerText = countPersonal;
+            if (elSpir) elSpir.innerText = countSpiritual;
+            if (elHist) elHist.innerText = countHistorical;
+            if (elCrim) elCrim.innerText = countCriminals;
+            if (elBadge) elBadge.innerText = `${countAll} charts`;
+        }
+
+        function getCategoryBadgeHtml(cat) {
+            const c = (cat || 'General').toLowerCase();
+            if (c === 'criminals') {
+                return '<span class="chart-category-tag chart-cat-criminals">⚠️ Criminals</span>';
+            } else if (c === 'spiritual') {
+                return '<span class="chart-category-tag chart-cat-spiritual">🕉️ Spiritual</span>';
+            } else if (c === 'historical') {
+                return '<span class="chart-category-tag chart-cat-historical">🏛️ Historical</span>';
+            } else if (c === 'personal') {
+                return '<span class="chart-category-tag chart-cat-personal">👤 Personal</span>';
+            } else {
+                return '<span class="chart-category-tag chart-cat-general">General</span>';
+            }
+        }
+
+        function renderOpenChartList() {
+            const container = document.getElementById('openChartListContainer');
+            if (!container) return;
+
+            if (filteredOpenCharts.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 40px 20px; text-align: center; color: #9ca3af;">
+                        <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
+                        <div style="font-size: 14px; font-weight: 600; color: #4b5563;">No matching charts found</div>
+                        <div style="font-size: 12px; margin-top: 4px;">Try a different search term or category filter.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentLoadedId = (currentLoadedNative && currentLoadedNative.id) || '';
+
+            let html = '';
+            filteredOpenCharts.forEach((native, idx) => {
+                const isLoaded = (native.id === currentLoadedId);
+                const isSelected = (idx === highlightedOpenChartIndex);
+                const isPinned = (native.in_dropdown !== false);
+                const pinBtnClass = isPinned ? 'pin-toggle-btn is-pinned' : 'pin-toggle-btn';
+                const pinBtnText = isPinned ? '📌 In Dropdown' : '📍 Pin';
+                const pinBtnTitle = isPinned ? 'Click to remove from top dropdown' : 'Click to show in top dropdown';
+                const badgeHtml = getCategoryBadgeHtml(native.category);
+
+                const placeStr = (native.place && native.place !== 'Custom') ? `${native.place}, ` : '';
+                const countryStr = native.country || '';
+                const locationText = (placeStr || countryStr) ? `${placeStr}${countryStr} • ` : '';
+                const coordsText = (native.lat !== undefined && native.lon !== undefined) ? `${parseFloat(native.lat).toFixed(2)}°, ${parseFloat(native.lon).toFixed(2)}° • ` : '';
+                const tzText = native.tz ? `TZ: ${native.tz}` : '';
+                const notesSnippet = native.notes ? `<div style="font-size: 11px; color: #64748b; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 500px;">📝 ${escapeHtml(native.notes)}</div>` : '';
+
+                const rowClasses = [
+                    'open-chart-row',
+                    isSelected ? 'selected' : '',
+                    isLoaded ? 'is-active-loaded' : ''
+                ].filter(Boolean).join(' ');
+
+                html += `
+                    <div class="${rowClasses}" 
+                         data-idx="${idx}" 
+                         data-id="${native.id}"
+                         onclick="selectOpenChartRow(${idx})"
+                         ondblclick="openChartFromModal('${native.id}')">
+                        <div style="flex: 1; min-width: 0; padding-right: 12px;">
+                            <div style="display:flex; align-items:center; gap:6px; margin-bottom: 2px;">
+                                ${badgeHtml}
+                                <span style="font-weight: 700; font-size: 14px; color: #1e293b;">${escapeHtml(native.name)}</span>
+                                ${isLoaded ? '<span style="font-size:10px; background:#10b981; color:#ffffff; padding:1px 5px; border-radius:3px; font-weight:700;">ACTIVE</span>' : ''}
+                            </div>
+                            <div style="font-size: 12px; color: #475569;">
+                                📅 <b>${formatToDDMMYYYY(native.date)}</b> at <b>${native.time || '12:00:00'}</b> | ${locationText}${coordsText}${tzText}
+                            </div>
+                            ${notesSnippet}
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                            <button type="button" class="${pinBtnClass}" title="${pinBtnTitle}" onclick="togglePinFromModal('${native.id}', event)">
+                                ${pinBtnText}
+                            </button>
+                            <button type="button" onclick="editNativeFromModal('${native.id}', event)" 
+                                    style="background:#f1f5f9; color:#374151; border:1px solid #cbd5e1; padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer;"
+                                    title="Edit details">
+                                ✏️
+                            </button>
+                            <button type="button" class="btn-primary" onclick="openChartFromModal('${native.id}')" style="padding: 5px 12px; font-size: 12px; font-weight: 600;">
+                                📂 Open
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            const selectedRow = container.querySelector('.open-chart-row.selected');
+            if (selectedRow) {
+                selectedRow.scrollIntoView({ block: 'nearest' });
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function selectOpenChartRow(idx) {
+            highlightedOpenChartIndex = idx;
+            const rows = document.querySelectorAll('.open-chart-row');
+            rows.forEach((r, i) => {
+                if (i === idx) {
+                    r.classList.add('selected');
+                } else {
+                    r.classList.remove('selected');
+                }
+            });
+        }
+
+        function handleOpenChartKeydown(e) {
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (highlightedOpenChartIndex < filteredOpenCharts.length - 1) {
+                    highlightedOpenChartIndex++;
+                    renderOpenChartList();
+                }
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (highlightedOpenChartIndex > 0) {
+                    highlightedOpenChartIndex--;
+                    renderOpenChartList();
+                }
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (filteredOpenCharts.length > 0 && highlightedOpenChartIndex < filteredOpenCharts.length) {
+                    const target = filteredOpenCharts[highlightedOpenChartIndex];
+                    openChartFromModal(target.id);
+                }
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                closeOpenChartModal();
+            }
+        }
+
+        async function openChartFromModal(nativeId) {
+            closeOpenChartModal();
+            await loadChart(nativeId);
+        }
+
+        async function togglePinFromModal(nativeId, event) {
+            if (event) event.stopPropagation();
+            try {
+                const res = await fetch(`/api/native/${nativeId}/toggle_dropdown`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    const native = allSavedNatives.find(n => n.id === nativeId);
+                    if (native) {
+                        native.in_dropdown = data.in_dropdown;
+                    }
+                    syncNativeSelectOptions();
+                    filterOpenChartsList();
+                }
+            } catch (err) {
+                console.error("Failed to toggle pin state:", err);
+            }
+        }
+
+        function editNativeFromModal(nativeId, event) {
+            if (event) event.stopPropagation();
+            closeOpenChartModal();
+            const select = document.getElementById('nativeSelect');
+            if (select) select.value = nativeId;
+            document.getElementById('editNativeId').value = nativeId;
+            openEditModal();
+        }
+
+        function syncNativeSelectOptions() {
+            const select = document.getElementById('nativeSelect');
+            if (!select) return;
+            const currentVal = select.value || (currentLoadedNative ? currentLoadedNative.id : '');
+            select.innerHTML = '<option value="">-- Select Person --</option>';
+
+            const dropdownNatives = allSavedNatives.filter(n => n.in_dropdown !== false);
+            dropdownNatives.forEach(n => {
+                const opt = document.createElement('option');
+                opt.value = n.id;
+                opt.text = `${n.name} (${formatToDDMMYYYY(n.date)})`;
+                select.appendChild(opt);
+            });
+
+            if (currentLoadedNative && !dropdownNatives.some(n => n.id === currentLoadedNative.id)) {
+                const opt = document.createElement('option');
+                opt.value = currentLoadedNative.id;
+                opt.text = `📁 ${currentLoadedNative.name} (${formatToDDMMYYYY(currentLoadedNative.date)})`;
+                select.appendChild(opt);
+            }
+
+            const openOpt = document.createElement('option');
+            openOpt.value = '__open_chart_dialog__';
+            openOpt.text = '── 📂 Open Chart... (Ctrl+O) ──';
+            select.appendChild(openOpt);
+
+            if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
+                select.value = currentVal;
+            } else if (currentLoadedNative) {
+                select.value = currentLoadedNative.id;
+            }
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'o') {
+                e.preventDefault();
+                openChartModal();
+            }
+        });
 
         async function loadCountries() {
             try {
@@ -10645,7 +11416,7 @@
                 return;
             }
 
-            const preset = document.querySelector('input[name="exportPreset"]:checked')?.value || 'master_a3';
+            const preset = document.querySelector('input[name="exportPreset"]:checked')?.value || 'master_dossier_a4';
             
             // If current view selected and preview requested, open native print
             if (preset === 'current_view' && previewOnly) {
@@ -10673,6 +11444,9 @@
                 include_d9: document.getElementById('expIncD9')?.checked ?? true,
                 include_d10: document.getElementById('expIncD10')?.checked ?? true,
                 include_d7: document.getElementById('expIncD7')?.checked ?? true,
+                include_master_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
+                include_diagnostic_key: document.getElementById('expIncDiagnosticKey')?.checked ?? true,
+                include_yogas: document.getElementById('expIncYogas')?.checked ?? true,
                 include_placements: document.getElementById('expIncPlacements')?.checked ?? true,
                 include_cusps: document.getElementById('expIncCusps')?.checked ?? true,
                 include_dignities: document.getElementById('expIncDignities')?.checked ?? true,
@@ -10833,6 +11607,20 @@
                 } else if (e.key === '}' || (e.key === ']' && e.shiftKey && e.ctrlKey)) {
                     e.preventDefault();
                     stepBirthTime(3600); // +1h
+                }
+
+                // Chart Type Switching Hotkeys (S = South, N = North, C = Circular, B = Bi-Wheel)
+                if (!e.ctrlKey && !e.metaKey && !e.altKey && ['s', 'n', 'c', 'b'].includes(e.key.toLowerCase())) {
+                    const k = e.key.toLowerCase();
+                    const styleMap = { 's': 'south', 'n': 'north', 'c': 'circular', 'b': 'biwheel' };
+                    const targetStyle = styleMap[k];
+                    const chartCell = (currentActiveCell && currentActiveCell.dataset.widget === 'chart') ? currentActiveCell : document.querySelector('.grid-cell[data-widget="chart"]');
+                    if (chartCell) {
+                        const btn = chartCell.querySelector('.btn-' + targetStyle);
+                        if (btn) switchWidgetChartType(btn, targetStyle);
+                    } else {
+                        setGlobalChartStyle(targetStyle);
+                    }
                 }
             }
         });

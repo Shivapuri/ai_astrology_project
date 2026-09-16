@@ -158,3 +158,86 @@ def test_native_crud_api(client):
         assert res_check.status_code == 404
 
 
+def test_biwheel_endpoints(client):
+    # Test Angelina Jolie chart has biwheel SVGs
+    res = client.get('/api/chart/angelina-jolie')
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert "svgs" in data
+    assert "D1" in data["svgs"]
+    assert "biwheel" in data["svgs"]["D1"]
+    assert "biwheel" in data["svgs"]["D1"]["symbol"]
+    assert "biwheel" in data["svgs"]["D9"]["symbol"]
+    assert '<svg' in data["svgs"]["D1"]["symbol"]["biwheel"]
+
+    # Test dynamic biwheel endpoint
+    res_bi = client.get('/api/chart/angelina-jolie/biwheel?inner=D1&outer=D9')
+    assert res_bi.status_code == 200
+    bi_data = json.loads(res_bi.data)
+    assert "svg" in bi_data
+    assert bi_data["inner"] == "D1"
+    assert bi_data["outer"] == "D9"
+    assert '<svg' in bi_data["svg"]
+    assert 'Bi-Wheel' in bi_data["svg"]
+
+
+def test_natives_list_and_dropdown_exclusivity(client):
+    # 1. Verify /api/natives returns all natives
+    res = client.get('/api/natives')
+    assert res.status_code == 200
+    natives = json.loads(res.data)
+    names = [n['name'] for n in natives]
+    assert "Adolf Hitler" in names
+    assert "Heinrich Himmler" in names
+    assert "Jeffrey Dahmer" in names
+
+    # 2. Verify top dropdown on index page does NOT include Criminals by default
+    res_idx = client.get('/')
+    assert res_idx.status_code == 200
+    html = res_idx.data.decode('utf-8')
+    select_section = html.split('id="nativeSelect"')[1].split('</select>')[0]
+    assert "Adolf Hitler" not in select_section
+    assert "Heinrich Himmler" not in select_section
+    assert "Jeffrey Dahmer" not in select_section
+
+    # 3. Verify Open Chart modal components exist in HTML
+    assert 'id="openChartModal"' in html
+    assert 'id="btnOpenChartModal"' in html
+    assert 'id="openChartSearchInput"' in html
+
+
+def test_hitler_himmler_dahmer_chart_api(client):
+    targets = [
+        ('adolf-hitler', 'Libra', 'Adolf Hitler'),
+        ('heinrich-himmler', 'Aquarius', 'Heinrich Himmler'),
+        ('jeffrey-dahmer', 'Libra', 'Jeffrey Dahmer')
+    ]
+    for cid, expected_lagna, expected_name in targets:
+        res = client.get(f'/api/chart/{cid}')
+        assert res.status_code == 200
+        data = json.loads(res.data)
+        assert data['native']['name'] == expected_name
+        assert data['data']['vargas']['D1']['lagna']['sign'] == expected_lagna
+        assert 'D1' in data['svgs']
+        assert 'D9' in data['svgs']
+        assert 'D10' in data['svgs']
+
+
+def test_toggle_dropdown_api(client):
+    # Toggle Hitler in_dropdown from false to true and back
+    res1 = client.post('/api/native/adolf-hitler/toggle_dropdown')
+    assert res1.status_code == 200
+    data1 = json.loads(res1.data)
+    assert data1['id'] == 'adolf-hitler'
+    assert data1['in_dropdown'] is True
+
+    # Toggle back to false
+    res2 = client.post('/api/native/adolf-hitler/toggle_dropdown')
+    assert res2.status_code == 200
+    data2 = json.loads(res2.data)
+    assert data2['id'] == 'adolf-hitler'
+    assert data2['in_dropdown'] is False
+
+
+
+

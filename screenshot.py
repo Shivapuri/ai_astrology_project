@@ -18,7 +18,25 @@ async def main():
             await page.locator(".top-toolbar").screenshot(path="screenshot_native_toolbar.png")
             print("Captured screenshot_native_toolbar.png")
 
-            # Open Edit Modal
+            # Open Chart Modal verification
+            await page.evaluate("openChartModal()")
+            await page.wait_for_timeout(600)
+            await page.screenshot(path="screenshot_open_chart_modal.png")
+            print("Captured screenshot_open_chart_modal.png")
+
+            # Filter Open Chart to Criminals
+            await page.evaluate("setOpenChartCategory('Criminals')")
+            await page.wait_for_timeout(400)
+            await page.screenshot(path="screenshot_open_chart_criminals_filter.png")
+            print("Captured screenshot_open_chart_criminals_filter.png")
+
+            # Load Adolf Hitler chart from Open Chart modal
+            await page.evaluate("openChartFromModal('adolf-hitler')")
+            await page.wait_for_timeout(1500)
+            await page.screenshot(path="screenshot_loaded_hitler_chart.png")
+            print("Captured screenshot_loaded_hitler_chart.png")
+
+            # Open Edit Modal for Hitler
             await page.evaluate("openEditModal()")
             await page.wait_for_timeout(600)
             await page.screenshot(path="screenshot_edit_native_modal.png")
@@ -212,6 +230,56 @@ async def main():
             if await cell2.count() > 0:
                 await cell2.screenshot(path="screenshot_classical_yogas_cell.png")
                 print("Captured screenshot_classical_yogas_cell.png")
+
+            # 22. Harmonic Bi-Wheel (D1 Natal + D9 Navamsha) in Chart Widget
+            await page.evaluate("changeWorkspace('core-predictive')")
+            await page.wait_for_timeout(1000)
+            chart_cell = page.locator('.grid-cell[data-widget="chart"]').first
+            if await chart_cell.count() > 0:
+                # Switch to Bi-Wheel
+                biwheel_btn = chart_cell.locator('.btn-biwheel')
+                if await biwheel_btn.count() > 0:
+                    await biwheel_btn.click()
+                    await page.wait_for_timeout(800)
+                    await chart_cell.screenshot(path="screenshot_harmonic_biwheel_d1_d9.png")
+                    print("Captured screenshot_harmonic_biwheel_d1_d9.png")
+
+                    # Maximize Bi-Wheel Chart
+                    await chart_cell.locator('.btn-widget-maximize').click()
+                    await page.wait_for_timeout(800)
+                    await page.screenshot(path="screenshot_harmonic_biwheel_maximized.png")
+                    print("Captured screenshot_harmonic_biwheel_maximized.png")
+                    await page.keyboard.press("Escape")
+                    await page.wait_for_timeout(400)
+
+                    # Switch outer to D10 Dashamsha
+                    outer_sel = chart_cell.locator('.biwheel-outer-select')
+                    if await outer_sel.count() > 0:
+                        await outer_sel.select_option("D10")
+                        await page.wait_for_timeout(800)
+                        await chart_cell.screenshot(path="screenshot_harmonic_biwheel_d10.png")
+                        print("Captured screenshot_harmonic_biwheel_d10.png")
+
+                    # Switch inner to D9 (Testing dynamic inner varga switch)
+                    inner_sel = chart_cell.locator('.varga-select')
+                    if await inner_sel.count() > 0:
+                        await inner_sel.select_option("D9")
+                        await page.wait_for_timeout(800)
+                        await chart_cell.screenshot(path="screenshot_harmonic_biwheel_inner_d9.png")
+                        print("Captured screenshot_harmonic_biwheel_inner_d9.png")
+
+            # 23. Harmonic Bi-Wheel with Vargottama Highlight (Shivapuri has Vargottama Venus)
+            await page.evaluate("loadChart('589fabff-bf49-405a-9372-6d9566bf6955')") # Shivapuri
+            await page.wait_for_timeout(1500)
+            chart_cell_varg = page.locator('.grid-cell[data-widget="chart"]').first
+            if await chart_cell_varg.count() > 0:
+                bi_btn = chart_cell_varg.locator('.btn-biwheel')
+                if await bi_btn.count() > 0:
+                    await bi_btn.click()
+                    await page.wait_for_timeout(800)
+                    await chart_cell_varg.screenshot(path="screenshot_harmonic_biwheel_vargottama.png")
+                    print("Captured screenshot_harmonic_biwheel_vargottama.png")
+
 
         except Exception as e:
             print("Error:", e)

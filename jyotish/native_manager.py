@@ -263,7 +263,7 @@ def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_emp
 
     return True
 
-def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0, notes: str = "") -> Dict[str, Any]:
+def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0, notes: str = "", category: str = "General", in_dropdown: bool = True) -> Dict[str, Any]:
     """Adds a new native with atomic safety and standard DD/MM/YYYY date."""
     if not _acquire_lock(filepath):
         raise RuntimeError("Could not acquire lock to save native")
@@ -292,6 +292,8 @@ def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon:
             "lon": float(lon),
             "alt": 0.0,
             "name_sound_value": int(name_sound_value),
+            "category": str(category or "General"),
+            "in_dropdown": bool(in_dropdown),
             "notes": str(notes or ""),
             "modified_at": datetime.now().isoformat()
         }
@@ -318,6 +320,10 @@ def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any])
                         n[k] = int(v)
                     elif k == 'date':
                         n[k] = to_standard_date(v)
+                    elif k == 'in_dropdown':
+                        n[k] = bool(v)
+                    elif k == 'category':
+                        n[k] = str(v or "General")
                     else:
                         n[k] = v
                 n['modified_at'] = datetime.now().isoformat()
@@ -329,6 +335,27 @@ def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any])
             atomic_write_natives(filepath, natives)
             return updated_native
         return None
+    finally:
+        _release_lock(filepath)
+
+def toggle_in_dropdown(filepath: str, native_id: str) -> Optional[bool]:
+    """Toggles the in_dropdown boolean flag for a given native ID and saves changes."""
+    if not _acquire_lock(filepath):
+        raise RuntimeError("Could not acquire lock to toggle in_dropdown")
+    try:
+        natives = load_natives(filepath)
+        new_val = None
+        for i, n in enumerate(natives):
+            if n.get("id") == native_id:
+                curr = n.get("in_dropdown", True)
+                new_val = not curr
+                n["in_dropdown"] = new_val
+                n["modified_at"] = datetime.now().isoformat()
+                natives[i] = n
+                break
+        if new_val is not None:
+            atomic_write_natives(filepath, natives)
+        return new_val
     finally:
         _release_lock(filepath)
 

@@ -1533,7 +1533,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     is_a3 = (page_size == "A3")
     css_page_size = "A3 landscape" if is_a3 else "A4 portrait"
     d1_svg_size = 310 if is_a3 else 260
-    varga_svg_size = 240 if is_a3 else 220
+    varga_svg_size = 220 if is_a3 else 175
 
     # 1. Generate D1 SVG
     d1_svg = get_chart_svg("D1", chart_data, chart_style, notation, width=d1_svg_size, height=d1_svg_size) if include_d1 else ""
@@ -2322,20 +2322,21 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 
   .varga-body {{
     display: flex;
-    flex-direction: row;
-    gap: 6px;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
     padding: 4px;
   }}
 
   .varga-svg-container {{
-    flex: 0 0 {varga_svg_size}px;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
   }}
 
   .varga-table-container {{
-    flex: 1;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -2634,8 +2635,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
       </div>
     </div>
 
+    <!-- Top Row: Qualitative Avasthas & Yoga Judgment in 2 Columns -->
     <div class="layout-2col">
-      <!-- Left Column: Qualitative Avasthas & Yoga Judgment -->
       <div class="column">
         {f'''
         <div class="card">
@@ -2648,7 +2649,9 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
           </div>
         </div>
         ''' if include_avasthas else ''}
+      </div>
 
+      <div class="column">
         {f'''
         <div class="card">
           <div class="card-header">
@@ -2661,22 +2664,20 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         </div>
         ''' if include_yoga_judgment else ''}
       </div>
+    </div>
 
-      <!-- Right Column: Shadbala Strength Breakdown Grid -->
-      <div class="column">
-        {f'''
-        <div class="card">
-          <div class="card-header">
-            <h3>⚖️ Ṣaḍbala Strength Matrix & Breakdown Grid</h3>
-            <span class="card-sub">Parashara 6-Fold Potencies & Minimum Thresholds</span>
-          </div>
-          <div class="card-body">
-            {shadbala_breakdown_html}
-          </div>
-        </div>
-        ''' if include_shadbala else ''}
+    <!-- Bottom Row: Shadbala Strength Breakdown Grid (Full Width) -->
+    {f'''
+    <div class="card full-width" style="margin-top:6px;">
+      <div class="card-header">
+        <h3>⚖️ Ṣaḍbala Strength Matrix & Breakdown Grid</h3>
+        <span class="card-sub">Parashara 6-Fold Potencies & Minimum Thresholds</span>
+      </div>
+      <div class="card-body">
+        {shadbala_breakdown_html}
       </div>
     </div>
+    ''' if include_shadbala else ''}
 
     <div class="footer-note">
       Astra Precision Astrological Computation • Page 4: Deep Planetary Strengths & Potency Matrix • Report Generated for {name}

@@ -5,7 +5,7 @@
 > **Source Provenance:** [Vedic Astrology Knowledge Vault](file:///Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/vault/) (Ryan Kurczak & Vic DiCara)  
 > **Dossier Directory:** All materials are self-contained in `ascendant_reports/Shivapuri/`  
 > **Master Synthesis Report:** `Ascendant_Interpretation.md` (this dossier)  
-> **Archived Raw Sources:** `raw_sources/` (30 original lecture notes in 6 tier folders)
+> **Archived Raw Sources:** `raw_sources/` (32 original lecture notes in 6 tier folders)
 
 ---
 
@@ -146,6 +146,11 @@ The ruler of the Ascendant is **Sun** (*Lagneśa*). Classical texts proclaim (*P
 > ---
 
 
+> #### 📖 Primary Vault Source: [Sun in Scorpio](raw_sources/tier_2_lagnesha/08%20-%20Sun%20in%20Scorpio.md)  
+> **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=789s9fezqaA)
+>
+
+
 > #### 📖 Primary Vault Source: [Sun and Saturn Astrological Conjunctions](raw_sources/tier_2_lagnesha/Lesson%2007%20-%20Sun%20and%20Saturn%20Astrological%20Conjunctions.md)  
 > **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=6y2pgLkq6VA)
 >
@@ -160,26 +165,6 @@ The ruler of the Ascendant is **Sun** (*Lagneśa*). Classical texts proclaim (*P
 > - **Humility & Realism:** Strips away superficial arrogance, building lasting achievements through sustained, practical effort.
 > - **Combustion of Saturn:** If Saturn is close to the Sun (within ~15°), Saturn is agitated (*Kshobhita*), creating chronic psychological pressure.
 > - **Karmic Maturity:** After age 36, this conjunction frequently produces respected judges, administrators, and organizational anchors.
-> 
-> ---
-
-
-> #### 📖 Primary Vault Source: [Planets Conjunct Sun](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20Planets%20Conjunct%20Sun.md)  
-> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=UU_NGxkVk4M)
->
-> **📌 High-Fidelity Executive Summary (Direct from Source):**  
-> Vic DiCara breaks down the mechanics and classical interpretations of planetary conjunctions with the Sun (*Surya*). Because the Sun is a radiant powerhouse of light and selfhood, any planet conjoining it undergoes combustion (*Asta*), altering how its energies manifest. While interior planets (Mercury and Venus) handle solar proximity naturally, exterior planets like Jupiter, Mars, and Saturn experience a profound shift where personal autonomy clashes with executive command.
-> 
-> ---
->
-> **🔑 Core Principles & Takeaways (Direct from Source):**  
-> - **Combustion Dynamics:** The Sun's radiant fire obliterates visible planetary light; planets naturally close to the Sun (Mercury, Venus) are adapted to this heat, whereas Jupiter and the Moon struggle with ego-saturation.
-> - **Sun + Moon (Architecture & Engineering):** Fuses the Sun's structural vision and purpose with the Moon's tangible, formative power, producing builders, architects, and masters of machinery (*Yantras*).
-> - **Sun + Mars (Command & Enforcement):** A union of two fiery rulers (*Kshatriyas*); yields relentless personal discipline, tactical execution, and military or law-enforcement authority.
-> - **Sun + Mercury (Budhaditya Yoga):** Sharp analytical intellect, executive communication, and advisory genius; Mercury functions as the brilliant royal counselor.
-> - **Sun + Jupiter (Ethical Imposition):** Combines moral righteousness with authoritative force; danger of dogmatism when personal belief is enforced upon others as law.
-> - **Sun + Venus (Aesthetic Authority):** Creative mastery, diplomacy, and luxury production; high aesthetic taste, though personal romantic intimacy requires conscious boundaries against ego pride.
-> - **Sun + Saturn (Metallurgy & Grinding Labor):** Natural archetypal enmity (Father vs. Son, King vs. Servant); manifests practically as mastering dense materials, mining, metallurgy, and perseverance under pressure.
 > 
 > ---
 
@@ -204,6 +189,7 @@ The Ascendant Lord in the 4th House draws life energy into deep interior contemp
   * The Sun commands 100% of the executive life engine as both the 1st house ruler and the natural *Sthira Karaka* of vitality. Its strength directly dictates constitutional stamina, self-worth, and moral integrity.
 
 ### 2.4 📁 Archived Raw Source Notes (In this Folder)
+* 📄 [08 - Sun in Scorpio.md](raw_sources/tier_2_lagnesha/08%20-%20Sun%20in%20Scorpio.md)
 * 📄 [Lesson 01 - Planets Conjunct Sun.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20Planets%20Conjunct%20Sun.md)
 * 📄 [Lesson 01 - The Sun in All 12 Signs.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20The%20Sun%20in%20All%2012%20Signs.md)
 * 📄 [Lesson 01 - The Sun in All Houses.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20The%20Sun%20in%20All%20Houses.md)
@@ -244,12 +230,12 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 > ---
 
 
-> #### 📖 Primary Vault Source: [First House: Tanu Bhava (The Embodiment & Ascendant)](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)  
-> **Author / Lineage:** Vedic Astrology Knowledge Vault
+> #### 📖 Primary Vault Source: [Sun in Scorpio](raw_sources/tier_3_sun_karaka/08%20-%20Sun%20in%20Scorpio.md)  
+> **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=789s9fezqaA)
 >
 
 
-> #### 📖 Primary Vault Source: [Sun (Surya) - Planetary Essence & Interpretation Guide](raw_sources/tier_3_sun_karaka/01%20-%20Sun%20%28Surya%29.md)  
+> #### 📖 Primary Vault Source: [First House: Tanu Bhava (The Embodiment & Ascendant)](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)  
 > **Author / Lineage:** Vedic Astrology Knowledge Vault
 >
 
@@ -276,6 +262,7 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 ### 3.5 📁 Archived Raw Source Notes (In this Folder)
 * 📄 [01 - First House (Tanu Bhava).md](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)
 * 📄 [01 - Sun (Surya).md](raw_sources/tier_3_sun_karaka/01%20-%20Sun%20%28Surya%29.md)
+* 📄 [08 - Sun in Scorpio.md](raw_sources/tier_3_sun_karaka/08%20-%20Sun%20in%20Scorpio.md)
 * 📄 [Lesson 01 - Planets Conjunct Sun.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20Planets%20Conjunct%20Sun.md)
 * 📄 [Lesson 01 - The Sun in All 12 Signs.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20The%20Sun%20in%20All%2012%20Signs.md)
 * 📄 [Lesson 01 - The Sun in All Houses.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20The%20Sun%20in%20All%20Houses.md)

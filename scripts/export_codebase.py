@@ -52,6 +52,7 @@ EXCLUDED_DIRS = {
     "knowledge_base",
     "lajjitadi_transcription",
     "ascendant_reports",
+    "scratch",
 }
 
 EXCLUDED_FILES = {

@@ -44,12 +44,29 @@ def test_generate_report_html(sample_chart):
     assert "Strengths Matrix • Yoga Judgment" in html
     assert "Classical Yogas" in html
     assert "Yoga Bhanga" in html
+    assert "Master Graha Diagnostics" in html
+    assert "Horizon Vitality Architecture" in html
+    assert "Master Astrological Diagnostic Key" in html
 
 def test_export_chart_pdf(sample_chart):
     options = {
         "page_size": "A3",
         "chart_style": "north",
         "notation": "symbol"
+    }
+    pdf_bytes = export_chart_pdf(sample_chart, options)
+    assert isinstance(pdf_bytes, bytes)
+    assert pdf_bytes.startswith(b"%PDF-")
+    assert len(pdf_bytes) > 50000
+
+def test_export_chart_pdf_master_dossier_a4(sample_chart):
+    options = {
+        "page_size": "A4",
+        "chart_style": "north",
+        "notation": "symbol",
+        "include_master_diagnostics": True,
+        "include_diagnostic_key": True,
+        "include_yogas": True
     }
     pdf_bytes = export_chart_pdf(sample_chart, options)
     assert isinstance(pdf_bytes, bytes)
