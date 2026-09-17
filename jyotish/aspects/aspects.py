@@ -95,6 +95,47 @@ def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon:
             
     return float(min(max(raw_drishti, 0.0), 60.0))
 
+def get_aspect_explanation(aspecting_planet: str, aspecting_lon: float, aspected_lon: float, aspected_name: str = "", aspecting_dignity: str = "Neutral") -> Dict[str, Any]:
+    """
+    Returns detailed explanation for Graha Drishti between two coordinates,
+    including exact angular separation, Virūpa potency, Parāśara rule name,
+    whether the aspect is Benefic (Subha) or Malefic (Aśubha), and suggested line style.
+    """
+    diff = (aspected_lon - aspecting_lon) % 360.0
+    virupas = get_graha_drishti(aspecting_planet, aspecting_lon, aspected_lon)
+    houses_away = int(diff // 30) + 1
+    
+    if houses_away == 7:
+        rule_name = "7th House Full Opposition (100% full mutual glance)"
+    elif aspecting_planet == "Mars" and houses_away in [4, 8]:
+        rule_name = f"Mars Special {houses_away}th House Glance (Chaturasra/Randhra Drishti)"
+    elif aspecting_planet == "Jupiter" and houses_away in [5, 9]:
+        rule_name = f"Jupiter Special {houses_away}th House Glance (Trikona Dharma & Wisdom Drishti)"
+    elif aspecting_planet == "Saturn" and houses_away in [3, 10]:
+        rule_name = f"Saturn Special {houses_away}th House Glance (Upachaya Duty & Persistence Drishti)"
+    else:
+        rule_name = f"Partial Parāśari Angle ({round(diff)}° separation, {houses_away}th house away)"
+
+    is_natural_benefic = aspecting_planet in ["Jupiter", "Venus", "Mercury"]
+    is_benefic = is_natural_benefic and aspecting_dignity not in ["Debilitated", "Enemy", "Great Enemy"]
+    if aspecting_planet in ["Saturn", "Mars", "Sun", "Rahu", "Ketu"]:
+        is_benefic = False
+
+    nature_label = "Benefic Light (Subha Dṛṣṭi — Continuous line)" if is_benefic else "Malefic Tension (Aśubha Dṛṣṭi — Dashed line)"
+
+    return {
+        "aspecting": aspecting_planet,
+        "aspected": aspected_name,
+        "separation_deg": round(diff, 1),
+        "houses_away": houses_away,
+        "virupas": round(virupas, 1),
+        "rule_name": rule_name,
+        "is_benefic": is_benefic,
+        "line_style": "continuous" if is_benefic else "dashed",
+        "nature_label": nature_label,
+        "dignity": aspecting_dignity
+    }
+
 def get_all_graha_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
     """
     Calculates the incoming Graha Drishti (aspect strength) for all planets from all other planets.

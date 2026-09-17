@@ -91,6 +91,8 @@ EXCLUDED_FILES = {
     "angelina_jolie_baselines.json",
     "astra_verification_task_list.md",
     "knowledge_base.json",
+    "generate_ascendant_report.py",
+    "analyze_ascendant.py",
 }
 
 EXCLUDED_EXTENSIONS = {
