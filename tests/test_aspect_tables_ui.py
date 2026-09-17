@@ -129,3 +129,38 @@ class TestAspectTableRendering:
         )
         assert '+' in labels, "Missing '+' totals row in planets table."
         assert '-' in labels, "Missing '-' totals row in planets table."
+
+    def test_planet_click_filters_aspects_below_thirty_virupas(self, page):
+        """Clicking a planet must only focus/show aspects with >= 30 Virūpas."""
+        page.evaluate("window.selectAstrologicalEntity('planet', 'Moon', 'D1')")
+        page.wait_for_timeout(500)
+
+        focused_aspects = page.evaluate(
+            """(() => {
+                const lines = Array.from(document.querySelectorAll('.interactive-aspect.aspect-focused'));
+                return lines.map(l => ({
+                    from: l.getAttribute('data-from'),
+                    to: l.getAttribute('data-to'),
+                    virupas: parseFloat(l.getAttribute('data-virupas') || '0')
+                }));
+            })()"""
+        )
+
+        # All focused aspects must have at least 30 Virūpas
+        for asp in focused_aspects:
+            assert asp["virupas"] >= 30.0, f"Aspect {asp['from']} ➔ {asp['to']} has {asp['virupas']}v (<30v) but was focused!"
+
+        # Verify dynamic table badges
+        table_badges = page.evaluate(
+            """(() => {
+                const badges = Array.from(document.querySelectorAll('.aspect-dynamic-badge:not(.aspect-selected-tag)'));
+                return badges.map(b => b.textContent);
+            })()"""
+        )
+        import re
+        for text in table_badges:
+            m = re.search(r'\((\d+)v\)', text)
+            if m:
+                v = int(m.group(1))
+                assert v >= 30, f"Table row aspect badge has {v}v (< 30v): {text}"
+

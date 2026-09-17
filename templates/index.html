@@ -6564,6 +6564,146 @@
                 12: "House 12 (Vyaya Bhāva): Solitude, spiritual liberation (Moksha), sleep, retreat, and expenses (Dusthāna / Moksha)."
             };
 
+            function getDignityIcon(digStr) {
+                const d = (digStr || '').toLowerCase();
+                if (d.includes('exalt') || d.includes('uccha')) return '👑';
+                if (d.includes('moola')) return '🏛️';
+                if (d.includes('own') || d.includes('svastha')) return '🏡';
+                if (d.includes('great friend') || d.includes('adhi-mitra')) return '🤝';
+                if (d.includes('friend') || d.includes('mitra')) return '🙂';
+                if (d.includes('great enemy') || d.includes('adhi-shatru')) return '⚔️';
+                if (d.includes('enemy') || d.includes('shatru')) return '⚠️';
+                if (d.includes('debilit') || d.includes('neecha')) return '🔻';
+                return '⚖️';
+            }
+
+            function renderAspectVisionBadges(aspList) {
+                if (!aspList || aspList.length === 0) {
+                    return '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
+                }
+
+                const tier3DecisiveAsps = [];
+                const tier2BackgroundAsps = [];
+
+                aspList.forEach(asp => {
+                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                    if (rawV < 20) return;
+                    if (rawV < 45) {
+                        tier2BackgroundAsps.push(asp);
+                    } else {
+                        tier3DecisiveAsps.push(asp);
+                    }
+                });
+
+                let tier2Tip = '';
+                if (tier2BackgroundAsps.length > 0) {
+                    const t2Lines = tier2BackgroundAsps.map(asp => {
+                        const aspG = asp.from_planet;
+                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                        const natIcon = isNaturalBen ? '🟢' : '🔴';
+                        const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
+                        const digIcon = getDignityIcon(asp.from_dignity_name);
+                        return `• ${natIcon} <strong>${aspG}:</strong> ${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
+                    }).join('<br>');
+                    tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
+                }
+
+                const badgeElements = tier3DecisiveAsps.map(asp => {
+                    const aspG = asp.from_planet;
+                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                    const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                    const natIcon = isNaturalBen ? '🟢' : '🔴';
+                    const digIcon = getDignityIcon(asp.from_dignity_name);
+
+                    const dName = (asp.from_dignity_name || '').toLowerCase();
+                    const dPct = Number(asp.from_dignity_pct !== undefined ? asp.from_dignity_pct : 50);
+
+                    const isExaltedOrMoola = dName.includes('exalt') || dName.includes('uccha') || dName.includes('moola');
+                    const isOwnOrFriend = dName.includes('own') || dName.includes('svastha') || dName.includes('friend') || dName.includes('mitra');
+                    const isDebilitated = dName.includes('debilit') || dName.includes('neecha') || Boolean(asp.is_debilitated) || Boolean(asp.is_distorted);
+                    const isEnemy = dName.includes('enemy') || dName.includes('shatru');
+
+                    let synthesisText = '';
+                    let bBg = '#f8fafc', bBorder = '#cbd5e1', hCol = '#334155', sCol = '#64748b';
+
+                    if (isNaturalBen) {
+                        if (isDebilitated) {
+                            synthesisText = 'Compromised Support';
+                            bBg = '#fefce8'; bBorder = '#fef08a'; hCol = '#854d0e'; sCol = '#a16207';
+                        } else if (isEnemy) {
+                            synthesisText = 'Misguided Help';
+                            bBg = '#fefce8'; bBorder = '#fef08a'; hCol = '#854d0e'; sCol = '#a16207';
+                        } else if (isExaltedOrMoola) {
+                            synthesisText = 'Pure Grace';
+                            bBg = '#ecfdf5'; bBorder = '#a7f3d0'; hCol = '#065f46'; sCol = '#047857';
+                        } else if (isOwnOrFriend || dPct >= 55) {
+                            synthesisText = 'Strong Support';
+                            bBg = '#f0fdf4'; bBorder = '#bbf7d0'; hCol = '#166534'; sCol = '#15803d';
+                        } else {
+                            synthesisText = 'Supportive Gaze';
+                            bBg = '#f0fdf4'; bBorder = '#bbf7d0'; hCol = '#166534'; sCol = '#15803d';
+                        }
+                    } else {
+                        if (isDebilitated) {
+                            synthesisText = 'Toxic Friction';
+                            bBg = '#fef2f2'; bBorder = '#fca5a5'; hCol = '#991b1b'; sCol = '#b91c1c';
+                        } else if (isEnemy) {
+                            synthesisText = 'Destructive Pressure';
+                            bBg = '#fff1f2'; bBorder = '#fecdd3'; hCol = '#be123c'; sCol = '#9f1239';
+                        } else if (isExaltedOrMoola || isOwnOrFriend || dPct >= 55) {
+                            synthesisText = (isExaltedOrMoola || dName.includes('own') || dName.includes('svastha'))
+                                ? 'Strict Discipline'
+                                : 'Constructive Pressure';
+                            bBg = '#eff6ff'; bBorder = '#bfdbfe'; hCol = '#1e40af'; sCol = '#1d4ed8';
+                        } else {
+                            synthesisText = 'Harsh Demand';
+                            bBg = '#f8fafc'; bBorder = '#cbd5e1'; hCol = '#334155'; sCol = '#475569';
+                        }
+                    }
+
+                    const distortNote = asp.is_distorted ? `<br>• <strong>Option A (Distorted Ray):</strong> ${asp.badge}. Originates from debilitated ${aspG}; positive light dampened by 50% (${(rawV * 0.5).toFixed(0)}v effective).` : '';
+                    const aspTip = `<strong>${asp.is_distorted ? '⚠️ ' : ''}${natIcon} ${aspG} (${rawV}v)</strong><br>` +
+                        `• <strong>Vision Type:</strong> ${isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)'}<br>` +
+                        `• <strong>${aspG} Dignity:</strong> ${digIcon} ${asp.from_dignity_name || 'Neutral'} (${asp.from_dignity_pct ? asp.from_dignity_pct.toFixed(0) : '50'}%)<br>` +
+                        `• <strong>Qualitative Effect:</strong> ${synthesisText}${distortNote}<br>` +
+                        `• <strong>Force Intensity:</strong> ${rawV} / 60 Virūpas (${((rawV / 60) * 100).toFixed(0)}% Decisive Force).`;
+
+                    return `
+                        <div class="tooltip-target" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 6px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
+                            <div style="display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 10px; color: ${hCol};">
+                                <span>${natIcon} ${aspG} (${rawV}v)</span>
+                            </div>
+                            <div style="font-size: 9px; color: ${sCol}; font-weight: 500; line-height: 1.2; margin-top: 1px;">
+                                ↳ ${synthesisText}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                let drishtiHtml = '';
+                if (tier3DecisiveAsps.length > 0) {
+                    let innerHtml = badgeElements.join('');
+                    if (tier2BackgroundAsps.length > 0) {
+                        innerHtml += `
+                            <div class="tooltip-target" style="font-size: 8.5px; color: #64748b; font-style: italic; margin-top: 2px; cursor: help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
+                                + ${tier2BackgroundAsps.length} background aspect${tier2BackgroundAsps.length > 1 ? 's' : ''} (20–44v in tooltip)
+                            </div>
+                        `;
+                    }
+                    drishtiHtml = `<div style="display: flex; flex-direction: column; gap: 1px;">${innerHtml}</div>`;
+                } else if (tier2BackgroundAsps.length > 0) {
+                    drishtiHtml = `
+                        <div class="tooltip-target" style="font-size: 9.5px; color: #64748b; font-style: italic; cursor: help; padding: 2px 0;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
+                            Subtle background (${tier2BackgroundAsps.length} aspect${tier2BackgroundAsps.length > 1 ? 's' : ''} 20–44v in tooltip)
+                        </div>
+                    `;
+                } else {
+                    drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
+                }
+                return drishtiHtml;
+            }
+
             // 1. Lagna Row
             const lagnaSign = (v_lagna && v_lagna.sign) ? v_lagna.sign : '';
             const lagnaLord = lagnaSign ? (signLords[lagnaSign] || (v_lagna && v_lagna.lord) || '') : '';
@@ -6761,18 +6901,35 @@
                 // Cusp aspect badges
                 let cuspDrishtiBadge = '';
                 if (c1Net >= 15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size:9px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Light</span>`;
+                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size:9px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi</span>`;
                 } else if (c1Net <= -15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pressure</span>`;
+                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi</span>`;
                 } else {
                     cuspDrishtiBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:9px;">${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span>`;
                 }
-                if (jupAspectVir > 15.0) {
-                    cuspDrishtiBadge += ` <span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold;" title="Jupiter casts direct aspect on Ascendant">🛡️ Guru Dṛṣṭi</span>`;
-                }
-                if (lordAspectVir > 15.0) {
-                    cuspDrishtiBadge += ` <span class="badge" style="background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-size:9px; font-weight:bold;" title="Lagneśa aspects its own rising sign">👑 Lagneśa Dṛṣṭi</span>`;
-                }
+                
+                const lagnaAspList = [];
+                Object.keys(c1Indiv).forEach(aspG => {
+                    const rawV = Math.abs(c1Indiv[aspG].net || c1Indiv[aspG].plus || c1Indiv[aspG].minus || 0);
+                    if (rawV > 0) {
+                        const fromPlanetData = v_grahas[aspG] || {};
+                        const fromDignityBreakdown = fromPlanetData.dignity_breakdown || {};
+                        const fromDignityName = fromDignityBreakdown.final_dignity || fromPlanetData.dignity || 'Neutral';
+                        const fromDignityClean = fromDignityName.replace("'s Sign", "").replace(" Sign", "").trim();
+                        const fromDignityPct = getDignityScore(fromDignityClean, aspG, fromPlanetData.sign || '', fromPlanetData.degree_0_to_30 || 15.0);
+                        
+                        lagnaAspList.push({
+                            from_planet: aspG,
+                            raw_virupas: rawV,
+                            virupas: rawV,
+                            from_dignity_name: fromDignityClean,
+                            from_dignity_pct: fromDignityPct,
+                            is_debilitated: fromDignityClean.toLowerCase().includes('debilitat'),
+                            is_distorted: false
+                        });
+                    }
+                });
+                const lagnaDrishtiHtml = renderAspectVisionBadges(lagnaAspList);
 
                 const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The foundational engine and reference frame against which all 12 houses and yogas manifest.`;
                 const lgPlacementTip = `<strong>Lagna: ${lgSign} ${lgDeg} (House 1)</strong><br>• <strong>Rising Sign:</strong> Core zodiac archetype of self-expression in ${varga}.<br>• <strong>Ascendant Lord:</strong> <strong>${lgLord}</strong> (Lagneśa).<br>• <strong>Nakshatra:</strong> ${lgNak}.`;
@@ -6830,8 +6987,11 @@
                         </td>
                         <td>
                             <div class="tooltip-target" data-tooltip="${lgInfluencesTip}" style="cursor:help;">
-                                ${lagnaConj.length > 0 ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` : '<div style="color:#94a3b8; font-size:9.5px;">Clean Horizon</div>'}
-                                <div style="margin-top:2px; display:flex; flex-wrap:wrap; gap:2px;">${cuspDrishtiBadge} ${kartariBadge}</div>
+                                <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
+                                    ${lagnaConj.length > 0 ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` : '<div style="color:#94a3b8; font-size:9.5px;">Clean Horizon</div>'}
+                                    <div style="display:flex; flex-wrap:wrap; gap:2px;">${cuspDrishtiBadge} ${kartariBadge}</div>
+                                    ${lagnaDrishtiHtml}
+                                </div>
                             </div>
                         </td>
                         <td>
@@ -7283,12 +7443,12 @@
                 let netDrishtiBadge = '';
                 if (netVal >= 12.0) {
                     const netTip = `<strong>🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle, supportive rays from friendly allies.<br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Demanding friction from tough aspects.<br>• <strong>Atmosphere:</strong> Clear skies and encouraging vision predominate.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🟢 Net Support (+${Math.round(netVal)}v)</span>`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)</span>`;
                 } else if (netVal <= -12.0) {
                     const netTip = `<strong>🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)} Virūpas)</strong><br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Heavy demands, delays, or friction from difficult aspects.<br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle support received.<br>• <strong>Atmosphere:</strong> High-resistance vision; demands extra discipline and mindful patience.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🔴 Net Pressure (${Math.round(netVal)}v)</span>`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)</span>`;
                 } else {
-                    const netTip = `<strong>⚖️ Net Neutral Vision (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (+${plusVal}v) vs Pāpa Dṛṣṭi (-${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental vision without extreme bias.`;
+                    const netTip = `<strong>⚖️ Net Neutral Vision (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v) vs Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental vision without extreme bias.`;
                     netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">⚖️ Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
                 }
 
@@ -7363,144 +7523,18 @@
                     yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
 
-                function getDignityIcon(digStr) {
-                    const d = (digStr || '').toLowerCase();
-                    if (d.includes('exalt') || d.includes('uccha')) return '👑';
-                    if (d.includes('moola')) return '🏛️';
-                    if (d.includes('own') || d.includes('svastha')) return '🏡';
-                    if (d.includes('great friend') || d.includes('adhi-mitra')) return '🤝';
-                    if (d.includes('friend') || d.includes('mitra')) return '🙂';
-                    if (d.includes('great enemy') || d.includes('adhi-shatru')) return '⚔️';
-                    if (d.includes('enemy') || d.includes('shatru')) return '⚠️';
-                    if (d.includes('debilit') || d.includes('neecha')) return '🔻';
-                    return '⚖️';
-                }
-
-                // Cell 6: Aspect Vision (The "> 20 Virūpa" Rule & 2-Line Gaze Badges - ADR-010)
+                // Cell 6: Aspect Vision (The 3-Tier Filter & 2-Line Gaze Badges)
                 let drishtiHtml = '';
                 const allAspList = (vitRes.aspect_details && vitRes.aspect_details.length > 0)
                     ? vitRes.aspect_details
                     : (aspDetails || []);
 
                 if (allAspList.length > 0) {
-                    const significantAsps = [];
-                    const backgroundAsps = [];
-
-                    allAspList.forEach(asp => {
-                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                        if (rawV < 4) return;
-                        if (rawV >= 20) {
-                            significantAsps.push(asp);
-                        } else {
-                            backgroundAsps.push(asp);
-                        }
-                    });
-
-                    // Background Glances Tooltip String
-                    let bgTip = '';
-                    if (backgroundAsps.length > 0) {
-                        const bgLines = backgroundAsps.map(asp => {
-                            const aspG = asp.from_planet;
-                            const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                            const isPlus = (asp.virupas !== undefined ? asp.virupas > 0 : (asp.raw_virupas > 0));
-                            const signChar = isPlus ? '+' : '-';
-                            const digIcon = getDignityIcon(asp.from_dignity_name);
-                            return `• <strong>${aspG}:</strong> ${signChar}${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'})`;
-                        }).join('<br>');
-                        bgTip = `<strong>Subtle Background Glances (&lt; 20 Virūpas)</strong><br>${bgLines}<br>• <em>Note: Influences below 20v provide mild ambient color without dominating planetary output.</em>`;
-                    }
-
-                    const badgeElements = significantAsps.map(asp => {
-                        const aspG = asp.from_planet;
-                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                        const isPlus = (asp.virupas !== undefined ? asp.virupas > 0 : (asp.raw_virupas > 0));
-                        const signChar = isPlus ? '+' : '-';
-                        const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
-                        const digIcon = getDignityIcon(asp.from_dignity_name);
-                        const isNaturalBen = ['Jupiter', 'Venus'].includes(aspG) || (aspG === 'Mercury') || (aspG === 'Moon');
-                        const natIcon = isNaturalBen ? '🟢' : '🔴';
-
-                        const dName = (asp.from_dignity_name || '').toLowerCase();
-                        const dPct = Number(asp.from_dignity_pct || 50);
-                        const isHighDig = (dPct >= 55) || dName.includes('exalt') || dName.includes('moola') || dName.includes('own') || dName.includes('friend');
-                        const isLowDig = (dPct <= 35) || dName.includes('debilit') || dName.includes('neecha') || dName.includes('enemy');
-
-                        let synthesisText = '';
-                        let bBg = '#f8fafc', bBorder = '#cbd5e1', hCol = '#334155', sCol = '#64748b';
-
-                        if (isNaturalBen) {
-                            if (dName.includes('debilit') || dName.includes('neecha') || asp.is_distorted) {
-                                synthesisText = 'Compromised Support (Debilitated)';
-                                bBg = '#fefce8'; bBorder = '#fef08a'; hCol = '#854d0e'; sCol = '#a16207';
-                            } else if (isLowDig) {
-                                synthesisText = 'Misguided Help (Enemy Sign)';
-                                bBg = '#fefce8'; bBorder = '#fef08a'; hCol = '#854d0e'; sCol = '#a16207';
-                            } else if (dName.includes('exalt') || dName.includes('moola') || dName.includes('own')) {
-                                synthesisText = 'Pure Grace (Fortified)';
-                                bBg = '#ecfdf5'; bBorder = '#a7f3d0'; hCol = '#065f46'; sCol = '#047857';
-                            } else {
-                                synthesisText = 'Strong Support (Friendly)';
-                                bBg = '#f0fdf4'; bBorder = '#bbf7d0'; hCol = '#166534'; sCol = '#15803d';
-                            }
-                        } else {
-                            if (dName.includes('debilit') || dName.includes('neecha')) {
-                                synthesisText = 'Toxic Pressure (Debilitated)';
-                                bBg = '#fef2f2'; bBorder = '#fca5a5'; hCol = '#991b1b'; sCol = '#b91c1c';
-                            } else if (isLowDig) {
-                                synthesisText = 'Destructive Friction (Enemy Sign)';
-                                bBg = '#fff1f2'; bBorder = '#fecdd3'; hCol = '#be123c'; sCol = '#9f1239';
-                            } else if (dName.includes('exalt') || dName.includes('moola') || dName.includes('own')) {
-                                synthesisText = 'Strict Discipline (Exalted / Own)';
-                                bBg = '#eff6ff'; bBorder = '#bfdbfe'; hCol = '#1e40af'; sCol = '#1d4ed8';
-                            } else {
-                                synthesisText = 'Constructive Pressure (Tempered)';
-                                bBg = '#f8fafc'; bBorder = '#cbd5e1'; hCol = '#334155'; sCol = '#475569';
-                            }
-                        }
-
-                        const distortNote = asp.is_distorted ? `<br>• <strong>Option A (Distorted Ray):</strong> ${asp.badge}. Originates from debilitated ${aspG}; positive light dampened by 50% (${(rawV * 0.5).toFixed(0)}v effective).` : '';
-                        const aspTip = `<strong>${asp.is_distorted ? '⚠️ ' : ''}${aspG} Dṛṣṭi: ${signChar}${rawV} Virūpas</strong><br>` +
-                            `• <strong>Vision Type:</strong> ${isPlus ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)'}<br>` +
-                            `• <strong>${aspG} Dignity:</strong> ${digIcon} ${asp.from_dignity_name || 'Neutral'} (${asp.from_dignity_pct ? asp.from_dignity_pct.toFixed(0) : '50'}%)<br>` +
-                            `• <strong>Qualitative Effect:</strong> ${synthesisText}${distortNote}<br>` +
-                            `• <strong>Force Intensity:</strong> ${rawV} / 60 Virūpas.`;
-
-                        return `
-                            <div class="tooltip-target" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 5px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
-                                <div style="display: flex; align-items: center; justify-content: space-between; gap: 4px; font-weight: bold; font-size: 10px; color: ${hCol};">
-                                    <span>${natIcon} ${aspGlyph} ${aspG} (${digIcon})</span>
-                                    <span style="font-family: monospace; font-size: 9.5px;">${rawV}v</span>
-                                </div>
-                                <div style="font-size: 9px; color: ${sCol}; font-weight: 500; line-height: 1.2;">
-                                    ↳ ${synthesisText}
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    if (significantAsps.length > 0) {
-                        let innerHtml = badgeElements.join('');
-                        if (backgroundAsps.length > 0) {
-                            innerHtml += `
-                                <div class="tooltip-target" style="font-size: 8.5px; color: #94a3b8; font-style: italic; margin-top: 2px; cursor: help;" data-tooltip="${escapeTooltipAttr(bgTip)}">
-                                    + ${backgroundAsps.length} background glance${backgroundAsps.length > 1 ? 's' : ''} (&lt;20v)
-                                </div>
-                            `;
-                        }
-                        drishtiHtml = `<div style="display: flex; flex-direction: column; gap: 1px;">${innerHtml}</div>`;
-                    } else if (backgroundAsps.length > 0) {
-                        drishtiHtml = `
-                            <div class="tooltip-target" style="font-size: 9.5px; color: #64748b; font-style: italic; cursor: help; padding: 2px 0;" data-tooltip="${escapeTooltipAttr(bgTip)}">
-                                Quiet field (${backgroundAsps.length} background glance${backgroundAsps.length > 1 ? 's' : ''} &lt;20v)
-                            </div>
-                        `;
-                    } else {
-                        drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No significant aspects</div>';
-                    }
+                    drishtiHtml = renderAspectVisionBadges(allAspList);
                 } else if (aspectList.length > 0) {
                     drishtiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>`;
                 } else {
-                    drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No significant aspects</div>';
+                    drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
                 }
 
                 const influencesHtml = `
@@ -13443,6 +13477,8 @@
                     svg.querySelectorAll('.interactive-aspect').forEach(l => {
                         const fromP = l.getAttribute('data-from');
                         const toP = l.getAttribute('data-to');
+                        const virVal = parseFloat(l.getAttribute('data-virupas') || '0');
+                        if (virVal < 30.0) return; // Aspects below 30 Virūpas will not show up
                         if (fromP === planetId) {
                             l.classList.add('aspect-focused', 'aspect-outgoing');
                         } else if (toP === planetId) {
@@ -13452,6 +13488,8 @@
                     svg.querySelectorAll('.interactive-aspect-badge').forEach(b => {
                         const fromP = b.getAttribute('data-from');
                         const toP = b.getAttribute('data-to');
+                        const virVal = parseFloat(b.getAttribute('data-virupas') || '0');
+                        if (virVal < 30.0) return; // Aspects below 30 Virūpas will not show up
                         if (fromP === planetId) {
                             b.classList.add('aspect-focused', 'aspect-outgoing');
                         } else if (toP === planetId) {
@@ -13525,7 +13563,7 @@
                         rowLon = vGrahas[rowId].longitude || 0;
                     }
 
-                    if (outVir > 0) {
+                    if (outVir >= 30) {
                         row.classList.add('table-row-outgoing');
                         const isBen = isBeneficPlanet(planetId);
                         const degOut = Math.round((rowLon - planetLon + 360.0) % 360.0);
@@ -13540,7 +13578,7 @@
                         }
                     }
 
-                    if (inVir > 0) {
+                    if (inVir >= 30) {
                         row.classList.add('table-row-incoming');
                         const isInBen = isBeneficPlanet(rowId);
                         const degIn = Math.round((planetLon - rowLon + 360.0) % 360.0);
@@ -13840,7 +13878,7 @@
                         plOrder.forEach(p => {
                             if (p !== id && advInfo.planets && advInfo.planets[p] && advInfo.planets[p][id]) {
                                 const entry = advInfo.planets[p][id];
-                                if (entry.raw > 0) {
+                                if (entry.raw >= 30) {
                                     const isBen = entry.plus > 0;
                                     outgoingRays.push(`<span style="color:${isBen ? '#15803d' : '#b91c1c'}; font-weight:600;">➔ ${p} (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
                                 }
@@ -13848,7 +13886,7 @@
                         });
                         if (advInfo.cusps && (advInfo.cusps[1] || advInfo.cusps['1']) && (advInfo.cusps[1] || advInfo.cusps['1'])[id]) {
                             const entry = (advInfo.cusps[1] || advInfo.cusps['1'])[id];
-                            if (entry.raw > 0) {
+                            if (entry.raw >= 30) {
                                 const isBen = entry.plus > 0;
                                 outgoingRays.push(`<span style="color:${isBen ? '#15803d' : '#b91c1c'}; font-weight:600;">➔ Lagna (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
                             }
@@ -13857,7 +13895,7 @@
                         plOrder.forEach(p => {
                             if (p !== id && advInfo.planets && advInfo.planets[id] && advInfo.planets[id][p]) {
                                 const entry = advInfo.planets[id][p];
-                                if (entry.raw > 0) {
+                                if (entry.raw >= 30) {
                                     const isBen = entry.plus > 0;
                                     incomingRays.push(`<span style="color:${isBen ? '#15803d' : '#b91c1c'}; font-weight:600;">⬅ ${p} (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
                                 }
