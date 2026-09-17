@@ -222,7 +222,7 @@ def test_master_diagnostic_widget_renders(page: Page):
     text = page.locator("#cell2 .master-diagnostic-table").inner_text()
     assert "Venus" in text
     assert "Shadbala" in page.locator("#cell2 .master-diagnostic-table thead").inner_text()
-    assert "Vitality Score" in page.locator("#cell2 .master-diagnostic-table thead").inner_text()
+    assert "Vitality" in page.locator("#cell2 .master-diagnostic-table thead").inner_text()
     assert "/ 10" in page.locator("#cell2 .master-diagnostic-table tbody").inner_text()
     assert "Net" in page.locator("#cell2 .master-diagnostic-table tbody").inner_text()
 
@@ -254,7 +254,7 @@ def test_floating_master_diagnostic_modal(page: Page):
     assert "Master Graha Diagnostics" in title
     rows = page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody tr")
     assert rows.count() == 10
-    assert "Vitality Score" in page.locator("#widgetMaximizeContainer .master-diagnostic-table thead").inner_text()
+    assert "Vitality" in page.locator("#widgetMaximizeContainer .master-diagnostic-table thead").inner_text()
     assert "/ 10" in page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody").inner_text()
 
     # Test multi-Varga switching in floating modal

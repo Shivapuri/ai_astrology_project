@@ -25,9 +25,10 @@ Features:
 import os
 import sys
 import argparse
+import re
 
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
-DEFAULT_MAX_SIZE_MB = 2.5
+DEFAULT_MAX_SIZE_MB = 1.2
 
 EXCLUDED_DIRS = {
     ".git",
@@ -95,6 +96,46 @@ EXCLUDED_FILES = {
     "knowledge_base.json",
     "generate_ascendant_report.py",
     "analyze_ascendant.py",
+    # Scratch & developer verification tools
+    "verify_all_chart_clicks.py",
+    "verify_context_ui.py",
+    "verify_stepper_visuals.py",
+    # Historical / superseded documentation notes
+    "HANDOFF.md",
+    "avasthas_remaining_tasks.md",
+    "shadbala_audit_report.md",
+    "master_graha_diagnostics_table.md",
+    "matrix_reading_guide.md",
+    "ui_scaling_guidelines.md",
+    # Playwright browser UI clicker tests (UI verification handled via dedicated runs)
+    "test_ui_e2e.py",
+    "test_new_widgets_ui.py",
+    "test_workspaces_and_kala_menu.py",
+    "test_aspect_tables_ui.py",
+    "test_aspects_interactive.py",
+    "test_open_chart_library.py",
+    "test_time_stepper.py",
+    "test_planetary_evaluation_ui.py",
+    "test_time_stepper_ui.py",
+    "test_shadbala_widget_ui.py",
+    "test_search_krishna_chart.py",
+    # Granular secondary sub-unit tests (core coverage preserved in main test suites)
+    "test_tripod_and_interpretations.py",
+    "test_varga_avasthas.py",
+    "test_vimshottari_timeline.py",
+    "test_quantitative_subvalues.py",
+    "test_varga_lajjitadi_transcription.py",
+    "test_sign_attributes.py",
+    "test_aspects.py",
+    "test_ascendant_analysis.py",
+    "test_varga_shadbala_transcription.py",
+    "test_d10_mode.py",
+    "test_combustion.py",
+    "test_house_aspects.py",
+    "test_karakas.py",
+    "test_basic_placements.py",
+    "test_vimshopaka.py",
+    "test_dignities.py",
 }
 
 EXCLUDED_EXTENSIONS = {
@@ -112,6 +153,7 @@ EXCLUDED_EXTENSIONS = {
     ".bsp",
     ".sqlite",
     ".pyc",
+    ".csv",
 }
 
 ALLOWED_EXTENSIONS = {
@@ -701,6 +743,111 @@ def generate_executive_header(manifest, project_root):
     return "\n".join(header)
 
 
+def condense_index_html(content: str) -> str:
+    """
+    Condenses the 13,000+ line templates/index.html file for export budget compliance (< 1.2 MB).
+    Preserves:
+    - Complete page layout, toolbars, and workspace navigation
+    - All modal overlay containers and essential form controls
+    - Core <template> UI component architectures
+    - All JavaScript application state, calculation API bridges, and function signatures
+    Condenses:
+    - CSS styles into a structured architectural summary
+    - Repetitive <option> dropdown lists
+    - Repetitive table rendering DOM logic inside function bodies
+    """
+    # 1. Condense CSS styles
+    content = re.sub(
+        r'<style>.*?</style>',
+        '<style>\n    /* [Astra UI CSS styling (Split.js multi-pane, grid cells, dark/light themes, widgets, tables, modals) condensed for export budget] */\n</style>',
+        content,
+        flags=re.DOTALL,
+    )
+
+    # 2. Condense repetitive <option> lists
+    def repl_opts(m):
+        opts = re.findall(r'<option.*?</option>', m.group(0), flags=re.DOTALL)
+        if len(opts) > 3:
+            return opts[0] + '\n            <!-- ... [' + str(len(opts)-2) + ' options condensed for export budget] ... -->\n' + opts[-1]
+        return m.group(0)
+    content = re.sub(r'(<option.*?</option>\s*){4,}', repl_opts, content, flags=re.DOTALL)
+
+    # 3. Condense large modal interiors
+    def repl_modal(m):
+        m_id = m.group(1)
+        body = m.group(2)
+        lines = [l for l in body.splitlines() if l.strip()]
+        if len(lines) > 15:
+            return f'<div class="modal-overlay" id="{m_id}">\n' + '\n'.join(lines[:6]) + f'\n    <!-- ... [{len(lines)-9} lines modal controls condensed for export budget] ... -->\n' + '\n'.join(lines[-3:]) + '\n</div>'
+        return m.group(0)
+    content = re.sub(r'<div class="modal-overlay[^"]*"\s+id="([^"]+)"[^>]*>(.*?)(?=\n\s*<!--\s*[A-Z]|\n\s*<div id="main-container")', repl_modal, content, flags=re.DOTALL)
+
+    # 4. Condense large <template> markup
+    def repl_tmpl(m):
+        tmpl_id = m.group(1)
+        body = m.group(2)
+        lines = [l for l in body.splitlines() if l.strip()]
+        if len(lines) > 10:
+            return f'<template id="{tmpl_id}">\n' + '\n'.join(lines[:4]) + f'\n    <!-- ... [{len(lines)-6} lines template markup condensed for export budget] ... -->\n' + '\n'.join(lines[-2:]) + '\n</template>'
+        return m.group(0)
+    content = re.sub(r'<template id="(.*?)">(.*?)</template>', repl_tmpl, content, flags=re.DOTALL)
+
+    # 5. Condense JavaScript function bodies while preserving signatures, state, and event bindings
+    marker_start = '<script>\n        let allSavedNatives'
+    idx_script = content.find(marker_start)
+    if idx_script == -1:
+        return content
+    pre = content[:idx_script]
+    post_marker = '<!-- Global Custom Tooltip Engine -->'
+    idx_post = content.find(post_marker)
+    if idx_post == -1:
+        idx_post = len(content)
+    js = content[idx_script:idx_post]
+    post = content[idx_post:]
+
+    lines = js.splitlines()
+    out = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if (stripped.startswith('function ') or ' = function(' in stripped or ' = async function(' in stripped or stripped.startswith('async function ')) and '{' in line:
+            func_sig = line
+            out.append(line)
+            brace_count = line.count('{') - line.count('}')
+            func_lines = [line]
+            i += 1
+            while i < len(lines) and brace_count > 0:
+                brace_count += lines[i].count('{') - lines[i].count('}')
+                func_lines.append(lines[i])
+                i += 1
+            if len(func_lines) <= 3:
+                out.extend(func_lines[1:])
+            else:
+                indent = ' ' * (len(func_sig) - len(stripped) + 4)
+                out.append(f'{indent}// ... [{len(func_lines)-2} lines of DOM/rendering logic condensed for export budget; full implementation in repo] ...')
+                out.append(func_lines[-1])
+            continue
+        out.append(line)
+        i += 1
+
+    dense = pre + '\n'.join(out) + '\n' + post
+    dense_lines = [re.sub(r'\s+', ' ', l).strip() for l in dense.splitlines() if l.strip()]
+    return '\n'.join(dense_lines)
+
+
+def get_file_export_content(rel_path: str, full_path: str) -> str:
+    """Reads file content and applies high-density condensation for oversized UI templates."""
+    try:
+        with open(full_path, "r", encoding="utf-8", errors="replace") as f:
+            content = f.read()
+        if rel_path == "templates/index.html":
+            content = condense_index_html(content)
+        return content
+    except Exception as e:
+        return f"# Error reading file {rel_path}: {e}\n"
+
+
 def export_codebase(
     output_file: str = DEFAULT_OUTPUT_FILE,
     max_size_mb: float = DEFAULT_MAX_SIZE_MB,
@@ -720,14 +867,10 @@ def export_codebase(
     manifest = []
     for rel in rel_files:
         full_path = os.path.join(project_root, rel)
-        size_bytes = os.path.getsize(full_path)
+        content = get_file_export_content(rel, full_path)
+        size_bytes = len(content.encode("utf-8"))
+        lines = len(content.splitlines())
         subsystem, desc = get_file_metadata(rel)
-        try:
-            with open(full_path, "r", encoding="utf-8", errors="replace") as f:
-                content = f.read()
-            lines = len(content.splitlines())
-        except Exception:
-            lines = 0
 
         manifest.append({
             "rel_path": rel,
@@ -736,6 +879,7 @@ def export_codebase(
             "lines": lines,
             "subsystem": subsystem,
             "description": desc,
+            "content": content,
         })
 
     if summary_only:
@@ -766,13 +910,7 @@ def export_codebase(
             out.write(f"ROLE: {desc}\n")
             out.write("=" * 80 + "\n")
 
-            try:
-                with open(item["full_path"], "r", encoding="utf-8", errors="replace") as f:
-                    content = f.read()
-                out.write(content)
-            except Exception as e:
-                out.write(f"# Error reading file {rel}: {e}\n")
-
+            out.write(item["content"])
             out.write("\n\n")
 
     final_size_bytes = os.path.getsize(output_path)

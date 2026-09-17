@@ -249,6 +249,7 @@ def classify_graha_archetype(
             "archetype": "The Transmuted Hero",
             "badge": "✨ Transmuted Hero",
             "tier": "Alchemical Raja Yoga",
+            "subtext": "Alchemical Rescue (Neecha Bhanga)",
             "description": "Initial vulnerability transformed by a noble host into profound resilience and hard-won wisdom.",
             "color": "#7c3aed",
             "bg": "#f3e8ff",
@@ -269,6 +270,7 @@ def classify_graha_archetype(
             archetype = "The Generous King"
             badge = "🌟 Generous King"
             tier = "Sovereign Benefactor"
+            subtext = "High Quality + High Muscle"
             desc = "High moral character equipped with immense executive power. Grants durable, honorable triumphs."
             color = "#15803d"
             bg = "#dcfce7"
@@ -276,6 +278,7 @@ def classify_graha_archetype(
             archetype = "The Noble Guardian"
             badge = "🛡️ Noble Guardian"
             tier = "Constructive Ally"
+            subtext = "High Quality + Balanced Muscle"
             desc = "Sincere ethical intentions with steady real-world capability. Provides consistent, harmonious progress."
             color = "#0284c7"
             bg = "#e0f2fe"
@@ -283,6 +286,7 @@ def classify_graha_archetype(
             archetype = "The Sincere Friend"
             badge = "🤝 Sincere Friend"
             tier = "Noble Intent / Low Muscle"
+            subtext = "High Quality + Low Muscle"
             desc = "Deep goodwill and spiritual integrity, but lacks physical muscle. Provides peace, but limited worldly output."
             color = "#4f46e5"
             bg = "#eef2ff"
@@ -291,6 +295,7 @@ def classify_graha_archetype(
             archetype = "The Pragmatic Executive"
             badge = "⚒️ Pragmatic Executive"
             tier = "Tireless Champion"
+            subtext = "Neutral Quality + High Muscle"
             desc = "Unpretentious, highly productive powerhouse. Fulfills duties with tireless endurance and practical mastery."
             color = "#0f766e"
             bg = "#ccfbf1"
@@ -298,6 +303,7 @@ def classify_graha_archetype(
             archetype = "The Dutiful Realist"
             badge = "⚖️ Dutiful Realist"
             tier = "Steady Craftsman"
+            subtext = "Neutral Quality + Balanced Muscle"
             desc = "Pragmatic and balanced; operates without drama or malice. Delivers solid, reliable everyday results."
             color = "#475569"
             bg = "#f1f5f9"
@@ -305,6 +311,7 @@ def classify_graha_archetype(
             archetype = "The Modest Citizen"
             badge = "🌾 Modest Citizen"
             tier = "Quiet Baseline"
+            subtext = "Neutral Quality + Low Muscle"
             desc = "Low-profile and harmless. Operates within familiar routines without seeking grand worldly conquest."
             color = "#a16207"
             bg = "#fef9c3"
@@ -313,6 +320,7 @@ def classify_graha_archetype(
             archetype = "The Armed Dictator"
             badge = "⚔️ Armed Dictator"
             tier = "Severe Hazard"
+            subtext = "Low Quality + High Muscle"
             desc = "Corrupt or rash intent armed with devastating kinetic force. Demands extreme vigilance and conscious discipline."
             color = "#b91c1c"
             bg = "#fee2e2"
@@ -320,6 +328,7 @@ def classify_graha_archetype(
             archetype = "The Embattled Striver"
             badge = "🌪️ Embattled Striver"
             tier = "Strained Fighter"
+            subtext = "Low Quality + Balanced Muscle"
             desc = "Under heavy friction and internal conflict. Requires hard labor and constant caution to avert missteps."
             color = "#c2410c"
             bg = "#ffedd5"
@@ -327,6 +336,7 @@ def classify_graha_archetype(
             archetype = "The Toothless Bully"
             badge = "⛓️ Toothless Bully"
             tier = "Harmless Adversary"
+            subtext = "Low Quality + Low Muscle"
             desc = "Strained or hostile intent, but powerless and behind bars. Petty irritations without lasting material ruin."
             color = "#854d0e"
             bg = "#fef3c7"
@@ -335,7 +345,9 @@ def classify_graha_archetype(
         "archetype": archetype,
         "badge": badge,
         "tier": tier,
+        "subtext": subtext,
         "description": desc,
+        "desc": desc,
         "color": color,
         "bg": bg,
         "is_high_dignity": is_high_dig,
@@ -579,6 +591,14 @@ def calculate_graha_vitality(
             effective_dignity = dignity_pct
         effective_shadbala = planet_shadbala_pct
 
+    rescue_class = "neutral"
+    if host_dignity_pct >= 85.0:
+        rescue_class = "exalt"
+    elif host_dignity_pct >= 65.0:
+        rescue_class = "own"
+    elif host_dignity_pct < 40.0:
+        rescue_class = "debil"
+
     # Neutral Sign Tilting (Sama Kshetra)
     if "neutral" in dignity_name.lower() or "sama" in dignity_name.lower() or (35.0 <= dignity_pct <= 50.0):
         if net_drishti_virupas > 0:
@@ -604,7 +624,8 @@ def calculate_graha_vitality(
     m_ratio = effective_shadbala / 100.0  # 1.0 = baseline (100%)
 
     if is_rescued:
-        base_vit = 7.5 + (m_ratio - 1.0) * 0.8
+        base_vit = 5.5 + (q_norm - 5.5) * 0.8 + (m_ratio - 1.0) * 1.0 + 0.5
+        base_vit = clamp(base_vit, 4.5, 9.0)
     elif q_norm >= 5.5:
         base_vit = 5.5 + (q_norm - 5.5) * 0.8 + (m_ratio - 1.0) * 1.2
     elif q_norm >= 3.5:
@@ -763,12 +784,10 @@ def calculate_graha_vitality(
 
     env_mod = clamp(drishti_mod + conj_mod, -1.2, 1.2)
 
-    # 6. Motional Modifiers
-    mot_mod = 0.0
-    if is_retrograde and planet in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
-        mot_mod += 0.3
-    if is_combust:
-        mot_mod -= 0.5
+    # 6. Motional & Light Modifiers (ADR-009: Decouple retrograde double-counting)
+    # Retrograde is omitted here because Cheshta Bala in Shadbala natively accounts for motional horsepower.
+    combust_mod = -0.50 if is_combust else 0.0
+    mot_mod = combust_mod
 
     # 7. Planetary War (Graha Yuddha) Modifier
     war_mod = 0.0
@@ -781,25 +800,27 @@ def calculate_graha_vitality(
         if not war_badge:
             war_badge = f"🏆 War Victor (Combat Stain: {war_opponent})" if war_opponent else "🏆 War Victor"
 
-    # 8. Psychological Feeling State (Lajjitadi)
+    # 8. Psychological Feeling State (Lajjitadi - ADR-009)
+    # Expressed primarily as qualitative badges, narrative interpretations, and neutral sign dynamic tilts.
+    # A gentle qualitative mood tint is applied (+/- 0.15 max) without heavy additive stacking on top of conjunctions/aspects.
     psy_mod = 0.0
     has_garvita = False
     for item in lajjitadi_states:
         st = (item.get("state", "") if isinstance(item, dict) else str(item)).lower()
         if "garvita" in st:
             has_garvita = True
-            psy_mod += 0.35
+            psy_mod += 0.15
         elif "mudita" in st:
-            psy_mod += 0.30
+            psy_mod += 0.15
         elif "kshudhita" in st:
-            psy_mod -= 0.35
+            psy_mod -= 0.15
         elif "kshobhita" in st:
-            psy_mod -= 0.25
+            psy_mod -= 0.10
         elif "lajjita" in st:
-            psy_mod -= (0.20 if has_garvita else 0.45)
+            psy_mod -= (0.10 if has_garvita else 0.15)
         elif "trushita" in st:
-            psy_mod -= 0.20
-    psy_mod = clamp(psy_mod, -1.0, 1.0)
+            psy_mod -= 0.10
+    psy_mod = clamp(psy_mod, -0.20, 0.20)
 
     # 9. Ascendant Functional Role Integration
     if functional_role is None and lagna_sign in ZODIAC_SIGNS:
@@ -823,6 +844,7 @@ def calculate_graha_vitality(
             quad["tier"] = "Ideological Mobilizer"
             quad["badge"] = "⚡ Ideological Mobilizer"
             quad["archetype"] = f"{quad['archetype']} (⚡ Ideological Mobilizer)"
+            quad["desc"] = quad["description"]
         elif is_functional_malefic and is_trishadaya and is_vikala:
             quad["description"] = (
                 f"High organizational competence and resource power (rules {functional_role.get('ruled_houses_str', '')}), "
@@ -831,6 +853,7 @@ def calculate_graha_vitality(
             quad["tier"] = "Embattled Executive"
             quad["badge"] = "⚡ Embattled Executive"
             quad["archetype"] = f"{quad['archetype']} (⚡ Embattled Executive)"
+            quad["desc"] = quad["description"]
 
     pre_score = base_vit + env_mod + mot_mod + psy_mod + war_mod + node_mod + vikala_mod
     final_score = 5.0 + (pre_score - 5.0) * (0.6 + 0.4 * efficiency)
@@ -854,6 +877,52 @@ def calculate_graha_vitality(
 
     affliction_badges = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge] if b]
 
+    # Detailed Step-by-Step Calculation Receipt (ADR-009)
+    receipt_lines = [
+        "🧮 VITALITY SCORE CALCULATION RECEIPT",
+        "------------------------------------",
+        f"1. Base Engine:          {base_vit:.1f} ({quad.get('archetype', 'Neutral')})",
+        f"   • Moral Intent / Dignity: {effective_dignity:.1f}% ({dignity_name})",
+        f"   • Kinetic Muscle / Power: {effective_shadbala:.1f}% of required",
+        f"   • Host Dispositor:        {rescue_status}",
+        f"2. Environmental Weather:  {env_mod:+.1f} pts (Aspects & Conjunctions)",
+        f"   • Aspect Vision (Dṛṣṭi):  {drishti_mod:+.1f} pts",
+        f"   • Conjunctions (Yuti):    {conj_mod:+.1f} pts",
+    ]
+    if is_combust:
+        receipt_lines.append(f"   • Combustion (Astangata): {combust_mod:+.1f} pts (Blinded by Sun)")
+    if is_war_winner or is_war_loser:
+        receipt_lines.append(f"   • Planetary War (Yuddha): {war_mod:+.1f} pts ({'Victor' if is_war_winner else 'Defeated'})")
+    if is_guru_chandal or is_guru_ketu or node_mod != 0.0:
+        receipt_lines.append(f"   • Nodal Influence:        {node_mod:+.2f} pts")
+    if is_vikala:
+        receipt_lines.append(f"   • Besieged State (Vikala):{vikala_mod:+.2f} pts (2+ Cruel Planets)")
+    if psy_mod != 0.0:
+        receipt_lines.append(f"   • Psychological State:    {psy_mod:+.2f} pts (Lajjitādi Mood)")
+    receipt_lines.extend([
+        f"3. Biological Efficiency:   {baladi['efficiency_pct']}% ({baladi['state']} stage)",
+        "------------------------------------",
+        f"★ Final Actualized Vitality: ★ {final_score:.1f} / 10 ({v_tier})"
+    ])
+    receipt_text = "\n".join(receipt_lines)
+
+    calculation_receipt = {
+        "base_vitality": round(base_vit, 1),
+        "effective_dignity_pct": round(effective_dignity, 1),
+        "effective_shadbala_pct": round(effective_shadbala, 1),
+        "env_mod": round(env_mod, 1),
+        "drishti_mod": round(drishti_mod, 1),
+        "conj_mod": round(conj_mod, 1),
+        "combust_mod": round(combust_mod, 1),
+        "war_mod": round(war_mod, 1),
+        "node_mod": round(node_mod, 2),
+        "vikala_mod": round(vikala_mod, 2),
+        "psy_mod": round(psy_mod, 2),
+        "efficiency_pct": baladi["efficiency_pct"],
+        "final_score": final_score,
+        "receipt_text": receipt_text
+    }
+
     return {
         "vitality_score": final_score,
         "vitality_tier": v_tier,
@@ -862,7 +931,9 @@ def calculate_graha_vitality(
         "effective_dignity_pct": round(effective_dignity, 1),
         "effective_shadbala_pct": round(effective_shadbala, 1),
         "rescue_status": rescue_status,
+        "rescue_desc": rescue_status,
         "rescue_badge": rescue_badge,
+        "rescue_class": rescue_class,
         "is_rescued": is_rescued,
         "is_neecha_bhanga": is_rescued,
         "baladi": baladi,
@@ -870,6 +941,7 @@ def calculate_graha_vitality(
         "base_vitality": round(base_vit, 1),
         "env_mod": round(env_mod, 1),
         "mot_mod": round(mot_mod, 1),
+        "combust_mod": round(combust_mod, 1),
         "psy_mod": round(psy_mod, 1),
         "war_mod": round(war_mod, 1),
         "node_mod": round(node_mod, 2),
@@ -887,7 +959,8 @@ def calculate_graha_vitality(
         "war_opponent": war_opponent,
         "war_badge": war_badge,
         "aspect_details": processed_aspect_details,
-        "conjunction_details": processed_conjunction_details
+        "conjunction_details": processed_conjunction_details,
+        "calculation_receipt": calculation_receipt
     }
 
 
@@ -1498,6 +1571,7 @@ def calculate_planetary_evaluation(
             "vitality": vit_res,
             "vitality_score": vit_res["vitality_score"],
             "vitality_tier": vit_res["vitality_tier"],
+            "calculation_receipt": vit_res.get("calculation_receipt", {}),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),
             "is_vikala": vit_res.get("is_vikala", False),
