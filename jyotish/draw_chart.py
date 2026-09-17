@@ -822,8 +822,9 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
         
         c_dx, c_dy, s_dx, s_dy = quadrant_map[sign]
         
+        h_num = (signs_list.index(sign) - anchor_index + 12) % 12 + 1
         # Background hit rect for interactive sign selection and highlighting
-        svg += f'<rect class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" x="{x}" y="{y}" width="100" height="100" fill="transparent" style="cursor: pointer;"><title>{sign} (Zodiac Sign)</title></rect>\n'
+        svg += f'<rect class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h_num}" x="{x}" y="{y}" width="100" height="100" fill="transparent" style="cursor: pointer;"><title>House {h_num} ({sign})</title></rect>\n'
 
         # Draw Rasi Sign (Inner Corner)
         s_sym, s_col, _ = sign_symbols[sign]
@@ -1018,7 +1019,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         s_sym, s_col, _ = sign_symbols[sign]
         
         # Background hit polygon for interactive sign selection and highlighting
-        svg += f'<polygon class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" points="{ni_polys[h]}" fill="transparent" style="cursor: pointer;"><title>{sign} (Zodiac Sign)</title></polygon>\n'
+        svg += f'<polygon class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h + 1}" points="{ni_polys[h]}" fill="transparent" style="cursor: pointer;"><title>House {h + 1} ({sign})</title></polygon>\n'
 
         sx, sy = sign_pos[h]
         svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
@@ -1147,6 +1148,21 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
         (375, 255), (225, 200), (375, 145), (255, 25)
     ]
     
+    ni_polys = [
+        "200,0 100,100 200,200 300,100",  # H1 (top diamond)
+        "0,0 200,0 100,100",              # H2 (top left triangle)
+        "0,0 100,100 0,200",              # H3 (left top triangle)
+        "0,200 100,100 200,200 100,300",  # H4 (left diamond)
+        "0,200 100,300 0,400",            # H5 (left bottom triangle)
+        "0,400 100,300 200,400",          # H6 (bottom left triangle)
+        "200,200 100,300 200,400 300,300",# H7 (bottom diamond)
+        "200,400 300,300 400,400",        # H8 (bottom right triangle)
+        "400,400 300,300 400,200",        # H9 (right bottom triangle)
+        "200,200 300,100 400,200 300,300",# H10 (right diamond)
+        "400,200 300,100 400,0",          # H11 (right top triangle)
+        "400,0 300,100 200,0"             # H12 (top right triangle)
+    ]
+    
     for h_idx in range(12):
         cx, cy = ni_centers[h_idx]
         bhava = bhavas[h_idx]
@@ -1154,6 +1170,8 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
         cusp_lon = bhava["cusp"]
         sign_idx = int(cusp_lon // 30)
         s_sym, s_col, _ = sign_symbols[signs_list[sign_idx]]
+        
+        svg += f'<polygon class="interactive sign-cell-bg" data-type="sign" data-id="{signs_list[sign_idx]}" data-house="{h_idx + 1}" points="{ni_polys[h_idx]}" fill="transparent" style="cursor: pointer;"><title>House {h_idx + 1} ({signs_list[sign_idx]})</title></polygon>\n'
         
         sx, sy = sign_pos[h_idx]
         svg += f'<text class="interactive" data-type="sign" data-id="{signs_list[sign_idx]}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'

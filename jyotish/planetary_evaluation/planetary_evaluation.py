@@ -907,6 +907,32 @@ def calculate_graha_vitality(
     ])
     receipt_text = "\n".join(receipt_lines)
 
+    # Calculate equation parts representing the mathematical breakdown of vitality_score
+    scale = 0.6 + 0.4 * efficiency
+    env_part = round(env_mod * scale, 2)
+    combust_part = round(combust_mod * scale, 2)
+    war_part = round(war_mod * scale, 2)
+    node_part = round(node_mod * scale, 2)
+    vikala_part = round(vikala_mod * scale, 2)
+    psy_part = round(psy_mod * scale, 2)
+
+    parts = {}
+    if env_part != 0:
+        parts["environmental_weather"] = env_part
+    if combust_part != 0:
+        parts["combustion"] = combust_part
+    if war_part != 0:
+        parts["planetary_war"] = war_part
+    if node_part != 0:
+        parts["nodal_influence"] = node_part
+    if vikala_part != 0:
+        parts["besieged_vikala"] = vikala_part
+    if psy_part != 0:
+        parts["psychological_state"] = psy_part
+
+    base_part = round(final_score - sum(parts.values()), 2)
+    equation_parts = {"base_engine": base_part, **parts}
+
     calculation_receipt = {
         "base_vitality": round(base_vit, 1),
         "effective_dignity_pct": round(effective_dignity, 1),
@@ -921,6 +947,7 @@ def calculate_graha_vitality(
         "psy_mod": round(psy_mod, 2),
         "efficiency_pct": baladi["efficiency_pct"],
         "final_score": final_score,
+        "equation_parts": equation_parts,
         "receipt_text": receipt_text
     }
 
@@ -929,6 +956,7 @@ def calculate_graha_vitality(
         "vitality_tier": v_tier,
         "vitality_bg": v_bg,
         "vitality_col": v_col,
+        "equation_parts": equation_parts,
         "effective_dignity_pct": round(effective_dignity, 1),
         "effective_shadbala_pct": round(effective_shadbala, 1),
         "rescue_status": rescue_status,
@@ -1591,6 +1619,7 @@ def calculate_planetary_evaluation(
             "vitality": vit_res,
             "vitality_score": vit_res["vitality_score"],
             "vitality_tier": vit_res["vitality_tier"],
+            "equation_parts": vit_res.get("equation_parts", {}),
             "calculation_receipt": vit_res.get("calculation_receipt", {}),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),

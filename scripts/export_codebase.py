@@ -28,7 +28,7 @@ import argparse
 import re
 
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
-DEFAULT_MAX_SIZE_MB = 1.2
+DEFAULT_MAX_SIZE_MB = 1.35
 
 EXCLUDED_DIRS = {
     ".git",
@@ -91,6 +91,7 @@ EXCLUDED_FILES = {
     "screenshot_aspects_interactive.py",
     "screenshot_shivapuri_mars.py",
     "search_krishna_chart.py",
+    "test_diagnostics_edge_cases.py",
     "angelina_jolie_baselines.json",
     "astra_verification_task_list.md",
     "knowledge_base.json",

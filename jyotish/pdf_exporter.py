@@ -12,6 +12,8 @@ Following Ernst Wilhelm's Kala Methodology:
 import os
 import io
 import datetime
+import asyncio
+import concurrent.futures
 from typing import Dict, Any, Optional, List
 from playwright.sync_api import sync_playwright
 
@@ -3178,26 +3180,37 @@ def export_chart_pdf(chart_data: Dict[str, Any], options: Optional[Dict[str, Any
     html = generate_report_html(chart_data, opts)
     subject_name = chart_data.get("subject_info", {}).get("name", "Native")
     
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        vp_width = 1920 if is_a3 else 1280
-        vp_height = 1080 if is_a3 else 1600
-        page = browser.new_page(viewport={"width": vp_width, "height": vp_height})
-        
-        page.set_content(html, wait_until="networkidle")
-        
-        header_tmpl = f'<div style="font-size: 7pt; color: #94a3b8; width: 100%; text-align: right; padding-right: 8mm; font-family: -apple-system, sans-serif;">{subject_name} • Astra Astrological Master Plan</div>'
-        footer_tmpl = '<div style="font-size: 7pt; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 8mm; font-family: -apple-system, sans-serif;"><span>Astra Astrological Computation Engine • Kala Integrated Approach</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
-        
-        pdf_bytes = page.pdf(
-            format=page_size,
-            landscape=is_a3,
-            print_background=True,
-            margin={"top": "8mm", "bottom": "8mm", "left": "8mm", "right": "8mm"},
-            display_header_footer=True,
-            header_template=header_tmpl,
-            footer_template=footer_tmpl
-        )
-        browser.close()
-        
-    return pdf_bytes
+    def _render_pdf():
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            vp_width = 1920 if is_a3 else 1280
+            vp_height = 1080 if is_a3 else 1600
+            page = browser.new_page(viewport={"width": vp_width, "height": vp_height})
+            
+            page.set_content(html, wait_until="networkidle")
+            
+            header_tmpl = f'<div style="font-size: 7pt; color: #94a3b8; width: 100%; text-align: right; padding-right: 8mm; font-family: -apple-system, sans-serif;">{subject_name} • Astra Astrological Master Plan</div>'
+            footer_tmpl = '<div style="font-size: 7pt; color: #94a3b8; width: 100%; display: flex; justify-content: space-between; padding: 0 8mm; font-family: -apple-system, sans-serif;"><span>Astra Astrological Computation Engine • Kala Integrated Approach</span><span>Page <span class="pageNumber"></span> of <span class="totalPages"></span></span></div>'
+            
+            pdf_bytes = page.pdf(
+                format=page_size,
+                landscape=is_a3,
+                print_background=True,
+                margin={"top": "8mm", "bottom": "8mm", "left": "8mm", "right": "8mm"},
+                display_header_footer=True,
+                header_template=header_tmpl,
+                footer_template=footer_tmpl
+            )
+            browser.close()
+            return pdf_bytes
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            return pool.submit(_render_pdf).result()
+    else:
+        return _render_pdf()

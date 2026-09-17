@@ -1190,6 +1190,222 @@
             opacity: 0 !important;
         }
 
+        /* House Classification Pastel Highlights */
+        .sign-cell-bg.house-kendra {
+            fill: rgba(186, 230, 253, 0.45) !important; /* Pastel Sky Blue */
+            stroke: #38bdf8 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-trikona {
+            fill: rgba(254, 240, 138, 0.45) !important; /* Pastel Warm Amber / Gold */
+            stroke: #eab308 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-dusthana {
+            fill: rgba(254, 202, 202, 0.45) !important; /* Pastel Soft Rose */
+            stroke: #f87171 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-upachaya {
+            fill: rgba(187, 247, 208, 0.45) !important; /* Pastel Sage Mint */
+            stroke: #4ade80 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        /* House Overlaps */
+        .sign-cell-bg.house-kendra.house-trikona {
+            fill: rgba(204, 251, 241, 0.55) !important; /* Pastel Teal / Aquamarine */
+            stroke: #0d9488 !important;
+            stroke-width: 2.5px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-dusthana.house-upachaya {
+            fill: rgba(254, 215, 170, 0.5) !important; /* Pastel Soft Peach */
+            stroke: #ea580c !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-kendra.house-upachaya {
+            fill: rgba(199, 210, 254, 0.5) !important; /* Pastel Periwinkle */
+            stroke: #6366f1 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+
+        .chart-house-highlights-bar {
+            padding: 3px 8px;
+            background: #faf6f0;
+            border-bottom: 1px solid #ebd9c8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            gap: 4px;
+            user-select: none;
+        }
+        .house-highlight-btn {
+            padding: 2px 7px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid #d5c8b2;
+            background: #fffdfa;
+            color: #5c4433;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .house-highlight-btn:hover {
+            filter: brightness(0.96);
+            border-color: #bfa88f;
+        }
+        .house-highlight-btn.active {
+            font-weight: 700;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .house-highlight-btn.active[data-category="kendra"] {
+            background: #e0f2fe !important;
+            border-color: #38bdf8 !important;
+            color: #0369a1 !important;
+        }
+        .house-highlight-btn.active[data-category="trikona"] {
+            background: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            color: #92400e !important;
+        }
+        .house-highlight-btn.active[data-category="dusthana"] {
+            background: #fee2e2 !important;
+            border-color: #f87171 !important;
+            color: #991b1b !important;
+        }
+        .house-highlight-btn.active[data-category="upachaya"] {
+            background: #dcfce7 !important;
+            border-color: #4ade80 !important;
+            color: #166534 !important;
+        }
+
+        /* Notes Widget Styling */
+        .notes-widget-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: #fdfbf7;
+            box-sizing: border-box;
+        }
+        .notes-toolbar {
+            padding: 6px 10px;
+            background: #f5ede0;
+            border-bottom: 1px solid #e2d3be;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .notes-filter-btn {
+            padding: 3px 8px;
+            font-size: 10.5px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid #d5c8b2;
+            background: #fffdfa;
+            color: #5c4433;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .notes-filter-btn:hover {
+            background: #f0e6d6;
+        }
+        .notes-filter-btn.active {
+            background: #2563eb;
+            color: #ffffff;
+            border-color: #1d4ed8;
+        }
+        .notes-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+        .notes-card {
+            background: #ffffff;
+            border: 1px solid #e8decb;
+            border-radius: 6px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(92, 68, 51, 0.04);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .notes-card:hover, .notes-card:focus-within {
+            border-color: #c4b097;
+            box-shadow: 0 2px 6px rgba(92, 68, 51, 0.08);
+        }
+        .notes-card.has-notes {
+            border-left: 3.5px solid #0284c7;
+        }
+        .notes-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 8px;
+        }
+        .notes-card-title {
+            font-weight: 700;
+            font-size: 12.5px;
+            color: #3e2d21;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .notes-card-context {
+            font-size: 11px;
+            color: #795548;
+            margin-bottom: 8px;
+            background: #faf6f0;
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid #ede3d3;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+        .notes-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #e0d5c1;
+            border-radius: 4px;
+            padding: 8px 10px;
+            font-size: 12px;
+            line-height: 1.5;
+            font-family: inherit;
+            color: #2c2520;
+            background: #fffdfa;
+            resize: vertical;
+            min-height: 72px;
+            transition: border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+        .notes-textarea:focus {
+            outline: none;
+            border-color: #2563eb;
+            background: #ffffff;
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.12);
+        }
+        .notes-save-badge {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: #16a34a;
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
         /* Harmonic Bi-Wheel Styling */
         .vargottama-beam {
             transition: stroke-width 0.25s ease, opacity 0.25s ease;
@@ -3357,6 +3573,7 @@
         <div class="menu-item" onclick="assignWidget('ashtakavarga')">🔢 Ashtakavarga & Reductions</div>
         <div class="menu-item" onclick="assignWidget('vimshopaka')">⭐ Varga Vimshopaka (20pt)</div>
         <div class="menu-item" onclick="assignWidget('nakshatras')">✨ Nakshatras & Speed</div>
+        <div class="menu-item" onclick="assignWidget('notes')" style="font-weight:bold; color:#0284c7; background:#f0f9ff;">📝 Astrological Notes & Journal</div>
         <div class="menu-item" onclick="assignWidget('empty')">Empty</div>
     </div>
     
@@ -3941,6 +4158,19 @@
                     <button type="button" class="btn-widget-maximize" title="Maximize Chart (Full Screen)" onclick="maximizeChartFromWidget(this)">⛶</button>
                 </div>
             </div>
+            <div class="chart-house-highlights-bar">
+                <div style="display: flex; align-items: center; gap: 4px; overflow-x: auto;">
+                    <span style="font-weight: 700; color: #795548; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.5px;">Houses:</span>
+                    <button type="button" class="house-highlight-btn btn-highlight-kendra" data-category="kendra" onclick="toggleHouseHighlight(this, 'kendra')" title="Kendras (Angles: 1, 4, 7, 10) — Pillars of Action, Stability & Manifestation">🏛️ Kendra (1,4,7,10)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-trikona" data-category="trikona" onclick="toggleHouseHighlight(this, 'trikona')" title="Trikonas (Trines: 1, 5, 9) — Auspicious Fortune, Dharma & Grace">🌟 Trikona (1,5,9)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-dusthana" data-category="dusthana" onclick="toggleHouseHighlight(this, 'dusthana')" title="Dusthanas (Difficult: 6, 8, 12) — Challenges, Debts, Transformation & Release">⚡ Dusthana (6,8,12)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-upachaya" data-category="upachaya" onclick="toggleHouseHighlight(this, 'upachaya')" title="Upachayas (Growth: 3, 6, 10, 11) — Effort & Improvement Over Time">📈 Upachaya (3,6,10,11)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-clear" onclick="clearHouseHighlights(this)" title="Clear all house highlights" style="display: none; color: #dc2626; border-color: #fca5a5; background: #fff1f2;">✕ Clear</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="house-highlight-btn btn-open-notes" onclick="openNotesFromChart(this)" title="Open Astrological Notes & Journal for this native" style="background: #f0f9ff; border-color: #bae6fd; color: #0369a1; font-weight: bold;">📝 Notes</button>
+                </div>
+            </div>
             <div class="chart-stage" style="flex:1; position:relative; overflow:hidden; display:flex; width:100%;">
                 <div class="widget-chart-zoom-badge" title="Chart Zoom & Pan (Wheel to zoom, Shift+drag or middle-click to pan, double-click to reset)">
                     <button type="button" class="widget-zoom-btn" onclick="zoomWidgetChartFromBtn(this, -0.15)" title="Zoom Out (or wheel down)">−</button>
@@ -4188,7 +4418,7 @@
                                 <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 140px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody id="master-diagnostic-tbody" class="master-diagnostic-tbody"></tbody>
                     </table>
                 </div>
             </div>
@@ -4536,6 +4766,53 @@
         </div>
     </template>
 
+    <template id="tmpl-notes">
+        <div class="widget-notes notes-widget-container">
+            <div class="notes-toolbar">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span style="font-weight: bold; font-size: 11.5px; color: #4a3325; display: flex; align-items: center; gap: 4px;">
+                        <span>📝</span> <span class="notes-native-name">Native Notes</span>
+                    </span>
+                    <div class="notes-filter-pills" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 2px;">
+                        <button type="button" class="notes-filter-btn active" data-filter="all" onclick="filterNotesCategory(this, 'all')" title="Show General Synthesis and All 12 Houses">All</button>
+                        <button type="button" class="notes-filter-btn" data-filter="general" onclick="filterNotesCategory(this, 'general')" title="General Synthesis & Overall Themes">📋 General</button>
+                        <button type="button" class="notes-filter-btn" data-filter="kendra" onclick="filterNotesCategory(this, 'kendra')" title="Kendras (Houses 1, 4, 7, 10)">🏛️ Kendra</button>
+                        <button type="button" class="notes-filter-btn" data-filter="trikona" onclick="filterNotesCategory(this, 'trikona')" title="Trikonas (Houses 1, 5, 9)">🌟 Trikona</button>
+                        <button type="button" class="notes-filter-btn" data-filter="dusthana" onclick="filterNotesCategory(this, 'dusthana')" title="Dusthanas (Houses 6, 8, 12)">⚡ Dusthana</button>
+                        <button type="button" class="notes-filter-btn" data-filter="upachaya" onclick="filterNotesCategory(this, 'upachaya')" title="Upachayas (Houses 3, 6, 10, 11)">📈 Upachaya</button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span class="notes-save-badge" style="opacity: 0.85;">All changes saved ✓</span>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Notes View" onclick="maximizeNotesFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="notes-scroll-area">
+                <!-- General Chart Synthesis Card -->
+                <div class="notes-card general-card" data-category="general">
+                    <div class="notes-card-header">
+                        <div class="notes-card-title">
+                            <span style="color: #0284c7; font-size: 14px;">🌟</span>
+                            <span>Chart Overview & General Synthesis</span>
+                        </div>
+                        <span class="notes-card-status" style="font-size: 10px; color: #64748b; font-weight: 600;">Overall Themes & Remedies</span>
+                    </div>
+                    <div class="notes-card-context notes-general-context">
+                        <span class="context-item context-atmakaraka"><strong>Atmakaraka:</strong> —</span>
+                        <span class="context-item context-lagna-lord"><strong>Lagna Lord:</strong> —</span>
+                        <span class="context-item context-dasha"><strong>Current Daśā:</strong> —</span>
+                    </div>
+                    <textarea class="notes-textarea general-notes-input" placeholder="General chart synthesis, holistic character analysis, core yogas, life trajectory, health remedies, consultation notes..." oninput="handleNoteTyping(this, 'general')"></textarea>
+                </div>
+
+                <!-- 12 Structured House Cards -->
+                <div class="notes-houses-container">
+                    <!-- Populated dynamically by updateNotesWidget -->
+                </div>
+            </div>
+        </div>
+    </template>
+
     <script>
         let allSavedNatives = {{ all_natives | tojson if all_natives is defined else [] }};
         let splitInstance = null;
@@ -4638,7 +4915,7 @@
                 const tmpl = document.getElementById('tmpl-' + widgetType);
                 if (tmpl) {
                     contentDiv.appendChild(tmpl.content.cloneNode(true));
-                    if (widgetType === 'info' || widgetType === 'planetary-evaluation' || widgetType === 'classical-yogas') {
+                    if (widgetType === 'info' || widgetType === 'planetary-evaluation' || widgetType === 'classical-yogas' || widgetType === 'notes') {
                         contentDiv.classList.add('scrollable');
                     } else {
                         contentDiv.classList.remove('scrollable');
@@ -4818,8 +5095,12 @@
                     }
                 }
                 applyWidgetChartZoom(cell);
+                applyHouseHighlights(cell);
                 if (typeof syncAllSteppersUI === 'function') syncAllSteppersUI();
             } 
+            else if (widgetType === 'notes') {
+                updateNotesWidget(cell);
+            }
             else if (widgetType === 'rashi-drishti') {
                 updateRashiDrishtiWidget(cell);
             }
@@ -6763,7 +7044,7 @@
                         `• <strong>Force Intensity:</strong> ${rawV} / 60 Virūpas (${((rawV / 60) * 100).toFixed(0)}% Decisive Force).`;
 
                     return `
-                        <div class="tooltip-target" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 6px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
+                        <div class="tooltip-target aspect-badge-main" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 6px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
                             <div style="display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 10px; color: ${hCol};">
                                 <span>${natIcon} ${aspG} (${rawV}v)</span>
                             </div>
@@ -8150,6 +8431,11 @@
                 updateShadbalaTableWidget();
             });
 
+            // Notes widgets
+            document.querySelectorAll('.grid-cell[data-widget="notes"]').forEach(cell => {
+                updateNotesWidget(cell);
+            });
+
             // Update floating modal if active for master-diagnostic or planetary-evaluation
             const modal = document.getElementById('widgetMaximizeModal');
             if (modal && modal.style.display === 'flex') {
@@ -8169,6 +8455,454 @@
                     if (cont) updateClassicalYogasWidget(cont);
                 }
             }
+        }
+
+        // ==========================================
+        // HOUSE CLASSIFICATION HIGHLIGHTS (Pastel)
+        // ==========================================
+        const HOUSE_CATEGORIES = {
+            kendra: [1, 4, 7, 10],
+            trikona: [1, 5, 9],
+            dusthana: [6, 8, 12],
+            upachaya: [3, 6, 10, 11]
+        };
+
+        function toggleHouseHighlight(btn, category) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            btn.classList.toggle('active');
+            
+            const bar = btn.closest('.chart-house-highlights-bar');
+            const activeCats = [];
+            if (bar) {
+                bar.querySelectorAll('.house-highlight-btn[data-category]').forEach(b => {
+                    if (b.classList.contains('active')) {
+                        activeCats.push(b.dataset.category);
+                    }
+                });
+            }
+            cell.dataset.houseHighlights = JSON.stringify(activeCats);
+            applyHouseHighlights(cell);
+        }
+
+        function clearHouseHighlights(btn) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            const bar = btn.closest('.chart-house-highlights-bar');
+            if (bar) {
+                bar.querySelectorAll('.house-highlight-btn[data-category]').forEach(b => {
+                    b.classList.remove('active');
+                });
+            }
+            cell.dataset.houseHighlights = '[]';
+            applyHouseHighlights(cell);
+        }
+
+        function applyHouseHighlights(cell) {
+            if (!cell) return;
+            let activeCats = [];
+            try {
+                activeCats = JSON.parse(cell.dataset.houseHighlights || '[]');
+            } catch(e) {
+                activeCats = [];
+            }
+            
+            // Sync highlight bar buttons
+            const bar = cell.querySelector('.chart-house-highlights-bar');
+            if (bar) {
+                bar.querySelectorAll('.house-highlight-btn[data-category]').forEach(b => {
+                    const cat = b.dataset.category;
+                    const isActive = activeCats.includes(cat);
+                    b.classList.toggle('active', isActive);
+                });
+                const clearBtn = bar.querySelector('.btn-highlight-clear');
+                if (clearBtn) {
+                    clearBtn.style.display = activeCats.length > 0 ? 'inline-block' : 'none';
+                }
+            }
+            
+            // Update SVG cell backgrounds with pastel classes
+            const bgCells = cell.querySelectorAll('.sign-cell-bg[data-house]');
+            bgCells.forEach(bg => {
+                bg.classList.remove('house-kendra', 'house-trikona', 'house-dusthana', 'house-upachaya');
+                const hNum = parseInt(bg.getAttribute('data-house'), 10);
+                if (!hNum) return;
+                
+                activeCats.forEach(cat => {
+                    if (HOUSE_CATEGORIES[cat] && HOUSE_CATEGORIES[cat].includes(hNum)) {
+                        bg.classList.add(`house-${cat}`);
+                    }
+                });
+            });
+        }
+
+        function openNotesFromChart(btn, targetHouseNum = null) {
+            let notesCell = document.querySelector('.grid-cell[data-widget="notes"]');
+            if (!notesCell) {
+                // Check for empty cell
+                const emptyCell = document.querySelector('.grid-cell[data-widget="empty"]');
+                if (emptyCell) {
+                    notesCell = emptyCell;
+                    assignWidget('notes', notesCell);
+                } else {
+                    const activeCell = btn ? btn.closest('.grid-cell') : currentActiveCell;
+                    if (activeCell) {
+                        notesCell = activeCell;
+                        assignWidget('notes', notesCell);
+                    }
+                }
+            }
+            
+            if (notesCell) {
+                notesCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                if (targetHouseNum) {
+                    setTimeout(() => {
+                        const card = notesCell.querySelector(`.notes-card[data-house="${targetHouseNum}"]`);
+                        if (card) {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            const ta = card.querySelector('textarea');
+                            if (ta) ta.focus();
+                        }
+                    }, 150);
+                }
+            }
+        }
+
+        // ==========================================
+        // ASTROLOGICAL NOTES & JOURNAL SYSTEM
+        // ==========================================
+        const BHAVA_METADATA = {
+            1: { name: "Tanu Bhava", domain: "Self, Physical Body, Vitality & Dharma", categories: ["kendra", "trikona"] },
+            2: { name: "Dhana Bhava", domain: "Wealth, Family, Speech & Resources", categories: [] },
+            3: { name: "Sahaja Bhava", domain: "Siblings, Courage, Initiative & Skills", categories: ["upachaya"] },
+            4: { name: "Sukha / Bandhu Bhava", domain: "Mother, Inner Peace, Home & Vehicles", categories: ["kendra"] },
+            5: { name: "Putra Bhava", domain: "Children, Intellect, Poorva Punya & Creativity", categories: ["trikona"] },
+            6: { name: "Ari / Satru Bhava", domain: "Debts, Diseases, Enemies & Service", categories: ["dusthana", "upachaya"] },
+            7: { name: "Kalatra / Jaya Bhava", domain: "Spouse, Relationships & Partnerships", categories: ["kendra"] },
+            8: { name: "Randhra Bhava", domain: "Longevity, Transformation, Secrets & Vulnerability", categories: ["dusthana"] },
+            9: { name: "Bhagya / Dharma Bhava", domain: "Higher Wisdom, Fortune, Father & Guru", categories: ["trikona"] },
+            10: { name: "Karma Bhava", domain: "Career, Social Status, Action & Authority", categories: ["kendra", "upachaya"] },
+            11: { name: "Labha Bhava", domain: "Gains, Aspirations, Income & Networks", categories: ["upachaya"] },
+            12: { name: "Vyaya Bhava", domain: "Losses, Moksha, Solitude & Foreign Lands", categories: ["dusthana"] }
+        };
+
+        let notesDebounceTimer = null;
+
+        function normalizeNativeNotes(notes) {
+            if (!notes) return { general: "", houses: {} };
+            if (typeof notes === 'string') {
+                const trimmed = notes.trim();
+                if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                    try {
+                        const parsed = JSON.parse(trimmed);
+                        if (parsed && typeof parsed === 'object') {
+                            return { general: parsed.general || "", houses: parsed.houses || {} };
+                        }
+                    } catch(e) {}
+                }
+                return { general: notes, houses: {} };
+            }
+            if (typeof notes === 'object') {
+                return { general: notes.general || "", houses: notes.houses || {} };
+            }
+            return { general: "", houses: {} };
+        }
+
+        function updateNotesWidget(cell) {
+            if (!cell) return;
+            const native = currentLoadedNative;
+            const chart = currentChartData;
+            
+            const nameEl = cell.querySelector('.notes-native-name');
+            if (nameEl) {
+                nameEl.textContent = native ? `Notes: ${native.name}` : "Native Notes";
+            }
+            
+            const notesData = native ? normalizeNativeNotes(native.notes) : { general: "", houses: {} };
+            if (native) native.notes = notesData;
+
+            // 1. General Synthesis Card
+            const genCard = cell.querySelector('.notes-card.general-card');
+            if (genCard) {
+                const genTa = genCard.querySelector('.general-notes-input');
+                if (genTa) {
+                    genTa.value = notesData.general || "";
+                    if (genTa.value.trim().length > 0) genCard.classList.add('has-notes');
+                    else genCard.classList.remove('has-notes');
+                }
+                
+                // General context
+                const akEl = genCard.querySelector('.context-atmakaraka');
+                const lagnaLordEl = genCard.querySelector('.context-lagna-lord');
+                const dashaEl = genCard.querySelector('.context-dasha');
+                
+                if (chart && chart.vargas && chart.vargas.D1) {
+                    const d1 = chart.vargas.D1;
+                    const lagnaSign = d1.lagna ? d1.lagna.sign : "";
+                    const signLords = { 'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon', 'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars', 'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter' };
+                    const lLord = signLords[lagnaSign] || "";
+                    let lLordPlacement = "";
+                    if (lLord && d1.grahas && d1.grahas[lLord]) {
+                        lLordPlacement = `${lLord} in ${d1.grahas[lLord].sign}`;
+                    }
+                    if (lagnaLordEl) lagnaLordEl.innerHTML = `<strong>Lagna Lord:</strong> ${lLordPlacement || lagnaSign || '—'}`;
+                    
+                    // Atmakaraka
+                    let akName = "";
+                    if (chart.karakas && chart.karakas.AK) akName = chart.karakas.AK;
+                    else if (chart.jaimini_karakas && chart.jaimini_karakas.AK) akName = chart.jaimini_karakas.AK;
+                    else if (d1.grahas) {
+                        let maxDeg = -1;
+                        for (const [gName, gData] of Object.entries(d1.grahas)) {
+                            if (['Rahu', 'Ketu', 'Lagna'].includes(gName)) continue;
+                            const deg = (gData.degree || 0) + (gData.minute || 0)/60;
+                            if (deg > maxDeg) { maxDeg = deg; akName = gName; }
+                        }
+                    }
+                    if (akEl) akEl.innerHTML = `<strong>Atmakaraka:</strong> ${akName || '—'}`;
+
+                    // Current Dasha
+                    let curDashaStr = "—";
+                    if (chart.vimshottari_dasha && chart.vimshottari_dasha.mahadashas) {
+                        const now = new Date();
+                        const activeMD = chart.vimshottari_dasha.mahadashas.find(m => {
+                            const s = new Date(m.start);
+                            const e = new Date(m.end);
+                            return now >= s && now <= e;
+                        });
+                        if (activeMD) curDashaStr = `${activeMD.planet} Mahādaśā`;
+                    }
+                    if (dashaEl) dashaEl.innerHTML = `<strong>Current Daśā:</strong> ${curDashaStr}`;
+                }
+            }
+
+            // 2. 12 House Cards
+            const housesContainer = cell.querySelector('.notes-houses-container');
+            if (!housesContainer) return;
+            housesContainer.innerHTML = '';
+
+            const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+            const signLords = { 'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon', 'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars', 'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter' };
+
+            const d1Data = (chart && chart.vargas && chart.vargas.D1) ? chart.vargas.D1 : null;
+            const bhavas = d1Data ? (d1Data.bhavas || []) : [];
+            const d1Grahas = d1Data ? (d1Data.grahas || {}) : {};
+            const d1Lagna = d1Data ? (d1Data.lagna || {}) : {};
+            const lagnaSign = d1Lagna.sign || "Aries";
+            const lagnaIdx = signsList.indexOf(lagnaSign);
+
+            for (let h = 1; h <= 12; h++) {
+                const meta = BHAVA_METADATA[h] || { name: `House ${h}`, domain: "", categories: [] };
+                const bhava = bhavas[h - 1] || null;
+                
+                let signName = "";
+                let cuspDegStr = "";
+                if (bhava && bhava.cusp !== undefined) {
+                    const cLon = bhava.cusp;
+                    const sIdx = Math.floor(cLon / 30);
+                    signName = signsList[sIdx];
+                    const degInSign = cLon % 30;
+                    const d = Math.floor(degInSign);
+                    const m = Math.round((degInSign - d) * 60);
+                    cuspDegStr = `${d}°${m.toString().padStart(2, '0')}'`;
+                } else {
+                    const sIdx = (lagnaIdx + h - 1) % 12;
+                    signName = signsList[sIdx];
+                }
+
+                // Lord of house and placement
+                const lord = signLords[signName] || "";
+                let lordPlacementStr = "";
+                if (lord && d1Grahas[lord]) {
+                    const lData = d1Grahas[lord];
+                    const lSign = lData.sign;
+                    const lH = (signsList.indexOf(lSign) - lagnaIdx + 12) % 12 + 1;
+                    lordPlacementStr = `${lord} in H${lH} (${lSign})`;
+                }
+
+                // Resident planets in this house
+                let residentPlanets = [];
+                if (bhava && Array.isArray(bhava.planets)) {
+                    residentPlanets = bhava.planets;
+                } else if (d1Grahas) {
+                    for (const [pName, pData] of Object.entries(d1Grahas)) {
+                        if (pData.sign === signName) residentPlanets.push(pName);
+                    }
+                }
+                const occupantsStr = residentPlanets.length > 0 ? residentPlanets.join(', ') : 'None';
+
+                // Badges
+                let catBadgesHtml = '';
+                if (meta.categories.includes('kendra')) {
+                    catBadgesHtml += `<span style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Kendra</span> `;
+                }
+                if (meta.categories.includes('trikona')) {
+                    catBadgesHtml += `<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Trikona</span> `;
+                }
+                if (meta.categories.includes('dusthana')) {
+                    catBadgesHtml += `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Dusthana</span> `;
+                }
+                if (meta.categories.includes('upachaya')) {
+                    catBadgesHtml += `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Upachaya</span> `;
+                }
+
+                const existingText = (notesData.houses && notesData.houses[h]) ? notesData.houses[h] : "";
+                const hasNotesClass = existingText.trim().length > 0 ? " has-notes" : "";
+                const writtenBadgeHtml = existingText.trim().length > 0 
+                    ? `<span class="notes-status-badge" style="color:#0284c7; font-size:10px; font-weight:700;">✓ Notes Written</span>` 
+                    : `<span class="notes-status-badge" style="color:#94a3b8; font-size:10px;">Empty</span>`;
+
+                const cardHtml = `
+                    <div class="notes-card house-card${hasNotesClass}" data-house="${h}" data-categories="${meta.categories.join(' ')}">
+                        <div class="notes-card-header">
+                            <div class="notes-card-title">
+                                <span style="background:#4a3325; color:#fffdfa; border-radius:4px; padding:1px 6px; font-size:11px; font-weight:bold;">H${h}</span>
+                                <span>${meta.name}</span>
+                                <span style="font-size:11px; font-weight:normal; color:#78716c;">— ${meta.domain}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                ${catBadgesHtml}
+                                ${writtenBadgeHtml}
+                            </div>
+                        </div>
+                        <div class="notes-card-context">
+                            <span><strong>Cusp:</strong> ${signName} ${cuspDegStr}</span>
+                            <span>•</span>
+                            <span><strong>Lord:</strong> ${lordPlacementStr || lord || '—'}</span>
+                            <span>•</span>
+                            <span><strong>Occupants:</strong> ${occupantsStr}</span>
+                        </div>
+                        <textarea class="notes-textarea house-notes-input" placeholder="Notes, significations, transits, or analysis for House ${h} (${meta.name})..." oninput="handleNoteTyping(this, 'house', ${h})">${existingText}</textarea>
+                    </div>
+                `;
+                housesContainer.insertAdjacentHTML('beforeend', cardHtml);
+            }
+        }
+
+        function handleNoteTyping(textarea, type, houseNum = null) {
+            if (!currentLoadedNative) return;
+            const native = currentLoadedNative;
+            if (!native.notes || typeof native.notes !== 'object') {
+                native.notes = { general: "", houses: {} };
+            }
+            if (!native.notes.houses) native.notes.houses = {};
+
+            const card = textarea.closest('.notes-card');
+            const val = textarea.value;
+
+            if (type === 'general') {
+                native.notes.general = val;
+            } else if (type === 'house' && houseNum) {
+                native.notes.houses[houseNum] = val;
+            }
+
+            if (card) {
+                const statusBadge = card.querySelector('.notes-status-badge');
+                if (val.trim().length > 0) {
+                    card.classList.add('has-notes');
+                    if (statusBadge) {
+                        statusBadge.textContent = '✓ Notes Written';
+                        statusBadge.style.color = '#0284c7';
+                        statusBadge.style.fontWeight = '700';
+                    }
+                } else {
+                    card.classList.remove('has-notes');
+                    if (statusBadge) {
+                        statusBadge.textContent = 'Empty';
+                        statusBadge.style.color = '#94a3b8';
+                        statusBadge.style.fontWeight = 'normal';
+                    }
+                }
+            }
+
+            // Update save status indicator
+            document.querySelectorAll('.notes-save-badge').forEach(b => {
+                b.textContent = 'Saving... ⏳';
+                b.style.color = '#d97706';
+            });
+
+            // Debounce save to server
+            clearTimeout(notesDebounceTimer);
+            notesDebounceTimer = setTimeout(() => {
+                saveNativeNotesToServer(native.id);
+            }, 800);
+        }
+
+        async function saveNativeNotesToServer(nativeId) {
+            if (!nativeId || !currentLoadedNative) return;
+            try {
+                const res = await fetch(`/api/native/${nativeId}/notes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(currentLoadedNative.notes)
+                });
+                if (res.ok) {
+                    document.querySelectorAll('.notes-save-badge').forEach(b => {
+                        b.textContent = 'All changes saved ✓';
+                        b.style.color = '#16a34a';
+                    });
+                } else {
+                    document.querySelectorAll('.notes-save-badge').forEach(b => {
+                        b.textContent = 'Save failed ⚠️';
+                        b.style.color = '#dc2626';
+                    });
+                }
+            } catch(e) {
+                console.error("Error saving notes:", e);
+                document.querySelectorAll('.notes-save-badge').forEach(b => {
+                    b.textContent = 'Save failed ⚠️';
+                    b.style.color = '#dc2626';
+                });
+            }
+        }
+
+        function filterNotesCategory(btn, filterType) {
+            const widget = btn.closest('.widget-notes');
+            if (!widget) return;
+            
+            widget.querySelectorAll('.notes-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const genCard = widget.querySelector('.notes-card.general-card');
+            const houseCards = widget.querySelectorAll('.notes-card.house-card');
+
+            if (filterType === 'all') {
+                if (genCard) genCard.style.display = 'block';
+                houseCards.forEach(c => c.style.display = 'block');
+            } else if (filterType === 'general') {
+                if (genCard) genCard.style.display = 'block';
+                houseCards.forEach(c => c.style.display = 'none');
+            } else {
+                if (genCard) genCard.style.display = 'none';
+                const targets = HOUSE_CATEGORIES[filterType] || [];
+                houseCards.forEach(c => {
+                    const hNum = parseInt(c.dataset.house, 10);
+                    if (targets.includes(hNum)) {
+                        c.style.display = 'block';
+                    } else {
+                        c.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function maximizeNotesFromWidget(btn) {
+            const cell = btn.closest('.grid-cell');
+            if (!cell) return;
+            const content = cell.querySelector('.grid-cell-content');
+            if (!content) return;
+            const modal = document.getElementById('widgetMaximizeModal');
+            const body = document.getElementById('maximizeModalBody');
+            const title = document.getElementById('maximizeModalTitle');
+            if (!modal || !body) return;
+            
+            title.textContent = `📝 Astrological Notes & Journal — ${currentLoadedNative ? currentLoadedNative.name : ''}`;
+            body.innerHTML = '';
+            
+            // Clone notes widget into modal body
+            const clone = content.cloneNode(true);
+            body.appendChild(clone);
+            modal.style.display = 'flex';
         }
 
         let splitInstances = [];

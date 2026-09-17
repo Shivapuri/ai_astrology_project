@@ -337,6 +337,44 @@ def update_native(native_id):
     else:
         return jsonify({"error": "Native not found"}), 404
 
+@app.route('/api/native/<native_id>/notes', methods=['GET'])
+def get_native_notes(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+    raw_notes = native.get("notes", {})
+    if isinstance(raw_notes, str):
+        raw_notes = raw_notes.strip()
+        if raw_notes.startswith('{') and raw_notes.endswith('}'):
+            try:
+                notes = json.loads(raw_notes)
+            except Exception:
+                notes = {"general": raw_notes, "houses": {}}
+        else:
+            notes = {"general": raw_notes, "houses": {}}
+    elif isinstance(raw_notes, dict):
+        notes = raw_notes
+    else:
+        notes = {"general": "", "houses": {}}
+    
+    if "general" not in notes:
+        notes["general"] = ""
+    if "houses" not in notes or not isinstance(notes["houses"], dict):
+        notes["houses"] = {}
+    return jsonify(notes)
+
+@app.route('/api/native/<native_id>/notes', methods=['POST'])
+def save_native_notes(native_id):
+    data = request.json or {}
+    notes_payload = {
+        "general": data.get("general", "") if isinstance(data, dict) else "",
+        "houses": data.get("houses", {}) if isinstance(data, dict) and isinstance(data.get("houses"), dict) else {}
+    }
+    updated = native_manager.update_native(CHARTS_FILE, native_id, {"notes": notes_payload})
+    if updated:
+        return jsonify({"success": True, "notes": updated.get("notes", {})})
+    return jsonify({"error": "Native not found"}), 404
+
 @app.route('/api/delete_native/<native_id>', methods=['POST', 'DELETE'])
 def delete_native(native_id):
     success = native_manager.delete_native(CHARTS_FILE, native_id)
