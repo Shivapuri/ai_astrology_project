@@ -5,7 +5,7 @@
 > **Source Provenance:** [Vedic Astrology Knowledge Vault](file:///Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/vault/) (Ryan Kurczak & Vic DiCara)  
 > **Dossier Directory:** All materials are self-contained in `ascendant_reports/Shivapuri/`  
 > **Master Synthesis Report:** `Ascendant_Interpretation.md` (this dossier)  
-> **Archived Raw Sources:** `raw_sources/` (32 original lecture notes in 6 tier folders)
+> **Archived Raw Sources:** `raw_sources/` (33 original lecture notes in 6 tier folders)
 
 ---
 
@@ -492,6 +492,7 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 * 📄 [Concept 01 - Symbolic Recipes of the Zodiac Signs.md](raw_sources/tier_6_rising_sign_nakshatra/Concept%2001%20-%20Symbolic%20Recipes%20of%20the%20Zodiac%20Signs.md)
 * 📄 [Concept 02 - What is the Zodiac.md](raw_sources/tier_6_rising_sign_nakshatra/Concept%2002%20-%20What%20is%20the%20Zodiac.md)
 * 📄 [Lesson 05 - Leo Rising.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2005%20-%20Leo%20Rising.md)
+* 📄 [Lesson 07 - Sex, Seduction, & Serpents... The Life-Lesson of Ashlesha Nakshatra.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2007%20-%20Sex%2C%20Seduction%2C%20%26%20Serpents...%20The%20Life-Lesson%20of%20Ashlesha%20Nakshatra.md)
 * 📄 [Lesson 10 - Ashlesha Nakshatra Description.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2010%20-%20Ashlesha%20Nakshatra%20Description.md)
 
 ---

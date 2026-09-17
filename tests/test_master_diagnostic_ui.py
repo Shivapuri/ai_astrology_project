@@ -42,28 +42,34 @@ def test_master_diagnostic_table_renders(page: Page):
     table = page.locator("#cell1 .master-diagnostic-table")
     assert table.is_visible()
 
-    # 2. Verify 8 header columns
+    # 2. Verify 9 header columns
     headers = page.locator("#cell1 .master-diagnostic-table thead th")
-    assert headers.count() == 8
+    assert headers.count() == 9
 
     # 3. Verify rows: 1 Lagna row + 9 Graha rows = 10 rows
     rows = page.locator("#cell1 .master-diagnostic-table tbody tr")
     assert rows.count() == 10
 
-    # 4. Verify each row has 8 cells
+    # 4. Verify each row has 9 cells
     for i in range(10):
         cells = rows.nth(i).locator("td")
-        assert cells.count() == 8
+        assert cells.count() == 9
 
     # 5. Check Master Lord badges exist in Cell 1
     master_lord_badges = page.locator("#cell1 .master-diagnostic-table tbody td:first-child .badge")
     assert master_lord_badges.count() >= 1
 
-    # 6. Check Vitality score and receipt in Cell 8
-    cell8_elements = page.locator("#cell1 .master-diagnostic-table tbody td:nth-child(8)")
-    assert cell8_elements.count() == 10
-    first_cell8 = cell8_elements.first.inner_text()
-    assert "★" in first_cell8
+    # 6. Check Nakshatra badge exists in Cell 7
+    cell7_elements = page.locator("#cell1 .master-diagnostic-table tbody td:nth-child(7)")
+    assert cell7_elements.count() == 10
+    first_cell7 = cell7_elements.first.inner_text()
+    assert "Overlord:" in first_cell7
+
+    # 7. Check Vitality score and receipt in Cell 9
+    cell9_elements = page.locator("#cell1 .master-diagnostic-table tbody td:nth-child(9)")
+    assert cell9_elements.count() == 10
+    first_cell9 = cell9_elements.first.inner_text()
+    assert "★" in first_cell9
 
 
 def test_master_diagnostic_varga_switch(page: Page):

@@ -98,6 +98,46 @@ To make the Environmental Vision column instantly readable without being overwhe
 
 ---
 
+### G. Integrating Nakshatra Diagnostics (The "Overlord" Agenda)
+Now that Nakshatra calculations (and the vast repository of vault knowledge) are available, we must integrate this critical layer into the Master Graha Diagnostics table. A planet's Rasi (Sign) shows *where* it is acting, but its Nakshatra shows its **subconscious motivation** and *who* it is secretly working for (the Nakshatra Lord).
+
+To visualize this without cluttering the UI, we will add a new column immediately following the "Environmental Vision (Aspects/Yuti)" column. 
+
+**New Column Header:** **"Subconscious Drive (Nakshatra)"**
+
+**Visual Structure inside the Cell:**
+We will use a clean, 2-line structure to instantly convey the Nakshatra's identity and its planetary Overlord.
+
+*   **Line 1 (The Star & Deity):** The Nakshatra name and its presiding Deity (which defines the core psychological energy, per Vic DiCara).
+*   **Line 2 (The Planetary Overlord):** The planetary ruler of the Nakshatra (which dictates the planet's agenda and Vimshottari timeline, per Ryan Kurczak).
+
+**Example Cell Rendering:**
+```html
+✨ Chitra (Tvashtar)
+↳ Overlord: Mars
+
+✨ Pushya (Brihaspati)
+↳ Overlord: Saturn
+
+✨ Jyeshtha (Indra)
+↳ Overlord: Mercury
+```
+
+**Hover Tooltip (The Deep Dive):**
+When the user hovers over this cell, the tooltip will pull a brief synthesis from the knowledge vault:
+```text
+✨ CHITRA NAKSHATRA
+------------------------------------
+• Deity: Tvashtar (The Divine Architect)
+• Overlord: Mars (Drives the Vimshottari agenda)
+• Nature: Mridu (Soft / Creative)
+• Core Drive: Intellectual design, craftsmanship, and fascinating aesthetic brilliance.
+```
+
+This ensures the user instantly sees who the "Overlord" is at a glance, while keeping the deep astrological meaning hidden safely within the tooltip.
+
+---
+
 ## Implementation Roadmap
 
 1. **Remove Double-Metering in Python:** Clean up `calculate_graha_vitality` by removing redundant modifiers (`mot_mod`, `drishti_mod`, `psy_mod`). Let aspects and avasthas organically affect Dignity and Shadbala without stacking additives.

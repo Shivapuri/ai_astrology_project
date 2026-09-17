@@ -224,7 +224,8 @@ def generate_kala_chart(
     d10_mode: str = "reverse",
     d24_mode: str = "reverse",
     place: str = "",
-    second: int = 0
+    second: int = 0,
+    nakshatra_system: str = "ERNST_DHRUVA"
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -597,70 +598,121 @@ def generate_kala_chart(
                 "lajjitadi": lajjitadi_avastha
             }
 
-    # 3. Equatorial Nakshatras & Galactic Center Ayanamsa
-    flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
-    flags_ecliptic_gc = swe.FLG_SWIEPH
-    
-    # Galactic Center Longitude and RA
-    try:
-        res_gc, name_gc, _ = swe.fixstar2_ut("Galactic Center", jd, flags_equatorial)
-        ra_gc = res_gc[0]
-        res_gc_ecl, _, _ = swe.fixstar2_ut("Galactic Center", jd, flags_ecliptic_gc)
-        lon_gc = res_gc_ecl[0]
-    except Exception:
-        # High-precision defaults if catalogue is not present
-        ra_gc = 266.0371
-        lon_gc = 266.5179
-        
-    # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees (246° 40')
-    ayanamsa_eq = ra_gc - 246.6667
-    ayanamsa_ecl = lon_gc - 246.6667
-    
-    # Get Sidereal positions
+    # 3. Nakshatras & Ayanamsa (ERNST_DHRUVA vs VIC_CHITRA)
     nakshatras_sidereal = {}
     
-    # Lagna is an ECLIPTIC intersection: Kala evaluates its Nakshatra using Ecliptic Ayanamsa
-    sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360.0
-    a_idx = int(sid_lon_asc / 13.3333333)
-    a_pada = int((sid_lon_asc % 13.3333333) / 3.3333333) + 1
-    nakshatras_sidereal["Lagna"] = {
-        "nakshatra": NAKSHATRAS[a_idx],
-        "pada": a_pada,
-        "sidereal_longitude": round(sid_lon_asc, 4),
-        "sidereal_ra": round(sid_lon_asc, 4),
-        "ecliptic_ayanamsa": round(ayanamsa_ecl, 4)
-    }
+    if nakshatra_system == "VIC_CHITRA":
+        # Vic DiCara: Tropical Rasis + Standard Ecliptic Sidereal Nakshatras (Lahiri / Spica)
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+        ayanamsa_lahiri = swe.get_ayanamsa_ut(jd)
+        ayanamsa_eq = ayanamsa_lahiri
+        ayanamsa_ecl = ayanamsa_lahiri
+        ra_gc = 0.0
+        lon_gc = 0.0
 
-    # Physical Grahas & Nodes: Measured along the CELESTIAL EQUATOR (Right Ascension)
-    for p_name, p_id in planet_ids.items():
-        if p_name == "Rahu":
-            res_eq, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_equatorial)
-            ra_planet = res_eq[0]
-        else:
-            res_eq, _ = swe.calc_ut(jd, p_id, flags_equatorial)
-            ra_planet = res_eq[0]
-        
-        sidereal_ra = (ra_planet - ayanamsa_eq) % 360.0
-        
-        if p_name == "Rahu":
-            ra_ketu = (ra_planet + 180.0) % 360.0
-            sid_ra_ketu = (ra_ketu - ayanamsa_eq) % 360.0
-            k_idx = int(sid_ra_ketu / 13.3333333)
-            k_pada = int((sid_ra_ketu % 13.3333333) / 3.3333333) + 1
-            nakshatras_sidereal["Ketu"] = {
-                "nakshatra": NAKSHATRAS[k_idx],
-                "pada": k_pada,
-                "sidereal_ra": round(sid_ra_ketu, 4)
-            }
-            
-        n_idx = int(sidereal_ra / 13.3333333)
-        n_pada = int((sidereal_ra % 13.3333333) / 3.3333333) + 1
-        
-        nakshatras_sidereal[p_name] = {
-            "nakshatra": NAKSHATRAS[n_idx],
-            "pada": n_pada,
-            "sidereal_ra": round(sidereal_ra, 4)
+        # Lagna is an ECLIPTIC intersection: Ecliptic Lahiri Sidereal
+        sid_lon_asc = (asc_lon - ayanamsa_lahiri) % 360.0
+        a_idx = int(sid_lon_asc / (360.0 / 27.0)) % 27
+        a_pada = int((sid_lon_asc % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
+        nakshatras_sidereal["Lagna"] = {
+            "nakshatra": NAKSHATRAS[a_idx],
+            "pada": a_pada,
+            "sidereal_longitude": round(sid_lon_asc, 4),
+            "sidereal_ra": round(sid_lon_asc, 4),
+            "ecliptic_ayanamsa": round(ayanamsa_lahiri, 4)
         }
+
+        # Physical Grahas & Nodes: Ecliptic Sidereal (FLG_SIDEREAL + SIDM_LAHIRI)
+        for p_name, p_id in planet_ids.items():
+            if p_name == "Rahu":
+                res_sid, _ = swe.calc_ut(jd, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
+                sid_lon = res_sid[0] % 360.0
+            else:
+                res_sid, _ = swe.calc_ut(jd, p_id, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
+                sid_lon = res_sid[0] % 360.0
+
+            if p_name == "Rahu":
+                sid_ketu = (sid_lon + 180.0) % 360.0
+                k_idx = int(sid_ketu / (360.0 / 27.0)) % 27
+                k_pada = int((sid_ketu % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
+                nakshatras_sidereal["Ketu"] = {
+                    "nakshatra": NAKSHATRAS[k_idx],
+                    "pada": k_pada,
+                    "sidereal_longitude": round(sid_ketu, 4),
+                    "sidereal_ra": round(sid_ketu, 4)
+                }
+
+            n_idx = int(sid_lon / (360.0 / 27.0)) % 27
+            n_pada = int((sid_lon % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
+
+            nakshatras_sidereal[p_name] = {
+                "nakshatra": NAKSHATRAS[n_idx],
+                "pada": n_pada,
+                "sidereal_longitude": round(sid_lon, 4),
+                "sidereal_ra": round(sid_lon, 4)
+            }
+    else:
+        # Ernst Wilhelm: Equatorial Nakshatras & Galactic Center Ayanamsa
+        flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
+        flags_ecliptic_gc = swe.FLG_SWIEPH
+        
+        # Galactic Center Longitude and RA
+        try:
+            res_gc, name_gc, _ = swe.fixstar2_ut("Galactic Center", jd, flags_equatorial)
+            ra_gc = res_gc[0]
+            res_gc_ecl, _, _ = swe.fixstar2_ut("Galactic Center", jd, flags_ecliptic_gc)
+            lon_gc = res_gc_ecl[0]
+        except Exception:
+            # High-precision defaults if catalogue is not present
+            ra_gc = 266.0371
+            lon_gc = 266.5179
+            
+        # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees (246° 40')
+        ayanamsa_eq = ra_gc - 246.6667
+        ayanamsa_ecl = lon_gc - 246.6667
+        
+        # Lagna is an ECLIPTIC intersection: Kala evaluates its Nakshatra using Ecliptic Ayanamsa
+        sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360.0
+        a_idx = int(sid_lon_asc / 13.3333333)
+        a_pada = int((sid_lon_asc % 13.3333333) / 3.3333333) + 1
+        nakshatras_sidereal["Lagna"] = {
+            "nakshatra": NAKSHATRAS[a_idx],
+            "pada": a_pada,
+            "sidereal_longitude": round(sid_lon_asc, 4),
+            "sidereal_ra": round(sid_lon_asc, 4),
+            "ecliptic_ayanamsa": round(ayanamsa_ecl, 4)
+        }
+
+        # Physical Grahas & Nodes: Measured along the CELESTIAL EQUATOR (Right Ascension)
+        for p_name, p_id in planet_ids.items():
+            if p_name == "Rahu":
+                res_eq, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_equatorial)
+                ra_planet = res_eq[0]
+            else:
+                res_eq, _ = swe.calc_ut(jd, p_id, flags_equatorial)
+                ra_planet = res_eq[0]
+            
+            sidereal_ra = (ra_planet - ayanamsa_eq) % 360.0
+            
+            if p_name == "Rahu":
+                ra_ketu = (ra_planet + 180.0) % 360.0
+                sid_ra_ketu = (ra_ketu - ayanamsa_eq) % 360.0
+                k_idx = int(sid_ra_ketu / 13.3333333)
+                k_pada = int((sid_ra_ketu % 13.3333333) / 3.3333333) + 1
+                nakshatras_sidereal["Ketu"] = {
+                    "nakshatra": NAKSHATRAS[k_idx],
+                    "pada": k_pada,
+                    "sidereal_ra": round(sid_ra_ketu, 4)
+                }
+                
+            n_idx = int(sidereal_ra / 13.3333333)
+            n_pada = int((sidereal_ra % 13.3333333) / 3.3333333) + 1
+            
+            nakshatras_sidereal[p_name] = {
+                "nakshatra": NAKSHATRAS[n_idx],
+                "pada": n_pada,
+                "sidereal_ra": round(sidereal_ra, 4)
+            }
 
     # Calculate Relative Speeds
     d1_speeds = {}
@@ -766,18 +818,36 @@ def generate_kala_chart(
                 )
                 v_data["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
 
-    # 4. Vimshottari Dasha (Full Cycle Timeline based on Equatorial Moon)
-    flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
-    res_moon, _ = swe.calc_ut(jd, swe.MOON, flags_equatorial)
-    moon_sid_ra_precise = (res_moon[0] - ayanamsa_eq) % 360.0
+    # 4. Vimshottari Dasha
+    if nakshatra_system == "VIC_CHITRA":
+        swe.set_sid_mode(swe.SIDM_LAHIRI)
+        res_moon, _ = swe.calc_ut(jd, swe.MOON, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
+        moon_sid_lon = res_moon[0] % 360.0
 
-    dasha_timeline = calculate_vimshottari_timeline(
-        moon_sidereal_ra=moon_sid_ra_precise,
-        birth_jd_local=jd_local,
-        cal_flag=cal_flag,
-        total_cycles=1,
-        dasha_year_days=SAURA_YEAR_DAYS
-    )
+        dasha_timeline = calculate_vimshottari_timeline(
+            moon_sidereal_ra=moon_sid_lon,
+            birth_jd_local=jd_local,
+            cal_flag=cal_flag,
+            total_cycles=1,
+            dasha_year_days=SAURA_YEAR_DAYS,
+            nakshatra_system=nakshatra_system,
+            birth_jd_utc=jd,
+            moon_sidereal_lon=moon_sid_lon
+        )
+    else:
+        flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
+        res_moon, _ = swe.calc_ut(jd, swe.MOON, flags_equatorial)
+        moon_sid_ra_precise = (res_moon[0] - ayanamsa_eq) % 360.0
+
+        dasha_timeline = calculate_vimshottari_timeline(
+            moon_sidereal_ra=moon_sid_ra_precise,
+            birth_jd_local=jd_local,
+            cal_flag=cal_flag,
+            total_cycles=1,
+            dasha_year_days=SAURA_YEAR_DAYS,
+            nakshatra_system=nakshatra_system,
+            birth_jd_utc=jd
+        )
         
     # 5. Shadbala (6-fold strength)
     shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude)
@@ -882,10 +952,13 @@ def generate_kala_chart(
         },
         "calculation_settings": {
             "d10_mode": d10_mode,
-            "d24_mode": d24_mode
+            "d24_mode": d24_mode,
+            "nakshatra_system": nakshatra_system,
+            "ayanamsa_name": "Lahiri / Chitra Paksha" if nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)"
         },
         "astronomy": {
-            "ayanamsa_name": "Dhruva Galactic Center (Middle of Mula)",
+            "nakshatra_system": nakshatra_system,
+            "ayanamsa_name": "Lahiri / Chitra Paksha" if nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)",
             "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
             "ecliptic_ayanamsa_value": round(ayanamsa_ecl, 4),
             "galactic_center_ra": round(ra_gc, 4),
@@ -895,7 +968,8 @@ def generate_kala_chart(
             "julian_day": jd
         },
         "nakshatras": {
-            "zodiac": "Sidereal Equatorial",
+            "zodiac": "Sidereal Ecliptic (Lahiri / Chitra)" if nakshatra_system == "VIC_CHITRA" else "Sidereal Equatorial",
+            "system": nakshatra_system,
             "grahas": nakshatras_sidereal
         },
         "vargas": vargas_data,

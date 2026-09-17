@@ -20,6 +20,7 @@ import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
 from jyotish.planetary_evaluation.lagna_evaluation import evaluate_lagna_vitality
 from jyotish.karakas import calculate_functional_roles
+from jyotish.nakshatra_metadata import get_nakshatra_metadata
 
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -1550,6 +1551,24 @@ def calculate_planetary_evaluation(
             functional_role=fn_role
         )
 
+        # Resolve Nakshatra metadata for Subconscious Drive (Lunar Mansion)
+        p_nak_name = p_d1.get("nakshatra")
+        if not p_nak_name:
+            n_idx = int(p_lon / (360.0 / 27.0)) % 27
+            from jyotish.generate_jyotish import NAKSHATRAS
+            p_nak_name = NAKSHATRAS[n_idx]
+
+        nak_meta = get_nakshatra_metadata(p_nak_name)
+        nak_ruler = p_d1.get("nakshatra_lord") or nak_meta.get("ruler", "Ketu")
+
+        nakshatra_payload = {
+            "name": nak_meta.get("name", p_nak_name),
+            "deity": nak_meta.get("deity", "Universal Divine"),
+            "ruler": nak_ruler,
+            "nature": nak_meta.get("nature", "Sadharana / General"),
+            "core_drive": nak_meta.get("core_drive", "Subconscious motivation and cosmic trajectory.")
+        }
+
         planets_result[p] = {
             "planet": p,
             "glyph": PLANET_GLYPHS.get(p, ""),
@@ -1558,6 +1577,7 @@ def calculate_planetary_evaluation(
             "net_scale_score": clamped_final,
             "expression_mode": expr_mode,
             "expression_class": expr_class,
+            "nakshatra": nakshatra_payload,
             "archetype": {
                 "title": arch_title,
                 "icon": arch_icon,

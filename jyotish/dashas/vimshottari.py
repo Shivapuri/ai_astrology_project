@@ -12,8 +12,12 @@ Ground Truth & Astronomical Authority:
   * Zodiac / Anchor: Moon Sidereal Equatorial Right Ascension (Dhruva Galactic Center, Middle of Mula).
 """
 
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 import swisseph as swe
+
+# Nakshatra Calculation Systems
+NAKSHATRA_SYSTEM_DHRUVA: str = "ERNST_DHRUVA"
+NAKSHATRA_SYSTEM_VIC: str = "VIC_CHITRA"
 
 # 1. Classical Vimshottari Configuration
 DASHA_LORDS: List[str] = [
@@ -85,10 +89,17 @@ def calculate_vimshottari_timeline(
     birth_jd_local: float,
     cal_flag: int = swe.GREG_CAL,
     total_cycles: int = 1,
-    dasha_year_days: float = SAURA_YEAR_DAYS
+    dasha_year_days: float = SAURA_YEAR_DAYS,
+    nakshatra_system: str = NAKSHATRA_SYSTEM_DHRUVA,
+    birth_jd_utc: Optional[float] = None,
+    moon_sidereal_lon: Optional[float] = None
 ) -> Dict[str, Any]:
     """
     Calculates the full Vimshottari Dasa timeline (all Mahadashas and Antardashas).
+
+    Supports two astrological systems:
+    - ERNST_DHRUVA: Dhruva Galactic Center Equatorial Right Ascension (Kala Default).
+    - VIC_CHITRA: Tropical Rasis + Ecliptic Sidereal Lahiri/Chitra (Vic DiCara methodology).
 
     Args:
         moon_sidereal_ra: Moon's Right Ascension in the Sidereal Equatorial frame (0-360°).
@@ -96,6 +107,9 @@ def calculate_vimshottari_timeline(
         cal_flag: Calendar flag (swe.GREG_CAL or swe.JUL_CAL).
         total_cycles: Number of 120-year cycles to compute (default 1).
         dasha_year_days: Number of days in one dasha year (default Saura 365.2422).
+        nakshatra_system: "ERNST_DHRUVA" or "VIC_CHITRA".
+        birth_jd_utc: UTC Julian Day of birth (optional, for VIC_CHITRA computation).
+        moon_sidereal_lon: Moon's Sidereal Longitude in Lahiri frame (optional, for VIC_CHITRA).
 
     Returns:
         Dictionary containing:
@@ -104,13 +118,27 @@ def calculate_vimshottari_timeline(
         - 'mahadashas': List of Mahadasha dictionaries (with nested Antardashas).
         - 'antardashas': Flattened list of all Antardashas across the cycle.
     """
-    # 1. Identify Nakshatra and Mahadasha Lord at birth
-    nak_idx = int(moon_sidereal_ra / NAKSHATRA_SPAN) % 27
+    # 1. Determine Moon position based on nakshatra_system
+    if nakshatra_system == NAKSHATRA_SYSTEM_VIC:
+        # Branch B: VIC_CHITRA (Vic DiCara: Ecliptic Sidereal Lahiri / Chitra)
+        if moon_sidereal_lon is not None:
+            moon_pos = float(moon_sidereal_lon) % 360.0
+        elif birth_jd_utc is not None:
+            swe.set_sid_mode(swe.SIDM_LAHIRI)
+            res_m, _ = swe.calc_ut(birth_jd_utc, swe.MOON, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
+            moon_pos = float(res_m[0]) % 360.0
+        else:
+            moon_pos = float(moon_sidereal_ra) % 360.0
+    else:
+        # Branch A: ERNST_DHRUVA (Ernst Wilhelm: Dhruva Equatorial Right Ascension)
+        moon_pos = float(moon_sidereal_ra) % 360.0
+
+    nak_idx = int(moon_pos / NAKSHATRA_SPAN) % 27
     lord_idx = nak_idx % 9
     birth_md_lord = DASHA_LORDS[lord_idx]
 
     # 2. Elapsed and Remaining Balance in the birth Nakshatra
-    deg_in_nak = moon_sidereal_ra % NAKSHATRA_SPAN
+    deg_in_nak = moon_pos % NAKSHATRA_SPAN
     fraction_passed = deg_in_nak / NAKSHATRA_SPAN
     fraction_left = 1.0 - fraction_passed
 
@@ -206,6 +234,8 @@ def calculate_vimshottari_timeline(
             "fraction_passed": round(fraction_passed, 6),
             "fraction_left": round(fraction_left, 6),
             "birth_jd_local": birth_jd_local,
+            "nakshatra_system": nakshatra_system,
+            "moon_position_used": round(moon_pos, 4),
         },
         "year_length_days": dasha_year_days,
         "mahadashas": mahadashas_list,

@@ -2584,6 +2584,16 @@
                             <span class="menu-check"></span>
                         </div>
                         <div class="menu-separator"></div>
+                        <div class="menu-header-label">Nakshatra System</div>
+                        <div class="menu-row active" data-nakshatra-system="ERNST_DHRUVA" onclick="setNakshatraSystem('ERNST_DHRUVA'); updateMenuCheckmarks();">
+                            <span>Dhruva Equatorial (Ernst Wilhelm)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-nakshatra-system="VIC_CHITRA" onclick="setNakshatraSystem('VIC_CHITRA'); updateMenuCheckmarks();">
+                            <span>Chitra Ecliptic (Vic DiCara)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
                         <div class="menu-header-label">South Indian Display</div>
                         <div class="menu-row active" id="menuRowSiSigns" onclick="toggleSiSignsFromMenu();">
                             <span>Show Signs in Corners</span>
@@ -2877,6 +2887,29 @@
                     <label for="radio-d10-direct">
                         <strong>D10: Contemporary Forward (Vic DiCara / Traditional)</strong>
                         <span class="setting-chip">Counts forward from 9th sign (Vic DiCara interpretation)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4>Nakshatra Calculation Engine</h4>
+                <div style="margin-bottom: 8px; font-size: 11px; color: #6b5a4b;">
+                    Calculation system for lunar mansions, Moon position, and Vimshottari Dasha balance
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-nak-dhruva').click()">
+                    <input type="radio" id="radio-nak-dhruva" name="modalNakMode" value="ERNST_DHRUVA" checked onchange="setNakshatraSystem('ERNST_DHRUVA')">
+                    <label for="radio-nak-dhruva">
+                        <strong>Dhruva Galactic Center / Equatorial (Ernst Wilhelm *)</strong>
+                        <span class="setting-chip">Equatorial Right Ascension anchored to Middle of Mula (Kala Default)</span>
+                    </label>
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-nak-chitra').click()">
+                    <input type="radio" id="radio-nak-chitra" name="modalNakMode" value="VIC_CHITRA" onchange="setNakshatraSystem('VIC_CHITRA')">
+                    <label for="radio-nak-chitra">
+                        <strong>Chitra Paksha / Ecliptic Sidereal (Vic DiCara)</strong>
+                        <span class="setting-chip">Tropical Rasis + Traditional Lahiri Sidereal Nakshatras</span>
                     </label>
                 </div>
             </div>
@@ -4150,6 +4183,7 @@
                                 <th class="tooltip-target" data-tooltip="<strong>Host Dispositor (Bedrock Foundation)</strong><br>• The planetary lord governing the sign where this planet resides.<br>• Provides the bedrock resources and determines whether a debilitated planet receives Neecha Bhanga cancellation / rescue.<br>• Fortified host acts as a savior; strained host creates foundational drag." style="width: 125px; cursor: help;">Host Dispositor (Foundation)</th>
                                 <th class="tooltip-target" data-tooltip="<strong>Kinetic Muscle (Shadbala Horsepower)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Virūpas/Rūpas, % of required minimum threshold, relative chart rank (#1 to #7), and Karmic Fruit (Ishta/Kashta).<br>• For Rahu/Ketu: Inherits proxy muscle via host dispositor." style="width: 125px; cursor: help;">Kinetic Muscle (Shadbala)</th>
                                 <th class="tooltip-target" data-tooltip="<strong>Environmental Vision (Aspects &amp; Yuti)</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign, with conjunction orbs and commanding precedence.<br>• <strong>Dṛṣṭi:</strong> Line-of-sight vision and gaze in Virūpas (Śubha Dṛṣṭi supportive, Pāpa Dṛṣṭi confrontational). Key aspects (&gt; 20v) highlighted with qualitative synthesis.<br>• <strong>Badges:</strong> Graha Yuddha (war), Combustion, and classical nodal/affliction yogas." style="width: 145px; cursor: help;">Environmental Vision (Aspects/Yuti)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Subconscious Drive (Nakshatra)</strong><br>• <strong>Deity:</strong> Presiding Vedic archetype shaping inner motivation.<br>• <strong>Overlord:</strong> Planetary ruler dictating the underlying agenda and Vimshottari timeline.<br>• <strong>Nature &amp; Drive:</strong> Innate temperament and cosmic purpose." style="width: 140px; cursor: help;">Subconscious Drive (Nakshatra)</th>
                                 <th class="tooltip-target" data-tooltip="<strong>Avastha & Biological Age</strong><br>• <strong>Bālādi Avasthās (Phaladeepika 3.10):</strong> Biological age cycle based on degrees in odd vs even signs (Bala infant, Kumara youth, Taruna prime, Pravaya elder, Mrita dormant).<br>• <strong>Lajjitādi Avasthās (BPHS Ch. 45):</strong> 6 emotional feeling states (Mudita delighted, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 135px; cursor: help;">Avastha & Biological Age</th>
                                 <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 140px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
                             </tr>
@@ -4257,6 +4291,7 @@
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Vimshottari Dasa Timeline</span>
                     <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">120 Years</span>
+                    <button type="button" class="btn-nak-toggle" onclick="toggleNakshatraSystem()" style="padding: 1px 6px; font-size: 9.5px; font-weight: 600; border-radius: 3px; border: 1px solid #c4b5fd; background: #ede9fe; color: #5b21b6; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" title="Click to toggle Nakshatra calculation system (Ernst Wilhelm Dhruva Equatorial vs. Vic DiCara Chitra Sidereal)">✨ Dhruva (Ernst)</button>
                 </div>
                 <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
@@ -4758,12 +4793,12 @@
                             // Dynamic biwheel fetch for any custom inner and outer combination
                             const natId = (typeof currentLoadedNative !== 'undefined' && currentLoadedNative && currentLoadedNative.id) || document.getElementById('nativeSelect')?.value || '';
                             const offsetSec = (typeof currentTimeStepperOffset !== 'undefined') ? currentTimeStepperOffset : 0;
-                            const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${offsetSec}`;
+                            const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${currentNakshatraSystem}_${offsetSec}`;
                             if (window.biwheelDynamicCache && window.biwheelDynamicCache[cacheKey]) {
                                 b.innerHTML = window.biwheelDynamicCache[cacheKey];
                             } else if (natId) {
                                 if (!window.biwheelDynamicCache) window.biwheelDynamicCache = {};
-                                const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&offset_seconds=${offsetSec}`;
+                                const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&nakshatra_system=${currentNakshatraSystem}&offset_seconds=${offsetSec}`;
                                 fetch(url)
                                     .then(res => res.json())
                                     .then(data => {
@@ -5734,6 +5769,64 @@
             "Great Enemy": "Faces intense friction, discomfort, and active opposition; high karmic resistance demands resilience.",
             "Debilitated": "Having hit rock bottom, outer worldly confidence is depleted, urging the native to cultivate humble, non-material inner strengths."
         };
+
+        const NAKSHATRA_DATA = {
+            "Ashwini": { name: "Ashwini", deity: "Ashwini Kumaras", ruler: "Ketu", nature: "Laghu / Light & Swift", core_drive: "Swift healing, pioneering initiative, and vitality restoration." },
+            "Bharani": { name: "Bharani", deity: "Yama", ruler: "Venus", nature: "Ugra / Fierce & Severe", core_drive: "Bearing cosmic burdens, radical transformation, and enduring restraint." },
+            "Krittika": { name: "Krittika", deity: "Agni", ruler: "Sun", nature: "Mishra / Mixed (Sharp & Soft)", core_drive: "Purifying fire, cutting through illusions, and digestive power." },
+            "Rohini": { name: "Rohini", deity: "Prajapati", ruler: "Moon", nature: "Sthira / Fixed & Enduring", core_drive: "Fertile growth, sensory beauty, charm, and artistic creation." },
+            "Mrigashira": { name: "Mrigashira", deity: "Soma", ruler: "Mars", nature: "Mridu / Soft & Gentle", core_drive: "Restless searching, seeking spiritual nectar, and gentle curiosity." },
+            "Ardra": { name: "Ardra", deity: "Rudra", ruler: "Rahu", nature: "Tikshna / Sharp & Dreadful", core_drive: "Cathartic storms, emotional breakthrough, and overcoming suffering." },
+            "Punarvasu": { name: "Punarvasu", deity: "Aditi", ruler: "Jupiter", nature: "Chara / Movable & Ephemeral", core_drive: "Renewal of light, restorative sanctuary, and return of goodness." },
+            "Pushya": { name: "Pushya", deity: "Brihaspati", ruler: "Saturn", nature: "Laghu / Light & Nurturing", core_drive: "Spiritual nourishment, wisdom cultivation, and ethical protection." },
+            "Ashlesha": { name: "Ashlesha", deity: "Sarpas", ruler: "Mercury", nature: "Tikshna / Sharp & Dreadful", core_drive: "Kundalini awakening, intuitive perception, and psychological defense." },
+            "Magha": { name: "Magha", deity: "Pitris", ruler: "Ketu", nature: "Ugra / Fierce & Severe", core_drive: "Ancestral honor, regal authority, tradition, and lineage pride." },
+            "Purva Phalguni": { name: "Purva Phalguni", deity: "Bhaga", ruler: "Venus", nature: "Ugra / Fierce & Severe", core_drive: "Creative recreation, marital affection, passion, and gracious living." },
+            "Uttara Phalguni": { name: "Uttara Phalguni", deity: "Aryaman", ruler: "Sun", nature: "Sthira / Fixed & Enduring", core_drive: "Noble contracts, benevolent leadership, and lasting social alliances." },
+            "Hasta": { name: "Hasta", deity: "Savitar", ruler: "Moon", nature: "Laghu / Light & Swift", core_drive: "Dexterous craftsmanship, skillful hands, healing, and manifest detail." },
+            "Chitra": { name: "Chitra", deity: "Tvashtar", ruler: "Mars", nature: "Mridu / Soft", core_drive: "Intellectual design and craftsmanship." },
+            "Swati": { name: "Swati", deity: "Vayu", ruler: "Rahu", nature: "Chara / Movable & Ephemeral", core_drive: "Independent movement, flexible diplomacy, and freedom of expression." },
+            "Vishakha": { name: "Vishakha", deity: "Indragni", ruler: "Jupiter", nature: "Mishra / Mixed (Sharp & Soft)", core_drive: "Single-pointed ambition, focused triumph, and overcoming hurdles." },
+            "Anuradha": { name: "Anuradha", deity: "Mitra", ruler: "Saturn", nature: "Mridu / Soft & Tender", core_drive: "Devotional allegiance, harmonious fellowship, and organizational loyalty." },
+            "Jyeshtha": { name: "Jyeshtha", deity: "Indra", ruler: "Mercury", nature: "Tikshna / Sharp & Dreadful", core_drive: "Elder guardianship, protective sovereignty, and safeguarding status." },
+            "Mula": { name: "Mula", deity: "Nirriti", ruler: "Ketu", nature: "Tikshna / Sharp & Dreadful", core_drive: "Root investigation, shattering superficiality, and transformative truth." },
+            "Purva Ashadha": { name: "Purva Ashadha", deity: "Apas", ruler: "Venus", nature: "Ugra / Fierce & Severe", core_drive: "Invincible confidence, purifying renewal, and unyielding conviction." },
+            "Uttara Ashadha": { name: "Uttara Ashadha", deity: "Vishvedevas", ruler: "Sun", nature: "Sthira / Fixed & Enduring", core_drive: "Universal integrity, permanent achievement, and righteous victory." },
+            "Shravana": { name: "Shravana", deity: "Vishnu", ruler: "Moon", nature: "Chara / Movable & Ephemeral", core_drive: "Attentive listening, oral tradition transmission, and preservation of order." },
+            "Dhanishtha": { name: "Dhanishtha", deity: "Vasus", ruler: "Mars", nature: "Chara / Movable & Ephemeral", core_drive: "Rhythmic harmony, material abundance, fame, and orchestral coordination." },
+            "Shatabhisha": { name: "Shatabhisha", deity: "Varuna", ruler: "Rahu", nature: "Chara / Movable & Ephemeral", core_drive: "Secret healing, 100 remedies, veiled contemplation, and cosmic laws." },
+            "Purva Bhadrapada": { name: "Purva Bhadrapada", deity: "Aja Ekapada", ruler: "Jupiter", nature: "Ugra / Fierce & Severe", core_drive: "Ascetic tapas, intense purification, and spiritual zeal." },
+            "Uttara Bhadrapada": { name: "Uttara Bhadrapada", deity: "Ahirbudhnya", ruler: "Saturn", nature: "Sthira / Fixed & Enduring", core_drive: "Deep ocean stability, serene wisdom, and grounded contemplation." },
+            "Revati": { name: "Revati", deity: "Pushan", ruler: "Mercury", nature: "Mridu / Soft & Gentle", core_drive: "Gentle nourishment, safe guidance of journeys, and spiritual release." }
+        };
+
+        function renderNakshatraCell(nakName, deity, ruler, nature, coreDrive) {
+            const rawName = String(nakName || '—');
+            const cleanUpper = rawName.toUpperCase();
+            const receiptText = `✨ ${cleanUpper}\n------------------------------------\n• Deity: ${deity || '—'}\n• Overlord: ${ruler || '—'} (Drives the underlying agenda)\n• Nature: ${nature || '—'}\n• Core Drive: ${coreDrive || 'Subconscious motivation and cosmic trajectory.'}`;
+            const escReceipt = receiptText
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/\n/g, '<br>');
+            const tooltipHtml = `<div style="font-family:monospace; font-size:10.5px; line-height:1.4; text-align:left;">${escReceipt}</div>`;
+
+            function escAttr(str) {
+                if (!str) return '';
+                return String(str).replace(/"/g, '&quot;');
+            }
+
+            return `
+                <div class="tooltip-target" data-tooltip="${escAttr(tooltipHtml)}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
+                    <div>
+                        <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:10px; padding:2px 6px;">✨ ${rawName} (${deity || '—'})</span>
+                    </div>
+                    <div style="font-size:11px; color:#64748b; padding-left:2px;">
+                        ↳ Overlord: <strong style="color:#475569;">${ruler || '—'}</strong>
+                    </div>
+                </div>
+            `;
+        }
 
         function updateMasterDiagnosticWidget(cell) {
             if (!cell) {
@@ -6938,6 +7031,15 @@
                 const lgPowerTip = `<strong>Lagna Vitality & Muscle Engine</strong><br>• <strong>Captain's Shadbala:</strong> ${sbVir} Virūpas (${sbPct !== null ? sbPct + '%' : '--'} of required, Rank #${sbRank || '--'}).<br>• <strong>Horizon Sky-Light:</strong> Net ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas (Benefic: +${c1Plus.toFixed(1)}, Malefic: -${c1Minus.toFixed(1)}).`;
                 const lgInfluencesTip = `<strong>Horizon Influences & Aspects</strong><br>• <strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lagnaConj.join(', ') : 'None (clean horizon)'}.<br>• <strong>Net Dṛṣṭi:</strong> ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas.<br>• <strong>Enclosure:</strong> ${kartariType}.`;
                 const lgAvasthaTip = `<strong>Lagna Bālādi Avasthā & Lord Field</strong><br>• <strong>Biological Age:</strong> ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency).<br>• <strong>Term:</strong> ${lgBaladi.sanskrit_term}.<br>• <strong>Lord in House:</strong> Whole Sign H${lordWHouse}${lordCHouse !== lordWHouse ? ' (Campanus Bhava ' + lordCHouse + ')' : ''}.`;
+                const lgRawNak = (naks["Lagna"] && naks["Lagna"].nakshatra) || (v_lagna && v_lagna.nakshatra) || '';
+                const lgMeta = NAKSHATRA_DATA[lgRawNak] || {};
+                const lgNakName = lgMeta.name || lgRawNak || '—';
+                const lgNakDeity = lgMeta.deity || '—';
+                const lgNakRuler = (naks["Lagna"] && naks["Lagna"].nakshatra_lord) || lgMeta.ruler || '—';
+                const lgNakNature = lgMeta.nature || '—';
+                const lgNakDrive = lgMeta.core_drive || 'Rising subconscious orientation and vital lens.';
+                const lgNakshatraCellHtml = renderNakshatraCell(lgNakName, lgNakDeity, lgNakRuler, lgNakNature, lgNakDrive);
+
                 const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>• <strong>Archetype:</strong> ${lagnaArchetype}<br>• <strong>Verdict:</strong> ${lagnaVerdict}`;
 
                 tbody.innerHTML += `
@@ -6993,6 +7095,9 @@
                                     ${lagnaDrishtiHtml}
                                 </div>
                             </div>
+                        </td>
+                        <td>
+                            ${lgNakshatraCellHtml}
                         </td>
                         <td>
                             <div class="tooltip-target" data-tooltip="${lgAvasthaTip}" style="cursor:help;">
@@ -7666,6 +7771,16 @@
                     </div>
                 `;
 
+                const pEval = (peData.planets && peData.planets[graha]) || {};
+                const pNak = pEval.nakshatra || {};
+                const nFallback = NAKSHATRA_DATA[pNak.name || (naks[graha] && naks[graha].nakshatra) || ''] || {};
+                const nakName = pNak.name || nFallback.name || (naks[graha] && naks[graha].nakshatra) || '—';
+                const nakDeity = pNak.deity || nFallback.deity || '—';
+                const nakRuler = pNak.ruler || nFallback.ruler || (naks[graha] && naks[graha].nakshatra_lord) || '—';
+                const nakNature = pNak.nature || nFallback.nature || '—';
+                const nakCoreDrive = pNak.core_drive || nFallback.core_drive || 'Subconscious motivation and cosmic trajectory.';
+                const nakshatraCellHtml = renderNakshatraCell(nakName, nakDeity, nakRuler, nakNature, nakCoreDrive);
+
                 const grahaTip = grahaArchetypes[graha] || `<strong>${graha}</strong>`;
 
                 tbody.innerHTML += `
@@ -7701,6 +7816,9 @@
                         </td>
                         <td>
                             ${influencesHtml}
+                        </td>
+                        <td>
+                            ${nakshatraCellHtml}
                         </td>
                         <td>
                             ${avasthasCellHtml}
@@ -9113,6 +9231,40 @@
         let currentSvgs = null;
         let currentD10Mode = localStorage.getItem('astra_d10_mode') || "reverse";
         let currentD24Mode = localStorage.getItem('astra_d24_mode') || "reverse";
+        let currentNakshatraSystem = localStorage.getItem('astra_nakshatra_system') || "ERNST_DHRUVA";
+
+        async function setNakshatraSystem(mode) {
+            if (currentNakshatraSystem === mode) return;
+            currentNakshatraSystem = mode;
+            localStorage.setItem('astra_nakshatra_system', currentNakshatraSystem);
+            syncNakshatraSystemUI();
+            await loadChart();
+        }
+
+        async function toggleNakshatraSystem() {
+            const nextMode = (currentNakshatraSystem === 'ERNST_DHRUVA') ? 'VIC_CHITRA' : 'ERNST_DHRUVA';
+            await setNakshatraSystem(nextMode);
+        }
+
+        function syncNakshatraSystemUI() {
+            const radioDhruva = document.getElementById('radio-nak-dhruva');
+            const radioChitra = document.getElementById('radio-nak-chitra');
+            if (radioDhruva && radioChitra) {
+                if (currentNakshatraSystem === 'VIC_CHITRA') radioChitra.checked = true;
+                else radioDhruva.checked = true;
+            }
+            document.querySelectorAll('.btn-nak-toggle').forEach(btn => {
+                const isVic = (currentNakshatraSystem === 'VIC_CHITRA');
+                btn.innerHTML = isVic ? '✨ Chitra (Vic)' : '✨ Dhruva (Ernst)';
+                btn.style.background = isVic ? '#fdf4ff' : '#ede9fe';
+                btn.style.color = isVic ? '#86198f' : '#5b21b6';
+                btn.style.borderColor = isVic ? '#f0abfc' : '#c4b5fd';
+                btn.title = isVic 
+                    ? 'Chitra Paksha Sidereal Ecliptic (Vic DiCara). Click to switch to Ernst Wilhelm Dhruva Equatorial.'
+                    : 'Dhruva Galactic Center Equatorial (Ernst Wilhelm). Click to switch to Vic DiCara Chitra Sidereal.';
+            });
+            if (typeof updateMenuCheckmarks === 'function') updateMenuCheckmarks();
+        }
 
         async function setD10Mode(mode) {
             if (currentD10Mode === mode) return;
@@ -9160,7 +9312,7 @@
             document.getElementById('loading').style.display = 'block';
             
             try {
-                const response = await fetch(`/api/chart/${id}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}`);
+                const response = await fetch(`/api/chart/${id}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}&nakshatra_system=${currentNakshatraSystem}`);
                 const result = await response.json();
                 
                 if (result.error) {
@@ -9260,6 +9412,7 @@
                 // Update all widgets
                 updateAllWidgets();
                 syncD10ModeUI();
+                syncNakshatraSystemUI();
                 syncAllSteppersUI();
 
 
@@ -9361,7 +9514,7 @@
 
             try {
                 const response = await fetch(
-                    `/api/chart/${nativeId}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}&offset_seconds=${offsetSeconds}`,
+                    `/api/chart/${nativeId}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}&nakshatra_system=${currentNakshatraSystem}&offset_seconds=${offsetSeconds}`,
                     { signal: stepperAbortController.signal }
                 );
                 const result = await response.json();
@@ -13038,6 +13191,13 @@
                 if (currentD10Mode === 'direct') radioDir.checked = true;
                 else radioRev.checked = true;
             }
+
+            const radioDhruva = document.getElementById('radio-nak-dhruva');
+            const radioChitra = document.getElementById('radio-nak-chitra');
+            if (radioDhruva && radioChitra) {
+                if (currentNakshatraSystem === 'VIC_CHITRA') radioChitra.checked = true;
+                else radioDhruva.checked = true;
+            }
             
             document.getElementById('settingsModal').style.display = 'flex';
         }
@@ -13140,7 +13300,8 @@
                 include_shadbala: document.getElementById('expIncShadbala')?.checked ?? true,
                 include_dasha: document.getElementById('expIncDasha')?.checked ?? true,
                 include_vimshopaka: document.getElementById('expIncVimshopaka')?.checked ?? true,
-                additional_vargas: additionalVargas
+                additional_vargas: additionalVargas,
+                nakshatra_system: currentNakshatraSystem
             };
 
             const nativeId = document.getElementById('editNativeId')?.value || document.getElementById('nativeSelect')?.value;
@@ -13148,7 +13309,8 @@
             const payload = {
                 native_id: nativeId,
                 chart_data: currentChartData,
-                options: options
+                options: options,
+                nakshatra_system: currentNakshatraSystem
             };
 
             const statusMsg = document.getElementById('exportStatusMsg');
@@ -13337,6 +13499,14 @@
             const d10Mode = (typeof currentD10Mode !== 'undefined') ? currentD10Mode : (localStorage.getItem('astra_d10_mode') || 'reverse');
             document.querySelectorAll('#settingsMenuDropdown .menu-row[data-d10]').forEach(row => {
                 const isAct = row.getAttribute('data-d10') === d10Mode;
+                row.classList.toggle('active', isAct);
+                const check = row.querySelector('.menu-check');
+                if (check) check.textContent = isAct ? '✓' : '';
+            });
+
+            const nakMode = (typeof currentNakshatraSystem !== 'undefined') ? currentNakshatraSystem : (localStorage.getItem('astra_nakshatra_system') || 'ERNST_DHRUVA');
+            document.querySelectorAll('#settingsMenuDropdown .menu-row[data-nakshatra-system]').forEach(row => {
+                const isAct = row.getAttribute('data-nakshatra-system') === nakMode;
                 row.classList.toggle('active', isAct);
                 const check = row.querySelector('.menu-check');
                 if (check) check.textContent = isAct ? '✓' : '';

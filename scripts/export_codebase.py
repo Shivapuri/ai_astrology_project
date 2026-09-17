@@ -100,6 +100,8 @@ EXCLUDED_FILES = {
     "verify_all_chart_clicks.py",
     "verify_context_ui.py",
     "verify_stepper_visuals.py",
+    "take_diagnostic_screenshot.py",
+    "scratch.py",
     # Historical / superseded documentation notes
     "HANDOFF.md",
     "avasthas_remaining_tasks.md",
@@ -119,6 +121,7 @@ EXCLUDED_FILES = {
     "test_time_stepper_ui.py",
     "test_shadbala_widget_ui.py",
     "test_search_krishna_chart.py",
+    "test_master_diagnostic_ui.py",
     # Granular secondary sub-unit tests (core coverage preserved in main test suites)
     "test_tripod_and_interpretations.py",
     "test_varga_avasthas.py",
@@ -130,12 +133,14 @@ EXCLUDED_FILES = {
     "test_ascendant_analysis.py",
     "test_varga_shadbala_transcription.py",
     "test_d10_mode.py",
+    "test_nakshatra_system.py",
     "test_combustion.py",
     "test_house_aspects.py",
     "test_karakas.py",
     "test_basic_placements.py",
     "test_vimshopaka.py",
     "test_dignities.py",
+    "test_svg_generation.py",
 }
 
 EXCLUDED_EXTENSIONS = {

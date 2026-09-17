@@ -33,7 +33,7 @@ def index():
         
     return render_template('index.html', natives=dropdown_natives, all_natives=all_natives, knowledge_base=knowledge_base)
 
-def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0):
+def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0, nakshatra_system="ERNST_DHRUVA"):
     try:
         date_str = str(date_override) if date_override else str(native.get('date', '01/01/2000'))
         year, month, day = native_manager.parse_date_to_parts(date_str)
@@ -103,7 +103,8 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
         name_sound_value=native.get('name_sound_value', 0),
         d10_mode=d10_mode,
         d24_mode=d24_mode,
-        place=native.get('place', '')
+        place=native.get('place', ''),
+        nakshatra_system=nakshatra_system
     )
     chart["preview_info"] = {
         "is_preview": is_preview,
@@ -121,6 +122,7 @@ def get_chart(native_id):
         
     d10_mode = request.args.get('d10_mode', 'reverse')
     d24_mode = request.args.get('d24_mode', 'reverse')
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     offset_seconds = request.args.get('offset_seconds', default=0, type=int)
     time_override = request.args.get('time')
     date_override = request.args.get('date')
@@ -131,7 +133,8 @@ def get_chart(native_id):
         d24_mode=d24_mode,
         date_override=date_override,
         time_override=time_override,
-        offset_seconds=offset_seconds
+        offset_seconds=offset_seconds,
+        nakshatra_system=nakshatra_system
     )
     
     # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
@@ -194,6 +197,7 @@ def get_chart_biwheel(native_id):
     root = request.args.get('root', 'Lagna')
     d10_mode = request.args.get('d10_mode', 'reverse')
     d24_mode = request.args.get('d24_mode', 'reverse')
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     offset_seconds = request.args.get('offset_seconds', default=0, type=int)
     time_override = request.args.get('time')
     date_override = request.args.get('date')
@@ -204,7 +208,8 @@ def get_chart_biwheel(native_id):
         d24_mode=d24_mode,
         date_override=date_override,
         time_override=time_override,
-        offset_seconds=offset_seconds
+        offset_seconds=offset_seconds,
+        nakshatra_system=nakshatra_system
     )
     vargas = chart_data.get("vargas", {})
     inner_v = vargas.get(inner, vargas.get("D1", {}))
@@ -246,7 +251,8 @@ def export_pdf():
             return jsonify({"error": "Native not found"}), 404
         d10_mode = options.get('d10_mode', req_data.get('d10_mode', 'reverse'))
         d24_mode = options.get('d24_mode', req_data.get('d24_mode', 'reverse'))
-        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
+        nakshatra_system = options.get('nakshatra_system', req_data.get('nakshatra_system', 'ERNST_DHRUVA'))
+        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode, nakshatra_system=nakshatra_system)
 
     name = chart_data.get('subject_info', {}).get('name', 'Chart')
     safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '_', '-')).rstrip().replace(' ', '_')
@@ -277,7 +283,8 @@ def export_preview():
             return "Native not found", 404
         d10_mode = options.get('d10_mode', req_data.get('d10_mode', 'reverse'))
         d24_mode = options.get('d24_mode', req_data.get('d24_mode', 'reverse'))
-        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode)
+        nakshatra_system = options.get('nakshatra_system', req_data.get('nakshatra_system', 'ERNST_DHRUVA'))
+        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode, nakshatra_system=nakshatra_system)
 
     html = pdf_exporter.generate_report_html(chart_data, options)
     return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
