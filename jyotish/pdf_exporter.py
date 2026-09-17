@@ -20,7 +20,8 @@ from jyotish.relationships.relationships import SIGN_LORDS
 from jyotish.planetary_evaluation import (
     calculate_baladi_avastha,
     classify_graha_quadrant,
-    calculate_graha_vitality
+    calculate_graha_vitality,
+    detect_planetary_wars
 )
 from jyotish.planetary_evaluation.planetary_evaluation import get_dignity_score
 
@@ -1172,6 +1173,8 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         """)
 
     # 2. PLANETARY ROWS (Sun through Ketu)
+    planetary_wars = detect_planetary_wars(v_grahas, shadbala)
+
     for p in PLANETS_ORDER:
         if p not in v_grahas:
             continue
@@ -1254,6 +1257,51 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         tot_rec = adv_aspects.get("totals", {}).get("planets", {}).get(p, {})
         net_val = float(tot_rec.get("net", 0.0))
         
+        # Conjunction details with exact orbs & precedence
+        conj_details = []
+        for cp in conjuncts:
+            cp_g = v_grahas.get(cp, {})
+            cp_deg = float(cp_g.get("degree_0_to_30", 0.0))
+            deg_diff = abs(deg_val - cp_deg)
+            cp_sb = float(shadbala.get(cp, {}).get("Pct_Required_Total", 100.0))
+            band = "Exact (Intimate)" if deg_diff <= (10.0 / 3.0) else ("Moderate" if deg_diff <= 10.0 else "Wide")
+            commands = (cp_sb > sb_pct_val)
+            conj_details.append({
+                "planet": cp,
+                "degree_diff": round(deg_diff, 2),
+                "orb_band": band,
+                "shadbala_pct": cp_sb,
+                "commands": commands
+            })
+
+        # Aspect details with Option A debilitated benefic dampening
+        asp_details = []
+        for asp_p in PLANETS_ORDER:
+            if asp_p != p and asp_p in asp_rec and asp_rec[asp_p].get("raw", 0.0) > 4.0:
+                a_data = asp_rec[asp_p]
+                raw_v = float(a_data.get("raw", 0.0))
+                is_p = a_data.get("plus", 0.0) > 0
+                asp_g = v_grahas.get(asp_p, {})
+                asp_dig_raw = asp_g.get("dignity_breakdown", {}).get("final_dignity", asp_g.get("dignity", "Neutral"))
+                asp_deg_val = float(asp_g.get("degree_0_to_30", 15.0))
+                asp_dig_pct = get_dignity_score(asp_dig_raw, planet=asp_p, sign=asp_g.get("sign"), degree=asp_deg_val)
+                vir_sign = raw_v if is_p else -raw_v
+                is_deb = (asp_dig_pct <= 25.0) or ("debilit" in asp_dig_raw.lower())
+                asp_details.append({
+                    "from_planet": asp_p,
+                    "virupas": vir_sign,
+                    "from_dignity_pct": asp_dig_pct,
+                    "from_dignity_name": asp_dig_raw,
+                    "is_debilitated": is_deb
+                })
+
+        # Planetary War Details
+        war_info = planetary_wars.get(p, {})
+        is_war_winner = war_info.get("is_winner", False)
+        is_war_loser = war_info.get("is_loser", False)
+        war_opponent = war_info.get("opponent")
+        war_badge = war_info.get("badge")
+
         # Lajjitadi Avasthas
         av_list = g.get("avasthas", {}).get("lajjitadi", [])
         
@@ -1278,6 +1326,12 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             is_node=is_node,
             lagna_sign=lagna_sign_val,
             lagna_lord=lagna_lord_val,
+            is_war_winner=is_war_winner,
+            is_war_loser=is_war_loser,
+            war_opponent=war_opponent,
+            war_badge=war_badge,
+            conjunction_details=conj_details,
+            aspect_details=asp_details
         )
         quad = vit_res["quadrant"]
         net_vitality = vit_res["vitality_score"]
@@ -1364,24 +1418,29 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             net_pill = f"<span class='badge neutral' style='font-size:5.5pt; font-weight:600;'>⚖️ Balanced ({'+' if net_val >= 0 else ''}{net_val:.0f}v)</span>"
 
         conj_spans = []
-        for cp in conjuncts:
+        for c_item in conj_details:
+            cp = c_item["planet"]
             c_glyph = GRAHA_GLYPHS_MAP.get(cp, "")
             is_b = cp in ["Jupiter", "Venus"]
             is_m = cp in ["Saturn", "Mars", "Rahu", "Ketu"]
             c_col = "#15803d" if is_b else ("#b91c1c" if is_m else "#475569")
-            conj_spans.append(f"<span style='color:{c_col}; font-weight:600;'>{c_glyph} {cp[:2]}</span>")
+            orb_tag = "⚡" if c_item["orb_band"].startswith("Exact") else ""
+            cmd_tag = "👑" if c_item["commands"] else ""
+            conj_spans.append(f"<span style='color:{c_col}; font-weight:600;'>{orb_tag}{cmd_tag}{c_glyph} {cp[:2]}</span>")
         yuti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>YUTI:</strong> {' '.join(conj_spans)}</div>" if conj_spans else ""
 
         asp_spans = []
-        for asp_p in PLANETS_ORDER:
-            if asp_p != p and asp_p in asp_rec and asp_rec[asp_p].get("raw", 0.0) > 4.0:
-                a_data = asp_rec[asp_p]
-                raw_v = int(round(a_data.get("raw", 0.0)))
-                is_p = a_data.get("plus", 0.0) > 0
-                sign_ch = "+" if is_p else "-"
-                a_col = "#15803d" if is_p else "#b91c1c"
-                a_glyph = GRAHA_GLYPHS_MAP.get(asp_p, asp_p[:2])
-                asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{sign_ch}{raw_v}v ({a_glyph})</span>")
+        for asp_info in vit_res.get("aspect_details", []):
+            asp_p = asp_info.get("from_planet")
+            raw_v = int(round(abs(asp_info.get("raw_virupas", 0.0))))
+            if raw_v <= 4:
+                continue
+            is_p = asp_info.get("raw_virupas", 0.0) > 0
+            sign_ch = "+" if is_p else "-"
+            a_col = "#15803d" if is_p else "#b91c1c"
+            a_glyph = GRAHA_GLYPHS_MAP.get(asp_p, asp_p[:2])
+            distort_tag = "⚠️" if asp_info.get("is_distorted") else ""
+            asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{distort_tag}{sign_ch}{raw_v}v ({a_glyph})</span>")
         drishti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>DRISHTI:</strong> {' '.join(asp_spans[:3])}</div>" if asp_spans else ""
 
         influences_cell_html = f"""
@@ -1443,11 +1502,19 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             """
 
         # Cell 8: Functional Archetype & Diagnosis
+        war_badge_html = ""
+        if war_badge:
+            w_bg = "#fee2e2" if is_war_loser else "#eff6ff"
+            w_col = "#991b1b" if is_war_loser else "#1d4ed8"
+            w_border = "#fca5a5" if is_war_loser else "#93c5fd"
+            war_badge_html = f"<div style='margin-top:2px;'><span class='badge' style='background:{w_bg}; color:{w_col}; border:1px solid {w_border}; font-size:5.2pt; font-weight:bold;'>{war_badge}</span></div>"
+
         diag_cell_html = f"""
         <div style="text-align:center;">
             <span style="display:inline-block; background:{quad['bg']}; color:{quad['color']}; border:1px solid {quad['color']}44; font-size:6.5pt; font-weight:bold; padding:1.5px 4px; border-radius:3px;">
                 {quad['badge']}
             </span>
+            {war_badge_html}
             <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:2px;">
                 Score: ★ {net_vitality:.1f} / 10
             </div>

@@ -280,17 +280,21 @@ def generate_kala_chart(
         "Rahu": swe.TRUE_NODE
     }
     
+    d1_latitudes = {}
     for p_name, p_id in planet_ids.items():
         if p_name == "Rahu":
             res_node, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_ecliptic)
             r_lon = res_node[0]
             d1_longitudes["Rahu"] = r_lon
             d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
+            d1_latitudes["Rahu"] = round(res_node[1], 4)
+            d1_latitudes["Ketu"] = round(-res_node[1], 4)
             d1_retrogrades["Rahu"] = True
             d1_retrogrades["Ketu"] = True
         else:
             res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
             d1_longitudes[p_name] = res[0]
+            d1_latitudes[p_name] = round(res[1], 4)
             # Speed is res[3]. Negative speed indicates Retrograde (Vakri) motion
             speed = res[3]
             d1_retrogrades[p_name] = bool(speed < 0 and p_name not in ["Sun", "Moon"])
@@ -317,12 +321,15 @@ def generate_kala_chart(
         for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
             p_lon = calculate_varga_longitude(d1_longitudes[p_name], v_name, d10_mode=d10_mode, d24_mode=d24_mode)
             p_sign, p_deg = get_sign(p_lon)
-            vargas_data[v_name]["grahas"][p_name] = {
+            graha_entry = {
                 "longitude": round(p_lon, 4),
                 "sign": p_sign,
                 "degree_0_to_30": p_deg,
                 "is_retrograde": d1_retrogrades.get(p_name, False)
             }
+            if v_name == "D1":
+                graha_entry["latitude"] = d1_latitudes.get(p_name, 0.0)
+            vargas_data[v_name]["grahas"][p_name] = graha_entry
             
         # Cusps (Bhava Chalita)
         v_cusps = []

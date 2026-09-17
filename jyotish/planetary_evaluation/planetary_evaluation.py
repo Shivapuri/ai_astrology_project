@@ -359,6 +359,118 @@ def classify_graha_quadrant(
     )
 
 
+TARA_GRAHAS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+
+
+def detect_planetary_wars(
+    grahas_data: Dict[str, Any],
+    shadbala_data: Optional[Dict[str, Any]] = None
+) -> Dict[str, Dict[str, Any]]:
+    """
+    Detects Graha Yuddha (Planetary War) per Phaladeepika 4.2 & BPHS.
+
+    Rules of Engagement:
+    1. Only the 5 Tara Grahas engage in war: Mars, Mercury, Jupiter, Venus, Saturn.
+       (Sun combusts, Moon occults, Rahu/Ketu swallow/shadow).
+    2. Threshold: Residing in the SAME SIGN within <= 1°00' (60 arcminutes) of each other.
+    3. Determination of Victor:
+       - Venus Invariance: Venus NEVER loses a planetary war (peerless luminosity / Bahula-Ruchi).
+       - For other pairs: The planet with the northern celestial latitude (higher numerical value) wins.
+       - Fallback (if latitudes unavailable/equal): Higher Shadbala virupas / percentage wins.
+         If still tied, natural brightness order: Jupiter > Mercury > Mars > Saturn.
+    4. Consequences:
+       - Victor (Jayi): war_mod = +0.30, inherits Combat Stain badge: '🏆 War Victor (Combat Stain: {loser})'
+       - Defeated (Nipidita): war_mod = -0.60, badge: '⚔️ Nipidita (War Defeat via {winner})'
+    """
+    if not grahas_data:
+        return {}
+
+    war_results: Dict[str, Dict[str, Any]] = {}
+    eligible = [p for p in TARA_GRAHAS if p in grahas_data]
+
+    for i in range(len(eligible)):
+        p1 = eligible[i]
+        g1 = grahas_data[p1]
+        s1 = g1.get("sign")
+        d1 = float(g1.get("degree_0_to_30", g1.get("longitude", 0.0) % 30.0))
+        lat1 = g1.get("latitude", g1.get("lat"))
+
+        for j in range(i + 1, len(eligible)):
+            p2 = eligible[j]
+            g2 = grahas_data[p2]
+            s2 = g2.get("sign")
+            d2 = float(g2.get("degree_0_to_30", g2.get("longitude", 0.0) % 30.0))
+            lat2 = g2.get("latitude", g2.get("lat"))
+
+            if s1 != s2:
+                continue
+
+            deg_diff = abs(d1 - d2)
+            if deg_diff <= 1.0:
+                # Determine winner
+                if p1 == "Venus":
+                    winner, loser = p1, p2
+                    reason = "Venus Invariance Rule (Supreme Natural Brilliance)"
+                elif p2 == "Venus":
+                    winner, loser = p2, p1
+                    reason = "Venus Invariance Rule (Supreme Natural Brilliance)"
+                else:
+                    # Northern celestial latitude
+                    if lat1 is not None and lat2 is not None and abs(float(lat1) - float(lat2)) > 0.001:
+                        if float(lat1) > float(lat2):
+                            winner, loser = p1, p2
+                            reason = f"Northern Celestial Latitude ({float(lat1):+.2f}° vs {float(lat2):+.2f}°)"
+                        else:
+                            winner, loser = p2, p1
+                            reason = f"Northern Celestial Latitude ({float(lat2):+.2f}° vs {float(lat1):+.2f}°)"
+                    else:
+                        sb1 = (shadbala_data or {}).get(p1, {})
+                        sb2 = (shadbala_data or {}).get(p2, {})
+                        v1 = float(sb1.get("Total_Virupas", sb1.get("Pct_Required_Total", 0.0)))
+                        v2 = float(sb2.get("Total_Virupas", sb2.get("Pct_Required_Total", 0.0)))
+                        if abs(v1 - v2) > 0.1:
+                            if v1 > v2:
+                                winner, loser = p1, p2
+                                reason = f"Higher Shadbala Virupas ({v1:.1f}v vs {v2:.1f}v)"
+                            else:
+                                winner, loser = p2, p1
+                                reason = f"Higher Shadbala Virupas ({v2:.1f}v vs {v1:.1f}v)"
+                        else:
+                            brightness_rank = {"Jupiter": 4, "Mercury": 3, "Mars": 2, "Saturn": 1}
+                            if brightness_rank.get(p1, 0) >= brightness_rank.get(p2, 0):
+                                winner, loser = p1, p2
+                            else:
+                                winner, loser = p2, p1
+                            reason = "Natural Luminosity Order"
+
+                war_results[winner] = {
+                    "in_war": True,
+                    "is_winner": True,
+                    "is_loser": False,
+                    "opponent": loser,
+                    "war_mod": 0.30,
+                    "badge": f"🏆 War Victor (Combat Stain: {loser})",
+                    "reason": reason,
+                    "orb_deg": round(deg_diff, 3),
+                    "sign": s1,
+                    "details": f"{winner} defeated {loser} in Graha Yuddha (orb: {deg_diff:.2f}° in {s1}) via {reason}."
+                }
+                war_results[loser] = {
+                    "in_war": True,
+                    "is_winner": False,
+                    "is_loser": True,
+                    "opponent": winner,
+                    "war_mod": -0.60,
+                    "badge": f"⚔️ Nipidita (War Defeat via {winner})",
+                    "reason": reason,
+                    "orb_deg": round(deg_diff, 3),
+                    "sign": s1,
+                    "details": f"{loser} defeated by {winner} in Graha Yuddha (orb: {deg_diff:.2f}° in {s1}) entering Nipidita Avastha."
+                }
+
+    return war_results
+
+
 def calculate_graha_vitality(
     planet: str,
     sign: str,
@@ -376,7 +488,14 @@ def calculate_graha_vitality(
     is_combust: bool = False,
     is_node: bool = False,
     lagna_sign: str = "Leo",
-    lagna_lord: Optional[str] = None
+    lagna_lord: Optional[str] = None,
+    # New parameters for Graha Yuddha, Recursive Drishti (Option A), & Conjunction Orbs
+    is_war_winner: bool = False,
+    is_war_loser: bool = False,
+    war_opponent: Optional[str] = None,
+    war_badge: Optional[str] = None,
+    conjunction_details: Optional[List[Dict[str, Any]]] = None,
+    aspect_details: Optional[List[Dict[str, Any]]] = None
 ) -> Dict[str, Any]:
     """
     Calibrated Net Functional Vitality calculation resolving architectural flaws:
@@ -386,6 +505,9 @@ def calculate_graha_vitality(
     4. Dynamically tilts neutral signs based on host dispositor, benefic rays, and Lagnesha protection.
     5. Evaluates Rahu and Ketu through their dispositor proxy.
     6. Balances psychological feeling states (Lajjitadi) with physical stamina.
+    7. Integrates Graha Yuddha (Planetary War): Nipidita (-0.60) / War Victor (+0.30) with Combat Stain.
+    8. Integrates Recursive Drishti (Option A): Debilitated benefic rays dampened by 50% with distorted badge.
+    9. Integrates Conjunction Dynamics: Nodal possession within 3°20' (Ketu suppression / Rahu obsession).
     """
     conjunctions = conjunctions or []
     lajjitadi_states = lajjitadi_states or []
@@ -395,7 +517,6 @@ def calculate_graha_vitality(
     efficiency = baladi["efficiency_factor"]
 
     # 2. Host Dispositor & Strict Debilitation Evaluation
-    # Classical Rule: Neecha Bhanga ONLY applies to planets in their genuine sign of fall!
     is_debilitated = (planet in TRUE_DEBILITATION_MAP and sign == TRUE_DEBILITATION_MAP[planet]) or \
                      ("debilit" in dignity_name.lower()) or ("neecha" in dignity_name.lower())
     is_self_hosted = (host_planet == planet)
@@ -416,7 +537,6 @@ def calculate_graha_vitality(
         effective_dignity = dignity_pct
         effective_shadbala = planet_shadbala_pct
     elif is_debilitated:
-        # Full Alchemical Cancellation (Neecha Bhanga Raja Yoga) requires a dignified and strong host
         if host_dignity_pct >= 62.5 and host_shadbala_pct >= 90.0:
             rescue_status = "Full Alchemical Rescue (Neecha Bhanga)"
             rescue_badge = "✨ Rescued (Neecha Bhanga)"
@@ -436,11 +556,8 @@ def calculate_graha_vitality(
             effective_dignity = dignity_pct
         effective_shadbala = planet_shadbala_pct
     else:
-        # Not debilitated (Own, Friend, Neutral, Enemy, Great Enemy)
         if host_dignity_pct >= 60.0:
             if dignity_pct <= 25.0:
-                # Enemy or Great Enemy sign: Exalted/fortified host provides a solid foundation,
-                # but NEVER grants false Neecha Bhanga!
                 effective_dignity = min(40.0, dignity_pct + 10.0 * (host_dignity_pct / 100.0))
                 rescue_status = f"Stabilized by Exalted Host {host_planet}" if host_dignity_pct >= 85.0 else f"Stabilized by Fortified Host {host_planet}"
                 rescue_badge = "🛡️ Fortified Host"
@@ -459,7 +576,6 @@ def calculate_graha_vitality(
         effective_shadbala = planet_shadbala_pct
 
     # Neutral Sign Tilting (Sama Kshetra)
-    # Neutral planets have no corrupt intent; they tilt noble when supported by benefic/Lagnesha rays or a happy avastha
     if "neutral" in dignity_name.lower() or "sama" in dignity_name.lower() or (35.0 <= dignity_pct <= 50.0):
         if net_drishti_virupas > 0:
             effective_dignity += min(12.0, (net_drishti_virupas / 35.0) * 10.0)
@@ -468,7 +584,6 @@ def calculate_graha_vitality(
             if "mudita" in st or "garvita" in st:
                 effective_dignity += 4.0
                 break
-        # Clamp neutral signs so they remain within the pragmatic tier (35.0% - 54.9%)
         effective_dignity = min(54.9, effective_dignity)
 
     # 3. 9-Tier Behavioral Archetype Classification
@@ -493,35 +608,120 @@ def calculate_graha_vitality(
     else:
         q_deficit = 3.5 - q_norm
         if effective_shadbala >= 110.0:
-            # Armed Dictator: Muscle increases hazard and worldly friction
             hazard_mult = min(1.3, 0.75 + 0.25 * m_ratio)
             base_vit = 3.8 - (q_deficit * hazard_mult) - (m_ratio - 1.0) * 1.0
         elif effective_shadbala < 88.0:
-            # Toothless Bully: Low muscle limits external harm; petty irritation
             base_vit = 3.5 - (q_deficit * 0.5) - max(0.0, 1.0 - m_ratio) * 0.5
         else:
-            # Embattled Striver: Strained fighter under friction
             base_vit = 4.2 - (q_deficit * 0.6) + (m_ratio - 1.0) * 0.5
 
-    # Environmental modifications (Aspects & Conjunctions)
-    env_mod = clamp(net_drishti_virupas / 35.0, -1.0, 1.0) * 0.7
-    for cp in conjunctions:
-        if cp in ["Jupiter", "Venus"]:
-            env_mod += 0.3
-        elif cp == lagna_lord:
-            env_mod += 0.35  # Lagnesha presence is always protective and auspicious
-        elif cp in ["Saturn", "Mars", "Rahu", "Ketu"]:
-            env_mod -= 0.3
-    env_mod = clamp(env_mod, -1.2, 1.2)
+    # 5. Environmental Modifications (Option A Recursive Drishti & Conjunction Dynamics)
+    processed_aspect_details = []
+    if aspect_details:
+        total_adj_virupas = 0.0
+        for asp in aspect_details:
+            from_p = asp.get("from_planet", "")
+            vir = float(asp.get("virupas", 0.0))
+            from_dig_pct = float(asp.get("from_dignity_pct", 50.0))
+            from_dig_name = str(asp.get("from_dignity_name", ""))
+            is_deb = asp.get("is_debilitated", (from_dig_pct <= 25.0) or ("debilit" in from_dig_name.lower()) or ("neecha" in from_dig_name.lower()))
+            is_distorted = False
+            badge = ""
 
-    # Motional modifiers
+            # Option A: Debilitated benefics (Jupiter, Venus) transmit distorted rays
+            if from_p in ["Jupiter", "Venus"] and is_deb:
+                is_distorted = True
+                adj_vir = (vir * 0.5) if vir > 0 else vir  # 50% positive dampening
+                if from_p == "Jupiter":
+                    badge = "⚠️ Distorted Ideology / Dogmatic Light"
+                else:
+                    badge = "⚠️ Corrupted Indulgence"
+            else:
+                adj_vir = vir
+
+            total_adj_virupas += adj_vir
+            processed_aspect_details.append({
+                "from_planet": from_p,
+                "raw_virupas": vir,
+                "adjusted_virupas": adj_vir,
+                "from_dignity_pct": from_dig_pct,
+                "from_dignity_name": from_dig_name,
+                "is_debilitated": is_deb,
+                "is_distorted": is_distorted,
+                "badge": badge
+            })
+        drishti_mod = clamp(total_adj_virupas / 35.0, -1.0, 1.0) * 0.7
+    else:
+        drishti_mod = clamp(net_drishti_virupas / 35.0, -1.0, 1.0) * 0.7
+
+    # Conjunction Dynamics & Nodal Possession
+    conj_mod = 0.0
+    node_mod = 0.0
+    processed_conjunction_details = []
+
+    if conjunction_details:
+        for c_item in conjunction_details:
+            cp = c_item.get("planet", "")
+            diff = float(c_item.get("degree_diff", 5.0))
+            cp_sb = float(c_item.get("shadbala_pct", 100.0))
+            band = "Exact (Intimate)" if diff <= (10.0 / 3.0) else ("Moderate" if diff <= 10.0 else "Wide")
+            commands = (cp_sb > planet_shadbala_pct)
+
+            # Close Nodal Possession (within 3°20')
+            if cp == "Ketu" and diff <= (10.0 / 3.0):
+                efficiency *= 0.80  # biological/external suppression
+                node_mod -= 0.25
+            elif cp == "Rahu" and diff <= (10.0 / 3.0):
+                if host_dignity_pct >= 60.0 and host_shadbala_pct >= 90.0:
+                    node_mod += 0.20  # constructive worldly amplification
+                else:
+                    node_mod -= 0.35  # toxic obsession / delusion
+            elif cp in ["Jupiter", "Venus"]:
+                conj_mod += 0.30
+            elif cp == lagna_lord:
+                conj_mod += 0.35
+            elif cp in ["Saturn", "Mars"]:
+                conj_mod -= 0.30
+            elif cp in ["Rahu", "Ketu"] and diff > (10.0 / 3.0):
+                conj_mod -= 0.20
+
+            processed_conjunction_details.append({
+                "planet": cp,
+                "degree_diff": diff,
+                "orb_band": band,
+                "shadbala_pct": cp_sb,
+                "commands": commands
+            })
+    else:
+        for cp in conjunctions:
+            if cp in ["Jupiter", "Venus"]:
+                conj_mod += 0.30
+            elif cp == lagna_lord:
+                conj_mod += 0.35
+            elif cp in ["Saturn", "Mars", "Rahu", "Ketu"]:
+                conj_mod -= 0.30
+
+    env_mod = clamp(drishti_mod + conj_mod, -1.2, 1.2)
+
+    # 6. Motional Modifiers
     mot_mod = 0.0
     if is_retrograde and planet in ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
         mot_mod += 0.3
     if is_combust:
         mot_mod -= 0.5
 
-    # Psychological Feeling State (Lajjitadi)
+    # 7. Planetary War (Graha Yuddha) Modifier
+    war_mod = 0.0
+    if is_war_loser:
+        war_mod = -0.60
+        if not war_badge:
+            war_badge = f"⚔️ Nipidita (War Defeat via {war_opponent})" if war_opponent else "⚔️ Nipidita (War Defeat)"
+    elif is_war_winner:
+        war_mod = 0.30
+        if not war_badge:
+            war_badge = f"🏆 War Victor (Combat Stain: {war_opponent})" if war_opponent else "🏆 War Victor"
+
+    # 8. Psychological Feeling State (Lajjitadi)
     psy_mod = 0.0
     has_garvita = False
     for item in lajjitadi_states:
@@ -541,7 +741,7 @@ def calculate_graha_vitality(
             psy_mod -= 0.20
     psy_mod = clamp(psy_mod, -1.0, 1.0)
 
-    pre_score = base_vit + env_mod + mot_mod + psy_mod
+    pre_score = base_vit + env_mod + mot_mod + psy_mod + war_mod + node_mod
     final_score = 5.0 + (pre_score - 5.0) * (0.6 + 0.4 * efficiency)
     final_score = clamp(round(final_score, 1), 1.0, 10.0)
 
@@ -577,7 +777,15 @@ def calculate_graha_vitality(
         "base_vitality": round(base_vit, 1),
         "env_mod": round(env_mod, 1),
         "mot_mod": round(mot_mod, 1),
-        "psy_mod": round(psy_mod, 1)
+        "psy_mod": round(psy_mod, 1),
+        "war_mod": round(war_mod, 1),
+        "node_mod": round(node_mod, 2),
+        "is_war_winner": is_war_winner,
+        "is_war_loser": is_war_loser,
+        "war_opponent": war_opponent,
+        "war_badge": war_badge,
+        "aspect_details": processed_aspect_details,
+        "conjunction_details": processed_conjunction_details
     }
 
 
@@ -1150,7 +1358,7 @@ def calculate_planetary_evaluation(
     # -------------------------------------------------------------------------
     # 1. Lagna Lord (D1) -> Overall Life Mastery
     lagna_lord = rel.SIGN_LORDS.get(lagna_sign, "Mars")
-    lagna_eval = planets_result.get(lagna_lord, {})
+    lagna_lord_eval = planets_result.get(lagna_lord, {})
     
     # 2. Navamsha Lord (D9) -> Inner Contentment & Dharma
     d9_lagna_sign = vargas_data.get("D9", {}).get("lagna", {}).get("sign", "Aries")
@@ -1167,11 +1375,11 @@ def calculate_planetary_evaluation(
             "planet": lagna_lord,
             "varga": "D1",
             "rising_sign": lagna_sign,
-            "placed_sign": lagna_eval.get("sign", ""),
-            "placed_degree": lagna_eval.get("longitude", 0.0),
-            "scale_score": lagna_eval.get("net_scale_score", 0.0),
-            "expression_mode": lagna_eval.get("expression_mode", "Mixed"),
-            "expression_class": lagna_eval.get("expression_class", "mixed"),
+            "placed_sign": lagna_lord_eval.get("sign", ""),
+            "placed_degree": lagna_lord_eval.get("longitude", 0.0),
+            "scale_score": lagna_lord_eval.get("net_scale_score", 0.0),
+            "expression_mode": lagna_lord_eval.get("expression_mode", "Mixed"),
+            "expression_class": lagna_lord_eval.get("expression_class", "mixed"),
             "title": "Lagna Lord (Lagna-Isha)",
             "governs": "Overall Life Mastery, Health & Holistic Fortune (Bhagyavan Prabhu)"
         },
@@ -1219,12 +1427,18 @@ def calculate_planetary_evaluation(
 
     lagna_eval = evaluate_lagna_vitality(vargas_data, shadbala_data, advanced_aspects, "D1")
 
+    planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data)
+    for p, war_info in planetary_wars.items():
+        if p in planets_result:
+            planets_result[p]["planetary_war"] = war_info
+
     return {
         "summary": {
             "title": "Vic DiCara's Planetary Evaluation & Positive-to-Negative Scale",
             "subtitle": "Continuous diagnostic spectrum (-100% to +100%) and 4-Quadrant Archetypes (Phaladeepika Chapters 3 & 4)",
             "master_lords": master_lords,
             "lagna_evaluation": lagna_eval,
+            "planetary_wars": planetary_wars,
             "chart_predominance": {
                 "auspicious_count": auspicious_count,
                 "hostile_count": hostile_count,
@@ -1233,5 +1447,6 @@ def calculate_planetary_evaluation(
             }
         },
         "lagna_evaluation": lagna_eval,
+        "planetary_wars": planetary_wars,
         "planets": planets_result
     }

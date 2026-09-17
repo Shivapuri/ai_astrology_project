@@ -5980,9 +5980,100 @@
                 return classifyGrahaArchetype(dignityPct, shadbalaPct, false, isNode);
             }
 
-            function calculateGrahaVitality(pName, sName, degInSign, digName, digPct, hName, hDigPct, hSbPct, pSbPct, netDrishtiVir, conjList, avList, isRet, isComb, isNod, lagnaSign = '', lagnaLord = '') {
+            const TARA_GRAHAS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
+
+            function detectPlanetaryWars(grahasObj, shadbalaObj) {
+                if (!grahasObj) return {};
+                const warResults = {};
+                const eligible = TARA_GRAHAS.filter(p => grahasObj[p]);
+
+                for (let i = 0; i < eligible.length; i++) {
+                    const p1 = eligible[i];
+                    const g1 = grahasObj[p1];
+                    const s1 = g1.sign;
+                    const d1 = (g1.degree_0_to_30 !== undefined) ? Number(g1.degree_0_to_30) : (Number(g1.longitude || 0) % 30.0);
+                    const lat1 = (g1.latitude !== undefined && g1.latitude !== null) ? Number(g1.latitude) : ((g1.lat !== undefined && g1.lat !== null) ? Number(g1.lat) : null);
+
+                    for (let j = i + 1; j < eligible.length; j++) {
+                        const p2 = eligible[j];
+                        const g2 = grahasObj[p2];
+                        const s2 = g2.sign;
+                        const d2 = (g2.degree_0_to_30 !== undefined) ? Number(g2.degree_0_to_30) : (Number(g2.longitude || 0) % 30.0);
+                        const lat2 = (g2.latitude !== undefined && g2.latitude !== null) ? Number(g2.latitude) : ((g2.lat !== undefined && g2.lat !== null) ? Number(g2.lat) : null);
+
+                        if (s1 !== s2) continue;
+                        const degDiff = Math.abs(d1 - d2);
+                        if (degDiff <= 1.0) {
+                            let winner, loser, reason;
+                            if (p1 === "Venus") {
+                                winner = p1; loser = p2;
+                                reason = "Venus Invariance Rule (Supreme Natural Brilliance)";
+                            } else if (p2 === "Venus") {
+                                winner = p2; loser = p1;
+                                reason = "Venus Invariance Rule (Supreme Natural Brilliance)";
+                            } else if (lat1 !== null && lat2 !== null && Math.abs(lat1 - lat2) > 0.001) {
+                                if (lat1 > lat2) {
+                                    winner = p1; loser = p2;
+                                    reason = `Northern Celestial Latitude (${lat1 >= 0 ? '+' : ''}${lat1.toFixed(2)}° vs ${lat2 >= 0 ? '+' : ''}${lat2.toFixed(2)}°)`;
+                                } else {
+                                    winner = p2; loser = p1;
+                                    reason = `Northern Celestial Latitude (${lat2 >= 0 ? '+' : ''}${lat2.toFixed(2)}° vs ${lat1 >= 0 ? '+' : ''}${lat1.toFixed(2)}°)`;
+                                }
+                            } else {
+                                const sb1 = (shadbalaObj && shadbalaObj[p1]) ? Number(shadbalaObj[p1].Total_Virupas || shadbalaObj[p1].Pct_Required_Total || 0) : 0;
+                                const sb2 = (shadbalaObj && shadbalaObj[p2]) ? Number(shadbalaObj[p2].Total_Virupas || shadbalaObj[p2].Pct_Required_Total || 0) : 0;
+                                if (Math.abs(sb1 - sb2) > 0.1) {
+                                    if (sb1 > sb2) {
+                                        winner = p1; loser = p2;
+                                        reason = `Higher Shadbala Virūpas (${sb1.toFixed(1)}v vs ${sb2.toFixed(1)}v)`;
+                                    } else {
+                                        winner = p2; loser = p1;
+                                        reason = `Higher Shadbala Virūpas (${sb2.toFixed(1)}v vs ${sb1.toFixed(1)}v)`;
+                                    }
+                                } else {
+                                    const rank = {"Jupiter": 4, "Mercury": 3, "Mars": 2, "Saturn": 1};
+                                    if ((rank[p1] || 0) >= (rank[p2] || 0)) {
+                                        winner = p1; loser = p2;
+                                    } else {
+                                        winner = p2; loser = p1;
+                                    }
+                                    reason = "Natural Luminosity Order";
+                                }
+                            }
+
+                            warResults[winner] = {
+                                in_war: true,
+                                is_winner: true,
+                                is_loser: false,
+                                opponent: loser,
+                                war_mod: 0.30,
+                                badge: `🏆 War Victor (Combat Stain: ${loser})`,
+                                reason: reason,
+                                orb_deg: Math.round(degDiff * 1000) / 1000,
+                                sign: s1,
+                                details: `${winner} defeated ${loser} in Graha Yuddha (orb: ${degDiff.toFixed(2)}° in ${s1}) via ${reason}.`
+                            };
+                            warResults[loser] = {
+                                in_war: true,
+                                is_winner: false,
+                                is_loser: true,
+                                opponent: winner,
+                                war_mod: -0.60,
+                                badge: `⚔️ Nipidita (War Defeat via ${winner})`,
+                                reason: reason,
+                                orb_deg: Math.round(degDiff * 1000) / 1000,
+                                sign: s1,
+                                details: `${loser} defeated by ${winner} in Graha Yuddha (orb: ${degDiff.toFixed(2)}° in ${s1}) entering Nipidita Avastha.`
+                            };
+                        }
+                    }
+                }
+                return warResults;
+            }
+
+            function calculateGrahaVitality(pName, sName, degInSign, digName, digPct, hName, hDigPct, hSbPct, pSbPct, netDrishtiVir, conjList, avList, isRet, isComb, isNod, lagnaSign = '', lagnaLord = '', warInfo = null, conjDetails = null, aspDetails = null) {
                 const baladi = calculateBaladiAvastha(sName, degInSign);
-                const efficiency = baladi.efficiency_factor;
+                let efficiency = baladi.efficiency_factor;
 
                 const isTrueDebilSign = (TRUE_DEBILITATION_SIGNS[pName] && sName === TRUE_DEBILITATION_SIGNS[pName]);
                 const isDebil = isTrueDebilSign || (digName && (digName.toLowerCase().includes('debilit') || digName.toLowerCase().includes('neecha')));
@@ -6089,21 +6180,101 @@
                     }
                 }
 
-                let envMod = Math.max(-1.0, Math.min(1.0, netDrishtiVir / 35.0)) * 0.7;
-                (conjList || []).forEach(cp => {
-                    if (lagnaLord && cp === lagnaLord) {
-                        envMod += 0.35; // Lagna Lord conjunction is protective
-                    } else if (['Jupiter', 'Venus'].includes(cp)) {
-                        envMod += 0.30;
-                    } else if (['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp)) {
-                        envMod -= 0.30;
-                    }
-                });
-                envMod = Math.max(-1.3, Math.min(1.3, envMod));
+                // Environmental Modifications (Option A Recursive Drishti & Conjunction Dynamics)
+                let drishtiMod = 0.0;
+                const processedAspDetails = [];
+                if (aspDetails && aspDetails.length > 0) {
+                    let totalAdjVir = 0.0;
+                    aspDetails.forEach(asp => {
+                        const fromP = asp.from_planet;
+                        const vir = Number(asp.virupas || 0);
+                        const isDeb = !!asp.is_debilitated;
+                        let isDistorted = false;
+                        let badge = '';
+                        let adjVir = vir;
+                        if (['Jupiter', 'Venus'].includes(fromP) && isDeb) {
+                            isDistorted = true;
+                            adjVir = (vir > 0) ? (vir * 0.5) : vir; // 50% positive dampening
+                            badge = (fromP === 'Jupiter') ? '⚠️ Distorted Ideology / Dogmatic Light' : '⚠️ Corrupted Indulgence';
+                        }
+                        totalAdjVir += adjVir;
+                        processedAspDetails.push({
+                            from_planet: fromP,
+                            raw_virupas: vir,
+                            adjusted_virupas: adjVir,
+                            is_debilitated: isDeb,
+                            is_distorted: isDistorted,
+                            badge: badge
+                        });
+                    });
+                    drishtiMod = Math.max(-1.0, Math.min(1.0, totalAdjVir / 35.0)) * 0.7;
+                } else {
+                    drishtiMod = Math.max(-1.0, Math.min(1.0, netDrishtiVir / 35.0)) * 0.7;
+                }
+
+                let conjMod = 0.0;
+                let nodeMod = 0.0;
+                const processedConjDetails = [];
+                if (conjDetails && conjDetails.length > 0) {
+                    conjDetails.forEach(cItem => {
+                        const cp = cItem.planet;
+                        const diff = Number(cItem.degree_diff || 5.0);
+                        const cpSb = Number(cItem.shadbala_pct || 100.0);
+                        const band = (diff <= (10.0 / 3.0)) ? "Exact (Intimate)" : ((diff <= 10.0) ? "Moderate" : "Wide");
+                        const commands = (cpSb > pSbPct);
+
+                        // Close Nodal Possession (within 3°20')
+                        if (cp === 'Ketu' && diff <= (10.0 / 3.0)) {
+                            efficiency *= 0.80; // Biological & worldly suppression
+                            nodeMod -= 0.25;
+                        } else if (cp === 'Rahu' && diff <= (10.0 / 3.0)) {
+                            if (hDigPct >= 60.0 && hSbPct >= 90.0) {
+                                nodeMod += 0.20; // Constructive worldly amplification
+                            } else {
+                                nodeMod -= 0.35; // Toxic obsession / delusion
+                            }
+                        } else if (['Jupiter', 'Venus'].includes(cp)) {
+                            conjMod += 0.30;
+                        } else if (lagnaLord && cp === lagnaLord) {
+                            conjMod += 0.35;
+                        } else if (['Saturn', 'Mars'].includes(cp)) {
+                            conjMod -= 0.30;
+                        } else if (['Rahu', 'Ketu'].includes(cp) && diff > (10.0 / 3.0)) {
+                            conjMod -= 0.20;
+                        }
+
+                        processedConjDetails.push({
+                            planet: cp,
+                            degree_diff: diff,
+                            orb_band: band,
+                            shadbala_pct: cpSb,
+                            commands: commands
+                        });
+                    });
+                } else {
+                    (conjList || []).forEach(cp => {
+                        if (lagnaLord && cp === lagnaLord) {
+                            conjMod += 0.35;
+                        } else if (['Jupiter', 'Venus'].includes(cp)) {
+                            conjMod += 0.30;
+                        } else if (['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp)) {
+                            conjMod -= 0.30;
+                        }
+                    });
+                }
+
+                let envMod = Math.max(-1.3, Math.min(1.3, drishtiMod + conjMod));
 
                 let motMod = 0.0;
                 if (isRet && ['Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'].includes(pName)) motMod += 0.30;
                 if (isComb) motMod -= 0.50;
+
+                // Planetary War Modifier
+                let warMod = 0.0;
+                if (warInfo) {
+                    if (warInfo.is_loser) warMod = -0.60;
+                    else if (warInfo.is_winner) warMod = 0.30;
+                }
 
                 let psyMod = 0.0;
                 let hasGarvita = false;
@@ -6118,7 +6289,7 @@
                 });
                 psyMod = Math.max(-1.0, Math.min(1.0, psyMod));
 
-                const preScore = baseVit + envMod + motMod + psyMod;
+                const preScore = baseVit + envMod + motMod + psyMod + warMod + nodeMod;
                 let finalScore = 5.0 + (preScore - 5.0) * (0.6 + 0.4 * efficiency);
                 finalScore = Math.max(1.0, Math.min(10.0, Math.round(finalScore * 10) / 10));
 
@@ -6131,7 +6302,12 @@
                     rescue_desc: rescueDesc,
                     is_neecha_bhanga: isNeechaBhanga,
                     quadrant: quad,
-                    vitality_score: finalScore
+                    vitality_score: finalScore,
+                    war_info: warInfo,
+                    war_mod: warMod,
+                    node_mod: nodeMod,
+                    aspect_details: processedAspDetails,
+                    conjunction_details: processedConjDetails
                 };
             }
 
@@ -6474,6 +6650,8 @@
             }
 
             // 2. Graha Rows (Sun through Ketu)
+            const planetaryWars = detectPlanetaryWars(v_grahas, (currentChartData.shadbala || {}));
+
             grahaOrder.forEach(graha => {
                 if (!v_grahas[graha]) return;
                 const gData = v_grahas[graha];
@@ -6634,6 +6812,25 @@
                     }
                 });
 
+                // Conjunction Details with Orbs & Precedence
+                const conjDetails = [];
+                conjunctList.forEach(cp => {
+                    const cpG = v_grahas[cp] || {};
+                    const cpDeg = (cpG.degree_0_to_30 !== undefined) ? Number(cpG.degree_0_to_30) : 0.0;
+                    const degDiff = Math.abs(degVal - cpDeg);
+                    const cpSbData = shadbala[cp] || {};
+                    const cpSb = Number(cpSbData.Pct_Required_Total !== undefined ? cpSbData.Pct_Required_Total : 100.0);
+                    const band = degDiff <= (10.0 / 3.0) ? "Exact (Intimate)" : (degDiff <= 10.0 ? "Moderate" : "Wide");
+                    const commands = cpSb > sbPctVal;
+                    conjDetails.push({
+                        planet: cp,
+                        degree_diff: degDiff,
+                        orb_band: band,
+                        shadbala_pct: cpSb,
+                        commands: commands
+                    });
+                });
+
                 const aspectList = [];
                 let netVal = 0;
                 let plusVal = 0;
@@ -6645,6 +6842,8 @@
                     minusVal = Math.round(tot.minus || 0);
                 }
 
+                // Aspect Details with Option A
+                const aspDetails = [];
                 if (adv_aspects && adv_aspects.planets && adv_aspects.planets[graha]) {
                     const aspRecv = adv_aspects.planets[graha];
                     grahaOrder.forEach(aspG => {
@@ -6652,14 +6851,24 @@
                             const aspData = aspRecv[aspG];
                             const rawV = Math.round(aspData.raw);
                             const isPlus = aspData.plus > 0;
-                            const signChar = isPlus ? '+' : '-';
-                            const tagColor = isPlus ? '#15803d' : '#b91c1c';
-                            const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
-                            const aspTip = `<strong>${aspG} Aspect: ${signChar}${rawV} Virūpas</strong><br>• <strong>Type:</strong> ${isPlus ? 'Subha Dṛṣṭi (Benefic protective light)' : 'Aśubha Dṛṣṭi (Challenging pressure)'}<br>• <strong>Intensity:</strong> ${rawV} / 60 Virūpas.`;
-                            aspectList.push(`<span class="tooltip-target" style="color:${tagColor}; font-weight:600; cursor:help;" data-tooltip="${aspTip}">${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`);
+                            const aspGData = v_grahas[aspG] || {};
+                            const aspDigRaw = (aspGData.dignity_breakdown && aspGData.dignity_breakdown.final_dignity) ? aspGData.dignity_breakdown.final_dignity : (aspGData.dignity || 'Neutral');
+                            const aspDegVal = Number(aspGData.degree_0_to_30 || 15.0);
+                            const aspDigPct = getDignityScore(aspDigRaw, aspG, aspGData.sign, aspDegVal);
+                            const isDeb = (aspDigPct <= 25.0) || aspDigRaw.toLowerCase().includes('debilit') || aspDigRaw.toLowerCase().includes('neecha');
+                            aspDetails.push({
+                                from_planet: aspG,
+                                virupas: isPlus ? rawV : -rawV,
+                                from_dignity_pct: aspDigPct,
+                                from_dignity_name: aspDigRaw,
+                                is_debilitated: isDeb
+                            });
                         }
                     });
                 }
+
+                // Planetary War Details
+                const warInfo = planetaryWars[graha] || null;
 
                 // Lajjitadi Avasthas
                 const avList = (gData.avasthas && gData.avasthas.lajjitadi) || [];
@@ -6668,7 +6877,8 @@
                 const vitRes = calculateGrahaVitality(
                     graha, sign, degVal, cleanDig, dignityPct, signLord,
                     hostDig, hostSb, sbPctVal, netVal, conjunctList, avList,
-                    isRetro, isCombust, isNode, lagnaSign, lagnaLord
+                    isRetro, isCombust, isNode, lagnaSign, lagnaLord,
+                    warInfo, conjDetails, aspDetails
                 );
                 const quad = vitRes.quadrant;
                 const netVitality = vitRes.vitality_score;
@@ -6842,22 +7052,46 @@
                 }
 
                 let yutiHtml = '';
-                if (conjunctList.length > 0) {
-                    const companionBadges = conjunctList.map(cp => {
+                if (conjDetails.length > 0) {
+                    const companionBadges = conjDetails.map(cItem => {
+                        const cp = cItem.planet;
                         const isBen = ['Jupiter', 'Venus'].includes(cp);
                         const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
                         const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
-                        const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
+                        const orbTag = cItem.orb_band.startsWith("Exact") ? "⚡" : "";
+                        const cmdTag = cItem.commands ? "👑 " : "";
                         const nature = isBen ? 'Benefic ally: offers grace, diplomacy, and resources.' : (isMal ? 'Malefic pressure: introduces intensity, demands, or discipline.' : 'Neutral companion.');
-                        const yTip = `<strong>Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.<br>• ${nature}`;
-                        return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${yTip}">${cIcon} ${cp}</span>`;
+                        const cmdNote = cItem.commands ? `<br>• <strong>Commanding Precedence:</strong> ${cp} has higher Shadbala (${cItem.shadbala_pct.toFixed(0)}%) and dominates the house agenda.` : '';
+                        const orbNote = `<br>• <strong>Orb:</strong> ${cItem.degree_diff.toFixed(2)}° (${cItem.orb_band})`;
+                        const yTip = `<strong>${cmdTag}Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.${orbNote}${cmdNote}<br>• ${nature}`;
+                        return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${yTip}">${orbTag}${cmdTag}${cp}</span>`;
                     }).join(', ');
                     yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
 
-                let drishtiHtml = aspectList.length > 0 
-                    ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>` 
-                    : '<div style="color:#94a3b8; font-size:9.5px;">No strong aspects</div>';
+                let drishtiHtml = '';
+                if (vitRes.aspect_details && vitRes.aspect_details.length > 0) {
+                    const aspSpans = vitRes.aspect_details.map(asp => {
+                        const aspG = asp.from_planet;
+                        const rawV = Math.abs(Math.round(asp.raw_virupas));
+                        if (rawV <= 3) return '';
+                        const isPlus = asp.raw_virupas > 0;
+                        const signChar = isPlus ? '+' : '-';
+                        const tagColor = isPlus ? '#15803d' : '#b91c1c';
+                        const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
+                        const distortTag = asp.is_distorted ? '⚠️ ' : '';
+                        const distortNote = asp.is_distorted ? `<br>• <strong>Option A (Distorted Ray):</strong> ${asp.badge}. Originates from debilitated ${aspG}; positive light dampened by 50% (${(rawV * 0.5).toFixed(0)}v effective).` : '';
+                        const aspTip = `<strong>${distortTag}${aspG} Aspect: ${signChar}${rawV} Virūpas</strong><br>• <strong>Type:</strong> ${isPlus ? 'Subha Dṛṣṭi (Benefic light)' : 'Aśubha Dṛṣṭi (Challenging pressure)'}${distortNote}<br>• <strong>Intensity:</strong> ${rawV} / 60 Virūpas.`;
+                        return `<span class="tooltip-target" style="color:${tagColor}; font-weight:600; cursor:help;" data-tooltip="${aspTip}">${distortTag}${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`;
+                    }).filter(Boolean);
+                    drishtiHtml = aspSpans.length > 0 
+                        ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspSpans.join(' ')}</div>` 
+                        : '<div style="color:#94a3b8; font-size:9.5px;">No strong aspects</div>';
+                } else {
+                    drishtiHtml = aspectList.length > 0 
+                        ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>` 
+                        : '<div style="color:#94a3b8; font-size:9.5px;">No strong aspects</div>';
+                }
 
                 const influencesHtml = `
                     <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
@@ -6956,11 +7190,21 @@
                     `• <strong>Foundational Host Anchor:</strong> ${rescueBadge} (${vitRes.rescue_desc})<br>` +
                     `• <strong>Calibrated Vitality Score:</strong> ${netVitality.toFixed(1)} / 10 (synthesizing quality, muscle, host rescue, biological efficiency, and aspect weather).`;
 
+                let warBadgeHtml = '';
+                if (warInfo && warInfo.badge) {
+                    const wBg = warInfo.is_loser ? '#fee2e2' : '#eff6ff';
+                    const wCol = warInfo.is_loser ? '#991b1b' : '#1d4ed8';
+                    const wBorder = warInfo.is_loser ? '#fca5a5' : '#93c5fd';
+                    const warTip = `<strong>${warInfo.badge}</strong><br>• <strong>Graha Yuddha (Phaladeepika 4.2):</strong> ${warInfo.details}<br>• <strong>Determination:</strong> ${warInfo.reason}<br>• <strong>Vitality Impact:</strong> ${warInfo.war_mod >= 0 ? '+' : ''}${warInfo.war_mod.toFixed(2)} pts.`;
+                    warBadgeHtml = `<div style="margin-top:2px;"><span class="badge tooltip-target" style="background:${wBg}; color:${wCol}; border:1px solid ${wBorder}; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="${warTip}">${warInfo.badge}</span></div>`;
+                }
+
                 const diagHtml = `
                     <div style="text-align:center;">
                         <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size:10px; font-weight:bold; padding:2px 6px; cursor:help;" data-tooltip="${quadTooltip}">
                             ${quad.badge}
                         </span>
+                        ${warBadgeHtml}
                         <div style="font-size:10.5px; font-weight:bold; color:#1e293b; margin-top:2px;">
                             <strong style="font-size:13px;">★ ${netVitality.toFixed(1)}</strong> <span style="font-size:10px; color:#64748b;">/ 10</span>
                         </div>

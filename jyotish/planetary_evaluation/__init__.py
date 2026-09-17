@@ -8,7 +8,8 @@ from .planetary_evaluation import (
     calculate_planetary_evaluation,
     calculate_baladi_avastha,
     classify_graha_quadrant,
-    calculate_graha_vitality
+    calculate_graha_vitality,
+    detect_planetary_wars
 )
 from .lagna_evaluation import evaluate_lagna_vitality
 
@@ -17,5 +18,6 @@ __all__ = [
     "calculate_baladi_avastha",
     "classify_graha_quadrant",
     "calculate_graha_vitality",
+    "detect_planetary_wars",
     "evaluate_lagna_vitality"
 ]

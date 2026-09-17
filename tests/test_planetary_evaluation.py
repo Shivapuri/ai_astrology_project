@@ -278,3 +278,138 @@ def test_shivapuri_and_hariompuri_diagnostic_validations():
     assert hitler_mars["quadrant"]["archetype"] == "The Armed Dictator"
     assert hitler_mars["vitality_score"] <= 3.5
 
+
+def test_detect_planetary_wars():
+    """Verify Graha Yuddha (Phaladeepika 4.2 & BPHS) mechanics:
+    1. Venus Invariance Rule (Venus never loses).
+    2. Northern Celestial Latitude Victor determination.
+    3. Shadbala fallback when latitudes are identical/unavailable.
+    4. Exempt bodies (Sun, Moon, Rahu, Ketu do not engage in war).
+    5. Orb threshold (<= 1°00').
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import detect_planetary_wars
+
+    # 1. Venus vs Mars within 0°15' in Taurus (Hitler's configuration)
+    hitler_grahas = {
+        "Mars": {"sign": "Taurus", "degree_0_to_30": 24.10, "latitude": -0.50},
+        "Venus": {"sign": "Taurus", "degree_0_to_30": 24.35, "latitude": +1.20},
+        "Sun": {"sign": "Taurus", "degree_0_to_30": 24.20} # Sun combusts, does NOT fight
+    }
+    wars = detect_planetary_wars(hitler_grahas)
+    assert "Venus" in wars
+    assert "Mars" in wars
+    assert "Sun" not in wars # Sun is exempt
+
+    venus_war = wars["Venus"]
+    mars_war = wars["Mars"]
+
+    assert venus_war["is_winner"]
+    assert not venus_war["is_loser"]
+    assert venus_war["opponent"] == "Mars"
+    assert venus_war["war_mod"] == 0.30
+    assert "🏆 War Victor (Combat Stain: Mars)" in venus_war["badge"]
+
+    assert mars_war["is_loser"]
+    assert not mars_war["is_winner"]
+    assert mars_war["opponent"] == "Venus"
+    assert mars_war["war_mod"] == -0.60
+    assert "⚔️ Nipidita (War Defeat via Venus)" in mars_war["badge"]
+
+    # 2. Mars vs Saturn: Northern celestial latitude wins
+    grahas_lat = {
+        "Mars": {"sign": "Capricorn", "degree_0_to_30": 10.20, "latitude": +1.80},
+        "Saturn": {"sign": "Capricorn", "degree_0_to_30": 10.70, "latitude": -1.20}
+    }
+    wars_lat = detect_planetary_wars(grahas_lat)
+    assert wars_lat["Mars"]["is_winner"]
+    assert wars_lat["Saturn"]["is_loser"]
+    assert "Northern Celestial Latitude" in wars_lat["Mars"]["reason"]
+
+    # 3. Different signs or wide orb (> 1°00') -> No war
+    grahas_peace = {
+        "Mars": {"sign": "Aries", "degree_0_to_30": 10.0},
+        "Saturn": {"sign": "Aries", "degree_0_to_30": 11.5} # 1.5° apart
+    }
+    assert detect_planetary_wars(grahas_peace) == {}
+
+
+def test_option_a_recursive_drishti_dampening():
+    """Verify Option A: Debilitated benefic aspects (Jupiter/Venus) are dampened by 50%
+    in positive virūpas and flagged with a distinctive warning badge."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
+
+    # Case 1: Healthy Jupiter (Exalted, 100%) aspecting with +30 virūpas
+    healthy_asp = [{
+        "from_planet": "Jupiter",
+        "virupas": 30.0,
+        "from_dignity_pct": 100.0,
+        "from_dignity_name": "Exalted",
+        "is_debilitated": False
+    }]
+    vit_healthy = calculate_graha_vitality(
+        planet="Mars", sign="Aries", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=75.0,
+        host_planet="Mars", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0, aspect_details=healthy_asp
+    )
+    assert not vit_healthy["aspect_details"][0]["is_distorted"]
+    assert vit_healthy["aspect_details"][0]["adjusted_virupas"] == 30.0
+
+    # Case 2: Debilitated Jupiter (Capricorn, 12.5%) aspecting with +30 virūpas (Option A)
+    debilitated_asp = [{
+        "from_planet": "Jupiter",
+        "virupas": 30.0,
+        "from_dignity_pct": 12.5,
+        "from_dignity_name": "Debilitated",
+        "is_debilitated": True
+    }]
+    vit_debilitated = calculate_graha_vitality(
+        planet="Mars", sign="Aries", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=75.0,
+        host_planet="Mars", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0, aspect_details=debilitated_asp
+    )
+    asp_res = vit_debilitated["aspect_details"][0]
+    assert asp_res["is_distorted"]
+    # Positive virūpas must be dampened by exactly 50%: 30.0 -> 15.0
+    assert asp_res["adjusted_virupas"] == 15.0
+    assert "⚠️ Distorted Ideology / Dogmatic Light" in asp_res["badge"]
+    # Environmental modifier should be lower for distorted benefic light
+    assert vit_debilitated["env_mod"] < vit_healthy["env_mod"]
+
+
+def test_conjunction_dynamics_and_nodal_possession():
+    """Verify conjunction orbs, commanding precedence by Shadbala, and intimate nodal possession."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
+
+    # 1. Ketu intimate conjunction (within 3°20' / one Navamsha):
+    # Suppresses outward expression: efficiency *= 0.80, node_mod = -0.25
+    ketu_conj = [{
+        "planet": "Ketu",
+        "degree_diff": 1.5,
+        "shadbala_pct": 90.0
+    }]
+    vit_ketu = calculate_graha_vitality(
+        planet="Sun", sign="Leo", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=75.0,
+        host_planet="Sun", host_dignity_pct=75.0, host_shadbala_pct=110.0,
+        planet_shadbala_pct=110.0, conjunction_details=ketu_conj
+    )
+    assert vit_ketu["conjunction_details"][0]["orb_band"] == "Exact (Intimate)"
+    assert vit_ketu["node_mod"] == -0.25
+
+    # 2. Conjunction Precedence: higher Shadbala planet commands
+    saturn_conj = [{
+        "planet": "Saturn",
+        "degree_diff": 5.0,
+        "shadbala_pct": 130.0 # Saturn has higher Shadbala than Sun (100.0)
+    }]
+    vit_prec = calculate_graha_vitality(
+        planet="Sun", sign="Leo", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=75.0,
+        host_planet="Sun", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0, conjunction_details=saturn_conj
+    )
+    assert vit_prec["conjunction_details"][0]["commands"] is True
+
+

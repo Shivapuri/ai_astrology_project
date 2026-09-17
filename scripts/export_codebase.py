@@ -27,7 +27,7 @@ import sys
 import argparse
 
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
-DEFAULT_MAX_SIZE_MB = 2.0
+DEFAULT_MAX_SIZE_MB = 2.5
 
 EXCLUDED_DIRS = {
     ".git",
@@ -87,6 +87,8 @@ EXCLUDED_FILES = {
     "build_proof_catalog.py",
     "screenshot.py",
     "screenshot_master_diag.py",
+    "screenshot_aspects_interactive.py",
+    "screenshot_shivapuri_mars.py",
     "search_krishna_chart.py",
     "angelina_jolie_baselines.json",
     "astra_verification_task_list.md",
