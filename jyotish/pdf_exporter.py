@@ -1331,7 +1331,8 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             war_opponent=war_opponent,
             war_badge=war_badge,
             conjunction_details=conj_details,
-            aspect_details=asp_details
+            aspect_details=asp_details,
+            functional_role=fn_role
         )
         quad = vit_res["quadrant"]
         net_vitality = vit_res["vitality_score"]
@@ -1523,7 +1524,18 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             war_badge_html = f"<div style='margin-top:2px;'><span class='badge' style='background:{w_bg}; color:{w_col}; border:1px solid {w_border}; font-size:5.2pt; font-weight:bold;'>{war_badge}</span></div>"
 
         v_tier_text = vit_res.get("vitality_tier", quad["tier"])
-        v_col = vit_res.get("vitality_col", "#64748b")
+        v_col = vit_res.get("vitality_col", "#1e293b")
+        gc_badge = vit_res.get("guru_chandal_badge")
+        gk_badge = vit_res.get("guru_ketu_badge")
+        vk_badge = vit_res.get("vikala_badge")
+        afflictions = []
+        if gc_badge:
+            afflictions.append(f"<span class='badge' style='background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:5.2pt; font-weight:bold;'>{gc_badge}</span>")
+        if gk_badge:
+            afflictions.append(f"<span class='badge' style='background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:5.2pt; font-weight:bold;'>{gk_badge}</span>")
+        if vk_badge:
+            afflictions.append(f"<span class='badge' style='background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size:5.2pt; font-weight:bold;'>{vk_badge}</span>")
+        affliction_badges_html = f"<div style='display:flex; flex-direction:column; gap:1.5px; margin-top:2px;'>{''.join(afflictions)}</div>" if afflictions else ""
 
         diag_cell_html = f"""
         <div style="text-align:center;">
@@ -1531,6 +1543,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
                 {quad['badge']}
             </span>
             {war_badge_html}
+            {affliction_badges_html}
             <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:2px;">
                 Score: ★ {net_vitality:.1f} / 10
             </div>

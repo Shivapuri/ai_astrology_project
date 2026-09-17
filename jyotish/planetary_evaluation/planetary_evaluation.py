@@ -19,6 +19,7 @@ import math
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
 from jyotish.planetary_evaluation.lagna_evaluation import evaluate_lagna_vitality
+from jyotish.karakas import calculate_functional_roles
 
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -495,7 +496,8 @@ def calculate_graha_vitality(
     war_opponent: Optional[str] = None,
     war_badge: Optional[str] = None,
     conjunction_details: Optional[List[Dict[str, Any]]] = None,
-    aspect_details: Optional[List[Dict[str, Any]]] = None
+    aspect_details: Optional[List[Dict[str, Any]]] = None,
+    functional_role: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Calibrated Net Functional Vitality calculation resolving architectural flaws:
@@ -508,6 +510,8 @@ def calculate_graha_vitality(
     7. Integrates Graha Yuddha (Planetary War): Nipidita (-0.60) / War Victor (+0.30) with Combat Stain.
     8. Integrates Recursive Drishti (Option A): Debilitated benefic rays dampened by 50% with distorted badge.
     9. Integrates Conjunction Dynamics: Nodal possession within 3°20' (Ketu suppression / Rahu obsession).
+    10. Integrates Guru-Chāṇḍāla Yoga (Jupiter+Rahu taboo zeal vs Ketu+Jupiter jnana contemplation).
+    11. Integrates Deeptādi Vikala Avasthā (mutilated/besieged by 2+ cruel malefics).
     """
     conjunctions = conjunctions or []
     lajjitadi_states = lajjitadi_states or []
@@ -654,10 +658,18 @@ def calculate_graha_vitality(
     else:
         drishti_mod = clamp(net_drishti_virupas / 35.0, -1.0, 1.0) * 0.7
 
-    # Conjunction Dynamics & Nodal Possession
+    # Conjunction Dynamics, Nodal Possession & Classical Nodal Yogas
     conj_mod = 0.0
     node_mod = 0.0
     processed_conjunction_details = []
+
+    is_guru_chandal = False
+    guru_chandal_badge = None
+    is_guru_ketu = False
+    guru_ketu_badge = None
+
+    cruel_malefics_set = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+    cruel_conjoined_names = []
 
     if conjunction_details:
         for c_item in conjunction_details:
@@ -667,23 +679,51 @@ def calculate_graha_vitality(
             band = "Exact (Intimate)" if diff <= (10.0 / 3.0) else ("Moderate" if diff <= 10.0 else "Wide")
             commands = (cp_sb > planet_shadbala_pct)
 
-            # Close Nodal Possession (within 3°20')
-            if cp == "Ketu" and diff <= (10.0 / 3.0):
-                efficiency *= 0.80  # biological/external suppression
-                node_mod -= 0.25
-            elif cp == "Rahu" and diff <= (10.0 / 3.0):
-                if host_dignity_pct >= 60.0 and host_shadbala_pct >= 90.0:
-                    node_mod += 0.20  # constructive worldly amplification
+            if cp in cruel_malefics_set and cp != planet:
+                cruel_conjoined_names.append(cp)
+
+            # 1. Jupiter + Rahu (Guru-Chāṇḍāla Yoga)
+            if (planet == "Jupiter" and cp == "Rahu") or (planet == "Rahu" and cp == "Jupiter"):
+                is_guru_chandal = True
+                if diff <= (10.0 / 3.0):
+                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Ideological Eclipse)"
+                    node_mod -= 0.35
+                elif diff <= 10.0:
+                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)"
+                    node_mod -= 0.20
                 else:
-                    node_mod -= 0.35  # toxic obsession / delusion
+                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Unorthodox Doctrine)"
+                    conj_mod -= 0.10
+
+            # 2. Jupiter + Ketu (Guru-Ketu Jñāna Yoga)
+            elif (planet == "Jupiter" and cp == "Ketu") or (planet == "Ketu" and cp == "Jupiter"):
+                is_guru_ketu = True
+                guru_ketu_badge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)"
+                node_mod += 0.15
+
+            # 3. Standard Nodal Dynamics for other planets
+            elif cp == "Ketu":
+                if diff <= (10.0 / 3.0):
+                    efficiency *= 0.80  # biological/external suppression
+                    node_mod -= 0.25
+                elif diff <= 10.0:
+                    conj_mod -= 0.15
+            elif cp == "Rahu":
+                if diff <= (10.0 / 3.0):
+                    if host_dignity_pct >= 60.0 and host_shadbala_pct >= 90.0:
+                        node_mod += 0.20  # constructive worldly amplification
+                    else:
+                        node_mod -= 0.35  # toxic obsession / delusion
+                elif diff <= 10.0:
+                    conj_mod -= 0.15
             elif cp in ["Jupiter", "Venus"]:
                 conj_mod += 0.30
             elif cp == lagna_lord:
                 conj_mod += 0.35
             elif cp in ["Saturn", "Mars"]:
                 conj_mod -= 0.30
-            elif cp in ["Rahu", "Ketu"] and diff > (10.0 / 3.0):
-                conj_mod -= 0.20
+            elif cp in ["Rahu", "Ketu"] and diff > 10.0:
+                conj_mod -= 0.10
 
             processed_conjunction_details.append({
                 "planet": cp,
@@ -694,12 +734,32 @@ def calculate_graha_vitality(
             })
     else:
         for cp in conjunctions:
-            if cp in ["Jupiter", "Venus"]:
+            if cp in cruel_malefics_set and cp != planet:
+                cruel_conjoined_names.append(cp)
+
+            if (planet == "Jupiter" and cp == "Rahu") or (planet == "Rahu" and cp == "Jupiter"):
+                is_guru_chandal = True
+                guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)"
+                node_mod -= 0.20
+            elif (planet == "Jupiter" and cp == "Ketu") or (planet == "Ketu" and cp == "Jupiter"):
+                is_guru_ketu = True
+                guru_ketu_badge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)"
+                node_mod += 0.15
+            elif cp in ["Jupiter", "Venus"]:
                 conj_mod += 0.30
             elif cp == lagna_lord:
                 conj_mod += 0.35
             elif cp in ["Saturn", "Mars", "Rahu", "Ketu"]:
                 conj_mod -= 0.30
+
+    # 4. Deeptādi Vikala Avasthā (Besieged by 2+ cruel malefics)
+    is_vikala = False
+    vikala_badge = None
+    vikala_mod = 0.0
+    if len(cruel_conjoined_names) >= 2 and planet not in ["Rahu", "Ketu"]:
+        is_vikala = True
+        vikala_badge = f"🩸 Vikala (Besieged by {', '.join(cruel_conjoined_names)})"
+        vikala_mod = -0.30
 
     env_mod = clamp(drishti_mod + conj_mod, -1.2, 1.2)
 
@@ -741,7 +801,38 @@ def calculate_graha_vitality(
             psy_mod -= 0.20
     psy_mod = clamp(psy_mod, -1.0, 1.0)
 
-    pre_score = base_vit + env_mod + mot_mod + psy_mod + war_mod + node_mod
+    # 9. Ascendant Functional Role Integration
+    if functional_role is None and lagna_sign in ZODIAC_SIGNS:
+        all_roles = calculate_functional_roles(lagna_sign)
+        functional_role = all_roles.get(planet, {})
+    elif functional_role is None:
+        functional_role = {}
+
+    fn_status = functional_role.get("status", "")
+    is_functional_malefic = (fn_status == "Functional Malefic")
+    is_trishadaya = functional_role.get("is_trishadaya", False)
+
+    # Narrative synthesis update for High Dignity + High Muscle under Affliction / Functional Malefic
+    if quad.get("archetype") == "The Generous King":
+        if is_guru_chandal:
+            quad["description"] = (
+                f"High executive capability and expansive mobilization muscle (rules {functional_role.get('ruled_houses_str', 'H11')}), "
+                f"harnessed to unorthodox, dogmatic, or ruthless ideological ambition (Guru-Chāṇḍāla). "
+                f"Massive administrative scale carrying high risk of ethical blind spots."
+            )
+            quad["tier"] = "Ideological Mobilizer"
+            quad["badge"] = "⚡ Ideological Mobilizer"
+            quad["archetype"] = f"{quad['archetype']} (⚡ Ideological Mobilizer)"
+        elif is_functional_malefic and is_trishadaya and is_vikala:
+            quad["description"] = (
+                f"High organizational competence and resource power (rules {functional_role.get('ruled_houses_str', '')}), "
+                f"besieged by cruel planets into aggressive worldly appetite and intense friction."
+            )
+            quad["tier"] = "Embattled Executive"
+            quad["badge"] = "⚡ Embattled Executive"
+            quad["archetype"] = f"{quad['archetype']} (⚡ Embattled Executive)"
+
+    pre_score = base_vit + env_mod + mot_mod + psy_mod + war_mod + node_mod + vikala_mod
     final_score = 5.0 + (pre_score - 5.0) * (0.6 + 0.4 * efficiency)
     final_score = clamp(round(final_score, 1), 1.0, 10.0)
 
@@ -760,6 +851,8 @@ def calculate_graha_vitality(
     else:
         v_tier = "🔴 Severe Hazard" if quad["archetype"] == "The Armed Dictator" else "🔴 Fragile"
         v_bg = "#fee2e2"; v_col = "#991b1b"
+
+    affliction_badges = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge] if b]
 
     return {
         "vitality_score": final_score,
@@ -780,6 +873,15 @@ def calculate_graha_vitality(
         "psy_mod": round(psy_mod, 1),
         "war_mod": round(war_mod, 1),
         "node_mod": round(node_mod, 2),
+        "vikala_mod": round(vikala_mod, 2),
+        "is_guru_chandal": is_guru_chandal,
+        "guru_chandal_badge": guru_chandal_badge,
+        "is_guru_ketu": is_guru_ketu,
+        "guru_ketu_badge": guru_ketu_badge,
+        "is_vikala": is_vikala,
+        "vikala_badge": vikala_badge,
+        "affliction_badges": affliction_badges,
+        "functional_role": functional_role,
         "is_war_winner": is_war_winner,
         "is_war_loser": is_war_loser,
         "war_opponent": war_opponent,
@@ -806,6 +908,7 @@ def calculate_planetary_evaluation(
     d1_lagna = d1_data.get("lagna", {})
     lagna_sign = d1_lagna.get("sign", "Aries")
     lagna_idx = ZODIAC_SIGNS.index(lagna_sign) if lagna_sign in ZODIAC_SIGNS else 0
+    functional_roles = calculate_functional_roles(lagna_sign)
 
     planets_eval_order = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
     
@@ -1328,6 +1431,52 @@ def calculate_planetary_evaluation(
         quad_sb_pct = sb_ratio * 100.0
         quad_res = classify_graha_quadrant(quad_dig_pct, quad_sb_pct, is_node=(p in ["Rahu", "Ketu"]))
 
+        fn_role = functional_roles.get(p, {})
+        step4_info["functional_role"] = fn_role
+
+        # Build detailed conjunctions for calibrated vitality evaluation
+        conj_details = []
+        for other_p, other_d1 in d1_grahas.items():
+            if other_p != p and other_d1.get("sign") == p_sign:
+                o_deg = float(other_d1.get("degree_0_to_30", other_d1.get("longitude", 0.0) % 30.0))
+                my_deg = float(p_d1.get("degree_0_to_30", p_lon % 30.0))
+                deg_diff = abs(my_deg - o_deg)
+                if deg_diff > 15.0:
+                    deg_diff = abs(30.0 - deg_diff)
+                o_sb = 100.0
+                if shadbala_data and other_p in shadbala_data:
+                    o_sb = float(shadbala_data[other_p].get("Pct_Required_Total", 100.0))
+                band = "Exact (Intimate)" if deg_diff <= (10.0 / 3.0) else ("Moderate" if deg_diff <= 10.0 else "Wide")
+                conj_details.append({
+                    "planet": other_p,
+                    "degree_diff": round(deg_diff, 2),
+                    "orb_band": band,
+                    "shadbala_pct": o_sb,
+                    "commands": (o_sb > (sb_ratio * 100.0))
+                })
+
+        vit_res = calculate_graha_vitality(
+            planet=p,
+            sign=p_sign,
+            degree_in_sign=float(p_d1.get("degree_0_to_30", p_lon % 30.0)),
+            dignity_name=d1_dignity_name,
+            dignity_pct=d1_score,
+            host_planet=sign_lord,
+            host_dignity_pct=host_dignity,
+            host_shadbala_pct=100.0,
+            planet_shadbala_pct=sb_ratio * 100.0,
+            net_drishti_virupas=clamped_aspect_net,
+            conjunctions=[c["source"] for c in step3_info.get("details", []) if c.get("type") == "Conjunction"],
+            lajjitadi_states=p_d1.get("avasthas", {}).get("lajjitadi", []),
+            is_retrograde=bool(p_d1.get("is_retrograde")),
+            is_combust=bool(p_d1.get("is_combust")),
+            is_node=(p in ["Rahu", "Ketu"]),
+            lagna_sign=lagna_sign,
+            lagna_lord=rel.SIGN_LORDS.get(lagna_sign, "Mars"),
+            conjunction_details=conj_details,
+            functional_role=fn_role
+        )
+
         planets_result[p] = {
             "planet": p,
             "glyph": PLANET_GLYPHS.get(p, ""),
@@ -1345,6 +1494,14 @@ def calculate_planetary_evaluation(
             },
             "quadrant": quad_res,
             "baladi_avastha": baladi_res,
+            "functional_role": fn_role,
+            "vitality": vit_res,
+            "vitality_score": vit_res["vitality_score"],
+            "vitality_tier": vit_res["vitality_tier"],
+            "is_guru_chandal": vit_res.get("is_guru_chandal", False),
+            "is_guru_ketu": vit_res.get("is_guru_ketu", False),
+            "is_vikala": vit_res.get("is_vikala", False),
+            "affliction_badges": vit_res.get("affliction_badges", []),
             "step1_shadvarga": step1_info,
             "step2_host_rescue": step2_info,
             "step3_aspects": step3_info,

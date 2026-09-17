@@ -17,6 +17,7 @@ class YogaCategory(str, Enum):
     PARIVARTANA = "Parivartana (Exchange)"
     VIPARITA = "Viparita Raja (Reversal)"
     KARTARI = "Kartari (Hemming)"
+    CHANDAL = "Chāṇḍāla & Doṣa (Afflictions)"
 
 class YogaStatus(str, Enum):
     PURE = "Pure & Eminent"

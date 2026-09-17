@@ -413,3 +413,103 @@ def test_conjunction_dynamics_and_nodal_possession():
     assert vit_prec["conjunction_details"][0]["commands"] is True
 
 
+def test_himmler_jupiter_evaluation_and_chandal_badges():
+    """Verify Heinrich Himmler's Jupiter configuration:
+    - Aquarius Lagna -> Jupiter rules 11th (Trishadāya) and 2nd -> Functional Malefic.
+    - Moolatrikona Sagittarius with High Shadbala (112%).
+    - Conjoined Rahu (within 4.9°) -> Guru-Chāṇḍāla Yoga.
+    - Conjoined Saturn & Rahu (2 cruel malefics) -> Vikala Avasthā.
+    - High horsepower preserved (~7.0 / 10 Capable) with prominent warning badges and 'Ideological Mobilizer' archetype.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
+
+    fn_role = {
+        "status": "Functional Malefic",
+        "badge": "⚡ Functional Malefic (Trishadāya)",
+        "is_trishadaya": True,
+        "houses_ruled": [2, 11]
+    }
+    jup_conj = [
+        {"planet": "Rahu", "degree_diff": 4.87, "shadbala_pct": 100.0},
+        {"planet": "Saturn", "degree_diff": 21.64, "shadbala_pct": 105.0}
+    ]
+
+    vit_jup = calculate_graha_vitality(
+        planet="Jupiter", sign="Sagittarius", degree_in_sign=7.77,
+        dignity_name="Moolatrikona", dignity_pct=87.5,
+        host_planet="Jupiter", host_dignity_pct=87.5, host_shadbala_pct=112.0,
+        planet_shadbala_pct=112.0, net_drishti_virupas=0.0,
+        conjunctions=["Rahu", "Saturn"], conjunction_details=jup_conj,
+        functional_role=fn_role,
+        lagna_sign="Aquarius", lagna_lord="Saturn"
+    )
+
+    # 1. Guru-Chandal and Vikala flags
+    assert vit_jup["is_guru_chandal"] is True, "Must identify Guru-Chāṇḍāla Yoga"
+    assert vit_jup["is_guru_ketu"] is False
+    assert vit_jup["is_vikala"] is True, "Must identify Vikala Avasthā (2 cruel malefics)"
+
+    # 2. Affliction badges
+    badges = vit_jup["affliction_badges"]
+    assert any("Guru-Chāṇḍāla" in b for b in badges), "Must include Guru-Chāṇḍāla badge"
+    assert any("Vikala" in b for b in badges), "Must include Vikala badge"
+
+    # 3. High horsepower maintained (~7.0 - 7.9 / 10 Capable)
+    assert 7.0 <= vit_jup["vitality_score"] <= 8.0, f"Expected ~7.0-8.0, got {vit_jup['vitality_score']}"
+    assert "Capable" in vit_jup["vitality_tier"]
+
+    # 4. Archetype re-calibrated from innocent King to Ideological Mobilizer
+    archetype_title = vit_jup["quadrant"]["archetype"]
+    assert "Ideological Mobilizer" in archetype_title, f"Archetype should be Ideological Mobilizer, got {archetype_title}"
+    assert vit_jup["functional_role"]["status"] == "Functional Malefic"
+
+
+def test_guru_ketu_jnana_badge_evaluation():
+    """Verify Jupiter + Ketu conjunction produces pure spiritual contemplation (Jñāna Catalyst)
+    without toxic Chāṇḍāla stigma."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
+
+    fn_role = {
+        "status": "Functional Benefic",
+        "badge": "✨ Functional Benefic (Kona Lord)",
+        "is_trishadaya": False,
+        "houses_ruled": [1, 4]
+    }
+    jup_conj = [
+        {"planet": "Ketu", "degree_diff": 2.0, "shadbala_pct": 95.0}
+    ]
+
+    vit_jup = calculate_graha_vitality(
+        planet="Jupiter", sign="Pisces", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=75.0,
+        host_planet="Jupiter", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Ketu"], conjunction_details=jup_conj,
+        functional_role=fn_role,
+        lagna_sign="Sagittarius", lagna_lord="Jupiter"
+    )
+
+    assert vit_jup["is_guru_ketu"] is True
+    assert vit_jup["is_guru_chandal"] is False
+    assert any("Jñāna Catalyst" in b for b in vit_jup["affliction_badges"])
+    assert "Ideological Mobilizer" not in vit_jup["quadrant"]["archetype"]
+    assert vit_jup["vitality_score"] >= 7.0
+
+
+def test_full_chart_functional_role_pipeline(test_chart):
+    """Verify that calculate_planetary_evaluation attaches functional_role, vitality_score,
+    and affliction flags to all planets in a real chart."""
+    eval_data = test_chart["planetary_evaluation"]
+    planets = eval_data["planets"]
+
+    for p_name, p_data in planets.items():
+        assert "functional_role" in p_data, f"Missing functional_role on {p_name}"
+        assert "vitality_score" in p_data, f"Missing vitality_score on {p_name}"
+        assert "vitality_tier" in p_data, f"Missing vitality_tier on {p_name}"
+        assert "is_guru_chandal" in p_data, f"Missing is_guru_chandal on {p_name}"
+        assert "is_guru_ketu" in p_data, f"Missing is_guru_ketu on {p_name}"
+        assert "is_vikala" in p_data, f"Missing is_vikala on {p_name}"
+        assert 1.0 <= p_data["vitality_score"] <= 10.0
+
+
+

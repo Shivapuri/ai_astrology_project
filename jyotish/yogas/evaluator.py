@@ -13,6 +13,7 @@ from jyotish.yogas.lunar_solar_yogas import detect_lunar_and_solar_yogas
 from jyotish.yogas.parivartana import detect_parivartana_yogas
 from jyotish.yogas.viparita import detect_viparita_raja_yogas
 from jyotish.yogas.kartari import detect_kartari_yogas
+from jyotish.yogas.chandal_yogas import detect_chandal_yogas
 
 def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -43,6 +44,9 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     # 7. Kartari Yogas
     all_yogas.extend(detect_kartari_yogas(chart))
     
+    # 8. Chandal & Nodal Affliction Yogas
+    all_yogas.extend(detect_chandal_yogas(chart))
+    
     # Sort by plausibility score descending
     all_yogas.sort(key=lambda y: y.plausibility_score, reverse=True)
     
@@ -60,7 +64,8 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
         YogaCategory.SOLAR.value,
         YogaCategory.PARIVARTANA.value,
         YogaCategory.VIPARITA.value,
-        YogaCategory.KARTARI.value
+        YogaCategory.KARTARI.value,
+        YogaCategory.CHANDAL.value
     ]
     
     return {

@@ -20,6 +20,7 @@ from jyotish.yogas.lunar_solar_yogas import detect_lunar_and_solar_yogas
 from jyotish.yogas.parivartana import detect_parivartana_yogas
 from jyotish.yogas.viparita import detect_viparita_raja_yogas
 from jyotish.yogas.kartari import detect_kartari_yogas
+from jyotish.yogas.chandal_yogas import detect_chandal_yogas
 from jyotish.yogas.breakers import (
     audit_neecha_bhanga,
     audit_trishadaya_interference,
@@ -329,3 +330,52 @@ def test_generate_kala_chart_yogas_payload():
     assert any("Mālavya" in n for n in yoga_names), "Shivapuri should have Malavya Mahapurusha Yoga"
     assert any("Budhāditya" in n for n in yoga_names), "Shivapuri should have Budhaditya Yoga"
     assert any("Mahā Parivartana" in n for n in yoga_names), "Shivapuri should have Maha Parivartana Yoga"
+    assert YogaCategory.CHANDAL.value in y_data["categories"]
+
+
+# =============================================================================
+# 9. CHANDAL & NODAL AFFLICTION YOGAS
+# =============================================================================
+
+def test_guru_chandal_yoga_detection():
+    """Verify Guru-Chandal Yoga detection (Jupiter + Rahu in same sign)."""
+    # Mock chart: Aquarius Lagna, Jupiter + Rahu in Sagittarius (H11)
+    chart = make_mock_chart("Aquarius", {
+        "Jupiter": {"sign": "Sagittarius", "longitude": 247.77, "degree_0_to_30": 7.77},
+        "Rahu": {"sign": "Sagittarius", "longitude": 242.90, "degree_0_to_30": 2.90},
+        "Saturn": {"sign": "Sagittarius", "longitude": 269.41, "degree_0_to_30": 29.41}
+    })
+    yogas = detect_chandal_yogas(chart)
+    gc = next((y for y in yogas if y.id == "guru_chandal_yoga"), None)
+    assert gc is not None, "Must detect Guru-Chandal Yoga when Jupiter and Rahu are in the same sign"
+    assert gc.category == YogaCategory.CHANDAL
+    assert "Jupiter" in gc.participating_planets
+    assert "Rahu" in gc.participating_planets
+    assert gc.status == YogaStatus.STAINED
+    # Saturn conjoined in Sagittarius should trigger Vikala breaker
+    assert any("Vikala" in b.factor for b in gc.breakers), "Must record Saturn co-conjunction as Vikala breaker"
+
+
+def test_guru_ketu_jnana_yoga_detection():
+    """Verify Guru-Ketu Jnana Yoga detection (Jupiter + Ketu promotes spiritual contemplation)."""
+    chart = make_mock_chart("Pisces", {
+        "Jupiter": {"sign": "Pisces", "longitude": 345.0, "degree_0_to_30": 15.0},
+        "Ketu": {"sign": "Pisces", "longitude": 348.0, "degree_0_to_30": 18.0}
+    })
+    yogas = detect_chandal_yogas(chart)
+    gk = next((y for y in yogas if y.id == "guru_ketu_jnana_yoga"), None)
+    assert gk is not None, "Must detect Guru-Ketu Jnana Yoga when Jupiter and Ketu are in the same sign"
+    assert gk.status == YogaStatus.PURE, "Guru-Ketu is a spiritual jnana combination, not an asubha dosha"
+
+
+def test_shrapit_and_angaraka_yoga_detection():
+    """Verify Shrapit Yoga (Saturn+Rahu) and Angaraka Yoga (Mars+Rahu)."""
+    chart = make_mock_chart("Aries", {
+        "Saturn": {"sign": "Libra", "longitude": 195.0, "degree_0_to_30": 15.0},
+        "Rahu": {"sign": "Libra", "longitude": 198.0, "degree_0_to_30": 18.0},
+        "Mars": {"sign": "Capricorn", "longitude": 280.0, "degree_0_to_30": 10.0}
+    })
+    yogas = detect_chandal_yogas(chart)
+    shrapit = next((y for y in yogas if y.id == "shrapit_yoga"), None)
+    assert shrapit is not None
+    assert shrapit.status == YogaStatus.RESCUED, "Exalted Saturn in Libra should rescue Shrapit Yoga"
