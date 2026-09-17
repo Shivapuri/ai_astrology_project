@@ -633,9 +633,9 @@ def calculate_graha_vitality(
                 is_distorted = True
                 adj_vir = (vir * 0.5) if vir > 0 else vir  # 50% positive dampening
                 if from_p == "Jupiter":
-                    badge = "⚠️ Distorted Ideology / Dogmatic Light"
+                    badge = "⚠️ Compromised Guidance / Dogmatic Light"
                 else:
-                    badge = "⚠️ Corrupted Indulgence"
+                    badge = "⚠️ Corrupted Indulgence / Compromised Harmony"
             else:
                 adj_vir = vir
 

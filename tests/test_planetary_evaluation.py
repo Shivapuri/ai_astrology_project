@@ -373,7 +373,7 @@ def test_option_a_recursive_drishti_dampening():
     assert asp_res["is_distorted"]
     # Positive virūpas must be dampened by exactly 50%: 30.0 -> 15.0
     assert asp_res["adjusted_virupas"] == 15.0
-    assert "⚠️ Distorted Ideology / Dogmatic Light" in asp_res["badge"]
+    assert "⚠️ Compromised Guidance / Dogmatic Light" in asp_res["badge"]
     # Environmental modifier should be lower for distorted benefic light
     assert vit_debilitated["env_mod"] < vit_healthy["env_mod"]
 

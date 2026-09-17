@@ -1429,6 +1429,18 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             conj_spans.append(f"<span style='color:{c_col}; font-weight:600;'>{orb_tag}{cmd_tag}{c_glyph} {cp[:2]}</span>")
         yuti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>YUTI:</strong> {' '.join(conj_spans)}</div>" if conj_spans else ""
 
+        def get_dignity_icon(dig_str: str) -> str:
+            d = (dig_str or "").lower()
+            if "exalt" in d or "uccha" in d: return "👑"
+            if "moola" in d: return "🏛️"
+            if "own" in d or "svastha" in d: return "🏡"
+            if "great friend" in d or "adhi-mitra" in d: return "🤝"
+            if "friend" in d or "mitra" in d: return "🙂"
+            if "great enemy" in d or "adhi-shatru" in d: return "⚔️"
+            if "enemy" in d or "shatru" in d: return "⚠️"
+            if "debilit" in d or "neecha" in d: return "🔻"
+            return "⚖️"
+
         asp_spans = []
         for asp_info in vit_res.get("aspect_details", []):
             asp_p = asp_info.get("from_planet")
@@ -1440,7 +1452,8 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             a_col = "#15803d" if is_p else "#b91c1c"
             a_glyph = GRAHA_GLYPHS_MAP.get(asp_p, asp_p[:2])
             distort_tag = "⚠️" if asp_info.get("is_distorted") else ""
-            asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{distort_tag}{sign_ch}{raw_v}v ({a_glyph})</span>")
+            dig_icon = get_dignity_icon(asp_info.get("from_dignity_name", ""))
+            asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{distort_tag}{sign_ch}{raw_v}v ({a_glyph} {dig_icon})</span>")
         drishti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>DRISHTI:</strong> {' '.join(asp_spans[:3])}</div>" if asp_spans else ""
 
         influences_cell_html = f"""
@@ -1490,7 +1503,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             </div>
             """
         else:
-            badges_html = "".join(lajjita_badges) if lajjita_badges else '<span style="color:#a8a29e; font-style:italic; font-size:5.5pt;">Neutral</span>'
+            badges_html = " ".join(lajjita_badges) if lajjita_badges else "<span style='color:#a8a29e; font-size:5.2pt; font-style:italic;'>Neutral (Unstirred)</span>"
             avasthas_cell_html = f"""
             <div>
                 <div style="font-size:6pt; font-weight:bold; color:#475569;">
@@ -1509,6 +1522,9 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             w_border = "#fca5a5" if is_war_loser else "#93c5fd"
             war_badge_html = f"<div style='margin-top:2px;'><span class='badge' style='background:{w_bg}; color:{w_col}; border:1px solid {w_border}; font-size:5.2pt; font-weight:bold;'>{war_badge}</span></div>"
 
+        v_tier_text = vit_res.get("vitality_tier", quad["tier"])
+        v_col = vit_res.get("vitality_col", "#64748b")
+
         diag_cell_html = f"""
         <div style="text-align:center;">
             <span style="display:inline-block; background:{quad['bg']}; color:{quad['color']}; border:1px solid {quad['color']}44; font-size:6.5pt; font-weight:bold; padding:1.5px 4px; border-radius:3px;">
@@ -1518,7 +1534,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:2px;">
                 Score: ★ {net_vitality:.1f} / 10
             </div>
-            <div style="font-size:5.2pt; color:#64748b;">{quad['tier']}</div>
+            <div style="font-size:5.2pt; font-weight:bold; color:{v_col};">{v_tier_text}</div>
         </div>
         """
 

@@ -6195,13 +6195,15 @@
                         if (['Jupiter', 'Venus'].includes(fromP) && isDeb) {
                             isDistorted = true;
                             adjVir = (vir > 0) ? (vir * 0.5) : vir; // 50% positive dampening
-                            badge = (fromP === 'Jupiter') ? '⚠️ Distorted Ideology / Dogmatic Light' : '⚠️ Corrupted Indulgence';
+                            badge = (fromP === 'Jupiter') ? '⚠️ Compromised Guidance / Dogmatic Light' : '⚠️ Corrupted Indulgence / Compromised Harmony';
                         }
                         totalAdjVir += adjVir;
                         processedAspDetails.push({
                             from_planet: fromP,
                             raw_virupas: vir,
                             adjusted_virupas: adjVir,
+                            from_dignity_pct: Number(asp.from_dignity_pct || 50.0),
+                            from_dignity_name: String(asp.from_dignity_name || ''),
                             is_debilitated: isDeb,
                             is_distorted: isDistorted,
                             badge: badge
@@ -6293,6 +6295,26 @@
                 let finalScore = 5.0 + (preScore - 5.0) * (0.6 + 0.4 * efficiency);
                 finalScore = Math.max(1.0, Math.min(10.0, Math.round(finalScore * 10) / 10));
 
+                let vTier = "🟡 Resilient";
+                let vBg = "#fef9c3";
+                let vCol = "#854d0e";
+                if (finalScore >= 8.5) {
+                    vTier = "🌟 Sovereign";
+                    vBg = "#fef3c7"; vCol = "#92400e";
+                } else if (finalScore >= 7.0) {
+                    vTier = "🟢 Capable";
+                    vBg = "#dcfce7"; vCol = "#15803d";
+                } else if (finalScore >= 5.5) {
+                    vTier = "🟡 Resilient";
+                    vBg = "#fef9c3"; vCol = "#854d0e";
+                } else if (finalScore >= 4.0) {
+                    vTier = "🟠 Strained";
+                    vBg = "#ffedd5"; vCol = "#9a3412";
+                } else {
+                    vTier = (quad.archetype === "The Armed Dictator") ? "🔴 Severe Hazard" : "🔴 Fragile";
+                    vBg = "#fee2e2"; vCol = "#991b1b";
+                }
+
                 return {
                     baladi: baladi,
                     effective_dignity_pct: effDig,
@@ -6303,6 +6325,9 @@
                     is_neecha_bhanga: isNeechaBhanga,
                     quadrant: quad,
                     vitality_score: finalScore,
+                    vitality_tier: vTier,
+                    vitality_bg: vBg,
+                    vitality_col: vCol,
                     war_info: warInfo,
                     war_mod: warMod,
                     node_mod: nodeMod,
@@ -7069,6 +7094,19 @@
                     yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
 
+                function getDignityIcon(digStr) {
+                    const d = (digStr || '').toLowerCase();
+                    if (d.includes('exalt') || d.includes('uccha')) return '👑';
+                    if (d.includes('moola')) return '🏛️';
+                    if (d.includes('own') || d.includes('svastha')) return '🏡';
+                    if (d.includes('great friend') || d.includes('adhi-mitra')) return '🤝';
+                    if (d.includes('friend') || d.includes('mitra')) return '🙂';
+                    if (d.includes('great enemy') || d.includes('adhi-shatru')) return '⚔️';
+                    if (d.includes('enemy') || d.includes('shatru')) return '⚠️';
+                    if (d.includes('debilit') || d.includes('neecha')) return '🔻';
+                    return '⚖️';
+                }
+
                 let drishtiHtml = '';
                 if (vitRes.aspect_details && vitRes.aspect_details.length > 0) {
                     const aspSpans = vitRes.aspect_details.map(asp => {
@@ -7080,9 +7118,10 @@
                         const tagColor = isPlus ? '#15803d' : '#b91c1c';
                         const aspGlyph = grahaGlyphs[aspG] || aspG.substring(0, 2);
                         const distortTag = asp.is_distorted ? '⚠️ ' : '';
+                        const digIcon = getDignityIcon(asp.from_dignity_name);
                         const distortNote = asp.is_distorted ? `<br>• <strong>Option A (Distorted Ray):</strong> ${asp.badge}. Originates from debilitated ${aspG}; positive light dampened by 50% (${(rawV * 0.5).toFixed(0)}v effective).` : '';
-                        const aspTip = `<strong>${distortTag}${aspG} Aspect: ${signChar}${rawV} Virūpas</strong><br>• <strong>Type:</strong> ${isPlus ? 'Subha Dṛṣṭi (Benefic light)' : 'Aśubha Dṛṣṭi (Challenging pressure)'}${distortNote}<br>• <strong>Intensity:</strong> ${rawV} / 60 Virūpas.`;
-                        return `<span class="tooltip-target" style="color:${tagColor}; font-weight:600; cursor:help;" data-tooltip="${aspTip}">${distortTag}${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)})</span>`;
+                        const aspTip = `<strong>${distortTag}${aspG} Aspect: ${signChar}${rawV} Virūpas</strong><br>• <strong>Type:</strong> ${isPlus ? 'Subha Dṛṣṭi (Benefic light)' : 'Aśubha Dṛṣṭi (Challenging pressure)'}<br>• <strong>${aspG} Dignity:</strong> ${digIcon} ${asp.from_dignity_name || 'Neutral'} (${asp.from_dignity_pct ? asp.from_dignity_pct.toFixed(0) : '50'}%)${distortNote}<br>• <strong>Intensity:</strong> ${rawV} / 60 Virūpas.`;
+                        return `<span class="tooltip-target" style="color:${tagColor}; font-weight:600; cursor:help;" data-tooltip="${aspTip}">${distortTag}${signChar}${rawV}v (${aspGlyph} ${aspG.substring(0,2)} ${digIcon})</span>`;
                     }).filter(Boolean);
                     drishtiHtml = aspSpans.length > 0 
                         ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspSpans.join(' ')}</div>` 
@@ -7158,15 +7197,15 @@
                             icon = '🟣'; style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
                             feelingExp = 'Ashamed & Inhibited: Feels bashful or self-conscious about expressing gifts.';
                         } else if (st.includes('Trushita')) {
-                            icon = '💧'; style = 'background:#cffafe; color:#155e75; border:1px solid #67e8f9;';
-                            feelingExp = 'Thirsty & Yearning: Yearns for fulfillment that feels perpetually just out of reach.';
+                            icon = '💧'; style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
+                            feelingExp = 'Thirsty & Yearning: Yearns for nourishment from water signs or benefic aspects.';
+                        } else {
+                            icon = '⚪'; style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                            feelingExp = 'Special condition.';
                         }
 
-                        const avaTip = `<strong>${icon} ${st}</strong><br>` +
-                            `• <strong>Trigger Condition:</strong> ${cond}<br>` +
-                            `• <strong>Feeling State:</strong> ${feelingExp}`;
-
-                        return `<span class="avastha-badge-pill tooltip-target" style="${style} font-size:9px; cursor:help;" data-tooltip="${avaTip}">${icon} ${label}${nuanceNote}</span>`;
+                        const avaTip = `<strong>${icon} ${st}</strong><br>• <strong>Condition:</strong> ${cond}<br>• <strong>Psychological Impact:</strong> ${feelingExp}`;
+                        return `<span class="badge tooltip-target" style="${style} font-size:9.5px; cursor:help;" data-tooltip="${avaTip}">${icon} ${label}${nuanceNote}</span>`;
                     });
                     avasthasHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px;">${badges.join('')}</div>`;
                 }
@@ -7182,13 +7221,13 @@
                 `;
 
                 // Cell 8: Functional Archetype & Calibrated Vitality HTML
-                const quadTooltip = `<strong>★ ${graha} 4-Quadrant Behavioral Archetype: ${quad.archetype}</strong><br>` +
-                    `• <strong>Quality vs Muscle Matrix:</strong> ${quad.desc}<br>` +
-                    `• <strong>Effective Dignity (Quality):</strong> ${effDig.toFixed(0)}% (Moral integrity & purity of motive)<br>` +
-                    `• <strong>Effective Shadbala (Muscle):</strong> ${effSb.toFixed(0)}% of required (Physical horsepower & kinetic leverage)<br>` +
-                    `• <strong>Tier Diagnosis:</strong> ${quad.tier}<br>` +
+                const quadTooltip = `<strong>★ ${graha} Diagnostics</strong><br>` +
+                    `• <strong>Inherent Engine:</strong> ${quad.badge} (${quad.tier})<br>` +
+                    `• <strong>Engine Definition:</strong> ${quad.desc}<br>` +
+                    `• <strong>Effective Dignity (Quality):</strong> ${effDig.toFixed(0)}% (Moral integrity & motive)<br>` +
+                    `• <strong>Effective Shadbala (Muscle):</strong> ${effSb.toFixed(0)}% of required (Physical horsepower)<br>` +
                     `• <strong>Foundational Host Anchor:</strong> ${rescueBadge} (${vitRes.rescue_desc})<br>` +
-                    `• <strong>Calibrated Vitality Score:</strong> ${netVitality.toFixed(1)} / 10 (synthesizing quality, muscle, host rescue, biological efficiency, and aspect weather).`;
+                    `• <strong>Actualized Vitality:</strong> ★ ${netVitality.toFixed(1)} / 10 (${vitRes.vitality_tier}) — real-world performance under current aspects, conjunctions, and avasthas.`;
 
                 let warBadgeHtml = '';
                 if (warInfo && warInfo.badge) {
@@ -7208,7 +7247,7 @@
                         <div style="font-size:10.5px; font-weight:bold; color:#1e293b; margin-top:2px;">
                             <strong style="font-size:13px;">★ ${netVitality.toFixed(1)}</strong> <span style="font-size:10px; color:#64748b;">/ 10</span>
                         </div>
-                        <div style="font-size:9.5px; color:#64748b;">${quad.tier}</div>
+                        <div style="font-size:9.5px; font-weight:600; color:${vitRes.vitality_col || '#64748b'};">${vitRes.vitality_tier || quad.tier}</div>
                     </div>
                 `;
 
