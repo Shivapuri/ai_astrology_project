@@ -3161,16 +3161,16 @@
                 <div class="setting-option-card" onclick="document.getElementById('radio-export-dossier-a4').click()">
                     <input type="radio" id="radio-export-dossier-a4" name="exportPreset" value="master_dossier_a4" checked onchange="onExportPresetChange('master_dossier_a4')">
                     <label for="radio-export-dossier-a4" style="margin-left: 8px;">
-                        <strong>🌟 Complete Master Astrological Dossier (A4 Multi-Page) — Recommended</strong>
-                        <span class="setting-chip">Root D1 + Harmonic Bi-Wheel + Master Graha Diagnostics + D9 Navāṃśa & Vargas + 16-Varga Matrix + Classical Yogas + Decoded Tooltips Reference Key (7 Pages)</span>
+                        <strong>🌟 Complete Master Astrological Dossier (A4 Horizontal / Landscape) — Recommended</strong>
+                        <span class="setting-chip">Root D1 + Concentric Bi-Wheel (D1+D9) + Master Diagnostics (D1, D9, D10 with Nakshatra Drives) + Side-by-Side Vargas (North &amp; South) + 16-Varga Matrix + 120-Yr Timeline + Classical Yogas</span>
                     </label>
                 </div>
                 
                 <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
                     <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" onchange="onExportPresetChange('master_a3')">
                     <label for="radio-export-a3" style="margin-left: 8px;">
-                        <strong>📑 Master Astrological Plan (A3 Landscape)</strong>
-                        <span class="setting-chip">Wide-Format Spread: D1 Hub + D9/D10/D7 Clusters + 16-Varga Vimśopaka Matrix</span>
+                        <strong>📑 Master Astrological Plan (A3 Horizontal / Landscape Spread)</strong>
+                        <span class="setting-chip">Expansive Wide-Format Archival Spread: High-res vector charts, extended vargas &amp; 16-varga matrices</span>
                     </label>
                 </div>
                 
@@ -3227,6 +3227,10 @@
                             </select>
                         </span>
                     </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #f0fdf4; padding: 5px 8px; border-radius: 5px; border: 1px solid #bbf7d0;">
+                        <input type="checkbox" id="expIncDualVargas" checked> 
+                        <span><strong>Divisional Charts: North &amp; South Indian Side-by-Side</strong> (D10, D7, D2, D3, D4, D12, D30, D60)</span>
+                    </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncD1" checked> <strong>D1 Rāśi</strong> (Root Life & Tanu)
                     </label>
@@ -3255,19 +3259,25 @@
             </div>
 
             <div class="setting-section" id="exportTablesToggle">
-                <h4>4. Included Diagnostic Tables</h4>
+                <h4>4. Included Diagnostic Tables & Analysis</h4>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncMasterDiagnostics" checked> <strong>Master Graha Diagnostics & Lagna</strong>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #fdf6e2; padding: 5px 8px; border-radius: 5px; border: 1px solid #ebd9c8;">
+                        <input type="checkbox" id="expIncMasterDiagnostics" checked> <strong>Master Graha Diagnostics: D1 Root, D9 Navāṃśa &amp; D10 Daśāṃśa</strong> (9 Columns with Nakshatra Subconscious Drives)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncDiagnosticKey" checked> <strong>Master Diagnostic Key (Decoded Tooltips)</strong>
+                        <input type="checkbox" id="expIncTimeline" checked> <strong>Vimśottarī Daśā 120-Year Timeline</strong> (with Active Sub-Periods)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncYogas" checked> <strong>Classical Yogas & Breakers Audit</strong>
+                        <input type="checkbox" id="expIncVimshopaka" checked> <strong>16-Varga Viṃśopaka Matrix</strong> (All 9 Grahas &amp; Counts)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncPlacements" checked> Planetary Placements & Nakshatras
+                        <input type="checkbox" id="expIncDiagnosticKey" checked> <strong>Master Diagnostic Key</strong> (Decoded Plain English)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncYogas" checked> <strong>Classical Yogas &amp; Breakers Audit</strong>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncPlacements" checked> Planetary Placements &amp; Nakshatras
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncCusps" checked> Campanus Bhava Chalita Cusps
@@ -3276,19 +3286,13 @@
                         <input type="checkbox" id="expIncDignities" checked> 5-Fold Compound Dignities
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncAvasthas" checked> Qualitative & Lajjitādi Avasthās
+                        <input type="checkbox" id="expIncAvasthas" checked> Qualitative &amp; Lajjitādi Avasthās
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncYogaJudgment" checked> Strengths Matrix • Yoga Judgment
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncShadbala" checked> Ṣaḍbala Strength Breakdown Grid
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncDasha" checked> Vimśottarī Daśā Major Cycles
-                    </label>
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncVimshopaka" checked> 16-Varga Viṃśopaka Scoring Matrix
                     </label>
                 </div>
             </div>
@@ -14014,6 +14018,7 @@
             const options = {
                 preset: preset,
                 page_size: pageSize,
+                landscape: true,
                 chart_style: chartStyle,
                 notation: notation,
                 include_d1: document.getElementById('expIncD1')?.checked ?? true,
@@ -14022,8 +14027,12 @@
                 include_d9: document.getElementById('expIncD9')?.checked ?? true,
                 include_d10: document.getElementById('expIncD10')?.checked ?? true,
                 include_d7: document.getElementById('expIncD7')?.checked ?? true,
+                include_dual_vargas: document.getElementById('expIncDualVargas')?.checked ?? true,
                 include_master_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
+                include_d9_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
+                include_d10_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
                 include_diagnostic_key: document.getElementById('expIncDiagnosticKey')?.checked ?? true,
+                include_timeline: document.getElementById('expIncTimeline')?.checked ?? true,
                 include_yogas: document.getElementById('expIncYogas')?.checked ?? true,
                 include_placements: document.getElementById('expIncPlacements')?.checked ?? true,
                 include_cusps: document.getElementById('expIncCusps')?.checked ?? true,
@@ -14032,7 +14041,7 @@
                 include_lajjitadi: document.getElementById('expIncAvasthas')?.checked ?? true,
                 include_yoga_judgment: document.getElementById('expIncYogaJudgment')?.checked ?? true,
                 include_shadbala: document.getElementById('expIncShadbala')?.checked ?? true,
-                include_dasha: document.getElementById('expIncDasha')?.checked ?? true,
+                include_dasha: true,
                 include_vimshopaka: document.getElementById('expIncVimshopaka')?.checked ?? true,
                 additional_vargas: additionalVargas,
                 nakshatra_system: currentNakshatraSystem

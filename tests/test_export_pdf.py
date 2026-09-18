@@ -143,3 +143,69 @@ def test_export_chart_pdf_biwheel(sample_chart):
     assert pdf_bytes.startswith(b"%PDF-")
     assert len(pdf_bytes) > 50000
 
+
+def test_master_diagnostics_d1_d9_d10_and_subconscious_drive(sample_chart):
+    options = {
+        "page_size": "A4",
+        "landscape": True,
+        "include_master_diagnostics": True,
+        "include_d9_diagnostics": True,
+        "include_d10_diagnostics": True
+    }
+    html = generate_report_html(sample_chart, options)
+    # Check landscape CSS
+    assert "A4 landscape" in html
+    # Check D1 Master Diagnostics
+    assert "Master Graha Diagnostics: D1 Rāśi" in html
+    assert "Subconscious Drive (Nakshatra)" in html
+    # Check D9 Navamsha Swamsha card & Diagnostics
+    assert "Swāṃśa (D9 Navāṃśa Lagna)" in html
+    assert "Master Graha Diagnostics: D9 Navāṃśa" in html
+    assert "Navāṃśa Lagna (D9)" in html
+    # Check D10 Dashamsha Executive card & Diagnostics
+    assert "Daśāṃśa Lagna (D10 Career Horizon)" in html
+    assert "Master Graha Diagnostics: D10 Daśāṃśa" in html
+    assert "Career Seat (D10)" in html
+
+
+def test_dual_vargas_north_and_south_indian(sample_chart):
+    options = {
+        "page_size": "A4",
+        "landscape": True,
+        "include_dual_vargas": True,
+        "dual_vargas": ["D10", "D7", "D2", "D3", "D4", "D12", "D30", "D60"]
+    }
+    html = generate_report_html(sample_chart, options)
+    # Check North and South Indian charts side-by-side
+    assert "North Indian (Diamond)" in html
+    assert "South Indian (Fixed Square)" in html
+    assert "D10 Daśāṃśa" in html
+    assert "D7 Saptāṃśa" in html
+    assert "D2 Horā" in html
+    assert "D3 Drekkāṇa" in html
+    assert "D4 Caturthāṃśa" in html
+    assert "D12 Dvādaśāṃśa" in html
+    assert "D30 Triṃśāṃśa" in html
+    assert "D60 Ṣaṣṭyāṃśa" in html
+
+
+def test_vimshottari_timeline_and_16_varga_matrix(sample_chart):
+    options = {
+        "page_size": "A4",
+        "landscape": True,
+        "include_timeline": True,
+        "include_vimshopaka": True
+    }
+    html = generate_report_html(sample_chart, options)
+    # Check 120-year timeline
+    assert "Vimśottarī Daśā 120-Year Parāśari Timeline" in html
+    assert "Active Mahādaśā Spotlight" in html
+    assert "Full 9 Antardaśā Sub-Periods Schedule" in html
+    assert "★ CURRENT" in html
+    # Check 16-Varga matrix with Rahu & Ketu and dignity counts
+    assert "16-Varga Viṃśopaka Strength &amp; Dignity Matrix" in html or "16-Varga Viṃśopaka Strength & Dignity Matrix" in html
+    assert "Dignified / Afflicted" in html
+    assert "Rahu" in html
+    assert "Ketu" in html
+
+

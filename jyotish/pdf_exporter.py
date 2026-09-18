@@ -26,6 +26,7 @@ from jyotish.planetary_evaluation import (
     detect_planetary_wars
 )
 from jyotish.planetary_evaluation.planetary_evaluation import get_dignity_score
+from jyotish.nakshatra_metadata import get_nakshatra_metadata
 
 # Standard Parashara Shadbala minimum benchmarks (in Virupas)
 SHADBALA_REQUIRED = {
@@ -39,22 +40,22 @@ SHADBALA_REQUIRED = {
 }
 
 VARGA_TITLES = {
-    "D1": "D1 - Rāśi (Root Life)",
-    "D9": "D9 - Navāṃśa (Dharma & Destiny)",
-    "D10": "D10 - Daśāṃśa (Career & Karma)",
-    "D7": "D7 - Saptāṃśa (Progeny & Partnerships)",
-    "D2": "D2 - Horā (Wealth & Resources)",
-    "D3": "D3 - Drekkāṇa (Siblings & Courage)",
-    "D4": "D4 - Caturthāṃśa (Property & Fortune)",
-    "D12": "D12 - Dvādaśāṃśa (Parents & Lineage)",
-    "D16": "D16 - Ṣoḍaśāṃśa (Vehicles & Pleasures)",
-    "D20": "D20 - Viṃśāṃśa (Spiritual Progress)",
-    "D24": "D24 - Siddhāṃśa (Higher Learning & Intellect)",
-    "D27": "D27 - Bhamśa (Strengths & Weaknesses)",
-    "D30": "D30 - Triṃśāṃśa (Arishta & Misfortune)",
-    "D40": "D40 - Khavedāṃśa (Auspicious Effects)",
-    "D45": "D45 - Akṣavedāṃśa (General Well-being)",
-    "D60": "D60 - Ṣaṣṭyāṃśa (Karmic Blueprint)"
+    "D1": "D1 Rāśi • Root Life & Physical Baseline",
+    "D9": "D9 Navāṃśa • Dharma & Soul Destiny",
+    "D10": "D10 Daśāṃśa • Career & Karma",
+    "D7": "D7 Saptāṃśa • Progeny & Partnerships",
+    "D2": "D2 Horā • Wealth & Resources",
+    "D3": "D3 Drekkāṇa • Siblings & Courage",
+    "D4": "D4 Caturthāṃśa • Property & Fortune",
+    "D12": "D12 Dvādaśāṃśa • Parents & Lineage",
+    "D16": "D16 Ṣoḍaśāṃśa • Vehicles & Pleasures",
+    "D20": "D20 Viṃśāṃśa • Spiritual Progress",
+    "D24": "D24 Siddhāṃśa • Higher Learning & Intellect",
+    "D27": "D27 Bhamśa • Strengths & Weaknesses",
+    "D30": "D30 Triṃśāṃśa • Arishta & Misfortune",
+    "D40": "D40 Khavedāṃśa • Auspicious Effects",
+    "D45": "D45 Akṣavedāṃśa • General Well-being",
+    "D60": "D60 Ṣaṣṭyāṃśa • Root Karmic Blueprint"
 }
 
 ALL_VARGAS_ORDER = [
@@ -991,6 +992,122 @@ def render_lagna_vitality_card(chart_data: Dict[str, Any], varga: str = "D1") ->
     """
 
 
+def render_d9_swamsha_card(chart_data: Dict[str, Any], notation: str = "symbol") -> str:
+    """Renders the executive Swamsha (D9 Navamsha Lagna) & Soul Purpose Architecture card."""
+    d9_v = chart_data.get("vargas", {}).get("D9", {})
+    d9_lagna = d9_v.get("lagna", {})
+    lg_sign = d9_lagna.get("sign", "-")
+    lg_deg = d9_lagna.get("degree_0_to_30", 0.0)
+    lg_lord = SIGN_LORDS.get(lg_sign, "-")
+    
+    ak_info = get_atmakaraka_info(chart_data)
+    vargottamas = get_vargottama_planets(chart_data)
+    varg_str = ", ".join(vargottamas) if vargottamas else "None"
+    
+    d9_grahas = d9_v.get("grahas", {})
+    lord_graha = d9_grahas.get(lg_lord, {})
+    lord_dig = lord_graha.get("dignity_breakdown", {}).get("final_dignity", lord_graha.get("dignity", "Neutral"))
+    lord_sign = lord_graha.get("sign", "-")
+    
+    return f"""
+    <div class="card" style="margin-bottom:8px; border:1.5px solid #dcb594; background:#fffdfa;">
+        <div class="card-header" style="background:#f5ece0; padding:5px 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14pt;">🏛️</span>
+                <div>
+                    <h3 style="font-size:9pt; margin:0; color:#4a3325;">Swāṃśa (D9 Navāṃśa Lagna) • Soul Dharma &amp; Higher Architecture</h3>
+                    <span style="font-size:6.8pt; color:#7c6853;">Swāṃśa Sign: <strong>{lg_sign} {format_deg_short(lg_deg)}</strong> • Soul Lord: <strong>{lg_lord}</strong> (in {lord_sign}, {lord_dig})</span>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:#eff6ff; color:#1d4ed8; border:1.5px solid #93c5fd; padding:3px 10px; border-radius:4px; font-weight:bold; font-size:9.5pt;">
+                    ★ D9 Navāṃśa • Fruit of Dharma
+                </span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:6px 10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">🏛️ Swāṃśa (The Soul Vehicle)</div>
+                    <div style="font-size:6.8pt; color:#1e293b;">Sign: <strong>{lg_sign}</strong> • Lord: <strong>{lg_lord}</strong></div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">Determines the fundamental nature of the soul's inner consciousness, spiritual inclination, and instinctive ethics.</div>
+                </div>
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">👑 Kārakāṃśa (Soul Purpose)</div>
+                    <div style="font-size:6.8pt; color:#1e293b;">Sign: <strong>{ak_info.get('karakamsa', '-')}</strong> • AK: <strong>{ak_info.get('planet', '-')}</strong></div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">The Navamsha sign of the Ātmakāraka; marks the ultimate life purpose and spiritual test chosen by the soul.</div>
+                </div>
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">🌟 Vargottama Fortification</div>
+                    <div style="font-size:6.8pt; color:#b45309; font-weight:bold;">{varg_str}</div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">Planets sharing identical signs in D1 and D9; endowed with rock-solid psychological stability and effortless materialization.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_d10_executive_card(chart_data: Dict[str, Any], notation: str = "symbol") -> str:
+    """Renders the executive Dashamsha (D10) & Professional Authority Architecture card."""
+    d10_v = chart_data.get("vargas", {}).get("D10", {})
+    d10_lagna = d10_v.get("lagna", {})
+    lg_sign = d10_lagna.get("sign", "-")
+    lg_deg = d10_lagna.get("degree_0_to_30", 0.0)
+    lg_lord = SIGN_LORDS.get(lg_sign, "-")
+    
+    d10_grahas = d10_v.get("grahas", {})
+    lg_idx = SIGNS_LIST.index(lg_sign) if lg_sign in SIGNS_LIST else 0
+    h10_sign = SIGNS_LIST[(lg_idx + 9) % 12]
+    h10_lord = SIGN_LORDS.get(h10_sign, "-")
+    
+    kendra_signs = [SIGNS_LIST[(lg_idx + i) % 12] for i in [0, 3, 6, 9]]
+    kendra_occupants = [p for p in PLANETS_ORDER if d10_grahas.get(p, {}).get("sign") in kendra_signs]
+    kendra_str = ", ".join(kendra_occupants) if kendra_occupants else "Clean Kendras"
+    
+    h10_graha = d10_grahas.get(h10_lord, {})
+    h10_lord_sign = h10_graha.get("sign", "-")
+    h10_lord_dig = h10_graha.get("dignity_breakdown", {}).get("final_dignity", h10_graha.get("dignity", "Neutral"))
+    
+    return f"""
+    <div class="card" style="margin-bottom:8px; border:1.5px solid #dcb594; background:#fffdfa;">
+        <div class="card-header" style="background:#f5ece0; padding:5px 10px; display:flex; justify-content:space-between; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:14pt;">👑</span>
+                <div>
+                    <h3 style="font-size:9pt; margin:0; color:#4a3325;">Daśāṃśa Lagna (D10 Career Horizon) • Professional Executive Architecture</h3>
+                    <span style="font-size:6.8pt; color:#7c6853;">D10 Rising Sign: <strong>{lg_sign} {format_deg_short(lg_deg)}</strong> • D10 Captain: <strong>{lg_lord}</strong> • 10th Lord: <strong>{h10_lord}</strong> (in {h10_lord_sign}, {h10_lord_dig})</span>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span style="background:#f0fdf4; color:#15803d; border:1.5px solid #86efac; padding:3px 10px; border-radius:4px; font-weight:bold; font-size:9.5pt;">
+                    ★ D10 Daśāṃśa • Status &amp; Karma
+                </span>
+            </div>
+        </div>
+        <div class="card-body" style="padding:6px 10px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:8px;">
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">👑 Professional Seat (D10 Lagna)</div>
+                    <div style="font-size:6.8pt; color:#1e293b;">Sign: <strong>{lg_sign}</strong> • Lord: <strong>{lg_lord}</strong></div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">Represents personal competence, public visibility, and capacity to hold leadership office in the external world.</div>
+                </div>
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">🏛️ 10th House Karma Lord</div>
+                    <div style="font-size:6.8pt; color:#1e293b;">Lord: <strong>{h10_lord}</strong> ({h10_lord_dig}) in <strong>{h10_lord_sign}</strong></div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">The governor of accomplishments, honors, authority, and public reputation; indicates vocational peak trajectory.</div>
+                </div>
+                <div style="background:#fdfbf7; border:1px solid #ebd9c8; border-radius:4px; padding:5px 7px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; margin-bottom:2px;">⚡ Kendra Pillars of Action</div>
+                    <div style="font-size:6.8pt; color:#15803d; font-weight:bold;">{kendra_str}</div>
+                    <div style="font-size:6pt; color:#64748b; margin-top:2px;">Planets in Kendras (1, 4, 7, 10) of D10 act as direct executive engines driving career dynamism and recognition.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
 def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str = "D1", notation: str = "symbol") -> str:
     """Renders the comprehensive Master Graha Diagnostics Table matching front-end software with inline decoded tooltips."""
     v_data = chart_data.get("vargas", {}).get(varga, chart_data.get("vargas", {}).get("D1", {}))
@@ -1102,11 +1219,57 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         if lord_aspect > 15.0:
             c1_badge += ' <span class="badge own" style="font-size:5.5pt;">👑 Lagneśa Dṛṣṭi</span>'
             
+        # Lagna Nakshatra Subconscious Drive
+        lg_nak_name = lg_nak_data.get('nakshatra', '-') if lg_nak_data else "-"
+        if (not lg_nak_name or lg_nak_name == "-") and v_lagna.get("nakshatra"):
+            lg_nak_name = v_lagna.get("nakshatra")
+        lg_nak_meta = get_nakshatra_metadata(lg_nak_name)
+        lg_deity = lg_nak_meta.get("deity", "—")
+        lg_ruler = lg_nak_data.get("nakshatra_lord") or lg_nak_meta.get("ruler", "—")
+        lg_drive = lg_nak_meta.get("core_drive", "Rising subconscious orientation and vital lens.")
+        lg_nak_cell_html = f"""
+        <div>
+            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:5.8pt;">✨ {lg_nak_name} ({lg_deity})</span>
+        </div>
+        <div style="font-size:5.5pt; color:#64748b; margin-top:1.5px;">
+            ↳ Overlord: <strong style="color:#475569;">{lg_ruler}</strong>
+        </div>
+        <div style="font-size:5.2pt; color:#78716c; margin-top:1px; line-height:1.15;">
+            {lg_drive}
+        </div>
+        """
+
+        # Lagna Title & Subtitle based on Varga
+        lg_title = "Lagna"
+        lg_sub = "Tanū Bhāva (H1)"
+        if varga == "D9":
+            lg_title = "Swāṃśa"
+            lg_sub = "Navāṃśa Lagna (D9)"
+        elif varga == "D10":
+            lg_title = "Daśāṃśa Lagna"
+            lg_sub = "Career Seat (D10)"
+        elif varga != "D1":
+            lg_title = f"{varga} Lagna"
+            lg_sub = f"Varga Horizon ({varga})"
+
         # Lagna Vitality Score
         lagna_eval = pe.get("lagna_evaluation", {}) if varga == "D1" else {}
-        lagna_vit = lagna_eval.get("vitality_score", 5.0)
-        lagna_tier = lagna_eval.get("vitality_tier", "Capable Vessel")
-        lagna_arch = lagna_eval.get("archetype", "The Steady Navigator")
+        if varga == "D1":
+            lagna_vit = lagna_eval.get("vitality_score", 5.0)
+            lagna_tier = lagna_eval.get("vitality_tier", "Capable Vessel")
+            lagna_arch = lagna_eval.get("archetype", "The Steady Navigator")
+        elif varga == "D9":
+            lagna_vit = round(lord_dig_pct / 10.0, 1)
+            lagna_tier = "Sublime Dharma" if lord_dig_pct >= 75 else ("Noble Purpose" if lord_dig_pct >= 55 else "Inner Pilgrim")
+            lagna_arch = "Soul Vehicle Fortitude"
+        elif varga == "D10":
+            lagna_vit = round(lord_dig_pct / 10.0, 1)
+            lagna_tier = "Executive Commander" if lord_dig_pct >= 75 else ("Accomplished Leader" if lord_dig_pct >= 55 else "Steadfast Worker")
+            lagna_arch = "Public Authority Seat"
+        else:
+            lagna_vit = round(lord_dig_pct / 10.0, 1)
+            lagna_tier = "Varga Center"
+            lagna_arch = f"{varga} Operational Axis"
         
         if lagna_vit >= 8.8:
             l_t_bg = "#ecfdf5"; l_t_col = "#065f46"
@@ -1125,8 +1288,8 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
                 <div style="display:flex; align-items:center; gap:3px;">
                     <span style="font-size:10pt;">🌅</span>
                     <div>
-                        <strong style="color:#4a3325; font-size:7.5pt;">Lagna</strong>
-                        <div style="font-size:5.8pt; color:#64748b;">Tanū Bhāva (H1)</div>
+                        <strong style="color:#4a3325; font-size:7.5pt;">{lg_title}</strong>
+                        <div style="font-size:5.8pt; color:#64748b;">{lg_sub}</div>
                     </div>
                 </div>
             </td>
@@ -1154,6 +1317,9 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
                 <div style="font-size:6pt; margin-bottom:1.5px;"><strong>YUTI:</strong> {occ_html}</div>
                 <div style="display:flex; flex-wrap:wrap; gap:2px;">{c1_badge} {kartari_badge}</div>
+            </td>
+            <td style="padding:2.5px 3px; border:1px solid #dcb594;">
+                {lg_nak_cell_html}
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
                 <div style="font-size:6pt; font-weight:bold; color:#475569;">
@@ -1230,6 +1396,26 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         # Nakshatra
         p_nak_data = naks.get(p, {})
         nak_str = f"{p_nak_data.get('nakshatra', '-')} ({p_nak_data.get('pada', '-')})" if p_nak_data else "-"
+        
+        # Subconscious Drive Nakshatra
+        p_nak_name = p_nak_data.get("nakshatra", "-")
+        if (not p_nak_name or p_nak_name == "-") and p in pe.get("planets", {}):
+            p_nak_name = pe["planets"][p].get("nakshatra", {}).get("name", "-")
+        p_nak_meta = get_nakshatra_metadata(p_nak_name)
+        p_deity = p_nak_meta.get("deity", "—")
+        p_ruler = p_nak_data.get("nakshatra_lord") or p_nak_meta.get("ruler", "—")
+        p_drive = p_nak_meta.get("core_drive", "Subconscious motivation and cosmic trajectory.")
+        nak_cell_html = f"""
+        <div>
+            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:5.8pt;">✨ {p_nak_name} ({p_deity})</span>
+        </div>
+        <div style="font-size:5.5pt; color:#64748b; margin-top:1.5px;">
+            ↳ Overlord: <strong style="color:#475569;">{p_ruler}</strong>
+        </div>
+        <div style="font-size:5.2pt; color:#78716c; margin-top:1px; line-height:1.15;">
+            {p_drive}
+        </div>
+        """
         
         # Dignity (5-fold)
         is_node = p in ["Rahu", "Ketu"]
@@ -1587,6 +1773,9 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
                 {influences_cell_html}
             </td>
             <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
+                {nak_cell_html}
+            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
                 {avasthas_cell_html}
             </td>
             <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
@@ -1595,29 +1784,44 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         </tr>
         """)
 
+    varga_domain_names = {
+        "D1": "Rāśi • Physical Baseline & Horizon Vitality",
+        "D9": "Navāṃśa • Dharma, Soul Purpose & Swāṃśa",
+        "D10": "Daśāṃśa • Career, Great Status & Executive Karma",
+        "D7": "Saptāṃśa • Progeny, Children & Creative Fruit",
+        "D2": "Horā • Wealth & Resource Stewardship",
+        "D3": "Drekkāṇa • Siblings, Courage & Initiative",
+        "D4": "Caturthāṃśa • Fixed Property, Real Estate & Home",
+        "D12": "Dvādaśāṃśa • Parents, Lineage & Ancestral Karma",
+        "D30": "Triṃśāṃśa • Arishta, Hidden Trials & Adversity",
+        "D60": "Ṣaṣṭyāṃśa • Root Karmic Blueprint & Destiny Seeds"
+    }
+    v_dom = varga_domain_names.get(varga, f"Harmonic Divisional {varga}")
+
     return f"""
     <div class="card full-width" style="margin-bottom:8px; border:1px solid #dcb594;">
         <div class="card-header" style="background:#eee5d3; padding:4px 8px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dcb594;">
             <div style="display:flex; align-items:center; gap:6px;">
                 <span style="font-size:10pt;">★</span>
-                <h3 style="font-size:8.5pt; font-weight:700; color:#4a3325; margin:0;">Master Graha Diagnostics • Unified Planetary Matrix ({varga})</h3>
+                <h3 style="font-size:8.5pt; font-weight:700; color:#4a3325; margin:0;">Master Graha Diagnostics • Unified Planetary Matrix ({varga} • {v_dom})</h3>
             </div>
             <span class="card-sub" style="font-size:6.5pt; color:#7c6853;">
-                Synthesizing Pañcadhā Dignity • Dispositor Anchor • Ṣaḍbala Muscle • Bālādi Age • Lajjitādi Feelings • 4-Quadrant Diagnosis
+                Synthesizing Pañcadhā Dignity • Dispositor Anchor • Ṣaḍbala Muscle • Subconscious Nakshatra • Bālādi Age • Lajjitādi Feelings • 4-Quadrant Diagnosis
             </span>
         </div>
         <div class="card-body" style="padding:2px;">
             <table class="data-table" style="width:100%; border-collapse:collapse; font-size:6.5pt; line-height:1.2;">
                 <thead>
                     <tr>
-                        <th style="width:11%;">Graha &amp; Soul</th>
-                        <th style="width:14%;">Placement &amp; Role</th>
-                        <th style="width:11%;">Essential Dign.</th>
-                        <th style="width:13%;">Host Dispositor</th>
-                        <th style="width:13%;">Ṣaḍbala Power</th>
-                        <th style="width:13%;">Aspect Weather</th>
-                        <th style="width:13%;">Avastha &amp; Age</th>
-                        <th style="width:12%;">★ Functional Archetype</th>
+                        <th style="width:10%;">Graha &amp; Soul</th>
+                        <th style="width:12%;">Placement &amp; Role</th>
+                        <th style="width:10%;">Intent &amp; Dignity</th>
+                        <th style="width:11%;">Host Dispositor</th>
+                        <th style="width:11%;">Ṣaḍbala Power</th>
+                        <th style="width:12%;">Aspect Weather</th>
+                        <th style="width:13%;">Subconscious Drive (Nakshatra)</th>
+                        <th style="width:10%;">Avastha &amp; Age</th>
+                        <th style="width:11%;">★ Functional Archetype</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -1828,6 +2032,342 @@ def render_diagnostic_key_section() -> str:
                     </div>
                 </div>
 
+                <!-- Card 10: Subconscious Drive (Nakshatras & Deities) -->
+                <div class="key-card" style="background:#fcfaf5; border:1px solid #e5dccb; border-radius:4px; padding:6px 8px;">
+                    <div style="font-weight:bold; color:#4a3325; font-size:7.2pt; border-bottom:1px solid #e5dccb; padding-bottom:3px; margin-bottom:4px; display:flex; align-items:center; gap:4px;">
+                        <span>✨</span> 10. Subconscious Drive (Nakshatras &amp; Deities)
+                    </div>
+                    <div style="font-size:6.3pt; color:#475569; line-height:1.35;">
+                        Nakshatras reveal the primal Vedic archetypes steering subconscious motivation:
+                        <div style="margin-top:2px;">
+                            • <strong>Vedic Deity (Taittirīya Brāhmaṇa):</strong> The cosmic force (Agni, Indra, Varuna, Yama, Soma) molding inner desire.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Planetary Overlord:</strong> Dictates the underlying life agenda and governs the Vimśottarī Daśā planetary timeline.
+                        </div>
+                        <div style="margin-top:2px;">
+                            • <strong>Core Subconscious Drive:</strong> The instinctual emotional current operating beneath conscious intellectual choice.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_varga_dual_chart_card(
+    varga_key: str,
+    chart_data: Dict[str, Any],
+    notation: str = "symbol",
+    svg_size: int = 165
+) -> str:
+    """Renders a Divisional Varga card featuring both North Indian and South Indian SVGs side-by-side."""
+    v_data = chart_data.get("vargas", {}).get(varga_key, {})
+    if not v_data:
+        return ""
+    
+    v_title = VARGA_TITLES.get(varga_key, varga_key)
+    v_grahas = v_data.get("grahas", {})
+    v_lagna = v_data.get("lagna", {})
+    lg_sign = v_lagna.get("sign", "-")
+    lg_deg = format_deg_short(v_lagna.get("degree_0_to_30", 0.0))
+    lg_lord = SIGN_LORDS.get(lg_sign, "-")
+    
+    north_svg = get_chart_svg(varga_key, chart_data, "north", notation, width=svg_size, height=svg_size)
+    south_svg = get_chart_svg(varga_key, chart_data, "south", notation, width=svg_size, height=svg_size)
+    
+    lg_idx = SIGNS_LIST.index(lg_sign) if lg_sign in SIGNS_LIST else 0
+    
+    p_rows = []
+    for p in PLANETS_ORDER:
+        if p not in v_grahas:
+            continue
+        g = v_grahas[p]
+        glyph = get_planet_glyph(p, notation)
+        sign = g.get("sign", "-")
+        deg = format_deg_short(g.get("degree_0_to_30", 0.0))
+        d_break = g.get("dignity_breakdown", {})
+        dig = d_break.get("final_dignity", g.get("dignity", "-"))
+        clean_dig = dig.replace("'s Sign", "").replace(" Sign", "").strip()
+        
+        p_idx = SIGNS_LIST.index(sign) if sign in SIGNS_LIST else 0
+        w_house = ((p_idx - lg_idx + 12) % 12 + 1) if (lg_sign in SIGNS_LIST and sign in SIGNS_LIST) else 1
+        
+        p_rows.append(f"""
+        <tr>
+            <td style="font-weight:600; padding:1.5px 3px;">{glyph} {p}</td>
+            <td style="padding:1.5px 3px;"><strong>{sign}</strong></td>
+            <td class="mono" style="padding:1.5px 3px;">{deg}</td>
+            <td style="padding:1.5px 3px;"><span class="badge neutral" style="font-size:5.5pt;">H{w_house}</span></td>
+            <td style="padding:1.5px 3px;">{dignity_badge(clean_dig)}</td>
+        </tr>
+        """)
+        
+    diag_lines = []
+    if varga_key == "D10":
+        h10_sign = SIGNS_LIST[(lg_idx + 9) % 12]
+        h10_lord = SIGN_LORDS.get(h10_sign, "-")
+        kendra_signs = [SIGNS_LIST[(lg_idx + i) % 12] for i in [0, 3, 6, 9]]
+        kendras_occ = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") in kendra_signs]
+        diag_lines.append(f"<strong>10th Lord:</strong> {h10_lord} governing status &amp; authority in {h10_sign}")
+        diag_lines.append(f"<strong>Kendra Action Pillars:</strong> {', '.join(kendras_occ) if kendras_occ else 'Clean Kendras'}")
+        diag_lines.append("<strong>Executive Focus:</strong> Worldly power, vocational peak, public karma &amp; organizational leadership")
+    elif varga_key == "D7":
+        h5_sign = SIGNS_LIST[(lg_idx + 4) % 12]
+        h5_lord = SIGN_LORDS.get(h5_sign, "-")
+        h7_sign = SIGNS_LIST[(lg_idx + 6) % 12]
+        h7_lord = SIGN_LORDS.get(h7_sign, "-")
+        jup_g = v_grahas.get("Jupiter", {})
+        diag_lines.append(f"<strong>5th Progeny Axis:</strong> {h5_sign} (Lord: {h5_lord}) • <strong>7th Partnership:</strong> {h7_sign} (Lord: {h7_lord})")
+        diag_lines.append(f"<strong>Putrakāraka Jupiter:</strong> in {jup_g.get('sign', '-')} ({jup_g.get('dignity_breakdown', {}).get('final_dignity', '-')})")
+        diag_lines.append("<strong>Domain Focus:</strong> Children, creative fruitfulness, cooperative alliances &amp; legacy continuation")
+    elif varga_key == "D2":
+        sun_hora_grahas = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == "Leo"]
+        moon_hora_grahas = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == "Cancer"]
+        diag_lines.append(f"<strong>Sun's Horā (Active Vital Wealth / Leo):</strong> {', '.join(sun_hora_grahas) if sun_hora_grahas else 'None'}")
+        diag_lines.append(f"<strong>Moon's Horā (Receptive Liquid Wealth / Cancer):</strong> {', '.join(moon_hora_grahas) if moon_hora_grahas else 'None'}")
+        diag_lines.append("<strong>Domain Focus:</strong> Accumulation of treasure, financial capacity, resource stewardship &amp; speech")
+    elif varga_key == "D3":
+        h3_sign = SIGNS_LIST[(lg_idx + 2) % 12]
+        h3_lord = SIGN_LORDS.get(h3_sign, "-")
+        mars_g = v_grahas.get("Mars", {})
+        diag_lines.append(f"<strong>3rd Courage Axis:</strong> {h3_sign} (Lord: {h3_lord}) • <strong>Bhrātṛkāraka Mars:</strong> in {mars_g.get('sign', '-')}")
+        diag_lines.append("<strong>Domain Focus:</strong> Siblings, energetic prowess, courage, physical stamina &amp; self-directed initiative")
+    elif varga_key == "D4":
+        h4_sign = SIGNS_LIST[(lg_idx + 3) % 12]
+        h4_lord = SIGN_LORDS.get(h4_sign, "-")
+        moon_g = v_grahas.get("Moon", {})
+        diag_lines.append(f"<strong>4th Property Axis:</strong> {h4_sign} (Lord: {h4_lord}) • <strong>Sukha Karaka Moon:</strong> in {moon_g.get('sign', '-')}")
+        diag_lines.append("<strong>Domain Focus:</strong> Fixed assets, real estate, vehicles, maternal sanctuary &amp; internal peace")
+    elif varga_key == "D12":
+        h9_sign = SIGNS_LIST[(lg_idx + 8) % 12]
+        h9_lord = SIGN_LORDS.get(h9_sign, "-")
+        h4_sign = SIGNS_LIST[(lg_idx + 3) % 12]
+        h4_lord = SIGN_LORDS.get(h4_sign, "-")
+        diag_lines.append(f"<strong>Father &amp; Lineage (9th):</strong> {h9_sign} (Lord: {h9_lord}) • <strong>Mother (4th):</strong> {h4_sign} (Lord: {h4_lord})")
+        diag_lines.append("<strong>Domain Focus:</strong> Ancestral karmic heritage, parental lineage, genetic dispositions &amp; past debts")
+    elif varga_key == "D30":
+        dusthana_signs = [SIGNS_LIST[(lg_idx + i) % 12] for i in [5, 7, 11]]
+        malefics = [p for p in ["Saturn", "Mars", "Rahu", "Ketu"] if v_grahas.get(p, {}).get("sign") in dusthana_signs]
+        diag_lines.append(f"<strong>Dusthana Pressure:</strong> {', '.join(malefics) if malefics else 'Clean Dusthanas'}")
+        diag_lines.append("<strong>Domain Focus:</strong> Arishta, hidden physiological trials, adversity &amp; karmic purification")
+    elif varga_key == "D60":
+        lagnesha_g = v_grahas.get(lg_lord, {})
+        diag_lines.append(f"<strong>D60 Root Governor:</strong> {lg_lord} in {lagnesha_g.get('sign', '-')} ({lagnesha_g.get('dignity_breakdown', {}).get('final_dignity', '-')})")
+        diag_lines.append("<strong>Domain Focus:</strong> Ultimate past-life destiny seeds; highest Parashara weight (4 points in Shodashavarga)")
+    else:
+        diag_lines.append(f"<strong>Varga Focus:</strong> Subtle harmonic frequency tuning {v_title}")
+        diag_lines.append(f"<strong>Lagna Ruler:</strong> {lg_lord} in {v_grahas.get(lg_lord, {}).get('sign', '-')}")
+        
+    diag_html = "<br>".join(diag_lines)
+    
+    return f"""
+    <div class="varga-card full-width" style="margin-bottom:8px; page-break-inside:avoid; break-inside:avoid; border:1px solid #dcb594; background:#fffdfa;">
+        <div class="varga-header" style="background:#eee5d3; padding:4px 8px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dcb594;">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:10pt;">🏛️</span>
+                <h3 style="font-size:8.5pt; font-weight:700; color:#4a3325; margin:0;">{v_title}</h3>
+            </div>
+            <span class="varga-sub" style="font-size:6.5pt; color:#7c6853;">
+                Lagna: <strong>{lg_sign} {lg_deg}</strong> • Lord: <strong>{lg_lord}</strong>
+            </span>
+        </div>
+        <div class="varga-body" style="display:flex; flex-direction:row; align-items:stretch; gap:8px; padding:5px;">
+            <div style="display:flex; flex-direction:column; align-items:center; border:1px solid #e5dccb; border-radius:4px; padding:3px; background:#ffffff;">
+                <div style="font-size:5.8pt; font-weight:bold; color:#7c6853; margin-bottom:2px; text-transform:uppercase;">North Indian (Diamond)</div>
+                {north_svg}
+            </div>
+            <div style="display:flex; flex-direction:column; align-items:center; border:1px solid #e5dccb; border-radius:4px; padding:3px; background:#ffffff;">
+                <div style="font-size:5.8pt; font-weight:bold; color:#7c6853; margin-bottom:2px; text-transform:uppercase;">South Indian (Fixed Square)</div>
+                {south_svg}
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; justify-content:space-between; border:1px solid #e5dccb; border-radius:4px; padding:4px; background:#ffffff;">
+                <table class="data-table compact" style="width:100%; border-collapse:collapse; font-size:6.2pt;">
+                    <thead>
+                        <tr>
+                            <th style="width:20%;">Graha</th>
+                            <th style="width:22%;">Sign</th>
+                            <th style="width:20%;">Degree</th>
+                            <th style="width:16%;">House</th>
+                            <th style="width:22%;">Dignity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {''.join(p_rows)}
+                    </tbody>
+                </table>
+                <div class="varga-diagnostics" style="margin-top:4px; padding:3px 6px; background:#fcfaf5; border:1px solid #e5dccb; border-radius:3px; font-size:6.2pt; line-height:1.25; color:#4a3325;">
+                    {diag_html}
+                </div>
+            </div>
+        </div>
+    </div>
+    """
+
+
+def render_vimshottari_timeline_section(chart_data: Dict[str, Any], notation: str = "symbol") -> str:
+    """Renders the comprehensive Vimshottari Dasha 120-year chronological timeline and active sub-period schedule."""
+    vd = chart_data.get("vimshottari_dasha", {})
+    if not vd:
+        return ""
+    
+    mds = vd.get("mahadashas", [])
+    at_birth = vd.get("at_birth", {})
+    start_lord = at_birth.get("mahadasha", "-")
+    bal_yrs = at_birth.get("mahadasha_balance_years", 0.0)
+    bal_yrs_int = int(bal_yrs)
+    bal_mos_int = int((bal_yrs - bal_yrs_int) * 12.0)
+    bal_days_int = int(round(((bal_yrs - bal_yrs_int) * 12.0 - bal_mos_int) * 30.4))
+    
+    astro = chart_data.get("astronomy", {})
+    ayan_name = astro.get("ayanamsa_name", "Dhruva Galactic Center")
+    
+    now = datetime.datetime.now()
+    active_md = None
+    active_ad = None
+    for md in mds:
+        try:
+            sd = datetime.datetime.strptime(md.get("start", "").split()[0], "%Y-%m-%d")
+            ed = datetime.datetime.strptime(md.get("end", "").split()[0], "%Y-%m-%d")
+            if sd <= now <= ed:
+                active_md = md
+                for ad in md.get("antardashas", []):
+                    ad_s = datetime.datetime.strptime((ad.get("start_date") or ad.get("start", "")).split()[0], "%Y-%m-%d")
+                    ad_e = datetime.datetime.strptime((ad.get("end_date") or ad.get("end", "")).split()[0], "%Y-%m-%d")
+                    if ad_s <= now <= ad_e:
+                        active_ad = ad
+                        break
+                break
+        except Exception:
+            pass
+            
+    active_md_name = active_md.get("planet", "-") if active_md else "-"
+    active_ad_name = (active_ad.get("period") or active_ad.get("antardasha_lord", "-")) if active_ad else "-"
+    active_ad_start = (active_ad.get("start_date") or active_ad.get("start", "-")) if active_ad else "-"
+    active_ad_end = (active_ad.get("end_date") or active_ad.get("end", "-")) if active_ad else "-"
+    
+    md_rows = []
+    for md in mds:
+        p = md.get("planet", "")
+        glyph = get_planet_glyph(p, notation)
+        s_str = md.get("start", "")
+        e_str = md.get("end", "")
+        yrs = md.get("years", "")
+        is_active = (active_md and active_md.get("planet") == p)
+        
+        status_badge = '<span class="badge active-dasha">ACTIVE</span>' if is_active else '<span class="badge neutral">Future</span>'
+        try:
+            ed = datetime.datetime.strptime(e_str.split()[0], "%Y-%m-%d")
+            if ed < now:
+                status_badge = '<span class="badge" style="background:#f1f5f9; color:#94a3b8; border:1px solid #cbd5e1;">Completed</span>'
+        except Exception:
+            pass
+            
+        row_bg = "background-color: #fef3c7; font-weight:600;" if is_active else ""
+        
+        md_rows.append(f"""
+        <tr style="{row_bg}">
+            <td style="padding:2px 4px;"><span class="planet-badge">{glyph} {p}</span></td>
+            <td style="padding:2px 4px; color:#4a3325; font-weight:600;">{yrs} Years</td>
+            <td class="mono" style="padding:2px 4px;">{s_str}</td>
+            <td class="mono" style="padding:2px 4px;">{e_str}</td>
+            <td style="padding:2px 4px; text-align:center;">{status_badge}</td>
+        </tr>
+        """)
+        
+    ad_rows = []
+    target_md = active_md or (mds[0] if mds else None)
+    if target_md:
+        for ad in target_md.get("antardashas", []):
+            period_lbl = ad.get("period") or ad.get("antardasha_lord", "-")
+            ad_lord = ad.get("antardasha_lord", "-")
+            ad_glyph = get_planet_glyph(ad_lord, notation)
+            ad_start = ad.get("start_date") or ad.get("start", "-")
+            ad_end = ad.get("end_date") or ad.get("end", "-")
+            is_cur = False
+            try:
+                ads = datetime.datetime.strptime(ad_start.split()[0], "%Y-%m-%d")
+                ade = datetime.datetime.strptime(ad_end.split()[0], "%Y-%m-%d")
+                is_cur = (ads <= now <= ade)
+            except Exception:
+                pass
+                
+            cur_badge = '<span class="badge active-dasha" style="background:#15803d; border:1px solid #166534; font-size:5.5pt;">★ CURRENT</span>' if is_cur else ''
+            ad_bg = "background-color: #ecfdf5; font-weight:600;" if is_cur else ""
+            
+            ad_rows.append(f"""
+            <tr style="{ad_bg}">
+                <td style="padding:2px 4px;"><span class="planet-badge">{ad_glyph} {period_lbl}</span></td>
+                <td class="mono" style="padding:2px 4px;">{ad_start}</td>
+                <td class="mono" style="padding:2px 4px;">{ad_end}</td>
+                <td style="padding:2px 4px; text-align:center;">{cur_badge}</td>
+            </tr>
+            """)
+            
+    return f"""
+    <div class="card full-width" style="margin-bottom:8px; border:1px solid #dcb594;">
+        <div class="card-header" style="background:#eee5d3; padding:5px 10px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dcb594;">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <span style="font-size:12pt;">⏳</span>
+                <h3 style="font-size:9pt; font-weight:700; color:#4a3325; margin:0;">Vimśottarī Daśā Complete Master Timeline (120-Year Parashari Cycle)</h3>
+            </div>
+            <span class="card-sub" style="font-size:6.8pt; color:#7c6853;">
+                Balance at Birth: <strong>{start_lord} ({bal_yrs_int}y {bal_mos_int}m {bal_days_int}d)</strong> • System: <strong>{ayan_name}</strong>
+            </span>
+        </div>
+        <div class="card-body" style="padding:6px;">
+            <div style="background:#fef3c7; border:1px solid #fcd34d; border-radius:4px; padding:5px 10px; margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-size:7.5pt; color:#92400e;">
+                    ⏱️ <strong>Active Operating System:</strong> <span style="font-size:8.5pt; font-weight:bold; color:#78350f;">{active_md_name} Mahādaśā ➔ {active_ad_name} Antardaśā</span>
+                </div>
+                <div style="font-size:6.8pt; color:#92400e;">
+                    Running Window: <strong>{active_ad_start}</strong> to <strong>{active_ad_end}</strong>
+                </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1.2fr 1fr; gap:8px;">
+                <div>
+                    <div style="font-size:7pt; font-weight:bold; color:#4a3325; margin-bottom:3px;">Major 120-Year Mahādaśā Chapters</div>
+                    <table class="data-table compact" style="width:100%; border-collapse:collapse; font-size:6.5pt;">
+                        <thead>
+                            <tr>
+                                <th>Mahādaśā Lord</th>
+                                <th>Span</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th style="text-align:center;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {''.join(md_rows)}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div>
+                    <div style="font-size:7pt; font-weight:bold; color:#4a3325; margin-bottom:3px;">
+                        {target_md.get('planet', '')} Mahādaśā • 9 Antardaśā Sub-Periods
+                    </div>
+                    <table class="data-table compact" style="width:100%; border-collapse:collapse; font-size:6.5pt;">
+                        <thead>
+                            <tr>
+                                <th>Sub-Period (Antar)</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th style="text-align:center;">Current</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {''.join(ad_rows)}
+                        </tbody>
+                    </table>
+                    
+                    <div style="margin-top:6px; padding:4px 6px; background:#fcfaf5; border:1px solid #e5dccb; border-radius:3px; font-size:6.2pt; line-height:1.3; color:#4a3325;">
+                        <strong>Daśā Manifestation Dynamics:</strong> The Mahādaśā lord establishes the broad psychological and environmental arena of life. The Antardaśā lord acts as the kinetic trigger delivering specific material outcomes. Planets possessing high Ṣaḍbala and noble Dignity in D1, D9, and D10 deliver fruitful accomplishments; afflicted planets provoke intensive spiritual transformation.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1837,7 +2377,11 @@ def render_diagnostic_key_section() -> str:
 def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str, Any]] = None) -> str:
     """Generates the complete, self-contained publication-grade HTML report."""
     opts = options or {}
-    page_size = opts.get("page_size", "A3")
+    page_size = opts.get("page_size", "A4")
+    is_landscape = opts.get("landscape", True)
+    is_a3 = (page_size.upper() == "A3")
+    css_page_size = f"{page_size} {'landscape' if is_landscape else 'portrait'}"
+    
     chart_style = opts.get("chart_style", "north")  # north, south, circular
     notation = opts.get("notation", "symbol")        # symbol, english, devanagari, translit
     
@@ -1856,9 +2400,15 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     include_vimshopaka = opts.get("include_vimshopaka", True)
     include_yogas = opts.get("include_yogas", True)
     include_master_diagnostics = opts.get("include_master_diagnostics", True)
+    include_d9_diagnostics = opts.get("include_d9_diagnostics", True)
+    include_d10_diagnostics = opts.get("include_d10_diagnostics", True)
     include_diagnostic_key = opts.get("include_diagnostic_key", True)
+    include_timeline = opts.get("include_timeline", True)
+    include_dual_vargas = opts.get("include_dual_vargas", True)
+    dual_vargas = opts.get("dual_vargas", ["D10", "D7", "D2", "D3", "D4", "D12", "D30", "D60"])
+    
     biwheel_outer = opts.get("biwheel_outer", "D9")
-    include_biwheel = opts.get("include_biwheel", True if (opts.get("preset") == "master_dossier_a4" or chart_style == "biwheel") else False)
+    include_biwheel = opts.get("include_biwheel", True)
     additional_vargas = opts.get("additional_vargas", [])
     
     subject = chart_data.get("subject_info", {})
@@ -1896,11 +2446,14 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
             planet_to_house[pl] = h_num
             
     # CSS size rules
-    is_a3 = (page_size == "A3")
-    css_page_size = "A3 landscape" if is_a3 else "A4 portrait"
-    d1_svg_size = 310 if is_a3 else 260
-    varga_svg_size = 220 if is_a3 else 175
-    biwheel_svg_size = 400 if is_a3 else 355
+    if is_landscape:
+        d1_svg_size = 290 if is_a3 else 240
+        varga_svg_size = 175 if is_a3 else 140
+        biwheel_svg_size = 420 if is_a3 else 360
+    else:
+        d1_svg_size = 310 if is_a3 else 260
+        varga_svg_size = 220 if is_a3 else 175
+        biwheel_svg_size = 400 if is_a3 else 355
 
     # 1. Generate D1 SVG
     d1_svg = get_chart_svg("D1", chart_data, chart_style, notation, width=d1_svg_size, height=d1_svg_size, biwheel_outer=biwheel_outer) if include_d1 else ""
@@ -2238,19 +2791,20 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 
     vargas_cards_html = "".join(vargas_cards)
 
-    # 10. Build 16-Varga Vimshopaka Dignity Matrix
+    # 10. Build 16-Varga Vimshopaka Dignity Matrix (All 9 Grahas with Auspicious / Inauspicious Counts)
     vimshopaka_matrix_html = ""
     if include_vimshopaka:
         v_scores = chart_data.get("varga_vimshopaka", {}).get("scores", {}).get("Shodasavarga", {})
         v_honors = chart_data.get("varga_vimshopaka", {}).get("vaisheshikamsa", {}).get("Shodasavarga", {})
         
         matrix_rows = []
-        for p in CLASSICAL_PLANETS:
+        for p in PLANETS_ORDER:
             glyph = get_planet_glyph(p, notation)
             cells = []
+            short_d_list = []
             for v in ALL_VARGAS_ORDER:
                 v_g = chart_data.get("vargas", {}).get(v, {}).get("grahas", {}).get(p, {})
-                dig = v_g.get("dignity_breakdown", {}).get("final_dignity", "-")
+                dig = v_g.get("dignity_breakdown", {}).get("final_dignity", v_g.get("dignity", "-"))
                 short_d = dig
                 if "Exalt" in dig: short_d = "Ex"
                 elif "Moola" in dig: short_d = "MT"
@@ -2262,6 +2816,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
                 elif "Enemy" in dig: short_d = "E"
                 elif "Debilitat" in dig: short_d = "Deb"
                 
+                short_d_list.append(short_d)
+                
                 cell_class = "cell-neutral"
                 if short_d in ["Ex", "MT", "Sva"]: cell_class = "cell-exalt"
                 elif short_d in ["GF", "F"]: cell_class = "cell-friend"
@@ -2269,7 +2825,17 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
                 
                 cells.append(f"<td class='matrix-cell {cell_class}' title='{p} in {v}: {dig}'>{short_d}</td>")
                 
-            score_val = v_scores.get(p, 0.0)
+            ausp_count = sum(1 for c in short_d_list if c in ["Ex", "MT", "Sva", "GF", "F"])
+            inausp_count = sum(1 for c in short_d_list if c in ["E", "GE", "Deb"])
+            
+            score_val = v_scores.get(p)
+            if score_val is not None:
+                score_str = f"{score_val:.2f} / 20"
+                score_class = "high-score" if score_val >= 15.0 else ("mid-score" if score_val >= 10.0 else "low-score")
+            else:
+                score_str = f"{(ausp_count / 16.0 * 20.0):.2f} / 20" if p in ["Rahu", "Ketu"] else "—"
+                score_class = "mid-score"
+                
             raw_honor = v_honors.get(p)
             honor_display = "—"
             if isinstance(raw_honor, dict):
@@ -2281,15 +2847,20 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
                         honor_display += f" <span style='color:#64748b;'>({h_meaning})</span>"
             elif isinstance(raw_honor, str) and raw_honor != "--":
                 honor_display = raw_honor
+            elif p in ["Rahu", "Ketu"]:
+                if ausp_count >= 9: honor_display = "<strong>Sārthakā</strong> <span style='color:#64748b;'>(Fruitful)</span>"
+                elif ausp_count >= 7: honor_display = "<strong>Mukuta</strong> <span style='color:#64748b;'>(Crown)</span>"
+                elif ausp_count >= 5: honor_display = "<strong>Chatra</strong> <span style='color:#64748b;'>(Royal Umbrella)</span>"
+                elif ausp_count >= 3: honor_display = "<strong>Vyañjana</strong> <span style='color:#64748b;'>(Royal Fan)</span>"
+                elif ausp_count >= 2: honor_display = "<strong>Bhedaka</strong> <span style='color:#64748b;'>(Distinguished)</span>"
                 
-            score_class = "high-score" if score_val >= 15.0 else ("mid-score" if score_val >= 10.0 else "low-score")
-            
             matrix_rows.append(f"""
             <tr>
                 <td><span class="planet-badge">{glyph} {p}</span></td>
                 {''.join(cells)}
-                <td class="mono font-bold {score_class}">{score_val:.2f} / 20</td>
-                <td style="font-size:7.5pt;">{honor_display}</td>
+                <td style="text-align:center; font-size:6.5pt; font-weight:600;"><span style="color:#15803d;">{ausp_count}</span> <span style="color:#94a3b8;">/</span> <span style="color:#991b1b;">{inausp_count}</span></td>
+                <td class="mono font-bold {score_class}">{score_str}</td>
+                <td style="font-size:7.2pt;">{honor_display}</td>
             </tr>
             """)
             
@@ -2297,17 +2868,18 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         vimshopaka_matrix_html = f"""
         <div class="card full-width">
             <div class="card-header">
-                <h3>⚖️ 16-Varga Dignity & Viṃśopaka Strength Matrix (20-Point Total)</h3>
-                <span class="card-sub">Evaluated across all 16 divisional charts with Vaiśeṣikāṃśa honorific classifications</span>
+                <h3>⚖️ 16-Varga Dignity &amp; Viṃśopaka Strength Matrix (20-Point Total)</h3>
+                <span class="card-sub">Evaluated across all 16 divisional charts with Auspicious/Inauspicious counts and Vaiśeṣikāṃśa honorific classifications</span>
             </div>
             <div class="card-body">
                 <table class="data-table matrix-table">
                     <thead>
                         <tr>
-                            <th>Graha</th>
+                            <th style="width:10%;">Graha</th>
                             {headers_th}
-                            <th>Viṃśopaka</th>
-                            <th>Vaiśeṣikāṃśa Classification</th>
+                            <th style="width:8%;">Dignified / Afflicted</th>
+                            <th style="width:9%;">Viṃśopaka</th>
+                            <th style="width:17%;">Vaiśeṣikāṃśa Classification</th>
                         </tr>
                     </thead>
                     <tbody>{''.join(matrix_rows)}</tbody>
@@ -2316,31 +2888,134 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
         </div>
         """
 
-    # 11. Build Master Graha Diagnostics & Horizon Vitality
+    # 11. Build Master Graha Diagnostics for D1, D9, and D10
     lagna_vitality_card_html = render_lagna_vitality_card(chart_data, "D1") if include_master_diagnostics else ""
-    master_diagnostics_table_html = render_master_graha_diagnostics_table(chart_data, "D1", notation) if include_master_diagnostics else ""
+    d1_master_diag_table_html = render_master_graha_diagnostics_table(chart_data, "D1", notation) if include_master_diagnostics else ""
+    
+    d9_swamsha_card_html = render_d9_swamsha_card(chart_data, notation) if (include_master_diagnostics and include_d9_diagnostics) else ""
+    d9_master_diag_table_html = render_master_graha_diagnostics_table(chart_data, "D9", notation) if (include_master_diagnostics and include_d9_diagnostics) else ""
 
-    # 12. Build Harmonic Bi-Wheel Section
+    d10_executive_card_html = render_d10_executive_card(chart_data, notation) if (include_master_diagnostics and include_d10_diagnostics) else ""
+    d10_master_diag_table_html = render_master_graha_diagnostics_table(chart_data, "D10", notation) if (include_master_diagnostics and include_d10_diagnostics) else ""
+
+    # 12. Build Divisional Dual-Chart Cards (South Indian & North Indian side-by-side)
+    dual_varga_pages = []
+    if include_dual_vargas:
+        target_dual_vargas = [v for v in dual_vargas if v in chart_data.get("vargas", {})]
+        for av in additional_vargas:
+            if av in chart_data.get("vargas", {}) and av not in target_dual_vargas:
+                target_dual_vargas.append(av)
+                
+        svg_s = 175 if is_a3 else 140
+        for i in range(0, len(target_dual_vargas), 2):
+            pair = target_dual_vargas[i:i+2]
+            cards = [render_varga_dual_chart_card(v_key, chart_data, notation, svg_size=svg_s) for v_key in pair]
+            pair_titles = [VARGA_TITLES.get(vk, vk).split("•")[0].strip() for vk in pair]
+            dual_varga_pages.append((pair, " & ".join(pair_titles), "".join(cards)))
+
+    # 13. Build Vimshottari 120-Year Chronological Timeline Section
+    timeline_section_html = render_vimshottari_timeline_section(chart_data, notation) if include_timeline else ""
+
+    # 14. Build Harmonic Bi-Wheel Section
     harmonic_biwheel_html = render_harmonic_biwheel_section(chart_data, outer_varga=biwheel_outer, notation=notation, svg_size=biwheel_svg_size) if include_biwheel else ""
 
-    # 13. Build Master Astrological Diagnostic Key
+    # 15. Build Master Astrological Diagnostic Key
     diagnostic_key_html = render_diagnostic_key_section() if include_diagnostic_key else ""
 
     # Calculate dynamic sequential page numbers for footer notes
     cur_p = 1
     p_d1_num = cur_p; cur_p += 1
+    
     p_biwheel_num = cur_p if (include_biwheel and harmonic_biwheel_html) else 0
     if p_biwheel_num: cur_p += 1
-    p_diag_num = cur_p if include_master_diagnostics else 0
-    if p_diag_num: cur_p += 1
-    p_vargas_num = cur_p if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else 0
-    if p_vargas_num: cur_p += 1
+    
+    p_d1_diag_num = cur_p if (include_master_diagnostics and d1_master_diag_table_html) else 0
+    if p_d1_diag_num: cur_p += 1
+    
+    p_d9_diag_num = cur_p if (include_master_diagnostics and include_d9_diagnostics and d9_master_diag_table_html) else 0
+    if p_d9_diag_num: cur_p += 1
+    
+    p_d10_diag_num = cur_p if (include_master_diagnostics and include_d10_diagnostics and d10_master_diag_table_html) else 0
+    if p_d10_diag_num: cur_p += 1
+    
+    dual_pages_numbered = []
+    if include_dual_vargas and dual_varga_pages:
+        for pair_keys, pair_title_str, p_cards in dual_varga_pages:
+            dual_pages_numbered.append((cur_p, pair_title_str, p_cards))
+            cur_p += 1
+    elif vargas_cards_html:
+        p_compact_vargas_num = cur_p; cur_p += 1
+    else:
+        p_compact_vargas_num = 0
+
+    p_vimshopaka_num = cur_p if (include_vimshopaka and vimshopaka_matrix_html) else 0
+    if p_vimshopaka_num: cur_p += 1
+    
+    p_timeline_num = cur_p if (include_timeline and timeline_section_html) else 0
+    if p_timeline_num: cur_p += 1
+    
     p_strengths_num = cur_p if (include_shadbala or include_avasthas or include_yoga_judgment) else 0
     if p_strengths_num: cur_p += 1
+    
     p_yogas_num = cur_p if (include_yogas and yogas_html) else 0
     if p_yogas_num: cur_p += 1
+    
     p_key_num = cur_p if (include_diagnostic_key and diagnostic_key_html) else 0
     if p_key_num: cur_p += 1
+
+    dual_varga_html_pages = []
+    if dual_pages_numbered:
+        for pg_num, pair_title_str, p_cards in dual_pages_numbered:
+            dual_varga_html_pages.append(f"""
+            <!-- DIVISIONAL ARCHITECTURE: {pair_title_str} -->
+            <div class="page-container page-break avoid-break">
+              <div class="master-header">
+                <div class="header-left">
+                  <div class="native-title">{name} • Divisional Architecture: {pair_title_str}</div>
+                  <div class="native-meta">
+                    <span>North Indian (Diamond) &amp; South Indian (Fixed Square) Side-by-Side</span>
+                    <span>Equal Divisions &amp; Whole Sign House Overlays</span>
+                    <span>Campanus Bhavas &amp; Specialized Life Arenas</span>
+                  </div>
+                </div>
+                <div class="header-right">
+                  <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Parāśari Harmonic Blueprints</span>
+                  <span style="font-size: 6.5pt; color: #e5dccb;">Dual Visual Traditions Integrated</span>
+                </div>
+              </div>
+              {p_cards}
+              <div class="footer-note">
+                Astra Precision Astrological Computation • Page {pg_num}: Divisional Architecture ({pair_title_str}) • Report Generated for {name}
+              </div>
+            </div>
+            """)
+    elif vargas_cards_html:
+        dual_varga_html_pages.append(f"""
+        <!-- DIVISIONAL ARCHITECTURE (VARGAS) -->
+        <div class="page-container page-break avoid-break">
+          <div class="master-header">
+            <div class="header-left">
+              <div class="native-title">{name} • Divisional Architecture (Vargas)</div>
+              <div class="native-meta">
+                <span>Soul Trajectory (D9 Navāṃśa)</span>
+                <span>Career &amp; Great Status (D10 Daśāṃśa)</span>
+                <span>Progeny &amp; Relationships (D7 Saptāṃśa)</span>
+              </div>
+            </div>
+            <div class="header-right">
+              <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">16-in-1 Shodashavarga Precision Analysis</span>
+              <span style="font-size: 6.5pt; color: #e5dccb;">Campanus House Cusps &amp; Equal Divisions</span>
+            </div>
+          </div>
+          <div class="layout-vargas">
+            {vargas_cards_html}
+          </div>
+          <div class="footer-note">
+            Astra Precision Astrological Computation • Page {p_compact_vargas_num}: Divisional Architecture • Report Generated for {name}
+          </div>
+        </div>
+        """)
+    dual_vargas_pages_rendered = "".join(dual_varga_html_pages)
 
     # Assemble Full HTML
     html_content = f"""<!DOCTYPE html>
@@ -2962,74 +3637,136 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
   ''' if (include_biwheel and harmonic_biwheel_html) else ''}
 
   {f'''
-  <!-- MASTER GRAHA DIAGNOSTICS & HORIZON VITALITY -->
+  <!-- MASTER GRAHA DIAGNOSTICS: D1 ROOT HORIZON VITALITY -->
   <div class="page-container page-break avoid-break">
-    
-    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
-        <div class="native-title">{name} • Master Graha Diagnostics & Horizon Vitality</div>
+        <div class="native-title">{name} • Master Graha Diagnostics: D1 Rāśi</div>
         <div class="native-meta">
           <span>5-Pillar Horizon Vitality</span>
           <span>Pañcadhā Maitrī</span>
-          <span>Ṣaḍbala Virūpas & Rank</span>
+          <span>Ṣaḍbala Virūpas &amp; Rank</span>
+          <span>Subconscious Drive (Nakshatra)</span>
           <span>Lajjitādi Feelings</span>
-          <span>Net Dṛṣṭi Weather</span>
         </div>
       </div>
       <div class="header-right">
-        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Executive Multi-Dimensional Synthesis</span>
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Root Natal Physical Reality</span>
         <span style="font-size: 6.5pt; color: #e5dccb;">Dynamic Swiss Ephemeris Computation</span>
       </div>
     </div>
-
-    <!-- Executive Lagna Vitality Architecture Card -->
     {lagna_vitality_card_html}
-
-    <!-- Master Graha Diagnostics Unified Matrix Table -->
-    {master_diagnostics_table_html}
-
+    {d1_master_diag_table_html}
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page {p_diag_num}: Master Graha Diagnostics & Horizon Vitality • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_d1_diag_num}: Master Graha Diagnostics &amp; Horizon Vitality (D1) • Report Generated for {name}
     </div>
-
   </div>
-  ''' if include_master_diagnostics else ''}
+  ''' if (include_master_diagnostics and d1_master_diag_table_html) else ''}
 
   {f'''
-  <!-- DIVISIONAL ARCHITECTURE (VARGAS) -->
+  <!-- MASTER GRAHA DIAGNOSTICS: D9 NAVĀṂŚA (SWĀṂŚA) -->
   <div class="page-container page-break avoid-break">
-    
-    <!-- Header Banner -->
     <div class="master-header">
       <div class="header-left">
-        <div class="native-title">{name} • Divisional Architecture (Vargas)</div>
+        <div class="native-title">{name} • Master Graha Diagnostics: D9 Navāṃśa</div>
         <div class="native-meta">
-          <span>Soul Trajectory (D9 Navāṃśa)</span>
-          <span>Career & Great Status (D10 Daśāṃśa)</span>
-          <span>Progeny & Relationships (D7 Saptāṃśa)</span>
+          <span>Swāṃśa (Soul Lagna)</span>
+          <span>Kārakāṃśa Focus</span>
+          <span>Vargottama Fortification</span>
+          <span>Subconscious Drive (Nakshatra)</span>
+          <span>Dharma &amp; Spiritual Fruit</span>
         </div>
       </div>
       <div class="header-right">
-        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">16-in-1 Shodashavarga Precision Analysis</span>
-        <span style="font-size: 6.5pt; color: #e5dccb;">Campanus House Cusps & Equal Divisions</span>
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Soul Destiny &amp; Spiritual Maturity</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">9th Harmonic Parāśari Evaluation</span>
       </div>
     </div>
-
-    <!-- Vargas Modular Cards (D9, D10, D7) -->
-    <div class="layout-vargas">
-      {vargas_cards_html}
-    </div>
-
-    <!-- 16-Varga Vimshopaka Dignity Matrix -->
-    {vimshopaka_matrix_html}
-
+    {d9_swamsha_card_html}
+    {d9_master_diag_table_html}
     <div class="footer-note">
-      Astra Precision Astrological Computation • Page {p_vargas_num}: Divisional Architecture & 16-Varga Viṃśopaka Scoring • Report Generated for {name}
+      Astra Precision Astrological Computation • Page {p_d9_diag_num}: Master Graha Diagnostics &amp; Soul Destiny (D9 Navāṃśa) • Report Generated for {name}
     </div>
-
   </div>
-  ''' if (include_d9 or include_d10 or include_d7 or include_vimshopaka or additional_vargas) else ''}
+  ''' if (include_master_diagnostics and include_d9_diagnostics and d9_master_diag_table_html) else ''}
+
+  {f'''
+  <!-- MASTER GRAHA DIAGNOSTICS: D10 DAŚĀṂŚA (EXECUTIVE KARMA) -->
+  <div class="page-container page-break avoid-break">
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Master Graha Diagnostics: D10 Daśāṃśa</div>
+        <div class="native-meta">
+          <span>Daśāṃśa Lagna</span>
+          <span>10th Lord Worldly Peak</span>
+          <span>Kendra Action Pillars</span>
+          <span>Subconscious Drive (Nakshatra)</span>
+          <span>Artha Trikoṇa Dynamics</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Executive Authority &amp; Public Karma</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">10th Harmonic Parāśari Evaluation</span>
+      </div>
+    </div>
+    {d10_executive_card_html}
+    {d10_master_diag_table_html}
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page {p_d10_diag_num}: Master Graha Diagnostics &amp; Executive Karma (D10 Daśāṃśa) • Report Generated for {name}
+    </div>
+  </div>
+  ''' if (include_master_diagnostics and include_d10_diagnostics and d10_master_diag_table_html) else ''}
+
+  {dual_vargas_pages_rendered}
+
+  {f'''
+  <!-- 16-VARGA VIMSHOPAKA DIGNITY MATRIX -->
+  <div class="page-container page-break avoid-break">
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • 16-Varga Viṃśopaka Strength &amp; Dignity Matrix</div>
+        <div class="native-meta">
+          <span>Complete Shodashavarga (D1–D60)</span>
+          <span>All 9 Grahas (with Rāhu &amp; Ketu)</span>
+          <span>Auspicious vs Inauspicious Counts</span>
+          <span>Vaiśeṣikāṃśa Classifications</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">20-Point Total Parāśari Scoring</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">BPHS Chapter 45 Alignment</span>
+      </div>
+    </div>
+    {vimshopaka_matrix_html}
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page {p_vimshopaka_num}: 16-Varga Viṃśopaka Matrix &amp; Dignity Breakdown • Report Generated for {name}
+    </div>
+  </div>
+  ''' if (include_vimshopaka and vimshopaka_matrix_html) else ''}
+
+  {f'''
+  <!-- VIMŚOTTARĪ DAŚĀ 120-YEAR CHRONOLOGICAL TIMELINE -->
+  <div class="page-container page-break avoid-break">
+    <div class="master-header">
+      <div class="header-left">
+        <div class="native-title">{name} • Vimśottarī Daśā 120-Year Parāśari Timeline</div>
+        <div class="native-meta">
+          <span>Chronological Mahādaśā Schedule (120 Years)</span>
+          <span>Active Mahādaśā Spotlight &amp; Balance at Birth</span>
+          <span>Full 9 Antardaśā Sub-Periods Schedule</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">Predictive Timing Engine</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Anchor: {ayanamsa_name}</span>
+      </div>
+    </div>
+    {timeline_section_html}
+    <div class="footer-note">
+      Astra Precision Astrological Computation • Page {p_timeline_num}: Vimśottarī Daśā 120-Year Parāśari Timeline • Report Generated for {name}
+    </div>
+  </div>
+  ''' if (include_timeline and timeline_section_html) else ''}
 
   {f'''
   <!-- DEEP PLANETARY STRENGTHS (ṢAḌBALA & QUALITATIVE AVASTHĀS) -->
@@ -3171,11 +3908,12 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 def export_chart_pdf(chart_data: Dict[str, Any], options: Optional[Dict[str, Any]] = None) -> bytes:
     """
     Renders publication-grade PDF bytes using headless Chromium (Playwright).
-    Supports A3 landscape master sheets and multi-page dossiers.
+    Supports horizontal (landscape) A4 and A3 master sheets and multi-page dossiers.
     """
     opts = options or {}
-    page_size = opts.get("page_size", "A3")
-    is_a3 = (page_size == "A3")
+    page_size = opts.get("page_size", "A4")
+    is_landscape = opts.get("landscape", True)
+    is_a3 = (page_size.upper() == "A3")
     
     html = generate_report_html(chart_data, opts)
     subject_name = chart_data.get("subject_info", {}).get("name", "Native")
@@ -3183,8 +3921,12 @@ def export_chart_pdf(chart_data: Dict[str, Any], options: Optional[Dict[str, Any
     def _render_pdf():
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=True)
-            vp_width = 1920 if is_a3 else 1280
-            vp_height = 1080 if is_a3 else 1600
+            if is_landscape:
+                vp_width = 1920 if is_a3 else 1440
+                vp_height = 1200 if is_a3 else 1020
+            else:
+                vp_width = 1440 if is_a3 else 1280
+                vp_height = 1920 if is_a3 else 1600
             page = browser.new_page(viewport={"width": vp_width, "height": vp_height})
             
             page.set_content(html, wait_until="networkidle")
@@ -3194,7 +3936,7 @@ def export_chart_pdf(chart_data: Dict[str, Any], options: Optional[Dict[str, Any
             
             pdf_bytes = page.pdf(
                 format=page_size,
-                landscape=is_a3,
+                landscape=is_landscape,
                 print_background=True,
                 margin={"top": "8mm", "bottom": "8mm", "left": "8mm", "right": "8mm"},
                 display_header_footer=True,
