@@ -7658,11 +7658,12 @@
 
                 // Lajjitadi Avasthas
                 const avList = (gData.avasthas && gData.avasthas.lajjitadi) || [];
+                const pEval = (peData && peData.planets && peData.planets[graha]) || {};
 
                 // Calibrated Vitality & Archetype Classification
                 let vitRes;
-                if (varga === 'D1' && peData && peData.planets && peData.planets[graha] && peData.planets[graha].vitality) {
-                    vitRes = peData.planets[graha].vitality;
+                if (varga === 'D1' && pEval.vitality) {
+                    vitRes = pEval.vitality;
                 } else {
                     vitRes = calculateGrahaVitality(
                         graha, sign, degVal, cleanDig, dignityPct, signLord,
@@ -7951,6 +7952,26 @@
                         `• <strong>Classical Citation:</strong> Sage Parashara applies the 6 Lajjitādi feeling states exclusively to the 7 physical Grahas.<br>` +
                         `• <strong>Role:</strong> Nodes act as powerful external agitators and catalysts rather than feeling beings.`;
                     avasthasHtml = `<span class="badge tooltip-target" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:9.5px; font-weight:600; cursor:help;" data-tooltip="${nodeAvaTip}">— (Chhāyā Catalyst)</span>`;
+                } else if (pEval.calibrated_lajjitadi && pEval.calibrated_lajjitadi.length > 0) {
+                    const badges = pEval.calibrated_lajjitadi.map(cItem => {
+                        const infStr = (cItem.influencing_planets && cItem.influencing_planets.length > 0)
+                            ? `• <strong>Influencing Grahas:</strong> ${cItem.influencing_planets.map(inf => `${inf.glyph} ${inf.planet} (${inf.alertness_state} - ${(inf.multiplier * 100).toFixed(0)}%)`).join(', ')}<br>`
+                            : '';
+                        const bTip = `<strong>${cItem.icon} ${cItem.state}</strong><br>` +
+                            `• <strong>Condition:</strong> ${cItem.condition}<br>` +
+                            `• <strong>Severity:</strong> ${cItem.severity} (Effective Intensity: ${(cItem.effective_intensity * 100).toFixed(0)}%)<br>` +
+                            infStr +
+                            `• <strong>Source:</strong> Richard Fish & Ryan Kurczak Vol 2 (Alertness-Governed Lajjitādi).`;
+                        let style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                        if (cItem.base_state === 'Mudita') style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                        else if (cItem.base_state === 'Garvita') style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                        else if (cItem.base_state === 'Kshudhita') style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                        else if (cItem.base_state === 'Kshobhita') style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
+                        else if (cItem.base_state === 'Lajjita') style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
+                        else if (cItem.base_state === 'Trushita') style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
+                        return `<span class="badge tooltip-target" style="${style} font-size:9px; cursor:help;" data-tooltip="${escapeTooltipAttr(bTip)}">${cItem.badge}</span>`;
+                    });
+                    avasthasHtml = `<div style="display:flex; flex-direction:column; gap:2px;">${badges.join('')}</div>`;
                 } else if (avList.length === 0) {
                     const neutralAvaTip = `<strong>Neutral (Unstirred Avasthā)</strong><br>` +
                         `• ${graha} is not subjected to starving enemy rays or agitating conjunctions in ${varga}.<br>` +
@@ -8008,12 +8029,33 @@
                     avasthasHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px;">${badges.join('')}</div>`;
                 }
 
+                // Deeptādi (Internal Mood) & Jagradādi (Alertness) Badges
+                let deepthaadiHtml = '';
+                if (pEval.deepthaadi) {
+                    const dTip = `<strong>${pEval.deepthaadi.icon} Deeptādi Mood: ${pEval.deepthaadi.state}</strong><br>` +
+                        `• <strong>Condition:</strong> ${pEval.deepthaadi.condition}<br>` +
+                        `• <strong>Innate Feeling:</strong> ${pEval.deepthaadi.meaning}<br>` +
+                        `• <strong>Source:</strong> Saravali Ch. 5 / Vol 2 Ch. 4.`;
+                    deepthaadiHtml = `<div><span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(dTip)}">${pEval.deepthaadi.badge}</span></div>`;
+                }
+
+                let jagradaadiHtml = '';
+                if (pEval.jagradaadi) {
+                    const jTip = `<strong>${pEval.jagradaadi.icon} Jagradādi Alertness: ${pEval.jagradaadi.state} (${pEval.jagradaadi.capacity_pct}%)</strong><br>` +
+                        `• <strong>House Management:</strong> ${pEval.jagradaadi.house_management}<br>` +
+                        `• <strong>Relational Impact:</strong> Exerts ${(pEval.jagradaadi.multiplier * 100).toFixed(0)}% force in Lajjitādi states.<br>` +
+                        `• <strong>Source:</strong> The Art & Science of Vedic Astrology, Vol 2 Ch. 10.`;
+                    jagradaadiHtml = `<div><span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(jTip)}">${pEval.jagradaadi.badge}</span></div>`;
+                }
+
                 const avasthasCellHtml = `
                     <div style="display:flex; flex-direction:column; gap:2px;">
                         <div style="font-size:10px; font-weight:bold; color:#475569;">
                             Age: <span class="badge tooltip-target" style="background:#f1f5f9; color:#334155; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
                         </div>
                         <div style="font-size:9px; color:#64748b;">${baladi.sanskrit_term.slice(0, 22)}</div>
+                        ${deepthaadiHtml}
+                        ${jagradaadiHtml}
                         <div style="margin-top:1px;">${avasthasHtml}</div>
                     </div>
                 `;
@@ -8033,6 +8075,7 @@
                     `• <strong>Inherent Engine:</strong> ${quad.badge} (${quad.tier})<br>` +
                     (quad.subtext ? `• <strong>Engine Matrix:</strong> ${quad.subtext}<br>` : '') +
                     `• <strong>Engine Definition:</strong> ${quad.desc || quad.description || ''}<br>` +
+                    (pEval.psychological_narrative ? `• <strong>Psychological Diagnosis (Vol 2):</strong> <em>${pEval.psychological_narrative}</em><br>` : '') +
                     `• <strong>Effective Dignity (Quality):</strong> ${effDig.toFixed(0)}% (Moral integrity & motive)<br>` +
                     `• <strong>Effective Shadbala (Muscle):</strong> ${effSb.toFixed(0)}% of required (Physical horsepower)<br>` +
                     `• <strong>Foundational Host Anchor:</strong> ${rescueBadge} (${vitRes.rescue_desc || vitRes.rescue_status || ''})<br>` +
@@ -8053,10 +8096,9 @@
                             <span style="font-size:9.5px; font-weight:600; color:${vitRes.vitality_col || '#64748b'};">${vitRes.vitality_tier || quad.tier}</span>
                             ${receiptText ? `<span class="badge tooltip-target" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size:8.5px; cursor:help; padding:0 3px;" data-tooltip="${escapeTooltipAttr(receiptTooltip)}">🧾 Receipt</span>` : ''}
                         </div>
+                        ${pEval.psychological_narrative ? `<div class="tooltip-target" style="font-size:8.5px; color:#475569; font-style:italic; margin-top:3px; max-width:135px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help;" data-tooltip="<strong>🧠 Psychological Diagnosis (Vol 2):</strong><br>${escapeTooltipAttr(pEval.psychological_narrative)}">🧠 ${escapeHtml(pEval.psychological_narrative)}</div>` : ''}
                     </div>
                 `;
-
-                const pEval = (peData.planets && peData.planets[graha]) || {};
                 const pNak = pEval.nakshatra || {};
                 const nFallback = NAKSHATRA_DATA[pNak.name || (naks[graha] && naks[graha].nakshatra) || ''] || {};
                 const nakName = pNak.name || nFallback.name || (naks[graha] && naks[graha].nakshatra) || '—';
@@ -10845,17 +10887,28 @@
                 let balaCond = av.bala && av.bala.condition ? av.bala.condition : "";
                 let balaTooltip = formatSentence(p, balaState, balaCond, "Bala");
                 
+                const pePlanets = (currentChartData.planetary_evaluation && currentChartData.planetary_evaluation.planets) || {};
+                const peP = pePlanets[p] || {};
+
                 // Jagrat
                 let jagratState = av.jagrat ? av.jagrat.state : "N/A";
                 let jagratVal = av.jagrat ? av.jagrat.alertness : 0;
-                let jagratPct = Math.round(jagratVal * 100);
                 let jagratCond = av.jagrat && av.jagrat.condition ? av.jagrat.condition : "";
+                if (peP.jagradaadi) {
+                    jagratState = peP.jagradaadi.badge || peP.jagradaadi.state;
+                    jagratVal = peP.jagradaadi.multiplier;
+                    jagratCond = peP.jagradaadi.house_management || "";
+                }
+                let jagratPct = Math.round(jagratVal * 100);
                 let jagratTooltip = formatSentence(p, jagratState, jagratCond, "Jagrat");
                 
                 // Deeptadi
                 let deepState = "N/A";
                 let deepTooltip = "";
-                if (av.deeptadi) {
+                if (peP.deepthaadi) {
+                    deepState = peP.deepthaadi.badge || peP.deepthaadi.state;
+                    deepTooltip = `<strong>${peP.deepthaadi.icon || '👑'} Deeptādi Mood: ${peP.deepthaadi.state}</strong><br>• Condition: ${peP.deepthaadi.condition}<br>• Meaning: ${peP.deepthaadi.meaning}`;
+                } else if (av.deeptadi) {
                     deepState = av.deeptadi.state || "N/A";
                     let deepCond = av.deeptadi.condition || "";
                     deepTooltip = formatSentence(p, deepState, deepCond, "Deeptadi");
@@ -10863,7 +10916,15 @@
                 
                 // Lajjitadi
                 let lajjitadiHtml = "";
-                if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
+                if (peP.calibrated_lajjitadi && Array.isArray(peP.calibrated_lajjitadi) && peP.calibrated_lajjitadi.length > 0) {
+                    lajjitadiHtml = peP.calibrated_lajjitadi.map(item => {
+                        const infStr = (item.influencing_planets && item.influencing_planets.length > 0)
+                            ? ` (${item.influencing_planets.map(inf => `${inf.glyph} ${inf.alertness_state}`).join(', ')})`
+                            : '';
+                        const lTooltip = `<strong>${item.icon} ${item.state}</strong><br>• Condition: ${item.condition}<br>• Severity: ${item.severity} (Intensity: ${(item.effective_intensity * 100).toFixed(0)}%)<br>• Source: Vol 2 Ch. 10 & 11`;
+                        return `<span class="badge tooltip-target" style="background:#f8fafc; border:1px solid #cbd5e1; font-size:9.5px; margin-right:3px;" data-tooltip="${escapeTooltipAttr(lTooltip)}">${item.badge}</span>`;
+                    }).join(" ");
+                } else if (av.lajjitadi && Array.isArray(av.lajjitadi)) {
                     lajjitadiHtml = av.lajjitadi.map(item => {
                         if (typeof item === 'object') {
                             let lTooltip = formatSentence(p, item.state, item.condition, "Lajjitadi");

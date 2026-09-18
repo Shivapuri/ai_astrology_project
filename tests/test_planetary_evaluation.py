@@ -509,7 +509,138 @@ def test_full_chart_functional_role_pipeline(test_chart):
         assert "is_guru_chandal" in p_data, f"Missing is_guru_chandal on {p_name}"
         assert "is_guru_ketu" in p_data, f"Missing is_guru_ketu on {p_name}"
         assert "is_vikala" in p_data, f"Missing is_vikala on {p_name}"
+        assert "deepthaadi" in p_data, f"Missing deepthaadi on {p_name}"
+        assert "jagradaadi" in p_data, f"Missing jagradaadi on {p_name}"
+        assert "calibrated_lajjitadi" in p_data, f"Missing calibrated_lajjitadi on {p_name}"
+        assert "psychological_narrative" in p_data, f"Missing psychological_narrative on {p_name}"
         assert 1.0 <= p_data["vitality_score"] <= 10.0
+
+
+def test_deepthaadi_avastha_9_canonical_states():
+    """Verify all 9 canonical Saravali / Vol 2 Ch. 4 Deepthaadi states."""
+    from jyotish.planetary_evaluation import calculate_deepthaadi_avastha
+
+    # 1. Nipeedita (War Defeat)
+    d1 = calculate_deepthaadi_avastha("Mars", "Capricorn", "Exalted", is_war_loser=True, war_opponent="Saturn")
+    assert d1["sanskrit"] == "Nipeedita"
+    assert "Nipeedita" in d1["badge"]
+
+    # 2. Vikala (Combustion)
+    d2 = calculate_deepthaadi_avastha("Venus", "Pisces", "Exalted", is_combust=True)
+    assert d2["sanskrit"] == "Vikala"
+    assert "Vikala" in d2["badge"]
+
+    # 3. Bhita (Fall / Debilitation)
+    d3 = calculate_deepthaadi_avastha("Sun", "Libra", "Debilitated")
+    assert d3["sanskrit"] == "Bhita"
+    assert "Bhita" in d3["badge"]
+
+    # 4. Deeptha (Exalted)
+    d4 = calculate_deepthaadi_avastha("Sun", "Aries", "Exalted")
+    assert d4["sanskrit"] == "Deeptha"
+    assert "Deeptha" in d4["badge"]
+
+    # 5. Swastha (Own / Moolatrikona)
+    d5 = calculate_deepthaadi_avastha("Mars", "Aries", "Own Sign")
+    assert d5["sanskrit"] == "Swastha"
+    assert "Swastha" in d5["badge"]
+
+    # 6. Sakta (Retrograde)
+    d6 = calculate_deepthaadi_avastha("Jupiter", "Taurus", "Enemy's Sign", is_retrograde=True)
+    assert d6["sanskrit"] == "Sakta"
+    assert "Sakta" in d6["badge"]
+
+    # 7. Mudita (Friend's Sign)
+    d7 = calculate_deepthaadi_avastha("Sun", "Scorpio", "Friend's Sign")
+    assert d7["sanskrit"] == "Mudita"
+    assert "Mudita" in d7["badge"]
+
+    # 8. Khala (Enemy's Sign)
+    d8 = calculate_deepthaadi_avastha("Saturn", "Scorpio", "Enemy's Sign")
+    assert d8["sanskrit"] == "Khala"
+    assert "Khala" in d8["badge"]
+
+    # 9. Santa (Neutral Sign)
+    d9 = calculate_deepthaadi_avastha("Mercury", "Aries", "Neutral's Sign")
+    assert d9["sanskrit"] == "Santa"
+    assert "Santa" in d9["badge"]
+
+
+def test_jagradaadi_avastha_capacities():
+    """Verify Jagradaadi Avastha 3 states (Jagrat, Svapna, Sushupti) per Vol 2 Ch. 10."""
+    from jyotish.planetary_evaluation import calculate_jagradaadi_avastha
+
+    # Jagrat: Exalted / Own / Moolatrikona -> 1.00 (100%)
+    j_exalt = calculate_jagradaadi_avastha("Jupiter", "Cancer", "Exalted")
+    assert j_exalt["multiplier"] == 1.00
+    assert j_exalt["capacity_pct"] == 100
+    assert "Jagrat" in j_exalt["state"]
+
+    # Svapna: Friend / Neutral -> 0.50 (50%)
+    j_friend = calculate_jagradaadi_avastha("Sun", "Scorpio", "Friend's Sign")
+    assert j_friend["multiplier"] == 0.50
+    assert j_friend["capacity_pct"] == 50
+    assert "Svapna" in j_friend["state"]
+
+    # Sushupti: Enemy / Debilitated -> 0.10 (10%)
+    j_enemy = calculate_jagradaadi_avastha("Saturn", "Scorpio", "Enemy's Sign")
+    assert j_enemy["multiplier"] == 0.10
+    assert j_enemy["capacity_pct"] == 10
+    assert "Sushupti" in j_enemy["state"]
+
+
+def test_lajjitadi_alertness_calibration():
+    """Verify that interacting planet alertness governs Lajjitadi severity per Vol 2 pp. 136-139."""
+    from jyotish.planetary_evaluation import calibrate_lajjitadi_states
+
+    jag_map = {
+        "Saturn": {"multiplier": 0.10, "english": "Asleep"},
+        "Venus": {"multiplier": 1.00, "english": "Awake"},
+        "Sun": {"multiplier": 0.50, "english": "Sleepy"}
+    }
+
+    # Case A: Starved by sleeping Saturn (sluggish impact)
+    raw_a = [{"state": "Kshudhita (Starved)", "condition": "conjoined enemy Saturn"}]
+    cal_a = calibrate_lajjitadi_states("Sun", "Scorpio", raw_a, jag_map, jag_map["Sun"])
+    assert len(cal_a) == 1
+    assert cal_a[0]["effective_intensity"] == 0.10
+    assert "Sluggish" in cal_a[0]["severity"]
+
+    # Case B: Starved by awake Venus (acute impact)
+    raw_b = [{"state": "Kshudhita (Starved)", "condition": "aspected by enemy Venus"}]
+    cal_b = calibrate_lajjitadi_states("Sun", "Scorpio", raw_b, jag_map, jag_map["Sun"])
+    assert len(cal_b) == 1
+    assert cal_b[0]["effective_intensity"] == 1.00
+    assert "Acute" in cal_b[0]["severity"]
+
+    # Case C: Self is Jagrat (Awake) facing negative state -> 25% resilience dampening
+    self_jagrat = {"multiplier": 1.00, "english": "Awake"}
+    cal_c = calibrate_lajjitadi_states("Sun", "Aries", raw_b, jag_map, self_jagrat)
+    assert cal_c[0]["effective_intensity"] == 0.75  # 1.00 * 0.75
+
+
+def test_psychological_narrative_synthesis():
+    """Verify rich 3-sentence developmental narrative synthesis."""
+    from jyotish.planetary_evaluation import (
+        calculate_deepthaadi_avastha,
+        calculate_jagradaadi_avastha,
+        calibrate_lajjitadi_states,
+        synthesize_psychological_narrative
+    )
+
+    d = calculate_deepthaadi_avastha("Sun", "Scorpio", "Friend's Sign")
+    j = calculate_jagradaadi_avastha("Sun", "Scorpio", "Friend's Sign")
+    jag_map = {"Saturn": {"multiplier": 0.10, "english": "Asleep"}}
+    raw_l = [{"state": "Kshudhita (Starved)", "condition": "conjoined enemy Saturn"}]
+    cal_l = calibrate_lajjitadi_states("Sun", "Scorpio", raw_l, jag_map, j)
+
+    narrative = synthesize_psychological_narrative("Sun", "Scorpio", d, j, cal_l)
+    assert "Mudita" in narrative
+    assert "Half Capacity" in narrative or "50%" in narrative
+    assert "Kshudhita" in narrative
+    assert "Saturn" in narrative
+    assert "Builds authentic authority" in narrative
+
 
 
 

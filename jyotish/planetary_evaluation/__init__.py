@@ -9,7 +9,11 @@ from .planetary_evaluation import (
     calculate_baladi_avastha,
     classify_graha_quadrant,
     calculate_graha_vitality,
-    detect_planetary_wars
+    detect_planetary_wars,
+    calculate_deepthaadi_avastha,
+    calculate_jagradaadi_avastha,
+    calibrate_lajjitadi_states,
+    synthesize_psychological_narrative
 )
 from .lagna_evaluation import evaluate_lagna_vitality
 
@@ -19,5 +23,9 @@ __all__ = [
     "classify_graha_quadrant",
     "calculate_graha_vitality",
     "detect_planetary_wars",
+    "calculate_deepthaadi_avastha",
+    "calculate_jagradaadi_avastha",
+    "calibrate_lajjitadi_states",
+    "synthesize_psychological_narrative",
     "evaluate_lagna_vitality"
 ]

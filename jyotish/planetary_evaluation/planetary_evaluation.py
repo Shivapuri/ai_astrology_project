@@ -211,6 +211,366 @@ def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]
     }
 
 
+def calculate_deepthaadi_avastha(
+    planet: str,
+    sign: str,
+    dignity_name: str,
+    is_retrograde: bool = False,
+    is_combust: bool = False,
+    is_war_loser: bool = False,
+    war_opponent: Optional[str] = None
+) -> Dict[str, Any]:
+    """
+    Calculates Deepthaadi Avastha (Innate Mental Mood) based on Saravali Ch. 5
+    and Richard Fish & Ryan Kurczak 'The Art and Science of Vedic Astrology, Vol 2', Ch. 4 (pp. 50-51).
+
+    The 9 Canonical States from Saravali:
+    1. Nipeedita (Harmed): Defeated in planetary war (Graha Yuddha).
+    2. Vikala (Mutilated): Combust with the Sun (within solar orb).
+    3. Bhita (Alarmed): In the sign of its fall (Debilitated).
+    4. Deeptha (Radiant): In its exaltation sign.
+    5. Swastha (Confident): In its own sign or Moolatrikona.
+    6. Sakta (Strong): Retrograde with bright rays / high horsepower.
+    7. Mudita (Rejoicing): In the sign of a friend.
+    8. Khala (Sorrowful / Mischievous): In an enemy sign.
+    9. Santa (Peaceful / Serene): In a neutral sign or benefic varga.
+    """
+    d_low = (dignity_name or "").lower()
+
+    if is_war_loser:
+        opp_str = f" via {war_opponent}" if war_opponent else ""
+        return {
+            "state": "Nipeedita (Harmed)",
+            "sanskrit": "Nipeedita",
+            "english": "Harmed",
+            "icon": "⚔️",
+            "badge": f"⚔️ Nipeedita (War Defeat{opp_str})",
+            "meaning": "Defeated in a close planetary war; bruised and obstructed, requiring recuperation before manifesting results.",
+            "condition": f"Defeated by {war_opponent} in Graha Yuddha" if war_opponent else "Defeated in Graha Yuddha"
+        }
+    elif is_combust and planet not in ["Sun", "Rahu", "Ketu"]:
+        return {
+            "state": "Vikala (Mutilated)",
+            "sanskrit": "Vikala",
+            "english": "Mutilated",
+            "icon": "🔥",
+            "badge": "🔥 Vikala (Combust)",
+            "meaning": "Combust with the Sun; outward material expression is scorched away, forcing energy to turn inward.",
+            "condition": "Combust within solar orb (Astangata)"
+        }
+    elif "debilit" in d_low or "neecha" in d_low or "fall" in d_low:
+        return {
+            "state": "Bhita (Alarmed)",
+            "sanskrit": "Bhita",
+            "english": "Alarmed",
+            "icon": "🔻",
+            "badge": "🔻 Bhita (Alarmed)",
+            "meaning": "In the sign of its fall; feels ungrounded, vulnerable, and exposed, demanding deep inner humility.",
+            "condition": f"Debilitated in {sign}"
+        }
+    elif "exalt" in d_low or "paramoccha" in d_low or "uccha" in d_low:
+        return {
+            "state": "Deeptha (Radiant)",
+            "sanskrit": "Deeptha",
+            "english": "Radiant",
+            "icon": "👑",
+            "badge": "👑 Deeptha (Radiant)",
+            "meaning": "In its exaltation sign; possesses sovereign nobility, supreme confidence, effortlessly radiating virtues.",
+            "condition": f"Exalted in {sign}"
+        }
+    elif "own" in d_low or "moolatrikona" in d_low or "sva" in d_low:
+        return {
+            "state": "Swastha (Confident)",
+            "sanskrit": "Swastha",
+            "english": "Confident",
+            "icon": "🏡",
+            "badge": "🏡 Swastha (Confident)",
+            "meaning": "In its own sign or prime mission; fully at home, self-reliant, comfortable, and in control of its resources.",
+            "condition": f"In Own/Moolatrikona Sign ({sign})"
+        }
+    elif is_retrograde and planet not in ["Sun", "Moon", "Rahu", "Ketu"]:
+        return {
+            "state": "Sakta (Strong)",
+            "sanskrit": "Sakta",
+            "english": "Strong",
+            "icon": "💪",
+            "badge": "💪 Sakta (Strong)",
+            "meaning": "Bright retrograde rays; high motional horsepower, persistent inner drive, and endurance.",
+            "condition": "Retrograde motion with bright rays"
+        }
+    elif "friend" in d_low or "mitra" in d_low:
+        return {
+            "state": "Mudita (Rejoicing)",
+            "sanskrit": "Mudita",
+            "english": "Rejoicing",
+            "icon": "🤝",
+            "badge": "🤝 Mudita (Rejoicing)",
+            "meaning": "In the sign of a friend; welcomed and honored as a valued guest in a supportive environment.",
+            "condition": f"In Friend's Sign ({sign})"
+        }
+    elif "enemy" in d_low or "shatru" in d_low:
+        return {
+            "state": "Khala (Sorrowful)",
+            "sanskrit": "Khala",
+            "english": "Sorrowful / Mischievous",
+            "icon": "⚠️",
+            "badge": "⚠️ Khala (Sorrowful)",
+            "meaning": "In an enemy sign; feels defensive, facing environmental friction and demanding stubborn effort.",
+            "condition": f"In Enemy's Sign ({sign})"
+        }
+    else:
+        return {
+            "state": "Santa (Peaceful)",
+            "sanskrit": "Santa",
+            "english": "Peaceful",
+            "icon": "🕊️",
+            "badge": "🕊️ Santa (Peaceful)",
+            "meaning": "Neutral footing; operates with steady, pragmatic composure without extreme bias.",
+            "condition": f"In Neutral Sign ({sign})"
+        }
+
+
+def calculate_jagradaadi_avastha(
+    planet: str,
+    sign: str,
+    natural_dignity: str
+) -> Dict[str, Any]:
+    """
+    Calculates Jagradaadi Avastha (Alertness & House Management Capacity)
+    per Richard Fish & Ryan Kurczak 'The Art and Science of Vedic Astrology, Vol 2', Ch. 10 (pp. 136-139).
+
+    Three States based on Natural Planetary Dignity:
+    1. Jagrat (Awake - 1.00): Exalted, Moolatrikona, or Own Sign.
+       - Full capacity (100%) to manage and produce house affairs.
+       - Full impact (100%) when causing Lajjitaadi avasthas on other planets.
+    2. Svapna (Sleepy - 0.50): Friend's or Neutral Sign.
+       - Half capacity (50%) to manage house affairs.
+       - Half impact (50%) when causing Lajjitaadi avasthas on other planets.
+    3. Sushupti (Asleep - 0.10): Enemy's or Debilitated Sign.
+       - Minimal capacity (10%) to manage house affairs; cannot sustain results alone.
+       - Sluggish / muted impact (10%) when causing Lajjitaadi avasthas on other planets.
+    """
+    d_low = (natural_dignity or "").lower()
+
+    if any(k in d_low for k in ["exalt", "moola", "own", "paramoccha", "uccha", "sva"]):
+        return {
+            "state": "Jagrat (Awake)",
+            "sanskrit": "Jagrat",
+            "english": "Awake",
+            "icon": "👁️",
+            "badge": "👁️ Jagrat (Awake - 100%)",
+            "alertness": 1.00,
+            "multiplier": 1.00,
+            "capacity_pct": 100,
+            "capacity_desc": "Full Capacity (100%)",
+            "house_management": "Full capacity to manage and produce the affairs of its ruled houses; exerts full power in planetary interactions."
+        }
+    elif any(k in d_low for k in ["debilit", "enemy", "neecha", "shatru"]):
+        return {
+            "state": "Sushupti (Asleep)",
+            "sanskrit": "Sushupti",
+            "english": "Asleep / Slumbering",
+            "icon": "💤",
+            "badge": "💤 Sushupti (Asleep - 10%)",
+            "alertness": 0.10,
+            "multiplier": 0.10,
+            "capacity_pct": 10,
+            "capacity_desc": "Minimal Capacity (10%)",
+            "house_management": "Cannot produce or manage house affairs alone; exerts minimal to sluggish impact in planetary interactions."
+        }
+    else:
+        return {
+            "state": "Svapna (Sleepy)",
+            "sanskrit": "Svapna",
+            "english": "Sleepy / Dreaming",
+            "icon": "😴",
+            "badge": "😴 Svapna (Sleepy - 50%)",
+            "alertness": 0.50,
+            "multiplier": 0.50,
+            "capacity_pct": 50,
+            "capacity_desc": "Half Capacity (50%)",
+            "house_management": "Half capacity to produce and manage house affairs; exerts moderate impact in planetary interactions."
+        }
+
+
+def calibrate_lajjitadi_states(
+    planet: str,
+    sign: str,
+    raw_lajjitadi_list: List[Dict[str, Any]],
+    jagradaadi_map: Dict[str, Dict[str, Any]],
+    self_jagradaadi: Dict[str, Any]
+) -> List[Dict[str, Any]]:
+    """
+    Calibrates Lajjitaadi Avasthas by modulating each state with the alertness (Jagradaadi)
+    of the interacting planet, as formulated by Ryan Kurczak in Vol 2 (pp. 136-139).
+    """
+    calibrated = []
+    graha_names = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+    self_mult = self_jagradaadi.get("multiplier", 0.50)
+
+    for item in raw_lajjitadi_list:
+        st = item.get("state", "") if isinstance(item, dict) else str(item)
+        cond = item.get("condition", "") if isinstance(item, dict) else ""
+        base_state = st.split(" ")[0].strip() if " " in st else st
+
+        # Identify which planets are influencing this state
+        found_influencers = [p for p in graha_names if p in cond and p != planet]
+
+        # If no specific planet is in condition text, check if sign lord is the host
+        if not found_influencers and ("enemy sign" in cond.lower() or "friend's sign" in cond.lower()):
+            host_lord = rel.SIGN_LORDS.get(sign)
+            if host_lord and host_lord != planet:
+                found_influencers.append(host_lord)
+
+        inf_details = []
+        mult_values = []
+        for inf_p in found_influencers:
+            inf_jag = jagradaadi_map.get(inf_p, {})
+            m = inf_jag.get("multiplier", 0.50)
+            mult_values.append(m)
+            inf_details.append({
+                "planet": inf_p,
+                "glyph": PLANET_GLYPHS.get(inf_p, inf_p),
+                "alertness_state": inf_jag.get("english", "Sleepy"),
+                "multiplier": m
+            })
+
+        # Determine effective intensity based on influencer's Jagradaadi
+        if base_state == "Garvita":
+            effective_intensity = 1.00
+            severity = "Peak (Regal Assurance)"
+            badge = "👑 Garvita (Proud - Peak)"
+            icon = "👑"
+        elif mult_values:
+            base_intensity = max(mult_values)
+            # If self is Jagrat (Awake) and facing a negative state, self-stamina grants 25% resilience dampening (Kurczak p. 137)
+            if self_mult == 1.00 and base_state in ["Kshudhita", "Kshobhita", "Lajjita", "Trushita"]:
+                effective_intensity = round(base_intensity * 0.75, 2)
+            else:
+                effective_intensity = base_intensity
+
+            primary_inf = inf_details[0]
+            inf_g = primary_inf["glyph"]
+            inf_s = primary_inf["alertness_state"]
+
+            if base_state == "Mudita":
+                icon = "🟢"
+                badge = f"🟢 Mudita (via {inf_g} {inf_s})"
+                severity = "Uplifting / Nourishing" if effective_intensity >= 0.8 else ("Warm / Steady" if effective_intensity >= 0.4 else "Subdued")
+            elif base_state == "Kshudhita":
+                icon = "🔴"
+                badge = f"🔴 Kshudhita (via {inf_g} {inf_s})"
+                severity = "Acute / Severe" if effective_intensity >= 0.8 else ("Moderate / Bearable" if effective_intensity >= 0.4 else "Sluggish / Muted")
+            elif base_state == "Kshobhita":
+                icon = "🟠"
+                badge = f"🟠 Kshobhita (via {inf_g} {inf_s})"
+                severity = "Intense Friction" if effective_intensity >= 0.8 else "Mild Agitation"
+            elif base_state == "Lajjita":
+                icon = "🟣"
+                badge = f"🟣 Lajjita (via {inf_g} {inf_s})"
+                severity = "Acute Inhibitions" if effective_intensity >= 0.8 else "Mild Bashfulness"
+            elif base_state == "Trushita":
+                icon = "💧"
+                badge = f"💧 Trushita (via {inf_g} {inf_s})"
+                severity = "Acute Thirst" if effective_intensity >= 0.8 else "Mild Yearning"
+            else:
+                icon = "⚪"
+                badge = f"⚪ {base_state} (via {inf_g} {inf_s})"
+                severity = "Standard"
+        else:
+            effective_intensity = 0.50
+            severity = "Moderate"
+            icon = "⚪"
+            badge = f"⚪ {st}"
+
+        calibrated.append({
+            "state": st,
+            "base_state": base_state,
+            "condition": cond,
+            "icon": icon,
+            "badge": badge,
+            "effective_intensity": effective_intensity,
+            "severity": severity,
+            "influencing_planets": inf_details
+        })
+
+    return calibrated
+
+
+def synthesize_psychological_narrative(
+    planet: str,
+    sign: str,
+    deepthaadi: Dict[str, Any],
+    jagradaadi: Dict[str, Any],
+    calibrated_lajjitadi: List[Dict[str, Any]],
+    functional_role: Optional[Dict[str, Any]] = None
+) -> str:
+    """
+    Synthesizes a rich 2-3 sentence psychological reality diagnosis following
+    Richard Fish & Ryan Kurczak 'The Art and Science of Vedic Astrology, Vol 2' (Chapters 4, 10 & 11).
+    Integrates internal mood (Deepthaadi), management alertness (Jagradaadi), and outer social dynamics (Lajjitaadi).
+    """
+    d_state = deepthaadi.get("state", "Santa (Peaceful)")
+    j_desc = jagradaadi.get("capacity_desc", "Full Capacity")
+
+    # Sentence 1: Baseline mood and executive alertness
+    s1 = f"Internally positioned in {d_state} within {sign}, operating with {j_desc} to manifest its portfolio."
+
+    # Sentence 2: Relational complexes from Lajjitadi
+    active_states = [c for c in calibrated_lajjitadi if "neutral" not in c.get("base_state", "").lower()]
+    pos_states = [c for c in active_states if c.get("base_state") in ["Garvita", "Mudita"]]
+    neg_states = [c for c in active_states if c.get("base_state") in ["Kshudhita", "Kshobhita", "Lajjita", "Trushita"]]
+
+    pos_parts = []
+    for c in pos_states:
+        b = c.get("base_state")
+        inf_names = [inf["planet"] for inf in c.get("influencing_planets", [])]
+        inf_str = f" from {', '.join(inf_names)}" if inf_names else ""
+        if b == "Garvita":
+            pos_parts.append("stands tall with sovereign pride and regal self-assurance (Garvita)")
+        elif b == "Mudita":
+            pos_parts.append(f"enjoys nourishing validation and cooperative ease (Mudita){inf_str}")
+
+    neg_parts = []
+    for c in neg_states:
+        b = c.get("base_state")
+        inf_names = [f"{inf['planet']} ({inf['alertness_state']})" for inf in c.get("influencing_planets", [])]
+        inf_str = f" via {', '.join(inf_names)}" if inf_names else ""
+        if b == "Kshudhita":
+            neg_parts.append(f"experiences resource starvation (Kshudhita){inf_str}, requiring steadfast commitments to overcome hesitation")
+        elif b == "Kshobhita":
+            neg_parts.append(f"faces internal friction and agitation (Kshobhita){inf_str}")
+        elif b == "Lajjita":
+            neg_parts.append(f"encounters bashfulness or self-doubt (Lajjita){inf_str} around asserting its desires")
+        elif b == "Trushita":
+            neg_parts.append(f"feels an emotional depletion or yearning thirst (Trushita){inf_str} in water signs")
+
+    if pos_parts and neg_parts:
+        s2 = f"While it {pos_parts[0]}, it simultaneously {neg_parts[0]}."
+    elif pos_parts:
+        s2 = f"Socially, it {pos_parts[0]}."
+    elif neg_parts:
+        s2 = f"Socially, it {neg_parts[0]}."
+    else:
+        s2 = "Socially, it operates in an undisturbed, peaceful baseline free of acute relational friction."
+
+    # Sentence 3: Kurczak Vol 2 core developmental guidance per planet
+    graha_advice = {
+        "Sun": "Builds authentic authority through managing expectations and leading with healthy self-esteem without overcompensating.",
+        "Moon": "Finds deep peace through emotional adaptability, accepting support, and maintaining genuine self-contentment.",
+        "Mars": "Channels drive into constructive, principled action, avoiding rigid dogma or impetuous haste.",
+        "Mercury": "Excels through curious exploration and adaptable intellect while avoiding nervous overthinking.",
+        "Jupiter": "Expands wisdom and spiritual benevolence, anchored in genuine ethical dharma.",
+        "Venus": "Cultivates graceful harmony and devoted discernment in partnerships, avoiding excessive reliance on outside counsel.",
+        "Saturn": "Matures through patient endurance and steady discipline, transmuting hardship into enduring authority.",
+        "Rahu": "Directs ambitious, unconventional worldly hunger into focused mastery while guarding against ideological illusions.",
+        "Ketu": "Deepens inward discernment and spiritual detachment, cutting through worldly dogma to perceive core truth."
+    }
+    s3 = graha_advice.get(planet, "Cultivates balance and mastery across its natural significations.")
+
+    return f"{s1} {s2} {s3}"
+
+
 def classify_graha_archetype(
     effective_dignity: Optional[float] = None,
     effective_shadbala: Optional[float] = None,
@@ -510,7 +870,12 @@ def calculate_graha_vitality(
     war_badge: Optional[str] = None,
     conjunction_details: Optional[List[Dict[str, Any]]] = None,
     aspect_details: Optional[List[Dict[str, Any]]] = None,
-    functional_role: Optional[Dict[str, Any]] = None
+    functional_role: Optional[Dict[str, Any]] = None,
+    # New parameters for Deepthaadi, Jagradaadi, & Calibrated Lajjitaadi (Vol 2)
+    deepthaadi: Optional[Dict[str, Any]] = None,
+    jagradaadi: Optional[Dict[str, Any]] = None,
+    calibrated_lajjitadi: Optional[List[Dict[str, Any]]] = None,
+    psychological_narrative: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Calibrated Net Functional Vitality calculation resolving architectural flaws:
@@ -801,26 +1166,45 @@ def calculate_graha_vitality(
         if not war_badge:
             war_badge = f"🏆 War Victor (Combat Stain: {war_opponent})" if war_opponent else "🏆 War Victor"
 
-    # 8. Psychological Feeling State (Lajjitadi - ADR-009)
+    # 8. Psychological Feeling State (Lajjitadi & Alertness Modulation - ADR-009 & Vol 2)
     # Expressed primarily as qualitative badges, narrative interpretations, and neutral sign dynamic tilts.
-    # A gentle qualitative mood tint is applied (+/- 0.15 max) without heavy additive stacking on top of conjunctions/aspects.
+    # A gentle qualitative mood tint is applied (+/- 0.15 max) modulated by interacting planet alertness.
     psy_mod = 0.0
     has_garvita = False
-    for item in lajjitadi_states:
-        st = (item.get("state", "") if isinstance(item, dict) else str(item)).lower()
-        if "garvita" in st:
-            has_garvita = True
-            psy_mod += 0.15
-        elif "mudita" in st:
-            psy_mod += 0.15
-        elif "kshudhita" in st:
-            psy_mod -= 0.15
-        elif "kshobhita" in st:
-            psy_mod -= 0.10
-        elif "lajjita" in st:
-            psy_mod -= (0.10 if has_garvita else 0.15)
-        elif "trushita" in st:
-            psy_mod -= 0.10
+    if calibrated_lajjitadi:
+        for item in calibrated_lajjitadi:
+            b_st = item.get("base_state", "")
+            eff_int = float(item.get("effective_intensity", 1.0))
+            if b_st == "Garvita":
+                has_garvita = True
+                psy_mod += 0.15 * eff_int
+            elif b_st == "Mudita":
+                psy_mod += 0.15 * eff_int
+            elif b_st == "Kshudhita":
+                psy_mod -= 0.15 * eff_int
+            elif b_st == "Kshobhita":
+                psy_mod -= 0.10 * eff_int
+            elif b_st == "Lajjita":
+                base_pen = 0.10 if has_garvita else 0.15
+                psy_mod -= base_pen * eff_int
+            elif b_st == "Trushita":
+                psy_mod -= 0.10 * eff_int
+    else:
+        for item in lajjitadi_states:
+            st = (item.get("state", "") if isinstance(item, dict) else str(item)).lower()
+            if "garvita" in st:
+                has_garvita = True
+                psy_mod += 0.15
+            elif "mudita" in st:
+                psy_mod += 0.15
+            elif "kshudhita" in st:
+                psy_mod -= 0.15
+            elif "kshobhita" in st:
+                psy_mod -= 0.10
+            elif "lajjita" in st:
+                psy_mod -= (0.10 if has_garvita else 0.15)
+            elif "trushita" in st:
+                psy_mod -= 0.10
     psy_mod = clamp(psy_mod, -0.20, 0.20)
 
     # 9. Ascendant Functional Role Integration
@@ -890,6 +1274,10 @@ def calculate_graha_vitality(
         f"   • Aspect Vision (Dṛṣṭi):  {drishti_mod:+.1f} pts",
         f"   • Conjunctions (Yuti):    {conj_mod:+.1f} pts",
     ]
+    if deepthaadi and deepthaadi.get("badge"):
+        receipt_lines.append(f"   • Deepthādi Mood:         {deepthaadi.get('badge')}")
+    if jagradaadi and jagradaadi.get("badge"):
+        receipt_lines.append(f"   • Jagradādi Alertness:    {jagradaadi.get('badge')}")
     if is_combust:
         receipt_lines.append(f"   • Combustion (Astangata): {combust_mod:+.1f} pts (Blinded by Sun)")
     if is_war_winner or is_war_loser:
@@ -948,7 +1336,11 @@ def calculate_graha_vitality(
         "efficiency_pct": baladi["efficiency_pct"],
         "final_score": final_score,
         "equation_parts": equation_parts,
-        "receipt_text": receipt_text
+        "receipt_text": receipt_text,
+        "deepthaadi": deepthaadi,
+        "jagradaadi": jagradaadi,
+        "calibrated_lajjitadi": calibrated_lajjitadi,
+        "psychological_narrative": psychological_narrative
     }
 
     return {
@@ -989,6 +1381,10 @@ def calculate_graha_vitality(
         "war_badge": war_badge,
         "aspect_details": processed_aspect_details,
         "conjunction_details": processed_conjunction_details,
+        "deepthaadi": deepthaadi,
+        "jagradaadi": jagradaadi,
+        "calibrated_lajjitadi": calibrated_lajjitadi or [],
+        "psychological_narrative": psychological_narrative,
         "calculation_receipt": calculation_receipt
     }
 
@@ -1078,6 +1474,18 @@ def calculate_planetary_evaluation(
             "predominance_desc": pred_desc,
             "varga_breakdown": v_breakdown
         }
+
+    planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data)
+
+    # Precompute Jagradaadi map across all D1 planets for interaction calibration (Vol 2 Ch. 10)
+    jagradaadi_map = {}
+    for p_name in planets_eval_order:
+        if p_name not in d1_grahas:
+            continue
+        p_d1_node = d1_grahas[p_name]
+        p_sign_node = p_d1_node.get("sign", "Aries")
+        p_nat_dig = p_d1_node.get("dignity_breakdown", {}).get("natural_dignity", "") or p_d1_node.get("dignity_breakdown", {}).get("final_dignity", "")
+        jagradaadi_map[p_name] = calculate_jagradaadi_avastha(p_name, p_sign_node, p_nat_dig)
 
     # -------------------------------------------------------------------------
     # STEPS 2, 3, 4 & SYNTHESIS: Full Evaluation per planet
@@ -1557,6 +1965,41 @@ def calculate_planetary_evaluation(
                     "commands": (o_sb > (sb_ratio * 100.0))
                 })
 
+        war_info = planetary_wars.get(p, {})
+        is_war_winner = war_info.get("is_winner", False)
+        is_war_loser = war_info.get("is_loser", False)
+        war_opponent = war_info.get("opponent")
+        war_badge = war_info.get("badge")
+
+        deepthaadi_res = calculate_deepthaadi_avastha(
+            planet=p,
+            sign=p_sign,
+            dignity_name=d1_dignity_name,
+            is_retrograde=bool(p_d1.get("is_retrograde")),
+            is_combust=bool(p_d1.get("is_combust")),
+            is_war_loser=is_war_loser,
+            war_opponent=war_opponent
+        )
+        jagradaadi_res = jagradaadi_map.get(p, calculate_jagradaadi_avastha(p, p_sign, d1_dignity_name))
+
+        raw_lajjitadi = p_d1.get("avasthas", {}).get("lajjitadi", [])
+        calibrated_lajj = calibrate_lajjitadi_states(
+            planet=p,
+            sign=p_sign,
+            raw_lajjitadi_list=raw_lajjitadi,
+            jagradaadi_map=jagradaadi_map,
+            self_jagradaadi=jagradaadi_res
+        )
+
+        psy_narrative = synthesize_psychological_narrative(
+            planet=p,
+            sign=p_sign,
+            deepthaadi=deepthaadi_res,
+            jagradaadi=jagradaadi_res,
+            calibrated_lajjitadi=calibrated_lajj,
+            functional_role=fn_role
+        )
+
         vit_res = calculate_graha_vitality(
             planet=p,
             sign=p_sign,
@@ -1569,14 +2012,22 @@ def calculate_planetary_evaluation(
             planet_shadbala_pct=sb_ratio * 100.0,
             net_drishti_virupas=clamped_aspect_net,
             conjunctions=[c["source"] for c in step3_info.get("details", []) if c.get("type") == "Conjunction"],
-            lajjitadi_states=p_d1.get("avasthas", {}).get("lajjitadi", []),
+            lajjitadi_states=raw_lajjitadi,
             is_retrograde=bool(p_d1.get("is_retrograde")),
             is_combust=bool(p_d1.get("is_combust")),
             is_node=(p in ["Rahu", "Ketu"]),
             lagna_sign=lagna_sign,
             lagna_lord=rel.SIGN_LORDS.get(lagna_sign, "Mars"),
+            is_war_winner=is_war_winner,
+            is_war_loser=is_war_loser,
+            war_opponent=war_opponent,
+            war_badge=war_badge,
             conjunction_details=conj_details,
-            functional_role=fn_role
+            functional_role=fn_role,
+            deepthaadi=deepthaadi_res,
+            jagradaadi=jagradaadi_res,
+            calibrated_lajjitadi=calibrated_lajj,
+            psychological_narrative=psy_narrative
         )
 
         # Resolve Nakshatra metadata for Subconscious Drive (Lunar Mansion)
@@ -1625,6 +2076,12 @@ def calculate_planetary_evaluation(
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),
             "is_vikala": vit_res.get("is_vikala", False),
             "affliction_badges": vit_res.get("affliction_badges", []),
+            "deepthaadi": deepthaadi_res,
+            "jagradaadi": jagradaadi_res,
+            "calibrated_lajjitadi": calibrated_lajj,
+            "lajjitadi": calibrated_lajj,
+            "psychological_narrative": psy_narrative,
+            "planetary_war": war_info,
             "step1_shadvarga": step1_info,
             "step2_host_rescue": step2_info,
             "step3_aspects": step3_info,
@@ -1706,11 +2163,6 @@ def calculate_planetary_evaluation(
         overall_meaning = "Dynamic mixture of opportunities and worldly responsibilities."
 
     lagna_eval = evaluate_lagna_vitality(vargas_data, shadbala_data, advanced_aspects, "D1")
-
-    planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data)
-    for p, war_info in planetary_wars.items():
-        if p in planets_result:
-            planets_result[p]["planetary_war"] = war_info
 
     return {
         "summary": {

@@ -117,4 +117,38 @@ $$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMo
 * $< 4.0$: **`🔴 Fragile`** / **`🔴 Severe Hazard`**
 
 ---
+
+## 🧘 8. Deeptādi & Lajjitādi Avasthā Systems (*Art & Science of Vedic Astrology, Vol 2*)
+
+### 8.1 Innate Mental Mood: Deeptādi Avasthā (Saravali Ch. 5 & Vol 2 Ch. 4)
+While dignity sets the functional foundation, **Deeptādi** determines the internal psychological attitude, mood, and subjective state of the planet:
+1. **Nipeedita (Harmed):** Defeated in Graha Yuddha (planetary war). Bruised, obstructed, requires healing.
+2. **Vikala (Mutilated):** Combust within solar orb (*Astangata*). Outer material expressions scorched, forced inward.
+3. **Bhita (Alarmed):** In the sign of its fall (Debilitated). Anxious, vulnerable, guarded.
+4. **Deeptha (Radiant):** In its exaltation sign. Luminous sovereign confidence, peak benevolence.
+5. **Swastha (Confident):** In its own sign or Moolatrikona. Grounded self-reliance, comfortable authority.
+6. **Sakta (Strong):** Retrograde with high brightness/horsepower. Focused, potent determination.
+7. **Mudita (Rejoicing):** In a friend's sign. Welcomed and honored guest, cooperative ease.
+8. **Khala (Sorrowful / Mischievous):** In an enemy's sign. Defensive friction, stubborn uphill struggle.
+9. **Santa (Peaceful / Serene):** In a neutral sign. Pragmatic composure, steady baseline.
+
+### 8.2 House Management & Alertness: Jagradādi Avasthā (Vol 2 Ch. 10)
+Alertness (*Jagrat*, *Svapna*, *Sushupti*) determines the planet's capacity to manage and manifest house affairs, as well as the potency with which it influences other planets:
+* **Jagrat (Awake - 1.00 / 100%):** Exalted, Moolatrikona, or Own Sign. Full executive management; 100% full-force impact when influencing other grahas.
+* **Svapna (Sleepy - 0.50 / 50%):** Friend's or Neutral Sign. Half management capacity; moderate, bearable impact on other grahas.
+* **Sushupti (Asleep - 0.10 / 10%):** Enemy's or Debilitated Sign. Cannot sustain house results alone; sluggish, muted, or minimal impact on other grahas.
+
+### 8.3 Social & Relational Complexes: Lajjitādi Alertness Calibration (Vol 2 Ch. 10 & 11)
+Lajjitādi states (Proud, Delighted, Starved, Agitated, Bashful, Thirsty) describe relational dynamics between planets. Crucially, Kurczak formulates that **the intensity of a Lajjitādi feeling state is directly governed by the influencer's Jagradādi alertness**:
+* **Full Severity:** If an enemy starver (causing *Kshudhita*) is **Jagrat (Awake)**, the starvation is acute and demanding.
+* **Muted Severity:** If the enemy starver is **Sushupti (Asleep)**, the starvation is sluggish and harmless, easily overcome through steadfast commitment.
+* **Self-Stamina Resilience:** If the native planet is itself **Jagrat (Awake)**, it possesses high self-resilience, reducing negative relational friction by 25%.
+
+### 8.4 Psychological Reality Diagnosis
+Each planet's evaluation synthesizes these three layers into a rich 3-sentence diagnostic narrative:
+1. **Baseline Mood & Alertness:** Internal attitude (*Deeptādi*) + operational capacity (*Jagradādi*).
+2. **Relational Dynamic:** Calibrated social complexes (*Lajjitādi*) noting specific influencing planets and their alertness levels.
+3. **Developmental Path:** Core developmental guidance (*Kurczak Vol 2*) tailored to the planet's true psychological reality.
+
+---
 *Authoritative specification for Astra Engine Master Graha Diagnostics.*
