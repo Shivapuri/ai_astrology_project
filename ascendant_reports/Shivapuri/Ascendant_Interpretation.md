@@ -5,7 +5,7 @@
 > **Source Provenance:** [Vedic Astrology Knowledge Vault](file:///Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/vault/) (Ryan Kurczak & Vic DiCara)  
 > **Dossier Directory:** All materials are self-contained in `ascendant_reports/Shivapuri/`  
 > **Master Synthesis Report:** `Ascendant_Interpretation.md` (this dossier)  
-> **Archived Raw Sources:** `raw_sources/` (33 original lecture notes in 6 tier folders)
+> **Archived Raw Sources:** `raw_sources/` (24 original lecture notes in 6 tier folders)
 
 ---
 
@@ -146,11 +146,6 @@ The ruler of the Ascendant is **Sun** (*Lagneśa*). Classical texts proclaim (*P
 > ---
 
 
-> #### 📖 Primary Vault Source: [Sun in Scorpio](raw_sources/tier_2_lagnesha/08%20-%20Sun%20in%20Scorpio.md)  
-> **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=789s9fezqaA)
->
-
-
 > #### 📖 Primary Vault Source: [Sun and Saturn Astrological Conjunctions](raw_sources/tier_2_lagnesha/Lesson%2007%20-%20Sun%20and%20Saturn%20Astrological%20Conjunctions.md)  
 > **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=6y2pgLkq6VA)
 >
@@ -165,6 +160,29 @@ The ruler of the Ascendant is **Sun** (*Lagneśa*). Classical texts proclaim (*P
 > - **Humility & Realism:** Strips away superficial arrogance, building lasting achievements through sustained, practical effort.
 > - **Combustion of Saturn:** If Saturn is close to the Sun (within ~15°), Saturn is agitated (*Kshobhita*), creating chronic psychological pressure.
 > - **Karmic Maturity:** After age 36, this conjunction frequently produces respected judges, administrators, and organizational anchors.
+> 
+> ---
+
+
+> #### 📖 Primary Vault Source: [The Sun in All Houses](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20The%20Sun%20in%20All%20Houses.md)  
+> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=5FmN6MH2W3c)
+>
+> **📌 High-Fidelity Executive Summary (Direct from Source):**  
+> Think of Surya (the Sun, representing the soul) as a cosmic spotlight and an authoritative CEO rolled into one. Wherever the Sun sits, it brings its core traits: **vision** (mental clarity, purpose, and direction), **visibility** (public renown, leadership, and extroversion), **animus** (life force, physical health, and vitality), and **centrality** (ego, identity, and the stabilizing anchor around which everything else orbits). 
+> 
+> However, a spotlight does not behave the same way in every room. Place it on an open stage (the public, overhead houses), and it illuminates the entire crowd; tuck it inside a quiet bedroom (the underground, private houses) or submerge it beneath the horizon (the houses of endings and erosion), and its natural urge to shine openly creates friction, sacrifice, or deep psychological complexity. 
+> 
+> Astrology is never a single-color painting. A challenging placement acts like a drop of black paint: on its own, it looks dark, but when blended with brilliant, auspicious alignments—such as a *Raja Yoga* (a royal planetary combination producing success and high status)—it merely adds depth, texture, and nuance to a vibrant life. To truly understand the Sun in any house, you must weigh how well its masculine, visible fire harmonizes with the natural environment of that sky quadrant, and then see how the rest of the chart either amplifies its majesty or challenges its shine.
+> 
+> ---
+>
+> **🔑 Core Principles & Takeaways (Direct from Source):**  
+> - **The Fundamental Duality of Light**: The Sun operates through two main currents: *Vision* (clarity, decisiveness, and commanding authority) and *Visibility* (fame, extroversion, public display, and masculine expression).
+> - **Synergy of Gender and Nature**: Tough, masculine planets thrive in tough, masculine houses. For example, placing the assertive Sun in the 6th house of enemies and challenges produces formidable fighters who conquer obstacles with ease.
+> - **The "Black Paint" Rule of Chart Synthesis**: Never judge a placement in isolation. A difficult house placement (like the Sun in the 7th or 12th) introduces a challenging tone ("black paint"), but supportive configurations—such as strong ascendants, exalted planets, or mutual aspects—will completely reshape the final portrait.
+> - **Angular Cusp Proximity**: The closer a planet sits to the sensitive cusp (the exact degree of the house, tied to the ascendant degree), the more intensely and dominantly its house interpretations will manifest.
+> - **The Engine of *Raja Yoga***: When a lord of a *Kendra* (an angular house: 1st, 4th, 7th, or 10th, representing action and power) links with a lord of a *Trikona* (a trinal house: 1st, 5th, or 9th, representing fortune and intellect), it creates a *Raja Yoga* (royal union). This combination can elevate an otherwise compromised Sun to legendary fame and influence.
+> - **Centrality vs. Dispersion**: While the Sun seeks stability and central command, windy and elevated houses (like the 10th) inherently bring fluctuation. Without stabilizing roots, high visibility can turn into sudden falls from grace.
 > 
 > ---
 
@@ -189,9 +207,6 @@ The Ascendant Lord in the 4th House draws life energy into deep interior contemp
   * The Sun commands 100% of the executive life engine as both the 1st house ruler and the natural *Sthira Karaka* of vitality. Its strength directly dictates constitutional stamina, self-worth, and moral integrity.
 
 ### 2.4 📁 Archived Raw Source Notes (In this Folder)
-* 📄 [08 - Sun in Scorpio.md](raw_sources/tier_2_lagnesha/08%20-%20Sun%20in%20Scorpio.md)
-* 📄 [Lesson 01 - Planets Conjunct Sun.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20Planets%20Conjunct%20Sun.md)
-* 📄 [Lesson 01 - The Sun in All 12 Signs.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20The%20Sun%20in%20All%2012%20Signs.md)
 * 📄 [Lesson 01 - The Sun in All Houses.md](raw_sources/tier_2_lagnesha/Lesson%2001%20-%20The%20Sun%20in%20All%20Houses.md)
 * 📄 [Lesson 04 - Sun and Mercury Astrological Conjunctions.md](raw_sources/tier_2_lagnesha/Lesson%2004%20-%20Sun%20and%20Mercury%20Astrological%20Conjunctions.md)
 * 📄 [Lesson 07 - Sun and Saturn Astrological Conjunctions.md](raw_sources/tier_2_lagnesha/Lesson%2007%20-%20Sun%20and%20Saturn%20Astrological%20Conjunctions.md)
@@ -230,12 +245,12 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 > ---
 
 
-> #### 📖 Primary Vault Source: [Sun in Scorpio](raw_sources/tier_3_sun_karaka/08%20-%20Sun%20in%20Scorpio.md)  
-> **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=789s9fezqaA)
+> #### 📖 Primary Vault Source: [First House: Tanu Bhava (The Embodiment & Ascendant)](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)  
+> **Author / Lineage:** Vedic Astrology Knowledge Vault
 >
 
 
-> #### 📖 Primary Vault Source: [First House: Tanu Bhava (The Embodiment & Ascendant)](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)  
+> #### 📖 Primary Vault Source: [Sun (Surya) - Planetary Essence & Interpretation Guide](raw_sources/tier_3_sun_karaka/01%20-%20Sun%20%28Surya%29.md)  
 > **Author / Lineage:** Vedic Astrology Knowledge Vault
 >
 
@@ -262,9 +277,6 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 ### 3.5 📁 Archived Raw Source Notes (In this Folder)
 * 📄 [01 - First House (Tanu Bhava).md](raw_sources/tier_3_sun_karaka/01%20-%20First%20House%20%28Tanu%20Bhava%29.md)
 * 📄 [01 - Sun (Surya).md](raw_sources/tier_3_sun_karaka/01%20-%20Sun%20%28Surya%29.md)
-* 📄 [08 - Sun in Scorpio.md](raw_sources/tier_3_sun_karaka/08%20-%20Sun%20in%20Scorpio.md)
-* 📄 [Lesson 01 - Planets Conjunct Sun.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20Planets%20Conjunct%20Sun.md)
-* 📄 [Lesson 01 - The Sun in All 12 Signs.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20The%20Sun%20in%20All%2012%20Signs.md)
 * 📄 [Lesson 01 - The Sun in All Houses.md](raw_sources/tier_3_sun_karaka/Lesson%2001%20-%20The%20Sun%20in%20All%20Houses.md)
 * 📄 [Lesson 03 - 9 Very Important Fundamental Yogas for the Sun and Ascendant.md](raw_sources/tier_3_sun_karaka/Lesson%2003%20-%209%20Very%20Important%20Fundamental%20Yogas%20for%20the%20Sun%20and%20Ascendant.md)
 * 📄 [Lesson 04 - Sun and Mercury Astrological Conjunctions.md](raw_sources/tier_3_sun_karaka/Lesson%2004%20-%20Sun%20and%20Mercury%20Astrological%20Conjunctions.md)
@@ -396,31 +408,6 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 * **Nakshatra Rulers:** Lord: Mercury | Sub-Lord: Venus
 
 ### 6.2 📖 Vault Source Text Collection & Direct Paraphrase
-> #### 📖 Primary Vault Source: [Leo Rising](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2005%20-%20Leo%20Rising.md)  
-> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=wgmF99R1z-I)
->
-> **📌 High-Fidelity Executive Summary (Direct from Source):**  
-> Leo (*Simha*) rising is the zodiac's royal throne of **Authority** and **Fidelity**. Every rising sign (*Lagna*, the sign ascending on the eastern horizon at birth) functions like a musical instrument: a guitar always retains the acoustic properties of a guitar, but whether it produces magnificent music or grating noise depends entirely on how it is tuned and played. In astrology, that tuning is measured by **Sign Dignity** (*Rashi Avastha*, the overall mathematical health and planetary support of a sign).
-> 
-> When Leo enjoys high dignity, its authority generates radiant, well-grounded self-confidence, clear and unequivocal decisiveness, and noble, inspiring leadership, while its fidelity creates steadfast dedication to promises and exemplary reliability both as a leader and as a follower. However, when Leo lacks dignity, those royal virtues deteriorate: confidence mutates into arrogant overconfidence and defensive egoism, decisiveness turns into over-assertive micromanagement, leadership becomes presumptuous authoritarianism that sparks chronic power struggles, dedication petrifies into closed-minded inflexibility, and reliability curdles into elitist exclusivity where rules are manipulated for personal gain while outsiders are treated with contempt.
-> 
-> ---
->
-> **🔑 Core Principles & Takeaways (Direct from Source):**  
-> * **Core Archetypal Pillars:** Leo is defined by two foundational energies: **Authority** (the power to guide, decide, and command) and **Fidelity** (the honor of adhering to promises, duty, and truth).
-> * **The Musical Instrument Metaphor:** The rising sign provides the baseline psychological instrument, while sign dignity acts as the tuning mechanism that governs whether traits express positively or negatively.
-> * **The Five Polarities of Leo:**
->   1. *Confidence vs. Overconfidence / Egoism:* Healthy self-assurance rooted in family, teachers, and real competence versus faking mastery, refusing to admit ignorance, and suffering loud public humiliation.
->   2. *Decisiveness vs. Over-Assertion:* Swift, unequivocal guidance ("turn right") versus dictating unnecessary choices and denying agency to everyone else.
->   3. *Leadership vs. Assumptive Authoritarianism:* Natural, inspiring stewardship that people gladly follow versus presuming command without mandate and provoking constant power struggles.
->   4. *Dedication vs. Inflexibility:* Steadfast loyalty to alliances, plans, and vows versus stubborn closed-mindedness that refuses to re-evaluate doomed decisions.
->   5. *Reliability vs. Exclusivity & Elitism:* Deep respect for duty, rules, and covenants (as both sovereign and loyal follower) versus manipulating laws for personal benefit while dismissing outsiders with arrogance.
-> * **The Follower Nuance:** Leo is celebrated as a leader, but high-dignity Leo is also an ideal follower because it understands and respects the vital sacredness of order, covenants, and law.
-> * **Sign Dignity Mechanics:** Calculated via a 4-step algorithm that measures external planetary aspects, weights the Sign Lord (*Sun*, Surya) at a 2:1 ratio, and incorporates the intrinsic positive baseline of the First Lord (*Lagna Lord*).
-> 
-> ---
-
-
 > #### 📖 Primary Vault Source: [Ashlesha Nakshatra Description](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2010%20-%20Ashlesha%20Nakshatra%20Description.md)  
 > **Author / Lineage:** Vedic Astrology Knowledge Vault | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=_oE__xKD0M8)
 >
@@ -439,42 +426,20 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 > ---
 
 
-> #### 📖 Primary Vault Source: [Symbolic Recipes of the Zodiac Signs](raw_sources/tier_6_rising_sign_nakshatra/Concept%2001%20-%20Symbolic%20Recipes%20of%20the%20Zodiac%20Signs.md)  
-> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=P3wVssOO_FY)
+> #### 📖 Primary Vault Source: [Sex, Seduction, & Serpents... The Life-Lesson of Ashlesha Nakshatra](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2007%20-%20Sex%2C%20Seduction%2C%20%26%20Serpents...%20The%20Life-Lesson%20of%20Ashlesha%20Nakshatra.md)  
+> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=Ly7qmQFNKrU)
 >
 > **📌 High-Fidelity Executive Summary (Direct from Source):**  
-> Most beginners struggle with astrology because they try to memorize laundry lists of personality traits for each sign (*Rashi*). This approach causes cognitive overload and leaves you trapped when encountering unfamiliar chart situations. Vic DiCara presents a transformative, generative model: every zodiac sign is actually like a cake baked from a simple three-ingredient recipe.
-> 
-> The three ingredients and their proportions are:
-> 1. **Planetary Ruler (*Swami* / Lord):** 3 parts (~50% of the sign's character) — the core archetype and motivation.
-> 2. **Element (*Tattva* / Substance):** 2 parts (~33% of the sign's character) — the environmental medium through which the planet acts (Fire, Earth, Air, Water).
-> 3. **Modality (*Gati* / Motion):** 1 part (~17% of the sign's character) — the operational tempo and focus (Cardinal, Fixed, Dual).
-> 
-> When you understand how a planet behaves inside a specific elemental environment and motion pattern, you can deduce the meaning of all twelve signs with infinite depth and intuitive accuracy, without ever memorizing another generic trait list.
+> Ashlesha, the seventh Vedic Nakshatra, represents the "hypnotic embrace" and is closely associated with serpents (*Sarpas*), seduction, and intense passion. Often misunderstood as an inherently evil or exploitative star, its true nature is about the power to captivate and lead others towards enjoyment. The core life lesson of Ashlesha is learning how to be seductive without becoming consumed by karma or acting with manipulative intent. When functioning correctly, it allows one to attract and guide others for their own happiness rather than for selfish exploitation, reflecting a powerful, spiritually progressive use of passionate energy.
 > 
 > ---
 >
 > **🔑 Core Principles & Takeaways (Direct from Source):**  
-> - **The 3:2:1 Proportional Ratio:** The planetary ruler contributes three parts of the sign's flavor, the element contributes two parts, and the modality contributes one part.
-> - **Mars Archetype (Ambition & Masculinity):** Mars (*Mangala*) signifies classical masculinity: independence, courage, strength, and pioneering drive.
->   - **Aries (*Mesha*):** Mars + Cardinal Fire. Unfiltered, outward drive; blazing one's own trail; absolute self-reliance ("I do it my way; no followers needed").
->   - **Scorpio (*Vrishchika*):** Mars + Fixed Water. Intense emotional passion; inward courage; desiring deep human connection while guarding a fiercely self-contained, mysterious privacy.
-> - **Venus Archetype (Receptivity & Femininity):** Venus (*Shukra*) signifies classical femininity: love, beauty, sensory harmony, and relational cooperation.
->   - **Taurus (*Vrishabha*):** Venus + Fixed Earth. Tangible, enduring stability; physical beauty, vitality, and wealth generation through practical commitment.
->   - **Libra (*Tula*):** Venus + Cardinal Air. Social justice, intellectual harmony, fairness, and active egalitarian love for all humanity.
-> - **Mercury Archetype (Cognition & Information):** Mercury (*Budha*) represents intellectual processing: receiving, analyzing, and communicating data.
->   - **Gemini (*Mithuna*):** Mercury + Dual Air. Linguistic agility, playful social banter, speech, and curiosity.
->   - **Virgo (*Kanya*):** Mercury + Dual Earth. Prudent planning, mathematical precision, organizing physical logistics, and serious scrutiny.
-> - **The Royal Luminary Pair (Self vs. Mind):**
->   - **Leo (*Simha*):** Sun (*Surya*) + Fixed Fire. Unwavering personal sovereignty, radiant self-confidence, clear moral leadership, and decisive steadfastness.
->   - **Cancer (*Karka*):** Moon (*Chandra*) + Cardinal Water. The inner theater of opinions, desires, and emotions; fiercely protective and deeply internalized convictions.
-> - **Jupiter Archetype (Classical Positivity):** Jupiter (*Guru*) signifies growth, expansion, success, and moral mentorship.
->   - **Sagittarius (*Dhanus*):** Jupiter + Dual Fire. Outward dharmic guidance; teaching by active example; visionary exploration.
->   - **Pisces (*Meena*):** Jupiter + Dual Water. Inward spiritual contemplation; reflective wisdom; seeking universal truth through emotional surrender.
-> - **Saturn Archetype (Classical Negativity / Reduction):** Saturn (*Shani*) signifies the minus sign: minimalism, time (*Kala*), limitation, discipline, and eliminating excess.
->   - **Capricorn (*Makara*):** Saturn + Cardinal Earth. Relentless industrious ambition; enduring stamina; cold, practical scrutiny that discards inefficiency.
->   - **Aquarius (*Kumbha*):** Saturn + Fixed Air. Social minimalism; sacrificing personal ego for the welfare of the collective community; broad intellectual scrutiny.
-> - **Generative Deduction vs. Static Memorization:** Astrological mastery comes from understanding generative components, freeing the practitioner from rigid cookbook interpretations.
+> - **Deity:** The *Sarpas* (Serpents/Dragons), symbolizing forbidden, hidden, and socially taboo subjects, notably sexuality and intense desire.
+> - **Etymology:** The word *Ashlesha* means intimate contact, embracing, hugging, entwining, and clinging.
+> - **Core Function:** Passionate attraction, seduction, and "impassioned dancing" (making others move to your rhythm).
+> - **Malfunctioning Ashlesha:** Manifests as a person who is easily seduced, manipulated, and made into a "dancing puppet" by others' desires.
+> - **Properly Functioning Ashlesha:** Grants the magnetic ability to seduce and control others—wrapping them around your finger—but using this power to bring them joy and pleasure without selfish karma.
 > 
 > ---
 
@@ -489,9 +454,6 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 * **Esoteric Impress:** Channels deep subconscious currents guiding the soul's karmic evolution.
 
 ### 6.4 📁 Archived Raw Source Notes (In this Folder)
-* 📄 [Concept 01 - Symbolic Recipes of the Zodiac Signs.md](raw_sources/tier_6_rising_sign_nakshatra/Concept%2001%20-%20Symbolic%20Recipes%20of%20the%20Zodiac%20Signs.md)
-* 📄 [Concept 02 - What is the Zodiac.md](raw_sources/tier_6_rising_sign_nakshatra/Concept%2002%20-%20What%20is%20the%20Zodiac.md)
-* 📄 [Lesson 05 - Leo Rising.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2005%20-%20Leo%20Rising.md)
 * 📄 [Lesson 07 - Sex, Seduction, & Serpents... The Life-Lesson of Ashlesha Nakshatra.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2007%20-%20Sex%2C%20Seduction%2C%20%26%20Serpents...%20The%20Life-Lesson%20of%20Ashlesha%20Nakshatra.md)
 * 📄 [Lesson 10 - Ashlesha Nakshatra Description.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2010%20-%20Ashlesha%20Nakshatra%20Description.md)
 

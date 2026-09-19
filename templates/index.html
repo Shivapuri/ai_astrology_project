@@ -4418,7 +4418,7 @@
                                 <th class="tooltip-target" data-tooltip="<strong>Kinetic Muscle (Shadbala Horsepower)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Virūpas/Rūpas, % of required minimum threshold, relative chart rank (#1 to #7), and Karmic Fruit (Ishta/Kashta).<br>• For Rahu/Ketu: Inherits proxy muscle via host dispositor." style="width: 125px; cursor: help;">Kinetic Muscle (Shadbala)</th>
                                 <th class="tooltip-target" data-tooltip="<strong>Environmental Vision (Aspects &amp; Yuti)</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign, with conjunction orbs and commanding precedence.<br>• <strong>Dṛṣṭi:</strong> Line-of-sight vision and gaze in Virūpas (Śubha Dṛṣṭi supportive, Pāpa Dṛṣṭi confrontational). Key aspects (&gt; 20v) highlighted with qualitative synthesis.<br>• <strong>Badges:</strong> Graha Yuddha (war), Combustion, and classical nodal/affliction yogas." style="width: 145px; cursor: help;">Environmental Vision (Aspects/Yuti)</th>
                                 <th class="tooltip-target" data-tooltip="<strong>Subconscious Drive (Nakshatra)</strong><br>• <strong>Deity:</strong> Presiding Vedic archetype shaping inner motivation.<br>• <strong>Overlord:</strong> Planetary ruler dictating the underlying agenda and Vimshottari timeline.<br>• <strong>Nature &amp; Drive:</strong> Innate temperament and cosmic purpose." style="width: 140px; cursor: help;">Subconscious Drive (Nakshatra)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Avastha & Biological Age</strong><br>• <strong>Bālādi Avasthās (Phaladeepika 3.10):</strong> Biological age cycle based on degrees in odd vs even signs (Bala infant, Kumara youth, Taruna prime, Pravaya elder, Mrita dormant).<br>• <strong>Lajjitādi Avasthās (BPHS Ch. 45):</strong> 6 emotional feeling states (Mudita delighted, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 135px; cursor: help;">Avastha & Biological Age</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Avasthās: Age, Alertness &amp; Social Weather</strong><br>• <strong>1. Physical Fuel &amp; Age (Bālādi - BPHS 45.3 / Vol 2):</strong> Biological maturity based on degrees in odd vs. even signs (Bala infant, Kumara youth, Yuva prime adult, Vriddha elder, Mrita dormant).<br>• <strong>2. Conscious Alertness (Jāgradādi - BPHS 45.5):</strong> Alertness &amp; house management capacity (Jagrat awake 100%, Svapna sleepy 50%, Sushupti asleep 10%).<br>• <strong>3. Innate Mood (Dīptādi - BPHS 45.7):</strong> Subjective mood from sign dignity (Pramudita joyous, Deepta radiant, Swastha confident, Santa peaceful, Bhita alarmed).<br>• <strong>4. Social Weather (Lajjitādi - BPHS 45.11):</strong> Relational dynamics from other planets (Mudita supported, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 185px; min-width: 180px; cursor: help;">Avasthās &amp; Age</th>
                                 <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 140px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
                             </tr>
                         </thead>
@@ -5585,6 +5585,38 @@
                 const navLord = ml.navamsha_lord || {};
                 const drekLord = ml.drekkana_lord || {};
                 const pred = summary.chart_predominance || {};
+                const mp = summary.moon_phase || null;
+
+                let moonPhaseCardHtml = '';
+                if (mp) {
+                    const isWax = mp.is_waxing;
+                    const illum = Number(mp.illumination_pct || 0);
+                    const gFac = Number(mp.gradual_factor !== undefined ? mp.gradual_factor : (illum >= 50 ? (illum - 50)/50 : (50 - illum)/50));
+                    const effMaxMod = (25.0 * gFac).toFixed(1);
+                    let mBorder = '#2563eb';
+                    let mBg = '#ffffff';
+                    let mClass = 'mixed';
+                    if (illum >= 50.0) {
+                        mBorder = illum >= 65.0 ? '#16a34a' : '#0d9488';
+                        mBg = illum >= 65.0 ? '#f0fdf4' : '#f0fdfa';
+                        mClass = 'positive';
+                    } else {
+                        mBorder = illum < 35.0 ? '#dc2626' : '#d97706';
+                        mBg = illum < 35.0 ? '#fef2f2' : '#fffbeb';
+                        mClass = 'negative';
+                    }
+                    moonPhaseCardHtml = `
+                        <div class="eval-master-card" style="border-left: 3px solid ${mBorder}; background:${mBg};">
+                            <div style="font-size:10px; text-transform:uppercase; color:#475569; font-weight:bold;">🌙 Lunar Phase &amp; Continuous Spectrum</div>
+                            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:3px;">
+                                <strong style="font-size:13px; color:#1e293b;">${mp.badge || `${isWax ? '🌔 Waxing' : '🌘 Waning'} (${illum.toFixed(0)}%)`}</strong>
+                                <span class="eval-scale-badge ${mClass}" style="font-size:10px; padding:1px 6px;">${mp.paksha}</span>
+                            </div>
+                            <div style="font-size:11px; font-weight:600; color:#334155; margin-top:2px;">${mp.light_type}</div>
+                            <div style="font-size:9.5px; color:#64748b; margin-top:2px;">Elongation: ${mp.elongation_deg}° • Scaling Factor: ${gFac.toFixed(2)}x (±${effMaxMod}% max terrain mod, BPHS 28.10-11)</div>
+                        </div>
+                    `;
+                }
 
                 banner.innerHTML = `
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:8px; width:100%; margin-bottom:10px;">
@@ -5629,6 +5661,8 @@
                             <div style="font-size:12px; font-weight:bold; color:#14532d; margin-top:3px;">${pred.overall_status || 'Shadvarga Balance'}</div>
                             <div style="font-size:10px; color:#166534; margin-top:2px;">${pred.meaning || ''}</div>
                         </div>
+
+                        ${moonPhaseCardHtml}
                     </div>
                 `;
             }
@@ -5689,6 +5723,11 @@
                 if (s4.kendra_rank) houseTip += `• Rank: ${s4.kendra_rank}<br>`;
                 if (s4.viparita_yoga) houseTip += `• Special Yoga: <strong>${s4.viparita_yoga}</strong><br>`;
                 houseTip += `• Bonus: ${s4.bonus_pct >= 0 ? '+' : ''}${s4.bonus_pct || 0}%<br>`;
+                if (s4.math_steps && s4.math_steps.length > 0) {
+                    houseTip += `<br><strong>📐 Functional Dignity Formula:</strong><br>` +
+                        s4.math_steps.map(st => `• ${st}`).join('<br>') +
+                        `<br>➔ <code>${s4.math_formula || ''}</code><br>`;
+                }
                 houseTip += `• ${s4.notes || ''}`;
 
                 // Tooltip for Strength
@@ -5715,6 +5754,7 @@
                     <td style="font-weight:bold; color:#1a4a82; white-space:nowrap;">
                         <span style="font-size:14px;">${data.glyph || ''}</span> ${p}
                         <span style="font-size:10px; color:#64748b; display:block;">${data.sign || ''} ${data.longitude || 0}°</span>
+                        ${p === 'Moon' && data.moon_phase ? `<span style="display:inline-block; margin-top:2px; font-size:9px; padding:1px 4px; border-radius:3px; background:${data.moon_phase.terrain_spectrum === 'bright_benefic' ? '#ecfdf5' : (data.moon_phase.terrain_spectrum === 'dark_malefic' ? '#fef2f2' : '#f8fafc')}; color:${data.moon_phase.terrain_spectrum === 'bright_benefic' ? '#065f46' : (data.moon_phase.terrain_spectrum === 'dark_malefic' ? '#991b1b' : '#475569')}; border:1px solid ${data.moon_phase.terrain_spectrum === 'bright_benefic' ? '#a7f3d0' : (data.moon_phase.terrain_spectrum === 'dark_malefic' ? '#fecaca' : '#cbd5e1')}; font-weight:600;">${data.moon_phase.badge || (data.moon_phase.is_waxing ? '🌔 Waxing' : '🌘 Waning') + ' ' + (data.moon_phase.illumination_pct || 0).toFixed(0) + '%'}</span>` : ''}
                     </td>
                     <td style="white-space:nowrap;">
                         <span class="eval-scale-badge ${exprClass}" title="Net Score on -100% to +100% continuous spectrum">
@@ -5782,6 +5822,7 @@
                             </div>
                             <div style="background:#ffffff; border:1px solid #cbd5e1; border-radius:4px; padding:6px 10px; font-family:monospace; font-size:11.5px; color:#0f172a; margin-bottom:6px; overflow-x:auto;">
                                 <strong>${trail.formula || ''}</strong>
+                                ${s4.math_formula ? `<div style="font-size:10.5px; color:#2563eb; margin-top:4px;"><strong>Functional Dignity:</strong> ${s4.math_formula}</div>` : ''}
                             </div>
                             <div style="font-family:sans-serif; font-size:11px; color:#475569; white-space:pre-line; line-height:1.5;">
                                 ${trail.human_readable || ''}
@@ -6014,8 +6055,8 @@
 
             resetFloatingWindowPosition();
             if (card) {
-                const w = Math.min(1180, window.innerWidth - 40);
-                const h = Math.min(740, window.innerHeight - 60);
+                const w = Math.min(1480, window.innerWidth - 40);
+                const h = Math.min(820, window.innerHeight - 60);
                 card.style.width = w + 'px';
                 card.style.height = h + 'px';
                 card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
@@ -6198,24 +6239,24 @@
                 if (seg < 0) seg = 0;
                 if (seg > 4) seg = 4;
 
-                const oddStates = ["Bala", "Kumara", "Taruna", "Pravaya", "Mrita"];
+                const oddStates = ["Bala", "Kumara", "Yuva", "Vriddha", "Mrita"];
                 const oddEff = [0.50, 0.75, 1.00, 0.50, 0.25];
                 const oddTerms = [
-                    "Vadhishnu (Needy/Student)",
-                    "Sukhi (Carefree/Playful)",
-                    "Nripa (King/Master)",
-                    "Gada (Fatigued/Mace)",
-                    "Mrita (Incapacitated)"
+                    "Bāla (Infant / Learning)",
+                    "Kumāra (Youth / Playful)",
+                    "Yuvā (Prime Adult / Master)",
+                    "Vṛddha (Elder / Waning)",
+                    "Mṛta (Dormant / Incapacitated)"
                 ];
 
-                const evenStates = ["Mrita", "Pravaya", "Taruna", "Kumara", "Bala"];
+                const evenStates = ["Mrita", "Vriddha", "Yuva", "Kumara", "Bala"];
                 const evenEff = [0.25, 0.50, 1.00, 0.75, 0.50];
                 const evenTerms = [
-                    "Mrita (Incapacitated)",
-                    "Gada (Fatigued/Mace)",
-                    "Nripa (King/Master)",
-                    "Sukhi (Carefree/Playful)",
-                    "Vadhishnu (Needy/Student)"
+                    "Mṛta (Dormant / Incapacitated)",
+                    "Vṛddha (Elder / Waning)",
+                    "Yuvā (Prime Adult / Master)",
+                    "Kumāra (Youth / Playful)",
+                    "Bāla (Infant / Learning)"
                 ];
 
                 const states = isOdd ? oddStates : evenStates;
@@ -7385,9 +7426,10 @@
                             ${lgNakshatraCellHtml}
                         </td>
                         <td>
-                            <div class="tooltip-target" data-tooltip="${lgAvasthaTip}" style="cursor:help;">
-                                <div style="font-size:10px; font-weight:bold; color:#475569;">Age: <span class="badge" style="background:#f1f5f9; color:#334155; font-size:9.5px;">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span></div>
-                                <div style="font-size:9px; color:#64748b;">${lgBaladi.sanskrit_term.slice(0, 22)}</div>
+                            <div class="tooltip-target" data-tooltip="${lgAvasthaTip}" style="cursor:help; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:4px 6px; display:flex; flex-direction:column; gap:2px; font-size:10px;">
+                                <div style="font-size:8px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Horizon</div>
+                                <div style="font-size:10px; font-weight:bold; color:#1e293b;">Age: <span class="badge" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9.5px; font-weight:700;">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span></div>
+                                <div style="font-size:8.5px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
                                 <div style="font-size:9.5px; color:#3730a3; font-weight:600; margin-top:1px;">Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' ➔ B' + lordCHouse : ''}</div>
                             </div>
                         </td>
@@ -7480,6 +7522,77 @@
                         (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (Combust planets mainly weaken or harm the houses they rule)<br>` : '') +
                         `• <strong>Core Teaching:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
                     statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
+                }
+
+                // Moon Illumination & Phase (Graha & Soul column badge)
+                let moonPhaseBadgeHtml = '';
+                if (graha === 'Moon') {
+                    let mPhase = (peData.planets && peData.planets['Moon'] && peData.planets['Moon'].moon_phase)
+                        || (peData.summary && peData.summary.moon_phase) || null;
+
+                    // Fallback calculation if mPhase is not directly available
+                    if (!mPhase && v_grahas['Sun'] && v_grahas['Moon']) {
+                        const sLon = Number(v_grahas['Sun'].longitude || 0.0);
+                        const mLon = Number(v_grahas['Moon'].longitude || 0.0);
+                        const elong = (mLon - sLon + 360) % 360;
+                        const isWax = elong < 180;
+                        const illum = (1 - Math.cos(elong * Math.PI / 180)) / 2 * 100;
+                        const sType = illum >= 60.0 ? 'bright_benefic' : (illum < 40.0 ? 'dark_malefic' : 'balanced_neutral');
+                        const lType = sType === 'bright_benefic' ? 'Bright Benefic Light (Pūrṇendu)' : (sType === 'dark_malefic' ? 'Dim/Dark Malefic Light (Kṣīṇendu)' : 'Balanced Intermediate Light');
+                        mPhase = {
+                            is_waxing: isWax,
+                            paksha: isWax ? 'Shukla' : 'Krishna',
+                            paksha_name: isWax ? 'Shukla Paksha (Bright Fortnight / Waxing)' : 'Krishna Paksha (Dark Fortnight / Waning)',
+                            elongation_deg: Math.round(elong * 10) / 10,
+                            illumination_pct: Math.round(illum * 10) / 10,
+                            light_type: lType,
+                            terrain_spectrum: sType,
+                            badge: `${isWax ? (illum > 80 ? '🌕' : '🌔') : (illum < 20 ? '🌑' : '🌘')} ${isWax ? 'Waxing' : 'Waning'} (${Math.round(illum)}%)`
+                        };
+                    }
+
+                    if (mPhase) {
+                        const isWax = mPhase.is_waxing;
+                        const illum = Number(mPhase.illumination_pct || 0);
+                        const gFac = Number(mPhase.gradual_factor !== undefined ? mPhase.gradual_factor : (illum >= 50 ? (illum - 50)/50 : (50 - illum)/50));
+                        const effMaxMod = (25.0 * gFac).toFixed(1);
+
+                        let badgeBg = '#f1f5f9';
+                        let badgeColor = '#475569';
+                        let badgeBorder = '#cbd5e1';
+                        let spectrumLabel = '';
+                        let spectrumDesc = '';
+
+                        if (illum >= 50.0) {
+                            badgeBg = illum >= 65.0 ? '#ecfdf5' : '#f0fdfa';
+                            badgeColor = illum >= 65.0 ? '#065f46' : '#0f766e';
+                            badgeBorder = illum >= 65.0 ? '#a7f3d0' : '#99f6e4';
+                            spectrumLabel = `Bright Benefic Spectrum (${(gFac * 100).toFixed(0)}% Light Scale)`;
+                            spectrumDesc = `<strong>Continuous Benefic Scaling (Illum ≥ 50%):</strong> Scales gradually from 0.0% at 50% half-moon up to +25.0% at 100% full moon (BPHS 28.10-11 &amp; 35.9). Current factor: <strong>${gFac.toFixed(2)}x</strong> produces <strong>+${effMaxMod}%</strong> in Kendras/Trikonas (1, 4, 5, 9, 10) and <strong>-${effMaxMod}%</strong> in struggle houses (3, 6).`;
+                        } else {
+                            badgeBg = illum < 35.0 ? '#fef2f2' : '#fffbeb';
+                            badgeColor = illum < 35.0 ? '#991b1b' : '#92400e';
+                            badgeBorder = illum < 35.0 ? '#fecaca' : '#fde68a';
+                            spectrumLabel = `Dark Malefic Spectrum (${(gFac * 100).toFixed(0)}% Dark Scale, Kṣīṇendu)`;
+                            spectrumDesc = `<strong>Continuous Malefic Scaling (Illum &lt; 50%):</strong> Scales gradually from 0.0% at 50% half-moon up to +25.0% at 0% new moon (BPHS 3.11 &amp; 28.11). Current factor: <strong>${gFac.toFixed(2)}x</strong> produces <strong>+${effMaxMod}%</strong> in Upachayas (3, 6, 10, 11) and <strong>-${effMaxMod}%</strong> in tender houses (1, 4, 5, 9).`;
+                        }
+
+                        const moonTooltip = `<strong>${isWax ? '🌔 Shukla Paksha (Waxing Moon)' : '🌘 Krishna Paksha (Waning Moon)'}</strong><br>` +
+                            `• <strong>Illumination:</strong> ${illum.toFixed(1)}% illuminated (${mPhase.elongation_deg}° from Sun)<br>` +
+                            `• <strong>Light Category:</strong> ${mPhase.light_type || '--'}<br>` +
+                            `• <strong>Continuous Spectrum:</strong> ${spectrumLabel}<br>` +
+                            `• <strong>House Terrain Rule:</strong> ${spectrumDesc}<br>` +
+                            `• <strong>Scriptural Proof:</strong> BPHS 28.10-11 (Paksha Bala Virupas), BPHS 35.9 (Pūrṇendu vs Kṣīṇendu), Saravali 5.43.`;
+
+                        const phaseIcon = isWax ? (illum > 80 ? '🌕' : '🌔') : (illum < 20 ? '🌑' : '🌘');
+                        const phaseName = isWax ? 'Waxing' : 'Waning';
+
+                        moonPhaseBadgeHtml = `<div style="margin-top:2px;">` +
+                            `<span class="badge tooltip-target" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder}; font-size:9px; padding:1px 5px; border-radius:3px; cursor:help; font-weight:600; display:inline-flex; align-items:center; gap:2px;" data-tooltip="${escapeTooltipAttr(moonTooltip)}">` +
+                            `${phaseIcon} ${phaseName} ${illum.toFixed(0)}%` +
+                            `</span>` +
+                            `</div>`;
+                    }
                 }
 
                 // Cusp shift & House Details
@@ -7682,16 +7795,48 @@
 
                 // Cell 3: Essential Dignity HTML
                 let digBadge = '';
+                const funcDig = pEval.functional_dignity || (pEval.step4_house_field ? {
+                    base_dignity_pct: dignityPct,
+                    base_dignity_name: cleanDig,
+                    terrain_mod_pct: pEval.step4_house_field.terrain_mod_pct || 0,
+                    lordship_mod_pct: pEval.step4_house_field.lordship_mod_pct || 0,
+                    functional_dignity_pct: pEval.step4_house_field.functional_dignity_pct || dignityPct,
+                    math_formula: pEval.step4_house_field.math_formula || '',
+                    math_steps: pEval.step4_house_field.math_steps || []
+                } : null);
+
+                let funcDigMathBlock = '';
+                if (funcDig && varga === 'D1') {
+                    const stepItems = (funcDig.math_steps || []).map(step => {
+                        let iconMark = '🔹 ';
+                        if (step.includes('+')) iconMark = '➕ ';
+                        else if (step.includes('-')) iconMark = '➖ ';
+                        return `&nbsp;&nbsp;${iconMark}<strong>${step}</strong>`;
+                    }).join('<br>');
+
+                    const terrainDig = (funcDig.terrain_dignity_pct !== undefined) ? Number(funcDig.terrain_dignity_pct).toFixed(1) : (Number(funcDig.base_dignity_pct || 0) + Number(funcDig.terrain_mod_pct || 0)).toFixed(1);
+                    funcDigMathBlock = `<br><br>` +
+                        `<div style="border-top:1px dashed rgba(255,255,255,0.35); padding-top:6px; margin-top:6px;">` +
+                        `<strong>📐 Functional Evaluation (Vic DiCara 4-Step Method):</strong><br>` +
+                        `${stepItems}<br>` +
+                        `<div style="margin:4px 0; border-top:1px solid rgba(255,255,255,0.25); width:100%;"></div>` +
+                        `🏡 <strong>House-Adjusted Dignity: ${terrainDig}%</strong><br>` +
+                        `➔ <strong>Final Functional Evaluation: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</strong><br>` +
+                        `<span style="font-size:9.5px; opacity:0.9; font-family:monospace;">${escapeTooltipAttr(funcDig.math_formula)}</span>` +
+                        `</div>`;
+                }
+
                 if (isNode) {
                     const nodeDigTip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
                         `• <strong>Why No 5-Fold Dignity:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical body or own sign.<br>` +
                         `• <strong>Effective Dignity:</strong> ${effDig.toFixed(0)}% (reflecting host ${signLord}'s ${hostDig.toFixed(0)}% dignity with sign affinity).<br>` +
-                        `• <strong>Current Sign:</strong> Residing in ${sign}, mirroring ${signLord}'s state.`;
+                        `• <strong>Current Sign:</strong> Residing in ${sign}, mirroring ${signLord}'s state.` +
+                        funcDigMathBlock;
                     digBadge = `
-                        <div style="text-align:center;">
-                            <span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; font-size:10px; cursor:help;" data-tooltip="${nodeDigTip}">Proxy (${signLord})</span>
+                        <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(nodeDigTip)}">
+                            <span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; font-size:10px;">Proxy (${signLord})</span>
                             <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${effDig.toFixed(0)}% Dignity</div>
-                            <div style="font-size:9px; color:#64748b;">Chhāyā Reflection</div>
+                            ${funcDig && varga === 'D1' ? `<div style="font-size:9.5px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size:9px; color:#64748b;">Chhāyā Reflection</div>`}
                         </div>
                     `;
                 } else {
@@ -7713,7 +7858,8 @@
 
                     const digTooltip = `<strong>👑 ${graha} Dignity in ${varga}: ${cleanDig} (${dignityPct.toFixed(0)}%)</strong><br>` +
                         `${whyReason}<br><br>` +
-                        `• <strong>How it feels:</strong> ${digMeaning}`;
+                        `• <strong>How it feels:</strong> ${digMeaning}` +
+                        funcDigMathBlock;
 
                     let style = '';
                     let icon = '';
@@ -7740,10 +7886,10 @@
                     }
 
                     digBadge = `
-                        <div style="text-align:center;">
-                            <span class="badge tooltip-target" style="${style} cursor:help;" data-tooltip="${digTooltip}">${icon}${cleanDig}</span>
+                        <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
+                            <span class="badge" style="${style}">${icon}${cleanDig}</span>
                             <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
-                            <div style="font-size:9px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>
+                            ${funcDig && varga === 'D1' ? `<div style="font-size:9.5px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size:9px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>`}
                         </div>
                     `;
                 }
@@ -7954,24 +8100,57 @@
                     avasthasHtml = `<span class="badge tooltip-target" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:9.5px; font-weight:600; cursor:help;" data-tooltip="${nodeAvaTip}">— (Chhāyā Catalyst)</span>`;
                 } else if (pEval.calibrated_lajjitadi && pEval.calibrated_lajjitadi.length > 0) {
                     const badges = pEval.calibrated_lajjitadi.map(cItem => {
-                        const infStr = (cItem.influencing_planets && cItem.influencing_planets.length > 0)
-                            ? `• <strong>Influencing Grahas:</strong> ${cItem.influencing_planets.map(inf => `${inf.glyph} ${inf.planet} (${inf.alertness_state} - ${(inf.multiplier * 100).toFixed(0)}%)`).join(', ')}<br>`
-                            : '';
+                        let style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                        let borderCol = '#cbd5e1';
+                        let titleColor = '#475569';
+                        if (cItem.base_state === 'Mudita') { style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;'; borderCol = '#86efac'; titleColor = '#166534'; }
+                        else if (cItem.base_state === 'Garvita') { style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;'; borderCol = '#fcd34d'; titleColor = '#92400e'; }
+                        else if (cItem.base_state === 'Kshudhita') { style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;'; borderCol = '#fca5a5'; titleColor = '#991b1b'; }
+                        else if (cItem.base_state === 'Kshobhita') { style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;'; borderCol = '#fed7aa'; titleColor = '#9a3412'; }
+                        else if (cItem.base_state === 'Lajjita') { style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;'; borderCol = '#d8b4fe'; titleColor = '#6b21a8'; }
+                        else if (cItem.base_state === 'Trushita') { style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;'; borderCol = '#bae6fd'; titleColor = '#0369a1'; }
+
+                        let influencerChipsHtml = '';
+                        let infLines = '';
+                        if (cItem.influencing_planets && cItem.influencing_planets.length > 0) {
+                            const chips = cItem.influencing_planets.map(inf => {
+                                const isMajor = inf.is_major; // virupas >= 30
+                                const chipStyle = isMajor
+                                    ? `background:#ffffff; border:1px solid ${borderCol}; color:#1e293b; font-weight:700; font-size:8px;`
+                                    : `background:rgba(255,255,255,0.65); border:1px dashed #94a3b8; color:#64748b; font-weight:500; font-size:7.5px;`;
+                                const titleStr = `${inf.planet}: ${inf.mechanism} (${inf.virupas.toFixed(1)}v) • Alertness: ${inf.alertness_state} (${inf.alertness_pct}% force)`;
+                                return `<span style="${chipStyle} padding:1px 3px; border-radius:3px; display:inline-flex; align-items:center; gap:2px;" title="${titleStr}">${inf.glyph} ${inf.symbol} ${inf.virupas.toFixed(0)}v <span style="font-size:7px; opacity:0.85;">(${inf.alertness_state.split(' ')[0]})</span></span>`;
+                            }).join('');
+                            influencerChipsHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${chips}</div>`;
+
+                            infLines = '<br>• <strong>Influencing Grahas &amp; Force:</strong><br>' + cItem.influencing_planets.map(inf => {
+                                const tierBadge = inf.is_major ? '<strong>[MAJOR DRIVER ≥ 30v]</strong>' : '<span style="color:#94a3b8;">[Minor Aspect &lt; 30v]</span>';
+                                return `&nbsp;&nbsp;• <strong>${inf.glyph} ${inf.planet}:</strong> ${inf.mechanism} (${inf.symbol} ${inf.virupas.toFixed(1)} / 60.0 Virupas) ${tierBadge}<br>` +
+                                       `&nbsp;&nbsp;&nbsp;&nbsp;Alertness: <em>${inf.alertness_state}</em> (${inf.alertness_pct}% force) ➔ Effective Force: <strong>${inf.combined_pct}%</strong>`;
+                            }).join('<br>');
+                        } else if (cItem.base_state === 'Garvita') {
+                            influencerChipsHtml = `<div style="font-size:8px; opacity:0.85; font-style:italic; margin-top:1px;">In ${cItem.condition || 'Own Office'}</div>`;
+                        }
+
                         const bTip = `<strong>${cItem.icon} ${cItem.state}</strong><br>` +
                             `• <strong>Condition:</strong> ${cItem.condition}<br>` +
-                            `• <strong>Severity:</strong> ${cItem.severity} (Effective Intensity: ${(cItem.effective_intensity * 100).toFixed(0)}%)<br>` +
-                            infStr +
-                            `• <strong>Source:</strong> Richard Fish & Ryan Kurczak Vol 2 (Alertness-Governed Lajjitādi).`;
-                        let style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
-                        if (cItem.base_state === 'Mudita') style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
-                        else if (cItem.base_state === 'Garvita') style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
-                        else if (cItem.base_state === 'Kshudhita') style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
-                        else if (cItem.base_state === 'Kshobhita') style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
-                        else if (cItem.base_state === 'Lajjita') style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
-                        else if (cItem.base_state === 'Trushita') style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
-                        return `<span class="badge tooltip-target" style="${style} font-size:9px; cursor:help;" data-tooltip="${escapeTooltipAttr(bTip)}">${cItem.badge}</span>`;
+                            `• <strong>Overall Severity:</strong> ${cItem.severity} (Intensity: ${(cItem.effective_intensity * 100).toFixed(0)}%)` +
+                            infLines + `<br>` +
+                            `• <strong>Epistemology:</strong> Combining Sage Parashara (BPHS Ch. 45 Graha Drishti Virupas) + Ryan Kurczak Vol 2 (Jagradādi Alertness Calibration).`;
+
+                        return `
+                            <div class="tooltip-target" style="${style} border-radius:4px; padding:3px 5px; cursor:help; display:flex; flex-direction:column; gap:1px;" data-tooltip="${escapeTooltipAttr(bTip)}">
+                                <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
+                                    <span style="font-weight:700; font-size:9px; display:flex; align-items:center; gap:3px;">
+                                        ${cItem.icon} ${cItem.base_state}
+                                    </span>
+                                    <span style="font-size:7px; font-weight:700; white-space:nowrap; opacity:0.9; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,0.75);">${cItem.severity.split(' ')[0]}</span>
+                                </div>
+                                ${influencerChipsHtml}
+                            </div>
+                        `;
                     });
-                    avasthasHtml = `<div style="display:flex; flex-direction:column; gap:2px;">${badges.join('')}</div>`;
+                    avasthasHtml = `<div style="display:flex; flex-direction:column; gap:3px;">${badges.join('')}</div>`;
                 } else if (avList.length === 0) {
                     const neutralAvaTip = `<strong>Neutral (Unstirred Avasthā)</strong><br>` +
                         `• ${graha} is not subjected to starving enemy rays or agitating conjunctions in ${varga}.<br>` +
@@ -8035,8 +8214,8 @@
                     const dTip = `<strong>${pEval.deepthaadi.icon} Deeptādi Mood: ${pEval.deepthaadi.state}</strong><br>` +
                         `• <strong>Condition:</strong> ${pEval.deepthaadi.condition}<br>` +
                         `• <strong>Innate Feeling:</strong> ${pEval.deepthaadi.meaning}<br>` +
-                        `• <strong>Source:</strong> Saravali Ch. 5 / Vol 2 Ch. 4.`;
-                    deepthaadiHtml = `<div><span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(dTip)}">${pEval.deepthaadi.badge}</span></div>`;
+                        `• <strong>Source:</strong> BPHS Ch. 45.7 / Saravali Ch. 5 / Vol 2 Ch. 4.`;
+                    deepthaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(dTip)}">${pEval.deepthaadi.badge}</span>`;
                 }
 
                 let jagradaadiHtml = '';
@@ -8044,19 +8223,35 @@
                     const jTip = `<strong>${pEval.jagradaadi.icon} Jagradādi Alertness: ${pEval.jagradaadi.state} (${pEval.jagradaadi.capacity_pct}%)</strong><br>` +
                         `• <strong>House Management:</strong> ${pEval.jagradaadi.house_management}<br>` +
                         `• <strong>Relational Impact:</strong> Exerts ${(pEval.jagradaadi.multiplier * 100).toFixed(0)}% force in Lajjitādi states.<br>` +
-                        `• <strong>Source:</strong> The Art & Science of Vedic Astrology, Vol 2 Ch. 10.`;
-                    jagradaadiHtml = `<div><span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(jTip)}">${pEval.jagradaadi.badge}</span></div>`;
+                        `• <strong>Source:</strong> BPHS Ch. 45.5 / The Art & Science of Vedic Astrology, Vol 2 Ch. 10.`;
+                    jagradaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(jTip)}">${pEval.jagradaadi.badge}</span>`;
                 }
 
                 const avasthasCellHtml = `
-                    <div style="display:flex; flex-direction:column; gap:2px;">
-                        <div style="font-size:10px; font-weight:bold; color:#475569;">
-                            Age: <span class="badge tooltip-target" style="background:#f1f5f9; color:#334155; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
+                    <div style="display:flex; flex-direction:column; gap:5px; font-size:10px; min-width:180px;">
+                        <!-- Compartment 1: Physical Fuel & Alertness -->
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
+                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Alertness</div>
+                            <div style="display:flex; flex-wrap:wrap; align-items:center; gap:3px;">
+                                <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9.5px; font-weight:700; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">Age: ${baladi.state} (${baladi.efficiency_pct}%)</span>
+                                ${jagradaadiHtml}
+                            </div>
+                            <div style="font-size:8.5px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
                         </div>
-                        <div style="font-size:9px; color:#64748b;">${baladi.sanskrit_term.slice(0, 22)}</div>
-                        ${deepthaadiHtml}
-                        ${jagradaadiHtml}
-                        <div style="margin-top:1px;">${avasthasHtml}</div>
+
+                        <!-- Compartment 2: Innate Dignity Mood (Dīptādi) -->
+                        ${deepthaadiHtml ? `
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
+                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🧘 Innate Mood</div>
+                            <div style="display:flex; align-items:center;">${deepthaadiHtml}</div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Compartment 3: Social & Relational Weather (Lajjitādi) -->
+                        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
+                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🤝 Social Relations</div>
+                            <div>${avasthasHtml}</div>
+                        </div>
                     </div>
                 `;
 
@@ -8121,6 +8316,7 @@
                                         ${ckBadge}
                                     </div>
                                     <div>${statusBadges}</div>
+                                    ${moonPhaseBadgeHtml}
                                     ${masterLordBadgesHtml}
                                 </div>
                             </div>

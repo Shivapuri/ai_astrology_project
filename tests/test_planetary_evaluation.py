@@ -550,10 +550,10 @@ def test_deepthaadi_avastha_9_canonical_states():
     assert d6["sanskrit"] == "Sakta"
     assert "Sakta" in d6["badge"]
 
-    # 7. Mudita (Friend's Sign)
+    # 7. Pramudita (Friend's Sign - BPHS 45.7)
     d7 = calculate_deepthaadi_avastha("Sun", "Scorpio", "Friend's Sign")
-    assert d7["sanskrit"] == "Mudita"
-    assert "Mudita" in d7["badge"]
+    assert d7["sanskrit"] == "Pramudita"
+    assert "Pramudita" in d7["badge"]
 
     # 8. Khala (Enemy's Sign)
     d8 = calculate_deepthaadi_avastha("Saturn", "Scorpio", "Enemy's Sign")
@@ -635,11 +635,365 @@ def test_psychological_narrative_synthesis():
     cal_l = calibrate_lajjitadi_states("Sun", "Scorpio", raw_l, jag_map, j)
 
     narrative = synthesize_psychological_narrative("Sun", "Scorpio", d, j, cal_l)
-    assert "Mudita" in narrative
+    assert "Pramudita" in narrative
     assert "Half Capacity" in narrative or "50%" in narrative
     assert "Kshudhita" in narrative
     assert "Saturn" in narrative
     assert "Builds authentic authority" in narrative
+
+
+def test_baladi_avastha_bphs_naming():
+    """Verify Baladi Avastha uses classical BPHS & Kurczak Vol 2 names: Yuva and Vriddha."""
+    from jyotish.planetary_evaluation import calculate_baladi_avastha
+
+    # Odd sign tests (Aries)
+    assert calculate_baladi_avastha("Aries", 2.0)["state"] == "Bala"
+    assert calculate_baladi_avastha("Aries", 8.0)["state"] == "Kumara"
+    assert calculate_baladi_avastha("Aries", 14.0)["state"] == "Yuva"
+    assert calculate_baladi_avastha("Aries", 20.0)["state"] == "Vriddha"
+    assert calculate_baladi_avastha("Aries", 26.0)["state"] == "Mrita"
+
+    # Even sign tests (Taurus - inverted)
+    assert calculate_baladi_avastha("Taurus", 2.0)["state"] == "Mrita"
+    assert calculate_baladi_avastha("Taurus", 8.0)["state"] == "Vriddha"
+    assert calculate_baladi_avastha("Taurus", 14.0)["state"] == "Yuva"
+    assert calculate_baladi_avastha("Taurus", 20.0)["state"] == "Kumara"
+    assert calculate_baladi_avastha("Taurus", 26.0)["state"] == "Bala"
+
+
+def test_vic_dicara_house_terrain_and_lordship_modifiers():
+    """
+    Validates Vic DiCara's exact video formulas:
+    1. Terrain compatibility (+25% in Upachayas for Malefics, -25% in 1,4,5,9;
+       +25% in 1,4,5,9,10 for Benefics, -25% in 3,6).
+    2. Lordship modifiers: +20% for 1st Lord (Lagnesha), +15% for Trine lords (5/9),
+       +5% for Angle lords (4/10), -15% for Dusthana lords (6/8/12),
+       and +15% Viparita reversal loophole when occupying 6/8/12.
+    3. Mathematical breakdown string generation.
+    """
+    # Create synthetic vargas data for test case 1: Jupiter in Cancer in 3rd House (Taurus Lagna)
+    vargas_case1 = {
+        "D1": {
+            "lagna": {"sign": "Taurus", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Jupiter": {"sign": "Cancer", "degree_0_to_30": 5.0, "longitude": 95.0, "dignity": "Exalted"},
+                "Sun": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 3.0, "longitude": 33.0, "dignity": "Exalted"},
+                "Mars": {"sign": "Capricorn", "degree_0_to_30": 28.0, "longitude": 298.0, "dignity": "Exalted"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 15.0, "longitude": 165.0, "dignity": "Exalted"},
+                "Venus": {"sign": "Pisces", "degree_0_to_30": 27.0, "longitude": 357.0, "dignity": "Exalted"},
+                "Saturn": {"sign": "Libra", "degree_0_to_30": 20.0, "longitude": 200.0, "dignity": "Exalted"},
+                "Rahu": {"sign": "Taurus", "degree_0_to_30": 20.0, "longitude": 50.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Scorpio", "degree_0_to_30": 20.0, "longitude": 230.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    eval_case1 = calculate_planetary_evaluation(vargas_case1)
+    jup_res = eval_case1["planets"]["Jupiter"]
+    s4_jup = jup_res["step4_house_field"]
+    fd_jup = jup_res["functional_dignity"]
+
+    # In D1, Jupiter in Cancer is Exalted (100% base)
+    assert s4_jup["house_num"] == 3
+    assert s4_jup["terrain_mod_pct"] == -25.0  # Benefic in 3rd house
+    # Taurus Lagna: Jupiter rules 8th (Sagittarius) and 11th (Pisces) -> 8th lord gives -15.0%
+    assert s4_jup["lordship_mod_pct"] == -15.0
+    # Net functional dignity: 100% - 25% - 15% = 60.0%
+    assert fd_jup["functional_dignity_pct"] == 60.0
+    assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
+    assert "-25.0%" in fd_jup["math_steps"][1]
+    assert "-15.0%" in fd_jup["math_steps"][2]
+    assert "60.0% Functional Dignity" in fd_jup["math_formula"]
+
+    # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
+    vargas_case2 = {
+        "D1": {
+            "lagna": {"sign": "Cancer", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 20.0, "longitude": 20.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Leo", "degree_0_to_30": 10.0, "longitude": 130.0, "dignity": "Moolatrikona"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 15.0, "longitude": 105.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 16.0, "longitude": 166.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 5.0, "longitude": 245.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Own Sign"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    eval_case2 = calculate_planetary_evaluation(vargas_case2)
+    sat_res = eval_case2["planets"]["Saturn"]
+    s4_sat = sat_res["step4_house_field"]
+    fd_sat = sat_res["functional_dignity"]
+
+    # In D1, Saturn in Aries is Debilitated (12.5% base in Kurczak scale)
+    assert s4_sat["house_num"] == 10
+    assert s4_sat["terrain_mod_pct"] == 25.0  # Malefic in 10th house Upachaya
+    # Cancer Lagna: Saturn rules 7th (Capricorn) and 8th (Aquarius) -> 8th lord gives -15.0%
+    assert s4_sat["lordship_mod_pct"] == -15.0
+    # Net functional dignity: 12.5% + 25.0% - 15.0% = 22.5%
+    assert fd_sat["functional_dignity_pct"] == 22.5
+    assert "22.5% Functional Dignity" in fd_sat["math_formula"]
+
+    # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
+    vargas_case3 = {
+        "D1": {
+            "lagna": {"sign": "Virgo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 20.0, "longitude": 20.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Leo", "degree_0_to_30": 10.0, "longitude": 130.0, "dignity": "Moolatrikona"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 15.0, "longitude": 105.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 16.0, "longitude": 166.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 5.0, "longitude": 245.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Own Sign"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    eval_case3 = calculate_planetary_evaluation(vargas_case3)
+    sat_res3 = eval_case3["planets"]["Saturn"]
+    s4_sat3 = sat_res3["step4_house_field"]
+    fd_sat3 = sat_res3["functional_dignity"]
+
+    # In D1, Saturn is in 8th house (Intermediate field: 0.0%)
+    assert s4_sat3["house_num"] == 8
+    assert s4_sat3["terrain_mod_pct"] == 0.0
+    # Virgo Lagna: Saturn rules 5th (Capricorn, Trine: +15.0%) and 6th (Aquarius, Dusthana).
+    # Since Saturn occupies 8th (Dusthana) while ruling 6th (Dusthana), Viparita Reversal applies (+15.0%)!
+    # Total lordship = +15.0% (Trine) + 15.0% (Viparita Reversal) = +30.0%
+    assert s4_sat3["lordship_mod_pct"] == 30.0
+    assert s4_sat3["viparita_yoga"] is not None
+    # Net functional dignity: 12.5% + 0.0% + 30.0% = 42.5%
+    assert fd_sat3["functional_dignity_pct"] == 42.5
+    assert "42.5% Functional Dignity" in fd_sat3["math_formula"]
+
+
+def test_moon_phase_and_illumination_spectrum():
+    """
+    Verifies continuous gradual Moon illumination scaling (BPHS 28.10-11 & 35.9):
+    - 50% to 100% illumination: scales gradually from 0.0% to ±25.0% benefic terrain.
+    - 50% down to 0% illumination: scales gradually from 0.0% to ±25.0% malefic terrain (Ksheenendu).
+    - 50% illumination (half moon): perfectly neutral (0.0% modifier).
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    # Test Case A: 100% Full Moon (Sun in Aries 0°, Moon in Libra 180°)
+    # Aries Lagna -> Libra is 7th house (Intermediate: 0.0%)
+    chart_100 = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 0.0, "longitude": 0.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Libra", "degree_0_to_30": 0.0, "longitude": 180.0, "dignity": "Neutral"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Friend"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_100 = calculate_planetary_evaluation(chart_100)
+    m_100 = eval_100["planets"]["Moon"]
+    assert m_100["moon_phase"]["illumination_pct"] == 100.0
+    assert m_100["moon_phase"]["gradual_factor"] == 1.0
+    assert m_100["moon_phase"]["terrain_spectrum"] == "bright_gradual"
+
+    # Test Case B: 75% Waxing Moon in 4th house (Cancer) -> Factor = 0.50 -> +12.5% modifier
+    # Sun in Aries 0°, Moon in Scorpio 15° (elongation 225° or 135° from other side: 135° elongation = Leo 15°)
+    # For Aries Lagna, Cancer is 4th house. Let Sun be Aries 0°, Moon in Cancer 15° (elongation 105° -> 58.3%)
+    # Let Sun be Pisces 15° (345°), Moon in Cancer 0° (90°): elongation = (90 - 345) % 360 = 105°
+    # Better yet: Sun in Pisces 0° (330°), Moon in Cancer 15° (105°): elongation = 135° -> paksha ratio = 1 - 45/180 = 0.75 (75%)
+    chart_75 = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Pisces", "degree_0_to_30": 0.0, "longitude": 330.0, "dignity": "Friend"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 15.0, "longitude": 105.0, "dignity": "Own Sign"}, # 135° elongation = 75.0%
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Friend"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_75 = calculate_planetary_evaluation(chart_75)
+    m_75 = eval_75["planets"]["Moon"]
+    assert m_75["moon_phase"]["illumination_pct"] == 75.0
+    assert m_75["moon_phase"]["gradual_factor"] == 0.5
+    # Moon in Cancer is 4th house for Aries Lagna -> Noble field: +25% * 0.50 = +12.5%
+    assert m_75["step4_house_field"]["house_num"] == 4
+    assert m_75["step4_house_field"]["terrain_mod_pct"] == 12.5
+    assert "Noble Flourishing Field (Gradual Lunar Light)" in m_75["step4_house_field"]["terrain_type"]
+
+    # Test Case C: 50% Half Moon in 4th house (Cancer) -> Factor = 0.0 -> 0.0% modifier
+    # Sun in Aries 0°, Moon in Cancer 0° (90° elongation = 50.0% half moon)
+    chart_50 = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 0.0, "longitude": 0.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 0.0, "longitude": 90.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Friend"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_50 = calculate_planetary_evaluation(chart_50)
+    m_50 = eval_50["planets"]["Moon"]
+    assert m_50["moon_phase"]["illumination_pct"] == 50.0
+    assert m_50["moon_phase"]["gradual_factor"] == 0.0
+    assert m_50["step4_house_field"]["terrain_mod_pct"] == 0.0
+
+    # Test Case D: 25% Dark Moon in 4th house (Cancer) -> Factor = 0.50 -> -12.5% modifier
+    # Elongation 45°: Sun in Taurus 15° (45°), Moon in Cancer 0° (90°) -> elongation = 45° -> paksha ratio = 45/180 = 0.25 (25%)
+    chart_25 = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Enemy"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 0.0, "longitude": 90.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Friend"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_25 = calculate_planetary_evaluation(chart_25)
+    m_25 = eval_25["planets"]["Moon"]
+    assert m_25["moon_phase"]["illumination_pct"] == 25.0
+    assert m_25["moon_phase"]["gradual_factor"] == 0.5
+    assert m_25["moon_phase"]["terrain_spectrum"] == "dark_gradual"
+    # Moon in 4th house (Tender Field Strain): -25% * 0.50 = -12.5%
+    assert m_25["step4_house_field"]["terrain_mod_pct"] == -12.5
+    assert "Tender Field Strain (Gradual Dark Moon)" in m_25["step4_house_field"]["terrain_type"]
+
+    # Test Case E: 0% New Moon in 3rd house (Gemini) -> Upachaya Growth: +25% * 1.0 = +25.0%
+    # Sun in Gemini 15° (75°), Moon in Gemini 15° (75°) -> elongation 0°
+    chart_0 = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Neutral"},
+                "Moon": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Friend"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Friend"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Scorpio", "degree_0_to_30": 15.0, "longitude": 225.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_0 = calculate_planetary_evaluation(chart_0)
+    m_0 = eval_0["planets"]["Moon"]
+    assert m_0["moon_phase"]["illumination_pct"] == 0.0
+    assert m_0["moon_phase"]["gradual_factor"] == 1.0
+    # Gemini is 3rd house for Aries Lagna -> Upachaya Growth for dark moon: +25.0%
+    assert m_0["step4_house_field"]["house_num"] == 3
+    assert m_0["step4_house_field"]["terrain_mod_pct"] == 25.0
+    assert "Upachaya Growth Field (Gradual Dark Moon)" in m_0["step4_house_field"]["terrain_type"]
+
+
+def test_vitality_functional_dignity_integration():
+    """
+    Verifies that calculate_graha_vitality integrates functional dignity from Step 4,
+    updating the effective dignity, calculation receipt, and vitality score.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    # Test with Leo Lagna, Sun in Scorpio (4th House)
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Scorpio", "degree_0_to_30": 10.0, "longitude": 220.0, "dignity": "Great Friend"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Exalted"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 15.0, "longitude": 195.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    sun = eval_res["planets"]["Sun"]
+    vit = sun["vitality"]
+    receipt = vit["calculation_receipt"]
+
+    # Sun in H4: -25% (Terrain) + 20% (Lagna Lord) = -5.0% delta
+    assert receipt["house_field_delta_pct"] == -5.0
+    assert "House Field & Lordship: -5.0%" in receipt["receipt_text"]
+    assert "Functional: 55.0%" in receipt["receipt_text"]
+
+
+def test_mars_in_scorpio_12th_house_dignity():
+    """
+    Verifies Mina's chart configuration (Sagittarius Lagna, Mars in Scorpio in H12):
+    1. Base Dignity: 62.5% (Scorpio is even own sign on Kurczak scale, not 68.8%).
+    2. House Terrain: 0.0% (H12 is intermediate).
+    3. Trine Lord (H5): +15.0%.
+    4. 12th Lord in 12th house: 0.0% (Own Dusthana, at home - NOT a +15% Viparita reversal).
+    5. Net Functional Dignity: 77.5% (NOT 98.8%).
+    """
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Sagittarius", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Exalted"},
+                "Mars": {"sign": "Scorpio", "degree_0_to_30": 15.0, "longitude": 225.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 15.0, "longitude": 195.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    mars = eval_res["planets"]["Mars"]
+    f_dig = mars["functional_dignity"]
+
+    # 1. Base dignity for Scorpio must be 62.5% (even sign own sign)
+    assert f_dig["base_dignity_pct"] == 62.5
+    # 2. House Terrain for H12 is 0.0%
+    assert f_dig["terrain_mod_pct"] == 0.0
+    assert f_dig["terrain_dignity_pct"] == 62.5
+    # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
+    assert f_dig["lordship_mod_pct"] == 15.0
+    # 4. Final Functional Dignity = 62.5 + 0.0 + 15.0 = 77.5% (never 98.8%!)
+    assert f_dig["functional_dignity_pct"] == 77.5
+    assert "Own Dusthana (H12): 0.0%" in f_dig["math_steps"]
+    assert "Viparita" not in f_dig["math_steps"]
+
+
+
 
 
 

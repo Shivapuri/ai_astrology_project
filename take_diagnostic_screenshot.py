@@ -24,8 +24,20 @@ async def main():
         await page.evaluate("maximizeTableFromWidget(document.querySelector('#cell1 .btn-widget-maximize'))")
         await page.wait_for_timeout(800)
 
-        await page.screenshot(path="screenshot_master_diagnostic_modal.png")
-        print("Captured screenshot_master_diagnostic_modal.png")
+        # Focus screenshot on the modal table body
+        modal_table = page.locator("#widgetMaximizeContainer table")
+        await modal_table.screenshot(path="screenshot_master_diag_tbody.png")
+        print("Captured screenshot_master_diag_tbody.png")
+
+        # Also screenshot Sun row specifically
+        sun_row = page.locator("#widgetMaximizeContainer tbody tr[data-id='Sun']")
+        await sun_row.screenshot(path="screenshot_sun_row.png")
+        print("Captured screenshot_sun_row.png")
+
+        # And Venus row specifically
+        venus_row = page.locator("#widgetMaximizeContainer tbody tr[data-id='Venus']")
+        await venus_row.screenshot(path="screenshot_venus_row.png")
+        print("Captured screenshot_venus_row.png")
 
         await browser.close()
 

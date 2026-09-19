@@ -35,7 +35,7 @@ The **Master Graha Diagnostics** table consolidates all planetary diagnostics in
 | **4. Host Dispositor** | Bedrock Foundation & Rescue | The planetary ruler governing the sign where the planet sits. Evaluates host essential dignity % and host Shadbala muscle %. Determines **Neecha Bhanga** (cancellation of debility) alchemical rescue: `🏡 Self-Hosted`, `🛡️ Fortified Host`, `✨ Rescued (Neecha Bhanga)`, `⚠️ Strained Host`, or `⚖️ Neutral Host`. |
 | **5. Shadbala Power** | 6-Fold Cumulative Potency (*Virūpas*) | Total Virūpas / Rūpas, % of required minimum threshold, and relative chart rank (#1 to #7). Displays capacity descriptor (*Abundant*, *Capable*, *Deficit*) and Parashari karmic harvest balance (*Ishta* & *Kashta Phala*). For Rahu/Ketu: inherits proxy muscle via host dispositor. |
 | **6. Aspect Weather** | Conjunctions & Continuous Rays | **YUTI:** Conjunct companions. **DRISHTI:** Continuous Virūpas received with explicit `+` (green benefic) and `-` (red malefic) signs. **Net Dṛṣṭi Pill:** `🟢 Net Support (+Xv)`, `🔴 Net Pressure (-Xv)`, or `⚖️ Net Neutral`. |
-| **7. Avastha & Age** | Biological Age & Psychological Mood | **Bālādi Avasthās** (*Phaladeepika* 3.10 with odd/even sign inversion): Biological age cycle (*Bala* infant 50%, *Kumara* youth 75%, *Taruna* prime 100%, *Pravaya* elder 50%, *Mrita* dormant 25%). Plus the 6 Parashari **Lajjitādi feeling states** (BPHS Ch. 45): *Mudita*, *Garvita*, *Kshudhita*, *Kshobhita*, *Lajjita*, *Trushita*. |
+| **7. Avastha & Age** | Biological Age, Alertness & Relational Weather | Three compartmentalized layers: (1) **Physical Fuel & Alertness:** Bālādi age cycle (*Bala* infant 50%, *Kumara* youth 75%, *Yuva* prime 100%, *Vriddha* elder 50%, *Mrita* dormant 25% per BPHS 45.3 / Vol 2) + Jāgradādi alertness (*Jagrat* 100%, *Svapna* 50%, *Sushupti* 10%). (2) **Innate Mood:** Dīptādi (*Pramudita*, *Swastha*, *Deepta*, *Santa*, etc.). (3) **Social Weather:** 6 Parashari Lajjitādi feeling states (*Mudita*, *Garvita*, *Kshudhita*, *Kshobhita*, *Lajjita*, *Trushita*). |
 | **8. ★ Functional Archetype** | 4-Quadrant Matrix & Vitality Score | Vic DiCara's 4-Quadrant Behavioral Matrix: `🌟 Generous King` (High Quality + High Muscle), `🤝 Sincere Friend` (High Quality + Low Muscle), `⛓️ Toothless Bully` (Low Quality + Low Muscle), or `⚔️ Armed Dictator` (Low Quality + High Muscle). Displays calibrated Net Functional Vitality Score (1.0 to 10.0) and tier title. |
 
 ---
@@ -85,9 +85,10 @@ Every element across the Master Graha Diagnostics table is equipped with instant
    - **Karmic Fruits (*Ishta* & *Kashta Phala*):** Clarifies *Ishta Phala* (sweet harvest) vs. *Kashta Phala* (arduous character-building trials).
 7. **Aspect Weather & Net Dṛṣṭi:**
    - Breaks down conjunction companions (*Yuti*) and aspect rays (*Graha Drishti*) with positive (+) and negative (-) Virūpa values and net environmental weather.
-8. **Avastha & Age:**
-   - **Bālādi Avasthās:** Explains the biological maturity stage based on degree progression in odd vs. even signs (Infant *Bala*, Youth *Kumara*, Adult *Taruna*, Elder *Pravaya*, Incapacitated *Mrita*).
-   - **Lajjitādi Avasthās:** Explains emotional feeling states (*Mudita* delighted, *Garvita* proud, *Kshudhita* starved, *Kshobhita* agitated, *Lajjita* ashamed, *Trushita* thirsty).
+8. **Avastha & Age (Three Clear Compartments):**
+   - **Layer 1: Physical Battery & Alertness:** Bālādi biological maturity (*Bala* infant, *Kumara* youth, *Yuva* prime adult, *Vriddha* elder, *Mrita* dormant per BPHS 45.3 / Vol 2) combined with Jāgradādi alertness (*Jagrat* awake 100%, *Svapna* sleepy 50%, *Sushupti* asleep 10%).
+   - **Layer 2: Innate Mood (Dīptādi):** Internal mood from sign dignity (*Pramudita* joyous, *Deepta* radiant, *Swastha* confident, *Santa* peaceful, *Bhita* alarmed per BPHS 45.7 / Saravali Ch. 5).
+   - **Layer 3: Social & Relational Weather (Lajjitādi):** Interpersonal feeling states (*Mudita* delighted, *Garvita* proud, *Kshudhita* starved, *Kshobhita* agitated, *Lajjita* ashamed, *Trushita* thirsty per BPHS Ch. 45.11 / Vol 2 Ch. 10).
 9. **★ Functional Archetype & Vitality Score:**
    - **4-Quadrant Behavioral Matrix (Vic DiCara):**
      - `🌟 Generous King` (High Quality + High Muscle): Noble character with vast resources to execute good.

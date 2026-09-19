@@ -10,13 +10,13 @@ However, ancient masters observed that degree position inside the sign determine
    - **Odd Signs** (Aries, Gemini, Leo, Libra, Sagittarius, Aquarius) progress from birth to death:
      - $0^\circ - 6^\circ$: **Bala** (Infant, 50% operational efficiency)
      - $6^\circ - 12^\circ$: **Kumara** (Youth, 75% efficiency)
-     - $12^\circ - 18^\circ$: **Taruna** (Prime Adult, 100% efficiency)
-     - $18^\circ - 24^\circ$: **Pravaya** (Elder/Aging, 50% efficiency)
+     - $12^\circ - 18^\circ$: **Yuva** (Prime Adult, 100% efficiency)
+     - $18^\circ - 24^\circ$: **Vriddha** (Elder/Aging, 50% efficiency)
      - $24^\circ - 30^\circ$: **Mrita** (Incapacitated/Dormant, 25% efficiency)
    - **Even Signs** (Taurus, Cancer, Virgo, Scorpio, Capricorn, Pisces) invert from death to birth:
      - $0^\circ - 6^\circ$: **Mrita** (25%)
-     - $6^\circ - 12^\circ$: **Pravaya** (50%)
-     - $12^\circ - 18^\circ$: **Taruna** (100%)
+     - $6^\circ - 12^\circ$: **Vriddha** (50%)
+     - $12^\circ - 18^\circ$: **Yuva** (100%)
      - $18^\circ - 24^\circ$: **Kumara** (75%)
      - $24^\circ - 30^\circ$: **Bala** (50%)
 2. **Operational Efficiency Factor ($E_{\text{baladi}}$):**

@@ -74,6 +74,77 @@ Essential dignity is computed using Sage Parashara's 5-Fold Compound Relationshi
 * **Lagnesha Protection:** Conjunction or aspect from the Ascendant Lord grants a **$+0.35$ protective modifier**.
 * **Trishadāya Rulership (3, 6, 11):** Intense Functional Malefics driven by worldly appetite and competitive friction.
 * **Single Yogakārakas:** Saturn (Taurus, Libra), Mars (Cancer, Leo), Venus (Capricorn, Aquarius).
+
+### 4.1 House Terrain Compatibility (Vic DiCara ±25% Environmental Modifier)
+A planet's expression is fundamentally shaped by whether its natural temperament matches the terrain of the house it occupies (*Phaladeepika* 14.18):
+* **Natural Malefics (Saturn, Mars, Sun, Rahu, Ketu):**
+  - **Upachaya Growth Field (Houses 3, 6, 10, 11) $\to \mathbf{+25.0\%}$:** Thrives in arenas of competitive grit, manual labor, long-haul career execution, and material ambition.
+  - **Tender Field Strain (Houses 1, 4, 5, 9) $\to \mathbf{-25.0\%}$:** Aggressive, cutting energy damages delicate domestic peace, physical health, emotional calm, and dharmic ease.
+  - **Intermediate Field (Houses 2, 7, 8, 12) $\to \mathbf{0.0\%}$:** Neutral terrain without decisive malefic bias.
+* **Natural Benefics (Jupiter, Venus, Mercury):**
+  - **Noble Flourishing Field (Houses 1, 4, 5, 9, 10) $\to \mathbf{+25.0\%}$:** Radiates wisdom, beauty, peace, and high public honor in central pillar houses.
+  - **Combative Field Handicap (Houses 3, 6) $\to \mathbf{-25.0\%}$:** Gentle, accommodating nature is ill-suited for street-level conflict, cutthroat litigation, and raw brawling.
+  - **Intermediate Field (Houses 2, 7, 8, 11, 12) $\to \mathbf{0.0\%}$:** Neutral terrain without decisive benefic bias.
+
+#### 4.1.1 Continuous Lunar Illumination Spectrum (BPHS 28.10-11, 35.9 & Saravali 5.43)
+In classical Parashari Jyotish, lunar beneficence and maleficence are **not a discrete binary switch** (+25% or -25%), but a **continuous, unbroken function of lunar light**:
+
+1. **Foundational Sanskrit Proofs (BPHS Chapter 28, Verses 10–11):**
+   $$\text{अथ पक्षबलं वक्ष्ये सूर्ये चन्द्राद् विशोध्य च । षड्भाधिके विशोध्यार्काद् भागीकृत्त्य त्रिभिर्भजेत् ॥ १०॥}$$
+   $$\text{पक्षजं बलमिन्दुज्ञशुक्रेज्यानां तु षष्टितः । विशोध्य तब्दलं ज्ञेनं पापानां पक्षसंभवम् ॥ ११॥}$$
+   *(“Now I declare Paksha Bala: Subtract the Sun from the Moon. If greater than 180°, subtract from 360°, and divide the degrees by 3. For the Moon and benefics, this is their Paksha Bala [0 to 60 Virupas]. Subtracting this from 60 Virupas gives the Paksha Bala of the Malefics.”)*
+
+2. **Benefic vs. Malefic Classification (BPHS Chapter 35, Verse 9):**
+   $$\text{पूर्णेन्दुज्ञेज्यशुक्राश्च प्रबला उत्तरोत्तरम् । क्षीणेन्द्वर्कार्किभूपुत्राः प्रबलाश्च यथोत्तरम् ॥ ९॥}$$
+   *(“The Full/Bright Moon [Pūrṇendu], Mercury, Jupiter, and Venus are the benefics, each stronger than the prior. The Waning/Dark Moon [Kṣīṇendu], Sun, Saturn, and Mars are the malefics, each stronger than the prior.”)*
+
+3. **Continuous Gradual Scaling Formula ($I \in [0.0\%, 100.0\%]$):**
+   * **The Neutral Balance Point ($I = 50.0\%$):** At exact half-moon (Ashtami / quarter phase), benefic and malefic Virupas are identical ($30$ vs. $30$ Virupas). The net terrain modifier is **$0.0\%$**.
+   * **Bright Benefic Half ($I \ge 50.0\%$):**
+     $$f_{\text{benefic}} = \frac{I - 50.0}{50.0} \in [0.0, 1.0]$$
+     - **Noble Flourishing Field (Houses 1, 4, 5, 9, 10):**
+       $$\text{Terrain Mod} = +25.0\% \times f_{\text{benefic}} = +25.0\% \times \frac{I - 50.0}{50.0}$$
+     - **Combative Field Handicap (Houses 3, 6):**
+       $$\text{Terrain Mod} = -25.0\% \times f_{\text{benefic}} = -25.0\% \times \frac{I - 50.0}{50.0}$$
+     - **Intermediate Field (Houses 2, 7, 8, 11, 12):** $0.0\%$.
+   * **Dim/Dark Malefic Half ($I < 50.0\%$, *Kṣīṇendu*):**
+     $$f_{\text{malefic}} = \frac{50.0 - I}{50.0} \in (0.0, 1.0]$$
+     - **Upachaya Growth Field (Houses 3, 6, 10, 11):**
+       $$\text{Terrain Mod} = +25.0\% \times f_{\text{malefic}} = +25.0\% \times \frac{50.0 - I}{50.0}$$
+     - **Tender Field Strain (Houses 1, 4, 5, 9):**
+       $$\text{Terrain Mod} = -25.0\% \times f_{\text{malefic}} = -25.0\% \times \frac{50.0 - I}{50.0}$$
+     - **Intermediate Field (Houses 2, 7, 8, 12):** $0.0\%$.
+
+### 4.2 House Lordship Modifiers (Functional Agenda - BPHS Ch. 34 & Phaladeepika Ch. 15)
+Planetary functional rulership grants explicit percentage adjustments to base dignity:
+* **The Ascendant Lord Exception (*Lagneśa*, House 1) $\to \mathbf{+20.0\%}$:**
+  - *BPHS 34.3 & Phaladeepika 15.9:* The 1st Lord is the sovereign captain of the chart. Because the whole chart belongs to it, it protects life vitality and preserves whatever house it visits.
+* **Trine Lords (*Trikonādhipati*, Houses 5 & 9) $\to \mathbf{+15.0\%}$:**
+  - Auspicious grace of Lakshmi and past life merit (*Purva Punya*).
+* **Angle Lords (*Kendrādhipati*, Houses 4 & 10) $\to \mathbf{+5.0\%}$:**
+  - Grounded executive action and foundational pillars (excluding H1 which receives +20%, and H7 which is neutral/maraka).
+* **Dusthana Lords (*Duṣṭhānādhipati*, Houses 6, 8, 12):**
+  - **Visited Non-Dusthana House (Houses 1, 2, 3, 4, 5, 7, 9, 10, 11) $\to \mathbf{-15.0\%}$:**
+    Carries friction, debt, sudden upheaval, or dissolution into visited houses (*"lords of these houses tend to mess up the places that they visit"*).
+  - **Own Dusthana House ($H_{\text{placed}} = H_{\text{ruled}}$) $\to \mathbf{0.0\%}$:**
+    Residing in its own domain (*Svakshetra*); protects its own house affairs and does not afflict any other visited house. Because it is at home, there is no negative penalty, but also no Viparita inversion bonus.
+  - **The Viparita Reversal Loophole ($H_{\text{placed}} \in \{6, 8, 12\} \text{ and } H_{\text{placed}} \neq H_{\text{ruled}}$) $\to \mathbf{+15.0\%}$:**
+    When a 6th, 8th, or 12th lord **occupies ANOTHER dusthana** (*Phaladeepika* 6.63–65 & Vic DiCara), adversity inverts into supreme strategic resilience (*Harsha*, *Sarala*, and *Vimala* yogas).
+
+### 4.3 Unified Mathematical Functional Dignity Formula
+Synthesizing Ryan Kurczak's 12.5% step scale baseline with Vic DiCara's terrain and lordship modifiers:
+$$\text{House-Adjusted Dignity} = \text{Base Dignity} + \text{Terrain Mod}$$
+$$\text{Functional Dignity} = \text{clamp}\big(\text{House-Adjusted Dignity} + \sum \text{Lordship Mods},\, 10.0\%,\, 100.0\%\big)$$
+* **Example 1 (Jupiter in Cancer H3, Taurus Lagna):**
+  $100.0\% \text{ (Exalted)} - 25.0\% \text{ (Benefic in H3)} - 15.0\% \text{ (8th Lord)} = \mathbf{60.0\% \text{ Functional Dignity}}$.
+* **Example 2 (Saturn in Aries H10, Cancer Lagna):**
+  $12.5\% \text{ (Fall)} + 25.0\% \text{ (Malefic in H10)} - 15.0\% \text{ (8th Lord)} = \mathbf{22.5\% \text{ Functional Dignity}}$.
+* **Example 3 (Saturn in Aries H8, Virgo Lagna - Viparita Loophole):**
+  $12.5\% \text{ (Fall)} + 0.0\% \text{ (Terrain H8)} + 15.0\% \text{ (5th Trine Lord)} + 15.0\% \text{ (6th Lord in 8th Viparita)} = \mathbf{42.5\% \text{ Functional Dignity}}$.
+* **Example 4 (Mars in Scorpio H12, Sagittarius Lagna - Mina's Chart):**
+  $62.5\% \text{ (Own Sign Scorpio, Even)} + 0.0\% \text{ (Terrain H12)} = \mathbf{62.5\% \text{ House-Adjusted Dignity}}$.
+  Adding Lordship: $+ 15.0\% \text{ (5th Trine Lord)} + 0.0\% \text{ (12th Lord in Own House)} = \mathbf{77.5\% \text{ Functional Dignity}}$ *(eliminating false 98.8% inflation)*.
+
 * **The Aquarius Ascendant & Himmler Paradigm:**
   - Aquarius Lagna: Jupiter rules 2nd (Maraka) and 11th (Trishadāya) $\to$ Functional Malefic.
   - Himmler's Jupiter in Sagittarius (Moolatrikona H11, 143% Shadbala) conjoined Rahu ($4.9^\circ \to$ **Guru-Chāṇḍāla Yoga**) and Saturn ($8.4^\circ \to$ **Deeptādi Vikala Avasthā**, besieged by 2 cruel planets).
@@ -108,6 +179,14 @@ Essential dignity is computed using Sage Parashara's 5-Fold Compound Relationshi
 $$\text{Final Vitality Score} = \text{clamp}\Big(5.0 + (\text{PreScore} - 5.0) \times (0.6 + 0.4 \times E_{\text{baladi}}),\, 1.0,\, 10.0\Big)$$
 
 $$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMod} + \text{WarMod} + \text{NodeMod} + \text{VikalaMod}$$
+
+### 7.1 Integration of Step 4 Functional Dignity into Base Vitality & Archetypes
+The Step 4 Functional Dignity calculation directly shifts the baseline quality and 4-quadrant archetype classification:
+* **House Field Shift:** $\Delta_{\text{field}} = \text{Functional Dignity} - \text{Base Dignity}$.
+* **Effective Dignity Adjustment:** $\text{Effective Dignity} = \text{clamp}(\text{Effective Dignity} + \Delta_{\text{field}},\, 10.0\%,\, 100.0\%)$.
+* **Base Vitality Impact:**
+  $$\text{BaseVit} = 1.0 + 9.0 \times \Big(0.40 \times \frac{\text{Effective Dignity}}{100.0} + 0.35 \times \frac{\text{Effective Shadbala}}{100.0} + 0.25 \times \frac{\text{Host Dignity}}{100.0}\Big)$$
+* **Mathematical Transparency:** The exact functional shift ($\Delta_{\text{field}}$) is logged directly into the itemized audit trail (`🧾 Receipt`) and the Step 4 mathematical drawer.
 
 ### Score Tiers:
 * $\ge 8.5$: **`🌟 Sovereign`**

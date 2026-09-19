@@ -75,7 +75,7 @@ def test_nakshatra_payload_presence_and_structure(test_chart):
 
 def is_server_running(url=FLASK_URL):
     try:
-        urllib.request.urlopen(url)
+        urllib.request.urlopen(url, timeout=1.0)
         return True
     except Exception:
         return False
