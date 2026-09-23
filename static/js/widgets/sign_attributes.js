@@ -490,7 +490,6 @@
         }
 
         function updateSignAttributesWidget(cell, chartData) {
-        if (!cell) return;
             if (!cell) return;
             const content = cell.querySelector('.sign-attr-content');
             if (!content) return;

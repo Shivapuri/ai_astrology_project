@@ -141,29 +141,6 @@ function updateVargaDignitiesTable(cell, chartData) {
     });
 }
 
-function openVargaFromInspector(vargaKey) {
-    let chartCell = document.querySelector('.grid-cell.active-cell[data-widget="chart"]');
-    if (!chartCell) {
-        chartCell = document.querySelector('.grid-cell[data-widget="chart"]');
-    }
-    if (chartCell) {
-        const sel = chartCell.querySelector('.varga-select');
-        if (sel) {
-            sel.value = vargaKey;
-            if (typeof window.updateWidget === 'function') {
-                window.updateWidget(chartCell);
-            }
-        }
-    }
-    document.querySelectorAll('.grid-cell[data-widget="info"]').forEach(ic => {
-        const s = ic.querySelector('.varga-select');
-        if (s) s.value = vargaKey;
-        if (typeof window.refreshContextInfoForCell === 'function') {
-            window.refreshContextInfoForCell(ic);
-        }
-    });
-}
-
 // Register with WidgetRegistry
 if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('dignities', {
@@ -180,5 +157,4 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
 // Global exports
 if (typeof window !== 'undefined') {
     window.updateVargaDignitiesTable = updateVargaDignitiesTable;
-    window.openVargaFromInspector = openVargaFromInspector;
 }

@@ -78,11 +78,9 @@
         }
 
         function updateNotesWidget(cell, chartData) {
-        if (!cell) return;
-        const native = window.currentLoadedNative;
-        const chart = chartData || window.currentChartData;
             if (!cell) return;
-            // Initialized above
+            const native = window.currentLoadedNative;
+            const chart = chartData || window.currentChartData;
             
             const nameEl = cell.querySelector('.notes-native-name');
             if (nameEl) {

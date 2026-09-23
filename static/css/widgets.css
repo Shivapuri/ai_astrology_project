@@ -1381,3 +1381,17 @@
             border-color: #d35400;
         }
 
+/* Global Floating Tooltip */
+#global-tooltip {
+    background: rgba(26, 32, 44, 0.97);
+    color: #f9fafb;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    max-width: 360px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    line-height: 1.45;
+    white-space: normal;
+    font-family: var(--font-sans);
+}

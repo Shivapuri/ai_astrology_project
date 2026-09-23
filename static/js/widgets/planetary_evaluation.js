@@ -6,14 +6,12 @@
  * house terrain expression, and step-by-step audit trails.
  */
 
-        function updatePlanetaryEvaluationWidget(cell, chartData) {
-        const currentData = chartData || window.currentChartData;
-        if (!currentData || !currentData.planetary_evaluation) return;
-        const evalData = currentData.planetary_evaluation;
-            if (!currentChartData || !currentChartData.planetary_evaluation) return;
-            // evalData defined above
-            const summary = evalData.summary || {};
-            const planets = evalData.planets || {};
+function updatePlanetaryEvaluationWidget(cell, chartData) {
+    const currentData = chartData || window.currentChartData;
+    if (!currentData || !currentData.planetary_evaluation) return;
+    const evalData = currentData.planetary_evaluation;
+    const summary = evalData.summary || {};
+    const planets = evalData.planets || {};
 
             // Render Master Lords Banner
             const banner = cell.querySelector('.master-lords-banner');
