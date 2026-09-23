@@ -14,7 +14,7 @@ Based on classical Sanskrit astrology (Phaladeepika Chapters 3 & 4) and Vic DiCa
 5. Comprehensive mathematical audit trail for transparent pedagogical display.
 """
 
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Tuple
 import math
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
@@ -357,6 +357,90 @@ def get_aspect_direction_vector(
 def calculate_aspect_shift(aspect_virupas: float, alertness: float, direction: float) -> float:
     ray_ratio = min(1.0, max(0.0, aspect_virupas / 60.0))
     return ray_ratio * alertness * direction * 20.0
+
+
+# -------------------------------------------------------------------------
+# 4.1 Continuous Vedic Aspect (Drishti) Line Graph Engine (Brihat Jataka 2.13)
+# -------------------------------------------------------------------------
+ANCHOR_DEGREES = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360]
+
+def get_aspect_anchor_points(planet: str) -> List[Tuple[float, float]]:
+    """Returns the (degree, percentage) anchor points for a given planet per Brihat Jataka 2.13."""
+    p = planet.strip().capitalize()
+    anchors = []
+    for d in ANCHOR_DEGREES:
+        if d in (0, 30, 150, 300, 330, 360):
+            pct = 0.0
+        elif d == 180:
+            pct = 100.0
+        elif d in (90, 210):
+            pct = 100.0 if p == "Mars" else 75.0
+        elif d in (120, 240):
+            pct = 100.0 if p in ("Jupiter", "Rahu", "Ketu") else 50.0
+        elif d in (60, 270):
+            pct = 100.0 if p == "Saturn" else 25.0
+        else:
+            pct = 0.0
+        anchors.append((float(d), pct))
+    return anchors
+
+def calculate_continuous_drishti(planet: str, relative_deg: float) -> float:
+    """Calculates exact aspect percentage at any intermediate degree using linear interpolation."""
+    d = relative_deg % 360.0
+    anchors = get_aspect_anchor_points(planet)
+    
+    for i in range(len(anchors) - 1):
+        d1, p1 = anchors[i]
+        d2, p2 = anchors[i + 1]
+        if d1 <= d <= d2:
+            if d2 == d1:
+                return p1
+            return p1 + ((d - d1) / (d2 - d1)) * (p2 - p1)
+    return 0.0
+
+def build_aspect_graph_data(
+    source_planet: str,
+    source_deg: float,
+    aspected_planets: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    Generates SVG-ready polyline points and aspected planet coordinates.
+    Plot dimensions: X: 30 to 690 (width 660), Y: 120 (0%) to 20 (100%).
+    """
+    anchors = get_aspect_anchor_points(source_planet)
+    
+    # Generate SVG points string
+    points_str = " ".join(
+        f"{30 + (d / 360.0) * 660:.1f},{120 - (pct / 100.0) * 100:.1f}"
+        for d, pct in anchors
+    )
+    
+    # Calculate aspected planet markers
+    target_markers = []
+    for tgt in aspected_planets:
+        tgt_name = tgt["name"]
+        tgt_abs_deg = float(tgt["longitude"])
+        rel_deg = (tgt_abs_deg - source_deg) % 360.0
+        pct = calculate_continuous_drishti(source_planet, rel_deg)
+        
+        x = 30 + (rel_deg / 360.0) * 660
+        y = 120 - (pct / 100.0) * 100
+        
+        target_markers.append({
+            "name": tgt_name,
+            "symbol": tgt.get("symbol", tgt_name[:2]),
+            "rel_deg": round(rel_deg, 1),
+            "pct": round(pct, 1),
+            "cx": round(x, 1),
+            "cy": round(y, 1),
+            "is_target": tgt.get("is_target", False)
+        })
+        
+    return {
+        "source_planet": source_planet,
+        "polyline_points": points_str,
+        "targets": target_markers
+    }
 
 
 # -------------------------------------------------------------------------
@@ -1322,7 +1406,7 @@ def calculate_graha_vitality(
     if aspect_details:
         total_adj_virupas = 0.0
         for asp in aspect_details:
-            from_p = asp.get("from_planet", "")
+            from_p = asp.get("from_planet", asp.get("source", ""))
             vir = float(asp.get("virupas", 0.0))
             from_dig_pct = float(asp.get("from_dignity_pct", 50.0))
             from_dig_name = str(asp.get("from_dignity_name", ""))
@@ -1330,8 +1414,10 @@ def calculate_graha_vitality(
             is_distorted = False
             badge = ""
 
+            is_conj = "conjunction" in asp.get("type", "").lower()
+
             # Option A: Debilitated benefics (Jupiter, Venus) transmit distorted rays
-            if from_p in ["Jupiter", "Venus"] and is_deb:
+            if from_p in ["Jupiter", "Venus"] and is_deb and not is_conj:
                 is_distorted = True
                 adj_vir = (vir * 0.5) if vir > 0 else vir  # 50% positive dampening
                 if from_p == "Jupiter":
@@ -1341,16 +1427,25 @@ def calculate_graha_vitality(
             else:
                 adj_vir = vir
 
-            total_adj_virupas += adj_vir
+            if not is_conj:
+                total_adj_virupas += adj_vir
+
             processed_aspect_details.append({
                 "from_planet": from_p,
+                "source": from_p,
                 "raw_virupas": vir,
+                "virupas": vir,
                 "adjusted_virupas": adj_vir,
                 "from_dignity_pct": from_dig_pct,
                 "from_dignity_name": from_dig_name,
                 "is_debilitated": is_deb,
                 "is_distorted": is_distorted,
-                "badge": badge
+                "badge": badge,
+                "type": asp.get("type", "Aspect (Drishti)"),
+                "sambhanda": asp.get("sambhanda", ""),
+                "direction": asp.get("direction", 0.0),
+                "shift": asp.get("shift", 0.0),
+                "impact": asp.get("impact", "")
             })
         drishti_mod = clamp(total_adj_virupas / 35.0, -1.0, 1.0) * 0.7
     else:
@@ -1980,28 +2075,38 @@ def calculate_planetary_evaluation(
             if base_dignity < 50.0:
                 if host_dignity >= 65.0:
                     host_bonus = round(25.0 * (host_dignity / 100.0), 1)
-                    rescue_status = "Rescued by Host (Neecha Bhanga / Alchemical Forge)"
+                    rescue_status = "Rescued by Fortified Host"
                     rescue_notes = (
                         f"Low base dignity ({base_dignity:.1f}%) is rescued by noble host {sign_lord} "
                         f"({host_dignity:.1f}% dignity). Converts vulnerability into enduring grit and authority."
                     )
                 elif host_dignity >= 50.0:
                     host_bonus = round(12.0 * (host_dignity / 100.0), 1)
-                    rescue_status = "Partially Rescued by Moderate Host"
+                    rescue_status = "Partially Supported by Friendly Host"
                     rescue_notes = f"Host {sign_lord} ({host_dignity:.1f}% dignity) buffers difficulty."
-                else:
+                elif host_dignity <= 25.0:
+                    # Penalty strictly reserved for truly fallen/debilitated hosts (Light on Life)
                     host_bonus = -10.0
                     rescue_status = "Unsaved / Stressed Host"
-                    rescue_notes = f"Host {sign_lord} is also strained ({host_dignity:.1f}% dignity), offering no rescue."
+                    rescue_notes = f"Host {sign_lord} is fallen/strained ({host_dignity:.1f}% dignity), offering no rescue."
+                else:
+                    # Neutral host provides a neutral baseline (0.0%), NOT -10%!
+                    host_bonus = 0.0
+                    rescue_status = "Neutral Host Foundation"
+                    rescue_notes = f"Host {sign_lord} ({host_dignity:.1f}% dignity) provides standard neutral stability."
             else:
                 if host_dignity >= 65.0:
                     host_bonus = 10.0
                     rescue_status = "Fortified by Dignified Host"
                     rescue_notes = f"Strong host {sign_lord} ({host_dignity:.1f}% dignity) reinforces positive manifestation."
-                elif host_dignity < 40.0:
+                elif host_dignity <= 25.0:
                     host_bonus = -5.0
                     rescue_status = "Slight Drag from Stressed Host"
                     rescue_notes = f"Weak host {sign_lord} ({host_dignity:.1f}% dignity) creates slight drag on execution."
+                else:
+                    host_bonus = 0.0
+                    rescue_status = "Neutral Host Foundation"
+                    rescue_notes = f"Host {sign_lord} ({host_dignity:.1f}% dignity) provides standard neutral stability."
 
         step2_info = {
             "host_planet": sign_lord,
@@ -2018,8 +2123,6 @@ def calculate_planetary_evaluation(
         peer_shifts = []
         benefic_rays = 0.0
         malefic_pressure = 0.0
-        combustion_penalty = 0.0
-        nodal_penalty = 0.0
 
         for other_p in planets_eval_order:
             if other_p == p or other_p not in d1_grahas:
@@ -2028,78 +2131,104 @@ def calculate_planetary_evaluation(
             o_d1 = d1_grahas[other_p]
             o_sign = o_d1.get("sign", "")
             o_lon = float(o_d1.get("longitude", 0.0))
+            o_deg = float(o_d1.get("degree_0_to_30", o_lon % 30.0))
+            my_deg = float(p_d1.get("degree_0_to_30", p_lon % 30.0))
             
-            dist = min(abs(o_lon - p_lon), 360.0 - abs(o_lon - p_lon))
-            drishti_virupas = float(aspects.get_graha_drishti(other_p, o_lon, p_lon))
-            drishti_fraction = drishti_virupas / 60.0
-            conj_fraction = max(0.0, 1.0 - (dist / 30.0)) if dist < 30.0 else 0.0
-            influence = max(drishti_fraction, conj_fraction)
-            if influence < 0.05:
-                continue
-                
-            inf_type = "Conjunction" if conj_fraction >= drishti_fraction else "Aspect (Drishti)"
+            o_dig_info = shadvarga_scores.get(other_p, {}).get("varga_breakdown", {}).get("D1", {})
+            o_dig_pct = float(o_dig_info.get("score", 50.0))
+            o_dig_name = str(o_dig_info.get("dignity", "Neutral"))
+
             alertness = float(jagradaadi_map.get(other_p, {}).get("multiplier", 0.50))
-            sambhanda = get_sambhanda(other_p, p, o_sign, p_sign)
+            
+            # Classical Rule: Aspects use Natural Relationship (BPHS Ch. 45 / ASVA Vol II)
+            natural_rel = rel.get_natural_relationship(other_p, p)
             lunar_weight = calculate_lunar_nature_weight(moon_lon_val, sun_lon_val) if other_p == "Moon" else None
-            direction = get_aspect_direction_vector(other_p, p, inf_type, sambhanda, sign_lord, lunar_weight)
+            rel_label = f"Bright Benefic ({lunar_weight:+.2f})" if other_p == "Moon" else natural_rel
 
-            if inf_type == "Conjunction":
-                shift = conj_fraction * alertness * direction * 20.0
-            else:
-                shift = drishti_fraction * alertness * direction * 20.0
-
-            peer_shifts.append(shift)
-            if shift > 0:
-                benefic_rays += shift
-            elif shift < 0:
-                malefic_pressure += abs(shift)
-
-            aspect_details.append({
-                "source": other_p,
-                "type": inf_type,
-                "power_pct": round(influence * 100.0, 1),
-                "virupas": round(drishti_virupas, 1) if inf_type != "Conjunction" else 60.0,
-                "sambhanda": sambhanda,
-                "direction": direction,
-                "shift": round(shift, 1),
-                "impact": f"{shift:+.1f}% ({other_p} {inf_type})"
-            })
-
-        # Sun Combustion (within 8° for physical planets)
-        if p not in ["Sun", "Rahu", "Ketu"]:
-            if sun_dist_val < 8.0:
-                comb_pts = round(30.0 * (1.0 - (sun_dist_val / 8.0)), 1)
-                combustion_penalty = comb_pts
+            # -----------------------------------------------------------------
+            # Case A: Same Sign / House -> Conjunction (Yuti) ONLY
+            # -----------------------------------------------------------------
+            if o_sign == p_sign:
+                inf_type = "Conjunction"
+                deg_diff = abs(my_deg - o_deg)
+                
+                # Classical 3-band discrete orb factor (Ruleset 9)
+                if deg_diff <= (10.0 / 3.0):      # <= 3°20' (One Navāṁśa)
+                    orb_factor = 1.0
+                    band_label = "Exact (Intimate)"
+                elif deg_diff <= 10.0:            # 3°20' to 10°00'
+                    orb_factor = 0.6
+                    band_label = "Moderate"
+                else:                             # > 10°00' (Same sign, wide)
+                    orb_factor = 0.25
+                    band_label = "Wide"
+                    
+                direction = get_aspect_direction_vector(other_p, p, inf_type, natural_rel, sign_lord, lunar_weight)
+                shift = orb_factor * alertness * direction * 20.0
+                peer_shifts.append(shift)
+                
+                if shift > 0:
+                    benefic_rays += shift
+                elif shift < 0:
+                    malefic_pressure += abs(shift)
+                    
                 aspect_details.append({
-                    "source": "Sun (Surya)",
-                    "type": "Combustion (Astangata)",
-                    "power_pct": round((1.0 - (sun_dist_val / 8.0)) * 100.0, 1),
-                    "impact": f"-{comb_pts}% (Combust within {sun_dist_val:.1f}° of Sun)"
+                    "source": other_p,
+                    "from_planet": other_p,
+                    "type": f"Conjunction ({band_label})",
+                    "power_pct": round(orb_factor * 100.0, 1),
+                    "virupas": 60.0,
+                    "sambhanda": rel_label,
+                    "direction": direction,
+                    "shift": round(shift, 1),
+                    "impact": f"{shift:+.1f}% ({other_p} Conjunction in {p_sign} [{rel_label}])",
+                    "from_dignity_pct": o_dig_pct,
+                    "from_dignity_name": o_dig_name
                 })
 
-        # Nodal Conjunction Affliction (within 12°)
-        for node in ["Rahu", "Ketu"]:
-            if p not in ["Rahu", "Ketu"] and node in d1_grahas:
-                node_lon = d1_grahas[node].get("longitude", 0.0)
-                node_dist = min(abs(node_lon - p_lon), 360.0 - abs(node_lon - p_lon))
-                if node_dist < 12.0:
-                    n_pts = round(15.0 * (1.0 - (node_dist / 12.0)), 1)
-                    nodal_penalty += n_pts
-                    aspect_details.append({
-                        "source": node,
-                        "type": "Nodal Eclipse / Shadow",
-                        "power_pct": round((1.0 - (node_dist / 12.0)) * 100.0, 1),
-                        "impact": f"-{n_pts}% (Afflicted by {node} within {node_dist:.1f}°)"
-                    })
+            # -----------------------------------------------------------------
+            # Case B: Different Signs -> Aspect (Dṛṣṭi) ONLY (Blind Spots = 0 Virūpas)
+            # -----------------------------------------------------------------
+            else:
+                inf_type = "Aspect (Drishti)"
+                drishti_virupas = float(aspects.get_graha_drishti(other_p, o_lon, p_lon))
+                
+                # Permit all classical partial aspects down to 0.5 Virūpa
+                if drishti_virupas < 0.5:
+                    continue
+                    
+                ray_ratio = min(1.0, max(0.0, drishti_virupas / 60.0))
+                direction = get_aspect_direction_vector(other_p, p, inf_type, natural_rel, sign_lord, lunar_weight)
+                shift = calculate_aspect_shift(drishti_virupas, alertness, direction)
+                peer_shifts.append(shift)
+                
+                if shift > 0:
+                    benefic_rays += shift
+                elif shift < 0:
+                    malefic_pressure += abs(shift)
+                    
+                aspect_details.append({
+                    "source": other_p,
+                    "from_planet": other_p,
+                    "type": inf_type,
+                    "power_pct": round(ray_ratio * 100.0, 1),
+                    "virupas": round(drishti_virupas, 1),
+                    "sambhanda": rel_label,
+                    "direction": direction,
+                    "shift": round(shift, 1),
+                    "impact": f"{shift:+.1f}% ({other_p} Aspect {drishti_virupas:.0f}v [{rel_label}])",
+                    "from_dignity_pct": o_dig_pct,
+                    "from_dignity_name": o_dig_name
+                })
 
-        raw_aspect_net = sum(peer_shifts) - (combustion_penalty * 0.5) - (nodal_penalty * 0.5)
-        clamped_aspect_net = clamp(round(raw_aspect_net, 1), -25.0, 25.0)
+        # Net peer shift clamped to [-25%, +25%] per Ruleset 9
+        clamped_aspect_net = clamp(round(sum(peer_shifts), 1), -25.0, 25.0)
 
         step3_info = {
             "benefic_rays_pct": round(benefic_rays, 1),
             "malefic_pressure_pct": round(-malefic_pressure, 1),
-            "combustion_penalty_pct": round(-combustion_penalty, 1),
-            "nodal_penalty_pct": round(-nodal_penalty, 1),
+            "combustion_penalty_pct": 0.0,  # Decoupled to Layer 3 Vitality Score
+            "nodal_penalty_pct": 0.0,       # Decoupled to Layer 3 Vitality Score
             "net_aspect_pct": round(clamped_aspect_net, 1),
             "details": aspect_details
         }
@@ -2444,7 +2573,7 @@ def calculate_planetary_evaluation(
             host_shadbala_pct=100.0,
             planet_shadbala_pct=sb_ratio * 100.0,
             net_drishti_virupas=clamped_aspect_net,
-            conjunctions=[c["source"] for c in step3_info.get("details", []) if c.get("type") == "Conjunction"],
+            conjunctions=[c["source"] for c in step3_info.get("details", []) if "conjunction" in c.get("type", "").lower()],
             lajjitadi_states=raw_lajjitadi,
             is_retrograde=bool(p_d1.get("is_retrograde")),
             is_combust=bool(p_d1.get("is_combust")),
@@ -2456,6 +2585,7 @@ def calculate_planetary_evaluation(
             war_opponent=war_opponent,
             war_badge=war_badge,
             conjunction_details=conj_details,
+            aspect_details=step3_info.get("details", []),
             functional_role=fn_role,
             deepthaadi=deepthaadi_res,
             jagradaadi=jagradaadi_res,
@@ -2500,6 +2630,46 @@ def calculate_planetary_evaluation(
         for b in vit_res.get("affliction_badges", []):
             if b not in planet_badges:
                 planet_badges.append(b)
+
+        # Outgoing & Incoming Continuous Vedic Aspect Line Graphs (Brihat Jataka 2.13)
+        all_chart_targets = [
+            {
+                "name": other_target,
+                "longitude": float(d1_grahas[other_target].get("longitude", 0.0)),
+                "symbol": f"{PLANET_GLYPHS.get(other_target, '')} {other_target[:2]}".strip()
+            }
+            for other_target in planets_eval_order
+            if other_target in d1_grahas
+        ]
+
+        outgoing_aspect_graph = build_aspect_graph_data(
+            source_planet=p,
+            source_deg=p_lon,
+            aspected_planets=[
+                t for t in all_chart_targets
+                if t["name"] != p and calculate_continuous_drishti(p, (t["longitude"] - p_lon) % 360.0) > 0.0
+            ]
+        )
+
+        incoming_aspect_graphs = {}
+        for asp_item in aspect_details:
+            src_p = asp_item.get("from_planet") or asp_item.get("source")
+            raw_v = float(asp_item.get("virupas", 0.0))
+            if src_p and src_p in d1_grahas and raw_v >= 20.0:
+                src_lon = float(d1_grahas[src_p].get("longitude", 0.0))
+                src_targets = [
+                    {
+                        "name": t["name"],
+                        "longitude": t["longitude"],
+                        "symbol": t["symbol"],
+                        "is_target": (t["name"] == p)
+                    }
+                    for t in all_chart_targets
+                    if t["name"] != src_p and (calculate_continuous_drishti(src_p, (t["longitude"] - src_lon) % 360.0) > 0.0 or t["name"] == p)
+                ]
+                inc_g = build_aspect_graph_data(src_p, src_lon, src_targets)
+                incoming_aspect_graphs[src_p] = inc_g
+                asp_item["aspect_graph"] = inc_g
 
         planets_result[p] = {
             "planet": p,
@@ -2549,6 +2719,8 @@ def calculate_planetary_evaluation(
             "step2_host_rescue": step2_info,
             "step3_aspects": step3_info,
             "step4_house_field": step4_info,
+            "aspect_graph": outgoing_aspect_graph,
+            "incoming_aspect_graphs": incoming_aspect_graphs,
             "functional_dignity": {
                 "base_dignity_pct": round(d1_score, 1),
                 "base_dignity_name": d1_dignity_name,

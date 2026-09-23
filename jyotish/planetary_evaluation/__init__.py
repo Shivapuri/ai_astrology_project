@@ -13,7 +13,11 @@ from .planetary_evaluation import (
     calculate_deepthaadi_avastha,
     calculate_jagradaadi_avastha,
     calibrate_lajjitadi_states,
-    synthesize_psychological_narrative
+    synthesize_psychological_narrative,
+    ANCHOR_DEGREES,
+    get_aspect_anchor_points,
+    calculate_continuous_drishti,
+    build_aspect_graph_data
 )
 from .lagna_evaluation import evaluate_lagna_vitality
 
@@ -27,5 +31,9 @@ __all__ = [
     "calculate_jagradaadi_avastha",
     "calibrate_lajjitadi_states",
     "synthesize_psychological_narrative",
-    "evaluate_lagna_vitality"
+    "evaluate_lagna_vitality",
+    "ANCHOR_DEGREES",
+    "get_aspect_anchor_points",
+    "calculate_continuous_drishti",
+    "build_aspect_graph_data"
 ]

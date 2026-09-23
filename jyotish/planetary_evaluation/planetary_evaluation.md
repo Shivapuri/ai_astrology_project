@@ -65,6 +65,13 @@ Essential dignity is computed using Sage Parashara's 5-Fold Compound Relationshi
 
 * **Strict Signs of Fall (Exclusivity Rule):** Neecha Bhanga is strictly granted ONLY to true signs of fall (Sun in Lib, Moon in Sco, Mars in Can, Mer in Pis, Jup in Cap, Ven in Vir, Sat in Ari, Rah in Sco, Ket in Tau). Enemy signs (like Mars in Virgo) are NOT debilitated and can never receive Neecha Bhanga.
 * **Full Alchemical Rescue (*Neecha Bhanga Raja Yoga*):** Dispositor Host Dignity $\ge 62.5\%$ AND Shadbala $\ge 90\% \to \text{Effective Dignity} = \text{clamp}(\text{dignity} + 50.0 \times (\text{host\_dignity}/100.0),\, 20.0,\, 85.0)$. Unlocks **`⚡ The Transmuted Hero`**!
+* **Dispositor Host Support Tiers (Step 2 Baseline):**
+  - **Fortified Host ($\ge 65.0\%$):** $+25.0\% \times (\text{host\_dignity}/100.0)$ for low dignity; $+10.0\%$ for baseline.
+  - **Friendly Host ($50.0\% - 65.0\%$):** $+12.0\% \times (\text{host\_dignity}/100.0)$ partial support.
+  - **Neutral Host ($25.0\% - 50.0\%$):** Provides a steady, pragmatic baseline (**$0.0\%$ modifier**; no penalty cliff).
+  - **Stressed / Fallen Host ($\le 25.0\%$):** Penalty strictly reserved for truly fallen or debilitated hosts ($-10.0\%$ for base dignity $< 50\%$; $-5.0\%$ otherwise per *Light on Life*).
+* **Natural Friendship for Aspects & Feeling States (BPHS Ch. 45 & ASVA Vol II):**
+  - Aspects (*Dṛṣṭi*) and *Lajjitādi* avasthās are governed exclusively by **Natural Friendship (*Naisargika Sambandha*)**, ensuring true mutual nature is reflected without temporal house distortions. Compound friendship (*Pañcadhā Maitrī*) is strictly reserved for physical sign placement (*Sthāna Bala*).
 * **Neutral Sign Dynamic Tilt (*Sama Kshetra*):** Benefic rays and Mudita/Garvita avasthas lift neutral dignity up to **$54.9\%$**, ensuring that disciplined powerhouse placements (like Shivapuri Baba's Mars & Saturn) are diagnosed as **`⚒️ The Pragmatic Executive`** rather than false Armed Dictators.
 
 ---
@@ -131,19 +138,28 @@ Planetary functional rulership grants explicit percentage adjustments to base di
   - **The Viparita Reversal Loophole ($H_{\text{placed}} \in \{6, 8, 12\} \text{ and } H_{\text{placed}} \neq H_{\text{ruled}}$) $\to \mathbf{+15.0\%}$:**
     When a 6th, 8th, or 12th lord **occupies ANOTHER dusthana** (*Phaladeepika* 6.63–65 & Vic DiCara), adversity inverts into supreme strategic resilience (*Harsha*, *Sarala*, and *Vimala* yogas).
 
-### 4.3 Unified Mathematical Functional Dignity Formula
-Synthesizing Ryan Kurczak's 12.5% step scale baseline with Vic DiCara's terrain and lordship modifiers:
-$$\text{House-Adjusted Dignity} = \text{Base Dignity} + \text{Terrain Mod}$$
-$$\text{Functional Dignity} = \text{clamp}\big(\text{House-Adjusted Dignity} + \sum \text{Lordship Mods},\, 10.0\%,\, 100.0\%\big)$$
+### 4.3 Decoupled 5-Tier Architecture: Layer 2 Functional Dignity vs. Layer 4 Expression Mode (ADR-006 & ADR-009)
+Under the 5-tier decoupled architecture, House Terrain ($\pm 25\%$) and Lordship Agenda govern situational **Expression Mode (Layer 4)**, never corrupting or inflating Inherent Dignity (Layer 1) or Functional Dignity (Layer 2):
+
+1. **Layer 2: Functional Dignity (Psychological Quality & Peer Alliance):**
+   $$\text{Functional Dignity} = \text{clamp}\big(\text{Base Dignity} + \text{Vargottama Bonus} + \text{Host Dispositor Bonus} + \Delta_{\text{aspect\_net}},\, 10.0\%,\, 100.0\%\big)$$
+   *(where $\Delta_{\text{aspect\_net}}$ is clamped to $[-25.0\%, +25.0\%]$ per Ruleset 9)*.
+
+2. **Layer 4: Expression Mode (Situational Arena & Lordship Agenda):**
+   $$\text{Expression Mode Score} = \sum \text{Lordship Mods}$$
+   - **High Expression ($> +30\%$):** Constructive & Flourishing delivery of agenda.
+   - **Mixed Expression ($-30\%$ to $+30\%$):** Routine, pragmatic, and balanced expression.
+   - **Low Expression ($< -30\%$):** Stressed, friction-heavy, or disruptive expression.
+
 * **Example 1 (Jupiter in Cancer H3, Taurus Lagna):**
-  $100.0\% \text{ (Exalted)} - 25.0\% \text{ (Benefic in H3)} - 15.0\% \text{ (8th Lord)} = \mathbf{60.0\% \text{ Functional Dignity}}$.
+  - Layer 1 Inherent Dignity: $100.0\%$ (Exalted).
+  - Layer 4 Expression Mode: $-15.0\%$ (8th Lord visited H3). Situational friction in H3, but innate benevolence and wisdom remain uncorrupted.
 * **Example 2 (Saturn in Aries H10, Cancer Lagna):**
-  $12.5\% \text{ (Fall)} + 25.0\% \text{ (Malefic in H10)} - 15.0\% \text{ (8th Lord)} = \mathbf{22.5\% \text{ Functional Dignity}}$.
-* **Example 3 (Saturn in Aries H8, Virgo Lagna - Viparita Loophole):**
-  $12.5\% \text{ (Fall)} + 0.0\% \text{ (Terrain H8)} + 15.0\% \text{ (5th Trine Lord)} + 15.0\% \text{ (6th Lord in 8th Viparita)} = \mathbf{42.5\% \text{ Functional Dignity}}$.
-* **Example 4 (Mars in Scorpio H12, Sagittarius Lagna - Mina's Chart):**
-  $62.5\% \text{ (Own Sign Scorpio, Even)} + 0.0\% \text{ (Terrain H12)} = \mathbf{62.5\% \text{ House-Adjusted Dignity}}$.
-  Adding Lordship: $+ 15.0\% \text{ (5th Trine Lord)} + 0.0\% \text{ (12th Lord in Own House)} = \mathbf{77.5\% \text{ Functional Dignity}}$ *(eliminating false 98.8% inflation)*.
+  - Layer 1 Inherent Dignity: $12.5\%$ (Debilitated).
+  - Layer 4 Expression Mode: $-15.0\%$ (8th Lord visited H10). High public responsibility (H10 Upachaya) but heavy karmic debt.
+* **Example 3 (Mars in Scorpio H12, Sagittarius Lagna - Mina's Chart):**
+  - Layer 1 Inherent Dignity: $62.5\%$ (Own Sign Scorpio, Even).
+  - Layer 4 Expression Mode: $+15.0\%$ (5th Trine Lord in 12th). Creative intelligence channels into spiritual solitude/renunciation.
 
 * **The Aquarius Ascendant & Himmler Paradigm:**
   - Aquarius Lagna: Jupiter rules 2nd (Maraka) and 11th (Trishadāya) $\to$ Functional Malefic.
@@ -180,13 +196,14 @@ $$\text{Final Vitality Score} = \text{clamp}\Big(5.0 + (\text{PreScore} - 5.0) \
 
 $$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMod} + \text{WarMod} + \text{NodeMod} + \text{VikalaMod}$$
 
-### 7.1 Integration of Step 4 Functional Dignity into Base Vitality & Archetypes
-The Step 4 Functional Dignity calculation directly shifts the baseline quality and 4-quadrant archetype classification:
-* **House Field Shift:** $\Delta_{\text{field}} = \text{Functional Dignity} - \text{Base Dignity}$.
-* **Effective Dignity Adjustment:** $\text{Effective Dignity} = \text{clamp}(\text{Effective Dignity} + \Delta_{\text{field}},\, 10.0\%,\, 100.0\%)$.
-* **Base Vitality Impact:**
+### 7.1 Integration of Functional Dignity & Expression Mode into Vitality & Archetypes
+Under ADR-006 and ADR-009, Functional Dignity (Layer 2) sets the core psychological quality, while House Field & Lordship (Layer 4) govern situational expression rather than altering Effective Dignity:
+* **Effective Dignity:** Driven purely by Layer 2 Functional Dignity (Base Shadvarga + Dispositor Host + Clamped Peer Aspects):
+  $$\text{Effective Dignity} = \text{Functional Dignity}$$
+* **Base Vitality Calculation:**
   $$\text{BaseVit} = 1.0 + 9.0 \times \Big(0.40 \times \frac{\text{Effective Dignity}}{100.0} + 0.35 \times \frac{\text{Effective Shadbala}}{100.0} + 0.25 \times \frac{\text{Host Dignity}}{100.0}\Big)$$
-* **Mathematical Transparency:** The exact functional shift ($\Delta_{\text{field}}$) is logged directly into the itemized audit trail (`🧾 Receipt`) and the Step 4 mathematical drawer.
+* **Decoupled Situational Expression:** House Terrain and Lordship Agenda are tracked independently as Expression Mode (Layer 4) and net scale score, ensuring mathematical transparency without double-counting.
+* **Mathematical Transparency:** All components—Inherent Base Dignity, Host Rescue, Peer Sambhanda Rays, House Field, and Lordship Agenda—are itemized transparently in the calculation audit trail (`🧾 Receipt`).
 
 ### Score Tiers:
 * $\ge 8.5$: **`🌟 Sovereign`**
@@ -230,4 +247,45 @@ Each planet's evaluation synthesizes these three layers into a rich 3-sentence d
 3. **Developmental Path:** Core developmental guidance (*Kurczak Vol 2*) tailored to the planet's true psychological reality.
 
 ---
+
+## 📈 9. Continuous Vedic Aspect (Dṛṣṭi) Line Graph Engine (Brihat Jataka 2.13)
+
+The continuous Vedic aspect line graph models the unbroken, continuous vision cast by a source planet across the entire $0^\circ$ to $360^\circ$ horizon (Houses 1 to 12) per *Brihat Jataka 2.13*.
+
+### 9.1 Anchor Points by Planetary Archetype
+All aspects are measured in relative degrees $D \in [0^\circ, 360^\circ]$ from the aspecting planet ($0^\circ = \text{Seat / House 1}$):
+
+| Relative Angle ($D$) | Relative House | Standard Planets (Sun, Moon, Mercury, Venus) | Mars (*Maṅgala*) | Jupiter (*Guru*) | Saturn (*Śani*) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **0°** | H1 (Seat) | **0%** | **0%** | **0%** | **0%** |
+| **30°** | H2 | **0%** | **0%** | **0%** | **0%** |
+| **60°** | H3 (3rd Aspect) | **25%** (¼) | 25% | 25% | **100% (Full Special)** |
+| **90°** | H4 (4th Aspect) | **75%** (¾) | **100% (Full Special)** | 75% | 75% |
+| **120°** | H5 (5th Aspect) | **50%** (½) | 50% | **100% (Full Special)** | 50% |
+| **150°** | H6 | **0%** | **0%** | **0%** | **0%** |
+| **180°** | H7 (7th Aspect) | **100% (Full)** | **100% (Full)** | **100% (Full)** | **100% (Full)** |
+| **210°** | H8 (8th Aspect) | **75%** (¾) | **100% (Full Special)** | 75% | 75% |
+| **240°** | H9 (9th Aspect) | **50%** (½) | 50% | **100% (Full Special)** | 50% |
+| **270°** | H10 (10th Aspect)| **25%** (¼) | 25% | 25% | **100% (Full Special)** |
+| **300°** | H11 | **0%** | **0%** | **0%** | **0%** |
+| **330°** | H12 | **0%** | **0%** | **0%** | **0%** |
+| **360°** | H1 (Full Cycle) | **0%** | **0%** | **0%** | **0%** |
+
+*(Note: Rahu/Ketu mirror Jupiter's 5th/9th trinal aspects when configured).*
+
+### 9.2 Continuous Linear Interpolation for In-Between Degrees
+For any target planet at absolute longitude $L_{\text{target}}$ aspected by source planet at $L_{\text{source}}$:
+1. Relative degree: $D = (L_{\text{target}} - L_{\text{source}}) \pmod{360}$.
+2. Bounding anchor segment $[D_1, D_2]$ such that $D_1 \le D \le D_2$.
+3. Interpolated aspect strength $P$:
+   $$P(D) = P_1 + \frac{D - D_1}{D_2 - D_1} \times (P_2 - P_1)$$
+
+### 9.3 SVG Coordinate System
+* **ViewBox:** `0 0 720 170`
+* **Plot Dimensions:** X from $30$ to $690$ (step = $55\text{px}$ per $30^\circ$), Y from $120$ ($0\%$) to $20$ ($100\%$).
+* **Baseline:** Line at $y=120$ spanning $x \in [30, 690]$.
+* **Target Coordinates:** $x = 30 + \frac{D}{360} \times 660$, $y = 120 - \frac{P}{100} \times 100$.
+
+---
 *Authoritative specification for Astra Engine Master Graha Diagnostics.*
+

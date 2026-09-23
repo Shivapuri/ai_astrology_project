@@ -7256,6 +7256,162 @@
                 return drishtiHtml;
             }
 
+            // =========================================================================
+            // Continuous Vedic Aspect (Drishti) Line Graph Engine (Brihat Jataka 2.13)
+            // =========================================================================
+            const ANCHOR_DEGREES = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360];
+
+            function getAspectAnchorPoints(planet) {
+                const p = (planet || '').trim();
+                const pCap = p.charAt(0).toUpperCase() + p.slice(1).toLowerCase();
+                const anchors = [];
+                ANCHOR_DEGREES.forEach(d => {
+                    let pct = 0.0;
+                    if (d === 0 || d === 30 || d === 150 || d === 300 || d === 330 || d === 360) {
+                        pct = 0.0;
+                    } else if (d === 180) {
+                        pct = 100.0;
+                    } else if (d === 90 || d === 210) {
+                        pct = (pCap === "Mars") ? 100.0 : 75.0;
+                    } else if (d === 120 || d === 240) {
+                        pct = (pCap === "Jupiter" || pCap === "Rahu" || pCap === "Ketu") ? 100.0 : 50.0;
+                    } else if (d === 60 || d === 270) {
+                        pct = (pCap === "Saturn") ? 100.0 : 25.0;
+                    }
+                    anchors.push([d, pct]);
+                });
+                return anchors;
+            }
+
+            function calculateContinuousDrishti(planet, relativeDeg) {
+                const d = ((relativeDeg % 360) + 360) % 360;
+                const anchors = getAspectAnchorPoints(planet);
+                for (let i = 0; i < anchors.length - 1; i++) {
+                    const [d1, p1] = anchors[i];
+                    const [d2, p2] = anchors[i + 1];
+                    if (d >= d1 && d <= d2) {
+                        if (d2 === d1) return p1;
+                        return p1 + ((d - d1) / (d2 - d1)) * (p2 - p1);
+                    }
+                }
+                return 0.0;
+            }
+
+            function buildAspectGraphData(sourcePlanet, sourceDeg, aspectedPlanets) {
+                const anchors = getAspectAnchorPoints(sourcePlanet);
+                const pointsStr = anchors.map(([d, pct]) => {
+                    const x = 30 + (d / 360.0) * 660;
+                    const y = 120 - (pct / 100.0) * 100;
+                    return `${x.toFixed(1)},${y.toFixed(1)}`;
+                }).join(' ');
+
+                const targetMarkers = [];
+                (aspectedPlanets || []).forEach(tgt => {
+                    const tgtName = tgt.name;
+                    const tgtAbsDeg = Number(tgt.longitude !== undefined ? tgt.longitude : 0);
+                    const relDeg = ((tgtAbsDeg - sourceDeg) % 360 + 360) % 360;
+                    const pct = calculateContinuousDrishti(sourcePlanet, relDeg);
+                    const isFocus = Boolean(tgt.is_target);
+
+                    // Only plot planets that are actively aspected (pct > 0) or the primary target
+                    if (pct <= 0.0 && !isFocus) return;
+
+                    const x = 30 + (relDeg / 360.0) * 660;
+                    const y = 120 - (pct / 100.0) * 100;
+                    targetMarkers.push({
+                        name: tgtName,
+                        symbol: tgt.symbol || (tgtName ? tgtName.slice(0, 2) : ''),
+                        rel_deg: Math.round(relDeg * 10) / 10,
+                        pct: Math.round(pct * 10) / 10,
+                        cx: Math.round(x * 10) / 10,
+                        cy: Math.round(y * 10) / 10,
+                        is_target: isFocus
+                    });
+                });
+
+                return {
+                    source_planet: sourcePlanet,
+                    polyline_points: pointsStr,
+                    targets: targetMarkers
+                };
+            }
+
+            function renderContinuousAspectSvg(graph, focusPlanetName) {
+                if (!graph || !graph.polyline_points) return '';
+                const labels = [
+                    [30, '0°', 'H1'], [85, '30°', 'H2'], [140, '60°', 'H3'], [195, '90°', 'H4'],
+                    [250, '120°', 'H5'], [305, '150°', 'H6'], [360, '180°', 'H7'], [415, '210°', 'H8'],
+                    [470, '240°', 'H9'], [525, '270°', 'H10'], [580, '300°', 'H11'], [635, '330°', 'H12'],
+                    [690, '360°', 'H1']
+                ];
+
+                const ticksHtml = labels.map(([x, deg, h]) => `
+                    <line x1="${x}" y1="120" x2="${x}" y2="124" stroke="#94a3b8" stroke-width="1" />
+                    <text x="${x}" y="138" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle">${deg}</text>
+                    <text x="${x}" y="152" font-size="9" fill="#64748b" text-anchor="middle">${h}</text>
+                `).join('');
+
+                const srcGlyph = grahaGlyphs[graph.source_planet] ? `${grahaGlyphs[graph.source_planet]} ` : '';
+                const srcLabel = `${srcGlyph}${graph.source_planet}`;
+
+                // Sort targets by cx to detect and avoid label collisions
+                const sortedTargets = [...(graph.targets || [])].sort((a, b) => a.cx - b.cx);
+                const targetsHtml = sortedTargets.map((tgt, idx) => {
+                    const isFocus = focusPlanetName && (tgt.name === focusPlanetName);
+                    const circleFill = isFocus ? "#d97706" : "#2563eb";
+                    const strokeAttr = isFocus ? 'stroke="#b45309" stroke-width="1.5"' : '';
+                    const radius = isFocus ? "5.5" : "4.5";
+                    const textFill = isFocus ? "#b45309" : "#2563eb";
+                    const fontWeight = isFocus ? "800" : "bold";
+                    
+                    let yOffset = isFocus ? 9 : 7;
+                    if (idx > 0 && Math.abs(tgt.cx - sortedTargets[idx - 1].cx) < 32) {
+                        yOffset += 12;
+                    }
+                    const labelText = isFocus
+                        ? `🎯 ${tgt.symbol} (${tgt.rel_deg}° • ${tgt.pct}%)`
+                        : `${tgt.symbol} (${tgt.rel_deg}°)`;
+
+                    return `
+                        <line x1="${tgt.cx}" y1="${tgt.cy}" x2="${tgt.cx}" y2="120" 
+                              stroke="#64748b" stroke-width="1" stroke-dasharray="2 2" />
+                        <circle cx="${tgt.cx}" cy="${tgt.cy}" r="${radius}" fill="${circleFill}" ${strokeAttr} />
+                        <text x="${tgt.cx}" y="${tgt.cy - yOffset}" font-size="10" font-weight="${fontWeight}" fill="${textFill}" text-anchor="middle">
+                          ${labelText}
+                        </text>
+                    `;
+                }).join('');
+
+                return `
+                    <div style="background: #ffffff; padding: 10px; width: 100%; max-width: 720px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; box-sizing: border-box;">
+                      <svg viewBox="0 0 720 170" style="width: 100%; height: auto; display: block; overflow: visible;">
+                        <!-- Baseline (0% aspect) -->
+                        <line x1="30" y1="120" x2="690" y2="120" stroke="#0f172a" stroke-width="1.5" />
+
+                        <!-- Continuous Aspect Polyline -->
+                        <polyline points="${graph.polyline_points}" 
+                                  fill="none" 
+                                  stroke="#2563eb" 
+                                  stroke-width="2.2" 
+                                  stroke-linejoin="round" 
+                                  stroke-linecap="round" />
+
+                        <!-- Degree Ticks & X-Labels (30px to 690px, step = 55px) -->
+                        ${ticksHtml}
+
+                        <!-- Source Planet at 0° (Baseline) -->
+                        <circle cx="30" cy="120" r="4.5" fill="#d97706" />
+                        <text x="36" y="112" font-size="10" font-weight="bold" fill="#d97706" text-anchor="start">
+                          ${srcLabel}
+                        </text>
+
+                        <!-- Aspected Target Planets Placed on Continuous Curve -->
+                        ${targetsHtml}
+                      </svg>
+                    </div>
+                `;
+            }
+
             // 1. Lagna Row
             const lagnaSign = (v_lagna && v_lagna.sign) ? v_lagna.sign : '';
             const lagnaLord = lagnaSign ? (signLords[lagnaSign] || (v_lagna && v_lagna.lord) || '') : '';
@@ -7483,6 +7639,66 @@
                 });
                 const lagnaDrishtiHtml = renderAspectVisionBadges(lagnaAspList);
 
+                let lagnaAspectGraphsHtml = '';
+                if (lagnaAspList && lagnaAspList.length > 0) {
+                    const decisiveLg = lagnaAspList.filter(asp => {
+                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                        return rawV >= 20;
+                    });
+                    if (decisiveLg.length > 0) {
+                        const cards = [];
+                        decisiveLg.forEach(asp => {
+                            const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                            const aspG = asp.from_planet;
+                            const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                            const natIcon = isNaturalBen ? '🟢' : '🔴';
+                            const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
+                            const aspStrengthPct = Math.round((rawV / 60.0) * 100);
+
+                            if (v_grahas[aspG] && v_grahas[aspG].longitude !== undefined && v_lagna && v_lagna.longitude !== undefined) {
+                                const aspGLon = Number(v_grahas[aspG].longitude);
+                                const lgLon = Number(v_lagna.longitude);
+                                const aspectedTargets = [
+                                    {
+                                        name: 'Lagna',
+                                        longitude: lgLon,
+                                        symbol: '🌅 Lagna',
+                                        is_target: true
+                                    }
+                                ];
+                                grahaOrder.forEach(tp => {
+                                    if (tp !== aspG && v_grahas[tp] && v_grahas[tp].longitude !== undefined) {
+                                        aspectedTargets.push({
+                                            name: tp,
+                                            longitude: Number(v_grahas[tp].longitude),
+                                            symbol: (grahaGlyphs[tp] ? `${grahaGlyphs[tp]} ` : '') + tp.slice(0, 2),
+                                            is_target: false
+                                        });
+                                    }
+                                });
+                                const incGraph = buildAspectGraphData(aspG, aspGLon, aspectedTargets);
+                                if (incGraph) {
+                                    cards.push(`
+                                        <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
+                                            <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
+                                                <div>
+                                                    <span>${natIcon} <strong>${aspG}</strong> Aspect on Horizon</span>
+                                                    <span style="color: #64748b; font-size: 9px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
+                                                </div>
+                                                <div style="font-size: 9.5px; font-weight: 600; color: #475569;">
+                                                    ${asp.from_dignity_name || 'Neutral'}${optANote}
+                                                </div>
+                                            </div>
+                                            ${renderContinuousAspectSvg(incGraph, 'Lagna')}
+                                        </div>
+                                    `);
+                                }
+                            }
+                        });
+                        lagnaAspectGraphsHtml = cards.join('');
+                    }
+                }
+
                 const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The foundational engine and reference frame against which all 12 houses and yogas manifest.`;
                 const lgPlacementTip = `<strong>Lagna: ${lgSign} ${lgDeg} (House 1)</strong><br>• <strong>Rising Sign:</strong> Core zodiac archetype of self-expression in ${varga}.<br>• <strong>Ascendant Lord:</strong> <strong>${lgLord}</strong> (Lagneśa).<br>• <strong>Nakshatra:</strong> ${lgNak}.`;
                 const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord} [${cleanLordDig}]</strong><br>• <strong>5-Fold Dignity:</strong> ${lordDigRaw} in ${lordSign} (${lordWHouse}th house from Lagna).<br>• <strong>Dignity Score:</strong> ${lordDigPct.toFixed(0)}% essential dignity.<br>• <strong>Core Teaching:</strong> The Lagna Lord is the captain of the ship.`;
@@ -7622,6 +7838,7 @@
                                             <div style="margin-top:4px;"><strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lgConjBadges : 'None (clean horizon)'}</div>
                                             <div style="margin-top:4px;"><strong>Aspect Rays:</strong></div>
                                             <div style="margin-top:2px;">${lagnaDrishtiHtml}</div>
+                                            ${lagnaAspectGraphsHtml}
                                         </div>
                                     </div>
                                     <div class="drawer-card">
@@ -8741,20 +8958,80 @@
 
                 // Box 3: Aspect & Conjunction Weather
                 let allAspectsRowsHtml = '';
+                let incomingGraphsHtml = '';
+
+                // Prepare targets for aspect graph rendering
+                const allTargetsData = grahaOrder
+                    .filter(tp => v_grahas[tp] && v_grahas[tp].longitude !== undefined)
+                    .map(tp => ({
+                        name: tp,
+                        longitude: Number(v_grahas[tp].longitude),
+                        symbol: (grahaGlyphs[tp] ? `${grahaGlyphs[tp]} ` : '') + tp.slice(0, 2)
+                    }));
+
                 if (allAspList && allAspList.length > 0) {
-                    allAspectsRowsHtml = allAspList.map(asp => {
+                    const decisiveIncoming = [];
+                    allAspList.forEach(asp => {
                         const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                        if (rawV < 20) return '';
-                        const aspG = asp.from_planet;
-                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                        const natIcon = isNaturalBen ? '🟢' : '🔴';
-                        const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
-                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
-                            <span>${natIcon} ${aspG} (${rawV}v):</span>
-                            <span style="font-weight:600;">${asp.from_dignity_name || 'Neutral'}${optANote}</span>
-                        </div>`;
-                    }).filter(Boolean).join('');
+                        if (rawV < 20) return;
+                        decisiveIncoming.push(asp);
+                    });
+
+                    if (decisiveIncoming.length > 0) {
+                        const summaryRows = [];
+                        const graphCards = [];
+
+                        decisiveIncoming.forEach(asp => {
+                            const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                            const aspG = asp.from_planet;
+                            const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                            const natIcon = isNaturalBen ? '🟢' : '🔴';
+                            const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
+                            const aspStrengthPct = Math.round((rawV / 60.0) * 100);
+
+                            summaryRows.push(`
+                                <div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                                    <span>${natIcon} <strong>${aspG}</strong> (${rawV}v / ${aspStrengthPct}%):</span>
+                                    <span style="font-weight:600;">${asp.from_dignity_name || 'Neutral'}${optANote}</span>
+                                </div>
+                            `);
+
+                            // Retrieve precomputed incoming graph or generate dynamically
+                            let incGraph = (pEval.incoming_aspect_graphs && pEval.incoming_aspect_graphs[aspG]) || asp.aspect_graph;
+                            if (!incGraph && v_grahas[aspG] && v_grahas[aspG].longitude !== undefined) {
+                                const aspGLon = Number(v_grahas[aspG].longitude);
+                                const aspectedTargets = allTargetsData
+                                    .filter(t => t.name !== aspG)
+                                    .map(t => ({
+                                        ...t,
+                                        is_target: (t.name === graha)
+                                    }));
+                                incGraph = buildAspectGraphData(aspG, aspGLon, aspectedTargets);
+                            }
+
+                            if (incGraph) {
+                                graphCards.push(`
+                                    <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
+                                        <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
+                                            <div>
+                                                <span>${natIcon} <strong>${aspG}</strong> Aspect Ray</span>
+                                                <span style="color: #64748b; font-size: 9px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
+                                            </div>
+                                            <div style="font-size: 9.5px; font-weight: 600; color: #475569;">
+                                                ${asp.from_dignity_name || 'Neutral'}${optANote}
+                                            </div>
+                                        </div>
+                                        ${renderContinuousAspectSvg(incGraph, graha)}
+                                    </div>
+                                `);
+                            }
+                        });
+
+                        allAspectsRowsHtml = summaryRows.join('');
+                        incomingGraphsHtml = graphCards.join('');
+                    }
                 }
+
                 let conjItemsHtml = '';
                 if (conjDetails && conjDetails.length > 0) {
                     conjItemsHtml = conjDetails.map(c => {
@@ -8765,15 +9042,39 @@
                         </div>`;
                     }).join('');
                 }
+
+                // Outgoing aspect graph cast by this planet across the 12 Bhavas
+                let outgoingAspectGraphHtml = '';
+                let outGraph = (pEval && pEval.aspect_graph) ? pEval.aspect_graph : null;
+                if (!outGraph && v_grahas[graha] && v_grahas[graha].longitude !== undefined) {
+                    const gLon = Number(v_grahas[graha].longitude);
+                    const targetsForOut = allTargetsData.filter(t => t.name !== graha);
+                    outGraph = buildAspectGraphData(graha, gLon, targetsForOut);
+                }
+                if (outGraph) {
+                    outgoingAspectGraphHtml = `
+                        <div style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
+                            <div style="font-size: 10px; font-weight: 700; color: #475569; margin-bottom: 4px;">
+                                👁 Outgoing Aspects Cast by ${graha} (Dṛṣṭi across Zodiac):
+                            </div>
+                            <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
+                                ${renderContinuousAspectSvg(outGraph, null)}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 const card3Html = `
                     <div><strong>Incoming Aspects (Dṛṣṭi):</strong></div>
                     ${allAspectsRowsHtml || '<div style="font-size:9.5px; color:#94a3b8; font-style:italic;">No decisive aspects (≥20v)</div>'}
-                    ${conjItemsHtml ? `<div style="margin-top:4px;"><strong>Conjunctions (Yuti):</strong></div>${conjItemsHtml}` : ''}
+                    ${incomingGraphsHtml}
+                    ${conjItemsHtml ? `<div style="margin-top:6px;"><strong>Conjunctions (Yuti):</strong></div>${conjItemsHtml}` : ''}
                     <div style="margin-top:4px; display:flex; flex-direction:column; gap:2px;">
                         ${warBadgeHtml}
                         ${combustionBadgeHtml}
                         ${afflictionBadgesHtml}
                     </div>
+                    ${outgoingAspectGraphHtml}
                 `;
 
                 // Box 4: Deep Avasthās & Psychology

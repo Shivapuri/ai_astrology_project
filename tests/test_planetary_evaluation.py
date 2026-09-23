@@ -698,11 +698,11 @@ def test_parashari_lordship_modifiers():
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
     assert s4_jup["expression_score"] == -20.0
-    assert fd_jup["functional_dignity_pct"] == 62.2
+    assert fd_jup["functional_dignity_pct"] == 63.0
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
     assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
-    assert "Layer 2 Functional Dignity = 62.2%" in fd_jup["math_formula"]
+    assert "Layer 2 Functional Dignity = 63.0%" in fd_jup["math_formula"]
 
     # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
     vargas_case2 = {
@@ -733,8 +733,8 @@ def test_parashari_lordship_modifiers():
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
     assert s4_sat["expression_score"] == -12.5
-    assert fd_sat["functional_dignity_pct"] == 10.0
-    assert "Layer 2 Functional Dignity = 10.0%" in fd_sat["math_formula"]
+    assert fd_sat["functional_dignity_pct"] == 24.2
+    assert "Layer 2 Functional Dignity = 24.2%" in fd_sat["math_formula"]
 
     # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
     vargas_case3 = {
@@ -767,8 +767,8 @@ def test_parashari_lordship_modifiers():
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
     assert s4_sat3["expression_score"] == 32.5
-    assert fd_sat3["functional_dignity_pct"] == 10.0
-    assert "Layer 2 Functional Dignity = 10.0%" in fd_sat3["math_formula"]
+    assert fd_sat3["functional_dignity_pct"] == 24.2
+    assert "Layer 2 Functional Dignity = 24.2%" in fd_sat3["math_formula"]
 
 
 def test_moon_phase_and_illumination_spectrum():
@@ -982,9 +982,156 @@ def test_mars_in_scorpio_12th_house_dignity():
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
     assert f_dig["lordship_mod_pct"] == 15.0
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
-    assert f_dig["functional_dignity_pct"] == 43.4
+    assert f_dig["functional_dignity_pct"] == 36.3
     assert s4_mars["expression_score"] == 15.0
     assert "House 12" in f_dig["math_steps"][1]
+
+
+def test_cross_border_conjunction_prevention_saturn_sun():
+    """
+    Validates that conjunctions are strictly confined to the same sign / house (Ruleset 9):
+    1. Cross-border proximity (Saturn at 2° Aries H1, Sun at 29° Pisces H12, dist = 3.0°):
+       - Different signs ("Aries" != "Pisces") -> Evaluated as Aspect (Drishti) ONLY.
+       - Pisces is 12th house from Aries (blind spot with 0.0 virupas).
+       - drishti_virupas < 3.0 -> skipped; Saturn does NOT starve Sun across house boundaries!
+    2. Same-sign conjunction (Saturn at 2° Aries, Sun at 5° Aries, deg_diff = 3.0°):
+       - Same sign ("Aries" == "Aries") -> Evaluated as Conjunction (Yuti).
+       - deg_diff <= 3°20' -> Exact (Intimate) band (orb_factor = 1.0).
+       - Saturn conjunction starves Sun (direction = -1.0), applying starvation penalty.
+    3. Discrete orb bands (Ruleset 9):
+       - <= 3°20': 1.0 (Exact / Intimate)
+       - 3°20' to 10°00': 0.6 (Moderate)
+       - > 10°00': 0.25 (Wide)
+    """
+    # 1. Cross-border configuration: Saturn in Aries H1, Sun in Pisces H12
+    chart_cross_border = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 2.0, "longitude": 2.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Pisces", "degree_0_to_30": 29.0, "longitude": 359.0, "dignity": "Friend"},
+            }
+        }
+    }
+    eval_cb = calculate_planetary_evaluation(chart_cross_border)
+    sun_cb = eval_cb["planets"]["Sun"]
+    s3_sun_cb = sun_cb["step3_aspects"]
+    
+    # Saturn should NOT appear as a conjunction or starving influencer for Sun across the border
+    sat_influences_cb = [d for d in s3_sun_cb["details"] if d["source"] == "Saturn"]
+    assert len(sat_influences_cb) == 0, f"Expected zero Saturn influence across border, got {sat_influences_cb}"
+    assert s3_sun_cb["malefic_pressure_pct"] == 0.0
+
+    # 2. Same-sign configuration: Both in Aries within 3°20' (Exact)
+    chart_same_sign_exact = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 2.0, "longitude": 2.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Exalted"},
+            }
+        }
+    }
+    eval_exact = calculate_planetary_evaluation(chart_same_sign_exact)
+    sun_exact = eval_exact["planets"]["Sun"]
+    s3_exact = sun_exact["step3_aspects"]
+    
+    sat_exact = next((d for d in s3_exact["details"] if d["source"] == "Saturn"), None)
+    assert sat_exact is not None
+    assert "Conjunction" in sat_exact["type"]
+    assert "Exact (Intimate)" in sat_exact["type"]
+    assert sat_exact["power_pct"] == 100.0  # orb_factor 1.0 * 100
+    assert sat_exact["direction"] == -1.0   # Saturn conjunction starves
+    assert sat_exact["shift"] < 0.0
+
+    # 3. Same-sign Moderate band (between 3°20' and 10°00')
+    chart_same_sign_mod = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 2.0, "longitude": 2.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Aries", "degree_0_to_30": 8.0, "longitude": 8.0, "dignity": "Exalted"},
+            }
+        }
+    }
+    eval_mod = calculate_planetary_evaluation(chart_same_sign_mod)
+    sat_mod = next((d for d in eval_mod["planets"]["Sun"]["step3_aspects"]["details"] if d["source"] == "Saturn"), None)
+    assert sat_mod is not None
+    assert "Moderate" in sat_mod["type"]
+    assert sat_mod["power_pct"] == 60.0
+
+    # 4. Same-sign Wide band (> 10°00')
+    chart_same_sign_wide = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Saturn": {"sign": "Aries", "degree_0_to_30": 2.0, "longitude": 2.0, "dignity": "Debilitated"},
+                "Sun": {"sign": "Aries", "degree_0_to_30": 18.0, "longitude": 18.0, "dignity": "Exalted"},
+            }
+        }
+    }
+    eval_wide = calculate_planetary_evaluation(chart_same_sign_wide)
+    sat_wide = next((d for d in eval_wide["planets"]["Sun"]["step3_aspects"]["details"] if d["source"] == "Saturn"), None)
+    assert sat_wide is not None
+    assert "Wide" in sat_wide["type"]
+    assert sat_wide["power_pct"] == 25.0
+
+
+def test_leo_rising_mars_in_virgo_neutral_host_and_natural_aspects():
+    """
+    Validates the three key corrections (Fix A, Fix B, Fix C):
+    1. Fix A: Mars in Virgo (H2, Leo Lagna). Host Mercury is in a Neutral sign.
+       Because Mercury host dignity is neutral (between 25% and 50%), host bonus is 0.0%
+       (eliminates the unscriptural -10.0% penalty cliff).
+    2. Fix B: Natural Relationship for Aspects & Partial Aspect Capture:
+       - Moon aspect is identified by Natural Friendship / Bright Benefic (not 'enemy').
+       - Saturn in Scorpio (H4) is 11 houses forward from Mars in Virgo: absolute blind spot (0 virūpas).
+       - Partial glances down to 0.5 Virūpas are permitted and displayed.
+    3. Fix C: aspect_details is passed into calculate_graha_vitality(), ensuring vitality's
+       aspect_details list is fully populated with all incoming aspect data.
+    """
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Mars": {"sign": "Virgo", "degree_0_to_30": 15.0, "longitude": 165.0, "dignity": "Neutral"},
+                "Mercury": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Neutral"},
+                "Saturn": {"sign": "Scorpio", "degree_0_to_30": 15.0, "longitude": 225.0, "dignity": "Enemy"},
+                "Sun": {"sign": "Leo", "degree_0_to_30": 20.0, "longitude": 140.0, "dignity": "Own Sign"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Capricorn", "degree_0_to_30": 10.0, "longitude": 280.0, "dignity": "Debilitated"},
+                "Venus": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Friend"},
+                "Rahu": {"sign": "Cancer", "degree_0_to_30": 10.0, "longitude": 100.0, "dignity": "Neutral"},
+                "Ketu": {"sign": "Capricorn", "degree_0_to_30": 10.0, "longitude": 280.0, "dignity": "Neutral"}
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    mars = eval_res["planets"]["Mars"]
+    
+    # 1. Fix A: Host rescue for neutral host Mercury must be 0.0% (not -10.0%)
+    s2 = mars["step2_host_rescue"]
+    assert s2["host_planet"] == "Mercury"
+    assert s2["bonus_pct"] == 0.0
+    assert s2["rescue_status"] == "Neutral Host Foundation"
+
+    # 2. Fix B: Saturn in Scorpio (H4) casts NO aspect on Mars in Virgo (H2, 11th from Saturn = blind spot)
+    s3 = mars["step3_aspects"]
+    sat_asp = [d for d in s3["details"] if d["source"] == "Saturn"]
+    assert len(sat_asp) == 0, f"Saturn should cast 0 aspect on 11th house forward, got {sat_asp}"
+
+    # Moon aspect uses natural relationship / bright illumination, not 'enemy'
+    moon_asp = next((d for d in s3["details"] if d["source"] == "Moon"), None)
+    if moon_asp:
+        assert "enemy" not in moon_asp["sambhanda"].lower()
+
+    # 3. Fix C: vitality's aspect_details is populated
+    vit = mars.get("vitality", {})
+    assert "aspect_details" in vit
+    assert len(vit["aspect_details"]) > 0
+    assert any(d["source"] == "Moon" or d.get("from_planet") == "Moon" for d in vit["aspect_details"])
+
+
 
 
 
