@@ -72,6 +72,7 @@ Essential dignity is computed using Sage Parashara's 5-Fold Compound Relationshi
   - **Stressed / Fallen Host ($\le 25.0\%$):** Penalty strictly reserved for truly fallen or debilitated hosts ($-10.0\%$ for base dignity $< 50\%$; $-5.0\%$ otherwise per *Light on Life*).
 * **Natural Friendship for Aspects & Feeling States (BPHS Ch. 45 & ASVA Vol II):**
   - Aspects (*Dṛṣṭi*) and *Lajjitādi* avasthās are governed exclusively by **Natural Friendship (*Naisargika Sambandha*)**, ensuring true mutual nature is reflected without temporal house distortions. Compound friendship (*Pañcadhā Maitrī*) is strictly reserved for physical sign placement (*Sthāna Bala*).
+  - **Receiver Vantage Point:** All aspectual and conjunction interactions are evaluated strictly from the perspective of the **receiving planet** (`rel.get_natural_relationship(receiver, sender)`). The incoming energy depends on how the recipient feels toward the influencer (e.g., Moon views Mercury as a natural friend, entering *Muditā* [+1.0], even though Mercury views the Moon as an enemy).
 * **Neutral Sign Dynamic Tilt (*Sama Kshetra*):** Benefic rays and Mudita/Garvita avasthas lift neutral dignity up to **$54.9\%$**, ensuring that disciplined powerhouse placements (like Shivapuri Baba's Mars & Saturn) are diagnosed as **`⚒️ The Pragmatic Executive`** rather than false Armed Dictators.
 
 ---
@@ -173,11 +174,22 @@ Under the 5-tier decoupled architecture, House Terrain ($\pm 25\%$) and Lordship
 * **Dispositor Proxy Rule:** Nodes inherit 85% host dignity and 90% host Shadbala.
 * **Sign Affinity Boost (+15%):** Rahu in Taurus, Gemini, Virgo, Aquarius; Ketu in Scorpio, Sagittarius, Pisces.
 * **Conjunction Orbs:** Exact/Intimate ($< 3^\circ 20'$ / One Navamsha) $\to$ Nodal Possession; Moderate ($3^\circ 20' - 10^\circ 00'$); Wide ($> 10^\circ$).
-* **Classical Nodal Affliction Yogas (`jyotish/yogas/chandal_yogas.py`):**
-  - **Guru-Chāṇḍāla Yoga (Jupiter + Rahu):** Subversive zeal, taboo doctrine, ideological fanaticism.
-  - **Guru-Ketu Jñāna Yoga (Jupiter + Ketu):** Direct spiritual discernment, skepticism of dogma, pure jñāna (not a dosha).
-  - **Shrapit Yoga (Saturn + Rahu):** Karmic curse, chronic institutional toil.
-  - **Angaraka Yoga (Mars + Rahu):** Explosive drive, technical audacity, violence risk.
+* **Universal Dispositor Immunity:**
+  - A node never afflicts its host dispositor when co-present in its own sign (`+0.50` directional aspect vector). Rather than clouding or eclipsing its host, the node magnifies the host's sovereign agenda.
+  - Furthermore, when conjoined with its own sign lord possessing fortified dignity ($\ge 60.0\%$), the planet receives a **$+0.20$ Dispositor Protection** vitality bonus.
+* **Rahu Natural Allies (Materialist Collaborative Vector):**
+  - Rahu shares natural affinity with Saturn, Mercury, and Venus. In conjunction or aspect, it collaborates with these planets (`+0.20` direction vector) rather than delivering default eclipse starvation.
+* **Ketu Analytical & Ascetic Combinations:**
+  - **Jupiter + Ketu (Guru-Ketu Jñāna Yoga):** Direct spiritual discernment and truth seeking (`+0.30` vector, `+0.15` vitality modifier, badge: `🕉️ Jñāna Catalyst (Spiritual Discernment)`).
+  - **Mercury + Ketu (Analytical Discrimination):** Deep technical, mathematical, and coding precision (`+0.20` vector, `+0.10` vitality modifier, badge: `💡 Jñāna Analysis (Systemic Discrimination)`).
+  - **Venus + Ketu (Aesthetic Idealism):** Detachment from superficial luxury, pure artistic refinement (`0.00` neutral vector, `+0.05` vitality modifier, badge: `✨ Aesthetic Idealism (Ascetic Refinement)`).
+  - **Saturn + Ketu (Ascetic Neutrality):** Detached duty and austerity (`0.00` neutral vector).
+  - **Mars + Ketu (Kujavat Ketu):** Intense surgical sharpness and technical drive (`+0.05` vitality modifier, badge: `⚡ Kujavat Ketu (Surgical Precision)`).
+* **Classical Nodal Affliction Yogas (`jyotish/planetary_evaluation/planetary_evaluation.py` & `jyotish/yogas/chandal_yogas.py`):**
+  - **Grahan Yoga (Sun/Moon + Rahu/Ketu):** Direct eclipse of vitality or mental tranquility. Intimate conjunction ($< 3^\circ 20'$) triggers $-0.30$ vitality penalty and biological suppression ($0.80\times$ efficiency); moderate conjunction ($3^\circ 20' - 10^\circ$) triggers $-0.15$ penalty (badge: `🌑 Grahan Yoga (<Planet> Eclipsed by <Node>)`).
+  - **Guru-Chāṇḍāla Yoga (Jupiter + Rahu):** Subversive zeal, taboo doctrine, ideological fanaticism ($-0.20$ vitality modifier, badge: `⚡ Guru-Chāṇḍāla (Ideological Zeal / Ambition)`).
+  - **Shrapit Yoga (Saturn + Rahu):** Heavy karmic toil, chronic institutional duty ($-0.25$ if $\le 5^\circ$, $-0.10$ otherwise, badge: `⛓️ Shrapit Yoga (Karmic Toil / Heavy Institutional Duty)`).
+  - **Angaraka Yoga (Mars + Rahu):** High engineering friction, volatile drive, incendiary focus ($-0.25$ if $\le 5^\circ$, $-0.10$ otherwise, badge: `🔥 Angaraka Yoga (Volatile Drive / High Engineering Friction)`).
 
 ---
 
@@ -239,6 +251,9 @@ Lajjitādi states (Proud, Delighted, Starved, Agitated, Bashful, Thirsty) descri
 * **Full Severity:** If an enemy starver (causing *Kshudhita*) is **Jagrat (Awake)**, the starvation is acute and demanding.
 * **Muted Severity:** If the enemy starver is **Sushupti (Asleep)**, the starvation is sluggish and harmless, easily overcome through steadfast commitment.
 * **Self-Stamina Resilience:** If the native planet is itself **Jagrat (Awake)**, it possesses high self-resilience, reducing negative relational friction by 25%.
+* **Integration into Lagna Evaluation (`lagna_evaluation.py`):**
+  - When assessing Ascendant Lord vitality (*Pillar 1*), the engine queries `calibrated_lajjitadi` rather than raw uncalibrated strings.
+  - The starvation penalty ($-0.50 \times \text{effective\_intensity}$) and delight bonus ($+0.40 \times \text{effective\_intensity}$) are dynamically scaled. A sleepy starver (e.g., Saturn asleep in Scorpio with $10\%$ alertness) delivers only a muted $-0.05$ penalty, preventing dormant malefics from falsely degrading the Ascendant Lord.
 
 ### 8.4 Psychological Reality Diagnosis
 Each planet's evaluation synthesizes these three layers into a rich 3-sentence diagnostic narrative:
@@ -285,6 +300,10 @@ For any target planet at absolute longitude $L_{\text{target}}$ aspected by sour
 * **Plot Dimensions:** X from $30$ to $690$ (step = $55\text{px}$ per $30^\circ$), Y from $120$ ($0\%$) to $20$ ($100\%$).
 * **Baseline:** Line at $y=120$ spanning $x \in [30, 690]$.
 * **Target Coordinates:** $x = 30 + \frac{D}{360} \times 660$, $y = 120 - \frac{P}{100} \times 100$.
+
+### 9.4 Incoming Aspect Weather Cutoff (12.0 Virūpas Threshold)
+* To ensure minor yet tangible glances (*Dṛṣṭi*) are visible on the planetary dashboard, the cutoff threshold for rendering aspect rays on the diagnostic line graph is set to **$\ge 12.0$ Virūpas** (reduced from the legacy $20.0$ Virūpa filter).
+* This ensures that secondary classical aspects (such as Mercury's or Venus's $\sim 19$ Virūpa trinal glance) are accurately reflected in the visual diagnostic cockpit.
 
 ---
 *Authoritative specification for Astra Engine Master Graha Diagnostics.*

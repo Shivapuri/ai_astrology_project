@@ -327,6 +327,10 @@ def get_aspect_direction_vector(
     """
     # 1. Classical Lajjitādi Mandatory Overrides (BPHS Ch. 45 & ASVA Vol II)
     if sender == "Saturn" and contact_type == "Conjunction":
+        if receiver == "Rahu":
+            return 0.2   # Shared Tamasic/Air affinity ("Shani-vat Rahu")
+        if receiver == "Ketu":
+            return 0.0   # Ascetic detachment / Neutral
         return -1.0  # Saturn conjunction ALWAYS starves co-present planets (Kshudhita)
         
     if sender == "Mars" and receiver == "Moon":
@@ -339,11 +343,37 @@ def get_aspect_direction_vector(
     # 3. Lunar Nodes (Rahu & Ketu) with Priority Exceptions
     if sender in ("Rahu", "Ketu"):
         if contact_type == "Conjunction":
+            # 1. Universal Dispositor Immunity: Node never afflicts its host lord
             if host_dispositor and receiver == host_dispositor:
-                return 0.5   # Amplifying host agenda
-            if sender == "Ketu" and receiver == "Jupiter":
-                return 0.3   # Jnana Catalyst
-        return -1.0  # Default eclipsing/obsessive influence
+                return 0.5
+            # 2. Ketu Jnana Combinations
+            if sender == "Ketu":
+                if receiver == "Jupiter":
+                    return 0.3   # Guru-Ketu Jnana Yoga
+                if receiver == "Mercury":
+                    return 0.2   # Esoteric / Analytical discernment
+                if receiver in ("Venus", "Saturn"):
+                    return 0.0   # Ascetic detachment / Neutral
+            # 3. Rahu Material Ambition Allies
+            if sender == "Rahu":
+                if receiver in ("Venus", "Mercury", "Saturn"):
+                    return 0.2   # Rahu collaborates with friendly materialists
+        return -1.0  # Default eclipsing / obsessive pressure
+
+    # Symmetrical handling when receiver is a Node
+    if receiver in ("Rahu", "Ketu") and contact_type == "Conjunction":
+        if host_dispositor and sender == host_dispositor:
+            return 0.5
+        if receiver == "Ketu":
+            if sender == "Jupiter":
+                return 0.3
+            if sender == "Mercury":
+                return 0.2
+            if sender in ("Venus", "Saturn"):
+                return 0.0
+        if receiver == "Rahu":
+            if sender in ("Venus", "Mercury", "Saturn"):
+                return 0.2
 
     # 4. Standard Sambandha Direction Vectors
     if "Great Friend" in sambhanda or "Friend" in sambhanda:
@@ -1460,6 +1490,10 @@ def calculate_graha_vitality(
     guru_chandal_badge = None
     is_guru_ketu = False
     guru_ketu_badge = None
+    is_grahan = False
+    is_angaraka = False
+    is_shrapit = False
+    nodal_badges = []
 
     cruel_malefics_set = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
     cruel_conjoined_names = []
@@ -1475,26 +1509,73 @@ def calculate_graha_vitality(
             if cp in cruel_malefics_set and cp != planet:
                 cruel_conjoined_names.append(cp)
 
-            # 1. Jupiter + Rahu (Guru-Chāṇḍāla Yoga)
+            # 1. Jupiter + Rahu: Guru-Chāṇḍāla Yoga
             if (planet == "Jupiter" and cp == "Rahu") or (planet == "Rahu" and cp == "Jupiter"):
                 is_guru_chandal = True
-                if diff <= (10.0 / 3.0):
-                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Ideological Eclipse)"
-                    node_mod -= 0.35
-                elif diff <= 10.0:
-                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)"
-                    node_mod -= 0.20
-                else:
-                    guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Unorthodox Doctrine)"
-                    conj_mod -= 0.10
+                guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Ideological Zeal / Ambition)"
+                node_mod -= 0.20
 
-            # 2. Jupiter + Ketu (Guru-Ketu Jñāna Yoga)
+            # 2. Jupiter + Ketu: Guru-Ketu Jñāna Yoga
             elif (planet == "Jupiter" and cp == "Ketu") or (planet == "Ketu" and cp == "Jupiter"):
                 is_guru_ketu = True
-                guru_ketu_badge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)"
+                guru_ketu_badge = "🕉️ Jñāna Catalyst (Spiritual Discernment)"
                 node_mod += 0.15
 
-            # 3. Standard Nodal Dynamics for other planets
+            # 3. Sun / Moon + Nodes: Grahan Yoga (Eclipse)
+            elif (cp in ("Rahu", "Ketu") and planet in ("Sun", "Moon")) or (planet in ("Rahu", "Ketu") and cp in ("Sun", "Moon")):
+                is_grahan = True
+                luminary = planet if planet in ("Sun", "Moon") else cp
+                node_p = cp if cp in ("Rahu", "Ketu") else planet
+                badge = f"🌑 Grahan Yoga ({luminary} Eclipsed by {node_p})"
+                nodal_badges.append(badge)
+                if node_p == "Ketu" and diff <= (10.0 / 3.0):
+                    efficiency *= 0.80  # biological/external suppression
+                node_mod -= 0.25 if diff <= (10.0 / 3.0) else -0.15
+
+            # 4. Mars + Rahu: Angaraka Yoga
+            elif (planet == "Mars" and cp == "Rahu") or (planet == "Rahu" and cp == "Mars"):
+                is_angaraka = True
+                badge = "🔥 Angaraka Yoga (Volatile Drive / High Engineering Friction)"
+                nodal_badges.append(badge)
+                node_mod -= 0.25 if diff <= 5.0 else -0.10
+
+            # 5. Saturn + Rahu: Shrapit Yoga
+            elif (planet == "Saturn" and cp == "Rahu") or (planet == "Rahu" and cp == "Saturn"):
+                is_shrapit = True
+                badge = "⛓️ Shrapit Yoga (Karmic Toil / Heavy Institutional Duty)"
+                nodal_badges.append(badge)
+                node_mod -= 0.25 if diff <= 5.0 else -0.10
+
+            # 6. Ketu's Combinations with Non-Jupiter Planets
+            elif (planet == "Mercury" and cp == "Ketu") or (planet == "Ketu" and cp == "Mercury"):
+                badge = "💡 Jñāna Analysis (Mathematical & Systems Perception)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod += 0.10
+
+            elif (planet == "Venus" and cp == "Ketu") or (planet == "Ketu" and cp == "Venus"):
+                badge = "✨ Aesthetic Idealism (Ascetic Detachment / Subtle Arts)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod += 0.05
+
+            elif (planet == "Mars" and cp == "Ketu") or (planet == "Ketu" and cp == "Mars"):
+                badge = "⚡ Kujavat Ketu (Technical Precision / High Pitta Friction)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod -= 0.15 if diff <= 5.0 else -0.05
+
+            # 7. Dispositor Protection: Node conjoined with its own Sign Lord
+            elif (cp == host_planet or (planet == host_planet and cp in ("Rahu", "Ketu"))) and host_dignity_pct >= 60.0:
+                node_mod += 0.20  # Magnifies host's constructive agenda
+
+            # 8. Standard Nodal Dynamics for other planets
             elif cp == "Ketu":
                 if diff <= (10.0 / 3.0):
                     efficiency *= 0.80  # biological/external suppression
@@ -1532,18 +1613,60 @@ def calculate_graha_vitality(
 
             if (planet == "Jupiter" and cp == "Rahu") or (planet == "Rahu" and cp == "Jupiter"):
                 is_guru_chandal = True
-                guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)"
+                guru_chandal_badge = "⚡ Guru-Chāṇḍāla (Ideological Zeal / Ambition)"
                 node_mod -= 0.20
             elif (planet == "Jupiter" and cp == "Ketu") or (planet == "Ketu" and cp == "Jupiter"):
                 is_guru_ketu = True
-                guru_ketu_badge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)"
+                guru_ketu_badge = "🕉️ Jñāna Catalyst (Spiritual Discernment)"
                 node_mod += 0.15
+            elif (cp in ("Rahu", "Ketu") and planet in ("Sun", "Moon")) or (planet in ("Rahu", "Ketu") and cp in ("Sun", "Moon")):
+                is_grahan = True
+                luminary = planet if planet in ("Sun", "Moon") else cp
+                node_p = cp if cp in ("Rahu", "Ketu") else planet
+                badge = f"🌑 Grahan Yoga ({luminary} Eclipsed by {node_p})"
+                nodal_badges.append(badge)
+                node_mod -= 0.20
+            elif (planet == "Mars" and cp == "Rahu") or (planet == "Rahu" and cp == "Mars"):
+                is_angaraka = True
+                badge = "🔥 Angaraka Yoga (Volatile Drive / High Engineering Friction)"
+                nodal_badges.append(badge)
+                node_mod -= 0.20
+            elif (planet == "Saturn" and cp == "Rahu") or (planet == "Rahu" and cp == "Saturn"):
+                is_shrapit = True
+                badge = "⛓️ Shrapit Yoga (Karmic Toil / Heavy Institutional Duty)"
+                nodal_badges.append(badge)
+                node_mod -= 0.20
+            elif (planet == "Mercury" and cp == "Ketu") or (planet == "Ketu" and cp == "Mercury"):
+                badge = "💡 Jñāna Analysis (Mathematical & Systems Perception)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod += 0.10
+            elif (planet == "Venus" and cp == "Ketu") or (planet == "Ketu" and cp == "Venus"):
+                badge = "✨ Aesthetic Idealism (Ascetic Detachment / Subtle Arts)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod += 0.05
+            elif (planet == "Mars" and cp == "Ketu") or (planet == "Ketu" and cp == "Mars"):
+                badge = "⚡ Kujavat Ketu (Technical Precision / High Pitta Friction)"
+                nodal_badges.append(badge)
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
+                else:
+                    node_mod -= 0.10
+            elif (cp == host_planet or (planet == host_planet and cp in ("Rahu", "Ketu"))) and host_dignity_pct >= 60.0:
+                node_mod += 0.20
             elif cp in ["Jupiter", "Venus"]:
                 conj_mod += 0.30
             elif cp == lagna_lord:
                 conj_mod += 0.35
-            elif cp in ["Saturn", "Mars", "Rahu", "Ketu"]:
+            elif cp in ["Saturn", "Mars"]:
                 conj_mod -= 0.30
+            elif cp in ["Rahu", "Ketu"]:
+                conj_mod -= 0.20
 
     # 4. Deeptādi Vikala Avasthā (Besieged by 2+ cruel malefics)
     is_vikala = False
@@ -1713,7 +1836,13 @@ def calculate_graha_vitality(
         v_tier = "🔴 Severe Hazard" if quad["archetype"] == "The Armed Dictator" else "🔴 Fragile"
         v_bg = "#fee2e2"; v_col = "#991b1b"
 
-    affliction_badges = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge, budhaditya_badge] if b]
+    raw_afflictions = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge, budhaditya_badge] + nodal_badges if b]
+    seen_badges = set()
+    affliction_badges = []
+    for b in raw_afflictions:
+        if b not in seen_badges:
+            seen_badges.add(b)
+            affliction_badges.append(b)
 
     # Detailed Step-by-Step Calculation Receipt (ADR-009 & Section 1.2)
     receipt_lines = [
@@ -1843,6 +1972,9 @@ def calculate_graha_vitality(
         "guru_ketu_badge": guru_ketu_badge,
         "is_budhaditya": is_budhaditya,
         "budhaditya_badge": budhaditya_badge,
+        "is_grahan": is_grahan,
+        "is_angaraka": is_angaraka,
+        "is_shrapit": is_shrapit,
         "is_vikala": is_vikala,
         "vikala_badge": vikala_badge,
         "affliction_badges": affliction_badges,
@@ -2140,7 +2272,8 @@ def calculate_planetary_evaluation(
             o_dig_name = str(o_dig_info.get("dignity", "Neutral"))
 
             alertness = float(jagradaadi_map.get(other_p, {}).get("multiplier", 0.50))
-            natural_rel = rel.get_natural_relationship(other_p, p)
+            # Relationship must reflect how the RECEIVER (p) absorbs the incoming energy of other_p
+            natural_rel = rel.get_natural_relationship(p, other_p)
             lunar_weight = calculate_lunar_nature_weight(moon_lon_val, sun_lon_val) if other_p == "Moon" else None
 
             # -----------------------------------------------------------------
@@ -2663,7 +2796,8 @@ def calculate_planetary_evaluation(
         for asp_item in aspect_details:
             src_p = asp_item.get("from_planet") or asp_item.get("source")
             raw_v = float(asp_item.get("virupas", 0.0))
-            if src_p and src_p in d1_grahas and raw_v >= 20.0:
+            # Lower threshold to 12.0 Virupas to include noticeable minor aspects (Brihat Jataka)
+            if src_p and src_p in d1_grahas and raw_v >= 12.0:
                 src_lon = float(d1_grahas[src_p].get("longitude", 0.0))
                 src_targets = [
                     {
@@ -2709,6 +2843,9 @@ def calculate_planetary_evaluation(
             "calculation_receipt": vit_res.get("calculation_receipt", {}),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),
+            "is_grahan": vit_res.get("is_grahan", False),
+            "is_angaraka": vit_res.get("is_angaraka", False),
+            "is_shrapit": vit_res.get("is_shrapit", False),
             "is_vikala": vit_res.get("is_vikala", False),
             "is_vargottama": is_vargottama,
             "vargottama_badge": vargottama_badge,
@@ -2817,6 +2954,10 @@ def calculate_planetary_evaluation(
     else:
         overall_pred = "Madhyamsha (Balanced Divisional Distribution)"
         overall_meaning = "Dynamic mixture of opportunities and worldly responsibilities."
+
+    for p_name, p_dict in d1_grahas.items():
+        if p_name in planets_result and "calibrated_lajjitadi" in planets_result[p_name]:
+            p_dict.setdefault("avasthas", {})["calibrated_lajjitadi"] = planets_result[p_name]["calibrated_lajjitadi"]
 
     lagna_eval = evaluate_lagna_vitality(vargas_data, shadbala_data, advanced_aspects, "D1")
 

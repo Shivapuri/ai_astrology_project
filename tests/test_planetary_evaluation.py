@@ -698,11 +698,11 @@ def test_parashari_lordship_modifiers():
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
     assert s4_jup["expression_score"] == -20.0
-    assert fd_jup["functional_dignity_pct"] == 63.0
+    assert fd_jup["functional_dignity_pct"] == 55.4
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
     assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
-    assert "Layer 2 Functional Dignity = 63.0%" in fd_jup["math_formula"]
+    assert "Layer 2 Functional Dignity = 55.4%" in fd_jup["math_formula"]
 
     # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
     vargas_case2 = {
@@ -733,8 +733,8 @@ def test_parashari_lordship_modifiers():
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
     assert s4_sat["expression_score"] == -12.5
-    assert fd_sat["functional_dignity_pct"] == 24.2
-    assert "Layer 2 Functional Dignity = 24.2%" in fd_sat["math_formula"]
+    assert fd_sat["functional_dignity_pct"] == 28.9
+    assert "Layer 2 Functional Dignity = 28.9%" in fd_sat["math_formula"]
 
     # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
     vargas_case3 = {
@@ -767,8 +767,8 @@ def test_parashari_lordship_modifiers():
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
     assert s4_sat3["expression_score"] == 32.5
-    assert fd_sat3["functional_dignity_pct"] == 24.2
-    assert "Layer 2 Functional Dignity = 24.2%" in fd_sat3["math_formula"]
+    assert fd_sat3["functional_dignity_pct"] == 28.9
+    assert "Layer 2 Functional Dignity = 28.9%" in fd_sat3["math_formula"]
 
 
 def test_moon_phase_and_illumination_spectrum():
@@ -982,7 +982,7 @@ def test_mars_in_scorpio_12th_house_dignity():
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
     assert f_dig["lordship_mod_pct"] == 15.0
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
-    assert f_dig["functional_dignity_pct"] == 36.3
+    assert f_dig["functional_dignity_pct"] == 42.1
     assert s4_mars["expression_score"] == 15.0
     assert "House 12" in f_dig["math_steps"][1]
 
@@ -1213,6 +1213,172 @@ def test_conjunction_and_aspect_partitioning_mercury_sun_saturn():
     assert "Sun" not in vit_asp_sources
     assert "Saturn" not in vit_asp_sources
     assert "Moon" in vit_asp_sources
+
+
+def test_receiver_perspective_vantage_point():
+    """Verify relationship vantage point: Moon receiving Mercury is delighted (+1.0), not starved."""
+    from jyotish.planetary_evaluation.planetary_evaluation import get_aspect_direction_vector
+    import jyotish.relationships.relationships as rel
+    
+    # Receiver is Moon, sender is Mercury
+    assert rel.get_natural_relationship("Moon", "Mercury") == "Friend"
+    # Even though Mercury views Moon as Enemy
+    assert rel.get_natural_relationship("Mercury", "Moon") == "Enemy"
+    
+    # Incoming energy into Moon from Mercury should be positive (+1.0)
+    vec = get_aspect_direction_vector("Mercury", "Moon", "Aspect (Drishti)", "Friend")
+    assert vec == 1.0
+
+
+def test_universal_dispositor_immunity():
+    """Verify Universal Dispositor Immunity: Node never afflicts its host lord in own sign (+0.5)."""
+    from jyotish.planetary_evaluation.planetary_evaluation import get_aspect_direction_vector, calculate_graha_vitality
+
+    # 1. Mars in Scorpio with Ketu
+    vec_mars = get_aspect_direction_vector("Ketu", "Mars", "Conjunction", "Neutral", host_dispositor="Mars")
+    assert vec_mars == 0.5
+    vec_ketu = get_aspect_direction_vector("Mars", "Ketu", "Conjunction", "Neutral", host_dispositor="Mars")
+    assert vec_ketu == 0.5
+
+    # Vitality calculation for Mars in Scorpio conjoined Ketu
+    vit_mars = calculate_graha_vitality(
+        planet="Mars", sign="Scorpio", degree_in_sign=15.0,
+        dignity_name="Own Sign", dignity_pct=62.5,
+        host_planet="Mars", host_dignity_pct=62.5, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Ketu"],
+        conjunction_details=[{"planet": "Ketu", "degree_diff": 2.0, "shadbala_pct": 95.0}]
+    )
+    assert vit_mars["node_mod"] == 0.20  # Magnifies host's constructive agenda
+    assert vit_mars["is_vikala"] is False
+
+    # 2. Venus in Taurus with Rahu
+    vec_ven = get_aspect_direction_vector("Rahu", "Venus", "Conjunction", "Neutral", host_dispositor="Venus")
+    assert vec_ven == 0.5
+
+    vit_ven = calculate_graha_vitality(
+        planet="Venus", sign="Taurus", degree_in_sign=10.0,
+        dignity_name="Own Sign", dignity_pct=62.5,
+        host_planet="Venus", host_dignity_pct=62.5, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Rahu"],
+        conjunction_details=[{"planet": "Rahu", "degree_diff": 3.0, "shadbala_pct": 100.0}]
+    )
+    assert vit_ven["node_mod"] == 0.20
+
+
+def test_classical_nodal_yogas_and_ketu_combinations():
+    """Verify Grahan Yoga, Angaraka Yoga, Shrapit Yoga, and Ketu combinations with non-Jupiter planets."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality, get_aspect_direction_vector
+
+    # 1. Grahan Yoga (Sun conjoined Rahu)
+    vit_sun = calculate_graha_vitality(
+        planet="Sun", sign="Aries", degree_in_sign=10.0,
+        dignity_name="Exalted", dignity_pct=100.0,
+        host_planet="Mars", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Rahu"],
+        conjunction_details=[{"planet": "Rahu", "degree_diff": 2.0, "shadbala_pct": 90.0}]
+    )
+    assert vit_sun["is_grahan"] is True
+    assert any("Grahan Yoga" in b for b in vit_sun["affliction_badges"])
+    assert vit_sun["node_mod"] == -0.25
+
+    # 2. Angaraka Yoga (Mars + Rahu)
+    vit_mars = calculate_graha_vitality(
+        planet="Mars", sign="Gemini", degree_in_sign=12.0,
+        dignity_name="Neutral", dignity_pct=50.0,
+        host_planet="Mercury", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Rahu"],
+        conjunction_details=[{"planet": "Rahu", "degree_diff": 3.0, "shadbala_pct": 90.0}]
+    )
+    assert vit_mars["is_angaraka"] is True
+    assert any("Angaraka Yoga" in b for b in vit_mars["affliction_badges"])
+    assert vit_mars["node_mod"] == -0.25
+
+    # 3. Shrapit Yoga (Saturn + Rahu)
+    vit_sat = calculate_graha_vitality(
+        planet="Saturn", sign="Virgo", degree_in_sign=18.0,
+        dignity_name="Friend's Sign", dignity_pct=50.0,
+        host_planet="Mercury", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Rahu"],
+        conjunction_details=[{"planet": "Rahu", "degree_diff": 4.0, "shadbala_pct": 90.0}]
+    )
+    assert vit_sat["is_shrapit"] is True
+    assert any("Shrapit Yoga" in b for b in vit_sat["affliction_badges"])
+    assert vit_sat["node_mod"] == -0.25
+
+    # 4. Ketu + Mercury: Jnana Analysis
+    vit_mer = calculate_graha_vitality(
+        planet="Mercury", sign="Taurus", degree_in_sign=15.0,
+        dignity_name="Friend's Sign", dignity_pct=60.0,
+        host_planet="Venus", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Ketu"],
+        conjunction_details=[{"planet": "Ketu", "degree_diff": 4.0, "shadbala_pct": 90.0}]
+    )
+    assert any("Jñāna Analysis" in b for b in vit_mer["affliction_badges"])
+    assert vit_mer["node_mod"] == 0.10
+    assert get_aspect_direction_vector("Ketu", "Mercury", "Conjunction", "Neutral") == 0.2
+
+    # 5. Ketu + Venus: Aesthetic Idealism
+    vit_ven = calculate_graha_vitality(
+        planet="Venus", sign="Pisces", degree_in_sign=27.0,
+        dignity_name="Exalted", dignity_pct=100.0,
+        host_planet="Jupiter", host_dignity_pct=75.0, host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0,
+        conjunctions=["Ketu"],
+        conjunction_details=[{"planet": "Ketu", "degree_diff": 5.0, "shadbala_pct": 90.0}]
+    )
+    assert any("Aesthetic Idealism" in b for b in vit_ven["affliction_badges"])
+    assert vit_ven["node_mod"] == 0.05
+    assert get_aspect_direction_vector("Ketu", "Venus", "Conjunction", "Neutral") == 0.0
+
+
+def test_rahu_natural_allies_vectors():
+    """Verify Rahu shares affinity (+0.2) with Saturn, Mercury, and Venus without full starvation."""
+    from jyotish.planetary_evaluation.planetary_evaluation import get_aspect_direction_vector
+
+    assert get_aspect_direction_vector("Saturn", "Rahu", "Conjunction", "Neutral") == 0.2
+    assert get_aspect_direction_vector("Rahu", "Saturn", "Conjunction", "Neutral") == 0.2
+    assert get_aspect_direction_vector("Mercury", "Rahu", "Conjunction", "Neutral") == 0.2
+    assert get_aspect_direction_vector("Rahu", "Mercury", "Conjunction", "Neutral") == 0.2
+    assert get_aspect_direction_vector("Venus", "Rahu", "Conjunction", "Neutral") == 0.2
+    assert get_aspect_direction_vector("Rahu", "Venus", "Conjunction", "Neutral") == 0.2
+
+
+def test_aspect_weather_cutoff_12_virupas():
+    """Verify minor aspects >= 12.0 Virūpas generate incoming aspect graphs (Brihat Jataka)."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Leo", "degree_0_to_30": 15.0, "longitude": 135.0, "dignity": "Own Sign"},
+                "Moon": {"sign": "Libra", "degree_0_to_30": 10.0, "longitude": 190.0, "dignity": "Neutral"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 20.0, "longitude": 200.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    planets = eval_res["planets"]
+    
+    found_minor_aspect = False
+    for p_name, p_data in planets.items():
+        for asp in p_data.get("step3_aspects", {}).get("aspects", []):
+            if asp.get("virupas", 0.0) >= 12.0:
+                assert "aspect_graph" in asp or asp.get("from_planet") in p_data.get("incoming_aspect_graphs", {})
+                found_minor_aspect = True
+    assert found_minor_aspect, "Should find aspects >= 12.0 Virūpas"
 
 
 

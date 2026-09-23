@@ -185,49 +185,34 @@ def evaluate_lagna_vitality(
 
     # Lajjitādi Avasthā (Feeling States of the Captain)
     lord_avasthas = lord_data.get("avasthas", {})
-    lajjitadi_list = lord_avasthas.get("lajjitadi", [])
-    is_starved = False
-    starved_saturn = False
-    is_delighted = False
-    is_proud = False
-    is_ashamed = False
-    is_agitated = False
+    lajjitadi_list = lord_avasthas.get("calibrated_lajjitadi") or lord_avasthas.get("lajjitadi", [])
 
     for item in lajjitadi_list:
         st = item.get("state", "").lower()
         cond = item.get("condition", "").lower()
+        eff_int = float(item.get("effective_intensity", 1.0))
         if "kshudhita" in st or "starved" in st:
-            is_starved = True
-            if "saturn" in cond:
-                starved_saturn = True
-        if "mudita" in st or "delighted" in st:
-            is_delighted = True
-        if "garvita" in st or "proud" in st:
-            is_proud = True
-        if "lajjita" in st or "ashamed" in st:
-            is_ashamed = True
-        if "kshobhita" in st or "agitated" in st:
-            is_agitated = True
-
-    if is_proud:
-        p1_score += 0.6
-        p1_notes.append("Lord Proud (Garvita) (+0.6): Radiant self-respect and inspiring initiative.")
-    if is_delighted:
-        p1_score += 0.4
-        p1_notes.append("Lord Delighted (Mudita) (+0.4): Receptive, encouraged, and cheered on by friendly allies.")
-    if is_starved:
-        if starved_saturn:
-            p1_score -= 0.8
-            p1_notes.append("Lord Starved by Saturn (Kshudhita) (-0.8): Painful inner critic, self-doubt, and persistent feeling of limitation or delay.")
-        else:
-            p1_score -= 0.5
-            p1_notes.append("Lord Starved (Kshudhita) (-0.5): Starved of essential emotional resources by enemies.")
-    if is_ashamed:
-        p1_score -= 0.8
-        p1_notes.append("Lord Ashamed (Lajjita) (-0.8): Shamed in action, fearful of judgment or unworthiness.")
-    if is_agitated:
-        p1_score -= 0.5
-        p1_notes.append("Lord Agitated (Kshobhita) (-0.5): Internal agitation and friction from cruel planetary influences.")
+            base_pen = 0.8 if "saturn" in cond else 0.5
+            pen = round(base_pen * eff_int, 2)
+            p1_score -= pen
+            sat_lbl = " by Saturn" if "saturn" in cond else ""
+            p1_notes.append(f"Lord Starved{sat_lbl} (Kshudhita) (-{pen:.2f}): Painful inner critic, self-doubt, and persistent feeling of limitation or delay.")
+        elif "mudita" in st or "delighted" in st:
+            bonus = round(0.4 * eff_int, 2)
+            p1_score += bonus
+            p1_notes.append(f"Lord Delighted (Mudita) (+{bonus:.2f}): Receptive, encouraged, and cheered on by friendly allies.")
+        elif "garvita" in st or "proud" in st:
+            bonus = round(0.6 * eff_int, 2)
+            p1_score += bonus
+            p1_notes.append(f"Lord Proud (Garvita) (+{bonus:.2f}): Radiant self-respect and inspiring initiative.")
+        elif "lajjita" in st or "ashamed" in st:
+            pen = round(0.8 * eff_int, 2)
+            p1_score -= pen
+            p1_notes.append(f"Lord Ashamed (Lajjita) (-{pen:.2f}): Shamed in action, fearful of judgment or unworthiness.")
+        elif "kshobhita" in st or "agitated" in st:
+            pen = round(0.5 * eff_int, 2)
+            p1_score -= pen
+            p1_notes.append(f"Lord Agitated (Kshobhita) (-{pen:.2f}): Internal agitation and friction from cruel planetary influences.")
 
     # Deeptādi / Direct Conjunction with Malefics
     deeptadi = lord_avasthas.get("deeptadi", {})
