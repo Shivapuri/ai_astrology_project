@@ -43,7 +43,10 @@ It utilizes a unified, **Integrated Approach**:
 ## Test-Driven Development & Regression Testing (MANDATORY)
 - **Zero Breakage Policy**: You must never introduce a change that silently breaks existing mathematical calculations, API responses, or UI functionality.
 - **Write Tests for Changes**: Whenever you make significant structural changes to the `/jyotish/` backend engines, Flask API routes, or the frontend layout, you MUST write or update the corresponding tests in the `/tests/` directory.
-- **Run the Suite**: It is STRICTLY MANDATORY after EACH AND EVERY change to run the entire test suite (`pytest tests/`) to guarantee everything is "Green" (passing). Never report back to the user without running the tests first.
+- **Targeted Testing First (Fast Iteration Loop)**:
+  - Do NOT run the entire test fleet (`pytest tests/`) for localized, incremental frontend or backend changes. Full Playwright browser suites take several minutes and create unnecessary delays.
+  - Run **only the specific, targeted test file(s)** related to the code or subsystem being changed (e.g. `pytest tests/test_master_diagnostic_ui.py` for Master Diagnostics UI, `pytest tests/test_planetary_evaluation.py` for dignity math).
+  - Run the full test fleet (`pytest tests/`) only for comprehensive pre-release milestones or major architectural overhauls affecting multiple decoupled engines.
 - **Test Categories**:
   - `test_math_engines.py` & `test_quantitative_avasthas.py`: Verify that Vargas, Avasthas, and Dignities calculate exactly to established baseline JSON/CSV files.
   - `test_api.py`: Verify that Flask JSON endpoints return 200 OK and expected schemas.

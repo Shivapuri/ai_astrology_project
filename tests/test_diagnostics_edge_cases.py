@@ -133,7 +133,7 @@ def test_aspect_virupa_ui_filtering(page: Page):
     page.wait_for_selector("#master-diagnostic-tbody tr")
 
     # 4. Target the Sun's row and its "Environmental Vision" (Aspects) cell
-    sun_row = page.locator("#master-diagnostic-tbody tr:has-text('Sun')")
+    sun_row = page.locator("#master-diagnostic-tbody tr.diagnostic-row:has-text('Sun')")
     aspects_cell = sun_row.locator("td").nth(5) # Environmental Vision (Aspects/Yuti) is Column 6 (index 5)
 
     # Assert 1: The < 20v aspect (Jupiter) is completely invisible in the main cell text

@@ -216,15 +216,15 @@ def test_master_diagnostic_widget_renders(page: Page):
     init_page(page)
     page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell2'))")
     page.wait_for_timeout(500)
-    rows = page.locator("#cell2 .master-diagnostic-table tbody tr")
+    rows = page.locator("#cell2 .master-diagnostic-table tbody tr.diagnostic-row")
     assert rows.count() == 10, f"Expected 10 rows (Lagna + 9 Grahas), got {rows.count()}"
     assert "Lagna" in rows.first.inner_text()
     text = page.locator("#cell2 .master-diagnostic-table").inner_text()
     assert "Venus" in text
-    assert "Shadbala" in page.locator("#cell2 .master-diagnostic-table thead").inner_text()
-    assert "Vitality" in page.locator("#cell2 .master-diagnostic-table thead").inner_text()
-    assert "/ 10" in page.locator("#cell2 .master-diagnostic-table tbody").inner_text()
-    assert "Net" in page.locator("#cell2 .master-diagnostic-table tbody").inner_text()
+    assert "Shadbala" in page.locator("#cell2 .master-diagnostic-table > thead").inner_text()
+    assert "Vitality" in page.locator("#cell2 .master-diagnostic-table > thead").inner_text()
+    assert "/ 10" in page.locator("#cell2 .master-diagnostic-table > tbody").inner_text()
+    assert "Net" in page.locator("#cell2 .master-diagnostic-table > tbody").inner_text()
 
     # Test multi-Varga switching in grid cell
     v_select = page.locator("#cell2 .varga-select")
@@ -236,7 +236,7 @@ def test_master_diagnostic_widget_renders(page: Page):
     page.wait_for_timeout(400)
     subtitle = page.locator("#cell2 .varga-subtitle").inner_text()
     assert "D9" in subtitle
-    assert page.locator("#cell2 .master-diagnostic-table tbody tr").count() == 10
+    assert page.locator("#cell2 .master-diagnostic-table tbody tr.diagnostic-row").count() == 10
 
     # Switch to D10 Dasamsa
     v_select.select_option("D10")
@@ -252,10 +252,10 @@ def test_floating_master_diagnostic_modal(page: Page):
     assert modal.is_visible()
     title = page.locator("#widgetMaximizeModalTitle").inner_text()
     assert "Master Graha Diagnostics" in title
-    rows = page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody tr")
+    rows = page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody tr.diagnostic-row")
     assert rows.count() == 10
-    assert "Vitality" in page.locator("#widgetMaximizeContainer .master-diagnostic-table thead").inner_text()
-    assert "/ 10" in page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody").inner_text()
+    assert "Vitality" in page.locator("#widgetMaximizeContainer .master-diagnostic-table > thead").inner_text()
+    assert "/ 10" in page.locator("#widgetMaximizeContainer .master-diagnostic-table > tbody").inner_text()
 
     # Test multi-Varga switching in floating modal
     v_select = page.locator("#widgetMaximizeContainer .varga-select")
@@ -266,7 +266,7 @@ def test_floating_master_diagnostic_modal(page: Page):
     page.wait_for_timeout(400)
     sub = page.locator("#widgetMaximizeContainer .varga-subtitle").inner_text()
     assert "D9" in sub
-    assert page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody tr").count() == 10
+    assert page.locator("#widgetMaximizeContainer .master-diagnostic-table tbody tr.diagnostic-row").count() == 10
 
     # Close modal
     page.evaluate("document.getElementById('widgetMaximizeModal').style.display = 'none'")

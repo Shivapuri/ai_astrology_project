@@ -1876,11 +1876,117 @@
             border: 1px solid #e5dccb;
             vertical-align: middle;
         }
-        .master-diagnostic-table tr:hover td {
-            background: #fbf5ea;
+        .master-diagnostic-table tr.diagnostic-row {
+            cursor: pointer;
+            transition: background-color 0.15s ease;
         }
-        .master-diagnostic-table tr:hover td:first-child {
+        .master-diagnostic-table tr.diagnostic-row:hover td {
+            background: #fbf5ea !important;
+        }
+        .master-diagnostic-table tr.diagnostic-row:hover td:first-child {
             background: #f7eedd !important;
+        }
+        .master-diagnostic-table tr.diagnostic-row.drawer-open td {
+            background: #f8f1e5 !important;
+            border-bottom: 1px dashed #dcb594 !important;
+        }
+        .master-diagnostic-table tr.diagnostic-row.drawer-open td:first-child {
+            background: #f3e6d3 !important;
+        }
+        .master-diagnostic-table tr.diagnostic-drawer-row {
+            background: #faf6ee !important;
+        }
+        .master-diagnostic-table tr.diagnostic-drawer-row > td {
+            padding: 10px 14px !important;
+            background: #faf6ee !important;
+            border-bottom: 2px solid #dcb594 !important;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+        .diagnostic-table-cell-2line {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-height: 32px;
+            justify-content: center;
+        }
+        .drawer-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+            width: 100%;
+        }
+        .drawer-card {
+            background: #ffffff;
+            border: 1px solid #e2d7c3;
+            border-radius: 6px;
+            padding: 8px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+        .drawer-card-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4a3325;
+            border-bottom: 1px solid #f0e6d6;
+            padding-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .drawer-card-body {
+            font-size: 10.5px;
+            color: #334155;
+            line-height: 1.4;
+        }
+        .drawer-mini-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin: 4px 0;
+        }
+        .drawer-mini-table th {
+            background: #fbf7ef;
+            color: #78716c;
+            padding: 2px 4px;
+            font-weight: 600;
+            border-bottom: 1px solid #e2d7c3;
+            text-align: left;
+        }
+        .drawer-mini-table td {
+            padding: 2px 4px;
+            border-bottom: 1px solid #f5f0e6;
+        }
+        .drawer-receipt {
+            background: #231e18;
+            color: #f5eedf;
+            border: 1px solid #14100c;
+            border-radius: 6px;
+            padding: 8px 12px;
+        }
+        .drawer-receipt-header {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fcd34d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+        .drawer-receipt-content {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+            font-size: 10px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 0;
+            color: #e2d7c3;
         }
         .avastha-badge-pill {
             display: inline-flex;
@@ -4411,15 +4517,15 @@
                     <table class="master-diagnostic-table dignity-grid" style="width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
                         <thead>
                             <tr>
-                                <th class="tooltip-target" data-tooltip="<strong>Graha & Soul</strong><br>• <strong>Graha:</strong> Planetary archetype with motion status ([R] Retrograde, [C] Combust).<br>• <strong>Chara Kāraka:</strong> Soul-level role assigned by longitudinal degree in sign (BPHS Ch. 32): Ātmakāraka (Soul), Amātyakāraka (Career), etc.<br>• <strong>Master Lords (👑):</strong> Lagna Lord, Navamsha Lord, and Drekkana Lord." style="width: 110px; cursor: help;">Graha & Soul</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Placement & Functional Role</strong><br>• <strong>Sign & House:</strong> Whole Sign house placement plus 3D Campanus Bhava shift.<br>• <strong>House Rulerships:</strong> Houses governed by this planet.<br>• <strong>Functional Titles:</strong> Yogakāraka (supreme benefic), Lagneśa (ascendant lord), Māraka (threshold), Bādhaka (karmic test)." style="width: 130px; cursor: help;">Placement & Role</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Intent & Quality (5-Fold Dignity)</strong><br>• Synthesized from permanent Natural Relationship (Naisargika) + chart-specific Temporary Relationship (Tātkālika) with the host sign lord.<br>• Dignities range from Exalted / Moolatrikona / Own Sign down to Bitter Enemy and Debilitated.<br>• For Rahu/Ketu: Reflects host dispositor's dignity as a proxy." style="width: 115px; cursor: help;">Intent & Quality (Dignity)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Host Dispositor (Bedrock Foundation)</strong><br>• The planetary lord governing the sign where this planet resides.<br>• Provides the bedrock resources and determines whether a debilitated planet receives Neecha Bhanga cancellation / rescue.<br>• Fortified host acts as a savior; strained host creates foundational drag." style="width: 125px; cursor: help;">Host Dispositor (Foundation)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Kinetic Muscle (Shadbala Horsepower)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Virūpas/Rūpas, % of required minimum threshold, relative chart rank (#1 to #7), and Karmic Fruit (Ishta/Kashta).<br>• For Rahu/Ketu: Inherits proxy muscle via host dispositor." style="width: 125px; cursor: help;">Kinetic Muscle (Shadbala)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Environmental Vision (Aspects &amp; Yuti)</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign, with conjunction orbs and commanding precedence.<br>• <strong>Dṛṣṭi:</strong> Line-of-sight vision and gaze in Virūpas (Śubha Dṛṣṭi supportive, Pāpa Dṛṣṭi confrontational). Key aspects (&gt; 20v) highlighted with qualitative synthesis.<br>• <strong>Badges:</strong> Graha Yuddha (war), Combustion, and classical nodal/affliction yogas." style="width: 145px; cursor: help;">Environmental Vision (Aspects/Yuti)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Subconscious Drive (Nakshatra)</strong><br>• <strong>Deity:</strong> Presiding Vedic archetype shaping inner motivation.<br>• <strong>Overlord:</strong> Planetary ruler dictating the underlying agenda and Vimshottari timeline.<br>• <strong>Nature &amp; Drive:</strong> Innate temperament and cosmic purpose." style="width: 140px; cursor: help;">Subconscious Drive (Nakshatra)</th>
-                                <th class="tooltip-target" data-tooltip="<strong>Avasthās: Age, Alertness &amp; Social Weather</strong><br>• <strong>1. Physical Fuel &amp; Age (Bālādi - BPHS 45.3 / Vol 2):</strong> Biological maturity based on degrees in odd vs. even signs (Bala infant, Kumara youth, Yuva prime adult, Vriddha elder, Mrita dormant).<br>• <strong>2. Conscious Alertness (Jāgradādi - BPHS 45.5):</strong> Alertness &amp; house management capacity (Jagrat awake 100%, Svapna sleepy 50%, Sushupti asleep 10%).<br>• <strong>3. Innate Mood (Dīptādi - BPHS 45.7):</strong> Subjective mood from sign dignity (Pramudita joyous, Deepta radiant, Swastha confident, Santa peaceful, Bhita alarmed).<br>• <strong>4. Social Weather (Lajjitādi - BPHS 45.11):</strong> Relational dynamics from other planets (Mudita supported, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 185px; min-width: 180px; cursor: help;">Avasthās &amp; Age</th>
-                                <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 140px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Graha & Soul</strong><br>• <strong>Graha:</strong> Planetary archetype with motion status ([R] Retrograde, [C] Combust).<br>• <strong>Chara Kāraka:</strong> Soul-level role assigned by longitudinal degree in sign (BPHS Ch. 32): Ātmakāraka (Soul), Amātyakāraka (Career), etc.<br>• <strong>Master Lords (👑):</strong> Lagna Lord, Navamsha Lord, and Drekkana Lord." style="width: 95px; cursor: help;">Graha & Soul</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Placement & Functional Role</strong><br>• <strong>Sign & House:</strong> Whole Sign house placement plus 3D Campanus Bhava shift.<br>• <strong>House Rulerships:</strong> Houses governed by this planet.<br>• <strong>Functional Titles:</strong> Yogakāraka (supreme benefic), Lagneśa (ascendant lord), Māraka (threshold), Bādhaka (karmic test)." style="width: 120px; cursor: help;">Placement & Role</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Intent & Quality (5-Fold Dignity)</strong><br>• Synthesized from permanent Natural Relationship (Naisargika) + chart-specific Temporary Relationship (Tātkālika) with the host sign lord.<br>• Dignities range from Exalted / Moolatrikona / Own Sign down to Bitter Enemy and Debilitated.<br>• For Rahu/Ketu: Reflects host dispositor's dignity as a proxy." style="width: 110px; cursor: help;">Intent & Quality (Dignity)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Host Dispositor (Bedrock Foundation)</strong><br>• The planetary lord governing the sign where this planet resides.<br>• Provides the bedrock resources and determines whether a debilitated planet receives Neecha Bhanga cancellation / rescue.<br>• Fortified host acts as a savior; strained host creates foundational drag." style="width: 100px; cursor: help;">Host Dispositor (Foundation)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Kinetic Muscle (Shadbala Horsepower)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Virūpas/Rūpas, % of required minimum threshold, relative chart rank (#1 to #7), and Karmic Fruit (Ishta/Kashta).<br>• For Rahu/Ketu: Inherits proxy muscle via host dispositor." style="width: 105px; cursor: help;">Kinetic Muscle (Shadbala)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Environmental Vision (Aspects &amp; Yuti)</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign, with conjunction orbs and commanding precedence.<br>• <strong>Dṛṣṭi:</strong> Line-of-sight vision and gaze in Virūpas (Śubha Dṛṣṭi supportive, Pāpa Dṛṣṭi confrontational). Key aspects (&gt; 20v) highlighted with qualitative synthesis.<br>• <strong>Badges:</strong> Graha Yuddha (war), Combustion, and classical nodal/affliction yogas." style="width: 130px; cursor: help;">Environmental Vision (Aspects/Yuti)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Subconscious Drive (Nakshatra)</strong><br>• <strong>Deity:</strong> Presiding Vedic archetype shaping inner motivation.<br>• <strong>Overlord:</strong> Planetary ruler dictating the underlying agenda and Vimshottari timeline.<br>• <strong>Nature &amp; Drive:</strong> Innate temperament and cosmic purpose." style="width: 120px; cursor: help;">Subconscious Drive (Nakshatra)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Avasthās: Age, Alertness &amp; Social Weather</strong><br>• <strong>1. Physical Fuel &amp; Age (Bālādi - BPHS 45.3 / Vol 2):</strong> Biological maturity based on degrees in odd vs. even signs (Bala infant, Kumara youth, Yuva prime adult, Vriddha elder, Mrita dormant).<br>• <strong>2. Conscious Alertness (Jāgradādi - BPHS 45.5):</strong> Alertness &amp; house management capacity (Jagrat awake 100%, Svapna sleepy 50%, Sushupti asleep 10%).<br>• <strong>3. Innate Mood (Dīptādi - BPHS 45.7):</strong> Subjective mood from sign dignity (Pramudita joyous, Deepta radiant, Swastha confident, Santa peaceful, Bhita alarmed).<br>• <strong>4. Social Weather (Lajjitādi - BPHS 45.11):</strong> Relational dynamics from other planets (Mudita supported, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 100px; cursor: help;">Avasthās &amp; Age</th>
+                                <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 125px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
                             </tr>
                         </thead>
                         <tbody id="master-diagnostic-tbody" class="master-diagnostic-tbody"></tbody>
@@ -6154,6 +6260,31 @@
             `;
         }
 
+        function toggleDiagnosticDrawer(drawerId, rowEl) {
+            const drawer = document.getElementById(drawerId);
+            if (!drawer) return;
+            const isHidden = (drawer.style.display === 'none' || !drawer.style.display);
+            
+            // Accordion behavior: close other open drawers in this table
+            const tbody = drawer.closest('tbody');
+            if (tbody) {
+                tbody.querySelectorAll('.diagnostic-drawer-row').forEach(d => {
+                    if (d !== drawer) d.style.display = 'none';
+                });
+                tbody.querySelectorAll('.diagnostic-row').forEach(r => {
+                    if (r !== rowEl) r.classList.remove('drawer-open');
+                });
+            }
+            
+            if (isHidden) {
+                drawer.style.display = 'table-row';
+                if (rowEl) rowEl.classList.add('drawer-open');
+            } else {
+                drawer.style.display = 'none';
+                if (rowEl) rowEl.classList.remove('drawer-open');
+            }
+        }
+
         function updateMasterDiagnosticWidget(cell) {
             if (!cell) {
                 cell = document.querySelector('.grid-cell[data-widget="master-diagnostic"]') ||
@@ -7368,77 +7499,157 @@
 
                 const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>• <strong>Archetype:</strong> ${lagnaArchetype}<br>• <strong>Verdict:</strong> ${lagnaVerdict}`;
 
+                const lgShortSign = `${lgSign} ${lgDeg} • H1`;
+                const lgExprBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:8.5px; font-weight:700;">High Expression (+25%)</span>`;
+                const lgCaptainBadge = `<span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:9px; padding:1px 5px;">${cleanLordDig} ${lordDigPct.toFixed(0)}%</span>`;
+
                 tbody.innerHTML += `
-                    <tr class="interactive-table-row" data-type="planet" data-id="Lagna" style="background:#faf7f2; border-bottom: 2px solid #dcb594; cursor: pointer;">
-                        <td>
-                            <div class="tooltip-target" data-tooltip="${lagnaTip}" style="display:flex; align-items:center; gap:6px; cursor:help;">
-                                <span style="font-size:16px;">🌅</span>
+                    <tr class="interactive-table-row diagnostic-row" data-type="planet" data-id="Lagna" style="background:#faf7f2; border-bottom: 2px solid #dcb594; cursor: pointer;" onclick="toggleDiagnosticDrawer('drawer-Lagna', this)">
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size:12px; color:#4a3325;">
+                                    <span style="font-size:14px;">🌅</span>
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lagnaTip)}" style="cursor:help;">Lagna</span>
+                                </div>
                                 <div>
-                                    <div style="display:flex; align-items:center; gap:4px;">
-                                        <strong style="color:#4a3325; font-size:12.5px;">Lagna</strong>
-                                        <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size:9px; font-weight:bold;">Tanū Bhāva</span>
-                                    </div>
-                                    <div style="font-size:10px; color:#78716c;">Ascendant (H1)</div>
+                                    <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size:8.5px; font-weight:bold;">Tanū Bhāva (H1)</span>
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <div class="tooltip-target" data-tooltip="${lgPlacementTip}" style="cursor:help;">
-                                <strong style="color:#1e293b;">${lgSign} ${lgDeg}</strong>
-                                <div style="font-size:10px; color:#64748b;">House 1 (Ascendant)</div>
-                                <div style="font-size:9.5px; color:#475569; margin-top:2px;">Lord: <strong>${lgLord}</strong></div>
-                                <div style="font-size:9.5px; color:#78716c; margin-top:1px;">${lgNak}</div>
-                            </div>
-                        </td>
-                        <td style="text-align: center;">
-                            <div class="tooltip-target" data-tooltip="${lgLordTip}" style="cursor:help;">
-                                <span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold;">${cleanLordDig}</span>
-                                <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${lordDigPct.toFixed(0)}% Dignity</div>
-                                <div style="font-size:9px; color:#64748b;">Captain: ${lgLord}</div>
-                            </div>
-                        </td>
-                        <td style="text-align: center;">
-                            <div class="tooltip-target" data-tooltip="${lgHostTip}" style="cursor:help;">
-                                <div style="font-weight:600; font-size:11px; color:#1e293b;">Host: ${lordHost}</div>
-                                <div style="font-size:9.5px; color:#64748b;">${lordHostDig.toFixed(0)}% Dignity • ${lordHostSb.toFixed(0)}% Musc</div>
-                                <div style="margin-top:2px;">${lordRescueBadge}</div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="tooltip-target" data-tooltip="${lgPowerTip}" style="cursor:help;">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <strong>${sbVir} Vir</strong> <span style="font-size:10px; color:${(sbPct || 0) >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'} req)</span>
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lgPlacementTip)}" style="cursor:help;">${lgShortSign}</span>
                                 </div>
-                                <div style="font-size:9.5px; color:#64748b;">${sbRank ? 'Rank #' + sbRank : ''} • Captain stamina</div>
-                                <div style="font-size:9px; color:#475569; margin-top:1px;">I: ${ishta} / K: ${kashta}</div>
+                                <div>${lgExprBadge}</div>
                             </div>
                         </td>
-                        <td>
-                            <div class="tooltip-target" data-tooltip="${lgInfluencesTip}" style="cursor:help;">
-                                <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
-                                    ${lagnaConj.length > 0 ? `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${lgConjBadges}</div>` : '<div style="color:#94a3b8; font-size:9.5px;">Clean Horizon</div>'}
-                                    <div style="display:flex; flex-wrap:wrap; gap:2px;">${cuspDrishtiBadge} ${kartariBadge}</div>
-                                    ${lagnaDrishtiHtml}
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div style="font-size:10.5px; font-weight:700; white-space:nowrap;">
+                                    Captain: ${lgCaptainBadge}
+                                </div>
+                                <div style="font-size:9.5px; color:#475569; font-weight:600;">
+                                    ↳ Lord: <strong>${lgLord}</strong>
                                 </div>
                             </div>
                         </td>
-                        <td>
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">Host: <strong>${lordHost}</strong></div>
+                                <div>${lordRescueBadge}</div>
+                            </div>
+                        </td>
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                    <strong>${sbVir}v</strong> <span style="font-size:9.5px; color:${(sbPct || 0) >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'})</span>
+                                </div>
+                                <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap;">
+                                    ${sbRank ? 'Rank #' + sbRank + ' • ' : ''}Captain Stamina
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div>${cuspDrishtiBadge}</div>
+                                <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${kartariBadge || (lagnaConj.length > 0 ? 'Yuti: ' + lagnaConj.join(', ') : 'Clean Horizon')}
+                                </div>
+                            </div>
+                        </td>
+                        <td style="padding: 4px 6px;">
                             ${lgNakshatraCellHtml}
                         </td>
-                        <td>
-                            <div class="tooltip-target" data-tooltip="${lgAvasthaTip}" style="cursor:help; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:4px 6px; display:flex; flex-direction:column; gap:2px; font-size:10px;">
-                                <div style="font-size:8px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Horizon</div>
-                                <div style="font-size:10px; font-weight:bold; color:#1e293b;">Age: <span class="badge" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9.5px; font-weight:700;">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span></div>
-                                <div style="font-size:8.5px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
-                                <div style="font-size:9.5px; color:#3730a3; font-weight:600; margin-top:1px;">Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' ➔ B' + lordCHouse : ''}</div>
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div>
+                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgAvasthaTip)}">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span>
+                                </div>
+                                <div style="font-size:9px; color:#3730a3; font-weight:600;">
+                                    Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' (➔ B' + lordCHouse + ')' : ''}
+                                </div>
                             </div>
                         </td>
-                        <td style="text-align: center;">
-                            <div class="tooltip-target" data-tooltip="${lgVitalityTip}" style="cursor:help; display:inline-block;">
-                                <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:10px; font-weight:bold; padding:2px 6px;">★ ${lagnaVitScore.toFixed(1)} • ${lagnaTier}</span>
-                                <div style="font-size:10.5px; font-weight:bold; color:#1e293b; margin-top:2px;"><strong style="font-size:13px;">★ ${lagnaVitScore.toFixed(1)}</strong> <span style="font-size:10px; color:#64748b;">/ 10</span></div>
-                                <div style="font-size:9px; color:#64748b; font-weight:500; margin-top:1px;">Intent: ${lordDigPct.toFixed(0)}% | Power: ${sbPct !== null ? sbPct : '--'}%</div>
-                                <div style="font-size:9.5px; color:#64748b; margin-top:1px;">${lagnaArchetype}</div>
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div>
+                                    <span class="badge tooltip-target" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:9.5px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgVitalityTip)}">★ ${lagnaVitScore.toFixed(1)} • ${lagnaArchetype}</span>
+                                </div>
+                                <div style="font-size:9.5px; color:#475569; font-weight:600; white-space:nowrap;">
+                                    ★ <strong style="color:#1e293b; font-size:11px;">${lagnaVitScore.toFixed(1)}</strong> / 10 • <span style="font-size:8.5px; color:#64748b;">Intent: ${lordDigPct.toFixed(0)}% | Power: ${sbPct !== null ? sbPct : '--'}%</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="drawer-Lagna" class="diagnostic-drawer-row" style="display:none;">
+                        <td colspan="9">
+                            <div class="drawer-container">
+                                <div class="drawer-grid">
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>👑 Lagna Lord Foundation</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Lagneśa Authority</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            <div><strong>Lagneśa (Ascendant Lord):</strong> ${lgLord} in ${lordSign} (House ${lordWHouse})</div>
+                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:9px;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
+                                            <div style="margin-top:2px;"><strong>Dispositor of Captain:</strong> ${lordHost} (${lordHostDig.toFixed(0)}% dignity, ${lordHostSb.toFixed(0)}% muscle)</div>
+                                            <div style="margin-top:4px; font-size:9.5px; color:#64748b;">The Lagna Lord serves as the captain of the physical vessel. Its dignity and stamina set the baseline capacity to manifest destiny.</div>
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>🏡 Rising Field (Tanū Bhāva)</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Physical Horizon</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            <div><strong>Rising Sign:</strong> ${lgSign} ${lgDeg} (${(signInfo[lgSign] || {}).element || '--'} • ${(signInfo[lgSign] || {}).quality || '--'})</div>
+                                            <div style="margin-top:2px;"><strong>House Structure:</strong> Whole Sign H1, Campanus Bhava 1 Cusp</div>
+                                            <div style="margin-top:2px;"><strong>Flanking Enclosure:</strong> ${kartariBadge || kartariType}</div>
+                                            <div style="margin-top:4px; font-size:9.5px; color:#64748b;">House 1 governs vitality, self-identity, physical health, and personal perspective. Benefics flanking H2 and H12 shield the horizon.</div>
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>⚡ Horizon Inflowing Aspects</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Dṛṣṭi on Cusp 1</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            <div><strong>Net Vision on Cusp 1:</strong> ${cuspDrishtiBadge} (Benefic: +${c1Plus.toFixed(1)}v, Malefic: -${c1Minus.toFixed(1)}v)</div>
+                                            <div style="margin-top:4px;"><strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lgConjBadges : 'None (clean horizon)'}</div>
+                                            <div style="margin-top:4px;"><strong>Aspect Rays:</strong></div>
+                                            <div style="margin-top:2px;">${lagnaDrishtiHtml}</div>
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>🧠 Biological Fuel &amp; Archetype</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Physical Vessel</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            <div><strong>Biological Age:</strong> ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)</div>
+                                            <div style="font-size:9.5px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
+                                            <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:9.5px; font-weight:bold;">${lagnaArchetype}</span></div>
+                                            <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">🧠 ${lagnaVerdict}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="drawer-receipt">
+                                    <div class="drawer-receipt-header">🧮 Ascendant (Lagna) Vitality Audit Receipt</div>
+                                    <pre class="drawer-receipt-content">🧮 LAGNA VITALITY AUDIT RECEIPT
+------------------------------------
+• Ascendant Degree:  ${lgSign} ${lgDeg} (House 1)
+• Captain (Lagneśa): ${lgLord} in ${lordSign} [${cleanLordDig} ${lordDigPct.toFixed(0)}%]
+• Captain Muscle:    ${sbVir} Virūpas (${sbPct !== null ? sbPct + '%' : '--'} of required, Rank #${sbRank || '--'})
+• Host Bedrock:      ${lordHost} [${lordHostDig.toFixed(0)}% Dignity, ${lordHostSb.toFixed(0)}% Muscle]
+• Horizon Skylight:  Net ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas (${kartariType})
+• Biological Age:    ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)
+------------------------------------
+★ Final Vitality:    ★ ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
+• Archetype:         ${lagnaArchetype}
+• Verdict:           ${lagnaVerdict}</pre>
+                                </div>
                             </div>
                         </td>
                     </tr>
@@ -7826,7 +8037,11 @@
                         `</div>`;
                 }
 
+                let digStyle = 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;';
+                let digIcon = '';
                 if (isNode) {
+                    digStyle = 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;';
+                    digIcon = '';
                     const nodeDigTip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
                         `• <strong>Why No 5-Fold Dignity:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical body or own sign.<br>` +
                         `• <strong>Effective Dignity:</strong> ${effDig.toFixed(0)}% (reflecting host ${signLord}'s ${hostDig.toFixed(0)}% dignity with sign affinity).<br>` +
@@ -7861,33 +8076,31 @@
                         `• <strong>How it feels:</strong> ${digMeaning}` +
                         funcDigMathBlock;
 
-                    let style = '';
-                    let icon = '';
                     if (rawDig.includes('Exalt')) {
-                        icon = '👑 '; style = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
+                        digIcon = '👑 '; digStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
                     } else if (rawDig.includes('Moola')) {
-                        icon = '🏛️ '; style = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
+                        digIcon = '🏛️ '; digStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
                     } else if (rawDig.includes('Own')) {
-                        icon = '🏡 '; style = 'background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;';
+                        digIcon = '🏡 '; digStyle = 'background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;';
                     } else if (rawDig.includes('Great Friend')) {
-                        icon = '🤝 '; style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;';
+                        digIcon = '🤝 '; digStyle = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;';
                     } else if (rawDig.includes('Friend')) {
-                        icon = '🙂 '; style = 'background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;';
+                        digIcon = '🙂 '; digStyle = 'background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;';
                     } else if (rawDig.includes('Neutral')) {
-                        icon = '⚖️ '; style = 'background:#f5f5f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;';
+                        digIcon = '⚖️ '; digStyle = 'background:#f5f5f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;';
                     } else if (rawDig.includes('Great Enemy')) {
-                        icon = '⚔️ '; style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;';
+                        digIcon = '⚔️ '; digStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;';
                     } else if (rawDig.includes('Enemy')) {
-                        icon = '⚠️ '; style = 'background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;';
+                        digIcon = '⚠️ '; digStyle = 'background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;';
                     } else if (rawDig.includes('Debilit')) {
-                        icon = '🔻 '; style = 'background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;';
+                        digIcon = '🔻 '; digStyle = 'background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;';
                     } else {
-                        style = 'color:#78716c;';
+                        digStyle = 'color:#78716c;';
                     }
 
                     digBadge = `
                         <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
-                            <span class="badge" style="${style}">${icon}${cleanDig}</span>
+                            <span class="badge" style="${digStyle}">${digIcon}${cleanDig}</span>
                             <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
                             ${funcDig && varga === 'D1' ? `<div style="font-size:9.5px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size:9px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>`}
                         </div>
@@ -8305,49 +8518,436 @@
 
                 const grahaTip = grahaArchetypes[graha] || `<strong>${graha}</strong>`;
 
+                // Expression mode badge for Col 2
+                const exprScore = (pEval.step4_house_field && pEval.step4_house_field.expression_score !== undefined) ? Number(pEval.step4_house_field.expression_score) : 0;
+                const exprScoreStr = (exprScore >= 0 ? '+' : '') + Math.round(exprScore) + '%';
+                const exprModeStr = pEval.expression_mode || '';
+                let expressionBadgeHtml = '';
+                if (exprModeStr.includes('High')) {
+                    expressionBadgeHtml = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:8.5px; font-weight:700;">High Expression (${exprScoreStr})</span>`;
+                } else if (exprModeStr.includes('Mixed')) {
+                    expressionBadgeHtml = `<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-size:8.5px; font-weight:700;">Mixed Expression (${exprScoreStr})</span>`;
+                } else if (exprModeStr.includes('Low')) {
+                    expressionBadgeHtml = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:8.5px; font-weight:700;">Low Expression (${exprScoreStr})</span>`;
+                } else {
+                    expressionBadgeHtml = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; font-size:8.5px; font-weight:600;">Neutral Expression</span>`;
+                }
+
+                // Peer shift for Col 3
+                let peerShiftVal = 0.0;
+                let peerShiftLeader = '';
+                if (pEval.functional_dignity && pEval.functional_dignity.peer_shift !== undefined) {
+                    peerShiftVal = Number(pEval.functional_dignity.peer_shift);
+                } else {
+                    peerShiftVal = effDig - dignityPct;
+                }
+                if (pEval.step3_aspects && pEval.step3_aspects.details && pEval.step3_aspects.details.length > 0) {
+                    let maxShift = 0.0;
+                    pEval.step3_aspects.details.forEach(d => {
+                        if (Math.abs(d.shift) > Math.abs(maxShift)) {
+                            maxShift = d.shift;
+                            const srcGlyph = grahaGlyphs[d.source] || d.source;
+                            if (d.shift > 0) {
+                                peerShiftLeader = `Delighted by ${srcGlyph}`;
+                            } else {
+                                peerShiftLeader = `Starved by ${srcGlyph}`;
+                            }
+                        }
+                    });
+                }
+                if (!peerShiftLeader) {
+                    peerShiftLeader = peerShiftVal > 0 ? 'Supported' : (peerShiftVal < 0 ? 'Pressure' : '');
+                }
+
+                let peerShiftHtml = '';
+                if (peerShiftVal > 0.5) {
+                    peerShiftHtml = `<span style="color:#15803d; font-size:9.5px; font-weight:600;">↳ +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                } else if (peerShiftVal < -0.5) {
+                    peerShiftHtml = `<span style="color:#b91c1c; font-size:9.5px; font-weight:600;">↳ ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                } else {
+                    peerShiftHtml = `<span style="color:#64748b; font-size:9.5px;">↳ Balanced (±0%)</span>`;
+                }
+
+                // Decisive Aspect for Col 6 Line 2 (>= 45v) and Background Aspects (20-44v)
+                let decisiveAspectBadge = '';
+                let bgBadgeHtml = '';
+                const decisiveAsps = allAspList.filter(asp => {
+                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                    return rawV >= 45;
+                });
+                const bgAsps = allAspList.filter(asp => {
+                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                    return rawV >= 20 && rawV < 45;
+                });
+
+                let tier2Tip = '';
+                if (bgAsps.length > 0) {
+                    const t2Lines = bgAsps.map(asp => {
+                        const aspG = asp.from_planet;
+                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                        const natIcon = isNaturalBen ? '🟢' : '🔴';
+                        const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
+                        const digIcon = getDignityIcon(asp.from_dignity_name);
+                        return `• ${natIcon} <strong>${aspG}:</strong> ${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
+                    }).join('<br>');
+                    tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
+                    bgBadgeHtml = `<span class="tooltip-target" style="color:#64748b; font-size:8.5px; margin-left:3px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">+${bgAsps.length} bg</span>`;
+                }
+
+                if (decisiveAsps.length > 0) {
+                    decisiveAsps.sort((a, b) => {
+                        const vA = Math.abs(a.raw_virupas !== undefined ? a.raw_virupas : (a.virupas || 0));
+                        const vB = Math.abs(b.raw_virupas !== undefined ? b.raw_virupas : (b.virupas || 0));
+                        return vB - vA;
+                    });
+                    const topAsp = decisiveAsps[0];
+                    const aspG = topAsp.from_planet;
+                    const rawV = Math.abs(Math.round(topAsp.raw_virupas !== undefined ? topAsp.raw_virupas : (topAsp.virupas || 0)));
+                    const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                    const natIcon = isNaturalBen ? '🟢' : '🔴';
+                    const dName = (topAsp.from_dignity_name || '').toLowerCase();
+                    const isExaltedOrMoola = dName.includes('exalt') || dName.includes('uccha') || dName.includes('moola');
+                    const isOwnOrFriend = dName.includes('own') || dName.includes('svastha') || dName.includes('friend') || dName.includes('mitra');
+                    const isDebilitated = dName.includes('debilit') || dName.includes('neecha') || Boolean(topAsp.is_debilitated) || Boolean(topAsp.is_distorted);
+                    const isEnemy = dName.includes('enemy') || dName.includes('shatru');
+                    let synth = '';
+                    if (isNaturalBen) {
+                        if (isDebilitated || isEnemy) synth = 'Compromised Support';
+                        else if (isExaltedOrMoola) synth = 'Pure Grace';
+                        else synth = 'Strong Support';
+                    } else {
+                        if (isDebilitated) synth = 'Toxic Friction';
+                        else if (isEnemy) synth = 'Destructive Pressure';
+                        else if (isExaltedOrMoola || isOwnOrFriend) synth = 'Constructive Pressure';
+                        else synth = 'Harsh Demand';
+                    }
+                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size:9px;">${natIcon} ${aspG} (${rawV}v) ↳ ${synth}</span>`;
+                } else if (bgAsps.length > 0) {
+                    decisiveAspectBadge = `<span class="tooltip-target" style="color:#64748b; font-style:italic; font-size:8.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">${bgAsps.length} background aspect${bgAsps.length > 1 ? 's' : ''} (20–44v)</span>`;
+                    bgBadgeHtml = '';
+                } else {
+                    decisiveAspectBadge = `<span style="color:#94a3b8; font-style:italic; font-size:8.5px;">No decisive gaze (drawer)</span>`;
+                }
+
+                // Primary Lajjitadi mood for Col 8 Line 2
+                let primaryMoodPill = '';
+                if (pEval.calibrated_lajjitadi && pEval.calibrated_lajjitadi.length > 0) {
+                    const topMood = pEval.calibrated_lajjitadi[0];
+                    let mStyle = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                    if (topMood.base_state === 'Mudita') mStyle = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                    else if (topMood.base_state === 'Garvita') mStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                    else if (topMood.base_state === 'Kshudhita') mStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                    else if (topMood.base_state === 'Kshobhita') mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
+                    else if (topMood.base_state === 'Lajjita') mStyle = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
+                    else if (topMood.base_state === 'Trushita') mStyle = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
+                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size:8.5px; font-weight:700; padding:1px 5px;">${topMood.icon} ${topMood.base_state}</span>`;
+                } else if (avList && avList.length > 0) {
+                    const firstAv = avList[0];
+                    const st = firstAv.state || String(firstAv);
+                    let mIcon = '🟡';
+                    let mStyle = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                    if (st.includes('Mudita')) { mIcon = '🟢'; mStyle = 'background:#dcfce7; color:#166534; border:1px solid #86efac;'; }
+                    else if (st.includes('Garvita')) { mIcon = '👑'; mStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;'; }
+                    else if (st.includes('Kshudhita')) { mIcon = '🔴'; mStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;'; }
+                    else if (st.includes('Kshobhita')) { mIcon = '🟠'; mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;'; }
+                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size:8.5px; font-weight:700; padding:1px 5px;">${mIcon} ${st.split(' ')[0]}</span>`;
+                } else {
+                    primaryMoodPill = `<span style="color:#94a3b8; font-style:italic; font-size:8.5px;">🟡 Neutral (Unstirred)</span>`;
+                }
+
+                // Subcaption for Col 9 Line 2
+                const subcaptionText = pEval.subcaption_text || `Intent: ${Math.round(effDig)}% | Power: ${Math.round(effSb)}%`;
+
+                // Drawer Details Construction
+                // Box 1: Shadvarga mini table
+                let shadvargaHtml = '';
+                if (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) {
+                    const vb = pEval.step1_shadvarga.varga_breakdown;
+                    const vWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1 };
+                    const vRows = Object.keys(vWeights).map(vgKey => {
+                        const item = vb[vgKey] || {};
+                        return `<tr>
+                            <td style="font-weight:700;">${vgKey}</td>
+                            <td>${item.sign || '--'}</td>
+                            <td>${item.dignity || '--'}</td>
+                            <td style="text-align:right;">${item.score !== undefined ? item.score.toFixed(1) + '%' : '--'}</td>
+                            <td style="text-align:right; color:#78716c;">${vWeights[vgKey]}</td>
+                        </tr>`;
+                    }).join('');
+                    shadvargaHtml = `
+                        <table class="drawer-mini-table">
+                            <thead>
+                                <tr>
+                                    <th>Varga</th>
+                                    <th>Sign</th>
+                                    <th>Dignity</th>
+                                    <th style="text-align:right;">Score</th>
+                                    <th style="text-align:right;">Pts</th>
+                                </tr>
+                            </thead>
+                            <tbody>${vRows}</tbody>
+                        </table>
+                        <div style="font-size:9.5px; margin-top:2px;">
+                            <strong>Viṁśopaka:</strong> ${pEval.step1_shadvarga.weighted_dignity_pct || dignityPct}% (${pEval.step1_shadvarga.predominance_desc || ''})
+                        </div>
+                    `;
+                } else {
+                    shadvargaHtml = `<div><strong>D1 Dignity:</strong> ${cleanDig} (${dignityPct.toFixed(0)}%)</div>`;
+                }
+
+                // Itemized peer shifts for Box 1
+                let peerShiftsDetailHtml = '';
+                if (pEval.step3_aspects && pEval.step3_aspects.details && pEval.step3_aspects.details.length > 0) {
+                    const pItems = pEval.step3_aspects.details.map(d => {
+                        const signChar = d.shift >= 0 ? '+' : '';
+                        const color = d.shift > 0 ? '#15803d' : (d.shift < 0 ? '#b91c1c' : '#64748b');
+                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                            <span>${d.source} (${d.type}):</span>
+                            <strong style="color:${color};">${signChar}${d.shift.toFixed(1)}% (${d.sambhanda})</strong>
+                        </div>`;
+                    }).join('');
+                    peerShiftsDetailHtml = `
+                        <div style="margin-top:4px; border-top:1px dashed #e2d7c3; padding-top:4px;">
+                            <div style="font-size:9.5px; font-weight:700; color:#4a3325; margin-bottom:2px;">Peer Sambandha Shifts:</div>
+                            ${pItems}
+                            <div style="margin-top:3px; font-weight:700; color:#1e293b; font-size:10px;">
+                                ➔ Final Functional Dignity: ${effDig.toFixed(1)}%
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Box 2: House Terrain & Lordship Agenda
+                const terrainType = (pEval.step4_house_field && pEval.step4_house_field.terrain_type) || `House ${wHouse}`;
+                const terrainMod = (pEval.step4_house_field && pEval.step4_house_field.terrain_mod_pct !== undefined) ? pEval.step4_house_field.terrain_mod_pct : 0;
+                const terrainNote = (pEval.step4_house_field && pEval.step4_house_field.terrain_note) || '';
+                const lordshipMod = (pEval.step4_house_field && pEval.step4_house_field.lordship_mod_pct !== undefined) ? pEval.step4_house_field.lordship_mod_pct : 0;
+
+                const card2Html = `
+                    <div><strong>House Terrain (${terrainType}):</strong> <span style="font-weight:700; color:${terrainMod >= 0 ? '#15803d' : '#b91c1c'};">${terrainMod >= 0 ? '+' : ''}${terrainMod}%</span></div>
+                    <div style="font-size:9.5px; color:#64748b; margin-top:1px;">${terrainNote}</div>
+                    <div style="margin-top:4px;"><strong>Lordship Agenda:</strong> <span style="font-weight:700; color:${lordshipMod >= 0 ? '#15803d' : '#b91c1c'};">${lordshipMod >= 0 ? '+' : ''}${lordshipMod}%</span></div>
+                    ${ruledHousesHtml}
+                    ${fnBadgesHtml}
+                    <div style="margin-top:4px;">
+                        <strong>Special Conditions:</strong>
+                        ${pEval.viparita_badge ? `<div>${pEval.viparita_badge}</div>` : ''}
+                        ${pEval.bhava_madhya_badge ? `<div>${pEval.bhava_madhya_badge}</div>` : ''}
+                        ${!pEval.viparita_badge && !pEval.bhava_madhya_badge ? '<span style="font-size:9.5px; color:#64748b;">None</span>' : ''}
+                    </div>
+                    <div style="margin-top:4px; font-weight:700;">
+                        Resulting Expression: ${expressionBadgeHtml}
+                    </div>
+                `;
+
+                // Box 3: Aspect & Conjunction Weather
+                let allAspectsRowsHtml = '';
+                if (allAspList && allAspList.length > 0) {
+                    allAspectsRowsHtml = allAspList.map(asp => {
+                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
+                        if (rawV < 20) return '';
+                        const aspG = asp.from_planet;
+                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                        const natIcon = isNaturalBen ? '🟢' : '🔴';
+                        const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
+                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                            <span>${natIcon} ${aspG} (${rawV}v):</span>
+                            <span style="font-weight:600;">${asp.from_dignity_name || 'Neutral'}${optANote}</span>
+                        </div>`;
+                    }).filter(Boolean).join('');
+                }
+                let conjItemsHtml = '';
+                if (conjDetails && conjDetails.length > 0) {
+                    conjItemsHtml = conjDetails.map(c => {
+                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                            <span>${c.commands ? '👑 ' : ''}${c.planet} (${c.degree_diff.toFixed(2)}°):</span>
+                            <span>${c.orb_band} ${c.commands ? '• Commands' : ''}</span>
+                        </div>`;
+                    }).join('');
+                }
+                const card3Html = `
+                    <div><strong>Incoming Aspects (Dṛṣṭi):</strong></div>
+                    ${allAspectsRowsHtml || '<div style="font-size:9.5px; color:#94a3b8; font-style:italic;">No decisive aspects (≥20v)</div>'}
+                    ${conjItemsHtml ? `<div style="margin-top:4px;"><strong>Conjunctions (Yuti):</strong></div>${conjItemsHtml}` : ''}
+                    <div style="margin-top:4px; display:flex; flex-direction:column; gap:2px;">
+                        ${warBadgeHtml}
+                        ${combustionBadgeHtml}
+                        ${afflictionBadgesHtml}
+                    </div>
+                `;
+
+                // Box 4: Deep Avasthās & Psychology
+                const card4Html = `
+                    <div><strong>Biological Maturity (Bālādi):</strong> ${baladi.state} (${baladi.efficiency_pct}%)</div>
+                    <div style="font-size:9.5px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_sandhi ? '<div style="color:#b45309; font-size:9.5px; font-weight:700;">⚠️ Rāśi Sandhi (Edge of Sign)</div>' : ''}
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_gandanta ? '<div style="color:#b91c1c; font-size:9.5px; font-weight:700;">⚡ Gaṇḍānta Knot (Water-Fire Border)</div>' : ''}
+                    <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px;">
+                        ${deepthaadiHtml}
+                        ${jagradaadiHtml}
+                    </div>
+                    <div style="margin-top:4px;">
+                        <strong>Social Relations (Lajjitādi):</strong>
+                        <div style="margin-top:2px;">${avasthasHtml}</div>
+                    </div>
+                    <div style="margin-top:5px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">
+                        🧠 ${pEval.psychological_narrative || quad.desc || ''}
+                    </div>
+                `;
+
                 tbody.innerHTML += `
-                    <tr class="interactive-table-row" data-type="planet" data-id="${graha}" style="cursor: pointer;">
-                        <td>
-                            <div style="display:flex; align-items:center; gap:6px;">
-                                <span style="font-size:16px; color:#1e293b;">${glyph}</span>
-                                <div>
-                                    <div style="display:flex; align-items:center; gap:4px; flex-wrap:wrap;">
-                                        <strong class="tooltip-target" data-tooltip="${grahaTip}" style="color:#1e293b; font-size:12.5px; cursor:help;">${graha}</strong>
-                                        ${ckBadge}
-                                    </div>
-                                    <div>${statusBadges}</div>
+                    <tr class="interactive-table-row diagnostic-row" data-type="planet" data-id="${graha}" style="cursor: pointer;" onclick="toggleDiagnosticDrawer('drawer-${graha}', this)">
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size:12px; color:#1e293b;">
+                                    <span style="font-size:14px;">${glyph}</span>
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(grahaTip)}" style="cursor:help;">${graha}</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:2px; flex-wrap:nowrap; overflow:hidden;">
+                                    ${ckBadge}
+                                    ${statusBadges}
                                     ${moonPhaseBadgeHtml}
                                     ${masterLordBadgesHtml}
                                 </div>
                             </div>
                         </td>
-                        <td>
-                            <strong class="tooltip-target" data-tooltip="${signTooltip}" style="color:#1e293b; cursor:help;">${sign} ${deg}</strong>
-                            <div style="font-size:10px; color:#64748b;">${houseHtml}</div>
-                            ${ruledHousesHtml}
-                            ${fnBadgesHtml}
-                            <div class="tooltip-target" data-tooltip="${nakTooltip}" style="font-size:9.5px; color:#78716c; margin-top:2px; cursor:help;">${nakStr}</div>
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(signTooltip)}" style="cursor:help;">${sign} ${deg} • ${houseHtml}</span>
+                                </div>
+                                <div>
+                                    ${expressionBadgeHtml}
+                                </div>
+                            </div>
                         </td>
-                        <td>
-                            ${digBadge}
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div style="font-size:10.5px; font-weight:700; white-space:nowrap;">
+                                    ${isNode ? `<span class="badge" style="${digStyle} font-size:9px; padding:1px 5px;">Proxy (${signLord})</span>` : `<span class="badge" style="${digStyle} font-size:9px; padding:1px 5px;">${digIcon}${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
+                                    <span style="color:#64748b; font-size:10px; margin:0 1px;">➔</span>
+                                    <strong style="color:#1e293b; font-size:11px;">${Math.round(effDig)}%</strong>
+                                </div>
+                                <div style="font-size:9px; font-weight:600; white-space:nowrap;">
+                                    ${peerShiftHtml}
+                                </div>
+                            </div>
                         </td>
-                        <td>
-                            ${hostHtml}
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div style="font-weight:700; font-size:11px; color:#1e293b; white-space:nowrap;">
+                                    Host: <strong>${signLord}</strong>
+                                </div>
+                                <div>
+                                    <span class="badge tooltip-target" style="${hostBadgeStyle} font-size:8.5px; font-weight:600; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
+                                </div>
+                            </div>
                         </td>
-                        <td>
-                            ${powerHtml}
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                ${isNode ? `
+                                    <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                        <strong>Proxy ${effSb.toFixed(0)}%</strong>
+                                    </div>
+                                    <div style="font-size:9px; color:#15803d; font-weight:600; white-space:nowrap;">
+                                        via ${signLord} (${hostVir.toFixed(0)}v)
+                                    </div>
+                                ` : `
+                                    <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                        <strong>${sb.Total_Virupas ? sb.Total_Virupas.toFixed(1) : '--'}v</strong> <span style="font-size:9.5px; color:${(sb.Pct_Required_Total >= 115) ? '#15803d' : ((sb.Pct_Required_Total < 100) ? '#b91c1c' : '#0369a1')}; font-weight:600;">(${sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) : '--'}%)</span>
+                                    </div>
+                                    <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap;">
+                                        ${sb.Relative_Rank ? 'Rank #' + sb.Relative_Rank + ' • ' : ''}${(sb.Pct_Required_Total >= 125) ? "Abundant" : ((sb.Pct_Required_Total >= 100) ? "Capable" : ((sb.Pct_Required_Total >= 85) ? "Mild Deficit" : "Deficit"))}
+                                    </div>
+                                `}
+                            </div>
                         </td>
-                        <td>
-                            ${influencesHtml}
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div>
+                                    ${netDrishtiBadge}
+                                </div>
+                                <div style="font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:145px;">
+                                    ${decisiveAspectBadge}${bgBadgeHtml}
+                                </div>
+                            </div>
                         </td>
-                        <td>
+                        <td style="padding: 4px 6px;">
                             ${nakshatraCellHtml}
                         </td>
-                        <td>
-                            ${avasthasCellHtml}
+                        <td style="padding: 4px 6px;">
+                            <div class="diagnostic-table-cell-2line">
+                                <div>
+                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
+                                </div>
+                                <div style="font-size:9px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    ${primaryMoodPill}
+                                </div>
+                            </div>
                         </td>
-                        <td>
-                            ${diagHtml}
+                        <td style="padding: 4px 6px; text-align: center;">
+                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
+                                <div>
+                                    <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size:9.5px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">${quad.badge}</span>
+                                </div>
+                                <div style="font-size:9.5px; color:#475569; font-weight:600; white-space:nowrap;">
+                                    ★ <strong style="color:#1e293b; font-size:11px;">${netVitality.toFixed(1)}</strong> / 10 • <span style="font-size:8.5px; color:#64748b;">${subcaptionText}</span>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr id="drawer-${graha}" class="diagnostic-drawer-row" style="display:none;">
+                        <td colspan="9">
+                            <div class="drawer-container">
+                                <div class="drawer-grid">
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>👑 Dignity &amp; Peer Bridge</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Inborn ➔ Functional Mindset</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            ${shadvargaHtml}
+                                            <div style="background:#fbf7ef; border:1px solid #ebdcc5; border-radius:4px; padding:4px 6px; margin:4px 0;">
+                                                <strong>Host Bedrock (${signLord}):</strong> ${hostDig.toFixed(0)}% dignity • ${hostSb.toFixed(0)}% muscle<br>
+                                                <span style="font-size:9.5px; color:#64748b;">${vitRes.rescue_desc || ''}</span>
+                                            </div>
+                                            ${peerShiftsDetailHtml}
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>🏡 House Terrain &amp; Lordship Agenda</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Layer 4 Operational Field</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            ${card2Html}
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>⚡ Aspect &amp; Conjunction Weather</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Environmental Pressures</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            ${card3Html}
+                                        </div>
+                                    </div>
+                                    <div class="drawer-card">
+                                        <div class="drawer-card-title">
+                                            <span>🧠 Deep Avasthās &amp; Psychology</span>
+                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Maturity, Mood &amp; Drive</span>
+                                        </div>
+                                        <div class="drawer-card-body">
+                                            ${card4Html}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="drawer-receipt">
+                                    <div class="drawer-receipt-header">🧮 Mathematical Audit Receipt (Zero Double-Counting)</div>
+                                    <pre class="drawer-receipt-content">${receiptText ? receiptText : 'No calculation receipt available.'}</pre>
+                                </div>
+                            </div>
                         </td>
                     </tr>
                 `;
