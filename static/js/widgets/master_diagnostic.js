@@ -5,7 +5,10 @@
  * and 4-quadrant psychological archetypes into a unified diagnostic view.
  */
 
-        function openFloatingMasterDiagnostic(varga = 'D1') {
+        let renderContinuousAspectSvg = function() { return ''; };
+let calculateContinuousDrishti = function() { return 0; };
+
+function openFloatingMasterDiagnostic(varga = 'D1') {
             closeKalaMenu();
             const modal = document.getElementById('widgetMaximizeModal');
             const card = document.getElementById('widgetMaximizeCard');

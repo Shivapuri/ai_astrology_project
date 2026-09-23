@@ -1,0 +1,169 @@
+/* ==========================================================================
+   Astra Centralized Design Tokens (Pergamon Palette & Astrological Theme)
+   ========================================================================== */
+
+:root {
+    /* Pergamon Warm Parchment Palette */
+    --bg-app: #f7f3eb;
+    --bg-surface: #fffdfa;
+    --bg-surface-alt: #fcfaf5;
+    --bg-surface-muted: #eee5d3;
+    --bg-surface-hover: #f7eedd;
+
+    /* Borders */
+    --border-subtle: #e5dccb;
+    --border-medium: #d5c8b2;
+    --border-strong: #dcb594;
+    --border-highlight: #d35400;
+    --border-hover: #bfa88f;
+
+    /* Typography & Content Colors */
+    --text-primary: #3d312a;
+    --text-heading: #4a3325;
+    --text-muted: #6b5a4b;
+    --text-subtle: #8c7b64;
+    --font-sans: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Astrological Dignity & Status Badges */
+    --status-benefic: #16a34a;
+    --status-benefic-dark: #15803d;
+    --status-benefic-bg: #dcfce7;
+    --status-benefic-bg-subtle: #f0fdf4;
+    --status-benefic-border: #86efac;
+
+    --status-malefic: #dc2626;
+    --status-malefic-dark: #b91c1c;
+    --status-malefic-bg: #fee2e2;
+    --status-malefic-bg-subtle: #fef2f2;
+    --status-malefic-border: #f87171;
+
+    --status-neutral: #d97706;
+    --status-neutral-bg: #fef3c7;
+    --status-neutral-border: #fde68a;
+
+    --status-alert: #ea580c;
+    --status-alert-bg: #ffedd5;
+    --status-alert-border: #fdba74;
+
+    --status-info: #2563eb;
+    --status-info-bg: #eff6ff;
+    --status-info-border: #93c5fd;
+
+    /* Specific Dignity Tokens (Panchadha Sambandha) */
+    --dignity-exalted: #16a34a;
+    --dignity-debilitated: #dc2626;
+    --dignity-moolatrikona: #2563eb;
+    --dignity-own: #0284c7;
+    --dignity-great-friend: #0d9488;
+    --dignity-great-enemy: #ea580c;
+    --dignity-friend: #22c55e;
+    --dignity-enemy: #f97316;
+    --dignity-neutral: #64748b;
+
+    /* Primary Accent / Button Actions */
+    --accent-primary: #d35400;
+    --accent-hover: #b84500;
+    --accent-focus: rgba(211, 84, 0, 0.25);
+
+    /* Graha Planetary Colors */
+    --graha-sun: #ea580c;
+    --graha-moon: #475569;
+    --graha-mars: #dc2626;
+    --graha-mercury: #16a34a;
+    --graha-jupiter: #d97706;
+    --graha-venus: #db2777;
+    --graha-saturn: #334155;
+    --graha-rahu: #4f46e5;
+    --graha-ketu: #78716c;
+    --graha-lagna: #0284c7;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 3px rgba(74, 51, 37, 0.05);
+    --shadow-md: 0 4px 18px rgba(74, 51, 37, 0.06);
+    --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================================================
+   Semantic Utility Classes
+   ========================================================================== */
+
+.text-benefic {
+    color: var(--status-benefic) !important;
+}
+
+.text-malefic {
+    color: var(--status-malefic) !important;
+}
+
+.text-neutral {
+    color: var(--status-neutral) !important;
+}
+
+.text-alert {
+    color: var(--status-alert) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+.badge-benefic {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: var(--status-benefic-bg);
+    color: var(--status-benefic-dark);
+    border: 1px solid var(--status-benefic-border);
+}
+
+.badge-malefic {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: var(--status-malefic-bg);
+    color: var(--status-malefic-dark);
+    border: 1px solid var(--status-malefic-border);
+}
+
+.badge-neutral {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: var(--status-neutral-bg);
+    color: var(--status-neutral);
+    border: 1px solid var(--status-neutral-border);
+}
+
+.badge-alert {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background-color: var(--status-alert-bg);
+    color: var(--status-alert);
+    border: 1px solid var(--status-alert-border);
+}
+
+/* Planetary Text Colors */
+.graha-sun { color: var(--graha-sun); }
+.graha-moon { color: var(--graha-moon); }
+.graha-mars { color: var(--graha-mars); }
+.graha-mercury { color: var(--graha-mercury); }
+.graha-jupiter { color: var(--graha-jupiter); }
+.graha-venus { color: var(--graha-venus); }
+.graha-saturn { color: var(--graha-saturn); }
+.graha-rahu { color: var(--graha-rahu); }
+.graha-ketu { color: var(--graha-ketu); }
+.graha-lagna { color: var(--graha-lagna); }

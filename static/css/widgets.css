@@ -19,7 +19,7 @@
         .chart-view h2 {
             margin-top: 0;
             font-size: 17px;
-            color: #4a3325;
+            color: var(--text-heading);
             margin-bottom: 16px;
             text-align: center;
             display: none; /* Hide redundant external headers */
@@ -72,7 +72,7 @@
         .widget-chart-zoom-badge:hover,
         .widget-chart-zoom-badge.is-zoomed {
             opacity: 0.96;
-            background: #fffdfa;
+            background: var(--bg-surface);
             border-color: #c9bba7;
             box-shadow: 0 2px 8px rgba(74, 51, 37, 0.15);
         }
@@ -105,7 +105,7 @@
             border: none;
             font-size: 10px;
             font-weight: 700;
-            color: #6b5a4b;
+            color: var(--text-muted);
             padding: 0 3px;
             cursor: pointer;
             line-height: 20px;
@@ -136,8 +136,8 @@
             padding: 16px 24px;
             font-size: 14px;
             font-weight: 600;
-            color: #4a3325;
-            border-bottom: 1px solid #e5dccb;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border-subtle);
             background: #f5ede0;
             display: flex;
             align-items: center;
@@ -153,7 +153,7 @@
         .tabs {
             display: flex;
             background: #f5ede0;
-            border-bottom: 1px solid #e5dccb;
+            border-bottom: 1px solid var(--border-subtle);
             padding: 0 16px;
             gap: 8px;
         }
@@ -164,14 +164,14 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            color: #8c7b64;
+            color: var(--text-subtle);
             border-bottom: 2px solid transparent;
             margin-bottom: -1px;
             transition: color 0.2s;
         }
         
         .tab-btn:hover {
-            color: #4a3325;
+            color: var(--text-heading);
         }
         
         .tab-btn.active {
@@ -202,7 +202,7 @@
         .kb-content {
             font-size: 14px;
             line-height: 1.5;
-            color: #4a3325;
+            color: var(--text-heading);
         }
         .kb-content h1, .kb-content h2, .kb-content h3, .kb-content h4 {
             margin-top: 15px;
@@ -228,7 +228,7 @@
             border-radius: 6px;
             overflow: hidden;
             font-size: 13px;
-            background: #fffdfa;
+            background: var(--bg-surface);
         }
         .kb-content th, .kb-content td {
             padding: 8px 10px;
@@ -238,7 +238,7 @@
         }
         .kb-content th {
             background-color: #f3eae0;
-            color: #4a3325;
+            color: var(--text-heading);
             font-weight: 600;
             font-size: 12.5px;
             border-bottom: 1px solid #e2d7c5;
@@ -285,12 +285,12 @@
             color: white;
         }
         .help-box {
-            background: #fffdfa;
+            background: var(--bg-surface);
             border-left: 3px solid #d35400;
             padding: 10px 15px;
             margin-bottom: 15px;
             font-size: 13px;
-            color: #4a3325;
+            color: var(--text-heading);
             line-height: 1.5;
             box-shadow: 0 1px 4px rgba(0,0,0,0.05);
             border-radius: 0 4px 4px 0;
@@ -323,7 +323,7 @@
             font-weight: 600;
             border-radius: 4px;
             border: 1px solid #d5c8b2;
-            background: #fffdfa;
+            background: var(--bg-surface);
             color: #5c4433;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -397,7 +397,7 @@
             line-height: 1.5;
             font-family: inherit;
             color: #2c2520;
-            background: #fffdfa;
+            background: var(--bg-surface);
             resize: vertical;
             min-height: 72px;
             transition: border-color 0.15s ease, box-shadow 0.15s ease;
@@ -459,8 +459,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 8px 16px;
-            background: #fffdfa;
-            border-bottom: 1px solid #e5dccb;
+            background: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
             box-sizing: border-box;
             box-shadow: 0 2px 10px rgba(74, 51, 37, 0.04);
             z-index: 100;
@@ -487,7 +487,7 @@
         }
         #chartSubtitle {
             font-size: 13px;
-            color: #8c7b64;
+            color: var(--text-subtle);
             margin: 0;
         }
 
@@ -511,7 +511,7 @@
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
         
-        .color-spiritual { background-color: #8c7b64; color: #fff; } /* Warm gray/brown */
+        .color-spiritual { background-color: var(--text-subtle); color: #fff; } /* Warm gray/brown */
         .color-beneficial { background-color: #d35400; color: #fff; } /* Burnt Orange */
         .color-damaging { background-color: #3d312a; color: #fff; } /* Dark chocolate */
         .color-neutral { background-color: #a89f91; color: #fff; } /* Muted earth */
@@ -553,7 +553,7 @@
             border-right: none;
         }
         .yoga-judgment-table .sec-header {
-            background: #fffdfa;
+            background: var(--bg-surface);
             color: #1a4a82;
             font-weight: bold;
             font-size: 13px;
@@ -567,7 +567,7 @@
             font-weight: bold;
             font-size: 13px;
             width: 80px;
-            background: #fffdfa;
+            background: var(--bg-surface);
         }
         .yoga-judgment-table .val-pos {
             color: #1a4a82;
@@ -585,18 +585,18 @@
 
         /* Planetary Information Table */
         .planetary-info-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-size: 11px;
             font-weight: 700;
             padding: 6px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             white-space: nowrap;
         }
         .planetary-info-table td {
             padding: 5px 8px;
             font-size: 11.5px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             white-space: nowrap;
         }
         .planetary-info-table tr:hover td {
@@ -613,11 +613,11 @@
             top: 0 !important;
             z-index: 15 !important;
             background: #eee5d3 !important;
-            color: #4a3325;
+            color: var(--text-heading);
             font-size: 10.5px;
             font-weight: 700;
             padding: 5px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             box-shadow: 0 1px 0 #dcb594 !important;
             white-space: nowrap;
         }
@@ -642,7 +642,7 @@
         .master-diagnostic-table td {
             padding: 4px 7px;
             font-size: 11px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             vertical-align: middle;
         }
         .master-diagnostic-table tr.diagnostic-row {
@@ -703,7 +703,7 @@
         .drawer-card-title {
             font-size: 11px;
             font-weight: 700;
-            color: #4a3325;
+            color: var(--text-heading);
             border-bottom: 1px solid #f0e6d6;
             padding-bottom: 4px;
             display: flex;
@@ -772,19 +772,19 @@
 
         /* Classical Yogas Table */
         .classical-yogas-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-size: 11px;
             font-weight: 700;
             padding: 6px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             white-space: nowrap;
         }
         .classical-yogas-table td {
             padding: 6px 8px;
             font-size: 11px;
-            border: 1px solid #e5dccb;
-            background: #fffdfa;
+            border: 1px solid var(--border-subtle);
+            background: var(--bg-surface);
         }
         .classical-yogas-table tr:hover td {
             background: #fbf5ea;
@@ -796,18 +796,18 @@
 
         /* Rashi Drishti Table */
         .rashi-drishti-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-size: 11px;
             font-weight: 700;
             padding: 5px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             white-space: nowrap;
         }
         .rashi-drishti-table td {
             padding: 4px 6px;
             font-size: 11.5px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             white-space: nowrap;
         }
         .rashi-drishti-table tr:hover td {
@@ -820,20 +820,20 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         .sign-attr-matrix-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-size: 11px;
             font-weight: 700;
             padding: 6px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             text-align: center;
         }
         .sign-attr-matrix-table td {
             padding: 6px 8px;
             font-size: 11.5px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             vertical-align: top;
-            background: #fffdfa;
+            background: var(--bg-surface);
         }
         .sign-attr-matrix-table tr:hover td {
             background: #fbf8f2;
@@ -843,27 +843,27 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
         .sign-attr-anatomy-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-size: 11px;
             font-weight: 700;
             padding: 6px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             text-align: left;
         }
         .sign-attr-anatomy-table td {
             padding: 5px 8px;
             font-size: 11px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             vertical-align: middle;
-            background: #fffdfa;
+            background: var(--bg-surface);
         }
         .sign-attr-anatomy-table tr:hover td {
             background: #fbf8f2;
         }
         .sign-attr-summary-card {
-            background: #fffdfa;
-            border: 1px solid #dcb594;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
             padding: 8px 12px;
             box-shadow: 0 1px 3px rgba(74, 51, 37, 0.04);
@@ -878,17 +878,17 @@
             font-size: 11.5px;
         }
         .planetary-eval-table th {
-            background: #eee5d3;
-            color: #4a3325;
+            background: var(--bg-surface-muted);
+            color: var(--text-heading);
             font-weight: bold;
             padding: 6px 8px;
-            border: 1px solid #dcb594;
+            border: 1px solid var(--border-strong);
             white-space: nowrap;
             text-align: left;
         }
         .planetary-eval-table td {
             padding: 5px 8px;
-            border: 1px solid #e5dccb;
+            border: 1px solid var(--border-subtle);
             vertical-align: middle;
             color: #334155;
         }
@@ -955,8 +955,8 @@
         .eval-master-card {
             flex: 1;
             min-width: 220px;
-            background: #fffdfa;
-            border: 1px solid #dcb594;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
             border-radius: 6px;
             padding: 8px 10px;
             box-shadow: 0 1px 3px rgba(74, 51, 37, 0.04);
@@ -975,8 +975,8 @@
 
         /* 5-Fold Bhava Inspector Card */
         .bhava-inspector-card {
-            background: #fffdfa;
-            border: 1px solid #dcb594;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 6px rgba(74, 51, 37, 0.06);
@@ -1007,8 +1007,8 @@
 
         /* Obsidian-Style YAML Properties Card ("In the Beginning") */
         .astra-props-card {
-            background: #fffdfa;
-            border: 1px solid #dcb594;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
             border-radius: 8px;
             padding: 10px 12px;
             margin-bottom: 10px;
@@ -1023,7 +1023,7 @@
         .astra-props-title {
             font-size: 14px;
             font-weight: 800;
-            color: #4a3325;
+            color: var(--text-heading);
             display: flex;
             align-items: center;
             gap: 6px;
@@ -1071,7 +1071,7 @@
             gap: 4px 10px;
             font-size: 11px;
             line-height: 1.4;
-            color: #4a3325;
+            color: var(--text-heading);
             border-top: 1px dashed #e8dfcf;
             padding-top: 8px;
         }
@@ -1081,7 +1081,7 @@
         }
         .astra-prop-key {
             font-weight: 700;
-            color: #8c7b64;
+            color: var(--text-subtle);
             min-width: 65px;
             flex-shrink: 0;
         }
@@ -1092,7 +1092,7 @@
         .raw-yaml-toggle-btn {
             background: transparent;
             border: none;
-            color: #8c7b64;
+            color: var(--text-subtle);
             font-size: 10px;
             font-weight: 700;
             cursor: pointer;
@@ -1104,7 +1104,7 @@
         }
         .raw-yaml-toggle-btn:hover {
             background: #eadecc;
-            color: #4a3325;
+            color: var(--text-heading);
         }
         .raw-yaml-block {
             display: none;
@@ -1140,7 +1140,7 @@
             padding: 5px 9px;
             font-size: 11px;
             font-weight: 700;
-            color: #6b5a4b;
+            color: var(--text-muted);
             cursor: pointer;
             transition: all 0.15s ease;
             white-space: nowrap;
@@ -1183,7 +1183,7 @@
             position: sticky;
             top: 0;
             z-index: 10;
-            background-color: #eee5d3;
+            background-color: var(--bg-surface-muted);
             box-shadow: 0 1px 0 #dcb594;
         }
         .grid-cell-content tbody td:first-child,
@@ -1205,7 +1205,7 @@
             top: 0;
             left: 0;
             z-index: 15;
-            background-color: #eee5d3;
+            background-color: var(--bg-surface-muted);
             box-shadow: 1px 1px 0 #dcb594;
         }
 
@@ -1225,7 +1225,7 @@
             top: 0;
             z-index: 5;
             background-color: #eee5d3 !important;
-            color: #4a3325 !important;
+            color: var(--text-heading) !important;
             border: 1px solid #dcb594 !important;
             box-shadow: 0 1px 0 #dcb594 !important;
             padding: 5px 6px;
@@ -1243,7 +1243,7 @@
             left: 0;
             z-index: 4;
             background-color: #fcfaf5 !important;
-            color: #4a3325 !important;
+            color: var(--text-heading) !important;
             font-weight: bold;
             box-shadow: 1px 0 0 #e5dccb !important;
         }
@@ -1276,7 +1276,7 @@
             top: 0;
             z-index: 5;
             background: #eee5d3 !important;
-            color: #4a3325 !important;
+            color: var(--text-heading) !important;
             padding: 5px 8px;
             font-weight: 600;
             text-align: right;
@@ -1301,7 +1301,7 @@
             left: 0;
             z-index: 4;
             text-align: left;
-            color: #4a3325 !important;
+            color: var(--text-heading) !important;
             background: #fcfaf5 !important;
             font-weight: 500;
             box-shadow: 1px 0 0 #e5dccb !important;
@@ -1330,7 +1330,7 @@
         }
         .shadbala-breakdown-grid tr.subtotal-row td {
             background: #f5ece0 !important;
-            color: #4a3325 !important;
+            color: var(--text-heading) !important;
             font-weight: bold;
             border-top: 1px solid #dcb594 !important;
             border-bottom: 1px solid #dcb594 !important;
@@ -1361,10 +1361,10 @@
 
 
         .btn-widget-maximize {
-            background: #fffdfa;
+            background: var(--bg-surface);
             border: 1px solid #d5c8b2;
             border-radius: 4px;
-            color: #4a3325;
+            color: var(--text-heading);
             padding: 2px 6px;
             font-size: 12px;
             cursor: pointer;
