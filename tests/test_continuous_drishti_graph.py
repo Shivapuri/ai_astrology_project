@@ -77,7 +77,7 @@ def test_continuous_interpolation_in_between_placement():
     """
     Acceptance Criteria 3:
     If Sun is at 0° and Moon is placed at 165°, Moon is halfway between 150° (0%) and 180° (100%),
-    yielding 50% aspect strength, cx = 332.5, cy = 70.0.
+    yielding 50% aspect strength, cx = 380.0, cy = 110.0 in 820x260 canvas.
     """
     pct = calculate_continuous_drishti("Sun", 165.0)
     assert pct == 50.0, f"Expected 50.0% at 165° for Sun, got {pct}"
@@ -96,12 +96,12 @@ def test_continuous_interpolation_in_between_placement():
     assert tgt["symbol"] == "Mo"
     assert tgt["rel_deg"] == 165.0
     assert tgt["pct"] == 50.0
-    assert tgt["cx"] == 332.5
-    assert tgt["cy"] == 70.0
+    assert tgt["cx"] == 380.0
+    assert tgt["cy"] == 110.0
 
 
 def test_build_aspect_graph_data_polyline():
-    """Verify SVG polyline coordinates are strictly bounded between Y:120 (0%) and Y:20 (100%)."""
+    """Verify SVG polyline coordinates are strictly bounded between Y:180 (0%) and Y:40 (100%)."""
     graph = build_aspect_graph_data("Mars", 100.0, [])
     points_str = graph["polyline_points"]
     pairs = [p.split(",") for p in points_str.split(" ")]
@@ -109,22 +109,28 @@ def test_build_aspect_graph_data_polyline():
     assert len(pairs) == 13, "Should have 13 anchor points from 0° to 360°"
     
     # Check start and end
-    assert pairs[0] == ["30.0", "120.0"]
-    assert pairs[-1] == ["690.0", "120.0"]
+    assert pairs[0] == ["50.0", "180.0"]
+    assert pairs[-1] == ["770.0", "180.0"]
 
-    # Check Mars 4th aspect (90° from seat): d=90 -> x = 30 + (90/360)*660 = 195.0, y=20.0
+    # Check Mars 4th aspect (90° from seat): d=90 -> x = 50 + (90/360)*720 = 230.0, y=40.0
     # In pairs list, d=90 is index 3 (0, 30, 60, 90)
-    assert pairs[3] == ["195.0", "20.0"]
+    assert pairs[3] == ["230.0", "40.0"]
     
     # Mars 7th aspect (180° from seat): index 6
-    assert pairs[6] == ["360.0", "20.0"]
+    assert pairs[6] == ["410.0", "40.0"]
     
-    # Mars 8th aspect (210° from seat): index 7 -> x = 30 + (210/360)*660 = 415.0, y=20.0
-    assert pairs[7] == ["415.0", "20.0"]
+    # Mars 8th aspect (210° from seat): index 7 -> x = 50 + (210/360)*720 = 470.0, y=40.0
+    assert pairs[7] == ["470.0", "40.0"]
+
+    # Check anchor nodes export
+    assert "anchors" in graph
+    assert len(graph["anchors"]) == 7  # 60, 90, 120, 180, 210, 240, 270
+    anchor_degs = [a["deg"] for a in graph["anchors"]]
+    assert anchor_degs == [60, 90, 120, 180, 210, 240, 270]
 
 
 def test_chart_aspect_graphs_integration():
-    """Verify that generate_kala_chart populates aspect_graph and incoming_aspect_graphs."""
+    """Verify that generate_kala_chart populates aspect_graph and incoming_aspect_graphs isolating target planet."""
     from jyotish.generate_jyotish import generate_kala_chart
     chart = generate_kala_chart(
         name="Angelina Jolie",
@@ -141,4 +147,13 @@ def test_chart_aspect_graphs_integration():
         g = data["aspect_graph"]
         assert g["source_planet"] == p
         assert len(g["polyline_points"]) > 0
+        assert "anchors" in g
+
+        # Verify incoming aspect graphs isolate ONLY the target planet (p)
+        inc_graphs = data["incoming_aspect_graphs"]
+        for src_planet, inc_g in inc_graphs.items():
+            assert "targets" in inc_g
+            assert len(inc_g["targets"]) == 1, f"Incoming aspect to {p} from {src_planet} should only target {p}"
+            assert inc_g["targets"][0]["name"] == p
+            assert inc_g["targets"][0]["is_target"] is True
 

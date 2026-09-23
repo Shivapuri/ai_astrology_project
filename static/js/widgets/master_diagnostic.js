@@ -1157,10 +1157,24 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             function buildAspectGraphData(sourcePlanet, sourceDeg, aspectedPlanets) {
                 const anchors = getAspectAnchorPoints(sourcePlanet);
                 const pointsStr = anchors.map(([d, pct]) => {
-                    const x = 30 + (d / 360.0) * 660;
-                    const y = 120 - (pct / 100.0) * 100;
+                    const x = 50 + (d / 360.0) * 720;
+                    const y = 180 - (pct / 100.0) * 140;
                     return `${x.toFixed(1)},${y.toFixed(1)}`;
                 }).join(' ');
+
+                const anchorNodes = [];
+                anchors.forEach(([d, pct]) => {
+                    if ([60, 90, 120, 180, 210, 240, 270].includes(d)) {
+                        const label = pct === 100 ? 'Full (100%)' : (pct === 75 ? '¾' : (pct === 50 ? '½' : (pct === 25 ? '¼' : `${Math.round(pct)}%`)));
+                        anchorNodes.push({
+                            deg: d,
+                            pct: Math.round(pct),
+                            label: label,
+                            cx: Math.round((50 + (d / 360.0) * 720) * 10) / 10,
+                            cy: Math.round((180 - (pct / 100.0) * 140) * 10) / 10
+                        });
+                    }
+                });
 
                 const targetMarkers = [];
                 (aspectedPlanets || []).forEach(tgt => {
@@ -1168,13 +1182,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const tgtAbsDeg = Number(tgt.longitude !== undefined ? tgt.longitude : 0);
                     const relDeg = ((tgtAbsDeg - sourceDeg) % 360 + 360) % 360;
                     const pct = calculateContinuousDrishti(sourcePlanet, relDeg);
-                    const isFocus = Boolean(tgt.is_target);
+                    const isFocus = tgt.is_target !== undefined ? Boolean(tgt.is_target) : true;
 
-                    // Only plot planets that are actively aspected (pct > 0) or the primary target
                     if (pct <= 0.0 && !isFocus) return;
 
-                    const x = 30 + (relDeg / 360.0) * 660;
-                    const y = 120 - (pct / 100.0) * 100;
+                    const x = 50 + (relDeg / 360.0) * 720;
+                    const y = 180 - (pct / 100.0) * 140;
                     targetMarkers.push({
                         name: tgtName,
                         symbol: tgt.symbol || (tgtName ? tgtName.slice(0, 2) : ''),
@@ -1189,81 +1202,154 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 return {
                     source_planet: sourcePlanet,
                     polyline_points: pointsStr,
+                    anchors: anchorNodes,
                     targets: targetMarkers
                 };
             }
 
             function renderContinuousAspectSvg(graph, focusPlanetName) {
                 if (!graph || !graph.polyline_points) return '';
-                const labels = [
-                    [30, '0°', 'H1'], [85, '30°', 'H2'], [140, '60°', 'H3'], [195, '90°', 'H4'],
-                    [250, '120°', 'H5'], [305, '150°', 'H6'], [360, '180°', 'H7'], [415, '210°', 'H8'],
-                    [470, '240°', 'H9'], [525, '270°', 'H10'], [580, '300°', 'H11'], [635, '330°', 'H12'],
-                    [690, '360°', 'H1']
-                ];
-
-                const ticksHtml = labels.map(([x, deg, h]) => `
-                    <line x1="${x}" y1="120" x2="${x}" y2="124" stroke="#94a3b8" stroke-width="1" />
-                    <text x="${x}" y="138" font-size="10" font-weight="600" fill="#0f172a" text-anchor="middle">${deg}</text>
-                    <text x="${x}" y="152" font-size="9" fill="#64748b" text-anchor="middle">${h}</text>
-                `).join('');
+                const gradId = 'rayGrad_' + Math.random().toString(36).substring(2, 9);
 
                 const srcGlyph = grahaGlyphs[graph.source_planet] ? `${grahaGlyphs[graph.source_planet]} ` : '';
                 const srcLabel = `${srcGlyph}${graph.source_planet}`;
 
-                // Sort targets by cx to detect and avoid label collisions
-                const sortedTargets = [...(graph.targets || [])].sort((a, b) => a.cx - b.cx);
-                const targetsHtml = sortedTargets.map((tgt, idx) => {
-                    const isFocus = focusPlanetName && (tgt.name === focusPlanetName);
-                    const circleFill = isFocus ? "#d97706" : "#2563eb";
-                    const strokeAttr = isFocus ? 'stroke="#b45309" stroke-width="1.5"' : '';
-                    const radius = isFocus ? "5.5" : "4.5";
-                    const textFill = isFocus ? "#b45309" : "#2563eb";
-                    const fontWeight = isFocus ? "800" : "bold";
-                    
-                    let yOffset = isFocus ? 9 : 7;
-                    if (idx > 0 && Math.abs(tgt.cx - sortedTargets[idx - 1].cx) < 32) {
-                        yOffset += 12;
-                    }
-                    const labelText = isFocus
-                        ? `🎯 ${tgt.symbol} (${tgt.rel_deg}° • ${tgt.pct}%)`
-                        : `${tgt.symbol} (${tgt.rel_deg}°)`;
+                // Bottom axis ticks & labels: X: 50 to 770 (width 720, step 60)
+                const bottomTicks = [
+                    [50, '0°', 'H1'], [110, '30°', 'H2'], [170, '60°', 'H3'], [230, '90°', 'H4'],
+                    [290, '120°', 'H5'], [350, '150°', 'H6'], [410, '180°', 'H7'], [470, '210°', 'H8'],
+                    [530, '240°', 'H9'], [590, '270°', 'H10'], [650, '300°', 'H11'], [710, '330°', 'H12'],
+                    [770, '360°', 'H1']
+                ];
+                const bottomAxisHtml = bottomTicks.map(([x, deg, h]) => `
+                    <line x1="${x}" y1="180" x2="${x}" y2="187" stroke="#475569" stroke-width="1.5"/>
+                    <text x="${x}" y="204" font-size="13" font-weight="700" fill="#0f172a" text-anchor="middle">${deg}</text>
+                    <text x="${x}" y="222" font-size="12" font-weight="600" fill="#64748b" text-anchor="middle">${h}</text>
+                `).join('');
 
+                // Classical Anchor Points (Brihat Jataka 2.13)
+                const anchors = (graph.anchors && graph.anchors.length > 0) ? graph.anchors : [
+                    { deg: 60, pct: 25, label: "¼", cx: 170, cy: 145 },
+                    { deg: 90, pct: 75, label: "¾", cx: 230, cy: 75 },
+                    { deg: 120, pct: 50, label: "½", cx: 290, cy: 110 },
+                    { deg: 180, pct: 100, label: "Full (100%)", cx: 410, cy: 40 },
+                    { deg: 210, pct: 75, label: "¾", cx: 470, cy: 75 },
+                    { deg: 240, pct: 50, label: "½", cx: 530, cy: 110 },
+                    { deg: 270, pct: 25, label: "¼", cx: 590, cy: 145 }
+                ];
+                const anchorsHtml = anchors.map(a => {
+                    const isFull = (a.pct === 100);
+                    const r = isFull ? "5" : "4.5";
+                    const fSize = isFull ? "11" : "10";
+                    const fWeight = isFull ? "800" : "700";
+                    const fColor = isFull ? "#1d4ed8" : "#64748b";
+                    const textY = isFull ? (a.cy - 10) : (a.cy - 9);
+                    const lbl = a.label || (isFull ? 'Full (100%)' : (a.pct === 75 ? '¾' : (a.pct === 50 ? '½' : (a.pct === 25 ? '¼' : `${a.pct}%`))));
                     return `
-                        <line x1="${tgt.cx}" y1="${tgt.cy}" x2="${tgt.cx}" y2="120" 
-                              stroke="#64748b" stroke-width="1" stroke-dasharray="2 2" />
-                        <circle cx="${tgt.cx}" cy="${tgt.cy}" r="${radius}" fill="${circleFill}" ${strokeAttr} />
-                        <text x="${tgt.cx}" y="${tgt.cy - yOffset}" font-size="10" font-weight="${fontWeight}" fill="${textFill}" text-anchor="middle">
-                          ${labelText}
-                        </text>
+                        <circle cx="${a.cx}" cy="${a.cy}" r="${r}" fill="#ffffff" stroke="#2563eb" stroke-width="2.5"/>
+                        <text x="${a.cx}" y="${textY}" font-size="${fSize}" font-weight="${fWeight}" fill="${fColor}" text-anchor="middle">${lbl}</text>
                     `;
                 }).join('');
 
+                // Target Planet Markers
+                const targets = graph.targets || [];
+                const targetsHtml = targets.map(tgt => {
+                    const isTarget = Boolean(tgt.is_target || (focusPlanetName && tgt.name === focusPlanetName) || (targets.length === 1));
+                    if (isTarget) {
+                        let boxX = tgt.cx;
+                        if (boxX < 95) boxX = 95;
+                        if (boxX > 725) boxX = 725;
+
+                        const isTop = (tgt.cy < 65);
+                        const boxY = isTop ? (tgt.cy + 36) : (tgt.cy - 38);
+                        const arrowOffset = tgt.cx - boxX;
+                        const clampedArrowX = Math.max(-65, Math.min(65, arrowOffset));
+
+                        const arrowPoints = isTop
+                            ? `${clampedArrowX},-18 ${clampedArrowX - 6},-12 ${clampedArrowX + 6},-12`
+                            : `${clampedArrowX},14 ${clampedArrowX - 6},8 ${clampedArrowX + 6},8`;
+
+                        const displaySymbol = tgt.symbol || tgt.name;
+                        const tagLabel = `${displaySymbol}: ${tgt.rel_deg}° (${Math.round(tgt.pct)}%)`;
+
+                        return `
+                            <!-- Drop-line to Axis -->
+                            <line x1="${tgt.cx}" y1="${tgt.cy}" x2="${tgt.cx}" y2="180" stroke="#ea580c" stroke-width="2" stroke-dasharray="4,3"/>
+
+                            <!-- Target Marker Node -->
+                            <circle cx="${tgt.cx}" cy="${tgt.cy}" r="8" fill="#ea580c" stroke="#ffffff" stroke-width="3"/>
+                            <circle cx="${tgt.cx}" cy="${tgt.cy}" r="14" fill="none" stroke="#ea580c" stroke-width="1.5" opacity="0.45"/>
+
+                            <!-- High-Contrast Target Tag -->
+                            <g transform="translate(${boxX}, ${boxY})">
+                              <rect x="-85" y="-14" width="170" height="28" rx="6" fill="#1e293b" />
+                              <polygon points="${arrowPoints}" fill="#1e293b" />
+                              <text x="0" y="5" font-size="13" font-weight="700" fill="#ffffff" text-anchor="middle">
+                                ${tagLabel}
+                              </text>
+                            </g>
+                        `;
+                    } else {
+                        return `
+                            <line x1="${tgt.cx}" y1="${tgt.cy}" x2="${tgt.cx}" y2="180" stroke="#64748b" stroke-width="1.5" stroke-dasharray="2,2"/>
+                            <circle cx="${tgt.cx}" cy="${tgt.cy}" r="5" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+                            <text x="${tgt.cx}" y="${tgt.cy - 9}" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">
+                              ${tgt.symbol || tgt.name} (${tgt.rel_deg}°)
+                            </text>
+                        `;
+                    }
+                }).join('');
+
                 return `
-                    <div style="background: #ffffff; padding: 10px; width: 100%; max-width: 720px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; box-sizing: border-box;">
-                      <svg viewBox="0 0 720 170" style="width: 100%; height: auto; display: block; overflow: visible;">
-                        <!-- Baseline (0% aspect) -->
-                        <line x1="30" y1="120" x2="690" y2="120" stroke="#0f172a" stroke-width="1.5" />
+                    <div style="background: #ffffff; padding: 10px; width: 100%; max-width: 820px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box;">
+                      <svg viewBox="0 0 820 260" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; display: block; overflow: visible;">
+                        <defs>
+                          <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stop-color="#2563eb" stop-opacity="0.25"/>
+                            <stop offset="100%" stop-color="#2563eb" stop-opacity="0.0"/>
+                          </linearGradient>
+                        </defs>
 
-                        <!-- Continuous Aspect Polyline -->
+                        <!-- Horizontal Reference Gridlines -->
+                        <g stroke="#e2e8f0" stroke-width="1" stroke-dasharray="3,3">
+                          <line x1="50" y1="40" x2="770" y2="40" />
+                          <line x1="50" y1="75" x2="770" y2="75" />
+                          <line x1="50" y1="110" x2="770" y2="110" />
+                          <line x1="50" y1="145" x2="770" y2="145" />
+                        </g>
+
+                        <!-- Left Y-Axis Strength Labels -->
+                        <g font-size="11" font-weight="600" fill="#94a3b8" text-anchor="end">
+                          <text x="42" y="44">100%</text>
+                          <text x="42" y="79">75%</text>
+                          <text x="42" y="114">50%</text>
+                          <text x="42" y="149">25%</text>
+                        </g>
+
+                        <!-- Ground Baseline (0% Level) -->
+                        <line x1="45" y1="180" x2="775" y2="180" stroke="#1e293b" stroke-width="2.5" stroke-linecap="round"/>
+
+                        <!-- Shaded Area Under Curve -->
+                        <polygon points="${graph.polyline_points} 770,180 50,180" fill="url(#${gradId})"/>
+
+                        <!-- Continuous Aspect Trajectory Line -->
                         <polyline points="${graph.polyline_points}" 
-                                  fill="none" 
-                                  stroke="#2563eb" 
-                                  stroke-width="2.2" 
-                                  stroke-linejoin="round" 
-                                  stroke-linecap="round" />
+                                  fill="none" stroke="#2563eb" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>
 
-                        <!-- Degree Ticks & X-Labels (30px to 690px, step = 55px) -->
-                        ${ticksHtml}
+                        <!-- CLASSICAL ANCHOR POINTS (Brihat Jataka 2.13) -->
+                        ${anchorsHtml}
 
-                        <!-- Source Planet at 0° (Baseline) -->
-                        <circle cx="30" cy="120" r="4.5" fill="#d97706" />
-                        <text x="36" y="112" font-size="10" font-weight="bold" fill="#d97706" text-anchor="start">
-                          ${srcLabel}
-                        </text>
+                        <!-- SOURCE PLANET SEAT -->
+                        <circle cx="50" cy="180" r="6" fill="#d97706" stroke="#ffffff" stroke-width="2"/>
+                        <text x="50" y="166" font-size="13" font-weight="800" fill="#d97706" text-anchor="middle">${srcLabel}</text>
 
-                        <!-- Aspected Target Planets Placed on Continuous Curve -->
+                        <!-- TARGET PLANET(S) -->
                         ${targetsHtml}
+
+                        <!-- BOTTOM AXIS TICKS & LABELS -->
+                        <g font-family="sans-serif">
+                          ${bottomAxisHtml}
+                        </g>
                       </svg>
                     </div>
                 `;
@@ -1523,16 +1609,6 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                         is_target: true
                                     }
                                 ];
-                                grahaOrder.forEach(tp => {
-                                    if (tp !== aspG && v_grahas[tp] && v_grahas[tp].longitude !== undefined) {
-                                        aspectedTargets.push({
-                                            name: tp,
-                                            longitude: Number(v_grahas[tp].longitude),
-                                            symbol: (grahaGlyphs[tp] ? `${grahaGlyphs[tp]} ` : '') + tp.slice(0, 2),
-                                            is_target: false
-                                        });
-                                    }
-                                });
                                 const incGraph = buildAspectGraphData(aspG, aspGLon, aspectedTargets);
                                 if (incGraph) {
                                     cards.push(`
@@ -2857,13 +2933,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             let incGraph = (pEval.incoming_aspect_graphs && pEval.incoming_aspect_graphs[aspG]) || asp.aspect_graph;
                             if (!incGraph && v_grahas[aspG] && v_grahas[aspG].longitude !== undefined) {
                                 const aspGLon = Number(v_grahas[aspG].longitude);
-                                const aspectedTargets = allTargetsData
-                                    .filter(t => t.name !== aspG)
-                                    .map(t => ({
-                                        ...t,
-                                        is_target: (t.name === graha)
-                                    }));
-                                incGraph = buildAspectGraphData(aspG, aspGLon, aspectedTargets);
+                                const targetData = allTargetsData.find(t => t.name === graha) || {
+                                    name: graha,
+                                    longitude: Number(v_grahas[graha].longitude || 0),
+                                    symbol: (grahaGlyphs[graha] ? `${grahaGlyphs[graha]} ` : '') + graha,
+                                    is_target: true
+                                };
+                                incGraph = buildAspectGraphData(aspG, aspGLon, [{ ...targetData, is_target: true }]);
                             }
 
                             if (incGraph) {

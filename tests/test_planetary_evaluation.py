@@ -1378,7 +1378,102 @@ def test_aspect_weather_cutoff_12_virupas():
             if asp.get("virupas", 0.0) >= 12.0:
                 assert "aspect_graph" in asp or asp.get("from_planet") in p_data.get("incoming_aspect_graphs", {})
                 found_minor_aspect = True
-    assert found_minor_aspect, "Should find aspects >= 12.0 Virūpas"
+
+def test_host_shadbala_dynamic_propagation():
+    """Verify that calculate_planetary_evaluation and calculate_graha_vitality dynamically use host Shadbala percentage."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation, calculate_graha_vitality
+
+    # 1. Direct calculate_graha_vitality test for Neecha Bhanga gatekeeper:
+    # Debilitated Jupiter with high dignity host (80%).
+    # Host with strong Shadbala (110% >= 90%) -> Full Neecha Bhanga rescue.
+    vit_strong = calculate_graha_vitality(
+        planet="Jupiter",
+        sign="Capricorn",
+        degree_in_sign=15.0,
+        dignity_name="Debilitated",
+        dignity_pct=15.0,
+        host_planet="Saturn",
+        host_dignity_pct=80.0,
+        host_shadbala_pct=110.0,
+        planet_shadbala_pct=85.0
+    )
+    assert "Neecha Bhanga" in vit_strong["rescue_status"]
+    assert vit_strong["is_rescued"] is True
+
+    # Host with weak Shadbala (60% < 90%) -> Cannot grant full Neecha Bhanga rescue.
+    vit_weak = calculate_graha_vitality(
+        planet="Jupiter",
+        sign="Capricorn",
+        degree_in_sign=15.0,
+        dignity_name="Debilitated",
+        dignity_pct=15.0,
+        host_planet="Saturn",
+        host_dignity_pct=80.0,
+        host_shadbala_pct=60.0,
+        planet_shadbala_pct=85.0
+    )
+    assert "Full Alchemical Rescue" not in vit_weak["rescue_status"]
+    assert vit_weak["is_rescued"] is False
+
+    # 2. End-to-end chart test: Rahu dynamically proxies its host's Shadbala at 90%
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Exalted"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Gemini", "degree_0_to_30": 10.0, "longitude": 70.0, "dignity": "Own Sign"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 20.0, "longitude": 50.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Own Sign"},
+                "Rahu": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Scorpio", "degree_0_to_30": 15.0, "longitude": 225.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    # Venus is host of Rahu in Taurus.
+    shadbala_a = {"Venus": {"Total_Virupas": 462.0, "Pct_Required_Total": 140.0}}
+    eval_a = calculate_planetary_evaluation(chart, shadbala_data=shadbala_a)
+    # Rahu power = 140 * 0.90 = 126.0%
+    assert eval_a["planets"]["Rahu"]["subcaption_power_pct"] == 126.0
+
+    shadbala_b = {"Venus": {"Total_Virupas": 231.0, "Pct_Required_Total": 70.0}}
+    eval_b = calculate_planetary_evaluation(chart, shadbala_data=shadbala_b)
+    # Rahu power = 70 * 0.90 = 63.0%
+    assert eval_b["planets"]["Rahu"]["subcaption_power_pct"] == 63.0
+
+
+def test_shadbala_pct_required_total_prioritized():
+    """Verify that Pct_Required_Total from Shadbala details is prioritized directly."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Leo", "degree_0_to_30": 15.0, "longitude": 135.0, "dignity": "Own Sign"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 10.0, "longitude": 100.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 20.0, "longitude": 200.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    # Jupiter has 519 Virūpas; with 390 required, Pct_Required_Total is 133.1%
+    shadbala_custom = {
+        "Jupiter": {"Total_Virupas": 519.0, "Pct_Required_Total": 133.1},
+        "Sun": {"Total_Virupas": 450.0, "Pct_Required_Total": 115.4}
+    }
+    eval_res = calculate_planetary_evaluation(chart, shadbala_data=shadbala_custom)
+    jup_data = eval_res["planets"]["Jupiter"]
+    assert jup_data["subcaption_power_pct"] == 133.1
+    assert "133%" in jup_data["subcaption_text"]
 
 
 

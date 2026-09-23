@@ -433,19 +433,26 @@ def build_aspect_graph_data(
     source_deg: float,
     aspected_planets: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
-    """
-    Generates SVG-ready polyline points and aspected planet coordinates.
-    Plot dimensions: X: 30 to 690 (width 660), Y: 120 (0%) to 20 (100%).
-    """
     anchors = get_aspect_anchor_points(source_planet)
     
-    # Generate SVG points string
+    # SVG Dimensions: Width 720 (x: 50 to 770), Height 140 (y: 180 = 0%, y: 40 = 100%)
     points_str = " ".join(
-        f"{30 + (d / 360.0) * 660:.1f},{120 - (pct / 100.0) * 100:.1f}"
+        f"{50 + (d / 360.0) * 720:.1f},{180 - (pct / 100.0) * 140:.1f}"
         for d, pct in anchors
     )
     
-    # Calculate aspected planet markers
+    anchor_nodes = []
+    for d, pct in anchors:
+        if d in (60, 90, 120, 180, 210, 240, 270):  # Active Parashari anchor points
+            label = "Full (100%)" if pct == 100 else ("¾" if pct == 75 else ("½" if pct == 50 else ("¼" if pct == 25 else f"{int(pct)}%")))
+            anchor_nodes.append({
+                "deg": d,
+                "pct": int(pct),
+                "label": label,
+                "cx": round(50 + (d / 360.0) * 720, 1),
+                "cy": round(180 - (pct / 100.0) * 140, 1)
+            })
+            
     target_markers = []
     for tgt in aspected_planets:
         tgt_name = tgt["name"]
@@ -453,22 +460,23 @@ def build_aspect_graph_data(
         rel_deg = (tgt_abs_deg - source_deg) % 360.0
         pct = calculate_continuous_drishti(source_planet, rel_deg)
         
-        x = 30 + (rel_deg / 360.0) * 660
-        y = 120 - (pct / 100.0) * 100
+        x = 50 + (rel_deg / 360.0) * 720
+        y = 180 - (pct / 100.0) * 140
         
         target_markers.append({
             "name": tgt_name,
-            "symbol": tgt.get("symbol", tgt_name[:2]),
+            "symbol": tgt.get("symbol", tgt_name),
             "rel_deg": round(rel_deg, 1),
             "pct": round(pct, 1),
             "cx": round(x, 1),
             "cy": round(y, 1),
-            "is_target": tgt.get("is_target", False)
+            "is_target": tgt.get("is_target", True)
         })
         
     return {
         "source_planet": source_planet,
         "polyline_points": points_str,
+        "anchors": anchor_nodes,
         "targets": target_markers
     }
 
@@ -2501,34 +2509,48 @@ def calculate_planetary_evaluation(
             expr_mode = "Mixed Expression (Routine & Balanced)"
             expr_class = "mixed"
 
+        # Required virupas according to BPHS / Kala methodology:
+        required_virupas_map = {
+            "Sun": 390.0,
+            "Moon": 360.0,
+            "Mars": 300.0,
+            "Mercury": 420.0,
+            "Jupiter": 390.0,
+            "Venus": 330.0,
+            "Saturn": 300.0
+        }
+
+        # Dynamically fetch the Host Dispositor's actual Shadbala percentage
+        host_sb_entry = (shadbala_data or {}).get(sign_lord, {})
+        if "Pct_Required_Total" in host_sb_entry:
+            actual_host_sb_pct = float(host_sb_entry["Pct_Required_Total"])
+        else:
+            h_vir = float(host_sb_entry.get("Total_Virupas", host_sb_entry.get("total_virupas", 0.0)))
+            h_req = required_virupas_map.get(sign_lord, 360.0)
+            actual_host_sb_pct = round((h_vir / h_req) * 100.0, 1) if (h_req > 0 and h_vir > 0) else 100.0
+
         # Raw Strength (Virya / Bala)
         if p in ["Rahu", "Ketu"]:
-            host_sb = (shadbala_data or {}).get(sign_lord, {})
-            host_virupas = host_sb.get("Total_Virupas", host_sb.get("total_virupas", 360.0))
-            host_pct = host_sb.get("Pct_Required_Total", 100.0)
-            tot_virupas = host_virupas * 0.90
+            tot_virupas = float(host_sb_entry.get("Total_Virupas", host_sb_entry.get("total_virupas", 360.0))) * 0.90
             tot_rupas = tot_virupas / 60.0
             req_virupas = 360.0
-            sb_ratio = round((host_pct / 100.0) * 0.90, 2)
-            is_high_strength = (sb_ratio >= 0.95)
+            planet_shadbala_pct = round(actual_host_sb_pct * 0.90, 1)
+            sb_ratio = round(planet_shadbala_pct / 100.0, 2)
+            is_high_strength = (planet_shadbala_pct >= 95.0) or (sb_ratio >= 0.95)
         else:
             sb_entry = (shadbala_data or {}).get(p, {})
-            tot_virupas = sb_entry.get("Total_Virupas", sb_entry.get("total_virupas", 0.0))
-            tot_rupas = sb_entry.get("Total_Rupas", sb_entry.get("total_rupas", 0.0))
+            if "Pct_Required_Total" in sb_entry:
+                planet_shadbala_pct = float(sb_entry["Pct_Required_Total"])
+                tot_virupas = float(sb_entry.get("Total_Virupas", sb_entry.get("total_virupas", 0.0)))
+            else:
+                tot_virupas = float(sb_entry.get("Total_Virupas", sb_entry.get("total_virupas", 0.0)))
+                req_virupas = required_virupas_map.get(p, 360.0)
+                planet_shadbala_pct = round((tot_virupas / req_virupas) * 100.0, 1) if req_virupas > 0 else 100.0
 
-            # Required virupas according to BPHS / Kala methodology:
-            required_virupas_map = {
-                "Sun": 390.0,
-                "Moon": 360.0,
-                "Mars": 300.0,
-                "Mercury": 420.0,
-                "Jupiter": 390.0,
-                "Venus": 330.0,
-                "Saturn": 300.0
-            }
+            tot_rupas = float(sb_entry.get("Total_Rupas", sb_entry.get("total_rupas", tot_virupas / 60.0)))
             req_virupas = required_virupas_map.get(p, 360.0)
-            sb_ratio = round(tot_virupas / req_virupas, 2) if req_virupas > 0 and tot_virupas > 0 else 1.0
-            is_high_strength = (sb_ratio >= 1.0) or (tot_virupas >= req_virupas)
+            sb_ratio = round(planet_shadbala_pct / 100.0, 2)
+            is_high_strength = (planet_shadbala_pct >= 100.0) or (tot_virupas >= req_virupas)
 
         # Inherent Planetary Dignity (Step 1 Shadvarga + Step 2 Host Rescue)
         # Dignity measures the internal mood/character (Avastha/Sthana),
@@ -2711,8 +2733,8 @@ def calculate_planetary_evaluation(
             dignity_pct=d1_score,
             host_planet=sign_lord,
             host_dignity_pct=host_dignity,
-            host_shadbala_pct=100.0,
-            planet_shadbala_pct=sb_ratio * 100.0,
+            host_shadbala_pct=actual_host_sb_pct,
+            planet_shadbala_pct=planet_shadbala_pct,
             net_drishti_virupas=clamped_aspect_net,
             conjunctions=[c.get("planet", c.get("source", "")) for c in step3_info.get("conjunctions", [])],
             lajjitadi_states=raw_lajjitadi,
@@ -2777,7 +2799,8 @@ def calculate_planetary_evaluation(
             {
                 "name": other_target,
                 "longitude": float(d1_grahas[other_target].get("longitude", 0.0)),
-                "symbol": f"{PLANET_GLYPHS.get(other_target, '')} {other_target[:2]}".strip()
+                "symbol": f"{PLANET_GLYPHS.get(other_target, '')} {other_target[:2]}".strip(),
+                "is_target": False
             }
             for other_target in planets_eval_order
             if other_target in d1_grahas
@@ -2799,16 +2822,19 @@ def calculate_planetary_evaluation(
             # Lower threshold to 12.0 Virupas to include noticeable minor aspects (Brihat Jataka)
             if src_p and src_p in d1_grahas and raw_v >= 12.0:
                 src_lon = float(d1_grahas[src_p].get("longitude", 0.0))
-                src_targets = [
-                    {
-                        "name": t["name"],
-                        "longitude": t["longitude"],
-                        "symbol": t["symbol"],
-                        "is_target": (t["name"] == p)
-                    }
-                    for t in all_chart_targets
-                    if t["name"] != src_p and (calculate_continuous_drishti(src_p, (t["longitude"] - src_lon) % 360.0) > 0.0 or t["name"] == p)
-                ]
+                
+                # FILTER ONLY THE TARGET PLANET (p)
+                target_lon = float(d1_grahas[p].get("longitude", 0.0))
+                rel_d = (target_lon - src_lon) % 360.0
+                
+                src_targets = [{
+                    "name": p,
+                    "longitude": target_lon,
+                    "symbol": f"{PLANET_GLYPHS.get(p, '')} {p}".strip(),
+                    "is_target": True
+                }]
+                
+                # Build graph containing ONLY the target planet
                 inc_g = build_aspect_graph_data(src_p, src_lon, src_targets)
                 incoming_aspect_graphs[src_p] = inc_g
                 asp_item["aspect_graph"] = inc_g
@@ -2837,8 +2863,8 @@ def calculate_planetary_evaluation(
             "vitality_score": vit_res["vitality_score"],
             "vitality_tier": vit_res["vitality_tier"],
             "subcaption_intent_pct": vit_res.get("subcaption_intent_pct", round(functional_dignity_pct, 1)),
-            "subcaption_power_pct": vit_res.get("subcaption_power_pct", round(sb_ratio * 100.0, 1)),
-            "subcaption_text": vit_res.get("subcaption_text", f"Intent: {functional_dignity_pct:.0f}% | Power: {sb_ratio * 100.0:.0f}%"),
+            "subcaption_power_pct": vit_res.get("subcaption_power_pct", round(planet_shadbala_pct, 1)),
+            "subcaption_text": vit_res.get("subcaption_text", f"Intent: {functional_dignity_pct:.0f}% | Power: {planet_shadbala_pct:.0f}%"),
             "equation_parts": vit_res.get("equation_parts", {}),
             "calculation_receipt": vit_res.get("calculation_receipt", {}),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
