@@ -2126,103 +2126,25 @@ def calculate_planetary_evaluation(
         rules_dusthana = any(h in [6, 8, 12] for h in ruled_houses)
         is_viparita_candidate = is_dusthana_occupant and rules_dusthana
 
-        # 4.1 Complete 12-House Terrain Compatibility Matrix (Ruleset 4)
+        # 4.1 Classical Parashari House Placement (Bhava Classification)
+        HOUSE_CLASSIFICATIONS = {
+            1: "Kendra & Trikona (Lagna)",
+            2: "Dhana & Maraka Bhāva",
+            3: "Upachaya & Bhrātṛ Bhāva",
+            4: "Kendra (Sukha Bhāva)",
+            5: "Trikona (Putra Bhāva)",
+            6: "Dusthana & Upachaya (Ripu Bhāva)",
+            7: "Kendra & Maraka (Kalatra Bhāva)",
+            8: "Dusthana (Randhra Bhāva)",
+            9: "Trikona (Dharma Bhāva)",
+            10: "Kendra & Upachaya (Karma Bhāva)",
+            11: "Upachaya (Lābha Bhāva)",
+            12: "Dusthana (Vyaya Bhāva)"
+        }
+        house_type = HOUSE_CLASSIFICATIONS.get(house_num, f"House {house_num}")
         terrain_mod = 0.0
-        terrain_type = "Intermediate Field"
-        terrain_note = ""
-
-        if house_num == 8:
-            terrain_mod = -20.0
-            terrain_type = "Turbulent Vortex Terrain (H8)"
-            terrain_note = "Turbulent Vortex (-20%): 8th house is inherently turbulent, sinking terrain (Light on Life)."
-        elif house_num == 12:
-            if is_viparita_candidate:
-                terrain_mod = 0.0
-                terrain_type = "Transmuted Sanctuary (H12 Viparita)"
-                terrain_note = "Transmuted Sanctuary (0%): Dusthana lord residing in 12th house neutralizes dissolution terrain into spiritual sanctuary."
-            else:
-                terrain_mod = -15.0
-                terrain_type = "Drain / Dissolution Field (H12)"
-                terrain_note = "Dissolution Field (-15%): 12th house dissolves worldly focus and drains outward momentum."
-        elif p == "Moon":
-            if moon_illum_pct >= 50.0:
-                g_factor = (moon_illum_pct - 50.0) / 50.0
-                if house_num in [1, 4, 5, 9, 10]:
-                    terrain_mod = round(25.0 * g_factor, 1)
-                    terrain_type = "Noble Flourishing Field (Gradual Lunar Light)"
-                    terrain_note = (
-                        f"Noble Field (+{terrain_mod:.1f}%): Waxing/Bright Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}) "
-                        f"flourishes in house {house_num}."
-                    )
-                elif house_num == 11:
-                    terrain_mod = round(20.0 * g_factor, 1)
-                    terrain_type = "Lābha Flourishing (Gradual Lunar Light)"
-                    terrain_note = f"Lābha Flourishing (+{terrain_mod:.1f}%): Waxing Moon flourishing in 11th house (Phaladīpikā 13.11)."
-                elif house_num in [3, 6]:
-                    terrain_mod = round(-25.0 * g_factor, 1)
-                    terrain_type = "Combative Field Strain (Gradual Lunar Light)"
-                    terrain_note = (
-                        f"Combative Strain ({terrain_mod:.1f}%): Bright Moon faces friction in struggle house {house_num}."
-                    )
-                else:
-                    terrain_mod = 0.0
-                    terrain_type = "Intermediate Field"
-                    terrain_note = f"Intermediate Terrain (0.0%): House {house_num} is neutral terrain for bright lunar energy."
-            else:
-                g_factor = (50.0 - moon_illum_pct) / 50.0
-                if house_num in [3, 6, 10, 11]:
-                    terrain_mod = round(25.0 * g_factor, 1)
-                    terrain_type = "Upachaya Growth Field (Gradual Dark Moon)"
-                    terrain_note = (
-                        f"Upachaya Growth (+{terrain_mod:.1f}%): Waning/Dark Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}) "
-                        f"channels striving into house {house_num}."
-                    )
-                elif house_num in [1, 4, 5, 9]:
-                    terrain_mod = round(-25.0 * g_factor, 1)
-                    terrain_type = "Tender Field Strain (Gradual Dark Moon)"
-                    terrain_note = (
-                        f"Tender Field Strain ({terrain_mod:.1f}%): Waning/Dark Moon disturbs emotional calm in house {house_num}."
-                    )
-                else:
-                    terrain_mod = 0.0
-                    terrain_type = "Intermediate Field"
-                    terrain_note = f"Intermediate Terrain (0.0%): House {house_num} has neutral terrain for dark lunar energy."
-        elif p in ["Saturn", "Mars", "Sun", "Rahu", "Ketu"]:
-            # Natural Malefics
-            if house_num in [3, 6, 10, 11]:
-                terrain_mod = 25.0
-                terrain_type = "Upachaya Growth Field"
-                terrain_note = f"Upachaya Growth (+25%): Natural malefic {p} thrives in house {house_num} (effort, competition, executive endurance)."
-            elif house_num in [1, 4, 5, 9]:
-                terrain_mod = -25.0
-                terrain_type = "Tender Field Disturbance"
-                terrain_note = f"Tender Field Disturbance (-25%): Natural malefic {p} in house {house_num} disturbs domestic or emotional peace."
-            else:
-                terrain_mod = 0.0
-                terrain_type = "Intermediate Field"
-                terrain_note = f"Intermediate Terrain (0%): House {house_num} has no decisive malefic terrain bias."
-        else:
-            # Natural Benefics (Jupiter, Venus, Mercury)
-            if house_num in [1, 4, 5, 9]:
-                terrain_mod = 25.0
-                terrain_type = "Noble Flourishing Field"
-                terrain_note = f"Noble Field (+25%): Natural benefic {p} flourishes in house {house_num} (dharma, peace, honor)."
-            elif house_num == 10:
-                terrain_mod = 25.0
-                terrain_type = "Noble Zenith"
-                terrain_note = f"Noble Zenith (+25%): Natural benefic {p} achieves peak honorable prominence in house 10."
-            elif house_num == 11:
-                terrain_mod = 20.0
-                terrain_type = "Lābha Flourishing"
-                terrain_note = f"Lābha Flourishing (+20%): Natural benefic {p} generates abundant, ethical gains in house 11 (Phaladīpikā 13.11)."
-            elif house_num in [3, 6]:
-                terrain_mod = -25.0
-                terrain_type = "Combative Field Strain"
-                terrain_note = f"Combative Strain (-25%): Natural benefic {p} in house {house_num} is ill-suited for rough fighting or litigation."
-            else:
-                terrain_mod = 0.0
-                terrain_type = "Intermediate Field"
-                terrain_note = f"Intermediate Terrain (0%): House {house_num} has no decisive benefic terrain bias."
+        terrain_type = house_type
+        terrain_note = f"Occupying House {house_num} ({house_type})."
 
         # Bhava Madhya Proximity Check (Ruleset 7: within ±3.0° of house cusp for H2-H12)
         is_bhava_madhya = False
@@ -2242,18 +2164,18 @@ def calculate_planetary_evaluation(
         is_multi_vip = bool(has_multi_viparita and is_viparita_candidate)
         viparita_badge = "⚡ Raja Sambandha Viparita" if is_multi_vip else None
         total_lordship_mod = calculate_lordship_modifier(ruled_houses, p, house_num, lagna_idx, is_multi_vip)
-        expression_score = round(terrain_mod + total_lordship_mod, 1)
+        expression_score = round(total_lordship_mod, 1)
         house_bonus = expression_score
 
         # Build math steps for formula string
         math_steps = [
             f"Base Dignity: {d1_score:.1f}% ({d1_dignity_name})",
-            f"House Terrain: {terrain_mod:+.1f}% ({terrain_type} in H{house_num})",
+            f"House Placement: House {house_num} ({house_type})",
             f"Lordship Agenda: {total_lordship_mod:+.1f}%"
         ]
         func_dig_formula_str = (
             f"Layer 2 Functional Dignity = {functional_dignity_pct:.1f}% | "
-            f"Layer 4 Expression Mode = Terrain ({terrain_mod:+.1f}%) + Lordship ({total_lordship_mod:+.1f}%) = {expression_score:+.1f}%"
+            f"Layer 4 Expression Mode = Lordship Agenda ({total_lordship_mod:+.1f}%) = {expression_score:+.1f}%"
         )
 
         house_type = f"{terrain_type} (House {house_num})"
@@ -2720,7 +2642,7 @@ def calculate_planetary_evaluation(
 
     return {
         "summary": {
-            "title": "Vic DiCara's Planetary Evaluation & Positive-to-Negative Scale",
+            "title": "Planetary Evaluation & Positive-to-Negative Scale",
             "subtitle": "Continuous diagnostic spectrum (-100% to +100%) and 4-Quadrant Archetypes (Phaladeepika Chapters 3 & 4)",
             "master_lords": master_lords,
             "moon_phase": moon_phase_summary,

@@ -80,7 +80,7 @@ def test_master_diagnostic_drawer_toggle(page: Page):
     sun_row.click()
     expect(drawer).to_be_visible()
     assert "Dignity & Peer Bridge" in drawer.inner_text()
-    assert "House Terrain" in drawer.inner_text()
+    assert "House Placement" in drawer.inner_text()
 
     # Click again to close drawer
     sun_row.click()

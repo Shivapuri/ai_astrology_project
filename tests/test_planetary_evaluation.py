@@ -166,10 +166,10 @@ def test_dayalpuri_jupiter_exalted_archetype():
     assert jup["archetype"]["title"] == "Generous King with Armies"
     assert jup["archetype"]["icon"] == "🌟"
     
-    # Located in 8th house, so its final situational score is Mixed Expression
+    # Located in 8th house, retains exalted archetype and positive expression
     assert jup["step4_house_field"]["house_num"] == 8
-    assert jup["expression_class"] == "mixed"
-    assert -30.0 <= jup["net_scale_score"] <= 30.0
+    assert jup["expression_class"] == "positive"
+    assert jup["net_scale_score"] > 30.0
 
 
 def test_kurczak_dignity_scale_and_moolatrikona():
@@ -661,15 +661,13 @@ def test_baladi_avastha_bphs_naming():
     assert calculate_baladi_avastha("Taurus", 26.0)["state"] == "Bala"
 
 
-def test_vic_dicara_house_terrain_and_lordship_modifiers():
+def test_parashari_lordship_modifiers():
     """
-    Validates Vic DiCara's exact video formulas:
-    1. Terrain compatibility (+25% in Upachayas for Malefics, -25% in 1,4,5,9;
-       +25% in 1,4,5,9,10 for Benefics, -25% in 3,6).
-    2. Lordship modifiers: +20% for 1st Lord (Lagnesha), +15% for Trine lords (5/9),
+    Validates classical Parashari Lordship modifiers without arbitrary terrain shifts:
+    1. Lordship modifiers: +20% for 1st Lord (Lagnesha), +15% for Trine lords (5/9),
        +5% for Angle lords (4/10), -15% for Dusthana lords (6/8/12),
-       and +15% Viparita reversal loophole when occupying 6/8/12.
-    3. Mathematical breakdown string generation.
+       and +25% Multi-Viparita reversal loophole when occupying 6/8/12.
+    2. Mathematical breakdown string generation.
     """
     # Create synthetic vargas data for test case 1: Jupiter in Cancer in 3rd House (Taurus Lagna)
     vargas_case1 = {
@@ -696,13 +694,13 @@ def test_vic_dicara_house_terrain_and_lordship_modifiers():
 
     # In D1, Jupiter in Cancer is Exalted (100% base)
     assert s4_jup["house_num"] == 3
-    assert s4_jup["terrain_mod_pct"] == -25.0  # Benefic in 3rd house
+    assert s4_jup["terrain_mod_pct"] == 0.0  # Decoupled from terrain
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
-    assert s4_jup["expression_score"] == -45.0
+    assert s4_jup["expression_score"] == -20.0
     assert fd_jup["functional_dignity_pct"] == 62.2
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
-    assert "-25.0%" in fd_jup["math_steps"][1]
+    assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
     assert "Layer 2 Functional Dignity = 62.2%" in fd_jup["math_formula"]
 
@@ -731,10 +729,10 @@ def test_vic_dicara_house_terrain_and_lordship_modifiers():
 
     # In D1, Saturn in Aries is Debilitated (12.5% base in Kurczak scale)
     assert s4_sat["house_num"] == 10
-    assert s4_sat["terrain_mod_pct"] == 25.0  # Malefic in 10th house Upachaya
+    assert s4_sat["terrain_mod_pct"] == 0.0  # Decoupled from terrain
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
-    assert s4_sat["expression_score"] == 12.5
+    assert s4_sat["expression_score"] == -12.5
     assert fd_sat["functional_dignity_pct"] == 10.0
     assert "Layer 2 Functional Dignity = 10.0%" in fd_sat["math_formula"]
 
@@ -761,14 +759,14 @@ def test_vic_dicara_house_terrain_and_lordship_modifiers():
     s4_sat3 = sat_res3["step4_house_field"]
     fd_sat3 = sat_res3["functional_dignity"]
 
-    # In D1, Saturn is in 8th house (Turbulent Vortex: -20.0% per Ruleset 4)
+    # In D1, Saturn is in 8th house
     assert s4_sat3["house_num"] == 8
-    assert s4_sat3["terrain_mod_pct"] == -20.0
+    assert s4_sat3["terrain_mod_pct"] == 0.0
     # Virgo Lagna: Saturn rules 5th (Capricorn: +7.5%) and 6th (Aquarius MT Dusthana).
     # Saturn in 8th while ruling 6th dusthana triggers Viparita (+25.0% Multi-Viparita).
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
-    assert s4_sat3["expression_score"] == 12.5
+    assert s4_sat3["expression_score"] == 32.5
     assert fd_sat3["functional_dignity_pct"] == 10.0
     assert "Layer 2 Functional Dignity = 10.0%" in fd_sat3["math_formula"]
 
@@ -831,10 +829,9 @@ def test_moon_phase_and_illumination_spectrum():
     m_75 = eval_75["planets"]["Moon"]
     assert m_75["moon_phase"]["illumination_pct"] == 75.0
     assert m_75["moon_phase"]["gradual_factor"] == 0.5
-    # Moon in Cancer is 4th house for Aries Lagna -> Noble field: +25% * 0.50 = +12.5%
+    # Moon in Cancer is 4th house for Aries Lagna
     assert m_75["step4_house_field"]["house_num"] == 4
-    assert m_75["step4_house_field"]["terrain_mod_pct"] == 12.5
-    assert "Noble Flourishing Field (Gradual Lunar Light)" in m_75["step4_house_field"]["terrain_type"]
+    assert m_75["step4_house_field"]["terrain_mod_pct"] == 0.0
 
     # Test Case C: 50% Half Moon in 4th house (Cancer) -> Factor = 0.0 -> 0.0% modifier
     # Sun in Aries 0°, Moon in Cancer 0° (90° elongation = 50.0% half moon)
@@ -860,7 +857,7 @@ def test_moon_phase_and_illumination_spectrum():
     assert m_50["moon_phase"]["gradual_factor"] == 0.0
     assert m_50["step4_house_field"]["terrain_mod_pct"] == 0.0
 
-    # Test Case D: 25% Dark Moon in 4th house (Cancer) -> Factor = 0.50 -> -12.5% modifier
+    # Test Case D: 25% Dark Moon in 4th house (Cancer) -> Factor = 0.50
     # Elongation 45°: Sun in Taurus 15° (45°), Moon in Cancer 0° (90°) -> elongation = 45° -> paksha ratio = 45/180 = 0.25 (25%)
     chart_25 = {
         "D1": {
@@ -883,11 +880,9 @@ def test_moon_phase_and_illumination_spectrum():
     assert m_25["moon_phase"]["illumination_pct"] == 25.0
     assert m_25["moon_phase"]["gradual_factor"] == 0.5
     assert m_25["moon_phase"]["terrain_spectrum"] == "dark_gradual"
-    # Moon in 4th house (Tender Field Strain): -25% * 0.50 = -12.5%
-    assert m_25["step4_house_field"]["terrain_mod_pct"] == -12.5
-    assert "Tender Field Strain (Gradual Dark Moon)" in m_25["step4_house_field"]["terrain_type"]
+    assert m_25["step4_house_field"]["terrain_mod_pct"] == 0.0
 
-    # Test Case E: 0% New Moon in 3rd house (Gemini) -> Upachaya Growth: +25% * 1.0 = +25.0%
+    # Test Case E: 0% New Moon in 3rd house (Gemini)
     # Sun in Gemini 15° (75°), Moon in Gemini 15° (75°) -> elongation 0°
     chart_0 = {
         "D1": {
@@ -909,10 +904,8 @@ def test_moon_phase_and_illumination_spectrum():
     m_0 = eval_0["planets"]["Moon"]
     assert m_0["moon_phase"]["illumination_pct"] == 0.0
     assert m_0["moon_phase"]["gradual_factor"] == 1.0
-    # Gemini is 3rd house for Aries Lagna -> Upachaya Growth for dark moon: +25.0%
     assert m_0["step4_house_field"]["house_num"] == 3
-    assert m_0["step4_house_field"]["terrain_mod_pct"] == 25.0
-    assert "Upachaya Growth Field (Gradual Dark Moon)" in m_0["step4_house_field"]["terrain_type"]
+    assert m_0["step4_house_field"]["terrain_mod_pct"] == 0.0
 
 
 def test_vitality_functional_dignity_integration():
@@ -944,8 +937,8 @@ def test_vitality_functional_dignity_integration():
     vit = sun["vitality"]
     receipt = vit["calculation_receipt"]
 
-    # Sun in H4: -25% (Terrain) + 20% (Lagna Lord) = -5.0% delta
-    assert receipt["house_field_delta_pct"] == -5.0
+    # Sun in H4: Lagna Lord = +20% delta
+    assert receipt["house_field_delta_pct"] == 20.0
     assert "Functional Dignity:" in receipt["receipt_text"]
     assert "Moral Intent / Dignity:" in receipt["receipt_text"]
 
@@ -954,11 +947,11 @@ def test_mars_in_scorpio_12th_house_dignity():
     """
     Verifies Mina's chart configuration (Sagittarius Lagna, Mars in Scorpio in H12):
     1. Base Dignity: 62.5% (Scorpio is even own sign on Kurczak scale, not 68.8%).
-    2. House Terrain: 0.0% (H12 Transmuted Sanctuary).
+    2. House Placement: House 12.
     3. Trine Lord (H5): +15.0%.
     4. 12th Lord in 12th house: 0.0% (Own Dusthana, at home).
     5. Layer 2 Functional Dignity is decoupled from House Terrain and Lordship.
-    6. Layer 4 Expression Score = Terrain (0.0%) + Lordship (+15.0%) = +15.0%.
+    6. Layer 4 Expression Score = Lordship (+15.0%) = +15.0%.
     """
     chart = {
         "D1": {
@@ -983,7 +976,7 @@ def test_mars_in_scorpio_12th_house_dignity():
 
     # 1. Base dignity for Scorpio must be 62.5% (even sign own sign)
     assert f_dig["base_dignity_pct"] == 62.5
-    # 2. House Terrain for H12 is 0.0% (Transmuted Sanctuary)
+    # 2. House Terrain for H12 is 0.0%
     assert f_dig["terrain_mod_pct"] == 0.0
     assert f_dig["terrain_dignity_pct"] == 62.5
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
@@ -991,7 +984,7 @@ def test_mars_in_scorpio_12th_house_dignity():
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
     assert f_dig["functional_dignity_pct"] == 43.4
     assert s4_mars["expression_score"] == 15.0
-    assert "Transmuted Sanctuary" in f_dig["math_steps"][1]
+    assert "House 12" in f_dig["math_steps"][1]
 
 
 
