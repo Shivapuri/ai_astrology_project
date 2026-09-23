@@ -28,44 +28,41 @@ def check_server():
 
 def init_page(page: Page):
     page.goto(FLASK_URL)
-    page.wait_for_timeout(800)
+    page.wait_for_function("typeof loadChart === 'function'")
     page.evaluate(f"loadChart('{CHART_ID}')")
-    page.wait_for_timeout(1200)
+    page.wait_for_function("typeof currentChartData !== 'undefined' && currentChartData !== null && currentChartData.planetary_evaluation")
 
 
 def test_master_diagnostic_table_renders(page: Page):
     init_page(page)
     page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
-    page.wait_for_timeout(600)
-
-    # 1. Verify table exists
     table = page.locator("#cell1 .master-diagnostic-table")
-    assert table.is_visible()
+    expect(table).to_be_visible()
 
-    # 2. Verify 9 header columns
+    # 1. Verify 9 header columns
     headers = page.locator("#cell1 .master-diagnostic-table > thead > tr > th")
     assert headers.count() == 9
 
-    # 3. Verify rows: 1 Lagna row + 9 Graha rows = 10 rows
+    # 2. Verify rows: 1 Lagna row + 9 Graha rows = 10 rows
     rows = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row")
-    assert rows.count() == 10
+    expect(rows).to_have_count(10)
 
-    # 4. Verify each row has 9 cells
+    # 3. Verify each row has 9 cells
     for i in range(10):
         cells = rows.nth(i).locator("td")
         assert cells.count() == 9
 
-    # 5. Check Master Lord badges exist in Cell 1
+    # 4. Check Master Lord badges exist in Cell 1
     master_lord_badges = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row td:first-child .badge")
     assert master_lord_badges.count() >= 1
 
-    # 6. Check Nakshatra badge exists in Cell 7
+    # 5. Check Nakshatra badge exists in Cell 7
     cell7_elements = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row td:nth-child(7)")
     assert cell7_elements.count() == 10
     first_cell7 = cell7_elements.first.inner_text()
     assert "Overlord:" in first_cell7
 
-    # 7. Check Vitality score and receipt in Cell 9
+    # 6. Check Vitality score and receipt in Cell 9
     cell9_elements = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row td:nth-child(9)")
     assert cell9_elements.count() == 10
     first_cell9 = cell9_elements.first.inner_text()
@@ -75,39 +72,34 @@ def test_master_diagnostic_table_renders(page: Page):
 def test_master_diagnostic_drawer_toggle(page: Page):
     init_page(page)
     page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
-    page.wait_for_timeout(600)
+    sun_row = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row[data-id='Sun']")
+    expect(sun_row).to_be_visible()
 
     # Click Sun's row to open drawer
-    sun_row = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row[data-id='Sun']")
-    sun_row.click()
-    page.wait_for_timeout(300)
-
-    # Verify Sun drawer is visible
     drawer = page.locator("#cell1 #drawer-Sun")
-    assert drawer.is_visible()
+    sun_row.click()
+    expect(drawer).to_be_visible()
     assert "Dignity & Peer Bridge" in drawer.inner_text()
     assert "House Terrain" in drawer.inner_text()
 
     # Click again to close drawer
     sun_row.click()
-    page.wait_for_timeout(300)
-    assert not drawer.is_visible()
+    expect(drawer).not_to_be_visible()
 
 
 def test_master_diagnostic_varga_switch(page: Page):
     init_page(page)
     page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
-    page.wait_for_timeout(600)
 
     # Select D9 Navamsha from dropdown
     select = page.locator("#cell1 .varga-select")
+    expect(select).to_be_visible()
     select.select_option("D9")
-    page.wait_for_timeout(500)
-
-    # Verify rows still render properly
-    rows = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row")
-    assert rows.count() == 10
 
     # Subtitle should update to D9
     subtitle = page.locator("#cell1 .varga-subtitle")
-    assert "D9" in subtitle.inner_text()
+    expect(subtitle).to_contain_text("D9")
+
+    # Verify rows still render properly
+    rows = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row")
+    expect(rows).to_have_count(10)

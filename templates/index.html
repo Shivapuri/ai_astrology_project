@@ -6261,7 +6261,9 @@
         }
 
         function toggleDiagnosticDrawer(drawerId, rowEl) {
-            const drawer = document.getElementById(drawerId);
+            let drawer = (rowEl && rowEl.nextElementSibling && rowEl.nextElementSibling.classList.contains('diagnostic-drawer-row'))
+                ? rowEl.nextElementSibling
+                : document.getElementById(drawerId);
             if (!drawer) return;
             const isHidden = (drawer.style.display === 'none' || !drawer.style.display);
             
@@ -8700,11 +8702,12 @@
                 let peerShiftsDetailHtml = '';
                 if (pEval.step3_aspects && pEval.step3_aspects.details && pEval.step3_aspects.details.length > 0) {
                     const pItems = pEval.step3_aspects.details.map(d => {
-                        const signChar = d.shift >= 0 ? '+' : '';
-                        const color = d.shift > 0 ? '#15803d' : (d.shift < 0 ? '#b91c1c' : '#64748b');
+                        const shiftNum = (typeof d.shift === 'number') ? d.shift : Number(d.shift || 0);
+                        const signChar = shiftNum >= 0 ? '+' : '';
+                        const color = shiftNum > 0 ? '#15803d' : (shiftNum < 0 ? '#b91c1c' : '#64748b');
                         return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
-                            <span>${d.source} (${d.type}):</span>
-                            <strong style="color:${color};">${signChar}${d.shift.toFixed(1)}% (${d.sambhanda})</strong>
+                            <span>${d.source || '--'} (${d.type || '--'}):</span>
+                            <strong style="color:${color};">${signChar}${shiftNum.toFixed(1)}% (${d.sambhanda || ''})</strong>
                         </div>`;
                     }).join('');
                     peerShiftsDetailHtml = `
@@ -8712,7 +8715,7 @@
                             <div style="font-size:9.5px; font-weight:700; color:#4a3325; margin-bottom:2px;">Peer Sambandha Shifts:</div>
                             ${pItems}
                             <div style="margin-top:3px; font-weight:700; color:#1e293b; font-size:10px;">
-                                ➔ Final Functional Dignity: ${effDig.toFixed(1)}%
+                                ➔ Final Functional Dignity: ${(typeof effDig === 'number' ? effDig : 50).toFixed(1)}%
                             </div>
                         </div>
                     `;
@@ -8760,9 +8763,10 @@
                 let conjItemsHtml = '';
                 if (conjDetails && conjDetails.length > 0) {
                     conjItemsHtml = conjDetails.map(c => {
+                        const degStr = (c.degree_diff !== undefined && c.degree_diff !== null) ? Number(c.degree_diff).toFixed(2) + '°' : '';
                         return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
-                            <span>${c.commands ? '👑 ' : ''}${c.planet} (${c.degree_diff.toFixed(2)}°):</span>
-                            <span>${c.orb_band} ${c.commands ? '• Commands' : ''}</span>
+                            <span>${c.commands ? '👑 ' : ''}${c.planet}${degStr ? ` (${degStr})` : ''}:</span>
+                            <span>${c.orb_band || ''} ${c.commands ? '• Commands' : ''}</span>
                         </div>`;
                     }).join('');
                 }
