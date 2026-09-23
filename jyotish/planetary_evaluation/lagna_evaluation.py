@@ -45,6 +45,14 @@ NATURAL_MALEFICS = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
 def clamp(val: float, min_val: float, max_val: float) -> float:
     return max(min_val, min(max_val, val))
 
+def calculate_occupant_proximity(planet_deg: float, lagna_deg: float) -> float:
+    """
+    Calculates linear proximity across the 30° Whole Sign field
+    with an explicit 0.15 baseline floor (Phaladipika 8.34-35).
+    """
+    deg_diff = abs(planet_deg - lagna_deg)
+    return max(0.15, 1.0 - (deg_diff / 30.0))
+
 def evaluate_lagna_vitality(
     vargas_data: Dict[str, Any],
     shadbala_data: Optional[Dict[str, Any]] = None,
@@ -323,47 +331,60 @@ def evaluate_lagna_vitality(
         p3_notes.append("No planets in House 1 (0.0): Clean, unencumbered horizon reflecting pure rising sign.")
     else:
         for p in h1_occupants:
+            p_deg = float(grahas[p].get("degree_0_to_30", 0.0))
+            prox = calculate_occupant_proximity(p_deg, lagna_deg)
             p_dig = grahas[p].get("dignity_breakdown", {}).get("final_dignity", "")
             p_dig_low = p_dig.lower()
             
             if p == "Jupiter":
-                p3_score += 1.0
-                p3_notes.append("Jupiter in House 1 (+1.0): Directional strength (Digbala); bestows noble wisdom, broad optimism, and cellular immunity.")
+                pts = round(1.0 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Jupiter in House 1 (+{pts:.2f}, prox {prox:.2f}): Directional strength (Digbala); bestows noble wisdom, broad optimism, and cellular immunity.")
             elif p == "Venus":
-                p3_score += 0.7
-                p3_notes.append("Venus in House 1 (+0.7): Aesthetic grace, bodily contentment, charisma, and peaceful diplomacy.")
+                pts = round(0.7 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Venus in House 1 (+{pts:.2f}, prox {prox:.2f}): Aesthetic grace, bodily contentment, charisma, and peaceful diplomacy.")
             elif p == "Mercury":
-                p3_score += 0.6
-                p3_notes.append("Mercury in House 1 (+0.6): Directional strength (Digbala); rapid cognitive processing and youthful adaptability.")
+                pts = round(0.6 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Mercury in House 1 (+{pts:.2f}, prox {prox:.2f}): Directional strength (Digbala); rapid cognitive processing and youthful adaptability.")
             elif p == "Moon":
-                p3_score += 0.6
-                p3_notes.append("Moon in House 1 (+0.6): Emotional magnetism, popularity, and deep sensitivity to surroundings.")
+                pts = round(0.6 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Moon in House 1 (+{pts:.2f}, prox {prox:.2f}): Emotional magnetism, popularity, and deep sensitivity to surroundings.")
             elif p == "Mars":
                 if "own" in p_dig_low or "exalt" in p_dig_low or lagna_sign in ("Leo", "Cancer"):
-                    p3_score += 0.8
-                    p3_notes.append(f"Mars in House 1 (Yogakāraka / Dignified) (+0.8): Gladiator willpower, fearless leadership, and impervious physical drive.")
+                    pts = round(0.8 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Mars in House 1 (Yogakāraka / Dignified) (+{pts:.2f}, prox {prox:.2f}): Gladiator willpower, fearless leadership, and impervious physical drive.")
                 else:
-                    p3_score -= 0.5
-                    p3_notes.append("Mars in House 1 (-0.5): Excess bodily heat (Pitta), rash impulsivity, and proneness to cuts, fevers, or injuries.")
+                    pts = round(-0.5 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Mars in House 1 ({pts:+.2f}, prox {prox:.2f}): Excess bodily heat (Pitta), rash impulsivity, and proneness to cuts, fevers, or injuries.")
             elif p == "Saturn":
                 if "own" in p_dig_low or "exalt" in p_dig_low:
-                    p3_score += 0.6
-                    p3_notes.append("Saturn in House 1 (Śaśa Mahāpuruṣa) (+0.6): Enduring iron discipline, profound realism, and grounded stamina.")
+                    pts = round(0.6 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Saturn in House 1 (Śaśa Mahāpuruṣa) (+{pts:.2f}, prox {prox:.2f}): Enduring iron discipline, profound realism, and grounded stamina.")
                 else:
-                    p3_score -= 0.6
-                    p3_notes.append("Saturn in House 1 (-0.6): Bodily coldness, stiffness, Vata stress, and aloof or morose projection.")
+                    pts = round(-0.6 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Saturn in House 1 ({pts:+.2f}, prox {prox:.2f}): Bodily coldness, stiffness, Vata stress, and aloof or morose projection.")
             elif p == "Sun":
                 if p == lord:
                     p3_notes.append("Sun in House 1 (Lagna Lord) (evaluated in Pillar 1 & 2): Radiates sovereign solar authority.")
                 else:
-                    p3_score -= 0.3
-                    p3_notes.append("Sun in House 1 (-0.3): Intense heat and egoic friction in the personal field.")
+                    pts = round(-0.3 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Sun in House 1 ({pts:+.2f}, prox {prox:.2f}): Intense heat and egoic friction in the personal field.")
             elif p == "Rahu":
-                p3_score -= 0.5
-                p3_notes.append("Rahu in House 1 (-0.5): Identity distortion, restless ambition, and unconventional nervous tension.")
+                pts = round(-0.5 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Rahu in House 1 ({pts:+.2f}, prox {prox:.2f}): Identity distortion, restless ambition, and unconventional nervous tension.")
             elif p == "Ketu":
-                p3_score -= 0.5
-                p3_notes.append("Ketu in House 1 (-0.5): Dissociation from physical needs, ascetic detachment, and enigmatic self-expression.")
+                pts = round(-0.5 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Ketu in House 1 ({pts:+.2f}, prox {prox:.2f}): Dissociation from physical needs, ascetic detachment, and enigmatic self-expression.")
 
     # -------------------------------------------------------------------------
     # PILLAR 4: Sky-Light & The Karaka Factor (Max +/- 1.8 pts)

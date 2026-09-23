@@ -113,7 +113,8 @@ def get_dignity_score(
 ) -> float:
     """
     Normalizes dignity string and returns its 0-100% score per Ryan Kurczak's 12.5% step scale
-    and classical Panchadha Maitri. Dynamically handles own positive/negative signs and moolatrikona.
+    and classical Panchadha Maitri. Dynamically handles own positive/negative signs,
+    single-ruling luminary domicile parity (75.0%), and moolatrikona degree bounds.
     """
     if not dignity_str:
         return 37.5
@@ -126,9 +127,14 @@ def get_dignity_score(
         if planet and degree is not None and planet in MOOLATRIKONA_RANGES:
             mt_sign, min_d, max_d = MOOLATRIKONA_RANGES[planet]
             if sign and sign == mt_sign and (degree < min_d or degree > max_d):
+                if planet in ("Sun", "Moon"):
+                    return 75.0
                 return 75.0 if sign in ODD_SIGNS else 62.5
         return 87.5
     if "own" in c_low or "svastha" in c_low or "house" in c_low:
+        # Luminary Domicile Parity (Light on Life): Sun in Leo, Moon in Cancer = 75.0%
+        if planet in ("Sun", "Moon") and sign in ("Leo", "Cancer"):
+            return 75.0
         if sign and sign in ODD_SIGNS:
             return 75.0
         elif sign and sign in EVEN_SIGNS:
@@ -147,6 +153,9 @@ def get_dignity_score(
     if "debilit" in c_low or "neecha" in c_low:
         return 12.5
 
+    if planet in ("Sun", "Moon") and sign in ("Leo", "Cancer") and "moola" not in c_low and "exalt" not in c_low:
+        return 75.0
+
     if cleaned in DIGNITY_SCORE_MAP:
         return DIGNITY_SCORE_MAP[cleaned]
     for key, val in DIGNITY_SCORE_MAP.items():
@@ -160,15 +169,210 @@ def clamp(val: float, min_val: float, max_val: float) -> float:
     return max(min_val, min(max_val, val))
 
 
-def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]:
+# -------------------------------------------------------------------------
+# 1. Step 1: Base Dignity & Luminary Domicile Parity (Ruleset 1)
+# -------------------------------------------------------------------------
+def calculate_shadvarga_dignity(v_breakdown: Dict[str, Any], planet: str) -> float:
     """
-    Calculates Baladi Avastha (BPHS Ch. 45.3 / Phaladeepika 3.3) with odd/even sign reversal.
+    Parāśara's classical 20-point Shadvarga weights (BPHS Ch. 6, Verse 4):
+    D1: 6.0, D9: 5.0, D3: 4.0, D2: 2.0, D12: 2.0, D30: 1.0 (Total = 20.0).
+    Moolatrikona applies STRICTLY to D1; elsewhere, evaluates as Own Sign.
+    Luminaries in Domicile evaluate to 75.0% parity.
+    """
+    SHADVARGA_WEIGHTS = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
+    weighted_sum = 0.0
+    for v_name, weight in SHADVARGA_WEIGHTS.items():
+        score = v_breakdown[v_name]["score"]
+        sign = v_breakdown[v_name]["sign"]
+        dignity = v_breakdown[v_name]["dignity"]
+        
+        # Enforce D1-only restriction for Moolatrikona
+        if v_name != "D1" and ("moola" in dignity.lower()):
+            if planet in ("Sun", "Moon"):
+                score = 75.0
+            else:
+                score = 75.0 if sign in ODD_SIGNS else 62.5
+        elif planet in ("Sun", "Moon") and sign in ("Leo", "Cancer") and ("moola" not in dignity.lower()) and ("exalt" not in dignity.lower()):
+            score = 75.0  # Domicile baseline for single-ruling luminaries
+            
+        weighted_sum += score * (weight / 20.0)
+    return round(weighted_sum, 1)
+
+
+# -------------------------------------------------------------------------
+# 2. Step 4: Complete Lordship Agenda with Moolatrikona Predominance & Viparita (Ruleset 4)
+# -------------------------------------------------------------------------
+BASE_LORD_BONUS = {
+    1: 20.0,   # Lagnesha (Protective captain)
+    5: 15.0, 9: 15.0,  # Trikonas (Lakshmi grace & dharma)
+    4: 5.0, 7: 5.0, 10: 5.0,  # Kendras (Pillars of action; 7th Lord per Phaladipika 1.17)
+    2: 0.0,    # Neutral / Follows secondary house coloring
+    3: -5.0,   # Trishadaya friction / restless desire
+    11: -10.0, # Trishadaya acquisitiveness / functional malefic bias
+    6: -15.0, 8: -15.0, 12: -15.0  # Dusthanas visiting non-dusthana
+}
+
+def _evaluate_single_house_agenda(h: int, placed_house: int, is_multi_viparita: bool = False) -> float:
+    """Evaluates the base agenda of a single house, properly isolating Viparita states."""
+    if h in (6, 8, 12):
+        if placed_house == h:
+            return 0.0   # Svakshetra: protects its own house, zero penalty
+        if placed_house in (6, 8, 12):
+            return 25.0 if is_multi_viparita else 15.0   # Viparita Reversal: dusthana lord trapped in another dusthana
+        return -15.0     # Contaminating a non-dusthana house
+    return BASE_LORD_BONUS.get(h, 0.0)
+
+def calculate_lordship_modifier(
+    ruled_houses: List[int], 
+    planet: str, 
+    placed_house: int, 
+    lagna_idx: int,
+    is_multi_viparita: bool = False
+) -> float:
+    """
+    Calculates the net lordship agenda modifier applying Moolatrikona predominance
+    (100% MT house / 50% Secondary house per Phaladipika 15.11).
+    Exception: Lagnesha (H1) ALWAYS retains 100% potency (+20.0%), regardless of whether H1 is MT or non-MT.
+    lagna_idx: 0-indexed integer (0 = Aries, ..., 11 = Pisces).
+    """
+    if not ruled_houses:
+        return 0.0
+        
+    # Single-ruled planets (Sun, Moon)
+    if len(ruled_houses) == 1 or planet in ("Sun", "Moon"):
+        return _evaluate_single_house_agenda(ruled_houses[0], placed_house, is_multi_viparita)
+    
+    # Dual-ruled planets (Mars, Mercury, Jupiter, Venus, Saturn)
+    mt_sign = MOOLATRIKONA_RANGES.get(planet, ("", 0, 0))[0]
+    
+    mt_house = None
+    sec_house = None
+    for h in ruled_houses:
+        s_name = ZODIAC_SIGNS[(lagna_idx + h - 1) % 12]
+        if s_name == mt_sign:
+            mt_house = h
+        else:
+            sec_house = h
+            
+    if mt_house is None and ruled_houses:
+        mt_house = ruled_houses[0]
+        sec_house = ruled_houses[1] if len(ruled_houses) > 1 else ruled_houses[0]
+    elif sec_house is None:
+        sec_house = mt_house
+        
+    b_mt = _evaluate_single_house_agenda(mt_house, placed_house, is_multi_viparita)
+    b_sec = _evaluate_single_house_agenda(sec_house, placed_house, is_multi_viparita)
+    
+    # Lagnesha (H1) exception: ALWAYS retains 100% potency (+20.0%)
+    if sec_house == 1:
+        return round(b_mt + b_sec, 2)
+    elif mt_house == 1:
+        return round(b_mt + 0.5 * b_sec, 2)
+    else:
+        return round(b_mt + 0.5 * b_sec, 2)
+
+
+# -------------------------------------------------------------------------
+# 3. Ruleset 8: Classical Lunar Benefic Window
+# -------------------------------------------------------------------------
+def calculate_lunar_nature_weight(moon_lon: float, sun_lon: float) -> float:
+    """
+    Ruleset 8: Classical Lunar Benefic Window (Light on Life & Phaladipika 2.27)
+    Elongation: (Moon_lon - Sun_lon) % 360.
+    Benefic Window: 48° (Shukla Panchami) to 300° (Krishna Dashami).
+    Scales from +0.50 (at 48°/300°) to +1.00 (at 180° Full Moon).
+    Malefic Window: outside 48° to 300°.
+    Scales from -0.50 (at 48°/300°) to -1.00 (at 0°/360° New Moon).
+    """
+    elongation = (moon_lon - sun_lon) % 360.0
+    if 48.0 <= elongation <= 300.0:
+        if elongation <= 180.0:
+            return round(0.50 + 0.50 * ((elongation - 48.0) / (180.0 - 48.0)), 2)
+        else:
+            return round(0.50 + 0.50 * ((300.0 - elongation) / (300.0 - 180.0)), 2)
+    else:
+        if elongation < 48.0:
+            return round(-1.00 + 0.50 * (elongation / 48.0), 2)
+        else:
+            return round(-0.50 - 0.50 * ((elongation - 300.0) / (360.0 - 300.0)), 2)
+
+
+# -------------------------------------------------------------------------
+# 4. Ruleset 9: Aspect Vector Overrides, Variable Moon & Virupa Clamping
+# -------------------------------------------------------------------------
+def get_sambhanda(sender: str, receiver: str, sender_sign: str, receiver_sign: str) -> str:
+    """Calculates compound Panchadha Maitri relationship between sender and receiver."""
+    if sender in ("Rahu", "Ketu") or receiver in ("Rahu", "Ketu"):
+        return "Neutral"
+    if sender_sign not in ZODIAC_SIGNS or receiver_sign not in ZODIAC_SIGNS:
+        return "Neutral"
+    s_idx = ZODIAC_SIGNS.index(sender_sign)
+    r_idx = ZODIAC_SIGNS.index(receiver_sign)
+    nat = rel.get_natural_relationship(sender, receiver)
+    temp = rel.get_temporary_relationship(s_idx, r_idx)
+    return rel.get_compound_relationship(nat, temp)
+
+
+def get_aspect_direction_vector(
+    sender: str, 
+    receiver: str, 
+    contact_type: str, 
+    sambhanda: str, 
+    host_dispositor: Optional[str] = None,
+    lunar_nature_weight: Optional[float] = None
+) -> float:
+    """
+    Calculates the directional vector (+1.0 to -1.0) of an incoming aspect or conjunction
+    based on classical Sambandha, variable Moon nature, and authentic Lajjitadi mechanics.
+    """
+    # 1. Classical Lajjitādi Mandatory Overrides (BPHS Ch. 45 & ASVA Vol II)
+    if sender == "Saturn" and contact_type == "Conjunction":
+        return -1.0  # Saturn conjunction ALWAYS starves co-present planets (Kshudhita)
+        
+    if sender == "Mars" and receiver == "Moon":
+        return -1.0  # Mars gaze/contact agitates the Moon (Kshobhita)
+
+    # 2. Variable Moon Arc Override (Ruleset 8)
+    if sender == "Moon" and lunar_nature_weight is not None:
+        return lunar_nature_weight
+
+    # 3. Lunar Nodes (Rahu & Ketu) with Priority Exceptions
+    if sender in ("Rahu", "Ketu"):
+        if contact_type == "Conjunction":
+            if host_dispositor and receiver == host_dispositor:
+                return 0.5   # Amplifying host agenda
+            if sender == "Ketu" and receiver == "Jupiter":
+                return 0.3   # Jnana Catalyst
+        return -1.0  # Default eclipsing/obsessive influence
+
+    # 4. Standard Sambandha Direction Vectors
+    if "Great Friend" in sambhanda or "Friend" in sambhanda:
+        return 1.0   # Delighting / Mudita Vector
+    if "Great Enemy" in sambhanda or "Enemy" in sambhanda:
+        return -1.0  # Starving / Agitating Vector
+        
+    return 0.0      # Neutral / Baseline footing
+
+
+def calculate_aspect_shift(aspect_virupas: float, alertness: float, direction: float) -> float:
+    ray_ratio = min(1.0, max(0.0, aspect_virupas / 60.0))
+    return ray_ratio * alertness * direction * 20.0
+
+
+# -------------------------------------------------------------------------
+# 5. Ruleset 6: Classical Baladi Output & Gandanta Knots
+# -------------------------------------------------------------------------
+def calculate_baladi_avastha(sign: str, degree_in_sign: float, longitude: Optional[float] = None) -> Dict[str, Any]:
+    """
+    Calculates Baladi Avastha (BPHS Ch. 45.3-4 / Phaladeepika 3.3) with odd/even sign reversal.
     Odd signs (Aries, Gemini, Leo, Libra, Sagittarius, Aquarius):
-      0-6°: Bala (Infant), 6-12°: Kumara (Child/Youth), 12-18°: Yuva (Prime Adult),
-      18-24°: Vriddha (Aging/Elder), 24-30°: Mrita (Dead/Incapacitated).
+      0-6°: Bala (25%), 6-12°: Kumara (50%), 12-18°: Yuva (100%),
+      18-24°: Vriddha (10%), 24-30°: Mrita (0%).
     Even signs (Taurus, Cancer, Virgo, Scorpio, Capricorn, Pisces):
       Inverts from death to birth:
-      0-6°: Mrita, 6-12°: Vriddha, 12-18°: Yuva, 18-24°: Kumara, 24-30°: Bala.
+      0-6°: Mrita (0%), 6-12°: Vriddha (10%), 12-18°: Yuva (100%),
+      18-24°: Kumara (50%), 24-30°: Bala (25%).
+    Also detects Rasi Sandhi (0°-1° / 29°-30°) and Gandanta knots (3°20' of water/fire junctions).
     """
     odd_signs = {"Aries", "Gemini", "Leo", "Libra", "Sagittarius", "Aquarius"}
     is_odd = sign in odd_signs
@@ -178,7 +382,7 @@ def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]
 
     if is_odd:
         states = ["Bala", "Kumara", "Yuva", "Vriddha", "Mrita"]
-        efficiency = [0.50, 0.75, 1.00, 0.50, 0.25]
+        efficiency = [0.25, 0.50, 1.00, 0.10, 0.00]
         sanskrit_terms = [
             "Bāla (Infant / Learning)",
             "Kumāra (Youth / Playful)",
@@ -189,7 +393,7 @@ def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]
         degree_ranges = ["0°00' - 5°59'", "6°00' - 11°59'", "12°00' - 17°59'", "18°00' - 23°59'", "24°00' - 29°59'"]
     else:
         states = ["Mrita", "Vriddha", "Yuva", "Kumara", "Bala"]
-        efficiency = [0.25, 0.50, 1.00, 0.75, 0.50]
+        efficiency = [0.00, 0.10, 1.00, 0.50, 0.25]
         sanskrit_terms = [
             "Mṛta (Dormant / Incapacitated)",
             "Vṛddha (Elder / Waning)",
@@ -200,6 +404,26 @@ def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]
         degree_ranges = ["0°00' - 5°59'", "6°00' - 11°59'", "12°00' - 17°59'", "18°00' - 23°59'", "24°00' - 29°59'"]
 
     state_name = states[segment]
+
+    # Rasi Sandhi check (0.0°-1.0° or 29.0°-30.0°)
+    is_sandhi = (deg < 1.0 or deg >= 29.0)
+    sandhi_badge = "⚠️ Rāśi Sandhi (Border Degree)" if is_sandhi else None
+
+    # Gandanta check (within 3°20' = 3.3333° of water/fire junctions)
+    sign_idx = ZODIAC_SIGNS.index(sign) if sign in ZODIAC_SIGNS else 0
+    abs_lon = (sign_idx * 30.0 + deg) if longitude is None else longitude
+    abs_lon = abs_lon % 360.0
+
+    is_gandanta = False
+    if (abs_lon >= (356.0 + 40.0/60.0) or abs_lon <= (3.0 + 20.0/60.0)):
+        is_gandanta = True
+    elif ((116.0 + 40.0/60.0) <= abs_lon <= (123.0 + 20.0/60.0)):
+        is_gandanta = True
+    elif ((236.0 + 40.0/60.0) <= abs_lon <= (243.0 + 20.0/60.0)):
+        is_gandanta = True
+
+    gandanta_badge = "🌊🔥 Gaṇḍānta (Karmic Knot)" if is_gandanta else None
+
     return {
         "state": state_name,
         "segment": segment,
@@ -207,7 +431,11 @@ def calculate_baladi_avastha(sign: str, degree_in_sign: float) -> Dict[str, Any]
         "efficiency_factor": efficiency[segment],
         "efficiency_pct": int(efficiency[segment] * 100),
         "sanskrit_term": sanskrit_terms[segment],
-        "is_odd_sign": is_odd
+        "is_odd_sign": is_odd,
+        "is_sandhi": is_sandhi,
+        "sandhi_badge": sandhi_badge,
+        "is_gandanta": is_gandanta,
+        "gandanta_badge": gandanta_badge
     }
 
 
@@ -628,10 +856,11 @@ def classify_graha_archetype(
     *,
     dignity_pct: Optional[float] = None,
     shadbala_pct: Optional[float] = None,
-    is_neecha_bhanga: Optional[bool] = None
+    is_neecha_bhanga: Optional[bool] = None,
+    house_num: Optional[int] = None
 ) -> Dict[str, Any]:
     """
-    Classifies a planet into the refined 9-Tier Behavioral Archetype Spectrum (+ Transmuted Hero):
+    Classifies a planet into the refined 9-Tier Behavioral Archetype Spectrum (+ Transmuted Hero / Simple Neecha Bhanga):
     Cross-references Moral Intent / Quality (Dignity) with Kinetic Power / Stamina (Shadbala).
 
     1. High Dignity + High Muscle: The Generous King (Sovereign Benefactor)
@@ -643,7 +872,9 @@ def classify_graha_archetype(
     7. Low Dignity + High Muscle: The Armed Dictator (Severe Hazard)
     8. Low Dignity + Balanced Muscle: The Embattled Striver (Strained Fighter)
     9. Low Dignity + Low Muscle: The Toothless Bully (Harmless Adversary)
-    10. True Debilitation + Exalted/Fortified Host: The Transmuted Hero (Alchemical Raja Yoga)
+    10. True Debilitation + Exalted/Fortified Host:
+        - In Kendra/Kona: The Transmuted Hero (Alchemical Raja Yoga)
+        - In Dusthana (6, 8, 12): Simple Neecha Bhanga (Overcoming Deficit)
     """
     if effective_dignity is None and dignity_pct is not None:
         effective_dignity = dignity_pct
@@ -653,18 +884,23 @@ def classify_graha_archetype(
         is_rescued = is_neecha_bhanga
     effective_dignity = 37.5 if effective_dignity is None else effective_dignity
     effective_shadbala = 100.0 if effective_shadbala is None else effective_shadbala
+
+    simple_neecha_badge = None
     if is_rescued:
-        return {
-            "archetype": "The Transmuted Hero",
-            "badge": "✨ Transmuted Hero",
-            "tier": "Alchemical Raja Yoga",
-            "subtext": "Alchemical Rescue (Neecha Bhanga)",
-            "description": "Initial vulnerability transformed by a noble host into profound resilience and hard-won wisdom.",
-            "color": "#7c3aed",
-            "bg": "#f3e8ff",
-            "is_high_dignity": True,
-            "is_high_strength": (effective_shadbala >= 95.0)
-        }
+        if house_num in (6, 8, 12):
+            simple_neecha_badge = "Simple Neecha Bhanga (Overcoming Deficit)"
+        else:
+            return {
+                "archetype": "The Transmuted Hero",
+                "badge": "✨ Transmuted Hero",
+                "tier": "Alchemical Raja Yoga",
+                "subtext": "Alchemical Rescue (Neecha Bhanga)",
+                "description": "Initial vulnerability transformed by a noble host into profound resilience and hard-won wisdom.",
+                "color": "#7c3aed",
+                "bg": "#f3e8ff",
+                "is_high_dignity": True,
+                "is_high_strength": (effective_shadbala >= 95.0)
+            }
 
     is_high_dig = effective_dignity >= 55.0
     is_neutral_dig = 35.0 <= effective_dignity < 55.0
@@ -750,7 +986,7 @@ def classify_graha_archetype(
             color = "#854d0e"
             bg = "#fef3c7"
 
-    return {
+    res = {
         "archetype": archetype,
         "badge": badge,
         "tier": tier,
@@ -762,6 +998,10 @@ def classify_graha_archetype(
         "is_high_dignity": is_high_dig,
         "is_high_strength": is_high_musc
     }
+    if simple_neecha_badge:
+        res["simple_neecha_badge"] = simple_neecha_badge
+        res["neecha_bhanga_badge"] = simple_neecha_badge
+    return res
 
 
 def classify_graha_quadrant(
@@ -769,7 +1009,9 @@ def classify_graha_quadrant(
     shadbala_pct: float,
     is_node: bool = False,
     is_rescued: bool = False,
-    dignity_name: str = ""
+    dignity_name: str = "",
+    *,
+    house_num: Optional[int] = None
 ) -> Dict[str, Any]:
     """Preserves backward compatibility while forwarding to the 9-tier archetype classifier."""
     return classify_graha_archetype(
@@ -777,7 +1019,8 @@ def classify_graha_quadrant(
         effective_shadbala=shadbala_pct,
         is_rescued=is_rescued,
         is_node=is_node,
-        dignity_name=dignity_name
+        dignity_name=dignity_name,
+        house_num=house_num
     )
 
 
@@ -926,7 +1169,9 @@ def calculate_graha_vitality(
     psychological_narrative: Optional[str] = None,
     # New parameters for Functional Dignity & House Field integration
     functional_dignity_pct: Optional[float] = None,
-    house_field_info: Optional[Dict[str, Any]] = None
+    house_field_info: Optional[Dict[str, Any]] = None,
+    sun_distance: Optional[float] = None,
+    longitude: Optional[float] = None
 ) -> Dict[str, Any]:
     """
     Calibrated Net Functional Vitality calculation resolving architectural flaws:
@@ -1027,28 +1272,37 @@ def calculate_graha_vitality(
                 break
         effective_dignity = min(54.9, effective_dignity)
 
-    # 2.5 House Field & Functional Dignity Integration (Vic DiCara Step 4)
-    house_field_delta = 0.0
+    # 2.5 Functional Dignity Integration (Layer 2: Psychological State)
+    # ADR-006 & ADR-009: House field/lordship is never added to effective_dignity
     if functional_dignity_pct is not None:
-        house_field_delta = functional_dignity_pct - dignity_pct
-        effective_dignity = clamp(effective_dignity + house_field_delta, 10.0, 100.0)
+        effective_dignity = functional_dignity_pct
+    house_field_delta = float(house_field_info.get("bonus_pct", 0.0)) if house_field_info else 0.0
+    h_num_val = house_field_info.get("house_num") if house_field_info else None
 
-    # 3. 9-Tier Behavioral Archetype Classification
+    # Transmuted Hero restriction: Kendra (1, 4, 7, 10) or Kona (1, 5, 9)
+    is_kendra_or_kona = (h_num_val in (1, 4, 5, 7, 9, 10)) if h_num_val is not None else True
+    is_rescued_raja_yoga = is_rescued and is_kendra_or_kona
+
+    # 3. 9-Tier Behavioral Archetype Classification (Section 1.1)
     quad = classify_graha_archetype(
-        effective_dignity,
-        effective_shadbala,
-        is_rescued=is_rescued,
+        effective_dignity=effective_dignity,
+        effective_shadbala=planet_shadbala_pct,
+        is_rescued=is_rescued_raja_yoga,
         is_node=is_node,
-        dignity_name=dignity_name
+        dignity_name=dignity_name,
+        house_num=h_num_val
     )
 
     # 4. Calibrated Functional Vitality Score (1.0 to 10.0)
     q_norm = effective_dignity / 10.0  # 1.0 to 10.0
     m_ratio = effective_shadbala / 100.0  # 1.0 = baseline (100%)
 
-    if is_rescued:
+    if is_rescued_raja_yoga:
         base_vit = 5.5 + (q_norm - 5.5) * 0.8 + (m_ratio - 1.0) * 1.0 + 0.5
         base_vit = clamp(base_vit, 4.5, 9.0)
+    elif is_rescued:
+        base_vit = 5.0 + (q_norm - 5.0) * 0.7 + (m_ratio - 1.0) * 1.0
+        base_vit = clamp(base_vit, 4.0, 7.5)
     elif q_norm >= 5.5:
         base_vit = 5.5 + (q_norm - 5.5) * 0.8 + (m_ratio - 1.0) * 1.2
     elif q_norm >= 3.5:
@@ -1205,11 +1459,55 @@ def calculate_graha_vitality(
         vikala_badge = f"🩸 Vikala (Besieged by {', '.join(cruel_conjoined_names)})"
         vikala_mod = -0.30
 
-    env_mod = clamp(drishti_mod + conj_mod, -1.2, 1.2)
+    # ADR-006 & ADR-009 Decoupling:
+    # Numeric environmental weather is driven strictly by conjunctions (Yuti).
+    # Aspects (Dṛṣṭi) are already accounted for in Ṣaḍbala (Dṛk Bala) and Sambandha peer shift (Layer 2).
+    # Lajjitādi states provide qualitative psychological feeling states.
+    env_mod = clamp(conj_mod, -1.2, 1.2)
 
-    # 6. Motional & Light Modifiers (ADR-009: Decouple retrograde double-counting)
-    # Retrograde is omitted here because Cheshta Bala in Shadbala natively accounts for motional horsepower.
-    combust_mod = -0.50 if is_combust else 0.0
+    # 6. Motional & Light Modifiers: Classical Sūrya Siddhānta Combustion (Ruleset 3)
+    SS_COMBUSTION_ORBS = {
+        "Mars": 17.0,
+        "Jupiter": 11.0,
+        "Saturn": 15.0,
+        "Moon": 12.0,
+        "Mercury": 12.0 if is_retrograde else 14.0,
+        "Venus": 8.0 if is_retrograde else 10.0
+    }
+    is_budhaditya = False
+    budhaditya_badge = None
+
+    if sun_distance is not None and planet not in ("Sun", "Rahu", "Ketu"):
+        orb_limit = SS_COMBUSTION_ORBS.get(planet, 8.0)
+        if sun_distance < orb_limit:
+            is_combust = True
+            if sun_distance < 3.0:
+                combust_mod = -0.50  # Deep combustion (< 3.0°)
+            else:
+                # Moderate combustion (3.0° to full orb)
+                if planet in ("Mars", "Jupiter", "Saturn", "Moon"):
+                    combust_mod = -0.25
+                elif planet in ("Mercury", "Venus"):
+                    combust_mod = -0.08 if is_retrograde else -0.15
+                else:
+                    combust_mod = -0.25
+        else:
+            is_combust = False
+            combust_mod = 0.0
+
+        # Budhāditya Illumination: Sun + Mercury separation 3.0°–14.0° without planetary war
+        if planet == "Mercury" and 3.0 <= sun_distance <= 14.0 and not (is_war_winner or is_war_loser):
+            is_budhaditya = True
+            budhaditya_badge = "☀️ Budhāditya Illumination (Discriminative Intellect)"
+    elif is_combust:
+        combust_mod = -0.50
+    else:
+        combust_mod = 0.0
+
+    # Lagneśa Sun Protection (Leo Lagna ONLY): combustion softened by 30%
+    if is_combust and lagna_sign == "Leo":
+        combust_mod = round(combust_mod * 0.70, 2)
+
     mot_mod = combust_mod
 
     # 7. Planetary War (Graha Yuddha) Modifier
@@ -1225,7 +1523,7 @@ def calculate_graha_vitality(
 
     # 8. Psychological Feeling State (Lajjitadi & Alertness Modulation - ADR-009 & Vol 2)
     # Expressed primarily as qualitative badges, narrative interpretations, and neutral sign dynamic tilts.
-    # A gentle qualitative mood tint is applied (+/- 0.15 max) modulated by interacting planet alertness.
+    # Decoupled from numeric vitality score to prevent double-counting.
     psy_mod = 0.0
     has_garvita = False
     if calibrated_lajjitadi:
@@ -1297,7 +1595,10 @@ def calculate_graha_vitality(
             quad["archetype"] = f"{quad['archetype']} (⚡ Embattled Executive)"
             quad["desc"] = quad["description"]
 
-    pre_score = base_vit + env_mod + mot_mod + psy_mod + war_mod + node_mod + vikala_mod
+    # Section 1.2: Vitality Score Cleanup (Zero Double-Counting)
+    # Aspect rays and conjunctions are factored into Functional Dignity (Layer 2).
+    # PreScore strictly reflects physical and operational realities:
+    pre_score = base_vit + combust_mod + war_mod + node_mod + vikala_mod
     final_score = 5.0 + (pre_score - 5.0) * (0.6 + 0.4 * efficiency)
     final_score = clamp(round(final_score, 1), 1.0, 10.0)
 
@@ -1317,9 +1618,9 @@ def calculate_graha_vitality(
         v_tier = "🔴 Severe Hazard" if quad["archetype"] == "The Armed Dictator" else "🔴 Fragile"
         v_bg = "#fee2e2"; v_col = "#991b1b"
 
-    affliction_badges = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge] if b]
+    affliction_badges = [b for b in [guru_chandal_badge, guru_ketu_badge, vikala_badge, budhaditya_badge] if b]
 
-    # Detailed Step-by-Step Calculation Receipt (ADR-009)
+    # Detailed Step-by-Step Calculation Receipt (ADR-009 & Section 1.2)
     receipt_lines = [
         "🧮 VITALITY SCORE CALCULATION RECEIPT",
         "------------------------------------",
@@ -1329,14 +1630,13 @@ def calculate_graha_vitality(
     if functional_dignity_pct is not None:
         h_ter = house_field_info.get('terrain_type', '-') if house_field_info else '-'
         h_num = house_field_info.get('house_num', '-') if house_field_info else '-'
-        receipt_lines.append(f"   • House Field & Lordship: {house_field_delta:+.1f}% (H{h_num}: {h_ter})")
-        receipt_lines.append(f"     [Base: {dignity_pct:.1f}% ➔ Functional: {functional_dignity_pct:.1f}%]")
+        receipt_lines.append(f"   • Functional Dignity:     {effective_dignity:.1f}% [Layer 2]")
     receipt_lines.extend([
         f"   • Kinetic Muscle / Power: {effective_shadbala:.1f}% of required",
         f"   • Host Dispositor:        {rescue_status}",
-        f"2. Environmental Weather:  {env_mod:+.1f} pts (Aspects & Conjunctions)",
-        f"   • Aspect Vision (Dṛṣṭi):  {drishti_mod:+.1f} pts",
-        f"   • Conjunctions (Yuti):    {conj_mod:+.1f} pts",
+        f"2. Physical & Operational Modifiers:",
+        f"   • Conjunctions (Yuti):    {conj_mod:+.1f} pts (Decoupled to Layer 2 Functional Dignity)",
+        f"   • Aspect Vision (Dṛṣṭi):  {drishti_mod:+.1f} (Decoupled to Ṣaḍbala Dṛk Bala)",
     ])
     if deepthaadi and deepthaadi.get("badge"):
         receipt_lines.append(f"   • Deepthādi Mood:         {deepthaadi.get('badge')}")
@@ -1344,6 +1644,8 @@ def calculate_graha_vitality(
         receipt_lines.append(f"   • Jagradādi Alertness:    {jagradaadi.get('badge')}")
     if is_combust:
         receipt_lines.append(f"   • Combustion (Astangata): {combust_mod:+.1f} pts (Blinded by Sun)")
+    if budhaditya_badge:
+        receipt_lines.append(f"   • Solar Yoga:             {budhaditya_badge}")
     if is_war_winner or is_war_loser:
         receipt_lines.append(f"   • Planetary War (Yuddha): {war_mod:+.1f} pts ({'Victor' if is_war_winner else 'Defeated'})")
     if is_guru_chandal or is_guru_ketu or node_mod != 0.0:
@@ -1351,7 +1653,7 @@ def calculate_graha_vitality(
     if is_vikala:
         receipt_lines.append(f"   • Besieged State (Vikala):{vikala_mod:+.2f} pts (2+ Cruel Planets)")
     if psy_mod != 0.0:
-        receipt_lines.append(f"   • Psychological State:    {psy_mod:+.2f} pts (Lajjitādi Mood)")
+        receipt_lines.append(f"   • Psychological State:    {psy_mod:+.2f} (Decoupled to Lajjitādi Narrative)")
     receipt_lines.extend([
         f"3. Biological Efficiency:   {baladi['efficiency_pct']}% ({baladi['state']} stage)",
         "------------------------------------",
@@ -1361,16 +1663,12 @@ def calculate_graha_vitality(
 
     # Calculate equation parts representing the mathematical breakdown of vitality_score
     scale = 0.6 + 0.4 * efficiency
-    env_part = round(env_mod * scale, 2)
     combust_part = round(combust_mod * scale, 2)
     war_part = round(war_mod * scale, 2)
     node_part = round(node_mod * scale, 2)
     vikala_part = round(vikala_mod * scale, 2)
-    psy_part = round(psy_mod * scale, 2)
 
     parts = {}
-    if env_part != 0:
-        parts["environmental_weather"] = env_part
     if combust_part != 0:
         parts["combustion"] = combust_part
     if war_part != 0:
@@ -1379,11 +1677,14 @@ def calculate_graha_vitality(
         parts["nodal_influence"] = node_part
     if vikala_part != 0:
         parts["besieged_vikala"] = vikala_part
-    if psy_part != 0:
-        parts["psychological_state"] = psy_part
 
     base_part = round(final_score - sum(parts.values()), 2)
     equation_parts = {"base_engine": base_part, **parts}
+
+    # Section 1.3: Subcaption Data Binding
+    subcaption_intent_pct = round(effective_dignity, 1)
+    subcaption_power_pct = round(effective_shadbala, 1)
+    subcaption_text = f"Intent: {effective_dignity:.0f}% | Power: {effective_shadbala:.0f}%"
 
     calculation_receipt = {
         "base_vitality": round(base_vit, 1),
@@ -1405,7 +1706,12 @@ def calculate_graha_vitality(
         "deepthaadi": deepthaadi,
         "jagradaadi": jagradaadi,
         "calibrated_lajjitadi": calibrated_lajjitadi,
-        "psychological_narrative": psychological_narrative
+        "psychological_narrative": psychological_narrative,
+        "is_budhaditya": is_budhaditya,
+        "budhaditya_badge": budhaditya_badge,
+        "subcaption_intent_pct": subcaption_intent_pct,
+        "subcaption_power_pct": subcaption_power_pct,
+        "subcaption_text": subcaption_text
     }
 
     return {
@@ -1416,6 +1722,9 @@ def calculate_graha_vitality(
         "equation_parts": equation_parts,
         "effective_dignity_pct": round(effective_dignity, 1),
         "effective_shadbala_pct": round(effective_shadbala, 1),
+        "subcaption_intent_pct": subcaption_intent_pct,
+        "subcaption_power_pct": subcaption_power_pct,
+        "subcaption_text": subcaption_text,
         "rescue_status": rescue_status,
         "rescue_desc": rescue_status,
         "rescue_badge": rescue_badge,
@@ -1426,6 +1735,7 @@ def calculate_graha_vitality(
         "quadrant": quad,
         "base_vitality": round(base_vit, 1),
         "env_mod": round(env_mod, 1),
+        "drishti_mod": round(drishti_mod, 1),
         "mot_mod": round(mot_mod, 1),
         "combust_mod": round(combust_mod, 1),
         "psy_mod": round(psy_mod, 1),
@@ -1436,6 +1746,8 @@ def calculate_graha_vitality(
         "guru_chandal_badge": guru_chandal_badge,
         "is_guru_ketu": is_guru_ketu,
         "guru_ketu_badge": guru_ketu_badge,
+        "is_budhaditya": is_budhaditya,
+        "budhaditya_badge": budhaditya_badge,
         "is_vikala": is_vikala,
         "vikala_badge": vikala_badge,
         "affliction_badges": affliction_badges,
@@ -1508,24 +1820,14 @@ def calculate_planetary_evaluation(
             }
             score_list.append(score)
             
+        weighted_score = calculate_shadvarga_dignity(v_breakdown, p)
         avg_score = sum(score_list) / max(1, len(score_list))
+        base_centered = 2.0 * (weighted_score - 50.0)
         
-        # Weighted Shadvarga (D1: 1.0, D9: 1.0, D2/D3/D12/D30: 0.5 each, total = 4.0)
-        d1_s = v_breakdown.get("D1", {}).get("score", 50.0)
-        d9_s = v_breakdown.get("D9", {}).get("score", 50.0)
-        d2_s = v_breakdown.get("D2", {}).get("score", 50.0)
-        d3_s = v_breakdown.get("D3", {}).get("score", 50.0)
-        d12_s = v_breakdown.get("D12", {}).get("score", 50.0)
-        d30_s = v_breakdown.get("D30", {}).get("score", 50.0)
-        weighted_score = (1.0 * d1_s + 1.0 * d9_s + 0.5 * (d2_s + d3_s + d12_s + d30_s)) / 4.0
-        
-        # Centered scale: 50% -> 0.0, 100% -> +100.0, 0% -> -100.0
-        base_centered = 2.0 * (avg_score - 50.0)
-        
-        if avg_score >= 60.0:
+        if weighted_score >= 60.0:
             predominance = "Shubhamsha Bahule"
             pred_desc = "Predominance of Auspicious Divisions (>60%)"
-        elif avg_score <= 40.0:
+        elif weighted_score <= 40.0:
             predominance = "Kruramsha Bahule"
             pred_desc = "Predominance of Hostile Divisions (<40%)"
         else:
@@ -1542,6 +1844,23 @@ def calculate_planetary_evaluation(
         }
 
     planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data)
+
+    # Global Multi-Viparita Detection (Ruleset 4: >= 2 dusthana lords occupy dusthanas)
+    dusthana_occupants = []
+    for p_name in planets_eval_order:
+        if p_name not in d1_grahas:
+            continue
+        p_s = d1_grahas[p_name].get("sign", "")
+        p_s_idx = ZODIAC_SIGNS.index(p_s) if p_s in ZODIAC_SIGNS else 0
+        h_num_check = (p_s_idx - lagna_idx) % 12 + 1
+        if h_num_check in (6, 8, 12):
+            p_rules = []
+            for s_idx, s_name in enumerate(ZODIAC_SIGNS):
+                if rel.SIGN_LORDS.get(s_name) == p_name:
+                    p_rules.append((s_idx - lagna_idx) % 12 + 1)
+            if any(r in (6, 8, 12) for r in p_rules):
+                dusthana_occupants.append(p_name)
+    has_multi_viparita = (len(dusthana_occupants) >= 2)
 
     # Precompute Jagradaadi map across all D1 planets for interaction calibration (Vol 2 Ch. 10)
     jagradaadi_map = {}
@@ -1608,6 +1927,37 @@ def calculate_planetary_evaluation(
         step1_info = shadvarga_scores[p]
         base_centered = step1_info["base_centered_score"]
         avg_dignity = step1_info["average_dignity_pct"]
+        base_dignity = step1_info["weighted_dignity_pct"]
+        d1_varga_info = step1_info.get("varga_breakdown", {}).get("D1", {})
+        d1_score = d1_varga_info.get("score", 50.0)
+        d1_dignity_name = d1_varga_info.get("dignity", "Neutral's Sign")
+        d1_sign = d1_varga_info.get("sign", p_sign)
+        d9_sign = step1_info.get("varga_breakdown", {}).get("D9", {}).get("sign", "")
+
+        # ---------------------------------------------------------------------
+        # Vargottama Potency (Ruleset 2: Tenacity vs Morality)
+        # ---------------------------------------------------------------------
+        is_vargottama = bool(d1_sign and d1_sign == d9_sign)
+        is_debilitated_d1 = (p in TRUE_DEBILITATION_MAP and d1_sign == TRUE_DEBILITATION_MAP[p]) or \
+                            ("debilit" in d1_dignity_name.lower()) or ("neecha" in d1_dignity_name.lower())
+        
+        sun_dist_val = min(abs(sun_lon_val - p_lon), 360.0 - abs(sun_lon_val - p_lon)) if p not in ("Sun", "Rahu", "Ketu") else 999.0
+        is_deeply_combust = (p not in ("Sun", "Rahu", "Ketu") and sun_dist_val < 3.0)
+
+        vargottama_bonus = 0.0
+        vargottama_badge = None
+        vargottama_floor = None
+
+        if is_vargottama and not is_debilitated_d1 and not is_deeply_combust:
+            is_auspicious = (d1_score >= 50.0) or any(k in d1_dignity_name.lower() for k in ["exalt", "own", "moola", "friend"])
+            if is_auspicious:
+                vargottama_bonus = 15.0
+                vargottama_badge = "🌟 Vargottama Strength"
+                vargottama_floor = 75.0
+            else:
+                vargottama_bonus = 0.0
+                vargottama_badge = "⚡ Vargottama (Concentrated Tenacity)"
+                vargottama_floor = None
         
         # ---------------------------------------------------------------------
         # STEP 2: The Dispositor Anchor & Host Rescue Rule
@@ -1616,7 +1966,7 @@ def calculate_planetary_evaluation(
         if not sign_lord or sign_lord not in rel.SIGN_LORDS.values():
             sign_lord = rel.SIGN_LORDS.get(p_sign, p)
             
-        host_dignity = shadvarga_scores.get(sign_lord, {}).get("average_dignity_pct", 50.0)
+        host_dignity = shadvarga_scores.get(sign_lord, {}).get("weighted_dignity_pct", 50.0)
         
         host_bonus = 0.0
         rescue_status = "Neutral Host Support"
@@ -1627,12 +1977,12 @@ def calculate_planetary_evaluation(
             rescue_notes = f"{p} resides in its own domicile ({p_sign}); self-reliant."
             host_bonus = 0.0
         else:
-            if avg_dignity < 50.0:
+            if base_dignity < 50.0:
                 if host_dignity >= 65.0:
                     host_bonus = round(25.0 * (host_dignity / 100.0), 1)
                     rescue_status = "Rescued by Host (Neecha Bhanga / Alchemical Forge)"
                     rescue_notes = (
-                        f"Low base dignity ({avg_dignity:.1f}%) is rescued by noble host {sign_lord} "
+                        f"Low base dignity ({base_dignity:.1f}%) is rescued by noble host {sign_lord} "
                         f"({host_dignity:.1f}% dignity). Converts vulnerability into enduring grit and authority."
                     )
                 elif host_dignity >= 50.0:
@@ -1662,115 +2012,69 @@ def calculate_planetary_evaluation(
         }
 
         # ---------------------------------------------------------------------
-        # STEP 3: Conjunctions and Aspect Gradients (Drishti)
+        # STEP 3: Conjunctions and Aspect Gradients (Drishti - Ruleset 9)
         # ---------------------------------------------------------------------
         aspect_details = []
+        peer_shifts = []
         benefic_rays = 0.0
         malefic_pressure = 0.0
         combustion_penalty = 0.0
         nodal_penalty = 0.0
 
-        # Calculate Moon Paksha Bala ratio for benefic Moon capacity
-        sun_lon = d1_grahas.get("Sun", {}).get("longitude", 0.0)
-        moon_lon = d1_grahas.get("Moon", {}).get("longitude", 0.0)
-        moon_elongation = (moon_lon - sun_lon) % 360.0
-        paksha_ratio = 1.0 - abs(moon_elongation - 180.0) / 180.0  # 1.0 = Full, 0.0 = New
-
-        for other_p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        for other_p in planets_eval_order:
             if other_p == p or other_p not in d1_grahas:
                 continue
                 
             o_d1 = d1_grahas[other_p]
-            o_lon = o_d1.get("longitude", 0.0)
+            o_sign = o_d1.get("sign", "")
+            o_lon = float(o_d1.get("longitude", 0.0))
             
-            # Aspect Virupas (0 to 60)
-            drishti_virupas = aspects.get_graha_drishti(other_p, o_lon, p_lon)
-            drishti_fraction = drishti_virupas / 60.0
-            
-            # Conjunction distance (linear drop within 30°)
             dist = min(abs(o_lon - p_lon), 360.0 - abs(o_lon - p_lon))
+            drishti_virupas = float(aspects.get_graha_drishti(other_p, o_lon, p_lon))
+            drishti_fraction = drishti_virupas / 60.0
             conj_fraction = max(0.0, 1.0 - (dist / 30.0)) if dist < 30.0 else 0.0
-            
             influence = max(drishti_fraction, conj_fraction)
             if influence < 0.05:
                 continue
                 
             inf_type = "Conjunction" if conj_fraction >= drishti_fraction else "Aspect (Drishti)"
-            
-            # Jupiter: 100% capacity to dissolve flaws & nourish (Phaladeepika 4.11)
-            if other_p == "Jupiter":
-                pts = round(35.0 * influence * 1.00, 1)
-                benefic_rays += pts
-                aspect_details.append({
-                    "source": "Jupiter",
-                    "type": inf_type,
-                    "power_pct": round(influence * 100.0, 1),
-                    "impact": f"+{pts}% (Guru 100% flaw-destroying & nourishing ray)"
-                })
-            # Venus: 50% capacity
-            elif other_p == "Venus":
-                pts = round(35.0 * influence * 0.50, 1)
-                benefic_rays += pts
-                aspect_details.append({
-                    "source": "Venus",
-                    "type": inf_type,
-                    "power_pct": round(influence * 100.0, 1),
-                    "impact": f"+{pts}% (Shukra 50% harmonic ray)"
-                })
-            # Moon: Waxing / Bright provides gentle nourishment
-            elif other_p == "Moon":
-                if paksha_ratio >= 0.4:
-                    pts = round(35.0 * influence * 0.35 * paksha_ratio, 1)
-                    if pts > 0.5:
-                        benefic_rays += pts
-                        aspect_details.append({
-                            "source": "Moon",
-                            "type": inf_type,
-                            "power_pct": round(influence * 100.0, 1),
-                            "impact": f"+{pts}% (Chandra gentle emotional care, {round(paksha_ratio*100)}% bright)"
-                        })
-            # Mercury: 25% capacity
-            elif other_p == "Mercury":
-                pts = round(35.0 * influence * 0.25, 1)
-                benefic_rays += pts
-                aspect_details.append({
-                    "source": "Mercury",
-                    "type": inf_type,
-                    "power_pct": round(influence * 100.0, 1),
-                    "impact": f"+{pts}% (Budha 25% intellect & tact ray)"
-                })
-            # Saturn: -100% malefic pressure
-            elif other_p == "Saturn":
-                pts = round(35.0 * influence * 1.00, 1)
-                malefic_pressure += pts
-                aspect_details.append({
-                    "source": "Saturn",
-                    "type": inf_type,
-                    "power_pct": round(influence * 100.0, 1),
-                    "impact": f"-{pts}% (Shani contraction & delay pressure)"
-                })
-            # Mars: -100% malefic pressure
-            elif other_p == "Mars":
-                pts = round(35.0 * influence * 1.00, 1)
-                malefic_pressure += pts
-                aspect_details.append({
-                    "source": "Mars",
-                    "type": inf_type,
-                    "power_pct": round(influence * 100.0, 1),
-                    "impact": f"-{pts}% (Mangala friction & aggression pressure)"
-                })
+            alertness = float(jagradaadi_map.get(other_p, {}).get("multiplier", 0.50))
+            sambhanda = get_sambhanda(other_p, p, o_sign, p_sign)
+            lunar_weight = calculate_lunar_nature_weight(moon_lon_val, sun_lon_val) if other_p == "Moon" else None
+            direction = get_aspect_direction_vector(other_p, p, inf_type, sambhanda, sign_lord, lunar_weight)
+
+            if inf_type == "Conjunction":
+                shift = conj_fraction * alertness * direction * 20.0
+            else:
+                shift = drishti_fraction * alertness * direction * 20.0
+
+            peer_shifts.append(shift)
+            if shift > 0:
+                benefic_rays += shift
+            elif shift < 0:
+                malefic_pressure += abs(shift)
+
+            aspect_details.append({
+                "source": other_p,
+                "type": inf_type,
+                "power_pct": round(influence * 100.0, 1),
+                "virupas": round(drishti_virupas, 1) if inf_type != "Conjunction" else 60.0,
+                "sambhanda": sambhanda,
+                "direction": direction,
+                "shift": round(shift, 1),
+                "impact": f"{shift:+.1f}% ({other_p} {inf_type})"
+            })
 
         # Sun Combustion (within 8° for physical planets)
         if p not in ["Sun", "Rahu", "Ketu"]:
-            sun_dist = min(abs(sun_lon - p_lon), 360.0 - abs(sun_lon - p_lon))
-            if sun_dist < 8.0:
-                comb_pts = round(30.0 * (1.0 - (sun_dist / 8.0)), 1)
+            if sun_dist_val < 8.0:
+                comb_pts = round(30.0 * (1.0 - (sun_dist_val / 8.0)), 1)
                 combustion_penalty = comb_pts
                 aspect_details.append({
                     "source": "Sun (Surya)",
                     "type": "Combustion (Astangata)",
-                    "power_pct": round((1.0 - (sun_dist / 8.0)) * 100.0, 1),
-                    "impact": f"-{comb_pts}% (Combust within {sun_dist:.1f}° of Sun)"
+                    "power_pct": round((1.0 - (sun_dist_val / 8.0)) * 100.0, 1),
+                    "impact": f"-{comb_pts}% (Combust within {sun_dist_val:.1f}° of Sun)"
                 })
 
         # Nodal Conjunction Affliction (within 12°)
@@ -1788,8 +2092,8 @@ def calculate_planetary_evaluation(
                         "impact": f"-{n_pts}% (Afflicted by {node} within {node_dist:.1f}°)"
                     })
 
-        raw_aspect_net = benefic_rays - malefic_pressure - combustion_penalty - nodal_penalty
-        clamped_aspect_net = clamp(raw_aspect_net, -40.0, 40.0)
+        raw_aspect_net = sum(peer_shifts) - (combustion_penalty * 0.5) - (nodal_penalty * 0.5)
+        clamped_aspect_net = clamp(round(raw_aspect_net, 1), -25.0, 25.0)
 
         step3_info = {
             "benefic_rays_pct": round(benefic_rays, 1),
@@ -1800,9 +2104,14 @@ def calculate_planetary_evaluation(
             "details": aspect_details
         }
 
+        # Calculate Layer 2: Functional Dignity %
+        raw_func_dig = base_dignity + vargottama_bonus + host_bonus + clamped_aspect_net
+        if vargottama_floor is not None:
+            raw_func_dig = max(raw_func_dig, vargottama_floor)
+        functional_dignity_pct = clamp(round(raw_func_dig, 1), 10.0, 100.0)
+
         # ---------------------------------------------------------------------
-        # ---------------------------------------------------------------------
-        # STEP 4: House Field & Dusthana Reversal Rule (Vic DiCara & Classical Phaladeepika 14.18 / BPHS 34.3)
+        # STEP 4: House Field & Dusthana Reversal Rule (Ruleset 4 & Ruleset 7)
         # ---------------------------------------------------------------------
         house_num = (p_sign_idx - lagna_idx) % 12 + 1
         
@@ -1813,18 +2122,29 @@ def calculate_planetary_evaluation(
                 h_num = (s_idx - lagna_idx) % 12 + 1
                 ruled_houses.append(h_num)
 
-        # 4.1 House Terrain Compatibility Modifier (Vic DiCara ±25% Rule & Continuous Moon)
+        is_dusthana_occupant = (house_num in [6, 8, 12])
+        rules_dusthana = any(h in [6, 8, 12] for h in ruled_houses)
+        is_viparita_candidate = is_dusthana_occupant and rules_dusthana
+
+        # 4.1 Complete 12-House Terrain Compatibility Matrix (Ruleset 4)
         terrain_mod = 0.0
-        terrain_type = "Neutral Terrain"
+        terrain_type = "Intermediate Field"
         terrain_note = ""
 
-        if p == "Moon":
-            # Classical continuous Paksha Bala spectrum (BPHS 28.10-11 & 35.9; Saravali 5.43):
-            # Rather than an abrupt binary step, lunar terrain scales continuously:
-            # - 50% illumination (Half Moon / Ashtami): Perfectly balanced neutral (0.0% modifier).
-            # - 50% to 100% illumination (Waxing / Bright Moon): Scales gradually from 0.0% to ±25.0% benefic terrain.
-            # - 50% down to 0% illumination (Waning / Dark Moon - Kṣīṇendu BPHS 3.11 & 28.11):
-            #   Scales gradually from 0.0% to ±25.0% malefic terrain (Upachaya growth vs. tender house strain).
+        if house_num == 8:
+            terrain_mod = -20.0
+            terrain_type = "Turbulent Vortex Terrain (H8)"
+            terrain_note = "Turbulent Vortex (-20%): 8th house is inherently turbulent, sinking terrain (Light on Life)."
+        elif house_num == 12:
+            if is_viparita_candidate:
+                terrain_mod = 0.0
+                terrain_type = "Transmuted Sanctuary (H12 Viparita)"
+                terrain_note = "Transmuted Sanctuary (0%): Dusthana lord residing in 12th house neutralizes dissolution terrain into spiritual sanctuary."
+            else:
+                terrain_mod = -15.0
+                terrain_type = "Drain / Dissolution Field (H12)"
+                terrain_note = "Dissolution Field (-15%): 12th house dissolves worldly focus and drains outward momentum."
+        elif p == "Moon":
             if moon_illum_pct >= 50.0:
                 g_factor = (moon_illum_pct - 50.0) / 50.0
                 if house_num in [1, 4, 5, 9, 10]:
@@ -1832,14 +2152,17 @@ def calculate_planetary_evaluation(
                     terrain_type = "Noble Flourishing Field (Gradual Lunar Light)"
                     terrain_note = (
                         f"Noble Field (+{terrain_mod:.1f}%): Waxing/Bright Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}) "
-                        f"flourishes in house {house_num}, scaling continuously from 0% at half moon to +25% at full moon (BPHS 28.10-11 & 35.9)."
+                        f"flourishes in house {house_num}."
                     )
+                elif house_num == 11:
+                    terrain_mod = round(20.0 * g_factor, 1)
+                    terrain_type = "Lābha Flourishing (Gradual Lunar Light)"
+                    terrain_note = f"Lābha Flourishing (+{terrain_mod:.1f}%): Waxing Moon flourishing in 11th house (Phaladīpikā 13.11)."
                 elif house_num in [3, 6]:
                     terrain_mod = round(-25.0 * g_factor, 1)
-                    terrain_type = "Combative Field Handicap (Gradual Lunar Light)"
+                    terrain_type = "Combative Field Strain (Gradual Lunar Light)"
                     terrain_note = (
-                        f"Combative Strain ({terrain_mod:.1f}%): Bright Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}) "
-                        f"faces friction in struggle house {house_num}, scaling continuously from 0% at half moon to -25% at full moon."
+                        f"Combative Strain ({terrain_mod:.1f}%): Bright Moon faces friction in struggle house {house_num}."
                     )
                 else:
                     terrain_mod = 0.0
@@ -1851,15 +2174,14 @@ def calculate_planetary_evaluation(
                     terrain_mod = round(25.0 * g_factor, 1)
                     terrain_type = "Upachaya Growth Field (Gradual Dark Moon)"
                     terrain_note = (
-                        f"Upachaya Growth (+{terrain_mod:.1f}%): Waning/Dark Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}, Kṣīṇendu BPHS 3.11 & 28.11) "
-                        f"channels striving into house {house_num}, scaling continuously up to +25% at New Moon."
+                        f"Upachaya Growth (+{terrain_mod:.1f}%): Waning/Dark Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}) "
+                        f"channels striving into house {house_num}."
                     )
                 elif house_num in [1, 4, 5, 9]:
                     terrain_mod = round(-25.0 * g_factor, 1)
                     terrain_type = "Tender Field Strain (Gradual Dark Moon)"
                     terrain_note = (
-                        f"Tender Field Strain ({terrain_mod:.1f}%): Waning/Dark Moon ({moon_illum_pct:.1f}% illum, factor {g_factor:.2f}, Kṣīṇendu BPHS 3.11 & 28.11) "
-                        f"disturbs emotional calm in house {house_num}, scaling continuously down to -25% at New Moon."
+                        f"Tender Field Strain ({terrain_mod:.1f}%): Waning/Dark Moon disturbs emotional calm in house {house_num}."
                     )
                 else:
                     terrain_mod = 0.0
@@ -1873,146 +2195,66 @@ def calculate_planetary_evaluation(
                 terrain_note = f"Upachaya Growth (+25%): Natural malefic {p} thrives in house {house_num} (effort, competition, executive endurance)."
             elif house_num in [1, 4, 5, 9]:
                 terrain_mod = -25.0
-                terrain_type = "Tender Field Strain"
-                terrain_note = f"Tender Field Strain (-25%): Natural malefic {p} in house {house_num} disturbs domestic or emotional peace."
+                terrain_type = "Tender Field Disturbance"
+                terrain_note = f"Tender Field Disturbance (-25%): Natural malefic {p} in house {house_num} disturbs domestic or emotional peace."
             else:
                 terrain_mod = 0.0
                 terrain_type = "Intermediate Field"
                 terrain_note = f"Intermediate Terrain (0%): House {house_num} has no decisive malefic terrain bias."
         else:
             # Natural Benefics (Jupiter, Venus, Mercury)
-            if house_num in [1, 4, 5, 9, 10]:
+            if house_num in [1, 4, 5, 9]:
                 terrain_mod = 25.0
                 terrain_type = "Noble Flourishing Field"
-                terrain_note = f"Noble Field (+25%): Natural benefic {p} flourishes in house {house_num} (dharma, peace, honor, high visibility)."
+                terrain_note = f"Noble Field (+25%): Natural benefic {p} flourishes in house {house_num} (dharma, peace, honor)."
+            elif house_num == 10:
+                terrain_mod = 25.0
+                terrain_type = "Noble Zenith"
+                terrain_note = f"Noble Zenith (+25%): Natural benefic {p} achieves peak honorable prominence in house 10."
+            elif house_num == 11:
+                terrain_mod = 20.0
+                terrain_type = "Lābha Flourishing"
+                terrain_note = f"Lābha Flourishing (+20%): Natural benefic {p} generates abundant, ethical gains in house 11 (Phaladīpikā 13.11)."
             elif house_num in [3, 6]:
                 terrain_mod = -25.0
-                terrain_type = "Combative Field Handicap"
-                terrain_note = f"Combative Handicap (-25%): Natural benefic {p} in house {house_num} is ill-suited for rough fighting or litigation."
+                terrain_type = "Combative Field Strain"
+                terrain_note = f"Combative Strain (-25%): Natural benefic {p} in house {house_num} is ill-suited for rough fighting or litigation."
             else:
                 terrain_mod = 0.0
                 terrain_type = "Intermediate Field"
                 terrain_note = f"Intermediate Terrain (0%): House {house_num} has no decisive benefic terrain bias."
 
-        # 4.2 House Lordship Modifiers (Functional Agenda - BPHS Ch. 34 & Phaladeepika Ch. 15)
-        lordship_items = []
-        viparita_yoga = None
+        # Bhava Madhya Proximity Check (Ruleset 7: within ±3.0° of house cusp for H2-H12)
+        is_bhava_madhya = False
+        bhava_madhya_badge = None
+        if house_num in range(2, 13):
+            cusps_list = d1_data.get("cusps", [])
+            if cusps_list and len(cusps_list) >= 12:
+                cusp_lon_val = float(cusps_list[house_num - 1].get("longitude", 0.0))
+            else:
+                cusp_lon_val = (float(d1_lagna.get("longitude", 0.0)) + (house_num - 1) * 30.0) % 360.0
+            c_diff = min(abs(p_lon - cusp_lon_val), 360.0 - abs(p_lon - cusp_lon_val))
+            if c_diff <= 3.0:
+                is_bhava_madhya = True
+                bhava_madhya_badge = "🎯 Bhava Madhya (Peak House Fruition)"
 
-        # A. Ascendant Lord (1st House - Lagnesha): +20%
-        if 1 in ruled_houses:
-            lordship_items.append({
-                "house": 1,
-                "label": "Ascendant Lord (Lagneśa H1)",
-                "value": 20.0,
-                "reason": "Lord of the whole chart (+20%); protects life vitality and preserves all houses it touches."
-            })
+        # 4.2 House Lordship Modifiers (Ruleset 4: Moolatrikona Predominance & Viparita Tiers)
+        is_multi_vip = bool(has_multi_viparita and is_viparita_candidate)
+        viparita_badge = "⚡ Raja Sambandha Viparita" if is_multi_vip else None
+        total_lordship_mod = calculate_lordship_modifier(ruled_houses, p, house_num, lagna_idx, is_multi_vip)
+        expression_score = round(terrain_mod + total_lordship_mod, 1)
+        house_bonus = expression_score
 
-        # B. Trine Lords (5th or 9th - Trikonadhipati): +15% per trine ruled (excluding 1)
-        for trine_h in [5, 9]:
-            if trine_h in ruled_houses:
-                lordship_items.append({
-                    "house": trine_h,
-                    "label": f"Trine Lord (H{trine_h})",
-                    "value": 15.0,
-                    "reason": f"Lord of {trine_h}th trine (+15%); confers auspicious merit, creative fruit, and dharmic grace."
-                })
-
-        # C. Kendra Lords (4th or 10th - Kendradhipati): +5% per kendra ruled (excluding 1 and 7)
-        for kendra_h in [4, 10]:
-            if kendra_h in ruled_houses:
-                lordship_items.append({
-                    "house": kendra_h,
-                    "label": f"Angle Lord (H{kendra_h})",
-                    "value": 5.0,
-                    "reason": f"Lord of {kendra_h}th kendra (+5%); provides foundational pillar of action and stability."
-                })
-
-        # D. Dusthana Lords (6th, 8th, 12th - Dusthanadhipati): -15%, 0% (Own House), or +15% (Viparita in ANOTHER dusthana)
-        dusthanas_ruled = [h for h in ruled_houses if h in [6, 8, 12]]
-        if dusthanas_ruled:
-            is_occupying_dusthana = (house_num in [6, 8, 12])
-            for dh in dusthanas_ruled:
-                if dh == 6:
-                    v_name = "Harsha Yoga"
-                elif dh == 8:
-                    v_name = "Sarala Yoga"
-                else:
-                    v_name = "Vimala Yoga"
-
-                if is_occupying_dusthana:
-                    if house_num != dh:
-                        # True Viparita Reversal: Dusthana lord occupies ANOTHER dusthana (Phaladeepika 6.63-65 & Vic DiCara)
-                        viparita_yoga = f"{v_name} (Lord {dh} in House {house_num})"
-                        lordship_items.append({
-                            "house": dh,
-                            "label": f"Viparita Reversal ({v_name} H{dh}➔H{house_num})",
-                            "value": 15.0,
-                            "reason": f"{v_name} (+15%): Lord of {dh}th house occupying another dusthana (House {house_num}) reverses adversity into strategic resilience."
-                        })
-                    else:
-                        # Dusthana lord occupies its OWN house (Svakshetra in Dusthana)
-                        # Protects own house (0% penalty), but does not invert adversity into another dusthana (0% bonus)
-                        lordship_items.append({
-                            "house": dh,
-                            "label": f"Own Dusthana (H{dh})",
-                            "value": 0.0,
-                            "reason": f"Lord of {dh}th house residing in its own house (House {dh}); at home, protecting own domain without afflicting other visited houses."
-                        })
-                else:
-                    lordship_items.append({
-                        "house": dh,
-                        "label": f"Dusthana Lord (H{dh})",
-                        "value": -15.0,
-                        "reason": f"Lord of {dh}th house (-15%); carries friction, debt, or expenditure into visited houses."
-                    })
-
-        total_lordship_mod = sum(item["value"] for item in lordship_items)
-        house_bonus = terrain_mod + total_lordship_mod
-
-        # Calculate Net Functional Dignity (on Kurczak 12.5% step scale baseline)
-        d1_varga_info = step1_info.get("varga_breakdown", {}).get("D1", {})
-        d1_score = d1_varga_info.get("score", 50.0)
-        d1_dignity_name = d1_varga_info.get("dignity", "Neutral's Sign")
-        raw_functional_dignity = d1_score + terrain_mod + total_lordship_mod
-        functional_dignity_pct = clamp(raw_functional_dignity, 10.0, 100.0)
-
-        # Build human-readable formula string and steps list
+        # Build math steps for formula string
         math_steps = [
-            f"Base Dignity: {d1_score:.1f}% ({d1_dignity_name})"
+            f"Base Dignity: {d1_score:.1f}% ({d1_dignity_name})",
+            f"House Terrain: {terrain_mod:+.1f}% ({terrain_type} in H{house_num})",
+            f"Lordship Agenda: {total_lordship_mod:+.1f}%"
         ]
-        formula_tokens = [f"{d1_score:.1f}% (Base)"]
-
-        if terrain_mod != 0.0:
-            t_sign = "+" if terrain_mod > 0 else ""
-            math_steps.append(f"House Terrain: {t_sign}{terrain_mod:.1f}% ({terrain_type} in H{house_num})")
-            formula_tokens.append(f"{t_sign}{terrain_mod:.1f}% (Terrain H{house_num})")
-        else:
-            math_steps.append(f"House Terrain: 0.0% (Intermediate H{house_num})")
-
-        if p == "Moon":
-            if moon_illum_pct >= 50.0:
-                g_fac = (moon_illum_pct - 50.0) / 50.0
-                math_steps.append(
-                    f"Moon Continuous Benefic Scaling ({moon_illum_pct:.1f}% illum, factor {g_fac:.2f}): "
-                    f"BPHS 28.10-11 Paksha Bala scales continuously from 0% at 50% half-moon to ±25% at 100% full moon."
-                )
-            else:
-                g_fac = (50.0 - moon_illum_pct) / 50.0
-                math_steps.append(
-                    f"Moon Continuous Malefic Scaling ({moon_illum_pct:.1f}% illum, factor {g_fac:.2f}): "
-                    f"BPHS 3.11 & 28.11 Kṣīṇendu scales continuously from 0% at 50% half-moon to ±25% at 0% new moon."
-                )
-
-        for l_item in lordship_items:
-            l_val = l_item["value"]
-            if l_val == 0.0:
-                math_steps.append(f"{l_item['label']}: 0.0%")
-                formula_tokens.append(f"+0.0% ({l_item['label']})")
-            else:
-                math_steps.append(f"{l_item['label']}: {l_val:+.1f}%")
-                formula_tokens.append(f"{l_val:+.1f}% ({l_item['label']})")
-
-        func_dig_formula_str = f"{' '.join(formula_tokens)} = {functional_dignity_pct:.1f}% Functional Dignity"
+        func_dig_formula_str = (
+            f"Layer 2 Functional Dignity = {functional_dignity_pct:.1f}% | "
+            f"Layer 4 Expression Mode = Terrain ({terrain_mod:+.1f}%) + Lordship ({total_lordship_mod:+.1f}%) = {expression_score:+.1f}%"
+        )
 
         house_type = f"{terrain_type} (House {house_num})"
         kendra_rank = None
@@ -2025,7 +2267,7 @@ def calculate_planetary_evaluation(
         elif house_num == 4:
             kendra_rank = "4th Rank (Nadir / IC)"
 
-        house_notes = f"{terrain_note} {'; '.join(it['reason'] for it in lordship_items)}".strip()
+        house_notes = f"{terrain_note} Lordship modifier: {total_lordship_mod:+.1f}%."
 
         step4_info = {
             "house_num": house_num,
@@ -2035,10 +2277,14 @@ def calculate_planetary_evaluation(
             "terrain_dignity_pct": round(d1_score + terrain_mod, 1),
             "terrain_note": terrain_note,
             "lordship_mod_pct": round(total_lordship_mod, 1),
-            "lordship_items": lordship_items,
+            "expression_score": expression_score,
             "kendra_rank": kendra_rank,
             "bonus_pct": round(house_bonus, 1),
-            "viparita_yoga": viparita_yoga,
+            "viparita_yoga": "Multi-Viparita (Raja Sambandha)" if is_multi_vip else ("Viparita Reversal" if is_viparita_candidate else None),
+            "is_multi_viparita": is_multi_vip,
+            "viparita_badge": viparita_badge,
+            "is_bhava_madhya": is_bhava_madhya,
+            "bhava_madhya_badge": bhava_madhya_badge,
             "ruled_houses": ruled_houses,
             "functional_dignity_pct": round(functional_dignity_pct, 1),
             "math_formula": func_dig_formula_str,
@@ -2152,10 +2398,10 @@ def calculate_planetary_evaluation(
         if p_d1.get("is_combust"):
             motional_factors.append("Combust (Astangata - Stripped of Light)")
         if p == "Moon":
-            if paksha_ratio >= 0.6:
-                motional_factors.append(f"Bright / Waxing Moon ({round(paksha_ratio*100)}% Full)")
+            if moon_paksha_ratio >= 0.6:
+                motional_factors.append(f"Bright / Waxing Moon ({round(moon_paksha_ratio*100)}% Full)")
             else:
-                motional_factors.append(f"Waning / Dim Moon ({round(paksha_ratio*100)}% Full)")
+                motional_factors.append(f"Waning / Dim Moon ({round(moon_paksha_ratio*100)}% Full)")
         if p == "Sun" and house_num == 10:
             motional_factors.append("Supreme Dig Bala (Midday Apex / Noon)")
 
@@ -2294,7 +2540,9 @@ def calculate_planetary_evaluation(
             calibrated_lajjitadi=calibrated_lajj,
             psychological_narrative=psy_narrative,
             functional_dignity_pct=round(functional_dignity_pct, 1),
-            house_field_info=step4_info
+            house_field_info=step4_info,
+            sun_distance=sun_dist_val,
+            longitude=p_lon
         )
 
         # Resolve Nakshatra metadata for Subconscious Drive (Lunar Mansion)
@@ -2314,6 +2562,22 @@ def calculate_planetary_evaluation(
             "nature": nak_meta.get("nature", "Sadharana / General"),
             "core_drive": nak_meta.get("core_drive", "Subconscious motivation and cosmic trajectory.")
         }
+
+        # Consolidate all active badges for the planet
+        planet_badges = []
+        if vargottama_badge:
+            planet_badges.append(vargottama_badge)
+        if bhava_madhya_badge:
+            planet_badges.append(bhava_madhya_badge)
+        if viparita_badge:
+            planet_badges.append(viparita_badge)
+        if baladi_res.get("sandhi_badge"):
+            planet_badges.append(baladi_res["sandhi_badge"])
+        if baladi_res.get("gandanta_badge"):
+            planet_badges.append(baladi_res["gandanta_badge"])
+        for b in vit_res.get("affliction_badges", []):
+            if b not in planet_badges:
+                planet_badges.append(b)
 
         planets_result[p] = {
             "planet": p,
@@ -2338,11 +2602,20 @@ def calculate_planetary_evaluation(
             "vitality": vit_res,
             "vitality_score": vit_res["vitality_score"],
             "vitality_tier": vit_res["vitality_tier"],
+            "subcaption_intent_pct": vit_res.get("subcaption_intent_pct", round(functional_dignity_pct, 1)),
+            "subcaption_power_pct": vit_res.get("subcaption_power_pct", round(sb_ratio * 100.0, 1)),
+            "subcaption_text": vit_res.get("subcaption_text", f"Intent: {functional_dignity_pct:.0f}% | Power: {sb_ratio * 100.0:.0f}%"),
             "equation_parts": vit_res.get("equation_parts", {}),
             "calculation_receipt": vit_res.get("calculation_receipt", {}),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),
             "is_vikala": vit_res.get("is_vikala", False),
+            "is_vargottama": is_vargottama,
+            "vargottama_badge": vargottama_badge,
+            "is_bhava_madhya": is_bhava_madhya,
+            "bhava_madhya_badge": bhava_madhya_badge,
+            "viparita_badge": viparita_badge,
+            "badges": planet_badges,
             "affliction_badges": vit_res.get("affliction_badges", []),
             "deepthaadi": deepthaadi_res,
             "jagradaadi": jagradaadi_res,
@@ -2357,6 +2630,9 @@ def calculate_planetary_evaluation(
             "functional_dignity": {
                 "base_dignity_pct": round(d1_score, 1),
                 "base_dignity_name": d1_dignity_name,
+                "vargottama_bonus": round(vargottama_bonus, 1),
+                "host_bonus": round(host_bonus, 1),
+                "peer_shift": round(clamped_aspect_net, 1),
                 "terrain_mod_pct": round(terrain_mod, 1),
                 "terrain_dignity_pct": round(d1_score + terrain_mod, 1),
                 "lordship_mod_pct": round(total_lordship_mod, 1),

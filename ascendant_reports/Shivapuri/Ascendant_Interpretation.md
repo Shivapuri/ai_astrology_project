@@ -5,7 +5,7 @@
 > **Source Provenance:** [Vedic Astrology Knowledge Vault](file:///Users/hajnaljanos/PycharmProjects/vedic-astrology-vault/vault/) (Ryan Kurczak & Vic DiCara)  
 > **Dossier Directory:** All materials are self-contained in `ascendant_reports/Shivapuri/`  
 > **Master Synthesis Report:** `Ascendant_Interpretation.md` (this dossier)  
-> **Archived Raw Sources:** `raw_sources/` (24 original lecture notes in 6 tier folders)
+> **Archived Raw Sources:** `raw_sources/` (23 original lecture notes in 6 tier folders)
 
 ---
 
@@ -426,24 +426,6 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 > ---
 
 
-> #### 📖 Primary Vault Source: [Sex, Seduction, & Serpents... The Life-Lesson of Ashlesha Nakshatra](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2007%20-%20Sex%2C%20Seduction%2C%20%26%20Serpents...%20The%20Life-Lesson%20of%20Ashlesha%20Nakshatra.md)  
-> **Author / Lineage:** Vic DiCara | **Lecture:** [Watch on YouTube](https://www.youtube.com/watch?v=Ly7qmQFNKrU)
->
-> **📌 High-Fidelity Executive Summary (Direct from Source):**  
-> Ashlesha, the seventh Vedic Nakshatra, represents the "hypnotic embrace" and is closely associated with serpents (*Sarpas*), seduction, and intense passion. Often misunderstood as an inherently evil or exploitative star, its true nature is about the power to captivate and lead others towards enjoyment. The core life lesson of Ashlesha is learning how to be seductive without becoming consumed by karma or acting with manipulative intent. When functioning correctly, it allows one to attract and guide others for their own happiness rather than for selfish exploitation, reflecting a powerful, spiritually progressive use of passionate energy.
-> 
-> ---
->
-> **🔑 Core Principles & Takeaways (Direct from Source):**  
-> - **Deity:** The *Sarpas* (Serpents/Dragons), symbolizing forbidden, hidden, and socially taboo subjects, notably sexuality and intense desire.
-> - **Etymology:** The word *Ashlesha* means intimate contact, embracing, hugging, entwining, and clinging.
-> - **Core Function:** Passionate attraction, seduction, and "impassioned dancing" (making others move to your rhythm).
-> - **Malfunctioning Ashlesha:** Manifests as a person who is easily seduced, manipulated, and made into a "dancing puppet" by others' desires.
-> - **Properly Functioning Ashlesha:** Grants the magnetic ability to seduce and control others—wrapping them around your finger—but using this power to bring them joy and pleasure without selfish karma.
-> 
-> ---
-
-
 ### 6.3 🔍 Interpretive Astrological Synthesis & Living Reality
 ### 6.1 Rasi Architecture: Leo
 * **Elemental Blueprint:** Operating through Leo, the native engages the world with the foundational traits of this sign, establishing the perceptual lens of the physical incarnation.
@@ -454,7 +436,6 @@ The Sun (*Sūrya*) is the eternal *Sthira Karaka* (universal fixed significator)
 * **Esoteric Impress:** Channels deep subconscious currents guiding the soul's karmic evolution.
 
 ### 6.4 📁 Archived Raw Source Notes (In this Folder)
-* 📄 [Lesson 07 - Sex, Seduction, & Serpents... The Life-Lesson of Ashlesha Nakshatra.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2007%20-%20Sex%2C%20Seduction%2C%20%26%20Serpents...%20The%20Life-Lesson%20of%20Ashlesha%20Nakshatra.md)
 * 📄 [Lesson 10 - Ashlesha Nakshatra Description.md](raw_sources/tier_6_rising_sign_nakshatra/Lesson%2010%20-%20Ashlesha%20Nakshatra%20Description.md)
 
 ---

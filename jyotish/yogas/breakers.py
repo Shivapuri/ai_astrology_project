@@ -21,6 +21,10 @@ EXALTATION_SIGNS = {
     "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
     "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra"
 }
+PLANET_EXALTED_IN_SIGN = {
+    "Aries": "Sun", "Taurus": "Moon", "Cancer": "Jupiter",
+    "Virgo": "Mercury", "Libra": "Saturn", "Capricorn": "Mars", "Pisces": "Venus"
+}
 DEBILITATION_SIGNS = {
     "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
     "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries"
@@ -194,6 +198,42 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
             
     return breakers
 
+def audit_neecha_bhanga_condition_3(
+    debilitated_planet: str, 
+    debilitation_sign: str, 
+    chart: Dict[str, Any]
+) -> Tuple[bool, str]:
+    """
+    Evaluates Condition 3 (Phaladipika 7.26) checking both:
+    - 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha)
+    - 3B: Planet that exalts in the debilitation sign
+    Evaluated in Kendra from both Lagna and Moon with safe non-zero checks.
+    """
+    moon_house = get_house_of_planet(chart, "Moon")
+    
+    # Condition 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha)
+    exalt_sign = EXALTATION_SIGNS.get(debilitated_planet)
+    exalt_lord = SIGN_LORDS.get(exalt_sign)
+    if exalt_lord:
+        lord_house = get_house_of_planet(chart, exalt_lord)
+        lord_from_moon = ((lord_house - moon_house) % 12 + 1) if (lord_house > 0 and moon_house > 0) else 0
+        if lord_house in (1, 4, 7, 10):
+            return True, f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_house} from Lagna."
+        if lord_from_moon in (1, 4, 7, 10):
+            return True, f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_from_moon} from Chandra."
+
+    # Condition 3B: Planet that exalts in the debilitation sign
+    exalted_guest = PLANET_EXALTED_IN_SIGN.get(debilitation_sign)
+    if exalted_guest:
+        guest_house = get_house_of_planet(chart, exalted_guest)
+        guest_from_moon = ((guest_house - moon_house) % 12 + 1) if (guest_house > 0 and moon_house > 0) else 0
+        if guest_house in (1, 4, 7, 10):
+            return True, f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_house} from Lagna."
+        if guest_from_moon in (1, 4, 7, 10):
+            return True, f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_from_moon} from Chandra."
+            
+    return False, ""
+
 def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[str], float]:
     """
     Audits the 6 Classical Cancellation of Debility (Neecha Bhanga) rules
@@ -236,15 +276,11 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
             reasons.append(f"Dispositor in Kendra from Moon: {dispositor} is in an angle from Chandra.")
             bonus += 25.0
             
-    # Condition 3: Planet that exalts in this sign is in Kendra from Lagna or Moon
-    if exaltation_lord:
-        ex_lord_house = get_house_of_planet(chart, exaltation_lord)
-        if ex_lord_house in (1, 4, 7, 10):
-            reasons.append(f"Exaltation lord in Kendra from Lagna: {exaltation_lord} occupies Kendra H{ex_lord_house}.")
-            bonus += 25.0
-        elif moon_house > 0 and ((ex_lord_house - moon_house) % 12 + 1) in (1, 4, 7, 10):
-            reasons.append(f"Exaltation lord in Kendra from Moon: {exaltation_lord} is in an angle from Chandra.")
-            bonus += 20.0
+    # Condition 3: Planet that exalts in this sign or lord of exaltation sign is in Kendra from Lagna or Moon
+    c3_met, c3_desc = audit_neecha_bhanga_condition_3(planet, debilitation_sign, chart)
+    if c3_met:
+        reasons.append(f"Condition 3 (Exaltation Alignment): {c3_desc}")
+        bonus += 25.0
             
     # Condition 4: Dispositor of debilitation sign is itself exalted
     if dispositor:
@@ -269,6 +305,11 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
         bonus += 15.0
         
     is_rescued = len(reasons) >= 1 and bonus >= 30.0
+    if is_rescued:
+        if p_house in (1, 4, 7, 10, 5, 9):
+            reasons.append(f"Rāja Yoga Upgrade: {planet} occupies auspicious House {p_house} (Kendra/Koṇa).")
+        elif p_house in (6, 8, 12):
+            reasons.append(f"Simple Cancellation: {planet} is trapped in Duṣṭhāna House {p_house}; manifests as overcoming deficit rather than worldly command.")
     return is_rescued, reasons, min(bonus, 100.0)
 
 def audit_dispositor_vitality(yoga_planets: List[str], chart: Dict[str, Any]) -> List[YogaBreakerDetail]:

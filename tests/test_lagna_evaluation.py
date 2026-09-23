@@ -260,7 +260,7 @@ def test_obama_lagna_evaluation(obama_chart):
     - Tropical Aquarius Lagna (Saturn as Lord).
     - Saturn in House 12 in own sign (Capricorn), retrograde (+0.3 motional power).
     - Jupiter in House 1 (+1.0, Digbala, noble oratorical presence).
-    - Score lands in 'Robust Horizon' (~7.1), 'The Resilient Architect'.
+    - Score lands in 'Capable Vessel' (~6.7), 'The Steady Navigator' under proximity scaling.
     """
     lagna_eval = obama_chart["planetary_evaluation"]["lagna_evaluation"]
     assert lagna_eval["lagna_sign"] == "Aquarius"
@@ -269,9 +269,9 @@ def test_obama_lagna_evaluation(obama_chart):
     assert "Jupiter" in lagna_eval["occupants"]
 
     score = lagna_eval["vitality_score"]
-    assert 6.7 <= score <= 7.5, f"Expected Obama vitality ~7.1, got {score}"
-    assert lagna_eval["vitality_tier"] == "Robust Horizon"
-    assert lagna_eval["archetype"] == "The Resilient Architect"
+    assert 6.5 <= score <= 7.5, f"Expected Obama vitality ~6.7, got {score}"
+    assert lagna_eval["vitality_tier"] == "Capable Vessel"
+    assert lagna_eval["archetype"] == "The Steady Navigator"
 
 
 def test_score_boundaries_and_tiers():
