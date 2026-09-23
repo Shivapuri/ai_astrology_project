@@ -1,0 +1,49 @@
+<template id="tmpl-classical-yogas">
+        <div class="widget-content" id="widget-classical-yogas" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #fbf7ef; border-bottom: 1px solid #e2d7c3; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">👑 Classical Yogas & Yoga Bhanga Audit</span>
+                    <span class="yoga-summary-badges" style="display: flex; gap: 4px; font-size: 10px;"></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <select class="yoga-category-filter" onchange="filterClassicalYogas(this)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="all" selected>All Categories (9)</option>
+                        <option value="Pancha Mahapurusha">Pancha Mahāpuruṣa</option>
+                        <option value="Raja Yoga">Rāja Yogas</option>
+                        <option value="Dhana (Wealth)">Dhana (Wealth)</option>
+                        <option value="Daridrya (Depletion)">Dāridrya (Leakage)</option>
+                        <option value="Chandra (Lunar)">Chandra (Lunar)</option>
+                        <option value="Ravi (Solar)">Ravi (Solar)</option>
+                        <option value="Parivartana (Exchange)">Parivartana (Exchanges)</option>
+                        <option value="Viparita Raja (Reversal)">Viparīta Rāja</option>
+                        <option value="Kartari (Flanking)">Kartarī (Flanking)</option>
+                    </select>
+                    <select class="yoga-status-filter" onchange="filterClassicalYogas(this)" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="all" selected>All Statuses</option>
+                        <option value="Pure">Pure & Eminent</option>
+                        <option value="Stained">Stained / Challenged</option>
+                        <option value="Rescued">Rescued (Neecha Bhanga)</option>
+                        <option value="Broken">Broken (Yoga Bhanga)</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <table class="classical-yogas-table dignity-grid" style="width: 100%; min-width: 950px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 180px;">Yoga & Classical Source</th>
+                                <th style="width: 120px;">Status & Quality</th>
+                                <th style="width: 130px;">Plausibility Score</th>
+                                <th style="width: 130px;">Grahas & Houses</th>
+                                <th style="min-width: 260px;">Archetype & Worldly Manifestation</th>
+                                <th style="min-width: 220px;">Yoga Breakers (Bhanga Audit)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

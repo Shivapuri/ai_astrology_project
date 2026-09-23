@@ -1,0 +1,48 @@
+<template id="tmpl-ashtakavarga">
+        <div class="widget-content" id="widget-ashtakavarga">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Ashtakavarga (SAV & BAV)</span>
+                    <span id="savTotalBadge" style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">SAV: 337</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="av-view-select" onchange="updateAshtakavargaWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="raw" selected>Raw Bindus (BAV/SAV)</option>
+                        <option value="trikona">After Trikona Shodhana</option>
+                        <option value="ekadhipatya">After Ekadhipatya Shodhana</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="ashtakavarga-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Graha</th>
+                                <th>Ar</th><th>Ta</th><th>Ge</th><th>Cn</th>
+                                <th>Le</th><th>Vi</th><th>Li</th><th>Sc</th>
+                                <th>Sg</th><th>Cp</th><th>Aq</th><th>Pi</th>
+                                <th>Tot</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                        <tfoot>
+                            <tr style="background-color: #f7ede0; font-weight: bold;">
+                                <td>SAV</td>
+                                <td class="sav-0">0</td><td class="sav-1">0</td><td class="sav-2">0</td><td class="sav-3">0</td>
+                                <td class="sav-4">0</td><td class="sav-5">0</td><td class="sav-6">0</td><td class="sav-7">0</td>
+                                <td class="sav-8">0</td><td class="sav-9">0</td><td class="sav-10">0</td><td class="sav-11">0</td>
+                                <td class="sav-tot">337</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <div class="shodhya-pindas-bar" style="margin-top: 6px; padding: 4px 8px; background: #fffdfa; border: 1px solid #e5dccb; border-radius: 4px; font-size: 11px; display: flex; justify-content: space-around;">
+                        <span><strong>Rasi Pinda:</strong> <span class="val-rasi-pinda">-</span></span>
+                        <span><strong>Graha Pinda:</strong> <span class="val-graha-pinda">-</span></span>
+                        <span><strong>Yoga Pinda:</strong> <span class="val-yoga-pinda" style="color:#d35400; font-weight:bold;">-</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>

@@ -33,6 +33,7 @@ scratch/
 *.jsonl
 database/backups/
 !templates/*.html
+!templates/**/*.html
 !source-material/sanskrit_texts/**
 !source-material/software-setup/sample-case/angelina-jolie-pdfs/**
 !source-material/software-setup/sample-case/*.csv

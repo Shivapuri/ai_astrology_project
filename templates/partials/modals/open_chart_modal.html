@@ -1,0 +1,53 @@
+    <div class="modal-overlay" id="openChartModal" onclick="if(event.target===this) closeOpenChartModal()">
+        <div class="modal-card open-chart-modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header" style="margin-bottom: 12px; padding-bottom: 8px;">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <h2 style="margin:0; font-size:19px; display:flex; align-items:center; gap:6px;">📂 Open Astrological Chart</h2>
+                    <span id="openChartTotalBadge" class="chart-count-badge">0 charts</span>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeOpenChartModal()">×</button>
+            </div>
+
+            <!-- Search bar -->
+            <div style="position:relative; margin-bottom: 10px;">
+                <input type="text" id="openChartSearchInput" placeholder="🔍 Search by name, city, country, category, notes... (Press Enter to open)" 
+                       oninput="filterOpenChartsList()" onkeydown="handleOpenChartKeydown(event)"
+                       style="width: 100%; box-sizing: border-box; padding: 8px 12px 8px 32px; font-size: 13px; border: 1px solid #d1d5db; border-radius: 6px; outline: none; background:#ffffff;">
+                <span style="position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:13px; color:#9ca3af; pointer-events:none;">🔍</span>
+                <button type="button" onclick="clearOpenChartSearch()" id="clearOpenChartSearchBtn" 
+                        style="display:none; position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; color:#9ca3af; cursor:pointer; font-size:14px;">✕</button>
+            </div>
+
+            <!-- Category Filter Pills -->
+            <div class="open-chart-pills" id="openChartPillsContainer">
+                <button type="button" class="open-chart-pill active" data-cat="all" onclick="setOpenChartCategory('all')">All (<span id="catCountAll">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="dropdown" onclick="setOpenChartCategory('dropdown')">📌 In Top Dropdown (<span id="catCountDropdown">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Personal" onclick="setOpenChartCategory('Personal')">👤 Personal (<span id="catCountPersonal">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Spiritual" onclick="setOpenChartCategory('Spiritual')">🕉️ Spiritual (<span id="catCountSpiritual">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Historical" onclick="setOpenChartCategory('Historical')">🏛️ Historical (<span id="catCountHistorical">0</span>)</button>
+                <button type="button" class="open-chart-pill" data-cat="Criminals" onclick="setOpenChartCategory('Criminals')">⚠️ Criminals (<span id="catCountCriminals">0</span>)</button>
+            </div>
+
+            <!-- Charts List View -->
+            <div class="open-chart-list" id="openChartListContainer" tabindex="0">
+                <!-- Dynamically rendered by JavaScript -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #e5dccb;">
+                <div style="font-size: 11px; color: #6b7280; display:flex; align-items:center; gap:8px;">
+                    <span>💡 <b>Enter</b>: Open selected</span>
+                    <span>•</span>
+                    <span><b>↑/↓</b>: Navigate</span>
+                    <span>•</span>
+                    <span><b>📌</b>: Pin/unpin from top dropdown</span>
+                </div>
+                <div style="display:flex; gap: 8px;">
+                    <button type="button" onclick="openAddModalFromLibrary()" style="background:#f3f4f6; color:#1f2937; border:1px solid #d1d5db; padding:5px 12px; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer;">+ Add New Person</button>
+                    <button type="button" onclick="closeOpenChartModal()" style="background:#e5e7eb; color:#374151; border:1px solid #d1d5db; padding:5px 12px; border-radius:4px; font-size:12px; cursor:pointer;">Close (Esc)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add / Edit Person Modal -->

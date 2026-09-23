@@ -1,0 +1,42 @@
+<template id="tmpl-planetary-evaluation">
+        <div class="widget-content" id="widget-planetary-evaluation">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">🌟 Planetary Evaluation & Scale</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">-100% to +100%</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <label style="font-size: 11px; color: #4a3325; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;">
+                        <input type="checkbox" class="toggle-calc-trail" onchange="togglePlanetaryEvalTrail(this)">
+                        <span>Show Calculation Equations</span>
+                    </label>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; overflow-x: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <!-- 3 Master Anchors of Destiny (Lagna, Navamsha, Drekkana Lords - Phaladeepika 3.11) -->
+                    <div class="master-lords-banner"></div>
+
+                    <!-- Main Evaluation Table -->
+                    <table class="planetary-eval-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11.5px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 110px;">Graha</th>
+                                <th style="width: 105px;">Scale Net</th>
+                                <th style="width: 125px;">Expression</th>
+                                <th style="width: 155px;">4-Quadrant Archetype</th>
+                                <th style="width: 95px;">Step 1: Shadvarga</th>
+                                <th style="width: 120px;">Step 2: Host Rescue</th>
+                                <th style="width: 110px;">Step 3: Drishti Rays</th>
+                                <th style="width: 115px;">Step 4: House Field</th>
+                                <th style="width: 105px;">Raw Strength</th>
+                                <th style="width: 65px; text-align: center;">Math</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

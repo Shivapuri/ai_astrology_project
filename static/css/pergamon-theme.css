@@ -1,0 +1,332 @@
+/* ==========================================================================
+   Pergamon Theme Tokens, Colors & Astrological Highlights
+   ========================================================================== */
+
+        /* SVG Highlighting */
+        svg .interactive {
+            transition: filter 0.25s ease;
+        }
+        svg.highlight-mode .interactive.highlight-active {
+            filter: drop-shadow(0px 0px 4px rgba(46, 204, 113, 0.6));
+        }
+        svg.highlight-mode .interactive.highlight-source {
+            filter: drop-shadow(0px 0px 5px rgba(211, 84, 0, 0.8));
+        }
+
+        /* Circular Chart Aspect Lines & Interactive Center Circle */
+        .interactive-aspect {
+            transition: opacity 0.25s ease, stroke-width 0.25s ease;
+            cursor: pointer;
+        }
+        .interactive-aspect:hover {
+            stroke-opacity: 1 !important;
+            filter: drop-shadow(0 0 5px rgba(0,0,0,0.55));
+        }
+        .interactive-aspect-badge {
+            transition: transform 0.15s ease, opacity 0.2s ease;
+            cursor: pointer;
+        }
+        .interactive-aspect-badge:hover {
+            transform: scale(1.18);
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.3));
+        }
+        .aspects-filtered .interactive-aspect:not(.aspect-focused),
+        .aspects-filtered .interactive-aspect-badge:not(.aspect-focused) {
+            display: none !important;
+        }
+        .aspects-filtered .interactive-aspect.aspect-focused {
+            display: inline !important;
+            opacity: 1 !important;
+        }
+        .aspects-filtered .interactive-aspect.aspect-focused.aspect-outgoing {
+            filter: drop-shadow(0 0 3px rgba(22, 163, 74, 0.45));
+        }
+        .aspects-filtered .interactive-aspect.aspect-focused.aspect-incoming {
+            filter: drop-shadow(0 0 3px rgba(37, 99, 235, 0.45));
+        }
+        .aspects-filtered .interactive-aspect-badge.aspect-focused {
+            display: inline !important;
+            opacity: 1 !important;
+        }
+        .aspects-hidden:not(.aspects-filtered) .aspect-lines {
+            display: none !important;
+        }
+        .planet-focused text.glyph-symbol,
+        .planet-focused text {
+            stroke: #F39C12 !important;
+            stroke-width: 3px !important;
+        }
+        .interactive-center-circle {
+            transition: fill 0.2s ease, fill-opacity 0.2s ease;
+        }
+        .interactive-center-circle:hover {
+            fill: #eee5d3 !important;
+            fill-opacity: 0.85 !important;
+        }
+
+        /* Interactive Aspect Highlighting for Tables */
+        tr.table-row-selected {
+            background-color: #fef3c7 !important;
+            box-shadow: inset 4px 0 0 #d97706 !important;
+        }
+        tr.table-row-outgoing {
+            background-color: #f0fdf4 !important;
+            box-shadow: inset 4px 0 0 #16a34a !important;
+        }
+        tr.table-row-incoming {
+            background-color: #eff6ff !important;
+            box-shadow: inset 4px 0 0 #2563eb !important;
+        }
+        .aspect-dynamic-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 6px;
+            vertical-align: middle;
+            animation: fadeInAspect 0.15s ease-out;
+        }
+        .aspect-dynamic-badge.aspect-tag-outgoing.benefic {
+            background: #dcfce7;
+            color: #15803d;
+            border: 1px solid #86efac;
+        }
+        .aspect-dynamic-badge.aspect-tag-outgoing.malefic {
+            background: #fee2e2;
+            color: #b91c1c;
+            border: 1px dashed #f87171;
+        }
+        .aspect-dynamic-badge.aspect-tag-incoming.benefic {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+        }
+        .aspect-dynamic-badge.aspect-tag-incoming.malefic {
+            background: #ffedd5;
+            color: #c2410c;
+            border: 1px dashed #fdba74;
+        }
+        @keyframes fadeInAspect {
+            from { opacity: 0; transform: scale(0.92); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Sign Highlight in Charts */
+        .highlight-mode .interactive[data-type="sign"].highlight-source {
+            filter: drop-shadow(0 0 6px #d97706);
+            font-weight: 900 !important;
+        }
+        .highlight-mode .interactive[data-type="sign"].highlight-active {
+            filter: drop-shadow(0 0 5px #2563eb);
+            opacity: 1 !important;
+        }
+        svg.highlight-mode .sign-cell-bg.highlight-source {
+            fill: rgba(245, 158, 11, 0.18) !important;
+            stroke: #d97706 !important;
+            stroke-width: 2px !important;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+        svg.highlight-mode .sign-cell-bg.highlight-active {
+            fill: rgba(59, 130, 246, 0.14) !important;
+            stroke: #2563eb !important;
+            stroke-width: 1.5px !important;
+            opacity: 1 !important;
+            filter: none !important;
+        }
+        svg.highlight-mode .sign-cell-bg:not(.highlight-source):not(.highlight-active) {
+            fill: transparent !important;
+            stroke: none !important;
+            opacity: 0 !important;
+        }
+
+        /* House Classification Pastel Highlights */
+        .sign-cell-bg.house-kendra {
+            fill: rgba(186, 230, 253, 0.45) !important; /* Pastel Sky Blue */
+            stroke: #38bdf8 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-trikona {
+            fill: rgba(254, 240, 138, 0.45) !important; /* Pastel Warm Amber / Gold */
+            stroke: #eab308 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-dusthana {
+            fill: rgba(254, 202, 202, 0.45) !important; /* Pastel Soft Rose */
+            stroke: #f87171 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-upachaya {
+            fill: rgba(187, 247, 208, 0.45) !important; /* Pastel Sage Mint */
+            stroke: #4ade80 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        /* House Overlaps */
+        .sign-cell-bg.house-kendra.house-trikona {
+            fill: rgba(204, 251, 241, 0.55) !important; /* Pastel Teal / Aquamarine */
+            stroke: #0d9488 !important;
+            stroke-width: 2.5px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-dusthana.house-upachaya {
+            fill: rgba(254, 215, 170, 0.5) !important; /* Pastel Soft Peach */
+            stroke: #ea580c !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+        .sign-cell-bg.house-kendra.house-upachaya {
+            fill: rgba(199, 210, 254, 0.5) !important; /* Pastel Periwinkle */
+            stroke: #6366f1 !important;
+            stroke-width: 2.2px !important;
+            opacity: 1 !important;
+        }
+
+        .chart-house-highlights-bar {
+            padding: 3px 8px;
+            background: #faf6f0;
+            border-bottom: 1px solid #ebd9c8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 11px;
+            gap: 4px;
+            user-select: none;
+        }
+        .house-highlight-btn {
+            padding: 2px 7px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            border: 1px solid #d5c8b2;
+            background: #fffdfa;
+            color: #5c4433;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            white-space: nowrap;
+        }
+        .house-highlight-btn:hover {
+            filter: brightness(0.96);
+            border-color: #bfa88f;
+        }
+        .house-highlight-btn.active {
+            font-weight: 700;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+        }
+        .house-highlight-btn.active[data-category="kendra"] {
+            background: #e0f2fe !important;
+            border-color: #38bdf8 !important;
+            color: #0369a1 !important;
+        }
+        .house-highlight-btn.active[data-category="trikona"] {
+            background: #fef3c7 !important;
+            border-color: #f59e0b !important;
+            color: #92400e !important;
+        }
+        .house-highlight-btn.active[data-category="dusthana"] {
+            background: #fee2e2 !important;
+            border-color: #f87171 !important;
+            color: #991b1b !important;
+        }
+        .house-highlight-btn.active[data-category="upachaya"] {
+            background: #dcfce7 !important;
+            border-color: #4ade80 !important;
+            color: #166534 !important;
+        }
+
+
+
+        /* Dignity / Condition Continuum Component */
+        .dignity-continuum-card {
+            background: #fffdfa;
+            border: 1px solid #dcb594;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin: 14px 0 16px 0;
+            box-shadow: 0 2px 6px rgba(74, 51, 37, 0.05);
+        }
+        .continuum-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #78350f;
+            margin-bottom: 10px;
+            text-align: center;
+            border-bottom: 1px dashed #e8dfcf;
+            padding-bottom: 6px;
+        }
+        .continuum-track {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+        .continuum-tier {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e5dccb;
+            border-left-width: 5px;
+            background: #ffffff;
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+        .continuum-tier:hover {
+            transform: translateX(2px);
+            box-shadow: 0 2px 5px rgba(74, 51, 37, 0.08);
+        }
+        .continuum-tier.tier-high {
+            border-left-color: #16a34a;
+            background: linear-gradient(to right, #f0fdf4 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-moderate {
+            border-left-color: #0284c7;
+            background: linear-gradient(to right, #f0f9ff 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-neutral {
+            border-left-color: #d97706;
+            background: linear-gradient(to right, #fffbeb 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-low {
+            border-left-color: #ea580c;
+            background: linear-gradient(to right, #fff7ed 0%, #fffdfa 45%);
+        }
+        .continuum-tier.tier-afflicted {
+            border-left-color: #dc2626;
+            background: linear-gradient(to right, #fef2f2 0%, #fffdfa 45%);
+        }
+        .tier-header {
+            font-size: 12px;
+            font-weight: 800;
+            color: #4a3325;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            line-height: 1.35;
+        }
+        .tier-desc {
+            font-size: 11.5px;
+            line-height: 1.45;
+            color: #554438;
+        }
+
+        .kb-content pre {
+            background: #231c16;
+            color: #f7f3eb;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            line-height: 1.45;
+            overflow-x: auto;
+            white-space: pre;
+            border: 1px solid #4a3325;
+        }
+        .kb-content code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+

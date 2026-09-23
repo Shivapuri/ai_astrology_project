@@ -1,0 +1,32 @@
+<template id="tmpl-planetary-info">
+        <div class="widget-content" id="widget-planetary-info">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Planetary Information Table</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">D1 Kala Standard</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px; overflow-x: auto;">
+                <div class="scale-wrapper">
+                    <table class="planetary-info-table nakshatras-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th>Graha</th>
+                                <th>Deg/Min</th>
+                                <th>Sign</th>
+                                <th>Dignity</th>
+                                <th>Nakshatra</th>
+                                <th>Pada</th>
+                                <th>Lord/Sub</th>
+                                <th>Speed (%)</th>
+                                <th>Tara</th>
+                                <th>Retro/Cb</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

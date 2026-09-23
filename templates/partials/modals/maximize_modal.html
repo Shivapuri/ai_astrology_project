@@ -1,0 +1,73 @@
+    <div class="modal-overlay floating-overlay" id="maximizeModal" onclick="closeMaximizeModal(event)">
+        <div id="maximizeChartCard" class="floating-window-card maximize-chart-window" onclick="event.stopPropagation()">
+            <div id="maximizeChartHeader" class="floating-window-header" title="Drag to move chart window">
+                <div class="floating-window-title-wrap">
+                    <span class="floating-drag-grip" title="Drag to move">⠿</span>
+                    <h2 id="maximizeModalTitle" class="floating-window-title">Tropical Chart</h2>
+                </div>
+                <div class="floating-window-actions" style="display: flex; align-items: center; gap: 6px;">
+                    <!-- Aspect Lines Toggle Button -->
+                    <button type="button" class="floating-btn-tool" id="maximizeToggleAspectsBtn" onclick="toggleMaximizeAspects()" title="Toggle Aspect Lines" style="padding: 2px 8px; font-size: 11px; font-weight: 600; width: auto; border-radius: 4px;">👁 Aspects</button>
+                    <!-- Zoom Controls -->
+                    <button type="button" class="floating-btn-tool" onclick="zoomMaximizeChart(-0.15)" title="Zoom Out">−</button>
+                    <button type="button" class="floating-btn-tool" id="maximizeZoomLabel" onclick="resetMaximizeZoom()" title="Reset Zoom" style="width: auto; padding: 2px 7px; font-size: 11px; font-weight: 600;">100%</button>
+                    <button type="button" class="floating-btn-tool" onclick="zoomMaximizeChart(0.15)" title="Zoom In">+</button>
+                    <!-- Reset Position & Size -->
+                    <button type="button" class="floating-btn-tool" onclick="resetMaximizeChartPosition()" title="Reset Position & Size">⌖</button>
+                    <!-- Close -->
+                    <button type="button" class="floating-btn-tool danger modal-close-btn" onclick="closeMaximizeModal()" title="Close (Esc)">×</button>
+                </div>
+            </div>
+            <div id="maximizeChartContainer" class="maximize-chart-container"></div>
+            <div class="floating-window-footer" id="maximizeChartFooter" style="padding: 6px 14px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #D8CCB9; background: #F5EEDB; font-size: 11px; color: #7f6e5d;">
+                <span class="floating-window-hint">Drag header to move • Wheel to zoom • Shift+Drag, Wheel-Click, or Shift+Wheel to pan • Drag ⇲ to resize</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" onclick="closeMaximizeModal()" class="btn-close-floating" style="padding: 3px 12px; font-size: 11px;">Close (Esc)</button>
+                    <span class="floating-corner-grip" id="maximizeCornerGrip" title="Drag to resize">⇲</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table / Widget Floating Utility Window -->
+    <div class="modal-overlay floating-overlay" id="widgetMaximizeModal" onclick="closeWidgetMaximizeModal(event)">
+        <div id="widgetMaximizeCard" class="floating-window-card" onclick="event.stopPropagation()">
+            <div id="widgetMaximizeHeader" class="floating-window-header" title="Drag to move window">
+                <div class="floating-window-title-wrap">
+                    <span class="floating-drag-grip" title="Drag to move">⠿</span>
+                    <h2 id="widgetMaximizeModalTitle" class="floating-window-title">Data Table</h2>
+                </div>
+                <div class="floating-window-actions">
+                    <button type="button" class="floating-btn-tool" onclick="resetFloatingWindowPosition()" title="Reset Position & Size">⌖</button>
+                    <button type="button" class="floating-btn-tool" id="widgetMaximizeCollapseBtn" onclick="toggleFloatingCollapse()" title="Minimize / Expand Window">−</button>
+                    <button type="button" class="floating-btn-tool danger modal-close-btn" onclick="closeWidgetMaximizeModal()" title="Close (Esc)">×</button>
+                </div>
+            </div>
+            
+            <!-- Quick Table Switcher Bar -->
+            <div class="floating-table-nav" id="floatingTableNav">
+                <button type="button" class="floating-nav-pill" id="nav-btn-master-diag" onclick="openFloatingMasterDiagnostic()">★ Master Diagnostics</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-bhava" onclick="openBhavaCuspsModal()">📐 Bhava Chalita Cusps</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-planet" onclick="openFloatingPlanetaryInfo()">✨ Planetary Info</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-shadbala" onclick="openFloatingShadbala()">⚖️ Shad Bala</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-yoga" onclick="openFloatingYogaJudgment()">⚖️ Yoga Judgment</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-ashtaka" onclick="openFloatingAshtakavarga()">📊 Ashtakavarga</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-evaluation" onclick="openFloatingPlanetaryEvaluation()">🌟 Planetary Evaluation</button>
+                <button type="button" class="floating-nav-pill" id="nav-btn-classical-yogas" onclick="openFloatingClassicalYogas()">👑 Classical Yogas</button>
+            </div>
+
+            <!-- Body Container -->
+            <div id="widgetMaximizeContainer" class="floating-window-body"></div>
+
+            <!-- Window Footer with Resize Handle & Status -->
+            <div class="floating-window-footer" id="widgetMaximizeFooter">
+                <span class="floating-window-hint">Drag header to move • Drag corner ⇲ to resize</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <button type="button" onclick="closeWidgetMaximizeModal()" class="btn-close-floating">Close (Esc)</button>
+                    <span class="floating-corner-grip" id="floatingCornerGrip" title="Drag to resize">⇲</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kala 4-Column "Menu – BIRTH CHART" Dialog -->

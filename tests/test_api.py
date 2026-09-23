@@ -239,5 +239,57 @@ def test_toggle_dropdown_api(client):
     assert data2['in_dropdown'] is False
 
 
+def test_lazy_chart_svg_api(client):
+    # 1. South Indian JSON response
+    res = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&style=south')
+    assert res.status_code == 200
+    data = json.loads(res.data)
+    assert data['varga'] == 'D1'
+    assert data['mode'] == 'symbol'
+    assert data['style'] == 'south'
+    assert '<svg' in data['svg']
+
+    # 2. Raw SVG response with Accept header
+    res_raw = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&style=south', headers={'Accept': 'image/svg+xml'})
+    assert res_raw.status_code == 200
+    assert res_raw.mimetype == 'image/svg+xml'
+    assert b'<svg' in res_raw.data
+
+    # 3. North Indian JSON response
+    res_north = client.get('/api/chart/adolf-hitler/svg?varga=D9&mode=symbol&style=north')
+    assert res_north.status_code == 200
+    data_north = json.loads(res_north.data)
+    assert data_north['varga'] == 'D9'
+    assert '<svg' in data_north['svg']
+
+    # 4. Circular Chart JSON response with Moon root
+    res_circ = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&root=Moon&style=circular')
+    assert res_circ.status_code == 200
+    data_circ = json.loads(res_circ.data)
+    assert data_circ['root'] == 'Moon'
+    assert '<svg' in data_circ['svg']
+
+    # 5. Bi-Wheel Chart JSON response
+    res_bi = client.get('/api/chart/adolf-hitler/svg?varga=D1&outer=D10&mode=symbol&style=biwheel')
+    assert res_bi.status_code == 200
+    data_bi = json.loads(res_bi.data)
+    assert '<svg' in data_bi['svg']
+
+    # 6. All styles combined JSON response
+    res_all = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&root=Lagna&style=all')
+    assert res_all.status_code == 200
+    data_all = json.loads(res_all.data)
+    assert 'svgs' in data_all
+    assert 'south' in data_all['svgs']
+    assert 'north' in data_all['svgs']
+    assert 'circular' in data_all['svgs']
+    assert 'biwheel' in data_all['svgs']
+
+    # 7. Error handling
+    assert client.get('/api/chart/nonexistent-id/svg').status_code == 404
+    assert client.get('/api/chart/adolf-hitler/svg?varga=D99').status_code == 404
+
+
+
 
 

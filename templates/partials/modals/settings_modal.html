@@ -1,0 +1,142 @@
+    <div class="modal-overlay" id="settingsModal" onclick="closeSettingsModal(event)">
+        <div class="modal-card" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>⚙️ Chart Display Settings</h2>
+                <button type="button" class="modal-close-btn" onclick="closeSettingsModal()">×</button>
+            </div>
+            
+            <div class="setting-section">
+                <h4>Planet Notation Mode</h4>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-symbol').click()">
+                    <input type="radio" id="radio-symbol" name="modalNotation" value="symbol" checked onchange="onModalNotationChange('symbol')">
+                    <label for="radio-symbol">
+                        <strong>Astronomical Symbols</strong>
+                        <span class="setting-chip">☉ ☽ ♂ ☿ ♃ ♀ ♄ ☊ ☋ Asc</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-english').click()">
+                    <input type="radio" id="radio-english" name="modalNotation" value="english" onchange="onModalNotationChange('english')">
+                    <label for="radio-english">
+                        <strong>English Abbreviations</strong>
+                        <span class="setting-chip">Su Mo Ma Me Ju Ve Sa Ra Ke Asc</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-devanagari').click()">
+                    <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" onchange="onModalNotationChange('devanagari')">
+                    <label for="radio-devanagari">
+                        <strong>Devanagari Script</strong>
+                        <span class="setting-chip">सू चं मं बु गु शु श रा के ल</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-translit').click()">
+                    <input type="radio" id="radio-translit" name="modalNotation" value="translit" onchange="onModalNotationChange('translit')">
+                    <label for="radio-translit">
+                        <strong>IAST Sanskrit Transliteration</strong>
+                        <span class="setting-chip">Sū Ca Ma Bu Gu Śu Śa Rā Ke Lag</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-section">
+                <h4>Chart Visibility</h4>
+                
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleSouth" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleSouth" style="margin-left: 10px;">
+                        <strong>Show South Indian Charts</strong>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleNorth" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleNorth" style="margin-left: 10px;">
+                        <strong>Show North Indian Charts</strong>
+                    </label>
+                </div>
+
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleRightSlot" checked onchange="onModalLayoutChange()">
+                    <label for="modalToggleRightSlot" style="margin-left: 10px;">
+                        <strong>Show Right Chart Slot (Comparison)</strong>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-section">
+                <h4>South Indian Chart Layout</h4>
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleSigns" checked onchange="onModalSignToggle(this.checked)">
+                    <label for="modalToggleSigns" style="margin-left: 10px;">
+                        <strong>Show Zodiac Signs</strong> in the corner of South Indian cells
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4>Divisional Chart Calculations (Vargas)</h4>
+                <div style="margin-bottom: 8px; font-size: 11px; color: #6b5a4b;">
+                    Reckoning method for even signs (e.g. Taurus, Cancer, Virgo)
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-d10-reverse').click()">
+                    <input type="radio" id="radio-d10-reverse" name="modalD10Mode" value="reverse" checked onchange="setD10Mode('reverse')">
+                    <label for="radio-d10-reverse">
+                        <strong>D10: Kala Reverse for Even Signs (Ernst Wilhelm *)</strong>
+                        <span class="setting-chip">Counts backwards from 9th sign (Kala Software Default)</span>
+                    </label>
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-d10-direct').click()">
+                    <input type="radio" id="radio-d10-direct" name="modalD10Mode" value="direct" onchange="setD10Mode('direct')">
+                    <label for="radio-d10-direct">
+                        <strong>D10: Contemporary Forward (Vic DiCara / Traditional)</strong>
+                        <span class="setting-chip">Counts forward from 9th sign (Vic DiCara interpretation)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4>Nakshatra Calculation Engine</h4>
+                <div style="margin-bottom: 8px; font-size: 11px; color: #6b5a4b;">
+                    Calculation system for lunar mansions, Moon position, and Vimshottari Dasha balance
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-nak-dhruva').click()">
+                    <input type="radio" id="radio-nak-dhruva" name="modalNakMode" value="ERNST_DHRUVA" checked onchange="setNakshatraSystem('ERNST_DHRUVA')">
+                    <label for="radio-nak-dhruva">
+                        <strong>Dhruva Galactic Center / Equatorial (Ernst Wilhelm *)</strong>
+                        <span class="setting-chip">Equatorial Right Ascension anchored to Middle of Mula (Kala Default)</span>
+                    </label>
+                </div>
+
+                <div class="setting-option-card" onclick="document.getElementById('radio-nak-chitra').click()">
+                    <input type="radio" id="radio-nak-chitra" name="modalNakMode" value="VIC_CHITRA" onchange="setNakshatraSystem('VIC_CHITRA')">
+                    <label for="radio-nak-chitra">
+                        <strong>Chitra Paksha / Ecliptic Sidereal (Vic DiCara)</strong>
+                        <span class="setting-chip">Tropical Rasis + Traditional Lahiri Sidereal Nakshatras</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <h4>Astrological PDF Export</h4>
+                <div class="setting-option-card" onclick="closeSettingsModal(); openExportModal();" style="border-left: 3px solid #2563eb;">
+                    <span style="font-size: 18px; margin-right: 10px;">📄</span>
+                    <div>
+                        <strong>Configure & Export Master Plan (PDF)...</strong>
+                        <span class="setting-chip">A3 Landscape Master Sheet, A4 Dossier & print export</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" onclick="closeSettingsModal()" style="background-color: #d35400; color: white; padding: 9px 22px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer;">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Chart PDF Modal Window -->

@@ -1,0 +1,44 @@
+<template id="tmpl-rashi-drishti">
+        <div class="widget-content" id="widget-rashi-drishti" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Rāśi Dṛṣṭi (Jaimini Sign Aspects)</span>
+                    <select class="varga-select" onchange="updateRashiDrishtiWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 110px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper">
+                    <table class="rashi-drishti-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead>
+                            <tr>
+                                <th>Sign</th>
+                                <th>Modality</th>
+                                <th>Occupants</th>
+                                <th>Aspects Signs</th>
+                                <th>Aspected Planets</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

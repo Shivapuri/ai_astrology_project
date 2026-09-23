@@ -1,0 +1,20 @@
+    <div class="modal-overlay" id="shodasaVargasModal" style="display:none; align-items:center; justify-content:center; z-index:10030;" onclick="if(event.target===this) closeShodasaVargasModal()">
+        <div class="shodasa-modal-card" onclick="event.stopPropagation()">
+            <div class="shodasa-modal-header">
+                <div>
+                    <h2 style="margin:0; font-size:17px; color:#4a3325; font-weight:bold;">ShodasaVargas — 16 Divisional Charts (16-in-1)</h2>
+                    <span id="shodasaSubjectTitle" style="font-size:12px; color:#7f8c8d;">Parashari Classical Divisional Harmonics</span>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div class="chart-hotkeys" style="display:flex; align-items:center; gap:4px;">
+                        <button type="button" class="hotkey-btn active shodasa-btn-south" onclick="switchShodasaStyle('south')">South</button>
+                        <button type="button" class="hotkey-btn shodasa-btn-north" onclick="switchShodasaStyle('north')">North</button>
+                        <button type="button" class="hotkey-btn shodasa-btn-circular" onclick="switchShodasaStyle('circular')">Circular</button>
+                        <button type="button" class="hotkey-btn shodasa-btn-biwheel" onclick="switchShodasaStyle('biwheel')">Bi-Wheel</button>
+                    </div>
+                    <button type="button" class="modal-close-btn" onclick="closeShodasaVargasModal()">×</button>
+                </div>
+            </div>
+            <div class="shodasa-grid-container" id="shodasaGridContainer"></div>
+        </div>
+    </div>

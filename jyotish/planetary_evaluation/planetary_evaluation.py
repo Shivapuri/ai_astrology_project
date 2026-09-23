@@ -2117,8 +2117,9 @@ def calculate_planetary_evaluation(
         }
 
         # ---------------------------------------------------------------------
-        # STEP 3: Conjunctions and Aspect Gradients (Drishti - Ruleset 9)
+        # STEP 3: Conjunctions (Yuti) & Aspect Gradients (Drishti)
         # ---------------------------------------------------------------------
+        conjunction_details = []
         aspect_details = []
         peer_shifts = []
         benefic_rays = 0.0
@@ -2139,17 +2140,13 @@ def calculate_planetary_evaluation(
             o_dig_name = str(o_dig_info.get("dignity", "Neutral"))
 
             alertness = float(jagradaadi_map.get(other_p, {}).get("multiplier", 0.50))
-            
-            # Classical Rule: Aspects use Natural Relationship (BPHS Ch. 45 / ASVA Vol II)
             natural_rel = rel.get_natural_relationship(other_p, p)
             lunar_weight = calculate_lunar_nature_weight(moon_lon_val, sun_lon_val) if other_p == "Moon" else None
-            rel_label = f"Bright Benefic ({lunar_weight:+.2f})" if other_p == "Moon" else natural_rel
 
             # -----------------------------------------------------------------
-            # Case A: Same Sign / House -> Conjunction (Yuti) ONLY
+            # 1. SAME SIGN -> CONJUNCTION (YUTI) ONLY (No Aspect Virūpas)
             # -----------------------------------------------------------------
             if o_sign == p_sign:
-                inf_type = "Conjunction"
                 deg_diff = abs(my_deg - o_deg)
                 
                 # Classical 3-band discrete orb factor (Ruleset 9)
@@ -2159,11 +2156,11 @@ def calculate_planetary_evaluation(
                 elif deg_diff <= 10.0:            # 3°20' to 10°00'
                     orb_factor = 0.6
                     band_label = "Moderate"
-                else:                             # > 10°00' (Same sign, wide)
+                else:                             # > 10°00' (Wide in same sign)
                     orb_factor = 0.25
                     band_label = "Wide"
                     
-                direction = get_aspect_direction_vector(other_p, p, inf_type, natural_rel, sign_lord, lunar_weight)
+                direction = get_aspect_direction_vector(other_p, p, "Conjunction", natural_rel, sign_lord, lunar_weight)
                 shift = orb_factor * alertness * direction * 20.0
                 peer_shifts.append(shift)
                 
@@ -2172,33 +2169,38 @@ def calculate_planetary_evaluation(
                 elif shift < 0:
                     malefic_pressure += abs(shift)
                     
-                aspect_details.append({
+                rel_label = f"Bright Benefic ({lunar_weight:+.2f})" if other_p == "Moon" else natural_rel
+                
+                # Appended STRICTLY to conjunctions
+                conjunction_details.append({
+                    "planet": other_p,
                     "source": other_p,
                     "from_planet": other_p,
                     "type": f"Conjunction ({band_label})",
+                    "degree_diff": round(deg_diff, 2),
+                    "orb_band": band_label,
+                    "orb_factor": orb_factor,
                     "power_pct": round(orb_factor * 100.0, 1),
-                    "virupas": 60.0,
                     "sambhanda": rel_label,
                     "direction": direction,
                     "shift": round(shift, 1),
-                    "impact": f"{shift:+.1f}% ({other_p} Conjunction in {p_sign} [{rel_label}])",
+                    "impact": f"{shift:+.1f}% ({other_p} Conjunction in {p_sign})",
                     "from_dignity_pct": o_dig_pct,
                     "from_dignity_name": o_dig_name
                 })
 
             # -----------------------------------------------------------------
-            # Case B: Different Signs -> Aspect (Dṛṣṭi) ONLY (Blind Spots = 0 Virūpas)
+            # 2. DIFFERENT SIGNS -> ASPECT (DRISHTI) ONLY
             # -----------------------------------------------------------------
             else:
-                inf_type = "Aspect (Drishti)"
                 drishti_virupas = float(aspects.get_graha_drishti(other_p, o_lon, p_lon))
                 
-                # Permit all classical partial aspects down to 0.5 Virūpa
+                # Ignore blind spots (0 Virūpas)
                 if drishti_virupas < 0.5:
                     continue
                     
                 ray_ratio = min(1.0, max(0.0, drishti_virupas / 60.0))
-                direction = get_aspect_direction_vector(other_p, p, inf_type, natural_rel, sign_lord, lunar_weight)
+                direction = get_aspect_direction_vector(other_p, p, "Aspect (Drishti)", natural_rel, sign_lord, lunar_weight)
                 shift = calculate_aspect_shift(drishti_virupas, alertness, direction)
                 peer_shifts.append(shift)
                 
@@ -2207,10 +2209,14 @@ def calculate_planetary_evaluation(
                 elif shift < 0:
                     malefic_pressure += abs(shift)
                     
+                rel_label = f"Bright Benefic ({lunar_weight:+.2f})" if other_p == "Moon" else natural_rel
+                
+                # Appended STRICTLY to aspects
                 aspect_details.append({
+                    "planet": other_p,
                     "source": other_p,
                     "from_planet": other_p,
-                    "type": inf_type,
+                    "type": "Aspect (Drishti)",
                     "power_pct": round(ray_ratio * 100.0, 1),
                     "virupas": round(drishti_virupas, 1),
                     "sambhanda": rel_label,
@@ -2230,7 +2236,9 @@ def calculate_planetary_evaluation(
             "combustion_penalty_pct": 0.0,  # Decoupled to Layer 3 Vitality Score
             "nodal_penalty_pct": 0.0,       # Decoupled to Layer 3 Vitality Score
             "net_aspect_pct": round(clamped_aspect_net, 1),
-            "details": aspect_details
+            "conjunctions": conjunction_details,  # Separated
+            "aspects": aspect_details,            # Separated
+            "details": conjunction_details + aspect_details # Backward compatibility
         }
 
         # Calculate Layer 2: Functional Dignity %
@@ -2573,7 +2581,7 @@ def calculate_planetary_evaluation(
             host_shadbala_pct=100.0,
             planet_shadbala_pct=sb_ratio * 100.0,
             net_drishti_virupas=clamped_aspect_net,
-            conjunctions=[c["source"] for c in step3_info.get("details", []) if "conjunction" in c.get("type", "").lower()],
+            conjunctions=[c.get("planet", c.get("source", "")) for c in step3_info.get("conjunctions", [])],
             lajjitadi_states=raw_lajjitadi,
             is_retrograde=bool(p_d1.get("is_retrograde")),
             is_combust=bool(p_d1.get("is_combust")),
@@ -2585,7 +2593,7 @@ def calculate_planetary_evaluation(
             war_opponent=war_opponent,
             war_badge=war_badge,
             conjunction_details=conj_details,
-            aspect_details=step3_info.get("details", []),
+            aspect_details=step3_info.get("aspects", []),
             functional_role=fn_role,
             deepthaadi=deepthaadi_res,
             jagradaadi=jagradaadi_res,

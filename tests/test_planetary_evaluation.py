@@ -1132,6 +1132,90 @@ def test_leo_rising_mars_in_virgo_neutral_host_and_natural_aspects():
     assert any(d["source"] == "Moon" or d.get("from_planet") == "Moon" for d in vit["aspect_details"])
 
 
+def test_conjunction_and_aspect_partitioning_mercury_sun_saturn():
+    """
+    Validates the clean architectural partition between Conjunctions (Yuti) and Aspects (Dṛṣṭi):
+    1. A planet NEVER aspects the house it sits in (Dṛṣṭi glance is 0% on own house).
+    2. Sun, Saturn, and Mercury sharing the same house (Virgo):
+       - Sun and Saturn are strictly CONJOINED with Mercury (yuti).
+       - Sun and Saturn appear in `conjunctions` with degree orb and 0 Virūpas (no "virupas" key).
+       - Sun and Saturn do NOT appear in `aspects`.
+    3. External planets (e.g. Moon in Pisces 7th aspect, Jupiter in Taurus 9th aspect):
+       - Appear in `aspects` with > 0 Virūpas.
+       - Do NOT appear in `conjunctions`.
+    4. `details` retains both for backward compatibility.
+    5. Vitality's `aspect_details` contains only true line-of-sight aspects.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                # Sun, Saturn, and Mercury co-occupying Virgo
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Sun": {"sign": "Virgo", "degree_0_to_30": 14.2, "longitude": 164.2, "dignity": "Neutral"},
+                "Saturn": {"sign": "Virgo", "degree_0_to_30": 17.1, "longitude": 167.1, "dignity": "Friend"},
+                # External rays: Moon in Pisces (7th aspect across space to Virgo)
+                "Moon": {"sign": "Pisces", "degree_0_to_30": 10.0, "longitude": 340.0, "dignity": "Neutral"},
+                # Jupiter in Taurus (9th aspect across space to Virgo)
+                "Jupiter": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Enemy"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 15.0, "longitude": 195.0, "dignity": "Own Sign"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    merc = eval_res["planets"]["Mercury"]
+    s3_merc = merc["step3_aspects"]
+
+    # 1. Conjunctions must contain Sun and Saturn
+    conjs = s3_merc["conjunctions"]
+    conj_planets = [c["planet"] for c in conjs]
+    assert "Sun" in conj_planets, f"Expected Sun in conjunctions, got {conj_planets}"
+    assert "Saturn" in conj_planets, f"Expected Saturn in conjunctions, got {conj_planets}"
+    assert "Moon" not in conj_planets
+    assert "Jupiter" not in conj_planets
+
+    # Verify metric is degree orb and NO virūpas
+    for c in conjs:
+        assert "virupas" not in c, f"Conjunction should NOT have virūpas key: {c}"
+        assert "degree_diff" in c
+        assert "orb_band" in c
+
+    sun_c = next(c for c in conjs if c["planet"] == "Sun")
+    assert round(sun_c["degree_diff"], 1) == 4.2
+    assert sun_c["orb_band"] == "Moderate"
+
+    sat_c = next(c for c in conjs if c["planet"] == "Saturn")
+    assert round(sat_c["degree_diff"], 1) == 7.1
+    assert sat_c["orb_band"] == "Moderate"
+
+    # 2. Aspects must contain external rays (Moon, Jupiter), but NEVER co-occupants (Sun, Saturn)
+    asps = s3_merc["aspects"]
+    asp_sources = [a["planet"] for a in asps]
+    assert "Sun" not in asp_sources, "Sun must NOT aspect its own occupied sign!"
+    assert "Saturn" not in asp_sources, "Saturn must NOT aspect its own occupied sign!"
+    assert "Moon" in asp_sources, f"Expected Moon in aspects, got {asp_sources}"
+
+    for a in asps:
+        assert "virupas" in a, f"Aspect must have virūpas: {a}"
+        assert a["virupas"] >= 0.5
+
+    # 3. Details contains both for backward compatibility
+    assert len(s3_merc["details"]) == len(conjs) + len(asps)
+
+    # 4. Vitality's aspect_details strictly contains line-of-sight aspects
+    vit = merc["vitality"]
+    vit_asp_sources = [a["source"] for a in vit.get("aspect_details", [])]
+    assert "Sun" not in vit_asp_sources
+    assert "Saturn" not in vit_asp_sources
+    assert "Moon" in vit_asp_sources
+
+
+
 
 
 

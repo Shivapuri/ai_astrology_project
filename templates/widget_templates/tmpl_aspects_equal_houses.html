@@ -1,0 +1,36 @@
+<template id="tmpl-aspects-equal-houses">
+        <div class="widget-content" id="tab-aspects-equal-houses">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <span class="aspect-table-title" style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">D1 - Aspects to Equal Houses</span>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table id="kalaAspectsEqualHousesTable" class="kala-matrix dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+                        <thead></thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

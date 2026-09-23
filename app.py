@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, send_file
+from flask import Flask, render_template, request, jsonify, send_file, Response
 import os
 import sys
 import io
@@ -114,6 +114,55 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
     }
     return chart
 
+def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None):
+    if modes is None:
+        modes = ["symbol"]
+    if roots is None:
+        roots = ["Lagna"]
+
+    vargas = chart_data.get("vargas", {})
+    v_data = vargas.get(v_name)
+    if not v_data:
+        return {}
+
+    d1_items = draw_chart.parse_varga_data(vargas["D1"]) if "D1" in vargas else []
+    d9_items = draw_chart.parse_varga_data(vargas["D9"]) if "D9" in vargas else d1_items
+    ayan_val = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0)
+
+    parsed_items = draw_chart.parse_varga_data(v_data)
+    outer_items = d9_items if v_name == "D1" else parsed_items
+    outer_lbl = "D9" if v_name == "D1" else v_name
+
+    v_svg = {}
+    for m in modes:
+        roots_dict = {}
+        for r in roots:
+            roots_dict[r] = {
+                "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=ayan_val, root_planet=r),
+                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
+                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
+                "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r)
+            }
+
+        v_svg[m] = {
+            "circular": roots_dict.get("Lagna", {}).get("circular", ""),
+            "south": roots_dict.get("Lagna", {}).get("south", ""),
+            "north": roots_dict.get("Lagna", {}).get("north", ""),
+            "biwheel": roots_dict.get("Lagna", {}).get("biwheel", ""),
+            "roots": roots_dict
+        }
+
+    # Default top-level shortcuts for backward compatibility
+    primary_m = "symbol" if "symbol" in v_svg else (modes[0] if modes else None)
+    if primary_m and primary_m in v_svg:
+        v_svg["south"] = v_svg[primary_m]["south"]
+        v_svg["north"] = v_svg[primary_m]["north"]
+        v_svg["circular"] = v_svg[primary_m]["circular"]
+        v_svg["biwheel"] = v_svg[primary_m]["biwheel"]
+        v_svg["roots"] = v_svg[primary_m]["roots"]
+
+    return v_svg
+
 @app.route('/api/chart/<native_id>')
 def get_chart(native_id):
     native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
@@ -137,42 +186,20 @@ def get_chart(native_id):
         nakshatra_system=nakshatra_system
     )
     
-    # Generate SVGs for all vargas, all notation modes, and root planets (Lagna, Moon, Sun)
+    # Efficient SVG generation:
+    # Pre-renders 'symbol' notation for all vargas (powers initial workspace and Shodasa Vargas 16-in-1 modal).
+    # For D1 and D9, pre-renders all 3 root perspectives (Lagna, Moon, Sun).
+    # All additional notations/roots are dynamically served on demand via /api/chart/<native_id>/svg.
     svgs = {}
-    modes = ["symbol", "english", "devanagari", "translit"]
-    roots = ["Lagna", "Moon", "Sun"]
-    d1_items = draw_chart.parse_varga_data(chart_data["vargas"]["D1"]) if "D1" in chart_data["vargas"] else []
-    d9_items = draw_chart.parse_varga_data(chart_data["vargas"]["D9"]) if "D9" in chart_data["vargas"] else d1_items
-    ayan_val = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0)
+    requested_mode = request.args.get('mode', 'symbol')
+    eager_all = request.args.get('eager_all_svgs', 'false').lower() == 'true'
+    
+    modes = ["symbol", "english", "devanagari", "translit"] if eager_all else list(dict.fromkeys(["symbol", requested_mode]))
+    all_roots = ["Lagna", "Moon", "Sun"]
 
-    for v_name, v_data in chart_data["vargas"].items():
-        parsed_items = draw_chart.parse_varga_data(v_data)
-        outer_items = d9_items if v_name == "D1" else parsed_items
-        outer_lbl = "D9" if v_name == "D1" else v_name
-        svgs[v_name] = {}
-        for m in modes:
-            roots_dict = {}
-            for r in roots:
-                roots_dict[r] = {
-                    "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=ayan_val, root_planet=r),
-                    "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
-                    "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r),
-                    "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r)
-                }
-
-            svgs[v_name][m] = {
-                "circular": roots_dict["Lagna"]["circular"],
-                "south": roots_dict["Lagna"]["south"],
-                "north": roots_dict["Lagna"]["north"],
-                "biwheel": roots_dict["Lagna"]["biwheel"],
-                "roots": roots_dict
-            }
-        # Default top-level shortcuts for backward compatibility
-        svgs[v_name]["south"] = svgs[v_name]["symbol"]["south"]
-        svgs[v_name]["north"] = svgs[v_name]["symbol"]["north"]
-        svgs[v_name]["circular"] = svgs[v_name]["symbol"]["circular"]
-        svgs[v_name]["biwheel"] = svgs[v_name]["symbol"]["biwheel"]
-        svgs[v_name]["roots"] = svgs[v_name]["symbol"]["roots"]
+    for v_name in chart_data.get("vargas", {}).keys():
+        v_roots = all_roots if (eager_all or v_name in ("D1", "D9")) else ["Lagna"]
+        svgs[v_name] = get_or_generate_varga_svgs(chart_data, v_name, modes=modes, roots=v_roots)
         
     preview_info = chart_data.get("preview_info", {})
     return jsonify({
@@ -184,6 +211,87 @@ def get_chart(native_id):
         "preview_date": preview_info.get("preview_date", native.get("date")),
         "preview_offset_seconds": preview_info.get("offset_seconds", 0)
     })
+
+@app.route('/api/chart/<native_id>/svg')
+def get_chart_svg(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+
+    varga = request.args.get('varga', 'D1')
+    mode = request.args.get('mode', 'symbol')
+    root = request.args.get('root', 'Lagna')
+    style = request.args.get('style', 'all')
+    outer = request.args.get('outer', 'D9' if varga == 'D1' else varga)
+    d10_mode = request.args.get('d10_mode', 'reverse')
+    d24_mode = request.args.get('d24_mode', 'reverse')
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
+    offset_seconds = request.args.get('offset_seconds', default=0, type=int)
+    time_override = request.args.get('time')
+    date_override = request.args.get('date')
+
+    chart_data = compute_chart_data(
+        native,
+        d10_mode=d10_mode,
+        d24_mode=d24_mode,
+        date_override=date_override,
+        time_override=time_override,
+        offset_seconds=offset_seconds,
+        nakshatra_system=nakshatra_system
+    )
+
+    vargas = chart_data.get("vargas", {})
+    if varga not in vargas:
+        return jsonify({"error": f"Varga {varga} not found"}), 404
+
+    v_data = vargas[varga]
+    parsed_items = draw_chart.parse_varga_data(v_data)
+    d1_items = draw_chart.parse_varga_data(vargas.get("D1", {})) if "D1" in vargas else parsed_items
+    outer_items = draw_chart.parse_varga_data(vargas.get(outer, {})) if outer in vargas else parsed_items
+    ayan_val = chart_data.get("astronomy", {}).get("equatorial_ayanamsa_value", 0)
+
+    is_svg_accept = (request.headers.get('Accept') == 'image/svg+xml') or (request.args.get('format') == 'svg')
+
+    if style == 'south':
+        svg = draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root)
+        if is_svg_accept:
+            return Response(svg, mimetype='image/svg+xml')
+        return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
+
+    elif style == 'north':
+        svg = draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root)
+        if is_svg_accept:
+            return Response(svg, mimetype='image/svg+xml')
+        return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
+
+    elif style == 'circular':
+        svg = draw_chart.generate_circular_chart(parsed_items, mode=mode, varga_name=varga, ayanamsha=ayan_val, root_planet=root)
+        if is_svg_accept:
+            return Response(svg, mimetype='image/svg+xml')
+        return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
+
+    elif style == 'biwheel':
+        svg = draw_chart.generate_biwheel_chart(
+            d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root
+        )
+        if is_svg_accept:
+            return Response(svg, mimetype='image/svg+xml')
+        return jsonify({"svg": svg, "varga": varga, "outer": outer, "mode": mode, "root": root, "style": style})
+
+    else:
+        # style == 'all'
+        svgs_dict = {
+            "south": draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root),
+            "north": draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root),
+            "circular": draw_chart.generate_circular_chart(parsed_items, mode=mode, varga_name=varga, ayanamsha=ayan_val, root_planet=root),
+            "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root)
+        }
+        return jsonify({
+            "varga": varga,
+            "mode": mode,
+            "root": root,
+            "svgs": svgs_dict
+        })
 
 @app.route('/api/chart/<native_id>/biwheel')
 def get_chart_biwheel(native_id):

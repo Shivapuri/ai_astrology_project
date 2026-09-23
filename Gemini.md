@@ -40,6 +40,45 @@ It utilizes a unified, **Integrated Approach**:
 - **Use the Design Subagent**: For major UI/UX overhauls or layout changes, it is mandatory to invoke a specialized "Gemini 3.7" design subagent (using the `pro` model). Delegate the visual iteration loop (edit -> screenshot -> inspect -> refine) completely to this subagent. 
 - **Do Not Interrupt**: Do not come back to the user after every small, untested incremental update. Wait until the design subagent has fully verified the UI is polished and unbroken before responding.
 
+## Frontend Architecture & Modularity Protocol (MANDATORY)
+The presentation layer uses a decoupled, modular architecture. All future frontend modifications and feature additions must strictly adhere to the following rules:
+
+1. **Zero Monolith Policy (`templates/index.html`)**:
+   - `templates/index.html` is strictly a high-level layout skeleton and state coordinator.
+   - **NEVER** write massive inline `<style>` tags, multi-thousand-line script functions, or raw multi-page modal trees inside `templates/index.html`.
+
+2. **Modular Jinja2 Partials**:
+   - **Navigation & Toolbars**: Reside in `templates/partials/` (e.g. `top_toolbar.html`, `context_menu.html`).
+   - **Modal Dialogs**: Every modal must be an isolated partial in `templates/partials/modals/<modal_name>.html` and included using `{% include 'partials/modals/<modal_name>.html' %}`.
+   - **Widget Templates**: Reusable `<template id="tmpl-...">` DOM blueprints must reside in `templates/widget_templates/tmpl_<name>.html` and be registered in `templates/partials/widget_templates.html`.
+
+3. **Structured CSS Token System**:
+   - Inline `<style>` blocks in HTML are forbidden.
+   - All styling must be added to the appropriate stylesheet in `static/css/`:
+     - `base.css`: Global typography, layout reset, and custom scrollbars.
+     - `pergamon-theme.css`: Pergamon color tokens (warm parchment palette, antique accents, badges).
+     - `layout-grid.css`: Split.js gutters, resizable cell geometry, and toolbars.
+     - `widgets.css`: Shared tables, sticky headers, strength meters, and SVG chart wrappers.
+     - `modals.css`: Draggable floating dialogs, maximize overlays, and dropdown menus.
+
+4. **The Pluggable Widget Registry Pattern (`static/js/widget_registry.js`)**:
+   - Every astrological view (table, diagnostic matrix, or calculation view) must be an isolated controller module in `static/js/widgets/<widget_name>.js`.
+   - Never add hardcoded `if/else` or `switch` branches in `index.html` to assign or update widgets.
+   - Widgets must self-register with `window.widgetRegistry.register(id, definition)` implementing:
+     - `id`: Unique identifier (e.g., `'shadbala-table'`).
+     - `title` & `icon`: Display name and emoji/glyph.
+     - `category`: Menu category (e.g., `'Positions'`, `'Strengths'`, `'Diagnostics'`).
+     - `onUpdate(cell, chartData)`: Lifecycle callback that populates or refreshes the widget using `chartData || window.currentChartData`.
+
+5. **Declarative Table Builder (`static/js/components/table_builder.js`)**:
+   - Avoid manual, error-prone HTML string concatenation (`+= '<tr><td>...'`).
+   - Use declarative helpers (`createTable`, `createBadge`, `createStrengthMeter`) to ensure consistent DOM markup and safe attribute rendering.
+
+6. **On-Demand Lazy SVG Generation (`/api/chart/<native_id>/svg`)**:
+   - Never eagerly generate hundreds of SVG permutations upfront on the backend.
+   - Initial chart loads pre-render only the active workspace views. Additional vargas, modes (`symbol`, `english`, `devanagari`), styles (`south`, `north`, `circular`, `biwheel`), and root perspectives (`Lagna`, `Moon`, `Sun`) must be requested on-demand via the `/api/chart/<native_id>/svg` endpoint.
+
+
 ## Test-Driven Development & Regression Testing (MANDATORY)
 - **Zero Breakage Policy**: You must never introduce a change that silently breaks existing mathematical calculations, API responses, or UI functionality.
 - **Write Tests for Changes**: Whenever you make significant structural changes to the `/jyotish/` backend engines, Flask API routes, or the frontend layout, you MUST write or update the corresponding tests in the `/tests/` directory.

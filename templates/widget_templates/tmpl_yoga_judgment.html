@@ -1,0 +1,31 @@
+<template id="tmpl-yoga-judgment">
+        <div class="widget-content" id="tab-yoga-judgment">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Yoga Judgment (Ishta/Kashta & Subha/Asubha Dig Bala)</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 4px; border-radius: 3px; font-weight: bold;">Kala System</span>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 6px; display: flex; justify-content: center;">
+                <div class="scale-wrapper" style="width: 100%; max-width: 680px;">
+                    <table class="yoga-judgment-table" style="width: 100%; border-collapse: collapse; border: 2px solid #b86829; text-align: center; font-family: sans-serif; background: #ffffff;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #b86829; background: #fffdfa;">
+                                <th style="border-right: 1px solid #b86829; width: 85px; padding: 4px;"></th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Sun (Surya)">☉</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Moon (Chandra)">☽</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Mars (Mangala)">♂</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Mercury (Budha)">☿</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Jupiter (Guru)">♃</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Venus (Shukra)">♀</th>
+                                <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 16px; font-weight: bold; padding: 4px;" title="Saturn (Shani)">♄</th>
+                                <th style="color: #1a4a82; font-size: 13px; font-weight: bold; padding: 4px;">Avg.</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

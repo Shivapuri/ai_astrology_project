@@ -1,0 +1,238 @@
+    <div class="top-toolbar">
+        <div class="toolbar-left" style="display:flex; align-items:center; gap:6px;">
+            <h1 style="cursor: pointer; margin:0 8px 0 0; font-size:18px;" onclick="changeWorkspace('core-predictive')" title="Astra Vedic Astrology">Astra</h1>
+            
+            <!-- Hidden selects for script compatibility and programmatic access -->
+            <select id="workspaceSelect" onchange="changeWorkspace(this.value)" style="display:none;">
+                <option value="core-predictive" selected>🌟 1. Core Predictive (D1 + D9 + Diagnostics + Dignities + Vimshottari)</option>
+                <option value="tripod-of-life">🏛️ 2. Tripod of Life (Lagna, Moon, Sun)</option>
+                <option value="big-four">🏛️ 3. The Big Four (D1, D9, D10, D3)</option>
+                <option value="strengths">⚖️ 4. Strengths & Avasthas</option>
+                <option value="timing">⏳ 5. Timing & Cycles</option>
+                <option value="custom">🛠️ Custom (Saved Grid)</option>
+            </select>
+            <select id="layoutSelect" onchange="changeLayout(this.value)" style="display:none;">
+                <option value="kala">Kala Layout (3x3)</option>
+                <option value="tripod-of-life">Tripod of Life (3 Top + Table)</option>
+                <option value="core-predictive" selected>Core Predictive (D1 + D9 + Diagnostics + Dignities + Vimshottari)</option>
+                <option value="big-four">4-Quadrant (2x2)</option>
+                <option value="8cell">8-Cell Grid</option>
+                <option value="11cell">11-Cell Grid</option>
+                <option value="2chart">2 Charts Side-by-Side</option>
+            </select>
+
+            <!-- Application Menu Bar -->
+            <nav class="app-menubar" id="appMenuBar">
+                <!-- 1. Native / Person Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📁 Native ▾</button>
+                    <div class="menu-dropdown-menu">
+                        <div class="menu-header-label">Chart Management</div>
+                        <div class="menu-row" onclick="openChartModal()">
+                            <span>📂 Open Chart...</span>
+                            <span style="font-size:10px; color:#6b7280; margin-left:auto; padding-left:12px;">Ctrl+O</span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" onclick="openEditModal()">
+                            <span>✏️ Edit Current Person...</span>
+                        </div>
+                        <div class="menu-row" onclick="openAddModal()">
+                            <span>➕ Add New Person...</span>
+                        </div>
+                        <div class="menu-row" onclick="openExportModal()">
+                            <span>📄 Export PDF Master Plan...</span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" onclick="openShodasaVargasModal()">
+                            <span>🏛️ ShodasaVargas (16-in-1)...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Workspaces Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">🌟 Workspaces ▾</button>
+                    <div class="menu-dropdown-menu" id="workspacesMenuDropdown">
+                        <div class="menu-header-label">Astrological Workspaces</div>
+                        <div class="menu-row active" data-ws="core-predictive" onclick="changeWorkspace('core-predictive')">
+                            <span>🌟 1. Core Predictive</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-ws="tripod-of-life" onclick="changeWorkspace('tripod-of-life')">
+                            <span>🏛️ 2. Tripod of Life</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="big-four" onclick="changeWorkspace('big-four')">
+                            <span>🏛️ 3. The Big Four (D1, D9, D10, D3)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="strengths" onclick="changeWorkspace('strengths')">
+                            <span>⚖️ 4. Strengths & Avasthas</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-ws="timing" onclick="changeWorkspace('timing')">
+                            <span>⏳ 5. Timing & Cycles</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" data-ws="custom" onclick="changeWorkspace('custom')">
+                            <span>🛠️ Custom (Saved Grid)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Layout / Grid Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📐 Layout ▾</button>
+                    <div class="menu-dropdown-menu" id="layoutMenuDropdown">
+                        <div class="menu-header-label">Grid Geometries</div>
+                        <div class="menu-row active" data-grid="core-predictive" onclick="changeLayout('core-predictive')">
+                            <span>🌟 Core Predictive (5-Cell)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-grid="kala" onclick="changeLayout('kala')">
+                            <span>🏛️ Kala Layout (3x3)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="tripod-of-life" onclick="changeLayout('tripod-of-life')">
+                            <span>🏛️ Tripod of Life</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="big-four" onclick="changeLayout('big-four')">
+                            <span>🏛️ 4-Quadrant (2x2)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="8cell" onclick="changeLayout('8cell')">
+                            <span>🏛️ 8-Cell Grid</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="11cell" onclick="changeLayout('11cell')">
+                            <span>🏛️ 11-Cell Grid</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-grid="2chart" onclick="changeLayout('2chart')">
+                            <span>🏛️ 2 Charts Side-by-Side</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-row" onclick="openShodasaVargasModal()">
+                            <span>🏛️ Open ShodasaVargas (16-in-1)...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Tables & Calculations Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">📊 Tables ▾</button>
+                    <div class="menu-dropdown-menu">
+                        <div class="menu-header-label">Calculated Diagnostics</div>
+                        <div class="menu-row" onclick="openFloatingMasterDiagnostic()">
+                            <span style="font-weight:bold; color:#b45309;">★ Master Graha Diagnostics</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingPlanetaryInfo()">
+                            <span>✨ Planetary Info Table</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingShadbala()">
+                            <span>⚖️ Shad Bala Details</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingYogaJudgment()">
+                            <span>⚖️ Yoga Judgment (Ishta/Kashta)</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingClassicalYogas()">
+                            <span>👑 Classical Yogas & Breakers</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingAshtakavarga()">
+                            <span>📊 Ashtakavarga (SAV 337)</span>
+                        </div>
+                        <div class="menu-row" onclick="openBhavaCuspsModal()">
+                            <span>📐 Bhava Chalita Cusps</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Settings Menu -->
+                <div class="menu-item-dropdown">
+                    <button type="button" class="menu-bar-btn">⚙️ Settings ▾</button>
+                    <div class="menu-dropdown-menu" id="settingsMenuDropdown">
+                        <div class="menu-header-label">Display Dialog</div>
+                        <div class="menu-row" onclick="openSettingsModal()">
+                            <span>⚙️ All Display Settings...</span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">Planet Notation</div>
+                        <div class="menu-row active" data-notation="symbol" onclick="switchNotation('symbol'); updateMenuCheckmarks();">
+                            <span>Astronomical Symbols (☉ ☽ ♂ ☿)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-notation="english" onclick="switchNotation('english'); updateMenuCheckmarks();">
+                            <span>English (Su Mo Ma Me)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-notation="devanagari" onclick="switchNotation('devanagari'); updateMenuCheckmarks();">
+                            <span>Devanagari (सू चं मं बु)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-row" data-notation="translit" onclick="switchNotation('translit'); updateMenuCheckmarks();">
+                            <span>Sanskrit IAST (Sū Ca Ma Bu)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">Divisional Reckoning</div>
+                        <div class="menu-row active" data-d10="reverse" onclick="setD10Mode('reverse'); updateMenuCheckmarks();">
+                            <span>D10: Kala Reverse (Ernst Wilhelm)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-d10="direct" onclick="setD10Mode('direct'); updateMenuCheckmarks();">
+                            <span>D10: Forward (Vic DiCara)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">Nakshatra System</div>
+                        <div class="menu-row active" data-nakshatra-system="ERNST_DHRUVA" onclick="setNakshatraSystem('ERNST_DHRUVA'); updateMenuCheckmarks();">
+                            <span>Dhruva Equatorial (Ernst Wilhelm)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-nakshatra-system="VIC_CHITRA" onclick="setNakshatraSystem('VIC_CHITRA'); updateMenuCheckmarks();">
+                            <span>Chitra Ecliptic (Vic DiCara)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
+                        <div class="menu-header-label">South Indian Display</div>
+                        <div class="menu-row active" id="menuRowSiSigns" onclick="toggleSiSignsFromMenu();">
+                            <span>Show Signs in Corners</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="toolbar-center" style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btnOpenChartModal" onclick="openChartModal()" class="btn-secondary" style="padding: 4px 10px; font-size: 11px; font-weight: 600; background: #f8fafc; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Open chart library / search all charts (Ctrl+O / ⌘O)">
+                <span>📂</span> Open...
+            </button>
+            <select id="nativeSelect" onchange="if(this.value==='__open_chart_dialog__'){openChartModal(); this.selectedIndex=0;}">
+                <option value="">-- Select Person --</option>
+                {% for n in natives %}
+                <option value="{{ n.id }}">{{ n.name }} ({{ n.date }})</option>
+                {% endfor %}
+                <option value="__open_chart_dialog__">── 📂 Open Chart... (Ctrl+O) ──</option>
+            </select>
+            <button onclick="loadChart()" class="btn-primary" style="padding: 4px 11px; font-weight: 600;">Load</button>
+            <button type="button" id="btnEditNative" onclick="openEditModal()" class="btn-secondary" style="padding: 4px 9px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;" title="Edit selected or loaded person details">✏️ Edit</button>
+            <button onclick="openAddModal()" style="padding: 4px 8px; font-size: 11px;">+ Add</button>
+            <div id="loading" style="display:none; color: #3498db; font-size:12px;">Calculating...</div>
+            
+            <div style="border-left: 1px solid #d5c8b2; height: 18px; margin: 0 4px;"></div>
+            
+            <span id="chartTitle" style="cursor:pointer;" onclick="openEditModal()" title="Click to edit person details">No Chart Loaded</span>
+            <span id="chartSubtitle"></span>
+        </div>
+
+        <div class="toolbar-right" style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
+                <span>📄</span> Export PDF
+            </button>
+        </div>
+    </div>

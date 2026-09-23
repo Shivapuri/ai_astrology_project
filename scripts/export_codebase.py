@@ -28,7 +28,7 @@ import argparse
 import re
 
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
-DEFAULT_MAX_SIZE_MB = 1.35
+DEFAULT_MAX_SIZE_MB = 1.85
 
 EXCLUDED_DIRS = {
     ".git",
@@ -357,10 +357,50 @@ FILE_METADATA_REGISTRY = {
         "Core Math Spec",
         "Mathematical specification and classical definitions for sign attributes and anatomy",
     ),
-    # Frontend UI
+    # Frontend Architecture & Modular UI
     "templates/index.html": (
-        "Frontend UI",
-        "Interactive web interface featuring Split.js resizable panes, SVG charts, tables, and hotkeys",
+        "Frontend Layout Skeleton",
+        "Clean HTML shell coordinating Split.js resizable workspace layout, modular partials, and hotkeys",
+    ),
+    "static/js/widget_registry.js": (
+        "Frontend Architecture",
+        "Pluggable Widget Registry managing dynamic widget registration and rendering lifecycle",
+    ),
+    "static/js/components/table_builder.js": (
+        "Frontend Architecture",
+        "Declarative DOM builder helpers for tables, status badges, and strength meters",
+    ),
+    "static/css/base.css": (
+        "Frontend Styles",
+        "Global resets, typography, input fields, and custom scrollbars",
+    ),
+    "static/css/pergamon-theme.css": (
+        "Frontend Styles",
+        "Authentic Pergamon warm parchment color palette tokens, highlights, and status badges",
+    ),
+    "static/css/layout-grid.css": (
+        "Frontend Styles",
+        "Split.js resizable gutters, 2x2/3x3 grid geometry, and toolbar controls",
+    ),
+    "static/css/widgets.css": (
+        "Frontend Styles",
+        "Shared table layout, sticky headers, strength progress bars, and SVG chart wrappers",
+    ),
+    "static/css/modals.css": (
+        "Frontend Styles",
+        "Draggable floating windows, modal overlays, and contextual dropdown menus",
+    ),
+    "templates/partials/top_toolbar.html": (
+        "Frontend Partials",
+        "Top navigation menubar, native chart dropdown, and quick action controls",
+    ),
+    "templates/partials/context_menu.html": (
+        "Frontend Partials",
+        "Right-click context menu for dynamic grid cell assignment",
+    ),
+    "templates/partials/widget_templates.html": (
+        "Frontend Partials",
+        "Unified registry assembling all modular HTML widget templates",
     ),
     # Tests
     "tests/__init__.py": (
@@ -600,6 +640,30 @@ def get_file_metadata(rel_path: str):
         return FILE_METADATA_REGISTRY[rel_path]
 
     # Pattern matching
+    if rel_path.startswith("static/css/"):
+        return ("Frontend Styles", "Modular stylesheet component (Pergamon tokens, layout, widgets, modals)")
+
+    if rel_path.startswith("static/js/widgets/"):
+        name = os.path.basename(rel_path).replace(".js", "").replace("_", " ").title()
+        return ("Frontend Widget", f"Pluggable widget controller module for {name}")
+
+    if rel_path.startswith("static/js/components/"):
+        return ("Frontend Architecture", "Declarative UI component and table builder helpers")
+
+    if rel_path.startswith("static/js/"):
+        return ("Frontend Architecture", "Pluggable Widget Registry and core client state")
+
+    if rel_path.startswith("templates/partials/modals/"):
+        name = os.path.basename(rel_path).replace(".html", "").replace("_", " ").title()
+        return ("Frontend Modals", f"Modular modal dialog partial for {name}")
+
+    if rel_path.startswith("templates/partials/"):
+        return ("Frontend Partials", "Modular Jinja2 interface partial (toolbars, menus, templates)")
+
+    if rel_path.startswith("templates/widget_templates/"):
+        name = os.path.basename(rel_path).replace("tmpl_", "").replace(".html", "").replace("_", " ").title()
+        return ("Widget Templates", f"Reusable HTML widget template for {name}")
+
     if rel_path.startswith("source-material/software-setup/sample-case/angelina_jolie_") and rel_path.endswith(".csv"):
         name = os.path.basename(rel_path).replace("angelina_jolie_", "").replace(".csv", "").replace("_", " ")
         return ("Ground Truth Baselines", f"Kala software reference matrix for {name} (Angelina Jolie baseline chart)")
@@ -721,9 +785,9 @@ def generate_executive_header(manifest, project_root):
     header.append("  (`draw_chart.py`), coordinate math (`calc_utils.py`), and BPHS scripture database querying (`bphs_db.py`).")
     header.append("- **`jyotish/shadbala/`**: Complete 6-fold planetary strength calculation (Sthana, Dig, Kala, Cheshta, Naisargika, Drik).")
     header.append("- **`jyotish/avasthas/`**: Comprehensive planetary states (Baladi, Jagradadi, Deeptadi, Lajjitadi, Shayanadi, and Quantitative matrices).")
-    header.append("- **`jyotish/relationships/` & `jyotish/aspects/`**: Panchadha Maitri (five-fold friendship) and Parashari Drishti (aspect rays).")
-    header.append("- **`app.py` & `templates/index.html`**: Flask REST API server and interactive single-page UI with Split.js and SVG rendering.")
-    header.append("- **`tests/`**: Automated verification test suites matching Kala reference outputs.")
+    header.append("- **`app.py` & API**: Flask application server exposing calculation endpoints and on-demand lazy SVG generation (`/api/chart/<id>/svg`).")
+    header.append("- **`static/css/` & `static/js/`**: Modular presentation layer featuring 5 Pergamon stylesheets, Pluggable Widget Registry (`widget_registry.js`), declarative table builders, and 11 isolated widget modules.")
+    header.append("- **`templates/`**: Decoupled layout skeleton (`index.html`), modular Jinja2 partials (`top_toolbar.html`, `context_menu.html`, `modals/`), and reusable DOM templates (`widget_templates/`).")
     header.append("- **`documentations/adr/`**: Architecture Decision Records (ADRs 001-008) explaining foundational technical choices.")
     header.append("- **`knowledge_base/`**: Curated astrological definitions and classical significations.")
     header.append("- **`source-material/software-setup/sample-case/`**: Ground-truth numerical baselines from Kala (Angelina Jolie benchmark).")
@@ -842,6 +906,45 @@ def condense_index_html(content: str) -> str:
     return '\n'.join(dense_lines)
 
 
+def condense_javascript_widget(content: str) -> str:
+    """
+    Condenses multi-thousand line DOM generation in oversized JS widgets (like master_diagnostic.js)
+    while strictly preserving:
+    - Module exports and global window registrations
+    - WidgetRegistry.register calls and metadata
+    - Core calculation functions and all function signatures
+    """
+    lines = content.splitlines()
+    out = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if (stripped.startswith('function ') or ' = function(' in stripped or stripped.startswith('async function ')) and '{' in line:
+            func_sig = line
+            out.append(line)
+            brace_count = line.count('{') - line.count('}')
+            func_lines = [line]
+            i += 1
+            while i < len(lines) and brace_count > 0:
+                brace_count += lines[i].count('{') - lines[i].count('}')
+                func_lines.append(lines[i])
+                i += 1
+            if len(func_lines) <= 6:
+                out.extend(func_lines[1:])
+            else:
+                indent = ' ' * (len(func_sig) - len(stripped) + 4)
+                out.append(f'{indent}// ... [{len(func_lines)-2} lines of Master Diagnostics DOM rendering logic condensed for export budget; full implementation in repo] ...')
+                out.append(func_lines[-1])
+            continue
+        out.append(line)
+        i += 1
+
+    dense = '\n'.join(out)
+    dense_lines = [re.sub(r'\s+', ' ', l).strip() for l in dense.splitlines() if l.strip()]
+    return '\n'.join(dense_lines)
+
+
 def get_file_export_content(rel_path: str, full_path: str) -> str:
     """Reads file content and applies high-density condensation for oversized UI templates."""
     try:
@@ -849,6 +952,8 @@ def get_file_export_content(rel_path: str, full_path: str) -> str:
             content = f.read()
         if rel_path == "templates/index.html":
             content = condense_index_html(content)
+        elif rel_path == "static/js/widgets/master_diagnostic.js":
+            content = condense_javascript_widget(content)
         return content
     except Exception as e:
         return f"# Error reading file {rel_path}: {e}\n"

@@ -1,0 +1,143 @@
+    <div class="modal-overlay" id="kalaMenuModal" style="display:none; align-items:center; justify-content:center; z-index:10020;" onclick="if(event.target===this) closeKalaMenu()">
+        <div class="kala-menu-card" onclick="event.stopPropagation()">
+            <div class="kala-menu-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:18px;">🧭</span>
+                    <h3 style="margin:0; font-size:16px; color:#4a3325;">Select Chart or Table for this Cell</h3>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeKalaMenu()">×</button>
+            </div>
+            
+            <div class="kala-menu-body">
+                <!-- Column 1: CHARTS & HOUSES -->
+                <div class="kala-column">
+                    <div class="kala-column-title">1. CHARTS & HOUSES</div>
+                    <div class="kala-column-list">
+                        <div class="kala-item" onclick="assignKalaPerspective('lagna')">• Ascendant / Lagna (Physical H1)</div>
+                        <div class="kala-item" onclick="assignKalaPerspective('chandra')">• Chandra Lagna (Moon=H1)</div>
+                        <div class="kala-item" onclick="assignKalaPerspective('surya')">• Surya Lagna (Sun=H1)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D1')">• D1 Rasi (Main Physical)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('aspects-bhava-chalita')">• Bhava-Chalita (Cusps)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('aspects-equal-houses')">• Equal Houses</div>
+                        <div class="kala-item" onclick="assignKalaWidget('empty')" style="color:#b91c1c; margin-top:8px;">• [Clear Cell / Empty]</div>
+                    </div>
+                </div>
+
+                <!-- Column 2: VARGAS (DIVISIONS) -->
+                <div class="kala-column">
+                    <div class="kala-column-title">2. VARGAS (DIVISIONS)</div>
+                    <div class="kala-column-list vargas-scroll">
+                        <div class="kala-item" onclick="assignKalaChart('D1')">• D1  Rasi (Seed/Body)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D2')">• D2  Hora (Wealth)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D3')">• D3  Drekkana ★ (Energy)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D4')">• D4  Chaturthamsa (Fortune)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D7')">• D7  Saptamsa (Children)</div>
+                        <div class="kala-item star-item" onclick="assignKalaChart('D9')">• D9  Navamsa ★ (Spouse/Fruit)</div>
+                        <div class="kala-item star-item" onclick="assignKalaChart('D10')">• D10 Dasamsa ★ (Career)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D12')">• D12 Dwadasamsa (Parents)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D16')">• D16 Shodamsa (Vehicles)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D20')">• D20 Vimsamsa (Spirituality)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D24')">• D24 Siddhamsa (Learning)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D27')">• D27 Bhamsa (Strengths)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D30')">• D30 Trimsamsa (Misfortunes)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D40')">• D40 Khavedamsa (Auspicious)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D45')">• D45 Akshavedamsa (All Realms)</div>
+                        <div class="kala-item" onclick="assignKalaChart('D60')">• D60 Shastiamsa (Karma)</div>
+                    </div>
+                </div>
+
+                <!-- Column 3: TABLES (CALCULATED) -->
+                <div class="kala-column">
+                    <div class="kala-column-title">3. TABLES (CALCULATED)</div>
+                    <div class="kala-column-list">
+                        <div class="kala-item star-item" onclick="assignKalaWidget('master-diagnostic')" style="font-weight:bold; color:#b45309; background:#fffdf5;">★ Master Graha Diagnostics ★</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('planetary-info')">• Planetary Info Table ★</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('dashas-timeline')">• Vimshottari Timeline ★</div>
+                        <div class="kala-item" onclick="assignKalaWidget('shadbala-table')">• Shad Bala Details</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('yoga-judgment')">• Yoga Judgment (Ishta/Kashta) ★</div>
+                        <div class="kala-item star-item" onclick="assignKalaWidget('classical-yogas')">• Classical Yogas & Breakers ★</div>
+                        <div class="kala-item" onclick="assignKalaWidget('quant-matrices')">• Lajjitādi Avasthā Calculation (Strength Matrix)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('dignities')">• Dignities in Vargas</div>
+                        <div class="kala-item" onclick="assignKalaWidget('avasthas-calc')">• Qualitative Avasthas</div>
+                        <div class="kala-item" onclick="assignKalaWidget('ashtakavarga')">• Ashtakavarga & SAV (337)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('vimshopaka')">• Varga Vimshopaka (20pt)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('aspects-planets')">• Aspects - Planetary</div>
+                        <div class="kala-item" onclick="assignKalaWidget('rashi-drishti')">• Rāśi Dṛṣṭi (Sign Aspects)</div>
+                        <div class="kala-item" onclick="assignKalaWidget('sign-attributes')">• Sign Attributes & Anatomy</div>
+                        <div class="kala-item" onclick="assignKalaWidget('nakshatras')">• Nakshatras & Speed</div>
+                        <div class="kala-item" onclick="assignKalaWidget('info')">• Context & Technical Info</div>
+                    </div>
+                </div>
+
+                <!-- Column 4: POP-UPS (FLOATING) -->
+                <div class="kala-column">
+                    <div class="kala-column-title">4. POP-UPS (FLOATING)</div>
+                    <div class="kala-column-list popups-list">
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingMasterDiagnostic()" style="border-left: 3px solid #f59e0b; background: #fffdf5;">
+                            <strong>★ Master Graha Diagnostics</strong>
+                            <small>Unified Dignity, Power, Avasthas & Drishti</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingSignAttributes()">
+                            <strong>Sign Attributes & Anatomy</strong>
+                            <small>4x3 Matrix, Varnas, Doshas & Limbs</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openShodasaVargasModal()">
+                            <strong>🏛️ ShodasaVargas</strong>
+                            <small>16-in-1 Full divisional grid</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingYogaJudgment()">
+                            <strong>⚖️ Yoga Judgment Screen</strong>
+                            <small>Ishta, Subha & Dig Bala (Kala)</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingClassicalYogas()" style="border-left: 3px solid #d97706; background: #fffdf5;">
+                            <strong>👑 Classical Yogas & Breakers</strong>
+                            <small>Parāśara & Mantreśvara Yogas & Bhanga Audit</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingAshtakavarga()">
+                            <strong>🔢 AshtakaVarga Transit</strong>
+                            <small>337 SAV Grid & Reductions</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingPlanetaryInfo()">
+                            <strong>✨ Planetary Info Table</strong>
+                            <small>Degrees, Speeds & Dignities</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openFloatingShadbala()">
+                            <strong>⚖️ Shad Bala Breakdown</strong>
+                            <small>6-fold planetary potencies</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="openBhavaCuspsModal()">
+                            <strong>📐 Bhava Chalita Cusps</strong>
+                            <small>12 Campanus Cusps Table</small>
+                        </button>
+                        <button type="button" class="btn-kala-popup" onclick="closeKalaMenu(); openExportModal();" style="border-left: 3px solid #2563eb;">
+                            <strong>📄 Export Astrological PDF Plan</strong>
+                            <small>A3 Master Sheet, A4 Dossier & Print</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kala Style Bar matching Kala Screenshot -->
+            <div class="kala-menu-footer">
+                <span style="font-size:12px; font-weight:bold; color:#4a3325;">STYLE:</span>
+                <label class="kala-radio">
+                    <input type="radio" name="kalaGlobalStyle" value="south" checked onchange="setGlobalChartStyle('south')">
+                    (o) South Indian (Square)
+                </label>
+                <label class="kala-radio">
+                    <input type="radio" name="kalaGlobalStyle" value="north" onchange="setGlobalChartStyle('north')">
+                    ( ) North Indian (Diamond)
+                </label>
+                <label class="kala-radio">
+                    <input type="radio" name="kalaGlobalStyle" value="circular" onchange="setGlobalChartStyle('circular')">
+                    ( ) Round Wheel
+                </label>
+                <label class="kala-radio">
+                    <input type="radio" name="kalaGlobalStyle" value="biwheel" onchange="setGlobalChartStyle('biwheel')">
+                    ( ) Harmonic Bi-Wheel
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- ShodasaVargas 16-in-1 Full-Screen Pop-Up Modal -->

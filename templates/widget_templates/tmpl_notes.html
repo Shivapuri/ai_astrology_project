@@ -1,0 +1,46 @@
+<template id="tmpl-notes">
+        <div class="widget-notes notes-widget-container">
+            <div class="notes-toolbar">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                    <span style="font-weight: bold; font-size: 11.5px; color: #4a3325; display: flex; align-items: center; gap: 4px;">
+                        <span>📝</span> <span class="notes-native-name">Native Notes</span>
+                    </span>
+                    <div class="notes-filter-pills" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 2px;">
+                        <button type="button" class="notes-filter-btn active" data-filter="all" onclick="filterNotesCategory(this, 'all')" title="Show General Synthesis and All 12 Houses">All</button>
+                        <button type="button" class="notes-filter-btn" data-filter="general" onclick="filterNotesCategory(this, 'general')" title="General Synthesis & Overall Themes">📋 General</button>
+                        <button type="button" class="notes-filter-btn" data-filter="kendra" onclick="filterNotesCategory(this, 'kendra')" title="Kendras (Houses 1, 4, 7, 10)">🏛️ Kendra</button>
+                        <button type="button" class="notes-filter-btn" data-filter="trikona" onclick="filterNotesCategory(this, 'trikona')" title="Trikonas (Houses 1, 5, 9)">🌟 Trikona</button>
+                        <button type="button" class="notes-filter-btn" data-filter="dusthana" onclick="filterNotesCategory(this, 'dusthana')" title="Dusthanas (Houses 6, 8, 12)">⚡ Dusthana</button>
+                        <button type="button" class="notes-filter-btn" data-filter="upachaya" onclick="filterNotesCategory(this, 'upachaya')" title="Upachayas (Houses 3, 6, 10, 11)">📈 Upachaya</button>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span class="notes-save-badge" style="opacity: 0.85;">All changes saved ✓</span>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Notes View" onclick="maximizeNotesFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="notes-scroll-area">
+                <!-- General Chart Synthesis Card -->
+                <div class="notes-card general-card" data-category="general">
+                    <div class="notes-card-header">
+                        <div class="notes-card-title">
+                            <span style="color: #0284c7; font-size: 14px;">🌟</span>
+                            <span>Chart Overview & General Synthesis</span>
+                        </div>
+                        <span class="notes-card-status" style="font-size: 10px; color: #64748b; font-weight: 600;">Overall Themes & Remedies</span>
+                    </div>
+                    <div class="notes-card-context notes-general-context">
+                        <span class="context-item context-atmakaraka"><strong>Atmakaraka:</strong> —</span>
+                        <span class="context-item context-lagna-lord"><strong>Lagna Lord:</strong> —</span>
+                        <span class="context-item context-dasha"><strong>Current Daśā:</strong> —</span>
+                    </div>
+                    <textarea class="notes-textarea general-notes-input" placeholder="General chart synthesis, holistic character analysis, core yogas, life trajectory, health remedies, consultation notes..." oninput="handleNoteTyping(this, 'general')"></textarea>
+                </div>
+
+                <!-- 12 Structured House Cards -->
+                <div class="notes-houses-container">
+                    <!-- Populated dynamically by updateNotesWidget -->
+                </div>
+            </div>
+        </div>
+    </template>

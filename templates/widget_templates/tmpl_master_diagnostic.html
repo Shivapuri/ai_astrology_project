@@ -1,0 +1,52 @@
+<template id="tmpl-master-diagnostic">
+        <div class="widget-content" id="widget-master-diagnostic" style="display: flex; flex-direction: column; height: 100%;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #fbf7ef; border-bottom: 1px solid #e2d7c3; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">★ Master Graha Diagnostics</span>
+                    <span style="font-size: 10px; background: #fef3c7; color: #92400e; padding: 1px 6px; border-radius: 4px; font-weight: bold; border: 1px solid #fde68a;">Unified Diagnostic Matrix</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="varga-subtitle" style="font-size: 10px; color: #78716c;">D1 Rāśi • Dignity • Power • Avasthas • Drishti</span>
+                    <select class="varga-select" onchange="updateMasterDiagnosticWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeModal') || this.closest('#widget-master-diagnostic'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 120px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="responsive-table-container" style="padding: 0 6px 6px 6px; flex: 1; overflow: auto;">
+                <div class="scale-wrapper" style="width: 100%;">
+                    <table class="master-diagnostic-table dignity-grid" style="width: 100%; min-width: 1000px; border-collapse: separate; border-spacing: 0; text-align: left; font-size: 11px;">
+                        <thead>
+                            <tr>
+                                <th class="tooltip-target" data-tooltip="<strong>Graha & Soul</strong><br>• <strong>Graha:</strong> Planetary archetype with motion status ([R] Retrograde, [C] Combust).<br>• <strong>Chara Kāraka:</strong> Soul-level role assigned by longitudinal degree in sign (BPHS Ch. 32): Ātmakāraka (Soul), Amātyakāraka (Career), etc.<br>• <strong>Master Lords (👑):</strong> Lagna Lord, Navamsha Lord, and Drekkana Lord." style="width: 95px; cursor: help;">Graha & Soul</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Placement & Functional Role</strong><br>• <strong>Sign & House:</strong> Whole Sign house placement plus 3D Campanus Bhava shift.<br>• <strong>House Rulerships:</strong> Houses governed by this planet.<br>• <strong>Functional Titles:</strong> Yogakāraka (supreme benefic), Lagneśa (ascendant lord), Māraka (threshold), Bādhaka (karmic test)." style="width: 120px; cursor: help;">Placement & Role</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Intent & Quality (5-Fold Dignity)</strong><br>• Synthesized from permanent Natural Relationship (Naisargika) + chart-specific Temporary Relationship (Tātkālika) with the host sign lord.<br>• Dignities range from Exalted / Moolatrikona / Own Sign down to Bitter Enemy and Debilitated.<br>• For Rahu/Ketu: Reflects host dispositor's dignity as a proxy." style="width: 110px; cursor: help;">Intent & Quality (Dignity)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Host Dispositor (Bedrock Foundation)</strong><br>• The planetary lord governing the sign where this planet resides.<br>• Provides the bedrock resources and determines whether a debilitated planet receives Neecha Bhanga cancellation / rescue.<br>• Fortified host acts as a savior; strained host creates foundational drag." style="width: 100px; cursor: help;">Host Dispositor (Foundation)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Kinetic Muscle (Shadbala Horsepower)</strong><br>• Parashara's cumulative physical horsepower system across 6 pillars (Positional, Directional, Temporal, Motional, Natural, and Aspectual).<br>• Displays Total Virūpas/Rūpas, % of required minimum threshold, relative chart rank (#1 to #7), and Karmic Fruit (Ishta/Kashta).<br>• For Rahu/Ketu: Inherits proxy muscle via host dispositor." style="width: 105px; cursor: help;">Kinetic Muscle (Shadbala)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Environmental Vision (Aspects &amp; Yuti)</strong><br>• <strong>Yuti:</strong> Physical companions sharing the same sign, with conjunction orbs and commanding precedence.<br>• <strong>Dṛṣṭi:</strong> Line-of-sight vision and gaze in Virūpas (Śubha Dṛṣṭi supportive, Pāpa Dṛṣṭi confrontational). Key aspects (&gt; 20v) highlighted with qualitative synthesis.<br>• <strong>Badges:</strong> Graha Yuddha (war), Combustion, and classical nodal/affliction yogas." style="width: 130px; cursor: help;">Environmental Vision (Aspects/Yuti)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Subconscious Drive (Nakshatra)</strong><br>• <strong>Deity:</strong> Presiding Vedic archetype shaping inner motivation.<br>• <strong>Overlord:</strong> Planetary ruler dictating the underlying agenda and Vimshottari timeline.<br>• <strong>Nature &amp; Drive:</strong> Innate temperament and cosmic purpose." style="width: 120px; cursor: help;">Subconscious Drive (Nakshatra)</th>
+                                <th class="tooltip-target" data-tooltip="<strong>Avasthās: Age, Alertness &amp; Social Weather</strong><br>• <strong>1. Physical Fuel &amp; Age (Bālādi - BPHS 45.3 / Vol 2):</strong> Biological maturity based on degrees in odd vs. even signs (Bala infant, Kumara youth, Yuva prime adult, Vriddha elder, Mrita dormant).<br>• <strong>2. Conscious Alertness (Jāgradādi - BPHS 45.5):</strong> Alertness &amp; house management capacity (Jagrat awake 100%, Svapna sleepy 50%, Sushupti asleep 10%).<br>• <strong>3. Innate Mood (Dīptādi - BPHS 45.7):</strong> Subjective mood from sign dignity (Pramudita joyous, Deepta radiant, Swastha confident, Santa peaceful, Bhita alarmed).<br>• <strong>4. Social Weather (Lajjitādi - BPHS 45.11):</strong> Relational dynamics from other planets (Mudita supported, Garvita proud, Kshudhita starved, Kshobhita agitated, Lajjita ashamed, Trushita thirsty)." style="width: 100px; cursor: help;">Avasthās &amp; Age</th>
+                                <th class="tooltip-target" data-tooltip="<strong>★ Final Archetype & Actualized Vitality (1–10)</strong><br>• <strong>Behavioral Archetypes (9-Tier + Transmuted Hero):</strong> High Dignity (Generous King, Noble Guardian, Sincere Friend), Neutral Dignity (Pragmatic Executive, Dutiful Realist, Modest Citizen), Low Dignity (Armed Dictator, Embattled Striver, Toothless Bully), and Transmuted Hero (Neecha Bhanga).<br>• <strong>Vitality Score (1.0 to 10.0):</strong> Actualized real-world manifesting power.<br>• <strong>Hover Receipt:</strong> Hover over the score cell to inspect the step-by-step mathematical calculation receipt." style="width: 125px; text-align: center; cursor: help;">★ Final Archetype & Vitality</th>
+                            </tr>
+                        </thead>
+                        <tbody id="master-diagnostic-tbody" class="master-diagnostic-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

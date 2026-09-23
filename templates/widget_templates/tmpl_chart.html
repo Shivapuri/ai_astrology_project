@@ -1,0 +1,116 @@
+<template id="tmpl-chart">
+        <div class="widget-chart" style="display:flex; flex-direction:column; height:100%; position:relative;">
+            <div class="chart-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span class="biwheel-inner-label" style="display:none; font-size:10px; font-weight:bold; color:#795548;">Inner:</span>
+                    <select class="varga-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 5px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 130px;">
+                        <option value="D1" selected>D1 - Rāśi</option>
+                        <option value="D2">D2 - Horā</option>
+                        <option value="D3">D3 - Drekkāṇa</option>
+                        <option value="D4">D4 - Caturthāṁśa</option>
+                        <option value="D7">D7 - Saptāṁśa</option>
+                        <option value="D9">D9 - Navāṁśa</option>
+                        <option value="D10">D10 - Daśāṁśa</option>
+                        <option value="D12">D12 - Dvādaśāṁśa</option>
+                        <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                        <option value="D20">D20 - Viṁśāṁśa</option>
+                        <option value="D24">D24 - Caturviṁśāṁśa</option>
+                        <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                        <option value="D30">D30 - Triṁśāṁśa</option>
+                        <option value="D40">D40 - Khavedāṁśa</option>
+                        <option value="D45">D45 - Akṣavedāṁśa</option>
+                        <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                    </select>
+                    <div class="biwheel-outer-controls" style="display:none; align-items:center; gap:2px;">
+                        <span style="font-size:10px; font-weight:bold; color:#795548;">Outer:</span>
+                        <select class="biwheel-outer-select" onchange="updateWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                            <option value="D9" selected>D9 - Navāṁśa</option>
+                            <option value="D10">D10 - Daśāṁśa</option>
+                            <option value="D7">D7 - Saptāṁśa</option>
+                            <option value="D12">D12 - Dvādaśāṁśa</option>
+                            <option value="D2">D2 - Horā</option>
+                            <option value="D3">D3 - Drekkāṇa</option>
+                            <option value="D4">D4 - Caturthāṁśa</option>
+                            <option value="D16">D16 - Ṣoḍaśāṁśa</option>
+                            <option value="D20">D20 - Viṁśāṁśa</option>
+                            <option value="D24">D24 - Caturviṁśāṁśa</option>
+                            <option value="D27">D27 - Saptaviṁśāṁśa</option>
+                            <option value="D30">D30 - Triṁśāṁśa</option>
+                            <option value="D40">D40 - Khavedāṁśa</option>
+                            <option value="D45">D45 - Akṣavedāṁśa</option>
+                            <option value="D60">D60 - Ṣaṣṭyāṁśa</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-d10-toggle" onclick="toggleD10Mode()" title="Toggle D10 Calculation: Kala Reverse vs. Contemporary Forward" style="display:none; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 4px; border: 1px solid #fcd34d; background: #fef3c7; color: #92400e; cursor: pointer; align-items: center; gap: 2px;">D10: Kala ↺</button>
+                    <div class="chart-root-pill" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
+                        <button type="button" class="root-pill-btn active btn-root-lagna" onclick="switchWidgetRootPlanet(this, 'Lagna')" title="Ascendant / Lagna (Physical Ascendant H1)" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Asc (Lagna)</button>
+                        <button type="button" class="root-pill-btn btn-root-moon" onclick="switchWidgetRootPlanet(this, 'Moon')" title="Chandra Lagna (Moon as H1)" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Moon</button>
+                        <button type="button" class="root-pill-btn btn-root-sun" onclick="switchWidgetRootPlanet(this, 'Sun')" title="Surya Lagna (Sun as H1)" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:10px; padding:2px 6px; border-radius:3px; cursor:pointer;">Sun</button>
+                    </div>
+                </div>
+                <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="hotkey-btn btn-south-matrix" onclick="cycleSouthCenterFromWidget(this)" title="Cycle South Indian Center: Title / 4x3 Sign Matrix / Anatomy" style="padding: 2px 6px; font-weight: bold; font-size: 11px;">Center [↺]</button>
+                    <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
+                    <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
+                    <button type="button" class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')" title="Circular (C)">C</button>
+                    <button type="button" class="hotkey-btn btn-biwheel" onclick="switchWidgetChartType(this, 'biwheel')" title="Harmonic Bi-Wheel (B)">B</button>
+                    <button type="button" class="btn-widget-maximize" title="Maximize Chart (Full Screen)" onclick="maximizeChartFromWidget(this)">⛶</button>
+                </div>
+            </div>
+            <div class="chart-house-highlights-bar">
+                <div style="display: flex; align-items: center; gap: 4px; overflow-x: auto;">
+                    <span style="font-weight: 700; color: #795548; font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.5px;">Houses:</span>
+                    <button type="button" class="house-highlight-btn btn-highlight-kendra" data-category="kendra" onclick="toggleHouseHighlight(this, 'kendra')" title="Kendras (Angles: 1, 4, 7, 10) — Pillars of Action, Stability & Manifestation">🏛️ Kendra (1,4,7,10)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-trikona" data-category="trikona" onclick="toggleHouseHighlight(this, 'trikona')" title="Trikonas (Trines: 1, 5, 9) — Auspicious Fortune, Dharma & Grace">🌟 Trikona (1,5,9)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-dusthana" data-category="dusthana" onclick="toggleHouseHighlight(this, 'dusthana')" title="Dusthanas (Difficult: 6, 8, 12) — Challenges, Debts, Transformation & Release">⚡ Dusthana (6,8,12)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-upachaya" data-category="upachaya" onclick="toggleHouseHighlight(this, 'upachaya')" title="Upachayas (Growth: 3, 6, 10, 11) — Effort & Improvement Over Time">📈 Upachaya (3,6,10,11)</button>
+                    <button type="button" class="house-highlight-btn btn-highlight-clear" onclick="clearHouseHighlights(this)" title="Clear all house highlights" style="display: none; color: #dc2626; border-color: #fca5a5; background: #fff1f2;">✕ Clear</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <button type="button" class="house-highlight-btn btn-open-notes" onclick="openNotesFromChart(this)" title="Open Astrological Notes & Journal for this native" style="background: #f0f9ff; border-color: #bae6fd; color: #0369a1; font-weight: bold;">📝 Notes</button>
+                </div>
+            </div>
+            <div class="chart-stage" style="flex:1; position:relative; overflow:hidden; display:flex; width:100%;">
+                <div class="widget-chart-zoom-badge" title="Chart Zoom & Pan (Wheel to zoom, Shift+drag or middle-click to pan, double-click to reset)">
+                    <button type="button" class="widget-zoom-btn" onclick="zoomWidgetChartFromBtn(this, -0.15)" title="Zoom Out (or wheel down)">−</button>
+                    <button type="button" class="widget-zoom-label" onclick="resetWidgetChartZoomFromBtn(this)" title="Click to Reset Zoom & Pan to 100%">100%</button>
+                    <button type="button" class="widget-zoom-btn" onclick="zoomWidgetChartFromBtn(this, 0.15)" title="Zoom In (or wheel up)">+</button>
+                    <button type="button" class="widget-zoom-btn btn-zoom-reset" onclick="resetWidgetChartZoomFromBtn(this)" title="Reset Zoom & Pan (or double-click chart)" style="display:none;">⌖</button>
+                </div>
+                <div class="view-south chart-view active" style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                    <div class="chart-svg-container svg-south" style="width:100%; height:100%;"></div>
+                </div>
+                <div class="view-north chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                    <div class="chart-svg-container svg-north" style="width:100%; height:100%;"></div>
+                </div>
+                <div class="view-circular chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                    <div class="chart-svg-container svg-circular" style="width:100%; height:100%;"></div>
+                </div>
+                <div class="view-biwheel chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                    <div class="chart-svg-container svg-biwheel" style="width:100%; height:100%;"></div>
+                </div>
+            </div>
+            <div class="chart-time-stepper" tabindex="0" title="Birth Time Navigation (Hover or focus to adjust time)">
+                <div class="stepper-btn-group">
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-3600)" title="Step Back 1 Hour">-1h</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-1800)" title="Step Back 30 Minutes">-30</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-900)" title="Step Back 15 Minutes">-15</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-60)" title="Step Back 1 Minute">-1m</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(-1)" title="Step Back 1 Second">-1s</button>
+                </div>
+                <div class="stepper-center-display">
+                    <span class="stepper-clock" title="Active Birth Time">12:00:00</span>
+                    <span class="stepper-offset-badge" title="Adjustment from saved birth time">Original</span>
+                    <button type="button" class="stepper-btn-reset" onclick="resetBirthTimePreview()" title="Revert to saved birth time" style="display:none;">↺</button>
+                </div>
+                <div class="stepper-btn-group">
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(1)" title="Step Forward 1 Second">+1s</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(60)" title="Step Forward 1 Minute">+1m</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(900)" title="Step Forward 15 Minutes">+15</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(1800)" title="Step Forward 30 Minutes">+30</button>
+                    <button type="button" class="stepper-btn" onclick="stepBirthTime(3600)" title="Step Forward 1 Hour">+1h</button>
+                    <button type="button" class="stepper-btn-save" onclick="savePreviewedBirthTime()" title="Save this rectified time to database" style="display:none; margin-left:1px;">💾</button>
+                </div>
+            </div>
+        </div>
+    </template>

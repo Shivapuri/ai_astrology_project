@@ -1,0 +1,27 @@
+<template id="tmpl-dashas-timeline">
+        <div class="widget-content" id="widget-dashas-timeline">
+            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Vimshottari Dasa Timeline</span>
+                    <span style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">120 Years</span>
+                    <button type="button" class="btn-nak-toggle" onclick="toggleNakshatraSystem()" style="padding: 1px 6px; font-size: 9.5px; font-weight: 600; border-radius: 3px; border: 1px solid #c4b5fd; background: #ede9fe; color: #5b21b6; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;" title="Click to toggle Nakshatra calculation system (Ernst Wilhelm Dhruva Equatorial vs. Vic DiCara Chitra Sidereal)">✨ Dhruva (Ernst)</button>
+                </div>
+                <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+            <div class="responsive-table-container" style="padding: 4px;">
+                <div class="scale-wrapper">
+                    <table class="dasa-timeline-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: left;">
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">Period</th>
+                                <th style="width: 25%;">Start Date</th>
+                                <th style="width: 25%;">End Date</th>
+                                <th style="width: 25%;">Age / Status</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </template>

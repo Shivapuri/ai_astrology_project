@@ -1,0 +1,225 @@
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            background-color: #f7f3eb;
+            color: #3d312a;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            height: 100vh;
+            overflow: hidden;
+        }
+        h1 {
+            color: #4a3325;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        .dignity-grid { width: 100%; border-collapse: collapse; text-align: center; margin-top: 10px; font-size: 0.9em; }
+        .dignity-grid th { background-color: #eee5d3; color: #4a3325; border: 1px solid #dcb594; padding: 6px; }
+        .dignity-grid td { border: 1px solid #e5dccb; padding: 6px; }
+        .dignity-grid td:first-child { font-weight: bold; background-color: #fcfaf5; }
+        .dignity-grid tbody tr:hover { background-color: #f7eedd; }
+
+        .header-controls {
+            background: #fffdfa;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            width: 90%;
+            max-width: 1200px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .select-section, .add-section {
+            padding: 10px;
+        }
+        .add-section {
+            border-left: 2px solid #eee5d3;
+            padding-left: 24px;
+        }
+        select, input, button {
+            padding: 9px 14px;
+            margin: 5px;
+            border-radius: 6px;
+            border: 1px solid #d5c8b2;
+            font-size: 14px;
+            background-color: #fff;
+            color: #3d312a;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #d35400;
+        }
+        button {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.15s ease;
+        }
+        button:hover {
+            background-color: #b84500;
+        }
+        .charts-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+            width: 100%;
+        }
+        .charts-comparison {
+            width: 95%;
+            max-width: 1440px;
+            display: flex;
+            gap: 36px;
+        }
+        .chart-box {
+            background: #fffdfa;
+            padding: 22px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .chart-box svg {
+            width: 100%;
+            max-width: 540px;
+            height: auto;
+            display: block;
+        }
+        .chart-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 540px;
+            margin-bottom: 12px;
+        }
+        .chart-header-row h2 {
+            margin: 0;
+            font-size: 17px;
+            color: #4a3325;
+        }
+        .btn-maximize {
+            background: #f5ede0;
+            color: #4a3325;
+            border: 1px solid #d5c8b2;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .btn-maximize:hover {
+            background: #d35400;
+            color: #ffffff;
+            border-color: #d35400;
+        }
+        .maximize-modal-card, .maximize-chart-window {
+            width: 760px;
+            height: 760px;
+            max-width: 96vw;
+            max-height: 94vh;
+            min-width: 360px;
+            min-height: 360px;
+            top: 50px;
+            left: calc(50% - 380px);
+        }
+        .maximize-chart-container {
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background: #faf7f2;
+            cursor: default;
+        }
+        .maximize-chart-container svg {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            transition: transform 0.12s ease-out;
+            transform-origin: center center;
+        }
+        .info-panel {
+            background: #fffdfa;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e5dccb;
+            box-shadow: 0 4px 18px rgba(74, 51, 37, 0.06);
+            margin-top: 40px;
+            width: 95%;
+            max-width: 1440px;
+        }
+        .info-panel h2 {
+            color: #4a3325;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 11px 14px;
+            text-align: left;
+            border-bottom: 1px solid #ece4d4;
+        }
+        th {
+            background-color: #f5ede0;
+            color: #4a3325;
+            font-weight: 600;
+        }
+        .varga-selector {
+            margin-bottom: 15px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #4a3325;
+        }
+        .btn-group {
+            display: inline-flex;
+            border-radius: 8px;
+            background: #eee5d3;
+            padding: 3px;
+            gap: 3px;
+        }
+        .btn-toggle {
+            background: transparent;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a3325;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            margin: 0;
+        }
+        .btn-toggle:hover {
+            background: rgba(255, 255, 255, 0.6);
+            color: #4a3325;
+        }
+        .btn-toggle.active {
+            background: #d35400;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(211, 84, 0, 0.25);
+        }
+        

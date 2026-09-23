@@ -1,0 +1,163 @@
+    <div class="modal-overlay" id="exportPdfModal" onclick="closeExportModal(event)">
+        <div class="modal-card" style="max-width: 660px; max-height: 90vh; overflow-y: auto;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>📄 Export Astrological Master Plan (PDF)</h2>
+                <button type="button" class="modal-close-btn" onclick="closeExportModal()">×</button>
+            </div>
+            
+            <div class="setting-section">
+                <h4>1. Export Preset & Format</h4>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-dossier-a4').click()">
+                    <input type="radio" id="radio-export-dossier-a4" name="exportPreset" value="master_dossier_a4" checked onchange="onExportPresetChange('master_dossier_a4')">
+                    <label for="radio-export-dossier-a4" style="margin-left: 8px;">
+                        <strong>🌟 Complete Master Astrological Dossier (A4 Horizontal / Landscape) — Recommended</strong>
+                        <span class="setting-chip">Root D1 + Concentric Bi-Wheel (D1+D9) + Master Diagnostics (D1, D9, D10 with Nakshatra Drives) + Side-by-Side Vargas (North &amp; South) + 16-Varga Matrix + 120-Yr Timeline + Classical Yogas</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
+                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" onchange="onExportPresetChange('master_a3')">
+                    <label for="radio-export-a3" style="margin-left: 8px;">
+                        <strong>📑 Master Astrological Plan (A3 Horizontal / Landscape Spread)</strong>
+                        <span class="setting-chip">Expansive Wide-Format Archival Spread: High-res vector charts, extended vargas &amp; 16-varga matrices</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-view').click()">
+                    <input type="radio" id="radio-export-view" name="exportPreset" value="current_view" onchange="onExportPresetChange('current_view')">
+                    <label for="radio-export-view" style="margin-left: 8px;">
+                        <strong>🖥️ Current Active Workspace Layout</strong>
+                        <span class="setting-chip">Print or export exactly what is currently visible on screen</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportVisualOptions">
+                <h4>2. Chart Diagram Style & Notation</h4>
+                <div style="display: flex; gap: 12px; margin-top: 6px;">
+                    <div style="flex: 1;">
+                        <label style="font-size: 11px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Chart Style</label>
+                        <select id="exportChartStyle" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500; background: #fff;">
+                            <option value="north">North Indian (Diamond / BPHS)</option>
+                            <option value="south">South Indian (Fixed Square)</option>
+                            <option value="circular">Western Circular (Campanus)</option>
+                            <option value="biwheel">Harmonic Bi-Wheel (D1 + Outer Varga)</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;">
+                        <label style="font-size: 11px; font-weight: 600; color: #475569; display: block; margin-bottom: 4px;">Notation Mode</label>
+                        <select id="exportNotation" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid #cbd5e1; font-weight: 500; background: #fff;">
+                            <option value="symbol">Astronomical Symbols (☉ ☽ ♂ ☿ ♃ ♀ ♄)</option>
+                            <option value="english">English Abbreviations (Su, Mo, Ma...)</option>
+                            <option value="devanagari">Devanagari Script (सू चं मं बु...)</option>
+                            <option value="translit">IAST Transliteration (Sū Ca Ma...)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportSectionsToggle">
+                <h4>3. Included Divisional Charts & Overlays</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; justify-content: space-between; grid-column: span 2; background: #faf5ee; padding: 6px 10px; border-radius: 6px; border: 1px solid #e2d3be; cursor: pointer;">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                            <input type="checkbox" id="expIncBiwheel" checked> 
+                            <span><strong>Harmonic Bi-Wheel</strong> (D1 Natal + Outer Harmonic Overlay)</span>
+                        </span>
+                        <span style="display: flex; align-items: center; gap: 4px;" onclick="event.stopPropagation();">
+                            <span style="font-size: 11px; color: #795548; font-weight: 600;">Outer:</span>
+                            <select id="exportBiwheelOuter" style="padding: 2px 6px; font-size: 11px; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; color: #4a3325;">
+                                <option value="D9" selected>D9 Navāṃśa (Dharma & Destiny)</option>
+                                <option value="D10">D10 Daśāṃśa (Career & Status)</option>
+                                <option value="D7">D7 Saptāṃśa (Progeny & Partners)</option>
+                                <option value="D12">D12 Dvādaśāṃśa (Lineage)</option>
+                                <option value="D24">D24 Siddhāṃśa (Higher Learning)</option>
+                                <option value="D60">D60 Ṣaṣṭyāṃśa (Root Karma)</option>
+                            </select>
+                        </span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #f0fdf4; padding: 5px 8px; border-radius: 5px; border: 1px solid #bbf7d0;">
+                        <input type="checkbox" id="expIncDualVargas" checked> 
+                        <span><strong>Divisional Charts: North &amp; South Indian Side-by-Side</strong> (D10, D7, D2, D3, D4, D12, D30, D60)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD1" checked> <strong>D1 Rāśi</strong> (Root Life & Tanu)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD9" checked> <strong>D9 Navāṃśa</strong> (Dharma & Swāṃśa)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD10" checked> <strong>D10 Daśāṃśa</strong> (Career & Status)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD7" checked> <strong>D7 Saptāṃśa</strong> (Progeny & Partners)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD2"> D2 Horā (Wealth)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD3"> D3 Drekkāṇa (Courage/Siblings)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD12"> D12 Dvādaśāṃśa (Lineage)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncD24"> D24 Siddhāṃśa (Higher Learning)
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportTablesToggle">
+                <h4>4. Included Diagnostic Tables & Analysis</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #fdf6e2; padding: 5px 8px; border-radius: 5px; border: 1px solid #ebd9c8;">
+                        <input type="checkbox" id="expIncMasterDiagnostics" checked> <strong>Master Graha Diagnostics: D1 Root, D9 Navāṃśa &amp; D10 Daśāṃśa</strong> (9 Columns with Nakshatra Subconscious Drives)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncTimeline" checked> <strong>Vimśottarī Daśā 120-Year Timeline</strong> (with Active Sub-Periods)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncVimshopaka" checked> <strong>16-Varga Viṃśopaka Matrix</strong> (All 9 Grahas &amp; Counts)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncDiagnosticKey" checked> <strong>Master Diagnostic Key</strong> (Decoded Plain English)
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncYogas" checked> <strong>Classical Yogas &amp; Breakers Audit</strong>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncPlacements" checked> Planetary Placements &amp; Nakshatras
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncCusps" checked> Campanus Bhava Chalita Cusps
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncDignities" checked> 5-Fold Compound Dignities
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncAvasthas" checked> Qualitative &amp; Lajjitādi Avasthās
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncYogaJudgment" checked> Strengths Matrix • Yoga Judgment
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expIncShadbala" checked> Ṣaḍbala Strength Breakdown Grid
+                    </label>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 14px; border-top: 1px solid #D5C8B2;">
+                <div id="exportStatusMsg" style="font-size: 12px; color: #2563eb; font-weight: 600; display: none; align-items: center; gap: 6px;">
+                    <span class="spinner-small"></span> <span>Rendering high-resolution vector PDF...</span>
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: auto;">
+                    <button type="button" onclick="closeExportModal()" style="background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer;">Cancel</button>
+                    <button type="button" onclick="triggerPdfExport(true)" style="background-color: #475569; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;" title="Open print-ready HTML preview in a new tab">👁️ Print Preview</button>
+                    <button type="button" id="btnDoExportPdf" onclick="triggerPdfExport(false)" style="background-color: #2563eb; color: white; padding: 8px 20px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(37,99,235,0.2);">📥 Download PDF</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Maximize / Zoom Modal Window -->
