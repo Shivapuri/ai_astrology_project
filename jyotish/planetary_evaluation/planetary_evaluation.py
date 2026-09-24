@@ -1027,6 +1027,8 @@ def classify_graha_archetype(
                 "description": "Initial vulnerability transformed by a noble host into profound resilience and hard-won wisdom.",
                 "color": "#7c3aed",
                 "bg": "#f3e8ff",
+                "is_royal_dig": False,
+                "is_high_dig": False,
                 "is_high_dignity": True,
                 "is_high_strength": (effective_shadbala >= 95.0)
             }
@@ -1159,6 +1161,8 @@ def classify_graha_archetype(
         "desc": desc,
         "color": color,
         "bg": bg,
+        "is_royal_dig": is_royal_dig,
+        "is_high_dig": is_high_dig,
         "is_high_dignity": (is_royal_dig or is_high_dig),
         "is_high_strength": is_high_musc
     }
@@ -1570,6 +1574,8 @@ def calculate_graha_vitality(
                 is_guru_ketu = True
                 guru_ketu_badge = "🕉️ Jñāna Catalyst (Spiritual Discernment)"
                 node_mod += 0.15
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
 
             # 3. Sun / Moon + Nodes: Grahan Yoga (Eclipse)
             elif (cp in ("Rahu", "Ketu") and planet in ("Sun", "Moon")) or (planet in ("Rahu", "Ketu") and cp in ("Sun", "Moon")):
@@ -1670,6 +1676,8 @@ def calculate_graha_vitality(
                 is_guru_ketu = True
                 guru_ketu_badge = "🕉️ Jñāna Catalyst (Spiritual Discernment)"
                 node_mod += 0.15
+                if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
+                    node_mod += 0.20
             elif (cp in ("Rahu", "Ketu") and planet in ("Sun", "Moon")) or (planet in ("Rahu", "Ketu") and cp in ("Sun", "Moon")):
                 is_grahan = True
                 luminary = planet if planet in ("Sun", "Moon") else cp
@@ -1929,8 +1937,9 @@ def calculate_graha_vitality(
         receipt_lines.append(f"   • Besieged State (Vikala):{vikala_mod:+.2f} pts (2+ Cruel Planets)")
     if psy_mod != 0.0:
         receipt_lines.append(f"   • Psychological State:    {psy_mod:+.2f} (Decoupled to Lajjitādi Narrative)")
+    actual_eff_pct = int(round(efficiency * 100))
     receipt_lines.extend([
-        f"3. Biological Efficiency:   {baladi['efficiency_pct']}% ({baladi['state']} stage)",
+        f"3. Biological Efficiency:   {actual_eff_pct}% ({baladi['state']} stage)",
         "------------------------------------",
         f"★ Final Actualized Vitality: ★ {final_score:.1f} / 10 ({v_tier})"
     ])
@@ -1974,7 +1983,7 @@ def calculate_graha_vitality(
         "node_mod": round(node_mod, 2),
         "vikala_mod": round(vikala_mod, 2),
         "psy_mod": round(psy_mod, 2),
-        "efficiency_pct": baladi["efficiency_pct"],
+        "efficiency_pct": actual_eff_pct,
         "final_score": final_score,
         "equation_parts": equation_parts,
         "receipt_text": receipt_text,
@@ -1986,7 +1995,8 @@ def calculate_graha_vitality(
         "budhaditya_badge": budhaditya_badge,
         "subcaption_intent_pct": subcaption_intent_pct,
         "subcaption_power_pct": subcaption_power_pct,
-        "subcaption_text": subcaption_text
+        "subcaption_text": subcaption_text,
+        "host_shadbala_pct": round(host_shadbala_pct, 1)
     }
 
     return {
@@ -1997,6 +2007,7 @@ def calculate_graha_vitality(
         "equation_parts": equation_parts,
         "effective_dignity_pct": round(effective_dignity, 1),
         "effective_shadbala_pct": round(effective_shadbala, 1),
+        "host_shadbala_pct": round(host_shadbala_pct, 1),
         "subcaption_intent_pct": subcaption_intent_pct,
         "subcaption_power_pct": subcaption_power_pct,
         "subcaption_text": subcaption_text,

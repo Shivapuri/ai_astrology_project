@@ -105,6 +105,16 @@ const scaleObserver = new ResizeObserver(entries => {
         // Reset transform to measure natural size
         wrapper.style.transform = 'none';
 
+        // EXEMPTION: Never scale down diagnostic tables or data sheets!
+        // Tables must maintain 100% font fidelity and scroll horizontally.
+        if (cell.dataset.widget === 'master-diagnostic' || 
+            cell.dataset.widget === 'classical-yogas' || 
+            cell.dataset.widget === 'planetary-evaluation' ||
+            wrapper.querySelector('.master-diagnostic-table')) {
+            wrapper.style.transform = 'none';
+            continue;
+        }
+
         const table = wrapper.querySelector('table');
         if (!table) continue;
 
@@ -114,8 +124,8 @@ const scaleObserver = new ResizeObserver(entries => {
 
         if (naturalW > 0 && availW > 0) {
             if (naturalW > availW) {
-                // Fit to width down to a legible floor of 0.78
-                const scale = Math.max(0.78, availW / naturalW);
+                // Keep scale floor at a readable 0.92 minimum for minor table adjustments
+                const scale = Math.max(0.92, availW / naturalW);
                 wrapper.style.transform = `scale(${scale})`;
                 wrapper.style.transformOrigin = 'top left';
             } else {

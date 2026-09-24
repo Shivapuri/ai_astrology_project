@@ -608,15 +608,18 @@
             border-collapse: separate !important;
             border-spacing: 0 !important;
         }
+
+        /* Table Headers: 10 pt */
         .master-diagnostic-table thead th {
             position: sticky !important;
             top: 0 !important;
             z-index: 15 !important;
             background: #eee5d3 !important;
             color: var(--text-heading);
-            font-size: 10.5px;
-            font-weight: 700;
-            padding: 5px 8px;
+            font-size: 13px !important;              /* ~9.8 pt */
+            font-weight: 700 !important;
+            padding: 7px 10px !important;
+            line-height: 1.35;
             border: 1px solid var(--border-strong);
             box-shadow: 0 1px 0 #dcb594 !important;
             white-space: nowrap;
@@ -639,9 +642,12 @@
         .master-diagnostic-table tr[data-id="Lagna"] td:first-child {
             background: #faf7f2 !important;
         }
+
+        /* Data Cells: 10 pt */
         .master-diagnostic-table td {
-            padding: 4px 7px;
-            font-size: 11px;
+            padding: 6px 10px !important;
+            font-size: 13px !important;              /* ~9.8 pt */
+            line-height: 1.45;
             border: 1px solid var(--border-subtle);
             vertical-align: middle;
         }
@@ -671,6 +677,14 @@
             border-bottom: 2px solid #dcb594 !important;
             box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
         }
+
+        /* Sub-labels, 2nd-line text, and Badges: Hard 9 pt floor (12px) */
+        .diagnostic-table-cell-2line,
+        .master-diagnostic-table td small,
+        .master-diagnostic-table .cell-sublabel {
+            font-size: 12px !important;              /* 9 pt */
+            line-height: 1.35;
+        }
         .diagnostic-table-cell-2line {
             display: flex;
             flex-direction: column;
@@ -678,61 +692,153 @@
             min-height: 32px;
             justify-content: center;
         }
+
+        .avastha-badge-pill,
+        .master-diagnostic-table .badge,
+        .master-diagnostic-table .aspect-dynamic-badge {
+            font-size: 12px !important;              /* 9 pt */
+            font-weight: 700 !important;
+            padding: 2.5px 6.5px !important;
+            border-radius: 4px !important;
+        }
+
+        .avastha-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            margin: 1px 2px;
+            white-space: nowrap;
+        }
+
         .drawer-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
             width: 100%;
         }
-        .drawer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 10px;
-            width: 100%;
+
+        /* Drawer View Switcher Bar & Tabs */
+        .drawer-view-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2d7c3;
+            margin-bottom: 4px;
         }
+        .drawer-tabs-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .drawer-tab-btn {
+            background: #fbf7ef;
+            border: 1px solid #dcb594;
+            color: #475569;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .drawer-tab-btn:hover {
+            background: #f5eedf;
+            color: #1e293b;
+            border-color: #c99e78;
+        }
+        .drawer-tab-btn.active {
+            background: #1e293b;
+            color: #ffffff;
+            border-color: #0f172a;
+        }
+        .drawer-actions-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .drawer-action-btn {
+            background: #fbf7ef;
+            border: 1px solid #dcb594;
+            color: #475569;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.15s ease;
+        }
+        .drawer-action-btn:hover {
+            background: #f5eedf;
+            color: #1e293b;
+            border-color: #c99e78;
+        }
+        .drawer-action-btn.active {
+            background: #dbeafe;
+            color: #1d4ed8;
+            border-color: #93c5fd;
+        }
+
+        /* Drawer Card Titles & Bodies */
         .drawer-card {
             background: #ffffff;
             border: 1px solid #e2d7c3;
             border-radius: 6px;
-            padding: 8px 10px;
+            padding: 10px 12px;
             display: flex;
             flex-direction: column;
             gap: 6px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            font-size: 13px !important;              /* ~9.8 pt */
+            line-height: 1.5 !important;
         }
+
         .drawer-card-title {
-            font-size: 11px;
-            font-weight: 700;
+            font-size: 14px !important;              /* ~10.5 pt */
+            font-weight: 700 !important;
             color: var(--text-heading);
             border-bottom: 1px solid #f0e6d6;
-            padding-bottom: 4px;
+            padding-bottom: 6px !important;
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
+
         .drawer-card-body {
-            font-size: 10.5px;
+            font-size: 13px !important;              /* ~9.8 pt */
             color: #334155;
-            line-height: 1.4;
+            line-height: 1.5 !important;
         }
+
         .drawer-mini-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 10px;
-            margin: 4px 0;
+            font-size: 12.5px !important;            /* ~9.4 pt */
+            margin: 6px 0 !important;
         }
+
         .drawer-mini-table th {
             background: #fbf7ef;
             color: #78716c;
-            padding: 2px 4px;
-            font-weight: 600;
+            font-size: 12px !important;              /* 9 pt */
+            padding: 4px 6px !important;
+            font-weight: 700 !important;
             border-bottom: 1px solid #e2d7c3;
             text-align: left;
         }
+
         .drawer-mini-table td {
-            padding: 2px 4px;
+            font-size: 12.5px !important;            /* ~9.4 pt */
+            padding: 4px 6px !important;
             border-bottom: 1px solid #f5f0e6;
         }
+
         .drawer-receipt {
             background: #231e18;
             color: #f5eedf;
@@ -740,33 +846,44 @@
             border-radius: 6px;
             padding: 8px 12px;
         }
+
         .drawer-receipt-header {
-            font-size: 10px;
+            font-size: 12px !important;              /* 9 pt */
             font-weight: 700;
             color: #fcd34d;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             margin-bottom: 4px;
         }
+
         .drawer-receipt-content {
             font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            font-size: 10px;
+            font-size: 12px !important;              /* 9 pt */
             line-height: 1.4;
             white-space: pre-wrap;
             word-break: break-word;
             margin: 0;
             color: #e2d7c3;
         }
-        .avastha-badge-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 2px;
-            font-size: 9.5px;
-            font-weight: 600;
-            padding: 1px 5px;
-            border-radius: 4px;
-            margin: 1px 2px;
-            white-space: nowrap;
+
+        /* Drawer Grid: Card 3 Aspect Waves spans 2 columns on desktop */
+        .drawer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
+            gap: 12px !important;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .drawer-card.drawer-card-aspects,
+            .drawer-card[data-card="aspect-weather"],
+            .drawer-card[data-card="aspects"] {
+                grid-column: span 2 !important;
+            }
+        }
+
+        .drawer-card.is-expanded {
+            grid-column: 1 / -1 !important;
         }
 
 
