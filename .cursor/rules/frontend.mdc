@@ -1,0 +1,52 @@
+---
+description: Frontend Architecture & Typography Protocol
+globs: ["static/**", "templates/**"]
+---
+
+# Astra Frontend Architecture & Typography Protocol
+
+This rulebook applies to all files inside `static/` and `templates/`. It enters memory specifically when frontend presentation code is modified.
+
+## 1. Strict Typography Floor (Rule of 9–10 PT)
+- **Hard Floor**: NEVER write or generate CSS font sizes below `12px` (equivalent to 9 pt).
+- **Scale Standard**:
+  - Micro-badges, secondary tags, and captions: **`12px`** (9 pt floor).
+  - Table data cells, body text, and mini-tables: **`13px` – `13.5px`** (~10 pt).
+  - Headers, card titles, and section labels: **`14px` – `16px`** (10.5 pt – 12 pt).
+- Sub-pixel text (`7px`, `8px`, `9px`, `9.5px`, `10px`, `10.5px`, `11px`) is strictly prohibited.
+
+## 2. Separation of Chart Zooming vs. Table Scrolling
+- **Astrological Charts (SVGs)**: Zoom and pan are handled by `initWidgetChartZoomAndPan`. Chart zooming must remain responsive and unconstrained.
+- **Data Tables & Diagnostics**: Must NEVER be shrunk using CSS `transform: scale(...)`. Tables must render at 100% true scale with `overflow: auto` (horizontal and vertical scrolling) and sticky headers/anchor columns.
+
+## 3. Waveform & 360° Graph Clearance
+- A 360° zodiac continuous aspect curve requires horizontal resolution to display 13 house/degree markers without collision.
+- Never squeeze full-zodiac continuous wave graphs into a 1-column slot in a 4-column grid (sub-350px).
+- Continuous wave cards must span at least 2 columns (`grid-column: span 2`, >= 600px) or provide an instant full-width expansion button (`[⛶]`) and dedicated tab view.
+
+## 4. Pluggable Widget Registry & Zero Monolith
+- All new views must register through `window.widgetRegistry.register(id, definition)`.
+- No inline `<style>` tags in HTML. All styles belong in `static/css/` tokens and modular sheets.
+- Always verify visually via Playwright screenshot (`python screenshot.py`) before completing tasks.
+
+## 5. Modular Jinja2 Partials
+- **Navigation & Toolbars**: Reside in `templates/partials/` (e.g. `top_toolbar.html`, `context_menu.html`).
+- **Modal Dialogs**: Every modal must be an isolated partial in `templates/partials/modals/<modal_name>.html` and included using `{% include 'partials/modals/<modal_name>.html' %}`.
+- **Widget Templates**: Reusable `<template id="tmpl-...">` DOM blueprints must reside in `templates/widget_templates/tmpl_<name>.html` and be registered in `templates/partials/widget_templates.html`.
+
+## 6. Structured CSS Token System
+- Inline `<style>` blocks in HTML are forbidden.
+- All styling must be added to the appropriate stylesheet in `static/css/`:
+  - `base.css`: Global typography, layout reset, and custom scrollbars.
+  - `pergamon-theme.css`: Pergamon color tokens (warm parchment palette, antique accents, badges).
+  - `layout-grid.css`: Split.js gutters, resizable cell geometry, and toolbars.
+  - `widgets.css`: Shared tables, sticky headers, strength meters, and SVG chart wrappers.
+  - `modals.css`: Draggable floating dialogs, maximize overlays, and dropdown menus.
+
+## 7. Declarative Table Builder (`static/js/components/table_builder.js`)
+- Avoid manual, error-prone HTML string concatenation (`+= '<tr><td>...'`).
+- Use declarative helpers (`createTable`, `createBadge`, `createStrengthMeter`) to ensure consistent DOM markup and safe attribute rendering.
+
+## 8. On-Demand Lazy SVG Generation (`/api/chart/<native_id>/svg`)
+- Never eagerly generate hundreds of SVG permutations upfront on the backend.
+- Initial chart loads pre-render only the active workspace views. Additional vargas, modes (`symbol`, `english`, `devanagari`), styles (`south`, `north`, `circular`, `biwheel`), and root perspectives (`Lagna`, `Moon`, `Sun`) must be requested on-demand via the `/api/chart/<native_id>/svg` endpoint.

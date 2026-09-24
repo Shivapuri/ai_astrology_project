@@ -98,7 +98,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/\n/g, '<br>');
-            const tooltipHtml = `<div style="font-family:monospace; font-size:10.5px; line-height:1.4; text-align:left;">${escReceipt}</div>`;
+            const tooltipHtml = `<div style="font-family:monospace; font-size: 12px; line-height:1.4; text-align:left;">${escReceipt}</div>`;
 
             function escAttr(str) {
                 if (!str) return '';
@@ -108,9 +108,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             return `
                 <div class="tooltip-target" data-tooltip="${escAttr(tooltipHtml)}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                     <div>
-                        <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:10px; padding:2px 6px;">✨ ${rawName} (${deity || '—'})</span>
+                        <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size: 12px; padding:2px 6px;">✨ ${rawName} (${deity || '—'})</span>
                     </div>
-                    <div style="font-size:11px; color:#64748b; padding-left:2px;">
+                    <div style="font-size: 12px; color:#64748b; padding-left:2px;">
                         ↳ Overlord: <strong style="color:#475569;">${ruler || '—'}</strong>
                     </div>
                 </div>
@@ -142,6 +142,43 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 drawer.style.display = 'none';
                 if (rowEl) rowEl.classList.remove('drawer-open');
             }
+        }
+
+        function switchDrawerTab(btn, tabId) {
+            const container = btn.closest('.drawer-container');
+            if (!container) return;
+
+            container.querySelectorAll('.drawer-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const cards = container.querySelectorAll('.drawer-card');
+            if (tabId === 'all') {
+                cards.forEach(c => {
+                    c.style.display = 'flex';
+                    c.style.gridColumn = '';
+                });
+            } else {
+                cards.forEach(c => {
+                    if (c.dataset.card === tabId) {
+                        c.style.display = 'flex';
+                        c.style.gridColumn = '1 / -1';
+                    } else {
+                        c.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        function toggleExpandAspects(btn) {
+            const container = btn.closest('.drawer-container');
+            if (!container) return;
+
+            const aspectCard = container.querySelector('.drawer-card-aspects') || container.querySelector('[data-card="aspect-weather"]');
+            if (!aspectCard) return;
+
+            const isExp = aspectCard.classList.toggle('is-expanded');
+            btn.classList.toggle('active', isExp);
+            btn.innerHTML = isExp ? '🗗 Restore Width' : '⛶ Expand Aspect Waves';
         }
 
         function updateMasterDiagnosticWidget(cell) {
@@ -988,7 +1025,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
             function renderAspectVisionBadges(aspList) {
                 if (!aspList || aspList.length === 0) {
-                    return '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
+                    return '<div style="color:#94a3b8; font-size: 12px; font-style:italic;">No decisive aspects</div>';
                 }
 
                 const tier3DecisiveAsps = [];
@@ -1080,10 +1117,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                     return `
                         <div class="tooltip-target aspect-badge-main" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 6px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
-                            <div style="display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 10px; color: ${hCol};">
+                            <div style="display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 12px; color: ${hCol};">
                                 <span>${natIcon} ${aspG} (${rawV}v)</span>
                             </div>
-                            <div style="font-size: 9px; color: ${sCol}; font-weight: 500; line-height: 1.2; margin-top: 1px;">
+                            <div style="font-size: 12px; color: ${sCol}; font-weight: 500; line-height: 1.2; margin-top: 1px;">
                                 ↳ ${synthesisText}
                             </div>
                         </div>
@@ -1095,7 +1132,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     let innerHtml = badgeElements.join('');
                     if (tier2BackgroundAsps.length > 0) {
                         innerHtml += `
-                            <div class="tooltip-target" style="font-size: 8.5px; color: #64748b; font-style: italic; margin-top: 2px; cursor: help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
+                            <div class="tooltip-target" style="font-size: 12px; color: #64748b; font-style: italic; margin-top: 2px; cursor: help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
                                 + ${tier2BackgroundAsps.length} background aspect${tier2BackgroundAsps.length > 1 ? 's' : ''} (20–44v in tooltip)
                             </div>
                         `;
@@ -1103,12 +1140,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     drishtiHtml = `<div style="display: flex; flex-direction: column; gap: 1px;">${innerHtml}</div>`;
                 } else if (tier2BackgroundAsps.length > 0) {
                     drishtiHtml = `
-                        <div class="tooltip-target" style="font-size: 9.5px; color: #64748b; font-style: italic; cursor: help; padding: 2px 0;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
+                        <div class="tooltip-target" style="font-size: 12px; color: #64748b; font-style: italic; cursor: help; padding: 2px 0;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">
                             Subtle background (${tier2BackgroundAsps.length} aspect${tier2BackgroundAsps.length > 1 ? 's' : ''} 20–44v in tooltip)
                         </div>
                     `;
                 } else {
-                    drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
+                    drishtiHtml = '<div style="color:#94a3b8; font-size: 12px; font-style:italic;">No decisive aspects</div>';
                 }
                 return drishtiHtml;
             }
@@ -1407,13 +1444,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const lordHostSbEntry = shadbala[lordHost] || {};
                 const lordHostSb = Number(lordHostSbEntry.Pct_Required_Total !== undefined ? lordHostSbEntry.Pct_Required_Total : 100.0);
 
-                let lordRescueBadge = '<span class="badge" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size:9px;">⚖️ Neutral Host</span>';
+                let lordRescueBadge = '<span class="badge" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size: 12px;">⚖️ Neutral Host</span>';
                 if (lordHost === lgLord) {
-                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold;">🏡 Self-Hosted</span>';
+                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold;">🏡 Self-Hosted</span>';
                 } else if (lordHostDig >= 70.0) {
-                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold;">🛡️ Fortified Host</span>';
+                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold;">🛡️ Fortified Host</span>';
                 } else if (lordHostDig < 40.0) {
-                    lordRescueBadge = '<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold;">⚠️ Strained Host</span>';
+                    lordRescueBadge = '<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold;">⚠️ Strained Host</span>';
                 }
 
                 // Lord Shadbala Power
@@ -1462,10 +1499,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let kartariType = 'Neutral';
                 if (h2Bens.length > 0 && h12Bens.length > 0 && h2Mals.length === 0 && h12Mals.length === 0) {
                     kartariType = 'Śubha Kartarī';
-                    kartariBadge = `<span class="badge tooltip-target" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>✨ Śubha Kartarī Yoga (Protective Hemming)</strong><br>• Benefics flank both H2 (${h2Bens.join(', ')}) and H12 (${h12Bens.join(', ')}), nurturing vitality and shielding destiny.">✨ Śubha Kartarī</span>`;
+                    kartariBadge = `<span class="badge tooltip-target" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>✨ Śubha Kartarī Yoga (Protective Hemming)</strong><br>• Benefics flank both H2 (${h2Bens.join(', ')}) and H12 (${h12Bens.join(', ')}), nurturing vitality and shielding destiny.">✨ Śubha Kartarī</span>`;
                 } else if (h2Mals.length > 0 && h12Mals.length > 0 && h2Bens.length === 0 && h12Bens.length === 0) {
                     kartariType = 'Pāpa Kartarī';
-                    kartariBadge = `<span class="badge tooltip-target" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>⚔️ Pāpa Kartarī Yoga (Malefic Hemming)</strong><br>• Malefics flank both H2 (${h2Mals.join(', ')}) and H12 (${h12Mals.join(', ')}), pinching the personal field with chronic resistance.">⚔️ Pāpa Kartarī</span>`;
+                    kartariBadge = `<span class="badge tooltip-target" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>⚔️ Pāpa Kartarī Yoga (Malefic Hemming)</strong><br>• Malefics flank both H2 (${h2Mals.join(', ')}) and H12 (${h12Mals.join(', ')}), pinching the personal field with chronic resistance.">⚔️ Pāpa Kartarī</span>`;
                 }
 
                 // -------------------------------------------------------------
@@ -1552,11 +1589,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 // Cusp aspect badges
                 let cuspDrishtiBadge = '';
                 if (c1Net >= 15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size:9px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi</span>`;
+                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi</span>`;
                 } else if (c1Net <= -15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size:9px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi</span>`;
+                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi</span>`;
                 } else {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size:9px;">${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span>`;
+                    cuspDrishtiBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size: 12px;">${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span>`;
                 }
                 
                 const lagnaAspList = [];
@@ -1613,12 +1650,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 if (incGraph) {
                                     cards.push(`
                                         <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
-                                            <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
+                                            <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
                                                 <div>
                                                     <span>${natIcon} <strong>${aspG}</strong> Aspect on Horizon</span>
-                                                    <span style="color: #64748b; font-size: 9px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
+                                                    <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
                                                 </div>
-                                                <div style="font-size: 9.5px; font-weight: 600; color: #475569;">
+                                                <div style="font-size: 12px; font-weight: 600; color: #475569;">
                                                     ${asp.from_dignity_name || 'Neutral'}${optANote}
                                                 </div>
                                             </div>
@@ -1651,25 +1688,25 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>• <strong>Archetype:</strong> ${lagnaArchetype}<br>• <strong>Verdict:</strong> ${lagnaVerdict}`;
 
                 const lgShortSign = `${lgSign} ${lgDeg} • H1`;
-                const lgExprBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:8.5px; font-weight:700;">High Expression (+25%)</span>`;
-                const lgCaptainBadge = `<span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:9px; padding:1px 5px;">${cleanLordDig} ${lordDigPct.toFixed(0)}%</span>`;
+                const lgExprBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:700;">High Expression (+25%)</span>`;
+                const lgCaptainBadge = `<span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size: 12px; padding:1px 5px;">${cleanLordDig} ${lordDigPct.toFixed(0)}%</span>`;
 
                 tbody.innerHTML += `
                     <tr class="interactive-table-row diagnostic-row" data-type="planet" data-id="Lagna" style="background:#faf7f2; border-bottom: 2px solid #dcb594; cursor: pointer;" onclick="toggleDiagnosticDrawer('drawer-Lagna', this)">
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size:12px; color:#4a3325;">
+                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#4a3325;">
                                     <span style="font-size:14px;">🌅</span>
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lagnaTip)}" style="cursor:help;">Lagna</span>
                                 </div>
                                 <div>
-                                    <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size:8.5px; font-weight:bold;">Tanū Bhāva (H1)</span>
+                                    <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size: 12px; font-weight:bold;">Tanū Bhāva (H1)</span>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lgPlacementTip)}" style="cursor:help;">${lgShortSign}</span>
                                 </div>
                                 <div>${lgExprBadge}</div>
@@ -1677,26 +1714,26 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-size:10.5px; font-weight:700; white-space:nowrap;">
+                                <div style="font-size: 12px; font-weight:700; white-space:nowrap;">
                                     Captain: ${lgCaptainBadge}
                                 </div>
-                                <div style="font-size:9.5px; color:#475569; font-weight:600;">
+                                <div style="font-size: 12px; color:#475569; font-weight:600;">
                                     ↳ Lord: <strong>${lgLord}</strong>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">Host: <strong>${lordHost}</strong></div>
+                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">Host: <strong>${lordHost}</strong></div>
                                 <div>${lordRescueBadge}</div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
-                                    <strong>${sbVir}v</strong> <span style="font-size:9.5px; color:${(sbPct || 0) >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'})</span>
+                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                    <strong>${sbVir}v</strong> <span style="font-size: 12px; color:${(sbPct || 0) >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'})</span>
                                 </div>
-                                <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap;">
+                                <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap;">
                                     ${sbRank ? 'Rank #' + sbRank + ' • ' : ''}Captain Stamina
                                 </div>
                             </div>
@@ -1704,7 +1741,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div>${cuspDrishtiBadge}</div>
-                                <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${kartariBadge || (lagnaConj.length > 0 ? 'Yuti: ' + lagnaConj.join(', ') : 'Clean Horizon')}
                                 </div>
                             </div>
@@ -1715,9 +1752,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgAvasthaTip)}">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span>
+                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgAvasthaTip)}">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span>
                                 </div>
-                                <div style="font-size:9px; color:#3730a3; font-weight:600;">
+                                <div style="font-size: 12px; color:#3730a3; font-weight:600;">
                                     Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' (➔ B' + lordCHouse + ')' : ''}
                                 </div>
                             </div>
@@ -1725,10 +1762,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:9.5px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgVitalityTip)}">★ ${lagnaVitScore.toFixed(1)} • ${lagnaArchetype}</span>
+                                    <span class="badge tooltip-target" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size: 12px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgVitalityTip)}">★ ${lagnaVitScore.toFixed(1)} • ${lagnaArchetype}</span>
                                 </div>
-                                <div style="font-size:9.5px; color:#475569; font-weight:600; white-space:nowrap;">
-                                    ★ <strong style="color:#1e293b; font-size:11px;">${lagnaVitScore.toFixed(1)}</strong> / 10 • <span style="font-size:8.5px; color:#64748b;">Intent: ${lordDigPct.toFixed(0)}% | Power: ${sbPct !== null ? sbPct : '--'}%</span>
+                                <div style="font-size: 12px; color:#475569; font-weight:600; white-space:nowrap;">
+                                    ★ <strong style="color:#1e293b; font-size: 12px;">${lagnaVitScore.toFixed(1)}</strong> / 10 • <span style="font-size: 12px; color:#64748b;">Intent: ${lordDigPct.toFixed(0)}% | Power: ${sbPct !== null ? sbPct : '--'}%</span>
                                 </div>
                             </div>
                         </td>
@@ -1736,35 +1773,47 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     <tr id="drawer-Lagna" class="diagnostic-drawer-row" style="display:none;">
                         <td colspan="9">
                             <div class="drawer-container">
+                                <div class="drawer-view-bar">
+                                    <div class="drawer-tabs-group">
+                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">👁️ All Side-by-Side</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">👑 Dignity</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">🏛️ House</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">🌊 Aspect Waves</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">🧘 Avasthas</button>
+                                    </div>
+                                    <div class="drawer-actions-group">
+                                        <button type="button" class="drawer-action-btn expand-aspects-btn" onclick="toggleExpandAspects(this)">⛶ Expand Aspect Waves</button>
+                                    </div>
+                                </div>
                                 <div class="drawer-grid">
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="dignity">
                                         <div class="drawer-card-title">
                                             <span>👑 Lagna Lord Foundation</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Lagneśa Authority</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Lagneśa Authority</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Lagneśa (Ascendant Lord):</strong> ${lgLord} in ${lordSign} (House ${lordWHouse})</div>
-                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:9px;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
+                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:12px;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
                                             <div style="margin-top:2px;"><strong>Dispositor of Captain:</strong> ${lordHost} (${lordHostDig.toFixed(0)}% dignity, ${lordHostSb.toFixed(0)}% muscle)</div>
-                                            <div style="margin-top:4px; font-size:9.5px; color:#64748b;">The Lagna Lord serves as the captain of the physical vessel. Its dignity and stamina set the baseline capacity to manifest destiny.</div>
+                                            <div style="margin-top:4px; font-size:12px; color:#64748b;">The Lagna Lord serves as the captain of the physical vessel. Its dignity and stamina set the baseline capacity to manifest destiny.</div>
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="house">
                                         <div class="drawer-card-title">
                                             <span>🏡 Rising Field (Tanū Bhāva)</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Physical Horizon</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Physical Horizon</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Rising Sign:</strong> ${lgSign} ${lgDeg} (${(signInfo[lgSign] || {}).element || '--'} • ${(signInfo[lgSign] || {}).quality || '--'})</div>
                                             <div style="margin-top:2px;"><strong>House Structure:</strong> Whole Sign H1, Campanus Bhava 1 Cusp</div>
                                             <div style="margin-top:2px;"><strong>Flanking Enclosure:</strong> ${kartariBadge || kartariType}</div>
-                                            <div style="margin-top:4px; font-size:9.5px; color:#64748b;">House 1 governs vitality, self-identity, physical health, and personal perspective. Benefics flanking H2 and H12 shield the horizon.</div>
+                                            <div style="margin-top:4px; font-size:12px; color:#64748b;">House 1 governs vitality, self-identity, physical health, and personal perspective. Benefics flanking H2 and H12 shield the horizon.</div>
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card drawer-card-aspects" data-card="aspect-weather">
                                         <div class="drawer-card-title">
                                             <span>⚡ Horizon Inflowing Aspects</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Dṛṣṭi on Cusp 1</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Dṛṣṭi on Cusp 1</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Net Vision on Cusp 1:</strong> ${cuspDrishtiBadge} (Benefic: +${c1Plus.toFixed(1)}v, Malefic: -${c1Minus.toFixed(1)}v)</div>
@@ -1774,15 +1823,15 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                             ${lagnaAspectGraphsHtml}
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="avasthas">
                                         <div class="drawer-card-title">
                                             <span>🧠 Biological Fuel &amp; Archetype</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Physical Vessel</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Physical Vessel</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Biological Age:</strong> ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)</div>
-                                            <div style="font-size:9.5px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
-                                            <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:9.5px; font-weight:bold;">${lagnaArchetype}</span></div>
+                                            <div style="font-size:12px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
+                                            <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:12px; font-weight:bold;">${lagnaArchetype}</span></div>
                                             <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">🧠 ${lagnaVerdict}</div>
                                         </div>
                                     </div>
@@ -1824,17 +1873,17 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const mlBadges = [];
                 if (graha === lagnaLordPlanet) {
                     const mlTip = `<strong>👑 Lagneśa (Ascendant Lord - D1)</strong><br>• Governs the D1 rising sign (${v_lagna.sign || '--'}).<br>• <strong>Master Authority:</strong> Physical vitality, constitution, and overall life mastery (Bhāgyavān Prabhu).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Lagneśa</span>`);
+                    mlBadges.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Lagneśa</span>`);
                 }
                 if (graha === navamshaLordPlanet) {
                     const d9LgSign = (currentChartData.vargas && currentChartData.vargas.D9 && currentChartData.vargas.D9.lagna && currentChartData.vargas.D9.lagna.sign) || '';
                     const mlTip = `<strong>👑 Navāṁśa Lord (D9 Lord of Fortune)</strong><br>• Rules the Navāṁśa rising sign (${d9LgSign || '--'}).<br>• <strong>Master Authority:</strong> Internal contentment, soul-level dharma, and spiritual happiness (Sukhī).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fdf4ff; color:#86198f; border:1px solid #f0abfc; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Navāṁśa Lord</span>`);
+                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fdf4ff; color:#86198f; border:1px solid #f0abfc; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Navāṁśa Lord</span>`);
                 }
                 if (graha === drekkanaLordPlanet) {
                     const d3LgSign = (currentChartData.vargas && currentChartData.vargas.D3 && currentChartData.vargas.D3.lagna && currentChartData.vargas.D3.lagna.sign) || '';
                     const mlTip = `<strong>👑 Drekkāṇa Lord (D3 Lord of Courage)</strong><br>• Rules the Drekkāṇa rising sign (${d3LgSign || '--'}).<br>• <strong>Master Authority:</strong> Bodily courage, competitiveness, and decisive worldly drive (Prabhu).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Drekkāṇa Lord</span>`);
+                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Drekkāṇa Lord</span>`);
                 }
                 if (mlBadges.length > 0) {
                     masterLordBadgesHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${mlBadges.join('')}</div>`;
@@ -1859,7 +1908,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let statusBadges = '';
                 if (isRetro) {
                     const rTip = `<strong>Retrograde [R] (Vakra Motion)</strong><br>• <strong>Motional Power:</strong> Apparent backward movement places ${graha} closest to Earth, largest, and brightest (high Cheṣṭa Bala).<br>• <strong>Psychological Meaning:</strong> Energy turns deeply introspective, non-linear, and unconventional; challenges standard norms and re-evaluates its significations.`;
-                    statusBadges += ` <span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${rTip}">[R]</span>`;
+                    statusBadges += ` <span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${rTip}">[R]</span>`;
                 }
                 if (isCombust) {
                     const sunDist = (gData.sun_distance !== undefined && gData.sun_distance !== null) ? Number(gData.sun_distance) : null;
@@ -1884,7 +1933,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `• <strong>Severity:</strong> ${sevNote}<br>` +
                         (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (Combust planets mainly weaken or harm the houses they rule)<br>` : '') +
                         `• <strong>Core Teaching:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
-                    statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9.5px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
+                    statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
                 }
 
                 // Moon Illumination & Phase (Graha & Soul column badge)
@@ -1951,7 +2000,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const phaseName = isWax ? 'Waxing' : 'Waning';
 
                         moonPhaseBadgeHtml = `<div style="margin-top:2px;">` +
-                            `<span class="badge tooltip-target" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder}; font-size:9px; padding:1px 5px; border-radius:3px; cursor:help; font-weight:600; display:inline-flex; align-items:center; gap:2px;" data-tooltip="${escapeTooltipAttr(moonTooltip)}">` +
+                            `<span class="badge tooltip-target" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder}; font-size: 12px; padding:1px 5px; border-radius:3px; cursor:help; font-weight:600; display:inline-flex; align-items:center; gap:2px;" data-tooltip="${escapeTooltipAttr(moonTooltip)}">` +
                             `${phaseIcon} ${phaseName} ${illum.toFixed(0)}%` +
                             `</span>` +
                             `</div>`;
@@ -1964,7 +2013,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let houseHtml = `<span class="tooltip-target" data-tooltip="${houseTooltip}" style="cursor:help;">House ${wHouse}</span>`;
                 if (cHouse !== wHouse) {
                     const shiftTip = `<strong>Campanus 3D Bhava Shift (➔ Bhava ${cHouse})</strong><br>• Whole sign is House ${wHouse}, but the 3D Campanus house cusp crosses into Bhava ${cHouse}.<br>• <strong>Interpretation:</strong> Outer circumstances follow House ${wHouse}, while internal psychological experience aligns with Bhava ${cHouse}.`;
-                    houseHtml += ` <span class="badge tooltip-target" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:10px; font-weight:bold; cursor:help;" data-tooltip="${shiftTip}">➔ Bhava ${cHouse}</span>`;
+                    houseHtml += ` <span class="badge tooltip-target" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${shiftTip}">➔ Bhava ${cHouse}</span>`;
                 }
 
                 // Chara Karaka
@@ -1996,7 +2045,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         ckIcon = '⚔️ ';
                     }
                     const ckTooltip = `<strong>${ckIcon}${ck.name} (${ck.karaka}) • ${ck.title}</strong><br>• Rank: #${ck.rank} (Traversed ${ck.degree_in_sign}° in sign)<br>• ${ck.description}`;
-                    ckBadge = `<span class="badge tooltip-target" style="${ckStyle} font-size:9.5px; padding:1px 5px; border-radius:3px; cursor:help;" data-tooltip="${ckTooltip}">${ckIcon}${ck.karaka}</span>`;
+                    ckBadge = `<span class="badge tooltip-target" style="${ckStyle} font-size: 12px; padding:1px 5px; border-radius:3px; cursor:help;" data-tooltip="${ckTooltip}">${ckIcon}${ck.karaka}</span>`;
                 }
 
                 // Functional Role
@@ -2005,27 +2054,27 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let fnBadgesHtml = '';
                 if (fnRole && fnRole.ruled_houses && fnRole.ruled_houses.length > 0) {
                     const ruledHousesTip = `<strong>House Rulership: ${fnRole.ruled_houses_str}</strong><br>• ${graha} owns and manages the affairs of House ${fnRole.ruled_houses.join(' and House ')}.<br>• Its placement and dignity directly govern the prosperity of these domains.`;
-                    ruledHousesHtml = `<div class="tooltip-target" data-tooltip="${ruledHousesTip}" style="font-size:9.5px; color:#475569; margin-top:2px; cursor:help;">Rules: <strong>${fnRole.ruled_houses_str}</strong></div>`;
+                    ruledHousesHtml = `<div class="tooltip-target" data-tooltip="${ruledHousesTip}" style="font-size: 12px; color:#475569; margin-top:2px; cursor:help;">Rules: <strong>${fnRole.ruled_houses_str}</strong></div>`;
                     
                     const bList = [];
                     if (fnRole.is_yogakaraka) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>⭐ Yogakāraka (Supreme Benefic)</strong><br>• Simultaneously rules Kendra & Trikona (${fnRole.ruled_houses_str})<br>• Unites action with divine grace, conferring high worldly and dharmic achievement.">⭐ Yogakāraka</span>`);
+                        bList.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>⭐ Yogakāraka (Supreme Benefic)</strong><br>• Simultaneously rules Kendra & Trikona (${fnRole.ruled_houses_str})<br>• Unites action with divine grace, conferring high worldly and dharmic achievement.">⭐ Yogakāraka</span>`);
                     } else if (fnRole.is_lagnesha) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="<strong>🛡️ Lagneśa (Ascendant Lord)</strong><br>• Rules House 1 (${fnRole.ruled_houses_str})<br>• Primary protector of self, health, and vitality.">🛡️ Lagneśa</span>`);
+                        bList.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>🛡️ Lagneśa (Ascendant Lord)</strong><br>• Rules House 1 (${fnRole.ruled_houses_str})<br>• Primary protector of self, health, and vitality.">🛡️ Lagneśa</span>`);
                     }
                     
                     if (fnRole.is_maraka && !fnRole.is_yogakaraka) {
                         const marakaH = fnRole.ruled_houses.filter(h => h === 2 || h === 7);
-                        bList.push(`<span class="badge tooltip-target" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-size:8.5px; font-weight:600; cursor:help;" data-tooltip="<strong>Māraka (H${marakaH.join('/')})</strong><br>• Rules death/transformation threshold houses (H2/H7)<br>• Demands resource stewardship and governs transformative thresholds.">Māraka</span>`);
+                        bList.push(`<span class="badge tooltip-target" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>Māraka (H${marakaH.join('/')})</strong><br>• Rules death/transformation threshold houses (H2/H7)<br>• Demands resource stewardship and governs transformative thresholds.">Māraka</span>`);
                     }
                     
                     if (fnRole.is_badhaka && !fnRole.is_yogakaraka && !fnRole.is_lagnesha) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:8.5px; font-weight:600; cursor:help;" data-tooltip="<strong>Bādhaka (Obstacle Maker)</strong><br>• Rules the specific testing house for this sign<br>• Creates subtle karmic friction or blind spots requiring self-reflection.">Bādhaka</span>`);
+                        bList.push(`<span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>Bādhaka (Obstacle Maker)</strong><br>• Rules the specific testing house for this sign<br>• Creates subtle karmic friction or blind spots requiring self-reflection.">Bādhaka</span>`);
                     }
 
                     if (fnRole.is_trishadaya && !fnRole.is_yogakaraka && !fnRole.is_lagnesha) {
                         const trishH = fnRole.ruled_houses.filter(h => [3, 6, 11].includes(h));
-                        bList.push(`<span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:8.5px; font-weight:600; cursor:help;" data-tooltip="<strong>⚡ Functional Malefic (Trishadāya H${trishH.join('/')})</strong><br>• Rules houses of intense worldly ambition, desire, or competitive drive (BPHS Ch. 34).<br>• Worldly appetite requires strong moral anchoring to prevent self-serving excess.">Trishadāya (H${trishH.join('/')})</span>`);
+                        bList.push(`<span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>⚡ Functional Malefic (Trishadāya H${trishH.join('/')})</strong><br>• Rules houses of intense worldly ambition, desire, or competitive drive (BPHS Ch. 34).<br>• Worldly appetite requires strong moral anchoring to prevent self-serving excess.">Trishadāya (H${trishH.join('/')})</span>`);
                     }
                     
                     if (bList.length > 0) {
@@ -2183,7 +2232,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `${stepItems}<br>` +
                         `<div style="margin:4px 0; border-top:1px solid rgba(255,255,255,0.25); width:100%;"></div>` +
                         `➔ <strong>Final Functional Evaluation: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</strong><br>` +
-                        `<span style="font-size:9.5px; opacity:0.9; font-family:monospace;">${escapeTooltipAttr(funcDig.math_formula)}</span>` +
+                        `<span style="font-size: 12px; opacity:0.9; font-family:monospace;">${escapeTooltipAttr(funcDig.math_formula)}</span>` +
                         `</div>`;
                 }
 
@@ -2199,9 +2248,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         funcDigMathBlock;
                     digBadge = `
                         <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(nodeDigTip)}">
-                            <span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; font-size:10px;">Proxy (${signLord})</span>
-                            <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${effDig.toFixed(0)}% Dignity</div>
-                            ${funcDig && varga === 'D1' ? `<div style="font-size:9.5px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size:9px; color:#64748b;">Chhāyā Reflection</div>`}
+                            <span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; font-size: 12px;">Proxy (${signLord})</span>
+                            <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${effDig.toFixed(0)}% Dignity</div>
+                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#64748b;">Chhāyā Reflection</div>`}
                         </div>
                     `;
                 } else {
@@ -2251,8 +2300,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     digBadge = `
                         <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
                             <span class="badge" style="${digStyle}">${digIcon}${cleanDig}</span>
-                            <div style="font-size:10px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
-                            ${funcDig && varga === 'D1' ? `<div style="font-size:9.5px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size:9px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>`}
+                            <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
+                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>`}
                         </div>
                     `;
                 }
@@ -2271,10 +2320,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 const hostHtml = `
                     <div style="text-align:center;">
-                        <div style="font-weight:600; font-size:11px; color:#1e293b;">Host: ${signLord}</div>
-                        <div style="font-size:9.5px; color:#64748b;">${hostDig.toFixed(0)}% Dignity • ${hostSb.toFixed(0)}% Musc</div>
+                        <div style="font-weight:600; font-size: 12px; color:#1e293b;">Host: ${signLord}</div>
+                        <div style="font-size: 12px; color:#64748b;">${hostDig.toFixed(0)}% Dignity • ${hostSb.toFixed(0)}% Musc</div>
                         <div style="margin-top:2px;">
-                            <span class="badge tooltip-target" style="${hostBadgeStyle} font-size:9px; cursor:help;" data-tooltip="${hostTooltip}">${rescueBadge}</span>
+                            <span class="badge tooltip-target" style="${hostBadgeStyle} font-size: 12px; cursor:help;" data-tooltip="${hostTooltip}">${rescueBadge}</span>
                         </div>
                     </div>
                 `;
@@ -2288,11 +2337,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     powerHtml = `
                         <div class="tooltip-target" data-tooltip="${nodeSbTip}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <strong style="font-size:11.5px;">${effSb.toFixed(0)}%</strong>
-                                <span class="badge" style="background:#f1f5f9; color:#475569; font-size:9px; font-weight:600;">Proxy</span>
+                                <strong style="font-size: 12px;">${effSb.toFixed(0)}%</strong>
+                                <span class="badge" style="background:#f1f5f9; color:#475569; font-size: 12px; font-weight:600;">Proxy</span>
                             </div>
-                            <div style="font-size:10px; color:#15803d; font-weight:bold;">via ${signLord} (${hostVir.toFixed(0)}v)</div>
-                            <div style="font-size:9px; color:#64748b;">Chhāyā Proxy Muscle</div>
+                            <div style="font-size: 12px; color:#15803d; font-weight:bold;">via ${signLord} (${hostVir.toFixed(0)}v)</div>
+                            <div style="font-size: 12px; color:#64748b;">Chhāyā Proxy Muscle</div>
                         </div>
                     `;
                 } else if (sb) {
@@ -2304,9 +2353,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const isHigh = (sb.Pct_Required_Total >= 115);
                     const isLow = (sb.Pct_Required_Total < 100);
 
-                    let rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; font-weight:bold; font-size:9.5px;">#${rank}</span>`;
-                    if (rank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold; font-size:9.5px;">👑 Rank 1</span>`;
-                    else if (rank === 7) rankBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px;">Rank 7</span>`;
+                    let rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; font-weight:bold; font-size: 12px;">#${rank}</span>`;
+                    if (rank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold; font-size: 12px;">👑 Rank 1</span>`;
+                    else if (rank === 7) rankBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size: 12px;">Rank 7</span>`;
 
                     const pctColor = isHigh ? '#15803d' : (isLow ? '#b91c1c' : '#0369a1');
                     const capDesc = (sb.Pct_Required_Total >= 125) ? "Abundant" : ((sb.Pct_Required_Total >= 100) ? "Capable" : ((sb.Pct_Required_Total >= 85) ? "Mild Deficit" : "Deficit"));
@@ -2328,28 +2377,28 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     powerHtml = `
                         <div class="tooltip-target" data-tooltip="${sbTooltip}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                             <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
-                                <strong style="font-size:11.5px;">${virupas}v</strong>
+                                <strong style="font-size: 12px;">${virupas}v</strong>
                                 ${rankBadge}
                             </div>
-                            <div style="font-size:10px; color:${pctColor}; font-weight:bold;">${pctVal}% req (${rupas})</div>
-                            <div style="font-size:9px; color:#64748b;">${capDesc} • I: ${ishta} / K: ${kashta}</div>
+                            <div style="font-size: 12px; color:${pctColor}; font-weight:bold;">${pctVal}% req (${rupas})</div>
+                            <div style="font-size: 12px; color:#64748b;">${capDesc} • I: ${ishta} / K: ${kashta}</div>
                         </div>
                     `;
                 } else {
-                    powerHtml = '<span style="color:#94a3b8; font-size:10px;">—</span>';
+                    powerHtml = '<span style="color:#94a3b8; font-size: 12px;">—</span>';
                 }
 
                 // Cell 6: Aspect Weather & Environmental Badges HTML (ADR-010)
                 let netDrishtiBadge = '';
                 if (netVal >= 12.0) {
                     const netTip = `<strong>🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle, supportive rays from friendly allies.<br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Demanding friction from tough aspects.<br>• <strong>Atmosphere:</strong> Clear skies and encouraging vision predominate.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)</span>`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)</span>`;
                 } else if (netVal <= -12.0) {
                     const netTip = `<strong>🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)} Virūpas)</strong><br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Heavy demands, delays, or friction from difficult aspects.<br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle support received.<br>• <strong>Atmosphere:</strong> High-resistance vision; demands extra discipline and mindful patience.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)</span>`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)</span>`;
                 } else {
                     const netTip = `<strong>⚖️ Net Neutral Vision (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v) vs Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental vision without extreme bias.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">⚖️ Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
+                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">⚖️ Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
                 }
 
                 // Planetary War Environmental Badge
@@ -2360,7 +2409,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const wCol = wInfo.is_loser ? '#991b1b' : '#1d4ed8';
                     const wBorder = wInfo.is_loser ? '#fca5a5' : '#93c5fd';
                     const warTip = `<strong>${wInfo.badge}</strong><br>• <strong>Graha Yuddha (Phaladeepika 4.2):</strong> ${wInfo.details}<br>• <strong>Determination:</strong> ${wInfo.reason}<br>• <strong>Vitality Impact:</strong> ${wInfo.war_mod >= 0 ? '+' : ''}${Number(wInfo.war_mod).toFixed(2)} pts.`;
-                    warBadgeHtml = `<div><span class="badge tooltip-target" style="background:${wBg}; color:${wCol}; border:1px solid ${wBorder}; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(warTip)}">${wInfo.badge}</span></div>`;
+                    warBadgeHtml = `<div><span class="badge tooltip-target" style="background:${wBg}; color:${wCol}; border:1px solid ${wBorder}; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(warTip)}">${wInfo.badge}</span></div>`;
                 }
 
                 // Combustion Environmental Badge
@@ -2383,7 +2432,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `• <strong>Severity:</strong> ${sevNote}<br>` +
                         (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (harms outward manifestation)<br>` : '') +
                         `• <strong>Vitality Impact:</strong> -0.50 pts (Sun absorbs outward rays).`;
-                    combustionBadgeHtml = `<div><span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:9px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(combTip)}">🔥 Combust (${sunDist !== null ? sunDist.toFixed(1) + '°' : ''} to ☉)</span></div>`;
+                    combustionBadgeHtml = `<div><span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(combTip)}">🔥 Combust (${sunDist !== null ? sunDist.toFixed(1) + '°' : ''} to ☉)</span></div>`;
                 }
 
                 // Classical Affliction Badges
@@ -2391,15 +2440,15 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const affList = [];
                 if (vitRes.guru_chandal_badge) {
                     const gcTip = `<strong>${vitRes.guru_chandal_badge}</strong><br>• <strong>Guru-Chāṇḍāla Yoga (Phaladeepika 6.34):</strong> Conjoined with Rahu, eclipsing traditional philosophy into unconventional, dogmatic, or revolutionary crusades.<br>• <strong>Vitality Impact:</strong> Modifies ethical expression and executive alignment.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gcTip)}">${vitRes.guru_chandal_badge}</span></div>`);
+                    affList.push(`<div><span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gcTip)}">${vitRes.guru_chandal_badge}</span></div>`);
                 }
                 if (vitRes.guru_ketu_badge) {
                     const gkTip = `<strong>${vitRes.guru_ketu_badge}</strong><br>• <strong>Guru-Ketu Jñāna Yoga:</strong> Conjoined with Ketu, spiritualizing philosophical wisdom into deep inward contemplation, esoteric research, and detachment from worldly dogma.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gkTip)}">${vitRes.guru_ketu_badge}</span></div>`);
+                    affList.push(`<div><span class="badge tooltip-target" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gkTip)}">${vitRes.guru_ketu_badge}</span></div>`);
                 }
                 if (vitRes.vikala_badge) {
                     const vkTip = `<strong>${vitRes.vikala_badge}</strong><br>• <strong>Deeptādi Vikala Avasthā (BPHS Ch. 45):</strong> Besieged by multiple cruel malefics (Bahu-Pāpa-Yuta), inducing severe environmental friction and harshness into planetary expression.<br>• <strong>Vitality Impact:</strong> -0.30 pts.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size:8.5px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(vkTip)}">${vitRes.vikala_badge}</span></div>`);
+                    affList.push(`<div><span class="badge tooltip-target" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(vkTip)}">${vitRes.vikala_badge}</span></div>`);
                 }
                 if (affList.length > 0) {
                     afflictionBadgesHtml = affList.join('');
@@ -2420,7 +2469,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const yTip = `<strong>${cmdTag}Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.${orbNote}${cmdNote}<br>• ${nature}`;
                         return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(yTip)}">${orbTag}${cmdTag}${cp}</span>`;
                     }).join(', ');
-                    yutiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
+                    yutiHtml = `<div><span style="color:#64748b; font-size: 12px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
 
                 // Cell 6: Aspect Vision (The 3-Tier Filter & 2-Line Gaze Badges)
@@ -2432,13 +2481,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 if (allAspList.length > 0) {
                     drishtiHtml = renderAspectVisionBadges(allAspList);
                 } else if (aspectList.length > 0) {
-                    drishtiHtml = `<div><span style="color:#64748b; font-size:9.5px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>`;
+                    drishtiHtml = `<div><span style="color:#64748b; font-size: 12px; font-weight:bold;">DRISHTI:</span> ${aspectList.join(' ')}</div>`;
                 } else {
-                    drishtiHtml = '<div style="color:#94a3b8; font-size:9.5px; font-style:italic;">No decisive aspects</div>';
+                    drishtiHtml = '<div style="color:#94a3b8; font-size: 12px; font-style:italic;">No decisive aspects</div>';
                 }
 
                 const influencesHtml = `
-                    <div style="display:flex; flex-direction:column; gap:2px; font-size:10.5px;">
+                    <div style="display:flex; flex-direction:column; gap:2px; font-size: 12px;">
                         <div>${netDrishtiBadge}</div>
                         ${warBadgeHtml}
                         ${combustionBadgeHtml}
@@ -2460,7 +2509,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const nodeAvaTip = `<strong>Chhāyā Catalyst (Rahu / Ketu)</strong><br>` +
                         `• <strong>Classical Citation:</strong> Sage Parashara applies the 6 Lajjitādi feeling states exclusively to the 7 physical Grahas.<br>` +
                         `• <strong>Role:</strong> Nodes act as powerful external agitators and catalysts rather than feeling beings.`;
-                    avasthasHtml = `<span class="badge tooltip-target" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size:9.5px; font-weight:600; cursor:help;" data-tooltip="${nodeAvaTip}">— (Chhāyā Catalyst)</span>`;
+                    avasthasHtml = `<span class="badge tooltip-target" style="background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="${nodeAvaTip}">— (Chhāyā Catalyst)</span>`;
                 } else if (pEval.calibrated_lajjitadi && pEval.calibrated_lajjitadi.length > 0) {
                     const badges = pEval.calibrated_lajjitadi.map(cItem => {
                         let style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
@@ -2479,10 +2528,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             const chips = cItem.influencing_planets.map(inf => {
                                 const isMajor = inf.is_major; // virupas >= 30
                                 const chipStyle = isMajor
-                                    ? `background:#ffffff; border:1px solid ${borderCol}; color:#1e293b; font-weight:700; font-size:8px;`
-                                    : `background:rgba(255,255,255,0.65); border:1px dashed #94a3b8; color:#64748b; font-weight:500; font-size:7.5px;`;
+                                    ? `background:#ffffff; border:1px solid ${borderCol}; color:#1e293b; font-weight:700; font-size: 12px;`
+                                    : `background:rgba(255,255,255,0.65); border:1px dashed #94a3b8; color:#64748b; font-weight:500; font-size: 12px;`;
                                 const titleStr = `${inf.planet}: ${inf.mechanism} (${inf.virupas.toFixed(1)}v) • Alertness: ${inf.alertness_state} (${inf.alertness_pct}% force)`;
-                                return `<span style="${chipStyle} padding:1px 3px; border-radius:3px; display:inline-flex; align-items:center; gap:2px;" title="${titleStr}">${inf.glyph} ${inf.symbol} ${inf.virupas.toFixed(0)}v <span style="font-size:7px; opacity:0.85;">(${inf.alertness_state.split(' ')[0]})</span></span>`;
+                                return `<span style="${chipStyle} padding:1px 3px; border-radius:3px; display:inline-flex; align-items:center; gap:2px;" title="${titleStr}">${inf.glyph} ${inf.symbol} ${inf.virupas.toFixed(0)}v <span style="font-size: 12px; opacity:0.85;">(${inf.alertness_state.split(' ')[0]})</span></span>`;
                             }).join('');
                             influencerChipsHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${chips}</div>`;
 
@@ -2492,7 +2541,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                        `&nbsp;&nbsp;&nbsp;&nbsp;Alertness: <em>${inf.alertness_state}</em> (${inf.alertness_pct}% force) ➔ Effective Force: <strong>${inf.combined_pct}%</strong>`;
                             }).join('<br>');
                         } else if (cItem.base_state === 'Garvita') {
-                            influencerChipsHtml = `<div style="font-size:8px; opacity:0.85; font-style:italic; margin-top:1px;">In ${cItem.condition || 'Own Office'}</div>`;
+                            influencerChipsHtml = `<div style="font-size: 12px; opacity:0.85; font-style:italic; margin-top:1px;">In ${cItem.condition || 'Own Office'}</div>`;
                         }
 
                         const bTip = `<strong>${cItem.icon} ${cItem.state}</strong><br>` +
@@ -2504,10 +2553,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         return `
                             <div class="tooltip-target" style="${style} border-radius:4px; padding:3px 5px; cursor:help; display:flex; flex-direction:column; gap:1px;" data-tooltip="${escapeTooltipAttr(bTip)}">
                                 <div style="display:flex; align-items:center; justify-content:space-between; gap:4px;">
-                                    <span style="font-weight:700; font-size:9px; display:flex; align-items:center; gap:3px;">
+                                    <span style="font-weight:700; font-size: 12px; display:flex; align-items:center; gap:3px;">
                                         ${cItem.icon} ${cItem.base_state}
                                     </span>
-                                    <span style="font-size:7px; font-weight:700; white-space:nowrap; opacity:0.9; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,0.75);">${cItem.severity.split(' ')[0]}</span>
+                                    <span style="font-size: 12px; font-weight:700; white-space:nowrap; opacity:0.9; padding:1px 3px; border-radius:2px; background:rgba(255,255,255,0.75);">${cItem.severity.split(' ')[0]}</span>
                                 </div>
                                 ${influencerChipsHtml}
                             </div>
@@ -2518,7 +2567,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const neutralAvaTip = `<strong>Neutral (Unstirred Avasthā)</strong><br>` +
                         `• ${graha} is not subjected to starving enemy rays or agitating conjunctions in ${varga}.<br>` +
                         `• Operates in a peaceful, undisturbed baseline state.`;
-                    avasthasHtml = `<span class="tooltip-target" style="color:#a8a29e; font-style:italic; font-size:9.5px; cursor:help;" data-tooltip="${neutralAvaTip}">Neutral (Unstirred)</span>`;
+                    avasthasHtml = `<span class="tooltip-target" style="color:#a8a29e; font-style:italic; font-size: 12px; cursor:help;" data-tooltip="${neutralAvaTip}">Neutral (Unstirred)</span>`;
                 } else {
                     const badges = avList.map(item => {
                         const st = item.state || '';
@@ -2566,7 +2615,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         }
 
                         const avaTip = `<strong>${icon} ${st}</strong><br>• <strong>Condition:</strong> ${cond}<br>• <strong>Psychological Impact:</strong> ${feelingExp}`;
-                        return `<span class="badge tooltip-target" style="${style} font-size:9.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(avaTip)}">${icon} ${label}${nuanceNote}</span>`;
+                        return `<span class="badge tooltip-target" style="${style} font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(avaTip)}">${icon} ${label}${nuanceNote}</span>`;
                     });
                     avasthasHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px;">${badges.join('')}</div>`;
                 }
@@ -2578,7 +2627,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `• <strong>Condition:</strong> ${pEval.deepthaadi.condition}<br>` +
                         `• <strong>Innate Feeling:</strong> ${pEval.deepthaadi.meaning}<br>` +
                         `• <strong>Source:</strong> BPHS Ch. 45.7 / Saravali Ch. 5 / Vol 2 Ch. 4.`;
-                    deepthaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(dTip)}">${pEval.deepthaadi.badge}</span>`;
+                    deepthaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(dTip)}">${pEval.deepthaadi.badge}</span>`;
                 }
 
                 let jagradaadiHtml = '';
@@ -2587,32 +2636,32 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `• <strong>House Management:</strong> ${pEval.jagradaadi.house_management}<br>` +
                         `• <strong>Relational Impact:</strong> Exerts ${(pEval.jagradaadi.multiplier * 100).toFixed(0)}% force in Lajjitādi states.<br>` +
                         `• <strong>Source:</strong> BPHS Ch. 45.5 / The Art & Science of Vedic Astrology, Vol 2 Ch. 10.`;
-                    jagradaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size:9px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(jTip)}">${pEval.jagradaadi.badge}</span>`;
+                    jagradaadiHtml = `<span class="badge tooltip-target" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(jTip)}">${pEval.jagradaadi.badge}</span>`;
                 }
 
                 const avasthasCellHtml = `
-                    <div style="display:flex; flex-direction:column; gap:5px; font-size:10px; min-width:180px;">
+                    <div style="display:flex; flex-direction:column; gap:5px; font-size: 12px; min-width:180px;">
                         <!-- Compartment 1: Physical Fuel & Alertness -->
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Alertness</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Alertness</div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center; gap:3px;">
-                                <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9.5px; font-weight:700; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">Age: ${baladi.state} (${baladi.efficiency_pct}%)</span>
+                                <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">Age: ${baladi.state} (${baladi.efficiency_pct}%)</span>
                                 ${jagradaadiHtml}
                             </div>
-                            <div style="font-size:8.5px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
+                            <div style="font-size: 12px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
                         </div>
 
                         <!-- Compartment 2: Innate Dignity Mood (Dīptādi) -->
                         ${deepthaadiHtml ? `
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🧘 Innate Mood</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🧘 Innate Mood</div>
                             <div style="display:flex; align-items:center;">${deepthaadiHtml}</div>
                         </div>
                         ` : ''}
 
                         <!-- Compartment 3: Social & Relational Weather (Lajjitādi) -->
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size:7.5px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🤝 Social Relations</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🤝 Social Relations</div>
                             <div>${avasthasHtml}</div>
                         </div>
                     </div>
@@ -2627,7 +2676,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;')
                     .replace(/\n/g, '<br>');
-                const receiptTooltip = `<div style="font-family:monospace; font-size:10.5px; line-height:1.4; text-align:left;">${escReceipt}</div>`;
+                const receiptTooltip = `<div style="font-family:monospace; font-size: 12px; line-height:1.4; text-align:left;">${escReceipt}</div>`;
 
                 const quadTooltip = `<strong>★ ${graha} Diagnostics</strong><br>` +
                     `• <strong>Inherent Engine:</strong> ${quad.badge} (${quad.tier})<br>` +
@@ -2638,23 +2687,23 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     `• <strong>Effective Shadbala (Muscle):</strong> ${effSb.toFixed(0)}% of required (Physical horsepower)<br>` +
                     `• <strong>Foundational Host Anchor:</strong> ${rescueBadge} (${vitRes.rescue_desc || vitRes.rescue_status || ''})<br>` +
                     `• <strong>Actualized Vitality:</strong> ★ ${netVitality.toFixed(1)} / 10 (${vitRes.vitality_tier || quad.tier})<br>` +
-                    (receiptText ? `<hr style="margin:6px 0; border:0; border-top:1px solid rgba(255,255,255,0.2);"><div style="font-family:monospace; font-size:10px; line-height:1.3; text-align:left;">${escReceipt}</div>` : '');
+                    (receiptText ? `<hr style="margin:6px 0; border:0; border-top:1px solid rgba(255,255,255,0.2);"><div style="font-family:monospace; font-size: 12px; line-height:1.3; text-align:left;">${escReceipt}</div>` : '');
 
                 const diagHtml = `
                     <div style="text-align:center;">
-                        <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size:10px; font-weight:bold; padding:2px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">
+                        <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size: 12px; font-weight:bold; padding:2px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">
                             ${quad.badge}
                         </span>
-                        ${quad.subtext ? `<div style="font-size:9px; color:#64748b; margin-top:2px; font-weight:500;">${quad.subtext}</div>` : ''}
-                        <div style="font-size:10.5px; font-weight:bold; color:#1e293b; margin-top:2px;">
-                            <strong style="font-size:13px;">★ ${netVitality.toFixed(1)}</strong> <span style="font-size:10px; color:#64748b;">/ 10</span>
+                        ${quad.subtext ? `<div style="font-size: 12px; color:#64748b; margin-top:2px; font-weight:500;">${quad.subtext}</div>` : ''}
+                        <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">
+                            <strong style="font-size:13px;">★ ${netVitality.toFixed(1)}</strong> <span style="font-size: 12px; color:#64748b;">/ 10</span>
                         </div>
-                        <div style="font-size:9px; color:#64748b; font-weight:500; margin-top:1px;">Intent: ${effDig.toFixed(0)}% | Power: ${effSb.toFixed(0)}%</div>
+                        <div style="font-size: 12px; color:#64748b; font-weight:500; margin-top:1px;">Intent: ${effDig.toFixed(0)}% | Power: ${effSb.toFixed(0)}%</div>
                         <div style="display:flex; align-items:center; justify-content:center; gap:4px; margin-top:2px;">
-                            <span style="font-size:9.5px; font-weight:600; color:${vitRes.vitality_col || '#64748b'};">${vitRes.vitality_tier || quad.tier}</span>
-                            ${receiptText ? `<span class="badge tooltip-target" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size:8.5px; cursor:help; padding:0 3px;" data-tooltip="${escapeTooltipAttr(receiptTooltip)}">🧾 Receipt</span>` : ''}
+                            <span style="font-size: 12px; font-weight:600; color:${vitRes.vitality_col || '#64748b'};">${vitRes.vitality_tier || quad.tier}</span>
+                            ${receiptText ? `<span class="badge tooltip-target" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size: 12px; cursor:help; padding:0 3px;" data-tooltip="${escapeTooltipAttr(receiptTooltip)}">🧾 Receipt</span>` : ''}
                         </div>
-                        ${pEval.psychological_narrative ? `<div class="tooltip-target" style="font-size:8.5px; color:#475569; font-style:italic; margin-top:3px; max-width:135px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help;" data-tooltip="<strong>🧠 Psychological Diagnosis (Vol 2):</strong><br>${escapeTooltipAttr(pEval.psychological_narrative)}">🧠 ${escapeHtml(pEval.psychological_narrative)}</div>` : ''}
+                        ${pEval.psychological_narrative ? `<div class="tooltip-target" style="font-size: 12px; color:#475569; font-style:italic; margin-top:3px; max-width:135px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help;" data-tooltip="<strong>🧠 Psychological Diagnosis (Vol 2):</strong><br>${escapeTooltipAttr(pEval.psychological_narrative)}">🧠 ${escapeHtml(pEval.psychological_narrative)}</div>` : ''}
                     </div>
                 `;
                 const pNak = pEval.nakshatra || {};
@@ -2674,13 +2723,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const exprModeStr = pEval.expression_mode || '';
                 let expressionBadgeHtml = '';
                 if (exprModeStr.includes('High')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size:8.5px; font-weight:700;">High Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:700;">High Expression (${exprScoreStr})</span>`;
                 } else if (exprModeStr.includes('Mixed')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-size:8.5px; font-weight:700;">Mixed Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-size: 12px; font-weight:700;">Mixed Expression (${exprScoreStr})</span>`;
                 } else if (exprModeStr.includes('Low')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:8.5px; font-weight:700;">Low Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size: 12px; font-weight:700;">Low Expression (${exprScoreStr})</span>`;
                 } else {
-                    expressionBadgeHtml = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; font-size:8.5px; font-weight:600;">Neutral Expression</span>`;
+                    expressionBadgeHtml = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; font-size: 12px; font-weight:600;">Neutral Expression</span>`;
                 }
 
                 // Peer shift for Col 3
@@ -2711,11 +2760,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 let peerShiftHtml = '';
                 if (peerShiftVal > 0.5) {
-                    peerShiftHtml = `<span style="color:#15803d; font-size:9.5px; font-weight:600;">↳ +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                    peerShiftHtml = `<span style="color:#15803d; font-size: 12px; font-weight:600;">↳ +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
                 } else if (peerShiftVal < -0.5) {
-                    peerShiftHtml = `<span style="color:#b91c1c; font-size:9.5px; font-weight:600;">↳ ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                    peerShiftHtml = `<span style="color:#b91c1c; font-size: 12px; font-weight:600;">↳ ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
                 } else {
-                    peerShiftHtml = `<span style="color:#64748b; font-size:9.5px;">↳ Balanced (±0%)</span>`;
+                    peerShiftHtml = `<span style="color:#64748b; font-size: 12px;">↳ Balanced (±0%)</span>`;
                 }
 
                 // Decisive Aspect for Col 6 Line 2 (>= 45v) and Background Aspects (20-44v)
@@ -2742,7 +2791,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         return `• ${natIcon} <strong>${aspG}:</strong> ${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
                     }).join('<br>');
                     tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
-                    bgBadgeHtml = `<span class="tooltip-target" style="color:#64748b; font-size:8.5px; margin-left:3px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">+${bgAsps.length} bg</span>`;
+                    bgBadgeHtml = `<span class="tooltip-target" style="color:#64748b; font-size: 12px; margin-left:3px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">+${bgAsps.length} bg</span>`;
                 }
 
                 if (decisiveAsps.length > 0) {
@@ -2772,12 +2821,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         else if (isExaltedOrMoola || isOwnOrFriend) synth = 'Constructive Pressure';
                         else synth = 'Harsh Demand';
                     }
-                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size:9px;">${natIcon} ${aspG} (${rawV}v) ↳ ${synth}</span>`;
+                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size: 12px;">${natIcon} ${aspG} (${rawV}v) ↳ ${synth}</span>`;
                 } else if (bgAsps.length > 0) {
-                    decisiveAspectBadge = `<span class="tooltip-target" style="color:#64748b; font-style:italic; font-size:8.5px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">${bgAsps.length} background aspect${bgAsps.length > 1 ? 's' : ''} (20–44v)</span>`;
+                    decisiveAspectBadge = `<span class="tooltip-target" style="color:#64748b; font-style:italic; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">${bgAsps.length} background aspect${bgAsps.length > 1 ? 's' : ''} (20–44v)</span>`;
                     bgBadgeHtml = '';
                 } else {
-                    decisiveAspectBadge = `<span style="color:#94a3b8; font-style:italic; font-size:8.5px;">No decisive gaze (drawer)</span>`;
+                    decisiveAspectBadge = `<span style="color:#94a3b8; font-style:italic; font-size: 12px;">No decisive gaze (drawer)</span>`;
                 }
 
                 // Primary Lajjitadi mood for Col 8 Line 2
@@ -2791,7 +2840,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     else if (topMood.base_state === 'Kshobhita') mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
                     else if (topMood.base_state === 'Lajjita') mStyle = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
                     else if (topMood.base_state === 'Trushita') mStyle = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
-                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size:8.5px; font-weight:700; padding:1px 5px;">${topMood.icon} ${topMood.base_state}</span>`;
+                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size: 12px; font-weight:700; padding:1px 5px;">${topMood.icon} ${topMood.base_state}</span>`;
                 } else if (avList && avList.length > 0) {
                     const firstAv = avList[0];
                     const st = firstAv.state || String(firstAv);
@@ -2801,9 +2850,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     else if (st.includes('Garvita')) { mIcon = '👑'; mStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;'; }
                     else if (st.includes('Kshudhita')) { mIcon = '🔴'; mStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;'; }
                     else if (st.includes('Kshobhita')) { mIcon = '🟠'; mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;'; }
-                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size:8.5px; font-weight:700; padding:1px 5px;">${mIcon} ${st.split(' ')[0]}</span>`;
+                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size: 12px; font-weight:700; padding:1px 5px;">${mIcon} ${st.split(' ')[0]}</span>`;
                 } else {
-                    primaryMoodPill = `<span style="color:#94a3b8; font-style:italic; font-size:8.5px;">🟡 Neutral (Unstirred)</span>`;
+                    primaryMoodPill = `<span style="color:#94a3b8; font-style:italic; font-size: 12px;">🟡 Neutral (Unstirred)</span>`;
                 }
 
                 // Subcaption for Col 9 Line 2
@@ -2838,7 +2887,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             </thead>
                             <tbody>${vRows}</tbody>
                         </table>
-                        <div style="font-size:9.5px; margin-top:2px;">
+                        <div style="font-size: 12px; margin-top:2px;">
                             <strong>Viṁśopaka:</strong> ${pEval.step1_shadvarga.weighted_dignity_pct || dignityPct}% (${pEval.step1_shadvarga.predominance_desc || ''})
                         </div>
                     `;
@@ -2853,16 +2902,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const shiftNum = (typeof d.shift === 'number') ? d.shift : Number(d.shift || 0);
                         const signChar = shiftNum >= 0 ? '+' : '';
                         const color = shiftNum > 0 ? '#15803d' : (shiftNum < 0 ? '#b91c1c' : '#64748b');
-                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                        return `<div style="display:flex; justify-content:space-between; font-size: 12px; padding:1px 0;">
                             <span>${d.source || '--'} (${d.type || '--'}):</span>
                             <strong style="color:${color};">${signChar}${shiftNum.toFixed(1)}% (${d.sambhanda || ''})</strong>
                         </div>`;
                     }).join('');
                     peerShiftsDetailHtml = `
                         <div style="margin-top:4px; border-top:1px dashed #e2d7c3; padding-top:4px;">
-                            <div style="font-size:9.5px; font-weight:700; color:#4a3325; margin-bottom:2px;">Peer Sambandha Shifts:</div>
+                            <div style="font-size: 12px; font-weight:700; color:#4a3325; margin-bottom:2px;">Peer Sambandha Shifts:</div>
                             ${pItems}
-                            <div style="margin-top:3px; font-weight:700; color:#1e293b; font-size:10px;">
+                            <div style="margin-top:3px; font-weight:700; color:#1e293b; font-size: 12px;">
                                 ➔ Final Functional Dignity: ${(typeof effDig === 'number' ? effDig : 50).toFixed(1)}%
                             </div>
                         </div>
@@ -2882,7 +2931,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <strong>Special Conditions:</strong>
                         ${pEval.viparita_badge ? `<div>${pEval.viparita_badge}</div>` : ''}
                         ${pEval.bhava_madhya_badge ? `<div>${pEval.bhava_madhya_badge}</div>` : ''}
-                        ${!pEval.viparita_badge && !pEval.bhava_madhya_badge ? '<span style="font-size:9.5px; color:#64748b;">None</span>' : ''}
+                        ${!pEval.viparita_badge && !pEval.bhava_madhya_badge ? '<span style="font-size: 12px; color:#64748b;">None</span>' : ''}
                     </div>
                     <div style="margin-top:4px; font-weight:700;">
                         Resulting Expression: ${expressionBadgeHtml}
@@ -2923,7 +2972,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             const aspStrengthPct = Math.round((rawV / 60.0) * 100);
 
                             summaryRows.push(`
-                                <div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                                <div style="display:flex; justify-content:space-between; font-size: 12px; padding:1px 0;">
                                     <span>${natIcon} <strong>${aspG}</strong> (${rawV}v / ${aspStrengthPct}%):</span>
                                     <span style="font-weight:600;">${asp.from_dignity_name || 'Neutral'}${optANote}</span>
                                 </div>
@@ -2945,12 +2994,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             if (incGraph) {
                                 graphCards.push(`
                                     <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
-                                        <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
+                                        <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
                                             <div>
                                                 <span>${natIcon} <strong>${aspG}</strong> Aspect Ray</span>
-                                                <span style="color: #64748b; font-size: 9px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
+                                                <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
                                             </div>
-                                            <div style="font-size: 9.5px; font-weight: 600; color: #475569;">
+                                            <div style="font-size: 12px; font-weight: 600; color: #475569;">
                                                 ${asp.from_dignity_name || 'Neutral'}${optANote}
                                             </div>
                                         </div>
@@ -2969,7 +3018,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 if (conjDetails && conjDetails.length > 0) {
                     conjItemsHtml = conjDetails.map(c => {
                         const degStr = (c.degree_diff !== undefined && c.degree_diff !== null) ? Number(c.degree_diff).toFixed(2) + '°' : '';
-                        return `<div style="display:flex; justify-content:space-between; font-size:9.5px; padding:1px 0;">
+                        return `<div style="display:flex; justify-content:space-between; font-size: 12px; padding:1px 0;">
                             <span>${c.commands ? '👑 ' : ''}${c.planet}${degStr ? ` (${degStr})` : ''}:</span>
                             <span>${c.orb_band || ''} ${c.commands ? '• Commands' : ''}</span>
                         </div>`;
@@ -2987,7 +3036,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 if (outGraph) {
                     outgoingAspectGraphHtml = `
                         <div style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
-                            <div style="font-size: 10px; font-weight: 700; color: #475569; margin-bottom: 4px;">
+                            <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
                                 👁 Outgoing Aspects Cast by ${graha} (Dṛṣṭi across Zodiac):
                             </div>
                             <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
@@ -2999,7 +3048,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 const card3Html = `
                     <div><strong>Incoming Aspects (Dṛṣṭi):</strong></div>
-                    ${allAspectsRowsHtml || '<div style="font-size:9.5px; color:#94a3b8; font-style:italic;">No decisive aspects (≥20v)</div>'}
+                    ${allAspectsRowsHtml || '<div style="font-size: 12px; color:#94a3b8; font-style:italic;">No decisive aspects (≥20v)</div>'}
                     ${incomingGraphsHtml}
                     ${conjItemsHtml ? `<div style="margin-top:6px;"><strong>Conjunctions (Yuti):</strong></div>${conjItemsHtml}` : ''}
                     <div style="margin-top:4px; display:flex; flex-direction:column; gap:2px;">
@@ -3013,9 +3062,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 // Box 4: Deep Avasthās & Psychology
                 const card4Html = `
                     <div><strong>Biological Maturity (Bālādi):</strong> ${baladi.state} (${baladi.efficiency_pct}%)</div>
-                    <div style="font-size:9.5px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
-                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_sandhi ? '<div style="color:#b45309; font-size:9.5px; font-weight:700;">⚠️ Rāśi Sandhi (Edge of Sign)</div>' : ''}
-                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_gandanta ? '<div style="color:#b91c1c; font-size:9.5px; font-weight:700;">⚡ Gaṇḍānta Knot (Water-Fire Border)</div>' : ''}
+                    <div style="font-size: 12px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_sandhi ? '<div style="color:#b45309; font-size: 12px; font-weight:700;">⚠️ Rāśi Sandhi (Edge of Sign)</div>' : ''}
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_gandanta ? '<div style="color:#b91c1c; font-size: 12px; font-weight:700;">⚡ Gaṇḍānta Knot (Water-Fire Border)</div>' : ''}
                     <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px;">
                         ${deepthaadiHtml}
                         ${jagradaadiHtml}
@@ -3033,7 +3082,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     <tr class="interactive-table-row diagnostic-row" data-type="planet" data-id="${graha}" style="cursor: pointer;" onclick="toggleDiagnosticDrawer('drawer-${graha}', this)">
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size:12px; color:#1e293b;">
+                                <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#1e293b;">
                                     <span style="font-size:14px;">${glyph}</span>
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(grahaTip)}" style="cursor:help;">${graha}</span>
                                 </div>
@@ -3047,7 +3096,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(signTooltip)}" style="cursor:help;">${sign} ${deg} • ${houseHtml}</span>
                                 </div>
                                 <div>
@@ -3057,40 +3106,40 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-size:10.5px; font-weight:700; white-space:nowrap;">
-                                    ${isNode ? `<span class="badge" style="${digStyle} font-size:9px; padding:1px 5px;">Proxy (${signLord})</span>` : `<span class="badge" style="${digStyle} font-size:9px; padding:1px 5px;">${digIcon}${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
-                                    <span style="color:#64748b; font-size:10px; margin:0 1px;">➔</span>
-                                    <strong style="color:#1e293b; font-size:11px;">${Math.round(effDig)}%</strong>
+                                <div style="font-size: 12px; font-weight:700; white-space:nowrap;">
+                                    ${isNode ? `<span class="badge" style="${digStyle} font-size: 12px; padding:1px 5px;">Proxy (${signLord})</span>` : `<span class="badge" style="${digStyle} font-size: 12px; padding:1px 5px;">${digIcon}${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
+                                    <span style="color:#64748b; font-size: 12px; margin:0 1px;">➔</span>
+                                    <strong style="color:#1e293b; font-size: 12px;">${Math.round(effDig)}%</strong>
                                 </div>
-                                <div style="font-size:9px; font-weight:600; white-space:nowrap;">
+                                <div style="font-size: 12px; font-weight:600; white-space:nowrap;">
                                     ${peerShiftHtml}
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-weight:700; font-size:11px; color:#1e293b; white-space:nowrap;">
+                                <div style="font-weight:700; font-size: 12px; color:#1e293b; white-space:nowrap;">
                                     Host: <strong>${signLord}</strong>
                                 </div>
                                 <div>
-                                    <span class="badge tooltip-target" style="${hostBadgeStyle} font-size:8.5px; font-weight:600; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
+                                    <span class="badge tooltip-target" style="${hostBadgeStyle} font-size: 12px; font-weight:600; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 ${isNode ? `
-                                    <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                    <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
                                         <strong>Proxy ${effSb.toFixed(0)}%</strong>
                                     </div>
-                                    <div style="font-size:9px; color:#15803d; font-weight:600; white-space:nowrap;">
+                                    <div style="font-size: 12px; color:#15803d; font-weight:600; white-space:nowrap;">
                                         via ${signLord} (${hostVir.toFixed(0)}v)
                                     </div>
                                 ` : `
-                                    <div style="font-size:11px; font-weight:700; color:#1e293b; white-space:nowrap;">
-                                        <strong>${sb.Total_Virupas ? sb.Total_Virupas.toFixed(1) : '--'}v</strong> <span style="font-size:9.5px; color:${(sb.Pct_Required_Total >= 115) ? '#15803d' : ((sb.Pct_Required_Total < 100) ? '#b91c1c' : '#0369a1')}; font-weight:600;">(${sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) : '--'}%)</span>
+                                    <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                        <strong>${sb.Total_Virupas ? sb.Total_Virupas.toFixed(1) : '--'}v</strong> <span style="font-size: 12px; color:${(sb.Pct_Required_Total >= 115) ? '#15803d' : ((sb.Pct_Required_Total < 100) ? '#b91c1c' : '#0369a1')}; font-weight:600;">(${sb.Pct_Required_Total ? sb.Pct_Required_Total.toFixed(1) : '--'}%)</span>
                                     </div>
-                                    <div style="font-size:9px; color:#64748b; font-weight:600; white-space:nowrap;">
+                                    <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap;">
                                         ${sb.Relative_Rank ? 'Rank #' + sb.Relative_Rank + ' • ' : ''}${(sb.Pct_Required_Total >= 125) ? "Abundant" : ((sb.Pct_Required_Total >= 100) ? "Capable" : ((sb.Pct_Required_Total >= 85) ? "Mild Deficit" : "Deficit"))}
                                     </div>
                                 `}
@@ -3101,7 +3150,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 <div>
                                     ${netDrishtiBadge}
                                 </div>
-                                <div style="font-size:9px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:145px;">
+                                <div style="font-size: 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:145px;">
                                     ${decisiveAspectBadge}${bgBadgeHtml}
                                 </div>
                             </div>
@@ -3112,9 +3161,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size:9px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
+                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
                                 </div>
-                                <div style="font-size:9px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                <div style="font-size: 12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${primaryMoodPill}
                                 </div>
                             </div>
@@ -3122,10 +3171,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size:9.5px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">${quad.badge}</span>
+                                    <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size: 12px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">${quad.badge}</span>
                                 </div>
-                                <div style="font-size:9.5px; color:#475569; font-weight:600; white-space:nowrap;">
-                                    ★ <strong style="color:#1e293b; font-size:11px;">${netVitality.toFixed(1)}</strong> / 10 • <span style="font-size:8.5px; color:#64748b;">${subcaptionText}</span>
+                                <div style="font-size: 12px; color:#475569; font-weight:600; white-space:nowrap;">
+                                    ★ <strong style="color:#1e293b; font-size: 12px;">${netVitality.toFixed(1)}</strong> / 10 • <span style="font-size: 12px; color:#64748b;">${subcaptionText}</span>
                                 </div>
                             </div>
                         </td>
@@ -3133,43 +3182,55 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     <tr id="drawer-${graha}" class="diagnostic-drawer-row" style="display:none;">
                         <td colspan="9">
                             <div class="drawer-container">
+                                <div class="drawer-view-bar">
+                                    <div class="drawer-tabs-group">
+                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">👁️ All Side-by-Side</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">👑 Dignity</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">🏛️ House</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">🌊 Aspect Waves</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">🧘 Avasthas</button>
+                                    </div>
+                                    <div class="drawer-actions-group">
+                                        <button type="button" class="drawer-action-btn expand-aspects-btn" onclick="toggleExpandAspects(this)">⛶ Expand Aspect Waves</button>
+                                    </div>
+                                </div>
                                 <div class="drawer-grid">
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="dignity">
                                         <div class="drawer-card-title">
                                             <span>👑 Dignity &amp; Peer Bridge</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Inborn ➔ Functional Mindset</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Inborn ➔ Functional Mindset</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             ${shadvargaHtml}
                                             <div style="background:#fbf7ef; border:1px solid #ebdcc5; border-radius:4px; padding:4px 6px; margin:4px 0;">
                                                 <strong>Host Bedrock (${signLord}):</strong> ${hostDig.toFixed(0)}% dignity • ${hostSb.toFixed(0)}% muscle<br>
-                                                <span style="font-size:9.5px; color:#64748b;">${vitRes.rescue_desc || ''}</span>
+                                                <span style="font-size:12px; color:#64748b;">${vitRes.rescue_desc || ''}</span>
                                             </div>
                                             ${peerShiftsDetailHtml}
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="house">
                                         <div class="drawer-card-title">
                                             <span>🏡 House Placement &amp; Lordship Agenda</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Layer 4 Operational Field</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Layer 4 Operational Field</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             ${card2Html}
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card drawer-card-aspects" data-card="aspect-weather">
                                         <div class="drawer-card-title">
                                             <span>⚡ Aspect &amp; Conjunction Weather</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Environmental Pressures</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Environmental Pressures</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             ${card3Html}
                                         </div>
                                     </div>
-                                    <div class="drawer-card">
+                                    <div class="drawer-card" data-card="avasthas">
                                         <div class="drawer-card-title">
                                             <span>🧠 Deep Avasthās &amp; Psychology</span>
-                                            <span style="font-size:9.5px; color:#78716c; font-weight:normal;">Maturity, Mood &amp; Drive</span>
+                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Maturity, Mood &amp; Drive</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             ${card4Html}
@@ -3207,6 +3268,8 @@ if (typeof window !== 'undefined') {
     window.updateMasterDiagnosticWidget = updateMasterDiagnosticWidget;
     window.populateMasterDiagnosticTable = populateMasterDiagnosticTable;
     window.toggleDiagnosticDrawer = toggleDiagnosticDrawer;
+    window.switchDrawerTab = switchDrawerTab;
+    window.toggleExpandAspects = toggleExpandAspects;
     window.renderNakshatraCell = renderNakshatraCell;
     window.renderContinuousAspectSvg = renderContinuousAspectSvg;
     window.calculateContinuousDrishti = calculateContinuousDrishti;

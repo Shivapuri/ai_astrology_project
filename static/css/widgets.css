@@ -604,6 +604,12 @@
         }
 
         /* Master Graha Diagnostic Table */
+        .master-diagnostic-table,
+        .master-diagnostic-table thead,
+        .master-diagnostic-table tbody,
+        .master-diagnostic-table tr {
+            font-size: 13px !important;
+        }
         .master-diagnostic-table {
             border-collapse: separate !important;
             border-spacing: 0 !important;

@@ -4,6 +4,7 @@ Verifies the 8-column layout, 9-tier archetypes, master lords, environmental bad
 calculation receipts, and divisional varga switching.
 """
 
+import re
 import pytest
 import urllib.request
 from playwright.sync_api import Page, expect
@@ -103,3 +104,97 @@ def test_master_diagnostic_varga_switch(page: Page):
     # Verify rows still render properly
     rows = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row")
     expect(rows).to_have_count(10)
+
+
+def test_master_diagnostic_typography_floor(page: Page):
+    """Verify that NO text anywhere in tables, badges, captions, or drawer cards is below 12px."""
+    init_page(page)
+    page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
+    
+    # Open Venus drawer
+    venus_row = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row[data-id='Venus']")
+    expect(venus_row).to_be_visible()
+    venus_row.click()
+    
+    drawer = page.locator("#cell1 #drawer-Venus")
+    expect(drawer).to_be_visible()
+    
+    # Check computed font-sizes of headers, cells, badges, and drawer elements
+    font_check = page.evaluate("""() => {
+        const table = document.querySelector('#cell1 .master-diagnostic-table');
+        if (!table) return { count: 0, violations: [] };
+        
+        const violations = [];
+        const walker = document.createTreeWalker(table, NodeFilter.SHOW_ELEMENT);
+        let el = walker.nextNode();
+        let total = 0;
+        
+        while (el) {
+            // Only inspect elements with direct text or specific visual widgets
+            if (el.tagName !== 'svg' && el.tagName !== 'path' && el.tagName !== 'g' && el.tagName !== 'line' && el.tagName !== 'circle' && el.tagName !== 'polyline' && el.tagName !== 'polygon') {
+                const fs = parseFloat(window.getComputedStyle(el).fontSize);
+                // Check if element has non-empty text content
+                const text = el.innerText ? el.innerText.trim() : '';
+                if (text && fs > 0) {
+                    total++;
+                    if (fs < 12.0) {
+                        violations.push({
+                            tag: el.tagName,
+                            className: el.className,
+                            fontSize: fs,
+                            text: text.substring(0, 30)
+                        });
+                    }
+                }
+            }
+            el = walker.nextNode();
+        }
+        return { count: total, violations: violations };
+    }""")
+    
+    assert font_check["count"] > 0, "Should have inspected text elements"
+    assert len(font_check["violations"]) == 0, f"Found sub-12px elements: {font_check['violations'][:5]}"
+
+
+def test_master_diagnostic_drawer_tabs_and_expand(page: Page):
+    """Verify drawer view switcher tabs and aspect waves full-width expansion button."""
+    init_page(page)
+    page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
+    
+    venus_row = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row[data-id='Venus']")
+    expect(venus_row).to_be_visible()
+    venus_row.click()
+    
+    drawer = page.locator("#cell1 #drawer-Venus")
+    expect(drawer).to_be_visible()
+    
+    # 1. Verify View Bar buttons exist
+    view_bar = drawer.locator(".drawer-view-bar")
+    expect(view_bar).to_be_visible()
+    expect(view_bar.locator(".drawer-tab-btn[data-tab='all']")).to_be_visible()
+    expect(view_bar.locator(".drawer-tab-btn[data-tab='aspect-weather']")).to_be_visible()
+    
+    # 2. Switch to Aspect Waves tab
+    view_bar.locator(".drawer-tab-btn[data-tab='aspect-weather']").click()
+    
+    # Aspect card should be visible, others hidden
+    aspect_card = drawer.locator(".drawer-card[data-card='aspect-weather']")
+    expect(aspect_card).to_be_visible()
+    dignity_card = drawer.locator(".drawer-card[data-card='dignity']")
+    expect(dignity_card).not_to_be_visible()
+    
+    # 3. Switch back to All Side-by-Side
+    view_bar.locator(".drawer-tab-btn[data-tab='all']").click()
+    expect(aspect_card).to_be_visible()
+    expect(dignity_card).to_be_visible()
+    
+    # 4. Click Expand Aspect Waves toggle button
+    expand_btn = drawer.locator(".expand-aspects-btn")
+    expect(expand_btn).to_be_visible()
+    expand_btn.click()
+    expect(aspect_card).to_have_class(re.compile(r"is-expanded"))
+    
+    # Click again to restore
+    expand_btn.click()
+    expect(aspect_card).not_to_have_class(re.compile(r"is-expanded"))
+
