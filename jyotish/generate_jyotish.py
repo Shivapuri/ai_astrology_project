@@ -15,6 +15,7 @@ import jyotish.vimshopaka as vimshopaka
 import jyotish.sign_attributes as sign_attributes
 import jyotish.planetary_evaluation as planetary_evaluation
 import jyotish.karakas as karakas
+import jyotish.report.report_engine as report_engine
 
 try:
     import swisseph as swe
@@ -997,6 +998,9 @@ def generate_kala_chart(
         "yogas": yogas_data
     }
     
+    # 6.5 Astrological Synthesis Report (Master Ingredients Desk)
+    vedic_context["report"] = report_engine.generate_report_payload(vedic_context)
+
     # 7. Write to file (only if requested)
     if output_filepath:
         with open(output_filepath, "w", encoding="utf-8") as f:

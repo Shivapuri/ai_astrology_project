@@ -1599,6 +1599,121 @@ def test_baladi_softened_compression_floor():
     assert vit_jup["quadrant"]["tier"] == "Constructive Ally"
 
 
+def test_calculate_conjunction_power_3band_navamsha():
+    """
+    Verify the canonical 3-Band Navāṁśa Conjunction Scale (Ruleset 9):
+    - Exact / Intimate: <= 3°20' (1 Navāṁśa = 3.3333°) -> 60.0 Virūpas (100%)
+    - Moderate: 3°20' to 10°00' -> 36.0 Virūpas (60%)
+    - Wide (Same Sign): > 10°00' -> 15.0 Virūpas (25%)
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_conjunction_power
+
+    # Exact Band (<= 3°20')
+    for orb in [0.0, 0.5, 1.5, 3.0, 3.3333]:
+        vir, pct, label = calculate_conjunction_power(orb)
+        assert vir == 60.0, f"Orb {orb} expected 60.0v, got {vir}"
+        assert pct == 100.0, f"Orb {orb} expected 100.0%, got {pct}"
+        assert "Exact" in label
+
+    # Moderate Band (3°20' to 10°00')
+    for orb in [3.35, 4.0, 6.5, 9.9, 10.0]:
+        vir, pct, label = calculate_conjunction_power(orb)
+        assert vir == 36.0, f"Orb {orb} expected 36.0v, got {vir}"
+        assert pct == 60.0, f"Orb {orb} expected 60.0%, got {pct}"
+        assert "Moderate" in label
+
+    # Wide Band (> 10°00')
+    for orb in [10.01, 12.0, 18.5, 29.9]:
+        vir, pct, label = calculate_conjunction_power(orb)
+        assert vir == 15.0, f"Orb {orb} expected 15.0v, got {vir}"
+        assert pct == 25.0, f"Orb {orb} expected 25.0%, got {pct}"
+        assert "Wide" in label
+
+
+def test_unified_graha_cockpit_structure_and_invariants(test_chart):
+    """
+    Verify the 3-Column Diagnostic Cockpit structure and architectural invariants:
+    1. Cockpit payload presence on all planets.
+    2. Shadvarga 6-Varga table structure with correct canonical weights (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1).
+    3. Drishti curve threshold: Only aspects >= 12.0 Virūpas are included in stage3_aspect_graphs.
+    4. Influencer Bālādi is contextual only; mathematical shift uses Jāgradādi alertness.
+    5. Naisargika Sambandha directionality: Natural Friends produce positive vector, Natural Enemies produce negative vector.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_aspect_shift, get_aspect_direction_vector
+
+    eval_data = test_chart["planetary_evaluation"]
+    planets = eval_data["planets"]
+
+    for p_name, p_data in planets.items():
+        assert "unified_cockpit" in p_data, f"unified_cockpit missing for {p_name}"
+        cockpit = p_data["unified_cockpit"]
+
+        # Basic keys
+        assert cockpit["planet"] == p_name
+        assert "stage1_shadvarga" in cockpit
+        assert "stage2_environment" in cockpit
+        assert "stage3_kinetic_muscle" in cockpit
+        assert "stage3_aspect_graphs" in cockpit
+        assert "stage4_synthesis" in cockpit
+
+        # Stage 1: Shadvarga rows
+        s1 = cockpit["stage1_shadvarga"]
+        assert "rows" in s1
+        assert len(s1["rows"]) == 6
+        expected_weights = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
+        for row in s1["rows"]:
+            v = row["varga"]
+            assert v in expected_weights
+            assert row["weight"] == expected_weights[v]
+
+        # Stage 3: Drishti curves threshold (>= 12.0 Virūpas only)
+        graphs = cockpit["stage3_aspect_graphs"]
+        for g in graphs:
+            assert g["virupas"] >= 12.0, f"Aspect graph virupas {g['virupas']} should be >= 12.0v"
+
+        # Stage 2: Peer alliances
+        s2 = cockpit["stage2_environment"]
+        for peer in s2.get("peer_influences", []):
+            assert "baladi" in peer
+            assert "state" in peer["baladi"]
+            assert "efficiency_pct" in peer["baladi"]
+            assert "jagradadi" in peer
+            assert "state" in peer["jagradadi"]
+            assert "multiplier_pct" in peer["jagradadi"]
+
+    # Invariant: Friendship directionality & shift
+    # Mars is Natural Friend to Jupiter -> direction = 1.0
+    dir_mars_on_jup = get_aspect_direction_vector(
+        sender="Mars",
+        receiver="Jupiter",
+        contact_type="Conjunction",
+        sambhanda="Friend",
+        host_dispositor="Mars",
+        lunar_nature_weight=None
+    )
+    assert dir_mars_on_jup == 1.0, "Mars to Jupiter must have positive direction (+1.0)"
+
+    # Venus is Natural Enemy to Jupiter -> direction = -1.0
+    dir_venus_on_jup = get_aspect_direction_vector(
+        sender="Venus",
+        receiver="Jupiter",
+        contact_type="Aspect (Drishti)",
+        sambhanda="Enemy",
+        host_dispositor="Mars",
+        lunar_nature_weight=None
+    )
+    assert dir_venus_on_jup == -1.0, "Venus to Jupiter must have negative direction (-1.0)"
+
+    # Invariant: Multiplier isolation (Shift uses alertness, NOT influencer baladi)
+    # 60 Virūpas, Jagradadi Alertness 1.0 -> shift = 1.0 * 1.0 * 1.0 * 20.0 = +20.0%
+    full_shift = calculate_aspect_shift(aspect_virupas=60.0, alertness=1.0, direction=1.0)
+    assert full_shift == 20.0
+    # Half alertness (Svapna 0.5) -> shift = +10.0%
+    half_shift = calculate_aspect_shift(aspect_virupas=60.0, alertness=0.5, direction=1.0)
+    assert half_shift == 10.0
+
+
+
 
 
 

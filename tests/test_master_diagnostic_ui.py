@@ -80,8 +80,11 @@ def test_master_diagnostic_drawer_toggle(page: Page):
     drawer = page.locator("#cell1 #drawer-Sun")
     sun_row.click()
     expect(drawer).to_be_visible()
-    assert "Dignity & Peer Bridge" in drawer.inner_text()
-    assert "House Placement" in drawer.inner_text()
+    drawer_text_upper = drawer.inner_text().upper()
+    assert "1. ESSENTIAL FOUNDATION" in drawer_text_upper
+    assert "2. ENVIRONMENT & ALLIANCES" in drawer_text_upper
+    assert "3. INCOMING DRISHTI CURVES" in drawer_text_upper
+    assert "STAGE 4 SYNTHESIS" in drawer_text_upper
 
     # Click again to close drawer
     sun_row.click()
@@ -156,8 +159,8 @@ def test_master_diagnostic_typography_floor(page: Page):
     assert len(font_check["violations"]) == 0, f"Found sub-12px elements: {font_check['violations'][:5]}"
 
 
-def test_master_diagnostic_drawer_tabs_and_expand(page: Page):
-    """Verify drawer view switcher tabs and aspect waves full-width expansion button."""
+def test_master_diagnostic_drawer_cockpit_layout(page: Page):
+    """Verify widescreen 3-column cockpit layout: Top Strip, Shadvarga Table, Alliances, Drishti Curves, and Stage 4 Banner."""
     init_page(page)
     page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
     
@@ -168,33 +171,49 @@ def test_master_diagnostic_drawer_tabs_and_expand(page: Page):
     drawer = page.locator("#cell1 #drawer-Venus")
     expect(drawer).to_be_visible()
     
-    # 1. Verify View Bar buttons exist
-    view_bar = drawer.locator(".drawer-view-bar")
-    expect(view_bar).to_be_visible()
-    expect(view_bar.locator(".drawer-tab-btn[data-tab='all']")).to_be_visible()
-    expect(view_bar.locator(".drawer-tab-btn[data-tab='aspect-weather']")).to_be_visible()
+    # 1. Cockpit container
+    cockpit = drawer.locator(".diagnostic-drawer-cockpit")
+    expect(cockpit).to_be_visible()
     
-    # 2. Switch to Aspect Waves tab
-    view_bar.locator(".drawer-tab-btn[data-tab='aspect-weather']").click()
+    drawer_text = drawer.inner_text()
+    drawer_text_upper = drawer_text.upper()
     
-    # Aspect card should be visible, others hidden
-    aspect_card = drawer.locator(".drawer-card[data-card='aspect-weather']")
-    expect(aspect_card).to_be_visible()
-    dignity_card = drawer.locator(".drawer-card[data-card='dignity']")
-    expect(dignity_card).not_to_be_visible()
+    # 2. Header Strip: Kinetic Muscle & Score
+    assert "Kinetic Muscle:" in drawer_text
+    assert "/ 10" in drawer_text
     
-    # 3. Switch back to All Side-by-Side
-    view_bar.locator(".drawer-tab-btn[data-tab='all']").click()
-    expect(aspect_card).to_be_visible()
-    expect(dignity_card).to_be_visible()
+    # 3. Column 1: Essential Foundation (Shadvarga)
+    assert "1. ESSENTIAL FOUNDATION (SHADVARGA)" in drawer_text_upper
+    assert "Base Shadvarga Dignity:" in drawer_text
     
-    # 4. Click Expand Aspect Waves toggle button
-    expand_btn = drawer.locator(".expand-aspects-btn")
-    expect(expand_btn).to_be_visible()
-    expand_btn.click()
-    expect(aspect_card).to_have_class(re.compile(r"is-expanded"))
+    # 4. Column 2: Environment & Alliances
+    assert "2. ENVIRONMENT & ALLIANCES" in drawer_text_upper
+    assert "Host Dispositor:" in drawer_text
+    assert "FUNCTIONAL DIGNITY:" in drawer_text_upper
     
-    # Click again to restore
-    expand_btn.click()
-    expect(aspect_card).not_to_have_class(re.compile(r"is-expanded"))
+    # 5. Column 3: Incoming Drishti Curves
+    assert "3. INCOMING DRISHTI CURVES" in drawer_text_upper
+    
+    # 6. Bottom Banner: Stage 4 Synthesis
+    assert "STAGE 4 SYNTHESIS:" in drawer_text_upper
+    assert "Net Vitality:" in drawer_text
+    assert "Biological Vitality:" in drawer_text
+    assert "Conscious Mood:" in drawer_text
+    
+    # 7. Also test Jupiter drawer for clean Lajjitadi badges and no emojis in badges
+    jup_row = page.locator("#cell1 .master-diagnostic-table tbody tr.diagnostic-row[data-id='Jupiter']")
+    expect(jup_row).to_be_visible()
+    jup_row.click()
+    
+    jup_drawer = page.locator("#cell1 #drawer-Jupiter")
+    expect(jup_drawer).to_be_visible()
+    jup_cockpit = jup_drawer.locator(".diagnostic-drawer-cockpit")
+    expect(jup_cockpit).to_be_visible()
+    
+    jup_text_upper = jup_drawer.inner_text().upper()
+    assert "1. ESSENTIAL FOUNDATION (SHADVARGA)" in jup_text_upper
+    assert "2. ENVIRONMENT & ALLIANCES" in jup_text_upper
+    assert "3. INCOMING DRISHTI CURVES" in jup_text_upper
+    assert "STAGE 4 SYNTHESIS:" in jup_text_upper
+
 

@@ -481,6 +481,207 @@ def build_aspect_graph_data(
     }
 
 
+def calculate_conjunction_power(orb_degrees: float) -> Tuple[float, float, str]:
+    """
+    Evaluates conjunction power according to the canonical 3-Band Navāṁśa Rule (Ruleset 9):
+    - Exact / Intimate: <= 3°20' (1 Navāṁśa) -> 60.0 Virūpas (100%)
+    - Moderate: 3°20' to 10°00' -> 36.0 Virūpas (60%)
+    - Wide (Same Sign): > 10°00' -> 15.0 Virūpas (25%)
+    """
+    clamped_orb = abs(orb_degrees)
+    one_navamsha = 10.0 / 3.0  # 3.3333° (3°20')
+    
+    if clamped_orb <= (one_navamsha + 1e-7):
+        return 60.0, 100.0, "Exact (Intimate)"
+    elif clamped_orb <= (10.0 + 1e-7):
+        return 36.0, 60.0, "Moderate"
+    else:
+        return 15.0, 25.0, "Wide"
+
+
+def assemble_unified_graha_cockpit(
+    p: str,
+    p_d1: Dict[str, Any],
+    step1_info: Dict[str, Any],
+    step2_info: Dict[str, Any],
+    step3_info: Dict[str, Any],
+    step4_info: Dict[str, Any],
+    functional_dignity_pct: float,
+    sb_entry: Dict[str, Any],
+    host_sb_entry: Dict[str, Any],
+    vit_res: Dict[str, Any],
+    calibrated_lajj: List[Dict[str, Any]],
+    jagradaadi_map: Dict[str, Dict[str, Any]],
+    baladi_map: Dict[str, Dict[str, Any]],
+    d1_grahas: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Assembles the 3-Column Diagnostic Cockpit payload for a single planet.
+    """
+    # -------------------------------------------------------------------------
+    # STAGE 1: Shadvarga Foundation Table (Weights: D1:6, D9:5, D3:4, D2:2, D12:2, D30:1)
+    # -------------------------------------------------------------------------
+    v_weights = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
+    v_breakdown = step1_info.get("varga_breakdown", {})
+    shadvarga_rows = []
+    
+    for v_code in ["D1", "D2", "D3", "D9", "D12", "D30"]:
+        v_data = v_breakdown.get(v_code, {})
+        shadvarga_rows.append({
+            "varga": v_code,
+            "weight": v_weights.get(v_code, 1.0),
+            "sign": v_data.get("sign", "-"),
+            "dignity": v_data.get("dignity", "Neutral"),
+            "score_pct": v_data.get("score", 50.0)
+        })
+
+    # -------------------------------------------------------------------------
+    # STAGE 2: Peer Influences (Bālādi Contextual, Jāgradādi Multiplicative)
+    # -------------------------------------------------------------------------
+    target_lon = float(p_d1.get("longitude", 0.0))
+    peer_influences = []
+
+    # Map Lajjitadi states by influencing planet
+    lajj_index = {}
+    for item in calibrated_lajj:
+        for inf in item.get("influencing_planets", []):
+            pl = inf.get("planet")
+            if pl:
+                lajj_index.setdefault(pl, []).append({
+                    "state": item.get("base_state"),
+                    "severity": item.get("severity", "Moderate")
+                })
+
+    # 1. Incoming Conjunctions
+    for c in step3_info.get("conjunctions", []):
+        src = c.get("from_planet") or c.get("planet") or c.get("source") or ""
+        orb_deg = float(c.get("degree_diff", 0.0))
+        c_virupas, c_pct, c_band = calculate_conjunction_power(orb_deg)
+        src_bal = baladi_map.get(src, {})
+        src_jag = jagradaadi_map.get(src, {})
+
+        peer_influences.append({
+            "influencer": src,
+            "glyph": PLANET_GLYPHS.get(src, ""),
+            "contact_type": "Conjunction",
+            "contact_metric": f"{c_band} ({orb_deg:.1f}° orb)",
+            "contact_virupas": c_virupas,
+            "contact_power_pct": c_pct,
+            # Bālādi is contextual physical maturity; does NOT multiply shift:
+            "baladi": {
+                "state": src_bal.get("state", "Yuva"),
+                "efficiency_pct": src_bal.get("efficiency_pct", 100.0)
+            },
+            # Jāgradādi is the sole mathematical capacity multiplier:
+            "jagradadi": {
+                "state": src_jag.get("sanskrit", "Jāgrata"),
+                "multiplier_pct": int(src_jag.get("multiplier", 1.0) * 100)
+            },
+            "lajjitadi_states": lajj_index.get(src, []),
+            "dignity_shift_pct": float(c.get("shift", 0.0))
+        })
+
+    # 2. Incoming Aspects (Drishti >= 12.0 Virūpas)
+    incoming_aspect_graphs = []
+    
+    for asp in step3_info.get("aspects", []):
+        src = asp.get("from_planet") or asp.get("source") or ""
+        raw_v = float(asp.get("virupas", 0.0))
+        pct_power = round((raw_v / 60.0) * 100.0, 1)
+        src_bal = baladi_map.get(src, {})
+        src_jag = jagradaadi_map.get(src, {})
+
+        peer_influences.append({
+            "influencer": src,
+            "glyph": PLANET_GLYPHS.get(src, ""),
+            "contact_type": "Aspect (Dṛṣṭi)",
+            "contact_metric": f"{raw_v:.1f} Virūpas",
+            "contact_virupas": raw_v,
+            "contact_power_pct": pct_power,
+            "baladi": {
+                "state": src_bal.get("state", "Yuva"),
+                "efficiency_pct": src_bal.get("efficiency_pct", 100.0)
+            },
+            "jagradadi": {
+                "state": src_jag.get("sanskrit", "Jāgrata"),
+                "multiplier_pct": int(src_jag.get("multiplier", 1.0) * 100)
+            },
+            "lajjitadi_states": lajj_index.get(src, []),
+            "dignity_shift_pct": float(asp.get("shift", 0.0))
+        })
+
+        # Cutoff: Only generate aspect curves for significant rays (raw_v >= 12.0)
+        if src in d1_grahas and raw_v >= 12.0:
+            src_lon = float(d1_grahas[src].get("longitude", 0.0))
+            graph_data = build_aspect_graph_data(
+                source_planet=src,
+                source_deg=src_lon,
+                aspected_planets=[{
+                    "name": p,
+                    "longitude": target_lon,
+                    "symbol": f"{PLANET_GLYPHS.get(p, '')} {p}".strip(),
+                    "virupas": raw_v,
+                    "is_target": True
+                }]
+            )
+            incoming_aspect_graphs.append({
+                "source": src,
+                "glyph": PLANET_GLYPHS.get(src, ""),
+                "virupas": raw_v,
+                "power_pct": pct_power,
+                "graph": graph_data
+            })
+
+    # -------------------------------------------------------------------------
+    # STAGE 3: Kinetic Muscle (Shadbala Quota)
+    # -------------------------------------------------------------------------
+    required_virupas_map = {
+        "Sun": 390.0, "Moon": 360.0, "Mars": 300.0,
+        "Mercury": 420.0, "Jupiter": 390.0, "Venus": 330.0, "Saturn": 300.0
+    }
+    tot_vir = float(sb_entry.get("Total_Virupas", sb_entry.get("total_virupas", 0.0)))
+    req_vir = required_virupas_map.get(p, 360.0)
+    shadbala_pct = float(sb_entry.get("Pct_Required_Total", round((tot_vir / req_vir) * 100.0, 1) if req_vir > 0 else 100.0))
+
+    quad_dict = vit_res.get("quadrant", {}) if isinstance(vit_res.get("quadrant"), dict) else {}
+
+    return {
+        "planet": p,
+        "glyph": PLANET_GLYPHS.get(p, ""),
+        "sign": p_d1.get("sign", ""),
+        "degree": float(p_d1.get("degree_0_to_30", float(p_d1.get("longitude", 0.0)) % 30.0)),
+        "stage1_shadvarga": {
+            "rows": shadvarga_rows,
+            "base_dignity_pct": step1_info.get("weighted_dignity_pct", 50.0)
+        },
+        "stage2_environment": {
+            "host_bedrock": {
+                "planet": step2_info.get("host_planet", "-"),
+                "status": step2_info.get("rescue_status", "Neutral"),
+                "bonus_pct": step2_info.get("bonus_pct", 0.0)
+            },
+            "peer_influences": peer_influences,
+            "functional_dignity_pct": functional_dignity_pct
+        },
+        "stage3_kinetic_muscle": {
+            "total_virupas": tot_vir,
+            "required_virupas": req_vir,
+            "shadbala_pct": shadbala_pct,
+            "is_sufficient": shadbala_pct >= 100.0
+        },
+        "stage3_aspect_graphs": incoming_aspect_graphs,
+        "stage4_synthesis": {
+            "vitality_score": float(vit_res.get("vitality_score", 5.0)),
+            "archetype_title": quad_dict.get("archetype", "Pragmatic Executive"),
+            "vitality_tier": vit_res.get("vitality_tier", "Resilient"),
+            "summary_text": quad_dict.get("description", ""),
+            "baladi": vit_res.get("baladi", {}),
+            "deepthaadi": vit_res.get("deepthaadi", {}),
+            "affliction_badges": vit_res.get("affliction_badges", [])
+        }
+    }
+
+
 # -------------------------------------------------------------------------
 # 5. Ruleset 6: Classical Baladi Output & Gandanta Knots
 # -------------------------------------------------------------------------
@@ -2151,8 +2352,9 @@ def calculate_planetary_evaluation(
                 dusthana_occupants.append(p_name)
     has_multi_viparita = (len(dusthana_occupants) >= 2)
 
-    # Precompute Jagradaadi map across all D1 planets for interaction calibration (Vol 2 Ch. 10)
+    # Precompute Jagradaadi and Baladi maps across all D1 planets for interaction calibration (Vol 2 Ch. 10 & 11)
     jagradaadi_map = {}
+    baladi_map = {}
     for p_name in planets_eval_order:
         if p_name not in d1_grahas:
             continue
@@ -2160,6 +2362,8 @@ def calculate_planetary_evaluation(
         p_sign_node = p_d1_node.get("sign", "Aries")
         p_nat_dig = p_d1_node.get("dignity_breakdown", {}).get("natural_dignity", "") or p_d1_node.get("dignity_breakdown", {}).get("final_dignity", "")
         jagradaadi_map[p_name] = calculate_jagradaadi_avastha(p_name, p_sign_node, p_nat_dig)
+        p_deg_node = float(p_d1_node.get("degree_0_to_30", float(p_d1_node.get("longitude", 0.0)) % 30.0))
+        baladi_map[p_name] = calculate_baladi_avastha(p_sign_node, p_deg_node)
 
     # -------------------------------------------------------------------------
     # Moon Illumination & Phase (Paksha Bala - BPHS 3.11 & Vol 1 p. 15)
@@ -2344,16 +2548,10 @@ def calculate_planetary_evaluation(
             if o_sign == p_sign:
                 deg_diff = abs(my_deg - o_deg)
                 
-                # Classical 3-band discrete orb factor (Ruleset 9)
-                if deg_diff <= (10.0 / 3.0):      # <= 3°20' (One Navāṁśa)
-                    orb_factor = 1.0
-                    band_label = "Exact (Intimate)"
-                elif deg_diff <= 10.0:            # 3°20' to 10°00'
-                    orb_factor = 0.6
-                    band_label = "Moderate"
-                else:                             # > 10°00' (Wide in same sign)
-                    orb_factor = 0.25
-                    band_label = "Wide"
+                # Canonical 3-Band Navāṁśa Conjunction Scale (Ruleset 9)
+                c_virupas, c_pct, c_band = calculate_conjunction_power(deg_diff)
+                orb_factor = c_pct / 100.0
+                band_label = c_band
                     
                 direction = get_aspect_direction_vector(other_p, p, "Conjunction", natural_rel, sign_lord, lunar_weight)
                 shift = orb_factor * alertness * direction * 20.0
@@ -2375,7 +2573,7 @@ def calculate_planetary_evaluation(
                     "degree_diff": round(deg_diff, 2),
                     "orb_band": band_label,
                     "orb_factor": orb_factor,
-                    "power_pct": round(orb_factor * 100.0, 1),
+                    "power_pct": c_pct,
                     "sambhanda": rel_label,
                     "direction": direction,
                     "shift": round(shift, 1),
@@ -2896,6 +3094,23 @@ def calculate_planetary_evaluation(
                     if (vit_asp.get("from_planet") == src_p) or (vit_asp.get("source") == src_p):
                         vit_asp["aspect_graph"] = inc_g
 
+        cockpit_payload = assemble_unified_graha_cockpit(
+            p=p,
+            p_d1=p_d1,
+            step1_info=step1_info,
+            step2_info=step2_info,
+            step3_info=step3_info,
+            step4_info=step4_info,
+            functional_dignity_pct=round(functional_dignity_pct, 1),
+            sb_entry=sb_entry,
+            host_sb_entry=host_sb_entry,
+            vit_res=vit_res,
+            calibrated_lajj=calibrated_lajj,
+            jagradaadi_map=jagradaadi_map,
+            baladi_map=baladi_map,
+            d1_grahas=d1_grahas
+        )
+
         planets_result[p] = {
             "planet": p,
             "glyph": PLANET_GLYPHS.get(p, ""),
@@ -2963,7 +3178,9 @@ def calculate_planetary_evaluation(
                 "math_steps": math_steps
             },
             "strength": strength_info,
-            "calculation_trail": calc_trail
+            "calculation_trail": calc_trail,
+            "unified_cockpit": cockpit_payload,
+            "cockpit": cockpit_payload
         }
 
     # -------------------------------------------------------------------------

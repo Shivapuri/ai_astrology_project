@@ -1392,6 +1392,313 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 `;
             }
 
+            function buildFallbackCockpit(graha, pEval, pD1, d1Sign, signLord, effDig, sbVir, sbPct, netVitality, quad, vitRes) {
+                const vWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1 };
+                const vb = (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) || {};
+                const shadvargaRows = Object.keys(vWeights).map(vgKey => {
+                    const item = vb[vgKey] || {};
+                    return {
+                        varga: vgKey,
+                        weight: vWeights[vgKey],
+                        sign: item.sign || '-',
+                        dignity: item.dignity || 'Neutral',
+                        score_pct: item.score !== undefined ? Number(item.score) : 50.0
+                    };
+                });
+
+                const peerInfluences = [];
+                if (pEval.step3_aspects) {
+                    (pEval.step3_aspects.conjunctions || []).forEach(c => {
+                        peerInfluences.push({
+                            influencer: c.planet || c.source || '',
+                            glyph: grahaGlyphs[c.planet || c.source] || '',
+                            contact_type: 'Conjunction',
+                            contact_metric: `${c.orb_band || 'Moderate'} (${c.degree_diff || 0}° orb)`,
+                            contact_virupas: Number(c.virupas || 36.0),
+                            contact_power_pct: Number(c.power_pct || 60.0),
+                            baladi: { state: 'Yuva', efficiency_pct: 100 },
+                            jagradadi: { state: 'Jāgrata', multiplier_pct: 100 },
+                            lajjitadi_states: [],
+                            dignity_shift_pct: Number(c.shift || 0.0)
+                        });
+                    });
+                    (pEval.step3_aspects.aspects || []).forEach(a => {
+                        peerInfluences.push({
+                            influencer: a.planet || a.source || '',
+                            glyph: grahaGlyphs[a.planet || a.source] || '',
+                            contact_type: 'Aspect (Dṛṣṭi)',
+                            contact_metric: `${a.virupas || 0} Virūpas`,
+                            contact_virupas: Number(a.virupas || 0),
+                            contact_power_pct: Number(a.power_pct || 0),
+                            baladi: { state: 'Yuva', efficiency_pct: 100 },
+                            jagradadi: { state: 'Jāgrata', multiplier_pct: 100 },
+                            lajjitadi_states: [],
+                            dignity_shift_pct: Number(a.shift || 0.0)
+                        });
+                    });
+                }
+
+                return {
+                    planet: graha,
+                    glyph: grahaGlyphs[graha] || '',
+                    sign: d1Sign,
+                    degree: (pD1 && pD1.degree_0_to_30 !== undefined) ? Number(pD1.degree_0_to_30) : ((pD1 && pD1.longitude) ? Number(pD1.longitude) % 30 : 0),
+                    stage1_shadvarga: {
+                        rows: shadvargaRows,
+                        base_dignity_pct: Number((pEval.step1_shadvarga && pEval.step1_shadvarga.weighted_dignity_pct) || 50.0)
+                    },
+                    stage2_environment: {
+                        host_bedrock: {
+                            planet: (pEval.step2_host_rescue && pEval.step2_host_rescue.host_planet) || signLord,
+                            status: (pEval.step2_host_rescue && pEval.step2_host_rescue.rescue_status) || 'Neutral',
+                            bonus_pct: Number((pEval.step2_host_rescue && pEval.step2_host_rescue.bonus_pct) || 0.0)
+                        },
+                        peer_influences: peerInfluences,
+                        functional_dignity_pct: Number(effDig)
+                    },
+                    stage3_kinetic_muscle: {
+                        total_virupas: Number(sbVir || 0),
+                        required_virupas: 360,
+                        shadbala_pct: Number(sbPct || 100),
+                        is_sufficient: Number(sbPct || 100) >= 100
+                    },
+                    stage3_aspect_graphs: [],
+                    stage4_synthesis: {
+                        vitality_score: Number(netVitality || 5.0),
+                        archetype_title: (quad && quad.badge) ? quad.badge : 'Pragmatic Executive',
+                        vitality_tier: (quad && quad.badge) ? quad.badge : 'Resilient',
+                        summary_text: vitRes.summary_text || (pEval.quadrant && pEval.quadrant.description) || '',
+                        baladi: pEval.baladi_avastha || {},
+                        deepthaadi: pEval.deepthaadi || {},
+                        affliction_badges: pEval.affliction_badges || []
+                    }
+                };
+            }
+
+            function renderUnifiedGrahaCockpitDrawer(cockpit) {
+                const p = cockpit.planet;
+                const s1 = cockpit.stage1_shadvarga || { rows: [], base_dignity_pct: 50.0 };
+                const s2 = cockpit.stage2_environment || { host_bedrock: { planet: '-', status: 'Neutral', bonus_pct: 0.0 }, peer_influences: [], functional_dignity_pct: 50.0 };
+                const s3 = cockpit.stage3_kinetic_muscle || { total_virupas: 0, required_virupas: 360, shadbala_pct: 100, is_sufficient: true };
+                const graphs = cockpit.stage3_aspect_graphs || [];
+                const s4 = cockpit.stage4_synthesis || { vitality_score: 5.0, archetype_title: 'Pragmatic Executive', vitality_tier: 'Resilient', summary_text: '', baladi: {}, deepthaadi: {}, affliction_badges: [] };
+
+                // 1. Shadvarga Rows (Column 1)
+                let s1RowsHtml = (s1.rows || []).map(r => `
+                    <tr style="border-bottom: 1px solid var(--border-subtle);">
+                        <td style="padding: 5px 6px; font-weight: 700; color: var(--text-heading); font-size: 12.5px;">${r.varga}</td>
+                        <td style="padding: 5px 6px; color: var(--text-muted); font-size: 12px;">${Number(r.weight || 0).toFixed(0)}v</td>
+                        <td style="padding: 5px 6px; font-size: 12.5px;">${r.sign}</td>
+                        <td style="padding: 5px 6px; font-weight: 600; font-size: 12px;">${r.dignity}</td>
+                        <td style="padding: 5px 6px; font-weight: 700; color: #0284c7; font-size: 12.5px;">${Number(r.score_pct || 0).toFixed(0)}%</td>
+                    </tr>
+                `).join('');
+
+                // 2. Peer Alliances (Column 2) - Clean Badges, No Smileys
+                let peerRowsHtml = (s2.peer_influences || []).map(rel => {
+                    let lajjBadge = (rel.lajjitadi_states && rel.lajjitadi_states.length > 0)
+                        ? rel.lajjitadi_states.map(st => {
+                            let isBeneficState = (st.state === 'Mudita' || st.state === 'Garvita');
+                            let bg = isBeneficState ? '#dcfce7' : '#fee2e2';
+                            let col = isBeneficState ? '#166534' : '#991b1b';
+                            let border = isBeneficState ? '#86efac' : '#fca5a5';
+                            return `<span class="badge" style="background:${bg}; color:${col}; border:1px solid ${border}; font-size:12px; font-weight:600; padding:1px 5px; border-radius:3px;">
+                                ${st.state} (${st.severity})
+                            </span>`;
+                        }).join(' ')
+                        : `<span style="color:var(--text-muted); font-size:12px;">Undisturbed</span>`;
+
+                    let shiftNum = Number(rel.dignity_shift_pct || 0);
+                    let shiftColor = shiftNum > 0 ? '#15803d' : (shiftNum < 0 ? '#b91c1c' : '#64748b');
+                    let shiftStr = (shiftNum >= 0 ? '+' : '') + shiftNum.toFixed(1) + '%';
+
+                    let baladiState = (rel.baladi && rel.baladi.state) ? rel.baladi.state : 'Yuva';
+                    let baladiEff = (rel.baladi && rel.baladi.efficiency_pct !== undefined) ? Number(rel.baladi.efficiency_pct).toFixed(0) : '100';
+                    let jagradadiState = (rel.jagradadi && rel.jagradadi.state) ? rel.jagradadi.state : 'Jāgrata';
+                    let jagradadiMult = (rel.jagradadi && rel.jagradadi.multiplier_pct !== undefined) ? rel.jagradadi.multiplier_pct : 100;
+                    let virupasNum = Number(rel.contact_virupas || 0);
+                    let powerPctNum = Number(rel.contact_power_pct || 0);
+
+                    return `
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 12px; line-height: 1.45;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="font-weight: 700; font-size: 13px; color: var(--text-heading);">
+                                    ${rel.glyph || ''} ${rel.influencer} <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">&bull; ${rel.contact_type}</span>
+                                </span>
+                                <span style="font-weight: 800; font-size: 13px; color: ${shiftColor};">${shiftStr}</span>
+                            </div>
+                            <div style="color: var(--text-primary); margin-bottom: 3px; font-size: 12.5px;">
+                                <strong>Contact Strength:</strong> ${virupasNum.toFixed(1)}v (${rel.contact_metric} &bull; ${powerPctNum.toFixed(0)}%)
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 3px;">
+                                <strong>Influencer Status:</strong> Bālādi: ${baladiState} (${baladiEff}%) | Jāgradādi: ${jagradadiState} (${jagradadiMult}%)
+                            </div>
+                            <div style="color: var(--text-heading); font-size: 12px; display: flex; align-items: center; gap: 4px;">
+                                <strong>Lajjitādi State:</strong> ${lajjBadge}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                if (!peerRowsHtml) {
+                    peerRowsHtml = `<div style="color: var(--text-muted); font-size: 12px; font-style: italic; padding: 12px 0;">No active conjunctions or direct Parashari aspects received.</div>`;
+                }
+
+                // 3. Aspect Graphs (Column 3)
+                let graphsHtml = graphs.map(g => {
+                    let svg = g.graph ? renderContinuousAspectSvg(g.graph, p) : '';
+                    let virVal = Number(g.virupas || 0);
+                    let pwrVal = Number(g.power_pct || 0);
+                    return `
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
+                                <span>${g.glyph || ''} ${g.source} &rarr; ${p} Gaze</span>
+                                <span style="color: #0284c7;">${virVal.toFixed(1)}v (${pwrVal.toFixed(0)}%)</span>
+                            </div>
+                            <div style="width: 100%; overflow: hidden;">
+                                ${svg}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                if (!graphsHtml) {
+                    graphsHtml = `<div style="color: var(--text-muted); font-size: 12px; font-style: italic; padding: 12px 0;">No incoming aspects &ge; 12.0 Virūpas.</div>`;
+                }
+
+                const hostBedrock = s2.host_bedrock || { planet: '-', status: 'Neutral', bonus_pct: 0.0 };
+                const hostBonus = Number(hostBedrock.bonus_pct || 0);
+                const baladiData = s4.baladi || {};
+                const deepthaadiData = s4.deepthaadi || {};
+                const afflictions = s4.affliction_badges || [];
+                const netVitVal = Number(s4.vitality_score || 5.0);
+                const baseDigVal = Number(s1.base_dignity_pct || 50.0);
+                const funcDigVal = Number(s2.functional_dignity_pct || 50.0);
+                const totVirVal = Number(s3.total_virupas || 0);
+                const reqVirVal = Number(s3.required_virupas || 360);
+                const sbPctVal = Number(s3.shadbala_pct || 100);
+                const degVal = Number(cockpit.degree || 0);
+
+                // Complete Cockpit Assembly
+                return `
+                    <div class="diagnostic-drawer-cockpit" style="display: flex; flex-direction: column; gap: 12px; background: #faf6ee; border: 1.5px solid var(--border-strong); border-radius: 8px; padding: 14px;">
+                        
+                        <!-- TOP STRIP: IDENTITY + KINETIC MUSCLE (SHADBALA) + SCORE -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 14px; flex-wrap: wrap; gap: 10px;">
+                            <div style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
+                                ${cockpit.glyph || ''} ${p} in ${cockpit.sign || ''} ${degVal.toFixed(2)}&deg;
+                            </div>
+                            
+                            <!-- Shadbala Kinetic Muscle Bar -->
+                            <div style="display: flex; align-items: center; gap: 10px; min-width: 290px; flex: 1; max-width: 440px;">
+                                <div style="font-size: 12px; font-weight: 700; color: var(--text-heading); white-space: nowrap;">
+                                    Kinetic Muscle: ${totVirVal.toFixed(1)}v / ${reqVirVal.toFixed(0)}v (${sbPctVal.toFixed(0)}%)
+                                </div>
+                                <div style="flex: 1; height: 8px; background: #eee5d3; border-radius: 4px; overflow: hidden;">
+                                    <div style="width: ${Math.min(100, Math.max(0, sbPctVal))}%; height: 100%; background: ${s3.is_sufficient ? '#16a34a' : '#dc2626'}; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Final Score Pill -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--accent-primary); letter-spacing: 0.5px;">
+                                    ${s4.archetype_title}
+                                </span>
+                                <span style="font-size: 13px; font-weight: 900; background: #eee5d3; color: var(--text-heading); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-strong); white-space: nowrap;">
+                                    &starf; ${netVitVal.toFixed(1)} / 10
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- MAIN 3-COLUMN BODY -->
+                        <div style="display: grid; grid-template-columns: minmax(220px, 1.1fr) minmax(360px, 2.1fr) minmax(300px, 1.8fr); gap: 12px; width: 100%;">
+                            
+                            <!-- COLUMN 1: STAGE 1 ESSENTIAL FOUNDATION -->
+                            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; display: flex; flex-direction: column;">
+                                <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-heading); margin-bottom: 6px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
+                                    1. Essential Foundation (Shadvarga)
+                                </div>
+                                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left; margin-bottom: 8px;">
+                                    <thead>
+                                        <tr style="background: #faf7f2; color: var(--text-heading); font-size: 12px;">
+                                            <th style="padding: 4px 6px;">Varga</th>
+                                            <th style="padding: 4px 6px;">Wt</th>
+                                            <th style="padding: 4px 6px;">Sign</th>
+                                            <th style="padding: 4px 6px;">Dignity</th>
+                                            <th style="padding: 4px 6px;">Score</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>${s1RowsHtml}</tbody>
+                                </table>
+                                <div style="margin-top: auto; font-size: 12px; font-weight: 700; color: var(--text-heading); background: #faf7f2; padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-subtle); text-align: right;">
+                                    Base Shadvarga Dignity: ${baseDigVal.toFixed(1)}%
+                                </div>
+                            </div>
+
+                            <!-- COLUMN 2: STAGE 2 ENVIRONMENT & ALLIANCES -->
+                            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; display: flex; flex-direction: column;">
+                                <div style="font-size: 12px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px; display: flex; justify-content: space-between;">
+                                    <span style="text-transform: uppercase;">2. Environment & Alliances</span>
+                                    <span style="color: #0284c7; text-transform: none; font-weight: 700;">Functional Dignity: ${funcDigVal.toFixed(1)}%</span>
+                                </div>
+
+                                <!-- Dispositor Bedrock Sub-card -->
+                                <div style="background: #faf7f2; border: 1px solid var(--border-subtle); border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
+                                    <span><strong>Host Dispositor:</strong> ${hostBedrock.planet} (${hostBedrock.status})</span>
+                                    <span style="font-weight: 700; color: ${hostBonus >= 0 ? '#15803d' : '#b91c1c'};">${(hostBonus >= 0 ? '+' : '') + hostBonus.toFixed(1)}%</span>
+                                </div>
+
+                                <!-- Peer Influence List -->
+                                <div style="flex: 1; overflow-y: auto;">
+                                    ${peerRowsHtml}
+                                </div>
+                            </div>
+
+                            <!-- COLUMN 3: STAGE 2 INCOMING ASPECT GRAPHS -->
+                            <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; display: flex; flex-direction: column;">
+                                <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-heading); margin-bottom: 6px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
+                                    3. Incoming Drishti Curves (&ge; 12.0v)
+                                </div>
+                                <div style="flex: 1; overflow-y: auto;">
+                                    ${graphsHtml}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTTOM FULL-WIDTH VERDICT & BIO-SUMMARY BANNER -->
+                        <div style="background: var(--bg-surface); border: 1px solid var(--border-strong); border-radius: 6px; padding: 10px 14px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; flex-wrap: wrap; gap: 8px;">
+                                <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-heading);">
+                                    Stage 4 Synthesis: ${s4.archetype_title} (${s4.vitality_tier})
+                                </span>
+                                <span style="font-size: 12px; font-weight: 700; color: #15803d; white-space: nowrap;">
+                                    Net Vitality: ${netVitVal.toFixed(1)} / 10
+                                </span>
+                            </div>
+                            <div style="font-size: 13px; color: var(--text-primary); line-height: 1.45; margin-bottom: 6px;">
+                                ${s4.summary_text}
+                            </div>
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px; font-size: 12px;">
+                                <span style="padding: 2px 7px; background: #faf7f2; border: 1px solid var(--border-subtle); border-radius: 4px; font-weight: 600;">
+                                    Biological Vitality: ${baladiData.state || '-'} (${baladiData.efficiency_pct !== undefined ? baladiData.efficiency_pct : 100}%)
+                                </span>
+                                <span style="padding: 2px 7px; background: #faf7f2; border: 1px solid var(--border-subtle); border-radius: 4px; font-weight: 600;">
+                                    Conscious Mood: ${deepthaadiData.state || '-'}
+                                </span>
+                                ${afflictions.map(b => {
+                                    const cleanB = (typeof b === 'string') ? b.replace(/^[\p{Emoji}\u2600-\u27BF\uFE0F\s]+/u, '') : b;
+                                    return `<span style="padding: 2px 7px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 4px; font-weight: 700;">
+                                        ${cleanB}
+                                    </span>`;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                    </div>
+                `;
+            }
+
             // 1. Lagna Row
             const lagnaSign = (v_lagna && v_lagna.sign) ? v_lagna.sign : '';
             const lagnaLord = lagnaSign ? (signLords[lagnaSign] || (v_lagna && v_lagna.lord) || '') : '';
@@ -3180,67 +3487,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                     </tr>
                     <tr id="drawer-${graha}" class="diagnostic-drawer-row" style="display:none;">
-                        <td colspan="9">
+                        <td colspan="9" style="padding: 10px 14px; background: var(--bg-app, #f7f3eb);">
                             <div class="drawer-container">
-                                <div class="drawer-view-bar">
-                                    <div class="drawer-tabs-group">
-                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">👁️ All Side-by-Side</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">👑 Dignity</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">🏛️ House</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">🌊 Aspect Waves</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">🧘 Avasthas</button>
-                                    </div>
-                                    <div class="drawer-actions-group">
-                                        <button type="button" class="drawer-action-btn expand-aspects-btn" onclick="toggleExpandAspects(this)">⛶ Expand Aspect Waves</button>
-                                    </div>
-                                </div>
-                                <div class="drawer-grid">
-                                    <div class="drawer-card" data-card="dignity">
-                                        <div class="drawer-card-title">
-                                            <span>👑 Dignity &amp; Peer Bridge</span>
-                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Inborn ➔ Functional Mindset</span>
-                                        </div>
-                                        <div class="drawer-card-body">
-                                            ${shadvargaHtml}
-                                            <div style="background:#fbf7ef; border:1px solid #ebdcc5; border-radius:4px; padding:4px 6px; margin:4px 0;">
-                                                <strong>Host Bedrock (${signLord}):</strong> ${hostDig.toFixed(0)}% dignity • ${hostSb.toFixed(0)}% muscle<br>
-                                                <span style="font-size:12px; color:#64748b;">${vitRes.rescue_desc || ''}</span>
-                                            </div>
-                                            ${peerShiftsDetailHtml}
-                                        </div>
-                                    </div>
-                                    <div class="drawer-card" data-card="house">
-                                        <div class="drawer-card-title">
-                                            <span>🏡 House Placement &amp; Lordship Agenda</span>
-                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Layer 4 Operational Field</span>
-                                        </div>
-                                        <div class="drawer-card-body">
-                                            ${card2Html}
-                                        </div>
-                                    </div>
-                                    <div class="drawer-card drawer-card-aspects" data-card="aspect-weather">
-                                        <div class="drawer-card-title">
-                                            <span>⚡ Aspect &amp; Conjunction Weather</span>
-                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Environmental Pressures</span>
-                                        </div>
-                                        <div class="drawer-card-body">
-                                            ${card3Html}
-                                        </div>
-                                    </div>
-                                    <div class="drawer-card" data-card="avasthas">
-                                        <div class="drawer-card-title">
-                                            <span>🧠 Deep Avasthās &amp; Psychology</span>
-                                            <span style="font-size:12px; color:#78716c; font-weight:normal;">Maturity, Mood &amp; Drive</span>
-                                        </div>
-                                        <div class="drawer-card-body">
-                                            ${card4Html}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="drawer-receipt">
-                                    <div class="drawer-receipt-header">🧮 Mathematical Audit Receipt (Zero Double-Counting)</div>
-                                    <pre class="drawer-receipt-content">${receiptText ? receiptText : 'No calculation receipt available.'}</pre>
-                                </div>
+                                ${renderUnifiedGrahaCockpitDrawer(pEval.unified_cockpit || pEval.cockpit || buildFallbackCockpit(graha, pEval, pD1, d1Sign, signLord, effDig, sbVir, sbPct, netVitality, quad, vitRes))}
                             </div>
                         </td>
                     </tr>
@@ -3272,6 +3521,7 @@ if (typeof window !== 'undefined') {
     window.toggleExpandAspects = toggleExpandAspects;
     window.renderNakshatraCell = renderNakshatraCell;
     window.renderContinuousAspectSvg = renderContinuousAspectSvg;
+    window.renderUnifiedGrahaCockpitDrawer = renderUnifiedGrahaCockpitDrawer;
     window.calculateContinuousDrishti = calculateContinuousDrishti;
     window.DIGNITY_MEANINGS = DIGNITY_MEANINGS;
     window.NAKSHATRA_DATA = NAKSHATRA_DATA;

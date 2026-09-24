@@ -576,7 +576,7 @@ function assignWidget(widgetType, targetCell = null, options = {}) {
             const tmpl = document.getElementById('tmpl-' + widgetType);
             if (tmpl) {
                 contentDiv.appendChild(tmpl.content.cloneNode(true));
-                if (['info', 'planetary-evaluation', 'classical-yogas', 'notes'].includes(widgetType)) {
+                if (['info', 'planetary-evaluation', 'classical-yogas', 'notes', 'report'].includes(widgetType)) {
                     contentDiv.classList.add('scrollable');
                 } else {
                     contentDiv.classList.remove('scrollable');

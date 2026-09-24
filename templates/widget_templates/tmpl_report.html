@@ -1,0 +1,70 @@
+<template id="tmpl-report">
+    <div class="widget-content widget-synthesis-report" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: #faf6ef;">
+        <!-- Top Toolbar -->
+        <div class="chart-toolbar report-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: #4a3325; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
+                    <span>📜</span> Astrological Synthesis Report
+                </span>
+                <div class="report-tab-pills" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 2px; gap: 2px;">
+                    <button type="button" class="report-pill-btn active" data-tab="polarity" onclick="switchReportTab(this, 'polarity')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌟 Polarity &amp; Stars</button>
+                    <button type="button" class="report-pill-btn" data-tab="environment" onclick="switchReportTab(this, 'environment')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌿 Elements &amp; Axis</button>
+                    <button type="button" class="report-pill-btn" data-tab="prominence" onclick="switchReportTab(this, 'prominence')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">👑 Planetary Rank</button>
+                    <button type="button" class="report-pill-btn" data-tab="synthesis" onclick="switchReportTab(this, 'synthesis')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🧪 Synthesis Desk</button>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="report-dominant-badge" style="font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 4px; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d;">Dominant: --</span>
+                <button type="button" class="btn-widget-maximize" title="Maximize Report (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+        </div>
+
+        <!-- Scrollable Report Body -->
+        <div class="responsive-table-container report-body" style="padding: 10px; flex: 1; overflow-y: auto; overflow-x: hidden; background: #faf6ef;">
+            <!-- Tab 1: Polarity Core & Stars -->
+            <div class="report-tab-pane tab-polarity active" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Polarity Relationship Banner -->
+                <div class="polarity-banner-container"></div>
+
+                <!-- Dual Nakshatra Cards (Responsive side-by-side or stacked) -->
+                <div class="polarity-cards-row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px;">
+                    <div class="asc-nak-card-wrapper"></div>
+                    <div class="moon-nak-card-wrapper"></div>
+                </div>
+
+                <!-- 4-Step Nakshatra Dominance Leaderboard -->
+                <div class="nakshatra-dominance-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+
+                <!-- Classical 7-Temperament Distribution -->
+                <div class="temperament-distribution-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+
+                <!-- All Occupied Nakshatras Table -->
+                <div class="all-nakshatras-table-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+            </div>
+
+            <!-- Tab 2: Elements & Operational Axis -->
+            <div class="report-tab-pane tab-environment" style="display: none; flex-direction: column; gap: 12px;">
+                <!-- Operational Axis (Rashi vs Navamsha) -->
+                <div class="operational-axis-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+
+                <!-- Elements & Gunas Balance -->
+                <div class="environmental-tallies-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+            </div>
+
+            <!-- Tab 3: Planetary Prominence & Dignity -->
+            <div class="report-tab-pane tab-prominence" style="display: none; flex-direction: column; gap: 12px;">
+                <!-- Commander Spotlight -->
+                <div class="commander-spotlight-container"></div>
+
+                <!-- Prominence Leaderboard Table -->
+                <div class="prominence-table-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
+            </div>
+
+            <!-- Tab 4: Synthesis Desk -->
+            <div class="report-tab-pane tab-synthesis" style="display: none; flex-direction: column; gap: 12px;">
+                <!-- Ingredients Checklist -->
+                <div class="synthesis-desk-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 12px;"></div>
+            </div>
+        </div>
+    </div>
+</template>

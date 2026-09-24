@@ -1518,3 +1518,46 @@
     white-space: normal;
     font-family: var(--font-sans);
 }
+
+/* ==========================================================================
+   Astrological Synthesis Report Widget Styling
+   ========================================================================== */
+.widget-synthesis-report {
+    font-family: var(--font-sans, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+    color: #1e293b;
+    background: #faf6ef;
+}
+
+.widget-synthesis-report .report-toolbar {
+    background: #f7f3eb;
+    border-bottom: 1px solid #e5dccb;
+    user-select: none;
+}
+
+.widget-synthesis-report .report-pill-btn {
+    transition: background 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.widget-synthesis-report .report-pill-btn:hover {
+    color: #1e293b;
+}
+
+.widget-synthesis-report .report-tab-pane {
+    animation: fadeInReport 0.15s ease-in-out;
+}
+
+@keyframes fadeInReport {
+    from { opacity: 0; transform: translateY(2px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+    .widget-synthesis-report .polarity-cards-row {
+        grid-template-columns: 1fr !important;
+    }
+    .widget-synthesis-report .report-tab-pills {
+        flex-wrap: wrap;
+    }
+}

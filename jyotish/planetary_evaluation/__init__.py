@@ -17,7 +17,9 @@ from .planetary_evaluation import (
     ANCHOR_DEGREES,
     get_aspect_anchor_points,
     calculate_continuous_drishti,
-    build_aspect_graph_data
+    build_aspect_graph_data,
+    calculate_conjunction_power,
+    assemble_unified_graha_cockpit
 )
 from .lagna_evaluation import evaluate_lagna_vitality
 
@@ -35,5 +37,7 @@ __all__ = [
     "ANCHOR_DEGREES",
     "get_aspect_anchor_points",
     "calculate_continuous_drishti",
-    "build_aspect_graph_data"
+    "build_aspect_graph_data",
+    "calculate_conjunction_power",
+    "assemble_unified_graha_cockpit"
 ]
