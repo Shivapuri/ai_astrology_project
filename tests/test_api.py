@@ -36,6 +36,19 @@ def test_chart_api(client):
     assert "D1" in data["svgs"]
     assert "south" in data["svgs"]["D1"]["symbol"]
 
+def test_chart_api_notation_and_modes(client):
+    response = client.get('/api/chart/adolf-hitler?mode=english&d10_mode=direct&nakshatra_system=VIC_CHITRA')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert "english" in data["svgs"]["D1"]
+    assert "Su" in data["svgs"]["D1"]["english"]["south"]
+    assert "Su" in data["svgs"]["D1"]["south"]
+    # Nakshatra system VIC_CHITRA
+    assert data["data"]["calculation_settings"]["nakshatra_system"] == "VIC_CHITRA"
+    assert data["data"]["nakshatras"]["system"] == "VIC_CHITRA"
+    # D10 mode direct
+    assert data["data"]["calculation_settings"]["d10_mode"] == "direct"
+
 def test_shri_krishna_chart_api(client):
     # Fetch by slug and UUID
     for endpoint in ['/api/chart/shri-krishna', '/api/chart/8270c2da-98d0-4b39-89ac-a3f5a11ac2b0']:

@@ -188,7 +188,7 @@ def test_table_widget_maximize_modal(page: Page):
 
     modal = page.locator("#widgetMaximizeModal")
     expect(modal).to_be_visible()
-    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Dignities in Vargas")
+    expect(page.locator("#widgetMaximizeModalTitle")).to_contain_text("Shivapuri")
     expect(page.locator("#widgetMaximizeContainer table")).to_be_visible()
 
     # Close with Escape key
@@ -342,7 +342,7 @@ def test_chart_maximize_floating_window_and_aspects(page: Page):
     card = page.locator("#maximizeChartCard")
     expect(card).to_be_visible()
     expect(page.locator("#maximizeChartHeader")).to_be_visible()
-    expect(page.locator("#maximizeModalTitle")).to_contain_text("Circular")
+    expect(page.locator("#maximizeModalTitle")).to_contain_text(re.compile("circular", re.IGNORECASE))
 
     # Check zoom controls
     zoom_label = page.locator("#maximizeZoomLabel")

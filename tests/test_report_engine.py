@@ -175,3 +175,103 @@ def test_generate_kala_chart_report_payload_integration():
     assert rep["nakshatra_dominance"]["dominant_nakshatra"]
     assert len(rep["nakshatra_dominance"]["temperament_breakdown"]) == 7
     assert rep["planetary_rankings"]["chart_commander"]
+
+
+def test_nakshatra_prominence_scaled_scoring():
+    """Verify that Prominence scaling weights occupancy and aspect rays dynamically."""
+    mock_nakshatras = {
+        "Lagna": {"nakshatra": "Bharani", "pada": 1},
+        "Moon": {"nakshatra": "Rohini", "pada": 2},
+        "Sun": {"nakshatra": "Pushya", "pada": 3},
+        "Mars": {"nakshatra": "Bharani", "pada": 4},
+        "Saturn": {"nakshatra": "Swati", "pada": 1}
+    }
+
+    # Custom prominence map:
+    # Mars is #1 Commander (2.30), Saturn is weak (0.65), Moon is strong (1.25), Sun is 1.50
+    mock_prominence = {
+        "Moon": 1.25,
+        "Sun": 1.50,
+        "Mars": 2.30,
+        "Saturn": 0.65
+    }
+
+    # Aspects passed to compute_nakshatra_dominance are ignored (backwards-compatibility)
+    mock_aspects = {
+        "planets": {
+            "Mars": {"Moon": {"raw": 30.0}, "Sun": {"raw": 0.0}}
+        },
+        "cusps": {}
+    }
+
+    res = compute_nakshatra_dominance({}, mock_nakshatras, mock_aspects, prominence_map=mock_prominence)
+    leaderboard = {item["nakshatra"]: item for item in res["leaderboard"]}
+
+    # Rohini (Moon): Base = 8.0 * 1.25 = 10.0
+    assert leaderboard["Rohini"]["base_points"] == 10.0
+    assert leaderboard["Rohini"]["total_points"] == 10.0
+
+    # Bharani: Lagna (4.0 * 1.0 = 4.0) + Mars (1.0 * 2.30 = 2.30) = 6.30 points
+    assert leaderboard["Bharani"]["base_points"] == 6.30
+    assert leaderboard["Bharani"]["total_points"] == 6.30
+
+    # Pushya (Sun): Base = 2.0 * 1.50 = 3.0
+    assert leaderboard["Pushya"]["base_points"] == 3.0
+    assert leaderboard["Pushya"]["total_points"] == 3.0
+
+    # Swati (Saturn): Base = 1.0 * 0.65 = 0.65
+    assert leaderboard["Swati"]["base_points"] == 0.65
+    assert leaderboard["Swati"]["total_points"] == 0.65
+
+    # Pure occupancy dominance ranking: Rohini (10.0) > Bharani (6.30) > Pushya (3.0) > Swati (0.65)
+    assert res["dominant_nakshatra"]["nakshatra"] == "Rohini"
+    assert leaderboard["Rohini"]["rank"] == 1
+    assert leaderboard["Bharani"]["rank"] == 2
+    assert leaderboard["Pushya"]["rank"] == 3
+    assert leaderboard["Swati"]["rank"] == 4
+
+
+def test_environmental_tally_prominence_weighted():
+    """Verify that Macro Environmental Tally weights elements by Prominence score."""
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},  # Fire (baseline score 1.0)
+            "grahas": {
+                "Mars": {"sign": "Leo"},      # Fire (exalted prominence 2.50)
+                "Sun": {"sign": "Taurus"},    # Earth (prominence 1.0)
+                "Venus": {"sign": "Virgo"},   # Earth (prominence 1.0)
+                "Mercury": {"sign": "Capricorn"}, # Earth (prominence 1.0)
+                "Moon": {"sign": "Gemini"},   # Air (prominence 1.0)
+                "Saturn": {"sign": "Libra"},  # Air (prominence 1.0)
+                "Jupiter": {"sign": "Cancer"},# Water (prominence 1.0)
+                "Rahu": {"sign": "Scorpio"},  # Water (prominence 1.0)
+                "Ketu": {"sign": "Pisces"}    # Water (prominence 1.0)
+            }
+        }
+    }
+
+    mock_prominence = {
+        "Mars": 2.50,
+        "Sun": 1.0,
+        "Venus": 1.0,
+        "Mercury": 1.0,
+        "Moon": 1.0,
+        "Saturn": 1.0,
+        "Jupiter": 1.0,
+        "Rahu": 1.0,
+        "Ketu": 1.0
+    }
+
+    tally = compute_environmental_tally(mock_vargas, prominence_map=mock_prominence)
+    elem = tally["elements"]
+
+    # Earth has 3 bodies with score 1.0 each = 3.0 pts
+    # Fire has Lagna (1.0) + Mars (2.50) = 3.50 pts (even though only 2 bodies!)
+    assert elem["counts"]["Earth"] == 3
+    assert elem["counts"]["Fire"] == 2
+    assert elem["points"]["Fire"] == 3.50
+    assert elem["points"]["Earth"] == 3.00
+
+    # Fire is dominant thermodynamically despite having fewer planets than Earth!
+    assert elem["dominant"] == "Fire"
+

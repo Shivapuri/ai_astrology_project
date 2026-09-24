@@ -170,13 +170,15 @@ function updateReportWidget(cell, chartData) {
         `;
     }
 
-    // 1.4 4-Step Nakshatra Dominance Leaderboard
+    // 1.4 Nakshatra Dominance Leaderboard (Prominence-Scaled Occupancy)
     const domContainer = cell.querySelector('.nakshatra-dominance-container');
     if (domContainer && nakDominance.leaderboard) {
         let rowsHtml = '';
         nakDominance.leaderboard.forEach(item => {
-            const occBadges = item.occupants.map(o => `<span style="font-weight:700; background:#e2e8f0; color:#1e293b; padding:1px 6px; border-radius:3px; font-size:12px;">${o.entity} (${o.weight}pt)</span>`).join(' ');
-            const aspectReceipt = item.aspect_points > 0 ? `<span style="color:#0284c7; font-size:12px; margin-left:6px;" title="${JSON.stringify(item.aspect_receipts)}">+${item.aspect_points}pt aspect bonus</span>` : '';
+            const occBadges = item.occupants.map(o => {
+                const promTag = (o.prominence && o.prominence !== 1.0) ? ` <span style="font-weight:600; color:#64748b; font-size:11px;">(P:${o.prominence})</span>` : '';
+                return `<span style="font-weight:700; background:#e2e8f0; color:#1e293b; padding:1px 6px; border-radius:3px; font-size:12px;">${o.entity} ${o.weight}pt${promTag}</span>`;
+            }).join(' ');
             
             rowsHtml += `
                 <div style="margin-bottom:8px; padding-bottom:8px; border-bottom:1px solid #f1f5f9;">
@@ -185,7 +187,6 @@ function updateReportWidget(cell, chartData) {
                             <strong style="font-size:13.5px; color:#0f172a;">#${item.rank} ${item.nakshatra}</strong>
                             <span style="font-size:12px; padding:1px 6px; border-radius:3px; background:#f1f5f9; color:#475569;">${item.group}</span>
                             <div style="display:inline-flex; gap:4px; margin-left:4px;">${occBadges}</div>
-                            ${aspectReceipt}
                         </div>
                         <div style="font-size:13px; font-weight:700; color:#1e293b;">
                             ${item.total_points} pts <span style="font-size:12px; font-weight:600; color:#64748b;">(${item.dominance_pct}%)</span>
@@ -200,8 +201,8 @@ function updateReportWidget(cell, chartData) {
 
         domContainer.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:14px; font-weight:700; color:#1e293b;">📊 4-Step Nakshatra Dominance Leaderboard</span>
-                <span style="font-size:12px; color:#64748b;">Scoring: Moon=8pt • Lagna=4pt • Sun=2pt • Grahas=1pt + Aspect Multipliers</span>
+                <span style="font-size:14px; font-weight:700; color:#1e293b;">📊 Nakshatra Dominance Leaderboard</span>
+                <span style="font-size:12px; color:#64748b;">Prominence-Scaled Occupancy: Moon=8×P • Lagna=4pt • Sun=2×P • Grahas=1×P</span>
             </div>
             ${rowsHtml}
         `;
@@ -328,33 +329,33 @@ function updateReportWidget(cell, chartData) {
         const d = envTally.ayurvedic_doshas;
 
         envContainer.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">🌿 Macro Environmental Tally</div>
+            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">🌿 Macro Environmental Tally (Prominence-Weighted Tattvas)</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🔥 Five Great Elements (Tattvas)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Fire: ${e.percentages.Fire}% (${e.counts.Fire})</div>
-                        <div>Earth: ${e.percentages.Earth}% (${e.counts.Earth})</div>
-                        <div>Air: ${e.percentages.Air}% (${e.counts.Air})</div>
-                        <div>Water: ${e.percentages.Water}% (${e.counts.Water})</div>
+                        <div>Fire: <strong>${e.percentages.Fire}%</strong> (${e.points ? e.points.Fire + ' pt' : e.counts.Fire})</div>
+                        <div>Earth: <strong>${e.percentages.Earth}%</strong> (${e.points ? e.points.Earth + ' pt' : e.counts.Earth})</div>
+                        <div>Air: <strong>${e.percentages.Air}%</strong> (${e.points ? e.points.Air + ' pt' : e.counts.Air})</div>
+                        <div>Water: <strong>${e.percentages.Water}%</strong> (${e.points ? e.points.Water + ' pt' : e.counts.Water})</div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#b91c1c; margin-top:6px;">Dominant: ${e.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🌀 Three Guṇas (Sign Mobility)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Rajas (Movable): ${g.percentages['Rajas (Movable)']}%</div>
-                        <div>Tamas (Fixed): ${g.percentages['Tamas (Fixed)']}%</div>
-                        <div>Sattva (Dual): ${g.percentages['Sattva (Dual)']}%</div>
+                        <div>Rajas (Movable): <strong>${g.percentages['Rajas (Movable)']}%</strong> (${g.points ? g.points['Rajas (Movable)'] + ' pt' : g.counts['Rajas (Movable)']})</div>
+                        <div>Tamas (Fixed): <strong>${g.percentages['Tamas (Fixed)']}%</strong> (${g.points ? g.points['Tamas (Fixed)'] + ' pt' : g.counts['Tamas (Fixed)']})</div>
+                        <div>Sattva (Dual): <strong>${g.percentages['Sattva (Dual)']}%</strong> (${g.points ? g.points['Sattva (Dual)'] + ' pt' : g.counts['Sattva (Dual)']})</div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#0d9488; margin-top:6px;">Dominant: ${g.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🍵 Ayurvedic Constitution (Prakṛti)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Vāta (Air/Movement): ${d.percentages.Vata}%</div>
-                        <div>Pitta (Fire/Metabolism): ${d.percentages.Pitta}%</div>
-                        <div>Kapha (Earth-Water/Structure): ${d.percentages.Kapha}%</div>
+                        <div>Vāta (Air/Movement): <strong>${d.percentages.Vata}%</strong> (${d.points ? d.points.Vata + ' pt' : d.counts.Vata})</div>
+                        <div>Pitta (Fire/Metabolism): <strong>${d.percentages.Pitta}%</strong> (${d.points ? d.points.Pitta + ' pt' : d.counts.Pitta})</div>
+                        <div>Kapha (Earth-Water): <strong>${d.percentages.Kapha}%</strong> (${d.points ? d.points.Kapha + ' pt' : d.counts.Kapha})</div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#2563eb; margin-top:6px;">Prakṛti Baseline: ${d.dominant}</div>
                 </div>

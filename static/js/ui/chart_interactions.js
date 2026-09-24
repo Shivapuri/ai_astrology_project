@@ -249,6 +249,12 @@
         const container = document.getElementById('maximizeChartContainer');
         if (!modal || !titleEl || !container) return;
 
+        if (!maximizeChartPositionInitialized) {
+            resetMaximizeChartPosition();
+        } else {
+            resetMaximizeZoom();
+        }
+
         const currentData = window.currentChartData;
         const subjectName = currentData && currentData.subject_info ? currentData.subject_info.name : '';
         titleEl.textContent = `${subjectName} — ${varga} (${style.toUpperCase()})`;

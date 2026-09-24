@@ -1,6 +1,13 @@
 import os
 import pytest
-from scripts.export_codebase import export_codebase, collect_codebase_files, get_file_metadata, DEFAULT_MAX_SIZE_MB
+from scripts.export_codebase import (
+    export_codebase,
+    collect_codebase_files,
+    get_file_metadata,
+    DEFAULT_MAX_SIZE_MB,
+    DEFAULT_REPORT_OUTPUT_FILE,
+    DEFAULT_REPORT_MAX_SIZE_MB,
+)
 
 def test_collect_codebase_files():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -110,4 +117,48 @@ def test_export_split_mode(tmp_path):
     be_file = str(tmp_path / "export_backend.txt")
     assert os.path.exists(fe_file)
     assert os.path.exists(be_file)
+
+
+def test_collect_codebase_files_report_scope():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    report_files = collect_codebase_files(project_root, scope="report")
+
+    assert len(report_files) >= 10, "Should collect all report subsystem files"
+    assert "jyotish/report/report_engine.py" in report_files
+    assert "jyotish/nakshatras/lore.py" in report_files
+    assert "jyotish/nakshatras/nakshatra_data.py" in report_files
+    assert "static/js/widgets/report_widget.js" in report_files
+    assert "templates/widget_templates/tmpl_report.html" in report_files
+    assert "tests/test_report_engine.py" in report_files
+
+    # Assert non-report exclusions
+    assert "jyotish/shadbala/shadbala.py" not in report_files
+    assert "static/css/pergamon-theme.css" not in report_files
+
+
+def test_export_report_scope(tmp_path):
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    report_out = str(tmp_path / "report_export.txt")
+
+    res = export_codebase(
+        output_file=report_out,
+        max_size_mb=DEFAULT_REPORT_MAX_SIZE_MB,
+        project_root=project_root,
+        scope="report",
+    )
+
+    assert os.path.exists(report_out)
+    assert res["total_bytes"] < DEFAULT_REPORT_MAX_SIZE_MB * 1024 * 1024
+    assert res["files_count"] >= 10
+
+    with open(report_out, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    assert "REPORT CODEBASE EXPORT" in content
+    assert "4-Step Nakshatra Scoring Engine" in content
+    assert "\nFILE: jyotish/report/report_engine.py\n" in content
+    assert "\nFILE: static/js/widgets/report_widget.js\n" in content
+    assert "\nFILE: templates/widget_templates/tmpl_report.html\n" in content
+    assert "\nFILE: jyotish/shadbala/shadbala.py\n" not in content
+
 

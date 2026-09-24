@@ -86,31 +86,29 @@ const modalManager = new ModalManager();
 // Global convenience functions for backwards compatibility with HTML inline onclick handlers
 function openSettingsModal() {
     // Synchronize modal state with current settings
-    if (typeof window.currentNotation !== 'undefined') {
-        const radio = document.getElementById(`radio-${window.currentNotation}`);
-        if (radio) radio.checked = true;
-    }
+    const notation = (window.astraStore && window.astraStore.state.notation) || window.currentNotation || 'symbol';
+    const radioNot = document.getElementById(`radio-${notation}`);
+    if (radioNot) radioNot.checked = true;
+
     const signCheck = document.getElementById('modalToggleSigns');
     if (signCheck && typeof window.showSiSigns !== 'undefined') {
         signCheck.checked = window.showSiSigns;
     }
     
-    if (typeof window.currentD10Mode !== 'undefined') {
-        const radioRev = document.getElementById('radio-d10-reverse');
-        const radioDir = document.getElementById('radio-d10-direct');
-        if (radioRev && radioDir) {
-            if (window.currentD10Mode === 'direct') radioDir.checked = true;
-            else radioRev.checked = true;
-        }
+    const d10 = (window.astraStore && window.astraStore.state.d10Mode) || window.currentD10Mode || 'reverse';
+    const radioRev = document.getElementById('radio-d10-reverse');
+    const radioDir = document.getElementById('radio-d10-direct');
+    if (radioRev && radioDir) {
+        if (d10 === 'direct') radioDir.checked = true;
+        else radioRev.checked = true;
     }
 
-    if (typeof window.currentNakshatraSystem !== 'undefined') {
-        const radioDhruva = document.getElementById('radio-nak-dhruva');
-        const radioChitra = document.getElementById('radio-nak-chitra');
-        if (radioDhruva && radioChitra) {
-            if (window.currentNakshatraSystem === 'VIC_CHITRA') radioChitra.checked = true;
-            else radioDhruva.checked = true;
-        }
+    const nak = (window.astraStore && window.astraStore.state.nakshatraSystem) || window.currentNakshatraSystem || 'ERNST_DHRUVA';
+    const radioDhruva = document.getElementById('radio-nak-dhruva');
+    const radioChitra = document.getElementById('radio-nak-chitra');
+    if (radioDhruva && radioChitra) {
+        if (nak === 'VIC_CHITRA') radioChitra.checked = true;
+        else radioDhruva.checked = true;
     }
     
     modalManager.openModal('settingsModal');

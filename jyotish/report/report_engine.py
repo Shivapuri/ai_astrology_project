@@ -60,14 +60,20 @@ SHADBALA_REQUIRED_RUPAS = {
 def compute_nakshatra_dominance(
     vargas_data: Dict[str, Any],
     nakshatras_grahas: Dict[str, Any],
-    advanced_aspects: Optional[Dict[str, Any]] = None
+    advanced_aspects: Optional[Dict[str, Any]] = None,
+    prominence_map: Optional[Dict[str, float]] = None
 ) -> Dict[str, Any]:
     """
-    Implements the canonical 4-step Nakshatra scoring system:
-    1. Filter out unoccupied nakshatras.
-    2. Key point weights: Moon = 8 pts, Lagna = 4 pts, Sun = 2 pts, ordinary grahas = 1 pt each.
+    Implements empirical Nakshatra dominance via Prominence-Scaled Occupancy:
+    1. Filter out unoccupied nakshatras (strictly empirical bodily presence / Sthana).
+    2. Key point weights scaled by Planetary Prominence:
+       - Moon Nakshatra: 8.0 * Prominence_Moon
+       - Lagna Nakshatra: 4.0 * 1.0 (foundational anchor)
+       - Sun Nakshatra: 2.0 * Prominence_Sun
+       - Ordinary Grahas: 1.0 * Prominence_Graha
     3. Tally multi-occupant nakshatras.
-    4. Aspectual refinement: multiply occupying planet's aspect percentage on Moon (x8), Lagna (x4), and Sun (x2).
+    Aspects are omitted from Nakshatra scoring because Grahas cast aspects, not stars,
+    avoiding double-counting prominence and keeping asterisms strictly tied to physical presence.
     """
     occupied: Dict[str, Dict[str, Any]] = {}
 
@@ -99,65 +105,33 @@ def compute_nakshatra_dominance(
                 "group": get_nakshatra_group(nak_name),
                 "occupants": [],
                 "base_points": 0.0,
-                "aspect_points": 0.0,
                 "total_points": 0.0,
-                "dominance_pct": 0.0,
-                "aspect_receipts": []
+                "dominance_pct": 0.0
             }
 
-        weight = base_weights.get(ent, 1.0)
+        # Prominence scaling
+        prom = 1.0
+        if prominence_map is not None:
+            prom = float(prominence_map.get(ent, 1.0)) if ent != "Lagna" else 1.0
+        base_w = base_weights.get(ent, 1.0)
+        effective_weight = round(base_w * prom, 2)
+
         occupied[nak_name]["occupants"].append({
             "entity": ent,
-            "weight": weight,
+            "base_weight": base_w,
+            "prominence": round(prom, 2),
+            "weight": effective_weight,
             "pada": ent_data.get("pada", 1),
             "lord": ent_data.get("nakshatra_lord", "--"),
             "sub_lord": ent_data.get("sub_lord", "--")
         })
-        occupied[nak_name]["base_points"] += weight
-
-    # Step 4: Aspectual Refinement
-    if advanced_aspects:
-        planets_aspects = advanced_aspects.get("planets", {})
-        cusps_aspects = advanced_aspects.get("cusps", {})
-
-        for nak_name, data in occupied.items():
-            for occ in data["occupants"]:
-                p_name = occ["entity"]
-                if p_name == "Lagna":
-                    continue  # Lagna degree does not cast Graha Drishti
-
-                # Aspect on Moon (multiplier 8)
-                raw_moon = planets_aspects.get(p_name, {}).get("Moon", {}).get("raw", 0.0)
-                pct_moon = min(1.0, max(0.0, raw_moon / 60.0))
-                moon_aspect_score = pct_moon * 8.0
-
-                # Aspect on Lagna (Cusp 1, multiplier 4)
-                raw_lagna = cusps_aspects.get(1, {}).get(p_name, {}).get("raw", 0.0)
-                pct_lagna = min(1.0, max(0.0, raw_lagna / 60.0))
-                lagna_aspect_score = pct_lagna * 4.0
-
-                # Aspect on Sun (multiplier 2)
-                raw_sun = planets_aspects.get(p_name, {}).get("Sun", {}).get("raw", 0.0)
-                pct_sun = min(1.0, max(0.0, raw_sun / 60.0))
-                sun_aspect_score = pct_sun * 2.0
-
-                total_aspect = moon_aspect_score + lagna_aspect_score + sun_aspect_score
-                if total_aspect > 0.05:
-                    data["aspect_points"] += total_aspect
-                    data["aspect_receipts"].append({
-                        "planet": p_name,
-                        "on_moon": round(moon_aspect_score, 2),
-                        "on_lagna": round(lagna_aspect_score, 2),
-                        "on_sun": round(sun_aspect_score, 2),
-                        "total_bonus": round(total_aspect, 2)
-                    })
+        occupied[nak_name]["base_points"] += effective_weight
 
     # Tally totals
     grand_total = 0.0
     for data in occupied.values():
         data["base_points"] = round(data["base_points"], 2)
-        data["aspect_points"] = round(data["aspect_points"], 2)
-        data["total_points"] = round(data["base_points"] + data["aspect_points"], 2)
+        data["total_points"] = data["base_points"]
         grand_total += data["total_points"]
 
     if grand_total <= 0.0:
@@ -406,10 +380,13 @@ def compute_operational_axis(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def compute_environmental_tally(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
+def compute_environmental_tally(
+    vargas_data: Dict[str, Any],
+    prominence_map: Optional[Dict[str, float]] = None
+) -> Dict[str, Any]:
     """
     Tallies the placements of the 9 Grahas + Lagna across Elements, Gunas,
-    Sign Rise Orientations, and Ayurvedic Doshas.
+    Sign Rise Orientations, and Ayurvedic Doshas, weighted by Planetary Prominence.
     """
     d1_data = vargas_data.get("D1", {})
     d1_grahas = d1_data.get("grahas", {})
@@ -418,9 +395,16 @@ def compute_environmental_tally(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
     entities = ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 
     elements_count = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
+    elements_points = {"Fire": 0.0, "Earth": 0.0, "Air": 0.0, "Water": 0.0}
+
     gunas_count = {"Rajas (Movable)": 0, "Tamas (Fixed)": 0, "Sattva (Dual)": 0}
+    gunas_points = {"Rajas (Movable)": 0.0, "Tamas (Fixed)": 0.0, "Sattva (Dual)": 0.0}
+
     rising_mode_count = {"Shirshodaya": 0, "Prishtodaya": 0, "Ubhayodaya": 0}
+    rising_mode_points = {"Shirshodaya": 0.0, "Prishtodaya": 0.0, "Ubhayodaya": 0.0}
+
     dosha_count = {"Vata": 0, "Pitta": 0, "Kapha": 0}
+    dosha_points = {"Vata": 0.0, "Pitta": 0.0, "Kapha": 0.0}
 
     # Planetary dosha signatures
     graha_doshas = {
@@ -439,56 +423,75 @@ def compute_environmental_tally(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
     for ent in entities:
         if ent == "Lagna":
             sign = d1_lagna.get("sign", "Aries")
+            score = 1.0
         else:
             sign = d1_grahas.get(ent, {}).get("sign", "Aries")
+            score = float(prominence_map.get(ent, 1.0)) if prominence_map is not None else 1.0
 
         elem = ELEMENT_MAP.get(sign, "Fire")
         elements_count[elem] += 1
+        elements_points[elem] += score
 
         guna = GUNA_MAP.get(sign, "Rajas (Movable)")
         gunas_count[guna] += 1
+        gunas_points[guna] += score
 
         rm = RISING_MODE_MAP.get(sign, "Shirshodaya")
         if "Shirshodaya" in rm:
             rising_mode_count["Shirshodaya"] += 1
+            rising_mode_points["Shirshodaya"] += score
         elif "Prishtodaya" in rm:
             rising_mode_count["Prishtodaya"] += 1
+            rising_mode_points["Prishtodaya"] += score
         else:
             rising_mode_count["Ubhayodaya"] += 1
+            rising_mode_points["Ubhayodaya"] += score
 
         # Dosha allocation (blend sign element and graha nature)
         if elem == "Fire":
             dosha_count["Pitta"] += 1
+            dosha_points["Pitta"] += score
         elif elem == "Air":
             dosha_count["Vata"] += 1
+            dosha_points["Vata"] += score
         elif elem == "Earth":
             dosha_count["Kapha"] += 1
+            dosha_points["Kapha"] += score
         elif elem == "Water":
             dosha_count["Kapha"] += 1
+            dosha_points["Kapha"] += score
 
-    total_ent = len(entities)
-    dominant_element = max(elements_count, key=elements_count.get)
-    dominant_guna = max(gunas_count, key=gunas_count.get)
-    dominant_dosha = max(dosha_count, key=dosha_count.get)
+    tot_elem_pts = sum(elements_points.values()) or 1.0
+    tot_guna_pts = sum(gunas_points.values()) or 1.0
+    tot_rm_pts = sum(rising_mode_points.values()) or 1.0
+    tot_dosha_pts = sum(dosha_points.values()) or 1.0
+
+    dominant_element = max(elements_points, key=elements_points.get)
+    dominant_guna = max(gunas_points, key=gunas_points.get)
+    dominant_dosha = max(dosha_points, key=dosha_points.get)
 
     return {
         "elements": {
             "counts": elements_count,
-            "percentages": {k: round((v / total_ent) * 100.0, 1) for k, v in elements_count.items()},
+            "points": {k: round(v, 2) for k, v in elements_points.items()},
+            "percentages": {k: round((v / tot_elem_pts) * 100.0, 1) for k, v in elements_points.items()},
             "dominant": dominant_element
         },
         "gunas": {
             "counts": gunas_count,
-            "percentages": {k: round((v / total_ent) * 100.0, 1) for k, v in gunas_count.items()},
+            "points": {k: round(v, 2) for k, v in gunas_points.items()},
+            "percentages": {k: round((v / tot_guna_pts) * 100.0, 1) for k, v in gunas_points.items()},
             "dominant": dominant_guna
         },
         "rising_modes": {
             "counts": rising_mode_count,
-            "percentages": {k: round((v / total_ent) * 100.0, 1) for k, v in rising_mode_count.items()}
+            "points": {k: round(v, 2) for k, v in rising_mode_points.items()},
+            "percentages": {k: round((v / tot_rm_pts) * 100.0, 1) for k, v in rising_mode_points.items()}
         },
         "ayurvedic_doshas": {
             "counts": dosha_count,
-            "percentages": {k: round((v / sum(dosha_count.values())) * 100.0, 1) for k, v in dosha_count.items()},
+            "points": {k: round(v, 2) for k, v in dosha_points.items()},
+            "percentages": {k: round((v / tot_dosha_pts) * 100.0, 1) for k, v in dosha_points.items()},
             "dominant": dominant_dosha
         }
     }
@@ -631,11 +634,20 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     shadbala_data = chart_data.get("shadbala", {})
     planetary_eval = chart_data.get("planetary_evaluation", {})
 
-    nak_dominance = compute_nakshatra_dominance(vargas_data, nakshatras_grahas, advanced_aspects)
+    # 1. Calculate Prominence first
+    planetary_rankings = compute_planetary_prominence_rankings(vargas_data, shadbala_data, planetary_eval)
+    prominence_map = {
+        p["planet"]: p["prominence_score"]
+        for p in planetary_rankings.get("leaderboard", [])
+    }
+
+    # 2. Pass prominence_map into Nakshatra and Environmental engines
+    nak_dominance = compute_nakshatra_dominance(
+        vargas_data, nakshatras_grahas, advanced_aspects, prominence_map=prominence_map
+    )
     polarity_core = compute_polarity_core(vargas_data, nakshatras_grahas)
     operational_axis = compute_operational_axis(vargas_data)
-    env_tally = compute_environmental_tally(vargas_data)
-    planetary_rankings = compute_planetary_prominence_rankings(vargas_data, shadbala_data, planetary_eval)
+    env_tally = compute_environmental_tally(vargas_data, prominence_map=prominence_map)
 
     # Ingredients Checklist for Astrologer Desk
     synthesis_ingredients = {

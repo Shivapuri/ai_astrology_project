@@ -23,6 +23,12 @@ let currentD10Mode = localStorage.getItem('astra_d10_mode') || "reverse";
 let currentD24Mode = localStorage.getItem('astra_d24_mode') || "reverse";
 let currentNakshatraSystem = localStorage.getItem('astra_nakshatra_system') || "ERNST_DHRUVA";
 
+if (typeof window !== 'undefined' && window.astraStore) {
+    window.astraStore.on('change:d10Mode', val => { currentD10Mode = val; window.currentD10Mode = val; });
+    window.astraStore.on('change:nakshatraSystem', val => { currentNakshatraSystem = val; window.currentNakshatraSystem = val; });
+    window.astraStore.on('change:notation', val => { currentNotation = val; window.currentNotation = val; });
+}
+
 let currentActiveCell = null;
 let splitInstances = [];
 let splitInstance = null;
@@ -1050,14 +1056,27 @@ async function applyBirthTimeOffset(nativeId, offsetSeconds) {
     if (loadingEl) loadingEl.style.display = 'block';
 
     try {
+        const notMode = window.currentNotation || currentNotation || 'symbol';
+        const d10 = window.currentD10Mode || currentD10Mode || 'reverse';
+        const d24 = currentD24Mode || 'reverse';
+        const nak = window.currentNakshatraSystem || currentNakshatraSystem || 'ERNST_DHRUVA';
+
         const response = await fetch(
-            `/api/chart/${nativeId}?d10_mode=${currentD10Mode}&d24_mode=${currentD24Mode}&nakshatra_system=${currentNakshatraSystem}&offset_seconds=${offsetSeconds}`,
+            `/api/chart/${nativeId}?mode=${notMode}&d10_mode=${d10}&d24_mode=${d24}&nakshatra_system=${nak}&offset_seconds=${offsetSeconds}`,
             { signal: stepperAbortController.signal }
         );
         const result = await response.json();
         if (result.error) {
             console.error("Stepper calculation error:", result.error);
             return;
+        }
+
+        if (window.currentSvgs && result.svgs) {
+            for (const v of Object.keys(result.svgs)) {
+                if (window.currentSvgs[v] && typeof window.currentSvgs[v] === 'object') {
+                    result.svgs[v] = { ...window.currentSvgs[v], ...result.svgs[v] };
+                }
+            }
         }
 
         currentChartData = result.data;
@@ -1068,6 +1087,16 @@ async function applyBirthTimeOffset(nativeId, offsetSeconds) {
         window.currentPreviewTime = result.preview_time;
         currentPreviewDate = result.preview_date;
         window.currentPreviewDate = result.preview_date;
+
+        if (window.astraStore) {
+            window.astraStore.setState({
+                chartData: result.data,
+                svgs: result.svgs,
+                previewOffsetSeconds: offsetSeconds,
+                previewTime: result.preview_time,
+                previewDate: result.preview_date
+            });
+        }
 
         updateAllWidgets();
         syncAllSteppersUI();
@@ -1151,11 +1180,15 @@ async function savePreviewedBirthTime() {
 // Calculation Modes & Notations
 // ==========================================
 async function setNakshatraSystem(mode) {
-    if (currentNakshatraSystem === mode) return;
+    if (currentNakshatraSystem === mode && window.astraStore?.state?.nakshatraSystem === mode) return;
     currentNakshatraSystem = mode;
     window.currentNakshatraSystem = mode;
     localStorage.setItem('astra_nakshatra_system', currentNakshatraSystem);
+    if (window.astraStore) {
+        window.astraStore.setState({ nakshatraSystem: mode });
+    }
     syncNakshatraSystemUI();
+    window.currentSvgs = null;
     if (typeof window.loadChart === 'function') await window.loadChart();
 }
 
@@ -1185,11 +1218,17 @@ function syncNakshatraSystemUI() {
 }
 
 async function setD10Mode(mode) {
-    if (currentD10Mode === mode) return;
+    if (currentD10Mode === mode && window.astraStore?.state?.d10Mode === mode) return;
     currentD10Mode = mode;
     window.currentD10Mode = mode;
     localStorage.setItem('astra_d10_mode', currentD10Mode);
+    if (window.astraStore) {
+        window.astraStore.setState({ d10Mode: mode });
+    }
     syncD10ModeUI();
+    if (window.currentSvgs && window.currentSvgs['D10']) {
+        delete window.currentSvgs['D10'];
+    }
     if (typeof window.loadChart === 'function') await window.loadChart();
 }
 
@@ -1224,21 +1263,43 @@ function syncD10ModeUI() {
     updateMenuCheckmarks();
 }
 
-function switchNotation(mode) {
+function syncModalNotationUI() {
+    const notMode = window.currentNotation || currentNotation || (localStorage.getItem('astra_notation') || 'symbol');
+    const radio = document.getElementById(`radio-${notMode}`);
+    if (radio) radio.checked = true;
+}
+
+async function switchNotation(mode) {
+    if (!mode) return;
     currentNotation = mode;
     window.currentNotation = mode;
     try { localStorage.setItem('astra_notation', mode); } catch(e){}
+    if (window.astraStore) {
+        window.astraStore.setState({ notation: mode });
+    }
+    syncModalNotationUI();
+    updateMenuCheckmarks();
+
+    const svgs = window.currentSvgs || currentSvgs;
+    const hasMode = svgs && svgs['D1'] && svgs['D1'][mode];
+
+    if (!hasMode) {
+        if (typeof window.loadChart === 'function') {
+            await window.loadChart();
+            return;
+        }
+    }
+
     updateSlot(1);
     updateSlot(2);
     document.querySelectorAll('.grid-cell[data-widget="chart"]').forEach(updateWidget);
     if (window.currentMaximized && typeof maximizeChart === 'function') {
         maximizeChart(window.currentMaximized.slot, window.currentMaximized.type);
     }
-    updateMenuCheckmarks();
 }
 
-function onModalNotationChange(mode) {
-    switchNotation(mode);
+async function onModalNotationChange(mode) {
+    await switchNotation(mode);
 }
 
 function onModalLayoutChange() {
@@ -1809,6 +1870,7 @@ if (typeof window !== 'undefined') {
     window.toggleD10Mode = toggleD10Mode;
     window.syncD10ModeUI = syncD10ModeUI;
     window.switchNotation = switchNotation;
+    window.syncModalNotationUI = syncModalNotationUI;
     window.onModalNotationChange = onModalNotationChange;
     window.onModalLayoutChange = onModalLayoutChange;
     window.onModalSignToggle = onModalSignToggle;

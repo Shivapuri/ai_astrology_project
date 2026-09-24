@@ -114,7 +114,7 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
     }
     return chart
 
-def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None):
+def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None, primary_mode=None):
     if modes is None:
         modes = ["symbol"]
     if roots is None:
@@ -153,7 +153,7 @@ def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None):
         }
 
     # Default top-level shortcuts for backward compatibility
-    primary_m = "symbol" if "symbol" in v_svg else (modes[0] if modes else None)
+    primary_m = primary_mode if (primary_mode and primary_mode in v_svg) else ("symbol" if "symbol" in v_svg else (modes[0] if modes else None))
     if primary_m and primary_m in v_svg:
         v_svg["south"] = v_svg[primary_m]["south"]
         v_svg["north"] = v_svg[primary_m]["north"]
@@ -199,7 +199,7 @@ def get_chart(native_id):
 
     for v_name in chart_data.get("vargas", {}).keys():
         v_roots = all_roots if (eager_all or v_name in ("D1", "D9")) else ["Lagna"]
-        svgs[v_name] = get_or_generate_varga_svgs(chart_data, v_name, modes=modes, roots=v_roots)
+        svgs[v_name] = get_or_generate_varga_svgs(chart_data, v_name, modes=modes, roots=v_roots, primary_mode=requested_mode)
         
     preview_info = chart_data.get("preview_info", {})
     return jsonify({

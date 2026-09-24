@@ -8,7 +8,7 @@
             <div class="setting-section">
                 <h4>Planet Notation Mode</h4>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-symbol').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-symbol').click()">
                     <input type="radio" id="radio-symbol" name="modalNotation" value="symbol" checked onchange="onModalNotationChange('symbol')">
                     <label for="radio-symbol">
                         <strong>Astronomical Symbols</strong>
@@ -16,7 +16,7 @@
                     </label>
                 </div>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-english').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-english').click()">
                     <input type="radio" id="radio-english" name="modalNotation" value="english" onchange="onModalNotationChange('english')">
                     <label for="radio-english">
                         <strong>English Abbreviations</strong>
@@ -24,7 +24,7 @@
                     </label>
                 </div>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-devanagari').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-devanagari').click()">
                     <input type="radio" id="radio-devanagari" name="modalNotation" value="devanagari" onchange="onModalNotationChange('devanagari')">
                     <label for="radio-devanagari">
                         <strong>Devanagari Script</strong>
@@ -32,7 +32,7 @@
                     </label>
                 </div>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-translit').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-translit').click()">
                     <input type="radio" id="radio-translit" name="modalNotation" value="translit" onchange="onModalNotationChange('translit')">
                     <label for="radio-translit">
                         <strong>IAST Sanskrit Transliteration</strong>
@@ -82,7 +82,7 @@
                     Reckoning method for even signs (e.g. Taurus, Cancer, Virgo)
                 </div>
 
-                <div class="setting-option-card" onclick="document.getElementById('radio-d10-reverse').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-d10-reverse').click()">
                     <input type="radio" id="radio-d10-reverse" name="modalD10Mode" value="reverse" checked onchange="setD10Mode('reverse')">
                     <label for="radio-d10-reverse">
                         <strong>D10: Kala Reverse for Even Signs (Ernst Wilhelm *)</strong>
@@ -90,7 +90,7 @@
                     </label>
                 </div>
 
-                <div class="setting-option-card" onclick="document.getElementById('radio-d10-direct').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-d10-direct').click()">
                     <input type="radio" id="radio-d10-direct" name="modalD10Mode" value="direct" onchange="setD10Mode('direct')">
                     <label for="radio-d10-direct">
                         <strong>D10: Contemporary Forward (Vic DiCara / Traditional)</strong>
@@ -105,7 +105,7 @@
                     Calculation system for lunar mansions, Moon position, and Vimshottari Dasha balance
                 </div>
 
-                <div class="setting-option-card" onclick="document.getElementById('radio-nak-dhruva').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-nak-dhruva').click()">
                     <input type="radio" id="radio-nak-dhruva" name="modalNakMode" value="ERNST_DHRUVA" checked onchange="setNakshatraSystem('ERNST_DHRUVA')">
                     <label for="radio-nak-dhruva">
                         <strong>Dhruva Galactic Center / Equatorial (Ernst Wilhelm *)</strong>
@@ -113,7 +113,7 @@
                     </label>
                 </div>
 
-                <div class="setting-option-card" onclick="document.getElementById('radio-nak-chitra').click()">
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-nak-chitra').click()">
                     <input type="radio" id="radio-nak-chitra" name="modalNakMode" value="VIC_CHITRA" onchange="setNakshatraSystem('VIC_CHITRA')">
                     <label for="radio-nak-chitra">
                         <strong>Chitra Paksha / Ecliptic Sidereal (Vic DiCara)</strong>

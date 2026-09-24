@@ -30,9 +30,11 @@ import re
 DEFAULT_OUTPUT_FILE = "codebase_export.txt"
 DEFAULT_FRONTEND_OUTPUT_FILE = "codebase_export_frontend.txt"
 DEFAULT_BACKEND_OUTPUT_FILE = "codebase_export_backend.txt"
-DEFAULT_MAX_SIZE_MB = 1.85
+DEFAULT_REPORT_OUTPUT_FILE = "codebase_export_report.txt"
+DEFAULT_MAX_SIZE_MB = 2.5
 DEFAULT_FRONTEND_MAX_SIZE_MB = 1.0
 DEFAULT_BACKEND_MAX_SIZE_MB = 1.5
+DEFAULT_REPORT_MAX_SIZE_MB = 0.5
 
 EXCLUDED_DIRS = {
     ".git",
@@ -65,6 +67,7 @@ EXCLUDED_FILES = {
     "codebase_export.txt",
     "codebase_export_frontend.txt",
     "codebase_export_backend.txt",
+    "codebase_export_report.txt",
     "commits_export.txt",
     "commits_export.md",
     "package-lock.json",
@@ -97,6 +100,8 @@ EXCLUDED_FILES = {
     "screenshot_master_diag.py",
     "screenshot_aspects_interactive.py",
     "screenshot_shivapuri_mars.py",
+    "screenshot_report_widget.py",
+    "screenshot_cockpit_drawer.py",
     "search_krishna_chart.py",
     "test_diagnostics_edge_cases.py",
     "angelina_jolie_baselines.json",
@@ -131,6 +136,7 @@ EXCLUDED_FILES = {
     "test_search_krishna_chart.py",
     "test_master_diagnostic_ui.py",
     # Granular secondary sub-unit tests (core coverage preserved in main test suites)
+    "test_planetary_evaluation.py",
     "test_tripod_and_interpretations.py",
     "test_varga_avasthas.py",
     "test_vimshottari_timeline.py",
@@ -243,6 +249,27 @@ FILE_METADATA_REGISTRY = {
     "jyotish/pdf_exporter.md": (
         "Architecture & Design",
         "Architectural specification for the publication-grade PDF exporter",
+    ),
+    # Report Engine & Nakshatras
+    "jyotish/report/__init__.py": (
+        "Report Subsystem",
+        "Package initialization exposing generate_report_payload",
+    ),
+    "jyotish/report/report_engine.py": (
+        "Core Math: Report Engine",
+        "Synthesizes Polarity Core, 4-step Nakshatra scoring, Operational Axis, Macro Environment, and Planetary Prominence",
+    ),
+    "jyotish/nakshatras/__init__.py": (
+        "Nakshatras & Lore",
+        "Package initialization exposing Nakshatra query APIs",
+    ),
+    "jyotish/nakshatras/lore.py": (
+        "Nakshatras & Lore",
+        "Authoritative lookup and normalization module for all 27 Nakshatras and 7 groups",
+    ),
+    "jyotish/nakshatras/nakshatra_data.py": (
+        "Nakshatras & Lore",
+        "Authoritative data store containing Sanskrit lore, deities, symbols, and psychological profiles",
     ),
     "jyotish/scripture_db.py": (
         "Scripture & Database",
@@ -409,10 +436,26 @@ FILE_METADATA_REGISTRY = {
         "Frontend Partials",
         "Unified registry assembling all modular HTML widget templates",
     ),
+    "static/js/widgets/report_widget.js": (
+        "Frontend Widget",
+        "Interactive synthesis report desk controller with tabs, dynamic scoring, and cards",
+    ),
+    "templates/widget_templates/tmpl_report.html": (
+        "Widget Templates",
+        "HTML5 blueprint for the 4-tab astrological synthesis report",
+    ),
+    "screenshot_report_widget.py": (
+        "Developer Tooling",
+        "Playwright automated visual regression screenshot script for the Report widget",
+    ),
     # Tests
     "tests/__init__.py": (
         "Verification Suite",
         "Test package initialization",
+    ),
+    "tests/test_report_engine.py": (
+        "Verification Suite",
+        "Unit test suite validating 4-step scoring, polarity, and report engine calculations",
     ),
     "tests/test_api.py": (
         "Verification Suite",
@@ -722,11 +765,53 @@ def is_backend_file(rel_path: str) -> bool:
     return False
 
 
+def is_report_file(rel_path: str) -> bool:
+    if rel_path.startswith(("jyotish/report/", "jyotish/nakshatras/")):
+        return True
+    if rel_path in (
+        "static/js/widgets/report_widget.js",
+        "templates/widget_templates/tmpl_report.html",
+        "templates/partials/context_menu.html",
+        "templates/partials/top_toolbar.html",
+        "templates/partials/widget_templates.html",
+        "tests/test_report_engine.py",
+        "screenshot_report_widget.py",
+    ):
+        return True
+    return False
+
+
 def collect_codebase_files(project_root: str, scope: str = "all"):
     """
-    Collects essential codebase files filtered by subsystem scope ('all', 'frontend', 'backend').
+    Collects essential codebase files filtered by subsystem scope ('all', 'frontend', 'backend', 'report').
     Filters out binaries, caches, raw books, transcripts, and duplicates.
     """
+    if scope == "report":
+        report_files = [
+            # Core Report Engine
+            "jyotish/report/__init__.py",
+            "jyotish/report/report_engine.py",
+            # Nakshatra Lore & Database
+            "jyotish/nakshatras/__init__.py",
+            "jyotish/nakshatras/lore.py",
+            "jyotish/nakshatras/nakshatra_data.py",
+            # Foundational Mathematical Dependencies
+            "jyotish/relationships/relationships.py",
+            "jyotish/relationships/relationships.md",
+            "jyotish/sign_attributes.py",
+            "jyotish/sign_attributes.md",
+            # Frontend Interactive Desk & Layout
+            "static/js/widgets/report_widget.js",
+            "templates/widget_templates/tmpl_report.html",
+            "templates/partials/context_menu.html",
+            "templates/partials/top_toolbar.html",
+            "templates/partials/widget_templates.html",
+            # Verification & Testing
+            "tests/test_report_engine.py",
+            "screenshot_report_widget.py",
+        ]
+        return [f for f in report_files if os.path.exists(os.path.join(project_root, f))]
+
     files_to_export = []
 
     for root, dirs, files in os.walk(project_root):
@@ -791,6 +876,7 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
     scope_title = {
         "frontend": "FRONTEND CODEBASE EXPORT",
         "backend": "BACKEND CODEBASE EXPORT",
+        "report": "REPORT CODEBASE EXPORT",
         "all": "CODEBASE EXPORT",
     }.get(scope, "CODEBASE EXPORT")
 
@@ -802,7 +888,22 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
     header.append("=" * 80)
     header.append("")
 
-    if scope == "frontend":
+    if scope == "report":
+        header.append("## 1. Executive Summary: Astrological Synthesis Report Subsystem")
+        header.append("This export aggregates all files comprising Astra's Astrological Synthesis Report desk,")
+        header.append("synthesizing Tropical Signs, Campanus Houses, and Sidereal Dhruva Nakshatras into an interactive cockpit:")
+        header.append("- **Polarity Core (Ahaṃkāra ⟷ Manas)**: Evaluates creative tension between Lagna (outer identity)")
+        header.append("  and Moon (inner emotional mind), computing elemental and guna harmonies.")
+        header.append("- **Authoritative 4-Step Nakshatra Scoring Engine**: Filters unoccupied stars, weights Moon (8 pts),")
+        header.append("  Lagna (4 pts), Sun (2 pts), Grahas (1 pt), plus aspectual multipliers on Moon (×8), Lagna (×4), Sun (×2).")
+        header.append("  Classifies stars into 7 classical families (Tikshna, Ugra, Dhruva, Mridu, Laghu, Chara, Mishra).")
+        header.append("- **Operational Axis (Rāśi Tree ⟷ Navāṁśa Fruit)**: Potential-to-fruition trajectory with Vargottama boost.")
+        header.append("- **Macro Environmental Balances**: Elemental (Fire/Earth/Air/Water), Guna, and Doshic breakdowns.")
+        header.append("- **Planetary Prominence & Dignity Leaderboard**: Identifies the #1 Chart Commander (Kārakādhipati).")
+        header.append("- **Interactive Presentation Desk**: Fully modular HTML5 blueprint, 4 tabs, responsive layout,")
+        header.append("  and right-click grid cell assignment.")
+        header.append("")
+    elif scope == "frontend":
         header.append("## 1. Executive Summary: Frontend & UI Presentation Layer")
         header.append("This export aggregates Astra's complete user interface and client-side presentation layer.")
         header.append("The frontend strictly adheres to the Frontend Architecture & Modularity Protocol (GEMINI.md):")
@@ -1080,6 +1181,8 @@ def export_codebase(
             output_file = DEFAULT_FRONTEND_OUTPUT_FILE
         elif scope == "backend":
             output_file = DEFAULT_BACKEND_OUTPUT_FILE
+        elif scope == "report":
+            output_file = DEFAULT_REPORT_OUTPUT_FILE
         else:
             output_file = DEFAULT_OUTPUT_FILE
 
@@ -1088,6 +1191,8 @@ def export_codebase(
             max_size_mb = DEFAULT_FRONTEND_MAX_SIZE_MB
         elif scope == "backend":
             max_size_mb = DEFAULT_BACKEND_MAX_SIZE_MB
+        elif scope == "report":
+            max_size_mb = DEFAULT_REPORT_MAX_SIZE_MB
         else:
             max_size_mb = DEFAULT_MAX_SIZE_MB
 
@@ -1181,20 +1286,20 @@ def main():
         "-o",
         "--output",
         default=None,
-        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt based on scope)",
+        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt, codebase_export_report.txt based on scope)",
     )
     parser.add_argument(
         "-m",
         "--max-size-mb",
         type=float,
         default=None,
-        help="Maximum allowable output size in megabytes (defaults: 1.85 for all, 1.0 for frontend, 1.5 for backend)",
+        help="Maximum allowable output size in megabytes (defaults: 2.5 for all, 1.0 for frontend, 1.5 for backend, 0.5 for report)",
     )
     parser.add_argument(
         "--scope",
-        choices=["all", "frontend", "backend", "split"],
+        choices=["all", "frontend", "backend", "report", "split"],
         default="all",
-        help="Subsystem scope to export: 'all' (unified), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), or 'split' (both files)",
+        help="Subsystem scope to export: 'all' (unified), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), 'report' (astrological synthesis report), or 'split' (both files)",
     )
     parser.add_argument(
         "--split",

@@ -11,19 +11,20 @@ const AstraAPI = {
      */
     async loadChart(nativeId = null) {
         const select = document.getElementById('nativeSelect');
-        const id = nativeId || (select ? select.value : null);
-        if (!id || id === '__open_chart_dialog__') return null;
+        const id = nativeId || (select && select.value && select.value !== '__open_chart_dialog__' ? select.value : null) || (window.currentLoadedNative ? window.currentLoadedNative.id : null);
+        if (!id) return null;
 
         const loadingEl = document.getElementById('loading');
         if (loadingEl) loadingEl.style.display = 'block';
 
         const store = window.astraStore;
-        const d10Mode = store ? store.state.d10Mode : (window.currentD10Mode || 'reverse');
-        const d24Mode = store ? store.state.d24Mode : (window.currentD24Mode || 'reverse');
-        const nakshatra = store ? store.state.nakshatraSystem : (window.currentNakshatraSystem || 'ERNST_DHRUVA');
+        const d10Mode = (store && store.state.d10Mode) ? store.state.d10Mode : (window.currentD10Mode || 'reverse');
+        const d24Mode = (store && store.state.d24Mode) ? store.state.d24Mode : (window.currentD24Mode || 'reverse');
+        const nakshatra = (store && store.state.nakshatraSystem) ? store.state.nakshatraSystem : (window.currentNakshatraSystem || 'ERNST_DHRUVA');
+        const notation = (store && store.state.notation) ? store.state.notation : (window.currentNotation || 'symbol');
 
         try {
-            const url = `/api/chart/${id}?d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}`;
+            const url = `/api/chart/${id}?mode=${notation}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}`;
             const response = await fetch(url);
             const result = await response.json();
 
@@ -35,6 +36,16 @@ const AstraAPI = {
             // Sync with Store & Window
             const previewTime = result.preview_time || (result.native && result.native.time);
             const previewDate = result.preview_date || (result.native && result.native.date);
+
+            // Merge newly fetched SVGs into existing cache so all fetched notations are preserved
+            if (window.currentSvgs && result.svgs) {
+                for (const v of Object.keys(result.svgs)) {
+                    if (window.currentSvgs[v] && typeof window.currentSvgs[v] === 'object') {
+                        result.svgs[v] = { ...window.currentSvgs[v], ...result.svgs[v] };
+                    }
+                }
+            }
+
             window.currentChartData = result.data;
             window.currentSvgs = result.svgs;
             window.currentLoadedNative = result.native;
@@ -49,7 +60,11 @@ const AstraAPI = {
                     svgs: result.svgs,
                     previewOffsetSeconds: 0,
                     previewTime: previewTime,
-                    previewDate: previewDate
+                    previewDate: previewDate,
+                    d10Mode: d10Mode,
+                    d24Mode: d24Mode,
+                    nakshatraSystem: nakshatra,
+                    notation: notation
                 });
             }
 
@@ -309,6 +324,28 @@ const AstraAPI = {
         } catch (e) {
             console.error("AstraAPI: saveNotes failed", e);
             return false;
+        }
+    },
+
+    /**
+     * Fetch individual SVG on-demand according to Architecture Rule 8
+     */
+    async fetchChartSvg(varga = 'D1', mode = 'symbol', root = 'Lagna', style = 'all', outer = 'D9') {
+        const nativeId = window.currentLoadedNative?.id || document.getElementById('nativeSelect')?.value;
+        if (!nativeId) return null;
+        const store = window.astraStore;
+        const d10Mode = (store && store.state.d10Mode) ? store.state.d10Mode : (window.currentD10Mode || 'reverse');
+        const d24Mode = (store && store.state.d24Mode) ? store.state.d24Mode : (window.currentD24Mode || 'reverse');
+        const nakshatra = (store && store.state.nakshatraSystem) ? store.state.nakshatraSystem : (window.currentNakshatraSystem || 'ERNST_DHRUVA');
+        const offsetSec = window.activePreviewOffsetSeconds || 0;
+
+        try {
+            const url = `/api/chart/${nativeId}/svg?varga=${varga}&mode=${mode}&root=${root}&style=${style}&outer=${outer}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}&offset_seconds=${offsetSec}`;
+            const res = await fetch(url);
+            return await res.json();
+        } catch (e) {
+            console.error("AstraAPI: fetchChartSvg failed", e);
+            return null;
         }
     }
 };
