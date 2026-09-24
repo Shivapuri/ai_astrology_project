@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ernst Wilhelm Kala Chart Software</title>
 
-    <!-- Vendor Dependencies -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js"></script>
-
     <!-- Server State Initialization -->
     <script>
         window.knowledgeBase = {{ knowledge_base | tojson | safe }};
@@ -22,38 +19,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/widgets.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/modals.css') }}">
 
+    <!-- Vendor Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.5/split.min.js" defer></script>
+
     <!-- Core Architecture & UI Primitives -->
-    <script src="{{ url_for('static', filename='js/widget_registry.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/components/table_builder.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/core/store.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/core/api.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui/draggable.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui/modal_manager.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui/library_modal.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui/export_manager.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/ui/chart_interactions.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/widget_registry.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/components/table_builder.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/core/store.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/core/api.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/ui/draggable.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/ui/modal_manager.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/ui/library_modal.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/ui/export_manager.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/ui/chart_interactions.js') }}" defer></script>
 
     <!-- Pluggable Astrological Widgets -->
-    <script src="{{ url_for('static', filename='js/widgets/shadbala_widget.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/ashtakavarga.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/vimshopaka.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/yoga_judgment.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/classical_yogas.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/master_diagnostic.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/planetary_evaluation.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/planetary_info.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/notes_widget.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/rashi_drishti.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/sign_attributes.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/quant_matrices.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/avasthas_calc.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/aspects.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/context_info.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/dashas_timeline.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/widgets/varga_dignities.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/widgets/shadbala_widget.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/ashtakavarga.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/vimshopaka.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/yoga_judgment.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/classical_yogas.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/master_diagnostic.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/planetary_evaluation.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/planetary_info.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/notes_widget.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/rashi_drishti.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/sign_attributes.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/quant_matrices.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/avasthas_calc.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/aspects.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/context_info.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/dashas_timeline.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='js/widgets/varga_dignities.js') }}" defer></script>
 
     <!-- Main Application Bootstrap & Controller -->
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
 </head>
 <body>
     {% include 'partials/top_toolbar.html' %}

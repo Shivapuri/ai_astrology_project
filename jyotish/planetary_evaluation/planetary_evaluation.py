@@ -982,21 +982,28 @@ def classify_graha_archetype(
     house_num: Optional[int] = None
 ) -> Dict[str, Any]:
     """
-    Classifies a planet into the refined 9-Tier Behavioral Archetype Spectrum (+ Transmuted Hero / Simple Neecha Bhanga):
+    Classifies a planet into the refined Behavioral Archetype Spectrum (+ Transmuted Hero / Simple Neecha Bhanga):
     Cross-references Moral Intent / Quality (Dignity) with Kinetic Power / Stamina (Shadbala).
 
-    1. High Dignity + High Muscle: The Generous King (Sovereign Benefactor)
-    2. High Dignity + Balanced Muscle: The Noble Guardian (Constructive Ally)
-    3. High Dignity + Low Muscle: The Sincere Friend (Noble Intent / Low Muscle)
-    4. Neutral Dignity + High Muscle: The Pragmatic Executive (Tireless Champion)
-    5. Neutral Dignity + Balanced Muscle: The Dutiful Realist (Steady Craftsman)
-    6. Neutral Dignity + Low Muscle: The Modest Citizen (Quiet Baseline)
-    7. Low Dignity + High Muscle: The Armed Dictator (Severe Hazard)
-    8. Low Dignity + Balanced Muscle: The Embattled Striver (Strained Fighter)
-    9. Low Dignity + Low Muscle: The Toothless Bully (Harmless Adversary)
-    10. True Debilitation + Exalted/Fortified Host:
-        - In Kendra/Kona: The Transmuted Hero (Alchemical Raja Yoga)
-        - In Dusthana (6, 8, 12): Simple Neecha Bhanga (Overcoming Deficit)
+    1. Royal Dignity (>= 75%):
+       - High Muscle: The Generous King (Sovereign Monarch)
+       - Balanced Muscle: The Noble Guardian (Constructive Sovereign)
+       - Low Muscle: The Sincere Friend (Noble Intent / Low Muscle)
+    2. High / Friendly Dignity (55% - 74%):
+       - High Muscle: The Noble Guardian (Constructive Ally)
+       - Balanced Muscle: The Capable Executive (Pragmatic Ally)
+       - Low Muscle: The Quiet Supporter (Supportive Baseline)
+    3. Neutral Dignity (35% - 54%):
+       - High Muscle: The Pragmatic Executive (Tireless Champion)
+       - Balanced Muscle: The Dutiful Realist (Steady Craftsman)
+       - Low Muscle: The Modest Citizen (Quiet Baseline)
+    4. Low Dignity (< 35%):
+       - High Muscle: The Armed Dictator (Severe Hazard)
+       - Balanced Muscle: The Embattled Striver (Strained Fighter)
+       - Low Muscle: The Toothless Bully (Harmless Adversary)
+    5. True Debilitation + Exalted/Fortified Host:
+       - In Kendra/Kona: The Transmuted Hero (Alchemical Raja Yoga)
+       - In Dusthana (6, 8, 12): Simple Neecha Bhanga (Overcoming Deficit)
     """
     if effective_dignity is None and dignity_pct is not None:
         effective_dignity = dignity_pct
@@ -1024,46 +1031,79 @@ def classify_graha_archetype(
                 "is_high_strength": (effective_shadbala >= 95.0)
             }
 
-    is_high_dig = effective_dignity >= 55.0
-    is_neutral_dig = 35.0 <= effective_dignity < 55.0
-    is_low_dig = effective_dignity < 35.0
+    # REFINED 4-TIER DIGNITY THRESHOLDS (Light on Life & Classical Panchadha Maitri)
+    is_royal_dig = effective_dignity >= 75.0          # Exalted, Moolatrikona, Own Sign
+    is_high_dig = 55.0 <= effective_dignity < 75.0     # Great Friend & Friend signs
+    is_neutral_dig = 35.0 <= effective_dignity < 55.0  # Sama Kshetra / Neutral signs
+    is_low_dig = effective_dignity < 35.0              # Enemy & Debilitated signs
 
+    # KINETIC MUSCLE TIERS
     is_high_musc = effective_shadbala >= 110.0
     is_bal_musc = 88.0 <= effective_shadbala < 110.0
     is_low_musc = effective_shadbala < 88.0
 
-    if is_high_dig:
+    # 1. ROYAL DIGNITY (>= 75%)
+    if is_royal_dig:
         if is_high_musc:
             archetype = "The Generous King"
             badge = "🌟 Generous King"
-            tier = "Sovereign Benefactor"
-            subtext = "High Quality + High Muscle"
-            desc = "High moral character equipped with immense executive power. Grants durable, honorable triumphs."
+            tier = "Sovereign Monarch"
+            subtext = "Peak Dignity + Peak Muscle"
+            desc = "Sovereign nobility combined with vast executive horsepower; manifests lasting, magnificent triumphs."
             color = "#15803d"
             bg = "#dcfce7"
         elif is_bal_musc:
             archetype = "The Noble Guardian"
             badge = "🛡️ Noble Guardian"
-            tier = "Constructive Ally"
-            subtext = "High Quality + Balanced Muscle"
-            desc = "Sincere ethical intentions with steady real-world capability. Provides consistent, harmonious progress."
+            tier = "Constructive Sovereign"
+            subtext = "Peak Dignity + Balanced Muscle"
+            desc = "Flawless moral intentions with steady everyday capability; protects and enriches its domains."
             color = "#0284c7"
             bg = "#e0f2fe"
         else:
             archetype = "The Sincere Friend"
             badge = "🤝 Sincere Friend"
             tier = "Noble Intent / Low Muscle"
-            subtext = "High Quality + Low Muscle"
-            desc = "Deep goodwill and spiritual integrity, but lacks physical muscle. Provides peace, but limited worldly output."
+            subtext = "Peak Dignity + Low Muscle"
+            desc = "Spiritual integrity and deep goodwill; provides harmony and peace, but lacks brute worldly output."
             color = "#4f46e5"
             bg = "#eef2ff"
+
+    # 2. HIGH / FRIENDLY DIGNITY (55% - 74%)
+    elif is_high_dig:
+        if is_high_musc:
+            archetype = "The Noble Guardian"
+            badge = "🛡️ Noble Guardian"
+            tier = "Constructive Ally"
+            subtext = "High Quality + High Muscle"
+            desc = "Welcomed guest equipped with robust executive drive; delivers reliable, honorable achievements."
+            color = "#0284c7"
+            bg = "#e0f2fe"
+        elif is_bal_musc:
+            archetype = "The Capable Executive"
+            badge = "⚖️ Capable Executive"
+            tier = "Pragmatic Ally"
+            subtext = "High Quality + Balanced Muscle"
+            desc = "Cooperative disposition with steady real-world stamina; operates with constructive ease."
+            color = "#0f766e"
+            bg = "#ccfbf1"
+        else:
+            archetype = "The Quiet Supporter"
+            badge = "🕊️ Quiet Supporter"
+            tier = "Supportive Baseline"
+            subtext = "High Quality + Low Muscle"
+            desc = "Friendly intentions operating with limited kinetic horsepower; thrives best in gentle environments."
+            color = "#6366f1"
+            bg = "#eef2ff"
+
+    # 3. NEUTRAL DIGNITY (35% - 54%)
     elif is_neutral_dig:
         if is_high_musc:
             archetype = "The Pragmatic Executive"
             badge = "⚒️ Pragmatic Executive"
             tier = "Tireless Champion"
             subtext = "Neutral Quality + High Muscle"
-            desc = "Unpretentious, highly productive powerhouse. Fulfills duties with tireless endurance and practical mastery."
+            desc = "Unpretentious, highly productive powerhouse; fulfills duties through endurance and practical skill."
             color = "#0f766e"
             bg = "#ccfbf1"
         elif is_bal_musc:
@@ -1071,7 +1111,7 @@ def classify_graha_archetype(
             badge = "⚖️ Dutiful Realist"
             tier = "Steady Craftsman"
             subtext = "Neutral Quality + Balanced Muscle"
-            desc = "Pragmatic and balanced; operates without drama or malice. Delivers solid, reliable everyday results."
+            desc = "Pragmatic and balanced; delivers solid, reliable everyday results without drama."
             color = "#475569"
             bg = "#f1f5f9"
         else:
@@ -1079,16 +1119,18 @@ def classify_graha_archetype(
             badge = "🌾 Modest Citizen"
             tier = "Quiet Baseline"
             subtext = "Neutral Quality + Low Muscle"
-            desc = "Low-profile and harmless. Operates within familiar routines without seeking grand worldly conquest."
+            desc = "Low-profile and harmless; operates within familiar routines without grand worldly conquest."
             color = "#a16207"
             bg = "#fef9c3"
+
+    # 4. LOW DIGNITY (< 35%)
     else:
         if is_high_musc:
             archetype = "The Armed Dictator"
             badge = "⚔️ Armed Dictator"
             tier = "Severe Hazard"
             subtext = "Low Quality + High Muscle"
-            desc = "Corrupt or rash intent armed with devastating kinetic force. Demands extreme vigilance and conscious discipline."
+            desc = "Rash or aggrieved disposition armed with forceful kinetic power; requires strict conscious discipline."
             color = "#b91c1c"
             bg = "#fee2e2"
         elif is_bal_musc:
@@ -1096,7 +1138,7 @@ def classify_graha_archetype(
             badge = "🌪️ Embattled Striver"
             tier = "Strained Fighter"
             subtext = "Low Quality + Balanced Muscle"
-            desc = "Under heavy friction and internal conflict. Requires hard labor and constant caution to avert missteps."
+            desc = "Under persistent friction; requires hard labor and conscious vigilance to avert missteps."
             color = "#c2410c"
             bg = "#ffedd5"
         else:
@@ -1104,7 +1146,7 @@ def classify_graha_archetype(
             badge = "⛓️ Toothless Bully"
             tier = "Harmless Adversary"
             subtext = "Low Quality + Low Muscle"
-            desc = "Strained or hostile intent, but powerless and behind bars. Petty irritations without lasting material ruin."
+            desc = "Strained disposition without the horsepower to execute its irritations; easily managed."
             color = "#854d0e"
             bg = "#fef3c7"
 
@@ -1117,7 +1159,7 @@ def classify_graha_archetype(
         "desc": desc,
         "color": color,
         "bg": bg,
-        "is_high_dignity": is_high_dig,
+        "is_high_dignity": (is_royal_dig or is_high_dig),
         "is_high_strength": is_high_musc
     }
     if simple_neecha_badge:
@@ -1531,28 +1573,29 @@ def calculate_graha_vitality(
 
             # 3. Sun / Moon + Nodes: Grahan Yoga (Eclipse)
             elif (cp in ("Rahu", "Ketu") and planet in ("Sun", "Moon")) or (planet in ("Rahu", "Ketu") and cp in ("Sun", "Moon")):
-                is_grahan = True
-                luminary = planet if planet in ("Sun", "Moon") else cp
-                node_p = cp if cp in ("Rahu", "Ketu") else planet
-                badge = f"🌑 Grahan Yoga ({luminary} Eclipsed by {node_p})"
-                nodal_badges.append(badge)
-                if node_p == "Ketu" and diff <= (10.0 / 3.0):
-                    efficiency *= 0.80  # biological/external suppression
-                node_mod -= 0.25 if diff <= (10.0 / 3.0) else -0.15
+                if diff <= 15.0:
+                    is_grahan = True
+                    luminary = planet if planet in ("Sun", "Moon") else cp
+                    node_p = cp if cp in ("Rahu", "Ketu") else planet
+                    badge = f"🌑 Grahan Yoga ({luminary} Eclipsed by {node_p})"
+                    nodal_badges.append(badge)
+                    if node_p == "Ketu" and diff <= (10.0 / 3.0):
+                        efficiency *= 0.80  # biological/external suppression
+                    node_mod -= 0.25 if diff <= (10.0 / 3.0) else 0.15
 
             # 4. Mars + Rahu: Angaraka Yoga
             elif (planet == "Mars" and cp == "Rahu") or (planet == "Rahu" and cp == "Mars"):
                 is_angaraka = True
                 badge = "🔥 Angaraka Yoga (Volatile Drive / High Engineering Friction)"
                 nodal_badges.append(badge)
-                node_mod -= 0.25 if diff <= 5.0 else -0.10
+                node_mod -= 0.25 if diff <= 5.0 else 0.10
 
             # 5. Saturn + Rahu: Shrapit Yoga
             elif (planet == "Saturn" and cp == "Rahu") or (planet == "Rahu" and cp == "Saturn"):
                 is_shrapit = True
                 badge = "⛓️ Shrapit Yoga (Karmic Toil / Heavy Institutional Duty)"
                 nodal_badges.append(badge)
-                node_mod -= 0.25 if diff <= 5.0 else -0.10
+                node_mod -= 0.25 if diff <= 5.0 else 0.10
 
             # 6. Ketu's Combinations with Non-Jupiter Planets
             elif (planet == "Mercury" and cp == "Ketu") or (planet == "Ketu" and cp == "Mercury"):
@@ -1577,7 +1620,7 @@ def calculate_graha_vitality(
                 if (planet == host_planet or cp == host_planet) and host_dignity_pct >= 60.0:
                     node_mod += 0.20
                 else:
-                    node_mod -= 0.15 if diff <= 5.0 else -0.05
+                    node_mod -= 0.15 if diff <= 5.0 else 0.05
 
             # 7. Dispositor Protection: Node conjoined with its own Sign Lord
             elif (cp == host_planet or (planet == host_planet and cp in ("Rahu", "Ketu"))) and host_dignity_pct >= 60.0:
@@ -1825,7 +1868,7 @@ def calculate_graha_vitality(
     # Aspect rays and conjunctions are factored into Functional Dignity (Layer 2).
     # PreScore strictly reflects physical and operational realities:
     pre_score = base_vit + combust_mod + war_mod + node_mod + vikala_mod
-    final_score = 5.0 + (pre_score - 5.0) * (0.6 + 0.4 * efficiency)
+    final_score = 5.0 + (pre_score - 5.0) * (0.8 + 0.2 * efficiency)
     final_score = clamp(round(final_score, 1), 1.0, 10.0)
 
     if final_score >= 8.5:
@@ -1894,7 +1937,7 @@ def calculate_graha_vitality(
     receipt_text = "\n".join(receipt_lines)
 
     # Calculate equation parts representing the mathematical breakdown of vitality_score
-    scale = 0.6 + 0.4 * efficiency
+    scale = 0.8 + 0.2 * efficiency
     combust_part = round(combust_mod * scale, 2)
     war_part = round(war_mod * scale, 2)
     node_part = round(node_mod * scale, 2)
@@ -2675,8 +2718,6 @@ def calculate_planetary_evaluation(
                 o_deg = float(other_d1.get("degree_0_to_30", other_d1.get("longitude", 0.0) % 30.0))
                 my_deg = float(p_d1.get("degree_0_to_30", p_lon % 30.0))
                 deg_diff = abs(my_deg - o_deg)
-                if deg_diff > 15.0:
-                    deg_diff = abs(30.0 - deg_diff)
                 o_sb = 100.0
                 if shadbala_data and other_p in shadbala_data:
                     o_sb = float(shadbala_data[other_p].get("Pct_Required_Total", 100.0))
@@ -2838,6 +2879,11 @@ def calculate_planetary_evaluation(
                 inc_g = build_aspect_graph_data(src_p, src_lon, src_targets)
                 incoming_aspect_graphs[src_p] = inc_g
                 asp_item["aspect_graph"] = inc_g
+
+                # Sync to processed vitality aspect details
+                for vit_asp in vit_res.get("aspect_details", []):
+                    if (vit_asp.get("from_planet") == src_p) or (vit_asp.get("source") == src_p):
+                        vit_asp["aspect_graph"] = inc_g
 
         planets_result[p] = {
             "planet": p,

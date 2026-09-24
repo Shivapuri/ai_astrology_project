@@ -1302,7 +1302,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 return `
                     <div style="background: #ffffff; padding: 10px; width: 100%; max-width: 820px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box;">
-                      <svg viewBox="0 0 820 260" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; display: block; overflow: visible;">
+                      <svg viewBox="0 0 820 260" width="100%" xmlns="http://www.w3.org/2000/svg" style="background:#ffffff; display: block; overflow: visible; height: auto;">
                         <defs>
                           <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stop-color="#2563eb" stop-opacity="0.25"/>

@@ -204,7 +204,7 @@ Under the 5-tier decoupled architecture, House Terrain ($\pm 25\%$) and Lordship
 
 ## 🔢 7. The Calibrated Vitality Score Formula (1.0 to 10.0)
 
-$$\text{Final Vitality Score} = \text{clamp}\Big(5.0 + (\text{PreScore} - 5.0) \times (0.6 + 0.4 \times E_{\text{baladi}}),\, 1.0,\, 10.0\Big)$$
+$$\text{Final Vitality Score} = \text{clamp}\Big(5.0 + (\text{PreScore} - 5.0) \times (0.8 + 0.2 \times E_{\text{baladi}}),\, 1.0,\, 10.0\Big)$$
 
 $$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMod} + \text{WarMod} + \text{NodeMod} + \text{VikalaMod}$$
 
@@ -216,6 +216,20 @@ Under ADR-006 and ADR-009, Functional Dignity (Layer 2) sets the core psychologi
   $$\text{BaseVit} = 1.0 + 9.0 \times \Big(0.40 \times \frac{\text{Effective Dignity}}{100.0} + 0.35 \times \frac{\text{Effective Shadbala}}{100.0} + 0.25 \times \frac{\text{Host Dignity}}{100.0}\Big)$$
 * **Decoupled Situational Expression:** House Terrain and Lordship Agenda are tracked independently as Expression Mode (Layer 4) and net scale score, ensuring mathematical transparency without double-counting.
 * **Mathematical Transparency:** All components—Inherent Base Dignity, Host Rescue, Peer Sambhanda Rays, House Field, and Lordship Agenda—are itemized transparently in the calculation audit trail (`🧾 Receipt`).
+
+### 7.2 The Refined Behavioral Archetype Spectrum (Dignity × Muscle Matrix)
+Cross-references Moral Intent / Quality (Effective Dignity) with Kinetic Power / Stamina (Effective Shadbala):
+
+| Dignity Band | High Muscle ($\ge 110\%$) | Balanced Muscle ($88\% - 109\%$) | Low Muscle ($< 88\%$) |
+| :--- | :--- | :--- | :--- |
+| **Royal Dignity ($\ge 75\%$)** *(Exalted, MT, Own)* | **🌟 The Generous King** *(Sovereign Monarch)* | **🛡️ The Noble Guardian** *(Constructive Sovereign)* | **🤝 The Sincere Friend** *(Noble Intent / Low Muscle)* |
+| **High / Friendly ($55\% - 74\%$)** *(Great Friend, Friend)* | **🛡️ The Noble Guardian** *(Constructive Ally)* | **⚖️ The Capable Executive** *(Pragmatic Ally)* | **🕊️ The Quiet Supporter** *(Supportive Baseline)* |
+| **Neutral Dignity ($35\% - 54\%$)** *(Sama Kshetra)* | **⚒️ The Pragmatic Executive** *(Tireless Champion)* | **⚖️ The Dutiful Realist** *(Steady Craftsman)* | **🌾 The Modest Citizen** *(Quiet Baseline)* |
+| **Low Dignity ($< 35\%$)** *(Enemy, Debilitated)* | **⚔️ The Armed Dictator** *(Severe Hazard)* | **🌪️ The Embattled Striver** *(Strained Fighter)* | **⛓️ The Toothless Bully** *(Harmless Adversary)* |
+
+* **Alchemical Rescue (Neecha Bhanga):**
+  - Kendra/Kona (1, 4, 5, 7, 9, 10): **✨ The Transmuted Hero** *(Alchemical Raja Yoga)*
+  - Dusthana (6, 8, 12): **Simple Neecha Bhanga** *(Overcoming Deficit)*
 
 ### Score Tiers:
 * $\ge 8.5$: **`🌟 Sovereign`**
@@ -296,10 +310,10 @@ For any target planet at absolute longitude $L_{\text{target}}$ aspected by sour
    $$P(D) = P_1 + \frac{D - D_1}{D_2 - D_1} \times (P_2 - P_1)$$
 
 ### 9.3 SVG Coordinate System
-* **ViewBox:** `0 0 720 170`
-* **Plot Dimensions:** X from $30$ to $690$ (step = $55\text{px}$ per $30^\circ$), Y from $120$ ($0\%$) to $20$ ($100\%$).
-* **Baseline:** Line at $y=120$ spanning $x \in [30, 690]$.
-* **Target Coordinates:** $x = 30 + \frac{D}{360} \times 660$, $y = 120 - \frac{P}{100} \times 100$.
+* **ViewBox:** `0 0 820 260`
+* **Plot Dimensions:** X from $50$ to $770$ (width = $720\text{px}$, step = $60\text{px}$ per $30^\circ$), Y from $180$ ($0\%$) to $40$ ($100\%$, height = $140\text{px}$).
+* **Baseline:** Line at $y=180$ spanning $x \in [45, 775]$.
+* **Target Coordinates:** $x = 50 + \frac{D}{360} \times 720$, $y = 180 - \frac{P}{100} \times 140$.
 
 ### 9.4 Incoming Aspect Weather Cutoff (12.0 Virūpas Threshold)
 * To ensure minor yet tangible glances (*Dṛṣṭi*) are visible on the planetary dashboard, the cutoff threshold for rendering aspect rays on the diagnostic line graph is set to **$\ge 12.0$ Virūpas** (reduced from the legacy $20.0$ Virūpa filter).

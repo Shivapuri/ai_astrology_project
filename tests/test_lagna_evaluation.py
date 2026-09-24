@@ -315,3 +315,49 @@ def test_graceful_null_handling():
     assert result["lord"]["name"] == "Venus"
     assert result["lord"]["house"] == 11
     assert result["kartari"]["type"] == "Neutral"
+
+
+def test_lagna_lord_lajjitadi_stacking_and_saturn_detection():
+    """Verify that multiple feeling states do not compound unbounded and Saturn starvation is detected."""
+    # Mock chart where Lagna Lord has 3 Mudita aspects and 1 Saturn starvation
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {
+                    "sign": "Leo",
+                    "degree_0_to_30": 15.0,
+                    "dignity_breakdown": {"final_dignity": "Own Sign"},
+                    "avasthas": {
+                        "calibrated_lajjitadi": [
+                            {"state": "Mudita", "effective_intensity": 1.0, "condition": "aspect from Jupiter"},
+                            {"state": "Mudita", "effective_intensity": 1.0, "condition": "aspect from Mars"},
+                            {"state": "Mudita", "effective_intensity": 1.0, "condition": "aspect from Moon"},
+                            {
+                                "state": "Kshudhita (via ♄ Saturn)",
+                                "effective_intensity": 1.0,
+                                "condition": "",  # Empty condition, but state and influencing_planets have Saturn!
+                                "badge": "⚠️ Kshudhita (via ♄ Saturn)",
+                                "influencing_planets": [{"planet": "Saturn"}]
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    result = evaluate_lagna_vitality(mock_vargas, shadbala_data=None, advanced_aspects=None)
+    p1_audit = result["audit_trail"]["p1_captain"]
+
+    # Verify Mudita (+0.40) is capped to 1 occurrence, not 3 (+1.20)
+    mudita_entries = [note for note in p1_audit if "Mudita" in note]
+    assert len(mudita_entries) == 1, f"Expected exactly 1 Mudita entry, got {len(mudita_entries)}"
+    assert "+0.40" in mudita_entries[0]
+
+    # Verify Saturn starvation detects Saturn (-0.80) and notes 'by Saturn'
+    starved_entries = [note for note in p1_audit if "Starved" in note]
+    assert len(starved_entries) == 1, f"Expected exactly 1 Starved entry, got {len(starved_entries)}"
+    assert "-0.80" in starved_entries[0], f"Expected -0.80 for Saturn starvation, got {starved_entries[0]}"
+    assert "by Saturn" in starved_entries[0]
+

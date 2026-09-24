@@ -198,17 +198,32 @@ def test_nine_tier_archetype_matrix():
     """Verify the 9-tier (+ Transmuted Hero) archetypal spectrum."""
     from jyotish.planetary_evaluation.planetary_evaluation import classify_graha_archetype
 
-    # 1. High Dignity Tiers
+    # 1. Royal Dignity Tiers (>= 75%)
     king = classify_graha_archetype(dignity_pct=85.0, shadbala_pct=120.0)
     assert king["archetype"] == "The Generous King"
+    assert king["tier"] == "Sovereign Monarch"
 
-    guardian = classify_graha_archetype(dignity_pct=85.0, shadbala_pct=95.0)
-    assert guardian["archetype"] == "The Noble Guardian"
+    guardian_royal = classify_graha_archetype(dignity_pct=85.0, shadbala_pct=95.0)
+    assert guardian_royal["archetype"] == "The Noble Guardian"
+    assert guardian_royal["tier"] == "Constructive Sovereign"
 
     friend = classify_graha_archetype(dignity_pct=85.0, shadbala_pct=75.0)
     assert friend["archetype"] == "The Sincere Friend"
 
-    # 2. Neutral Dignity Tiers
+    # 2. Friendly Dignity Tiers (55% - 74%)
+    guardian_friendly = classify_graha_archetype(dignity_pct=63.9, shadbala_pct=120.0)
+    assert guardian_friendly["archetype"] == "The Noble Guardian"
+    assert guardian_friendly["tier"] == "Constructive Ally"
+
+    exec_capable = classify_graha_archetype(dignity_pct=63.9, shadbala_pct=95.0)
+    assert exec_capable["archetype"] == "The Capable Executive"
+    assert exec_capable["tier"] == "Pragmatic Ally"
+
+    supporter = classify_graha_archetype(dignity_pct=63.9, shadbala_pct=75.0)
+    assert supporter["archetype"] == "The Quiet Supporter"
+    assert supporter["tier"] == "Supportive Baseline"
+
+    # 3. Neutral Dignity Tiers (35% - 54%)
     exec_archetype = classify_graha_archetype(dignity_pct=45.0, shadbala_pct=120.0)
     assert exec_archetype["archetype"] == "The Pragmatic Executive"
 
@@ -218,7 +233,7 @@ def test_nine_tier_archetype_matrix():
     citizen = classify_graha_archetype(dignity_pct=45.0, shadbala_pct=75.0)
     assert citizen["archetype"] == "The Modest Citizen"
 
-    # 3. Low Dignity Tiers
+    # 4. Low Dignity Tiers (< 35%)
     dictator = classify_graha_archetype(dignity_pct=25.0, shadbala_pct=120.0)
     assert dictator["archetype"] == "The Armed Dictator"
 
@@ -228,7 +243,7 @@ def test_nine_tier_archetype_matrix():
     bully = classify_graha_archetype(dignity_pct=25.0, shadbala_pct=75.0)
     assert bully["archetype"] == "The Toothless Bully"
 
-    # 4. Transmuted Hero (Strict Neecha Bhanga)
+    # 5. Transmuted Hero (Strict Neecha Bhanga)
     hero = classify_graha_archetype(dignity_pct=25.0, shadbala_pct=120.0, is_neecha_bhanga=True)
     assert hero["archetype"] == "The Transmuted Hero"
 
@@ -1474,6 +1489,115 @@ def test_shadbala_pct_required_total_prioritized():
     jup_data = eval_res["planets"]["Jupiter"]
     assert jup_data["subcaption_power_pct"] == 133.1
     assert "133%" in jup_data["subcaption_text"]
+
+
+def test_wide_conjunction_no_wraparound():
+    """Verify that a 27° separation in the same sign is treated as Wide, NOT wrapped to 3°."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Leo", "degree_0_to_30": 2.0, "longitude": 122.0, "dignity": "Own Sign"},
+                "Ketu": {"sign": "Leo", "degree_0_to_30": 29.0, "longitude": 149.0, "dignity": "Enemy"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 10.0, "longitude": 100.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 20.0, "longitude": 200.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 20.0, "longitude": 320.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Aquarius", "degree_0_to_30": 29.0, "longitude": 329.0, "dignity": "Friend"}
+            }
+        }
+    }
+
+    eval_res = calculate_planetary_evaluation(chart)
+    sun_data = eval_res["planets"]["Sun"]
+    sun_vit = sun_data["vitality"]
+
+    # Sun at 2° and Ketu at 29°: difference is 27°, which is Wide (orb_band="Wide")
+    conj = next((c for c in sun_vit["conjunction_details"] if c["planet"] == "Ketu"), None)
+    assert conj is not None, "Ketu should be in Sun conjunction_details"
+    assert conj["degree_diff"] == 27.0, f"Expected 27.0° separation, got {conj['degree_diff']}"
+    assert conj["orb_band"] == "Wide"
+
+    # Must NOT trigger Exact Intimate conjunction penalty (-0.25) or 20% biological efficiency wipeout (0.80x)
+    assert conj["orb_band"] != "Exact (Intimate)"
+    assert sun_vit["node_mod"] != -0.25  # Should be wide (-0.15), not intimate (-0.25)
+    # Biological efficiency should remain 25% (Bala stage), not reduced to 20% via Ketu suppression
+    assert sun_vit["calculation_receipt"]["efficiency_pct"] == 25
+
+
+def test_vitality_aspect_details_has_aspect_graph():
+    """Verify that vit_res.aspect_details receives aspect_graph synchronized from incoming graphs."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    # Chart where Mars in Aries (10°) aspects Sun in Leo (15°) via 5th/4th house trine or 8th aspect
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Leo", "degree_0_to_30": 15.0, "longitude": 135.0, "dignity": "Own Sign"},
+                "Mars": {"sign": "Taurus", "degree_0_to_30": 15.0, "longitude": 45.0, "dignity": "Neutral"},
+                "Moon": {"sign": "Cancer", "degree_0_to_30": 10.0, "longitude": 100.0, "dignity": "Own Sign"},
+                "Mercury": {"sign": "Virgo", "degree_0_to_30": 10.0, "longitude": 160.0, "dignity": "Exalted"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Libra", "degree_0_to_30": 20.0, "longitude": 200.0, "dignity": "Own Sign"},
+                "Saturn": {"sign": "Aquarius", "degree_0_to_30": 15.0, "longitude": 315.0, "dignity": "Moolatrikona"},
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    eval_res = calculate_planetary_evaluation(chart)
+    sun_data = eval_res["planets"]["Sun"]
+    vit_aspects = sun_data["vitality"].get("aspect_details", [])
+
+    # Saturn in Aquarius (315°) casts full 7th aspect (180°) on Sun in Leo (135°)
+    sat_asp = next((a for a in vit_aspects if (a.get("from_planet") == "Saturn" or a.get("source") == "Saturn")), None)
+    assert sat_asp is not None, "Saturn 7th aspect on Sun should be present"
+    assert "aspect_graph" in sat_asp, "aspect_graph must be synchronized to vitality.aspect_details"
+    assert sat_asp["aspect_graph"] is not None
+    assert "polyline_points" in sat_asp["aspect_graph"]
+
+
+def test_baladi_softened_compression_floor():
+    """Verify that 0% Mrita efficiency uses the softened 0.8 multiplier instead of 0.6."""
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
+
+    # Jupiter in Scorpio at 2.0°: Even sign, 0°-6° is Mṛta Avasthā (0% efficiency)
+    # Dignity: Friend (63.9%), Shadbala: 133%
+    # Base Engine: 5.5 + (6.39 - 5.5)*0.8 + (1.33 - 1.0)*1.2 = 6.6
+    # Under old 0.6 floor: 5.0 + (6.6 - 5.0)*0.6 = 5.96 ~ 6.0
+    # Under new 0.8 floor: 5.0 + (6.6 - 5.0)*0.8 = 6.28 ~ 6.3
+    vit_jup = calculate_graha_vitality(
+        planet="Jupiter",
+        sign="Scorpio",
+        degree_in_sign=2.0,  # 0°-6° in even sign Scorpio is Mrita (0% efficiency)
+        dignity_name="Friend's Sign",
+        dignity_pct=63.9,
+        functional_dignity_pct=63.9,
+        host_planet="Mars",
+        host_dignity_pct=75.0,
+        host_shadbala_pct=100.0,
+        planet_shadbala_pct=133.0,
+        conjunctions=[],
+        conjunction_details=[],
+        is_retrograde=False,
+        is_combust=False,
+        is_node=False,
+        lagna_sign="Leo",
+        lagna_lord="Sun"
+    )
+
+    assert vit_jup["calculation_receipt"]["base_vitality"] == 6.6
+    assert vit_jup["calculation_receipt"]["efficiency_pct"] == 0
+    assert vit_jup["vitality_score"] == 6.3, f"Expected 6.3 with softened 0.8 floor, got {vit_jup['vitality_score']}"
+    assert vit_jup["quadrant"]["archetype"] == "The Noble Guardian"
+    assert vit_jup["quadrant"]["tier"] == "Constructive Ally"
+
 
 
 
