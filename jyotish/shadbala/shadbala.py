@@ -893,7 +893,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
             # Pillar 6: Drik & Naisargika & War
             "Drik_Bala": round(drik, 1),
             "Naisargika_Bala": round(naisarg, 2),
-            "Yuddha_Bala": round(yuddha, 1),
+            "Yuddha_Bala": round(yuddha, 2),
             
             # Totals & Rankings
             "Total_Virupas": round(total_virupas, 1),

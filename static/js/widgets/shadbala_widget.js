@@ -88,7 +88,7 @@
             { type: "header", title: "Other Balas" },
             { label: "Naisargika Bala", key: "Naisargika_Bala", decimals: 2, desc: "Natural Fixed Luminosity: Inherent cosmic brightness rank (Sun 60 > Moon 51.4 > Venus 42.9 > Jupiter 34.3 > Mercury 25.7 > Mars 17.1 > Saturn 8.6)." },
             { label: "Drig Bala", key: "Drik_Bala", decimals: 1, desc: "Aspectual Strength (Drik Bala): Net balance of supportive benefic aspects (+) versus stressful malefic aspects (-) received." },
-            { label: "Yuddha Bala", key: "Yuddha_Bala", decimals: 0, desc: "Planetary War Strength: Bonus won or lost when two true planets are within 1° of celestial longitude." },
+            { label: "Yuddha Bala", key: "Yuddha_Bala", decimals: 2, desc: "Planetary War Strength: Bonus won or lost when two true planets are within 1° of celestial longitude." },
             
             // Final Summary & Rankings
             { type: "header", title: "Summary & Rankings" },
@@ -125,7 +125,10 @@
                             const tip = `<strong>${p} — Rank #${val}</strong><br>Ranked #${val} out of 7 planets in overall Shadbala strength.`;
                             html += `<td class="tooltip-target" data-tooltip="${tip}" style="cursor:help;"><span class="rank-val">#${val}</span></td>`;
                         } else {
-                            const vFormatted = Number(val).toFixed(row.decimals);
+                            let vFormatted = Number(val).toFixed(row.decimals);
+                            if (row.key === "Yuddha_Bala" && Number(val) > 0) {
+                                vFormatted = "+" + vFormatted;
+                            }
                             const tip = `<strong>${p} — ${row.label}: ${vFormatted}</strong><br>• ${row.desc}`;
                             html += `<td class="tooltip-target" data-tooltip="${tip}" style="cursor:help;">${vFormatted}</td>`;
                         }
