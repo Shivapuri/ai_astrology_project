@@ -2093,27 +2093,24 @@ def calculate_graha_vitality(
             quad["archetype"] = f"{quad['archetype']} (⚡ Embattled Executive)"
             quad["desc"] = quad["description"]
 
-    # Deep Exaltation (Paramoccha) & Deep Debilitation (Parama Neecha) Apex Check
-    apex_mod = 0.0
+    # Deep Exaltation (Paramoccha) & Deep Debilitation (Parama Neecha) Apex Badge Check
     apex_badge = None
     ONE_NAVAMSHA = 10.0 / 3.0  # 3°20' = 3.3333°
 
     if planet in PARAMOCCHA_DEGREES:
         ex_sign, ex_deg = PARAMOCCHA_DEGREES[planet]
         if sign == ex_sign and abs(degree_in_sign - ex_deg) <= ONE_NAVAMSHA:
-            apex_mod = 0.25
             apex_badge = "👑 Paramoccha (Deep Exaltation Peak)"
 
     if planet in PARAMA_NEECHA_DEGREES:
         deb_sign, deb_deg = PARAMA_NEECHA_DEGREES[planet]
         if sign == deb_sign and abs(degree_in_sign - deb_deg) <= ONE_NAVAMSHA:
-            apex_mod = -0.25
             apex_badge = "🔻 Parama Neecha (Deep Debilitation Core)"
 
     # Section 1.2: Vitality Score Cleanup (Zero Double-Counting)
     # Aspect rays and conjunctions are factored into Functional Dignity (Layer 2).
     # PreScore strictly reflects physical and operational realities:
-    pre_score = base_vit + combust_mod + war_mod + node_mod + vikala_mod + apex_mod
+    pre_score = base_vit + combust_mod + war_mod + node_mod + vikala_mod
     final_score = 5.0 + (pre_score - 5.0) * (0.8 + 0.2 * efficiency)
     final_score = clamp(round(final_score, 1), 1.0, 10.0)
 
@@ -2177,7 +2174,7 @@ def calculate_graha_vitality(
     if is_vikala:
         receipt_lines.append(f"   • Besieged State (Vikala):{vikala_mod:+.2f} pts (2+ Cruel Planets)")
     if apex_badge:
-        receipt_lines.append(f"   • Apex Proximity:         {apex_mod:+.2f} pts ({apex_badge})")
+        receipt_lines.append(f"   • Apex Proximity:         {apex_badge}")
     if psy_mod != 0.0:
         receipt_lines.append(f"   • Psychological State:    {psy_mod:+.2f} (Decoupled to Lajjitādi Narrative)")
     actual_eff_pct = int(round(efficiency * 100))
@@ -2194,7 +2191,6 @@ def calculate_graha_vitality(
     war_part = round(war_mod * scale, 2)
     node_part = round(node_mod * scale, 2)
     vikala_part = round(vikala_mod * scale, 2)
-    apex_part = round(apex_mod * scale, 2)
 
     parts = {}
     if combust_part != 0:
@@ -2205,8 +2201,6 @@ def calculate_graha_vitality(
         parts["nodal_influence"] = node_part
     if vikala_part != 0:
         parts["besieged_vikala"] = vikala_part
-    if apex_part != 0:
-        parts["apex_degree"] = apex_part
 
     base_part = round(final_score - sum(parts.values()), 2)
     equation_parts = {"base_engine": base_part, **parts}
@@ -2228,7 +2222,6 @@ def calculate_graha_vitality(
         "war_mod": round(war_mod, 1),
         "node_mod": round(node_mod, 2),
         "vikala_mod": round(vikala_mod, 2),
-        "apex_mod": round(apex_mod, 2),
         "apex_badge": apex_badge,
         "psy_mod": round(psy_mod, 2),
         "efficiency_pct": actual_eff_pct,
@@ -2276,7 +2269,6 @@ def calculate_graha_vitality(
         "war_mod": round(war_mod, 1),
         "node_mod": round(node_mod, 2),
         "vikala_mod": round(vikala_mod, 2),
-        "apex_mod": round(apex_mod, 2),
         "apex_badge": apex_badge,
         "is_guru_chandal": is_guru_chandal,
         "guru_chandal_badge": guru_chandal_badge,
@@ -3188,7 +3180,6 @@ def calculate_planetary_evaluation(
             "subcaption_text": vit_res.get("subcaption_text", f"Intent: {functional_dignity_pct:.0f}% | Power: {planet_shadbala_pct:.0f}%"),
             "equation_parts": vit_res.get("equation_parts", {}),
             "calculation_receipt": vit_res.get("calculation_receipt", {}),
-            "apex_mod": vit_res.get("apex_mod", 0.0),
             "apex_badge": vit_res.get("apex_badge"),
             "is_guru_chandal": vit_res.get("is_guru_chandal", False),
             "is_guru_ketu": vit_res.get("is_guru_ketu", False),

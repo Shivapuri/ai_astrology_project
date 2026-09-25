@@ -1713,10 +1713,11 @@ def test_unified_graha_cockpit_structure_and_invariants(test_chart):
     assert half_shift == 10.0
 
 
-def test_paramoccha_and_parama_neecha_apex_modifiers():
+def test_paramoccha_and_parama_neecha_apex_badges():
     """
-    Verify canonical Paramoccha (+0.25 bonus) and Parama Neecha (-0.25 penalty)
-    within a 3°20' (1 Navamsha) orb of peak canonical degrees.
+    Verify canonical Paramoccha and Parama Neecha apex badges
+    within a 3°20' (1 Navamsha) orb of peak canonical degrees,
+    with zero numerical impact on vitality calculations.
     """
     from jyotish.planetary_evaluation.planetary_evaluation import calculate_graha_vitality
 
@@ -1732,35 +1733,12 @@ def test_paramoccha_and_parama_neecha_apex_modifiers():
         host_shadbala_pct=100.0,
         planet_shadbala_pct=100.0
     )
-    assert vit_paramoccha["apex_mod"] == 0.25
     assert vit_paramoccha["apex_badge"] == "👑 Paramoccha (Deep Exaltation Peak)"
     assert "👑 Paramoccha (Deep Exaltation Peak)" in vit_paramoccha["affliction_badges"]
-    assert "apex_degree" in vit_paramoccha["equation_parts"]
-    assert vit_paramoccha["equation_parts"]["apex_degree"] > 0
+    assert "apex_degree" not in vit_paramoccha["equation_parts"]
     assert "Apex Proximity" in vit_paramoccha["calculation_receipt"]["receipt_text"]
-    assert vit_paramoccha["calculation_receipt"]["apex_mod"] == 0.25
 
-    # 2. Sun at 10.0° Libra (exact Parama Neecha core)
-    vit_parama_neecha = calculate_graha_vitality(
-        planet="Sun",
-        sign="Libra",
-        degree_in_sign=10.0,
-        dignity_name="Debilitated",
-        dignity_pct=12.5,
-        host_planet="Venus",
-        host_dignity_pct=75.0,
-        host_shadbala_pct=100.0,
-        planet_shadbala_pct=100.0
-    )
-    assert vit_parama_neecha["apex_mod"] == -0.25
-    assert vit_parama_neecha["apex_badge"] == "🔻 Parama Neecha (Deep Debilitation Core)"
-    assert "🔻 Parama Neecha (Deep Debilitation Core)" in vit_parama_neecha["affliction_badges"]
-    assert "apex_degree" in vit_parama_neecha["equation_parts"]
-    assert vit_parama_neecha["equation_parts"]["apex_degree"] < 0
-    assert "Apex Proximity" in vit_parama_neecha["calculation_receipt"]["receipt_text"]
-    assert vit_parama_neecha["calculation_receipt"]["apex_mod"] == -0.25
-
-    # 3. Sun at 20.0° Aries (Exalted, but outside 3°20' orb of 10.0°)
+    # 2. Sun at 20.0° Aries (Exalted, outside 3°20' orb of 10.0°)
     vit_outside_orb = calculate_graha_vitality(
         planet="Sun",
         sign="Aries",
@@ -1772,10 +1750,28 @@ def test_paramoccha_and_parama_neecha_apex_modifiers():
         host_shadbala_pct=100.0,
         planet_shadbala_pct=100.0
     )
-    assert vit_outside_orb["apex_mod"] == 0.0
     assert vit_outside_orb["apex_badge"] is None
     assert "👑 Paramoccha (Deep Exaltation Peak)" not in vit_outside_orb["affliction_badges"]
-    assert "apex_degree" not in vit_outside_orb["equation_parts"]
+    # Verify zero mathematical impact: equation_parts contains only base_engine
+    assert vit_paramoccha["equation_parts"] == {"base_engine": vit_paramoccha["vitality_score"]}
+    assert "apex_degree" not in vit_paramoccha["equation_parts"]
+
+    # 3. Sun at 10.0° Libra (exact Parama Neecha core)
+    vit_parama_neecha = calculate_graha_vitality(
+        planet="Sun",
+        sign="Libra",
+        degree_in_sign=10.0,
+        dignity_name="Debilitated",
+        dignity_pct=12.5,
+        host_planet="Venus",
+        host_dignity_pct=75.0,
+        host_shadbala_pct=100.0,
+        planet_shadbala_pct=100.0
+    )
+    assert vit_parama_neecha["apex_badge"] == "🔻 Parama Neecha (Deep Debilitation Core)"
+    assert "🔻 Parama Neecha (Deep Debilitation Core)" in vit_parama_neecha["affliction_badges"]
+    assert "apex_degree" not in vit_parama_neecha["equation_parts"]
+    assert "Apex Proximity" in vit_parama_neecha["calculation_receipt"]["receipt_text"]
 
 
 
