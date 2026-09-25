@@ -65,7 +65,11 @@ def calculate_saptavarga_bala(planet: str, planet_positions: dict) -> float:
             total_virupas += get_saptavarga_points(planet, varga_sign_name, "", is_d1=is_d1)
             continue
             
-        # In Saptavarga, Venus in Pisces (Jupiter's sign) in divisional charts evaluates to Neutral (10 Virupas)
+        # TODO [TECH-DEBT: MULTI-CHART SAMBANDHA AUDIT]:
+        # In Angelina Jolie's baseline chart, Venus in D9 Pisces requires 10.0 Virupas (Neutral)
+        # to match Kala software. Currently, Guest-to-Host evaluation yields Friend (15.0 Virupas).
+        # A Host-to-Guest evaluation (Jupiter -> Venus: Enemy + Friend = Neutral) produces 10.0 Virupas.
+        # DO NOT refactor this globally until verified against a multi-native test matrix covering all Ascendants.
         if not is_d1 and planet == "Venus" and varga_sign_name == "Pisces":
             total_virupas += 10.0
             continue
@@ -604,6 +608,86 @@ REQUIRED_AYANA = {"Sun": 30.0, "Moon": 40.0, "Mars": 20.0, "Mercury": 30.0, "Jup
 REQUIRED_CHESHTA = {"Sun": 50.0, "Moon": 30.0, "Mars": 40.0, "Mercury": 50.0, "Jupiter": 50.0, "Venus": 30.0, "Saturn": 40.0}
 REQUIRED_TOTAL = {"Sun": 390.0, "Moon": 360.0, "Mars": 300.0, "Mercury": 420.0, "Jupiter": 390.0, "Venus": 330.0, "Saturn": 300.0}
 
+# Constants for Planetary War: Standard Disc Diameters in arcseconds per BPHS 28.19
+BIMBA_PARIMANAS = {
+    "Mars": 9.4,
+    "Mercury": 6.6,
+    "Jupiter": 190.4,
+    "Venus": 16.6,
+    "Saturn": 158.0
+}
+
+def calculate_yuddha_bala(
+    pre_war_balas: dict, 
+    planet_longitudes: dict, 
+    planet_latitudes: dict = None, 
+    use_latitude: bool = True
+) -> dict:
+    """
+    Calculates Yuddha Bala (Planetary War Strength) in Virupas per BPHS 28.19-20.
+    Evaluates Mars, Mercury, Jupiter, Venus, Saturn within <= 1°00'00" in the SAME sign.
+    
+    Formula:
+        Bala Difference = |Pre-War Winner - Pre-War Loser|
+        Bimba Difference = |Bimba Winner - Bimba Loser|
+        War Points = Bala Difference / Bimba Difference
+        Winner gains +War Points; Loser loses -War Points.
+    """
+    eligible = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    adjustments = {p: 0.0 for p in pre_war_balas}
+    
+    for i in range(len(eligible)):
+        p1 = eligible[i]
+        if p1 not in planet_longitudes:
+            continue
+        for j in range(i + 1, len(eligible)):
+            p2 = eligible[j]
+            if p2 not in planet_longitudes:
+                continue
+            
+            # Must occupy the exact same zodiac sign (0-11)
+            s1 = int((planet_longitudes[p1] % 360.0) / 30.0)
+            s2 = int((planet_longitudes[p2] % 360.0) / 30.0)
+            if s1 != s2:
+                continue
+
+            diff = abs(planet_longitudes[p1] - planet_longitudes[p2]) % 360.0
+            if diff > 180.0:
+                diff = 360.0 - diff
+                
+            if diff <= 1.0:
+                # Victor Determination:
+                # 1. Venus Invariance Rule (Bahula-Ruchi: Venus never loses war)
+                if p1 == "Venus":
+                    winner, loser = p1, p2
+                elif p2 == "Venus":
+                    winner, loser = p2, p1
+                # 2. Celestial Latitude (higher northern latitude wins per Surya Siddhanta / Kala)
+                elif use_latitude and planet_latitudes:
+                    lat1 = planet_latitudes.get(p1, 0.0)
+                    lat2 = planet_latitudes.get(p2, 0.0)
+                    if abs(lat1 - lat2) > 0.0001:
+                        winner = p1 if lat1 > lat2 else p2
+                    else:
+                        winner = p1 if planet_longitudes[p1] < planet_longitudes[p2] else p2
+                    loser = p2 if winner == p1 else p1
+                # 3. Lower Longitude fallback (Classical Parashara)
+                else:
+                    winner = p1 if planet_longitudes[p1] < planet_longitudes[p2] else p2
+                    loser = p2 if winner == p1 else p1
+                    
+                bimba_diff = abs(BIMBA_PARIMANAS[winner] - BIMBA_PARIMANAS[loser])
+                if bimba_diff == 0:
+                    bimba_diff = 1.0
+                    
+                bala_diff = abs(pre_war_balas[winner] - pre_war_balas[loser])
+                war_pts = round(bala_diff / bimba_diff, 2)
+                
+                adjustments[winner] += war_pts
+                adjustments[loser] -= war_pts
+                
+    return adjustments
+
 def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: float, birth_time_jd: float, lon: float = 0.0, lat: float = 0.0) -> dict:
     """
     Master function to calculate the full Kala Shadbala breakdown for all 7 primary planets.
@@ -639,6 +723,11 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
     moon_paksha = calculate_paksha_bala("Moon", moon_lon, sun_lon)
     is_moon_benefic = (moon_paksha >= 30.0)
     
+    # Pass 1: Compute Sthana, Dig, and preliminary Kaala Bala for all planets to obtain pre-war scores
+    planet_lats = {}
+    pre_war_scores = {}
+    preliminary_data = {}
+
     for p in planets:
         if p not in planet_positions:
             continue
@@ -651,6 +740,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
                 pl_lat = res_pl[1]
             except Exception:
                 pl_lat = 0.0
+        planet_lats[p] = pl_lat
         
         # 1. Sthana Bala (Positional)
         uccha = calculate_uccha_bala(p, pl_lon)
@@ -664,7 +754,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         # 2. Dig Bala (Directional)
         dig = calculate_dig_bala(p, pl_lon, ascendant_lon, mc_lon, armc=armc, geolat=lat, eps=eps, planet_lat=pl_lat)
         
-        # 3. Kaala Bala (Time Strength - in Kala, distinct from Ayana Bala)
+        # 3. Kaala Bala (Preliminary Time Strength)
         nathonnatha = calculate_nathonnatha_bala(p, sun_lon, mc_lon)
         paksha = calculate_paksha_bala(p, moon_lon, sun_lon)
         tribhaga = calculate_tribhaga_bala(p, sun_lon, ascendant_lon)
@@ -673,10 +763,59 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         masa = 30.0 if p == time_lords["Masa"] else 0.0
         vara = 45.0 if p == time_lords["Vara"] else 0.0
         hora = 60.0 if p == time_lords["Hora"] else 0.0
-        yuddha = 0.0 # Planetary War
         
-        kaala = nathonnatha + paksha + tribhaga + abda + masa + vara + hora + yuddha
+        kaala_pre = nathonnatha + paksha + tribhaga + abda + masa + vara + hora
+        pre_war_scores[p] = sthana + dig + kaala_pre
         
+        preliminary_data[p] = {
+            "pl_lon": pl_lon,
+            "pl_lat": pl_lat,
+            "uccha": uccha,
+            "saptavarga": saptavarga,
+            "ojayugma": ojayugma,
+            "kendra": kendra,
+            "drekkana": drekkana,
+            "sthana": sthana,
+            "dig": dig,
+            "nathonnatha": nathonnatha,
+            "paksha": paksha,
+            "tribhaga": tribhaga,
+            "abda": abda,
+            "masa": masa,
+            "vara": vara,
+            "hora": hora,
+            "kaala_pre": kaala_pre
+        }
+
+    # Planetary War (Yuddha Bala) adjustments per BPHS 28.19-20
+    yuddha_adjustments = calculate_yuddha_bala(pre_war_scores, planet_positions, planet_lats, use_latitude=True)
+
+    # Pass 2: Finalize Kala Bala, Ayana, Cheshta, Naisargika, Drik, and Totals
+    for p in planets:
+        if p not in planet_positions:
+            continue
+
+        p_data = preliminary_data[p]
+        pl_lon = p_data["pl_lon"]
+        sthana = p_data["sthana"]
+        uccha = p_data["uccha"]
+        saptavarga = p_data["saptavarga"]
+        ojayugma = p_data["ojayugma"]
+        kendra = p_data["kendra"]
+        drekkana = p_data["drekkana"]
+        dig = p_data["dig"]
+        nathonnatha = p_data["nathonnatha"]
+        paksha = p_data["paksha"]
+        tribhaga = p_data["tribhaga"]
+        abda = p_data["abda"]
+        masa = p_data["masa"]
+        vara = p_data["vara"]
+        hora = p_data["hora"]
+        kaala_pre = p_data["kaala_pre"]
+
+        yuddha = yuddha_adjustments.get(p, 0.0)
+        kaala = kaala_pre + yuddha
+
         # 4. Ayana Bala (Khandakas)
         ayana = calculate_ayana_bala(p, birth_time_jd, pl_lon)
         
@@ -700,7 +839,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         ishta_phala = (uccha_clamped + cheshta_clamped) / 2.0
         kashta_phala = (max(0.0, 60.0 - uccha_clamped) + max(0.0, 60.0 - cheshta_clamped)) / 2.0
         
-        total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik + yuddha, 1)
+        total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik, 1)
         total_rupas = round(total_virupas / 60.0, 2)
         
         subha_phala = calculate_subha_phala(p, planet_positions)

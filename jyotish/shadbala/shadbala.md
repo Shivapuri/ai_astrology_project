@@ -65,10 +65,10 @@ Planets are strongest when angular (in the 1st, 4th, 7th, or 10th houses from th
 - Apoklima (Cadent: 3, 6, 9, 12): 15 Virupas
 
 ### Phase 3: Sthana Bala - Component 4: Drekkana Bala (Decanate Strength)
-Depending on the gender of the planet, it thrives in different 10-degree segments of a sign.
-- Male planets (Sun, Mars, Jupiter): Gain 15 Virupas in the 1st Drekkana (0-10°)
-- Female planets (Moon, Venus): Gain 15 Virupas in the 2nd Drekkana (10-20°)
-- Neuter planets (Mercury, Saturn): Gain 15 Virupas in the 3rd Drekkana (20-30°)
+Depending on the gender of the planet, it thrives in different 10-degree segments of a sign per BPHS 27.6 and `shadbala.py`:
+- **1st Drekkana (0°–10°):** Male planets (Sun, Mars, Jupiter) gain 15 Virupas.
+- **2nd Drekkana (10°–20°):** Neuter planets (Mercury, Saturn) gain 15 Virupas.
+- **3rd Drekkana (20°–30°):** Female planets (Moon, Venus) gain 15 Virupas.
 
 ### Phase 3: Sthana Bala - Component 5: Saptavarga Bala (Seven-fold Divisional Strength)
 Planets are evaluated not just in the main birth chart (D1), but across 7 different divisional charts (Hora, Drekkana, Saptamsa, Navamsa, Dvadasamsa, and Trimsamsa). In each of these 7 charts, the planet is awarded Virupas based on its dignity:
@@ -226,12 +226,12 @@ The aspect value is a mathematically precise piecewise function that awards 60 V
 
 ### Phase 7: Ishta and Kashta Phalas (Auspicious / Inauspicious Effects)
 Beyond standard strength (Bala), the exact measure of a planet's tendency to give good (Ishta) or evil (Kashta) results during its Dasa (planetary period) is calculated mathematically.
-- **Ishta Phala** is the geometric mean of the planet's Positional Exaltation strength (Uccha Bala) and its Motional Anomaly strength (Cheshta Bala).
-- **Kashta Phala** is the geometric mean of the *lack* of these two strengths (the difference from 60).
 
-**Formula:**
-- Ishta Phala = $\sqrt{\text{Uccha Bala} \times \text{Cheshta Bala}}$
-- Kashta Phala = $\sqrt{(60 - \text{Uccha Bala}) \times (60 - \text{Cheshta Bala})}$
+While some classical commentaries formulate Ishta/Kashta as the geometric mean ($\sqrt{U \times C}$), Ernst Wilhelm's *Kala* software standardizes on the balanced arithmetic mean:
+$$\text{Ishta Phala} = \frac{U + C}{2}, \quad \text{Kashta Phala} = \frac{(60 - U) + (60 - C)}{2}$$
+where $U$ is the clamped Uccha Bala ($0 \le U \le 60$) and $C$ is the clamped Cheshta Bala ($0 \le C \le 60$).
+
+This enforces the mathematical conservation law $\text{Ishta} + \text{Kashta} = 60.0\text{ Virūpas}$ across all reporting tables.
 
 ### Ishta / Kashta Rules
 > कथ्याम्यथा भावानां खेटानां च पदं द्विज । अथ चेष्टमनिष्टं च ग्रहानां कथयाम्यहम्।ह् । यद्।ह्वशाच्च प्रयच्छन्ति शुभाऽशुभदशाफलम्।ह् ॥ १॥
@@ -242,3 +242,46 @@ Beyond standard strength (Bala), the exact measure of a planet's tendency to giv
 > *cheShTAkendrAchcha tadrashmiM sAdhayeduchcharashmivat.h | cheShTAkendraM kujAdInAM pUrvamuktaM mayA dvija || 3||*
 > **Translation:** Now I shall tell the strength of Bhavas and Grahas, O Brahmin. I shall explain the Ishta (auspicious) and Anishta / Kashta (inauspicious) state of planets, by which they yield good and bad effects in their Dasas. Subtract the planet's longitude from its debilitation point... this yields the Uccha Rashmi (exaltation rays). From the Cheshta Kendra, determine its rays (strength) exactly like Exaltation.
 > *— Brihat Parashara Hora Shastra Chapter 29:1-3*
+
+---
+
+### Phase 8: Yuddha Bala (Planetary War Strength)
+When two of the five star planets (Mars, Mercury, Jupiter, Venus, Saturn) are in the same zodiac sign and within $1^\circ00'00"$ of each other, they engage in **Graha Yuddha** (Planetary War) per BPHS 28.19–20.
+
+#### Victor Determination
+1. **Venus Invariance Rule (Bahula-Ruchi):** Venus never loses a planetary war.
+2. **Celestial Latitude:** The planet with greater northern celestial latitude wins (per Surya Siddhanta / Kala).
+3. **Longitude Fallback:** The planet with lower longitude wins if latitudes are virtually identical.
+
+#### War Point Formula
+$$\text{Bala Difference} = |\text{Pre-War Winner} - \text{Pre-War Loser}|$$
+$$\text{Bimba Difference} = |\text{Bimba Winner} - \text{Bimba Loser}|$$
+$$\text{War Points} = \frac{\text{Bala Difference}}{\text{Bimba Difference}}$$
+
+The victor gains $+\text{War Points}$ added to its Kala Bala; the defeated planet loses $-\text{War Points}$.
+Standard planetary disc diameters (*Bimba Parimanas* in arcseconds per BPHS 28.19): Mars ($9.4''$), Mercury ($6.6''$), Jupiter ($190.4''$), Venus ($16.6''$), Saturn ($158.0''$).
+
+---
+
+## 4. Bhava Bala Subsystem (House Strength)
+Bhava Bala measures the strength of each of the 12 astrological houses (*Bhavas*) to manifest auspicious results. Calibrated to BPHS Chapters 28–30 and Ernst Wilhelm's Kala methodology, each house's total strength is composed of three foundational pillars:
+
+### Pillar 1: Bhavadhipati Bala (House Lord Strength)
+The total Shadbala Virupas of the planet that rules the sign on the Bhava Madhya (cusp). A house whose lord has high Shadbala receives robust life force and resources.
+
+### Pillar 2: Bhava Digbala (Directional House Strength)
+Houses derive directional strength ($0$ to $60$ Virupas) based on the biological genus (*Nara*, *Jalachara*, *Chathushpada*, *Keeta*) of the sign on the Bhava Madhya:
+- **Nara (Human):** Strongest in 1st house ($60$ Virupas); powerless in 7th house ($0$ Virupas).
+- **Jalachara (Watery):** Strongest in 4th house ($60$ Virupas); powerless in 10th house ($0$ Virupas).
+- **Keeta (Insect):** Strongest in 7th house ($60$ Virupas); powerless in 1st house ($0$ Virupas).
+- **Chathushpada (Quadruped):** Strongest in 10th house ($60$ Virupas); powerless in 4th house ($0$ Virupas).
+
+The strength scales linearly by $10$ Virupas per house distance from the zero-point house:
+$$\text{Digbala} = \min(\text{dist}, 12 - \text{dist}) \times 10.0$$
+
+### Pillar 3: Bhava Drishti Bala (Aspectual Strength on Cusp)
+Aspectual rays cast by the 7 classical planets upon the Bhava Madhya:
+- **Benefics** (Jupiter, Venus, bright Moon, unafflicted Mercury) add strength.
+- **Malefics** (Sun, Mars, Saturn, dark Moon, combust/afflicted Mercury) subtract strength.
+- **Jupiter and Mercury** cast full aspectual strength ($100\%$).
+- **All other planets** cast one-quarter aspectual strength ($25\%$).
