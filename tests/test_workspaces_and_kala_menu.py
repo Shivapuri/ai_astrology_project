@@ -136,12 +136,14 @@ def test_floating_bhava_chalita_window(page: Page):
     rows = page.locator("#widgetMaximizeContainer table tbody tr")
     assert rows.count() == 12, f"Expected 12 house rows, found {rows.count()}"
     
-    # Verify columns: Bhava, Sign, Lord, Cusp, Longitude, Occupants
+    # Verify columns: Bhava, Start, Cusp, End, Sign, Lord, Occupants
     header_text = page.locator("#widgetMaximizeContainer table thead").inner_text()
     assert "Bhava" in header_text
+    assert "Start" in header_text
+    assert "Cusp" in header_text
+    assert "End" in header_text
     assert "Sign" in header_text
     assert "Lord" in header_text
-    assert "Cusp" in header_text
     assert "Occupants" in header_text
     
     # 3. Test Dragging: Drag header by 60px down and 80px right

@@ -464,7 +464,7 @@
     function resetFloatingWindowPosition() {
         const card = document.getElementById('widgetMaximizeCard');
         if (!card) return;
-        const defaultWidth = Math.min(820, window.innerWidth - 40);
+        const defaultWidth = Math.min(900, window.innerWidth - 40);
         const defaultHeight = Math.min(540, window.innerHeight - 80);
         card.style.width = defaultWidth + 'px';
         card.style.height = defaultHeight + 'px';
@@ -558,38 +558,54 @@
         if (!modal || !titleEl || !container || !currentData) return;
         
         setActiveFloatingNav('nav-btn-bhava');
-        titleEl.textContent = currentData.subject_info.name + " — Bhava Chalita (12 Campanus Cusps)";
+        titleEl.textContent = currentData.subject_info.name + " — Bhava Chalita (12 Campanus Cusps & Boundaries)";
         const cusps = (currentData.vargas && currentData.vargas.D1 && currentData.vargas.D1.cusps) || [];
         const bhavas = (currentData.vargas && currentData.vargas.D1 && currentData.vargas.D1.bhavas) || [];
         
-        function formatDeg(deg_float) {
-            if (deg_float === undefined || deg_float === null) return "00:00";
-            let d = Math.floor(deg_float);
-            let m = Math.round((deg_float - d) * 60);
-            if (m === 60) { d += 1; m = 0; }
-            return `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-        }
-
-        const signLords = {
-            'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
-            'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
-            'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
-        };
+        const signsList = [
+            'Aries', 'Taurus', 'Gemini', 'Cancer',
+            'Leo', 'Virgo', 'Libra', 'Scorpio',
+            'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+        ];
         const signGlyphs = {
             'Aries': '♈', 'Taurus': '♉', 'Gemini': '♊', 'Cancer': '♋',
             'Leo': '♌', 'Virgo': '♍', 'Libra': '♎', 'Scorpio': '♏',
             'Sagittarius': '♐', 'Capricorn': '♑', 'Aquarius': '♒', 'Pisces': '♓'
         };
+        const signLords = {
+            'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+            'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+            'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+        };
+
+        function formatLonDetails(lon) {
+            if (lon === undefined || lon === null || isNaN(lon)) return { glyph: '', sign: '—', degMin: '—', lonStr: '—' };
+            const normLon = ((lon % 360) + 360) % 360;
+            const sIdx = Math.floor(normLon / 30) % 12;
+            const sign = signsList[sIdx];
+            const glyph = signGlyphs[sign] || '';
+            const deg = normLon % 30;
+            let d = Math.floor(deg);
+            let m = Math.round((deg - d) * 60);
+            if (m === 60) { d += 1; m = 0; }
+            return {
+                glyph: glyph,
+                sign: sign,
+                degMin: `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`,
+                lonStr: normLon.toFixed(2) + '°'
+            };
+        }
         
         let html = `
             <table class="dignity-grid" style="width:100%; border-collapse:collapse; font-size:13px; text-align:center;">
                 <thead>
                     <tr>
                         <th style="padding:7px 10px;">Bhava</th>
+                        <th style="padding:7px 10px;">Start (Sandhi)</th>
+                        <th style="padding:7px 10px; background:var(--bg-surface-elevated, rgba(0,0,0,0.03));">Cusp (Madhya)</th>
+                        <th style="padding:7px 10px;">End (Sandhi)</th>
                         <th style="padding:7px 10px;">Sign</th>
                         <th style="padding:7px 10px;">Lord</th>
-                        <th style="padding:7px 10px;">Cusp (Deg:Min)</th>
-                        <th style="padding:7px 10px;">Longitude</th>
                         <th style="padding:7px 10px;">Occupants (Campanus)</th>
                     </tr>
                 </thead>
@@ -604,13 +620,25 @@
                 ? planets.map(p => `<span style="display:inline-block; padding:2px 8px; margin:1px; background:var(--bg-surface-muted); border:1px solid var(--border-medium); border-radius:10px; font-size:11px; font-weight:600; color:var(--text-heading);">${p}</span>`).join(' ')
                 : `<span style="color:var(--text-subtle);">—</span>`;
             
+            const startInfo = formatLonDetails(bhavaData.start);
+            const cuspLon = c.longitude !== undefined ? c.longitude : bhavaData.cusp;
+            const cuspInfo = formatLonDetails(cuspLon);
+            const endInfo = formatLonDetails(bhavaData.end);
+
             html += `
                 <tr>
-                    <td style="padding:7px 10px;"><strong>House ${idx + 1}</strong></td>
-                    <td style="padding:7px 10px;"><span style="color:var(--border-highlight); font-weight:bold; margin-right:4px;">${glyph}</span>${c.sign}</td>
-                    <td style="padding:7px 10px; font-weight:600; color:var(--text-heading);">${lord}</td>
-                    <td style="padding:7px 10px; font-family:monospace; font-weight:600;">${formatDeg(c.degree_0_to_30)}</td>
-                    <td style="padding:7px 10px; font-family:monospace;">${c.longitude.toFixed(2)}°</td>
+                    <td style="padding:7px 10px; white-space:nowrap;"><strong>House ${idx + 1}</strong></td>
+                    <td style="padding:7px 10px; font-family:monospace; white-space:nowrap;" title="Start Longitude: ${startInfo.lonStr}">
+                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${startInfo.glyph}</span>${startInfo.degMin} <span style="font-size:11.5px; font-family:sans-serif; color:var(--text-muted);">${startInfo.sign}</span>
+                    </td>
+                    <td style="padding:7px 10px; font-family:monospace; white-space:nowrap; background:var(--bg-surface-elevated, rgba(0,0,0,0.02));" title="Cusp Longitude: ${cuspInfo.lonStr}">
+                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${cuspInfo.glyph}</span><strong>${cuspInfo.degMin}</strong> <span style="font-size:11.5px; font-family:sans-serif; font-weight:600; color:var(--text-heading);">${cuspInfo.sign}</span>
+                    </td>
+                    <td style="padding:7px 10px; font-family:monospace; white-space:nowrap;" title="End Longitude: ${endInfo.lonStr}">
+                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${endInfo.glyph}</span>${endInfo.degMin} <span style="font-size:11.5px; font-family:sans-serif; color:var(--text-muted);">${endInfo.sign}</span>
+                    </td>
+                    <td style="padding:7px 10px; white-space:nowrap;"><span style="color:var(--border-highlight); font-weight:bold; margin-right:4px;">${glyph}</span>${c.sign}</td>
+                    <td style="padding:7px 10px; font-weight:600; color:var(--text-heading); white-space:nowrap;">${lord}</td>
                     <td style="padding:7px 10px;">${planetsStr}</td>
                 </tr>
             `;

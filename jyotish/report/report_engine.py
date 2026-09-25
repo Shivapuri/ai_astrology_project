@@ -521,6 +521,38 @@ def compute_planetary_prominence_rankings(
     ranked_list = []
     planets_to_rank = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 
+    # -------------------------------------------------------------------------
+    # Pre-compute Jaimini Chara Karakas (AK & AmK) with dynamic fallback
+    # -------------------------------------------------------------------------
+    classical_7 = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+
+    def _get_planet_deg(g_name: str) -> float:
+        g_node = d1_grahas.get(g_name, {})
+        return float(g_node.get("degree_0_to_30", g_node.get("longitude", 0.0) % 30.0))
+
+    # Rank classical 7 grahas by degree descending
+    sorted_by_deg = sorted(
+        [g for g in classical_7 if g in d1_grahas],
+        key=_get_planet_deg,
+        reverse=True
+    )
+
+    ak_planet = sorted_by_deg[0] if len(sorted_by_deg) > 0 else None
+    amk_planet = sorted_by_deg[1] if len(sorted_by_deg) > 1 else None
+
+    # Check for AK-AmK Raja Yoga Connection (Conjunction or Mutual 1/7 Axis)
+    has_ak_amk_yoga = False
+    if ak_planet and amk_planet:
+        ak_sign = d1_grahas.get(ak_planet, {}).get("sign")
+        amk_sign = d1_grahas.get(amk_planet, {}).get("sign")
+        if ak_sign in ZODIAC_SIGNS and amk_sign in ZODIAC_SIGNS:
+            ak_s_idx = ZODIAC_SIGNS.index(ak_sign)
+            amk_s_idx = ZODIAC_SIGNS.index(amk_sign)
+            sign_dist = (amk_s_idx - ak_s_idx) % 12
+            # Conjunct (0) or Opposite 7th house (6)
+            if sign_dist in (0, 6):
+                has_ak_amk_yoga = True
+
     for p in planets_to_rank:
         p_data = d1_grahas.get(p, {})
         p_lon = p_data.get("longitude", 0.0)
@@ -577,11 +609,21 @@ def compute_planetary_prominence_rankings(
                 weights += 0.25
                 weight_reasons.append("Aligned with Moon (+0.25)")
 
-        # Atmakaraka check
-        ak_name = p_data.get("chara_karaka", {}).get("role", "")
-        if ak_name == "Atmakaraka (AK)" or "Atmakaraka" in str(ak_name):
-            weights += 0.20
-            weight_reasons.append("Atmakaraka Soul Signifier (+0.20)")
+        # Jaimini Karaka Evaluation (AK, AmK, and Raja Yoga Connection)
+        ck_role = str(p_data.get("chara_karaka", {}).get("role", ""))
+        is_ak = (p == ak_planet) or ("Atmakaraka" in ck_role and "Amatya" not in ck_role)
+        is_amk = (p == amk_planet) or ("Amatyakaraka" in ck_role or "AmK" in ck_role)
+
+        if is_ak:
+            weights += 0.30
+            weight_reasons.append("Atmakaraka Soul Signifier (+0.30)")
+        elif is_amk:
+            weights += 0.15
+            weight_reasons.append("Amatyakaraka Executive Mind (+0.15)")
+
+        if has_ak_amk_yoga and (is_ak or is_amk):
+            weights += 0.15
+            weight_reasons.append("Jaimini Raja Yoga: AK-AmK Connection (+0.15)")
 
         prominence_score = round(sbr * (1.0 + weights), 2)
 

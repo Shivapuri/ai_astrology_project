@@ -275,3 +275,83 @@ def test_environmental_tally_prominence_weighted():
     # Fire is dominant thermodynamically despite having fewer planets than Earth!
     assert elem["dominant"] == "Fire"
 
+
+def test_atmakaraka_prominence_weight_and_fallback():
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries", "longitude": 10.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "longitude": 5.0, "degree_0_to_30": 5.0},
+                # Mars has highest degree (28.0°) -> Atma Karaka
+                "Mars": {"sign": "Capricorn", "longitude": 298.0, "degree_0_to_30": 28.0},
+                "Moon": {"sign": "Taurus", "longitude": 34.0, "degree_0_to_30": 4.0},
+                "Mercury": {"sign": "Gemini", "longitude": 70.0, "degree_0_to_30": 10.0},
+                "Jupiter": {"sign": "Cancer", "longitude": 95.0, "degree_0_to_30": 5.0},
+                "Venus": {"sign": "Pisces", "longitude": 350.0, "degree_0_to_30": 20.0},
+                "Saturn": {"sign": "Libra", "longitude": 200.0, "degree_0_to_30": 20.0},
+            },
+            "cusps": [{"longitude": i * 30.0} for i in range(12)]
+        }
+    }
+    
+    mock_shadbala = {
+        p: {"Total_Rupas": 5.0, "Total_Virupas": 300.0, "Pct_Required_Total": 100.0}
+        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+    }
+
+    rankings = compute_planetary_prominence_rankings(mock_vargas, mock_shadbala, {})
+    mars_rank = next(item for item in rankings["leaderboard"] if item["planet"] == "Mars")
+
+    # Verify Mars gains the +0.30 Atmakaraka bonus via dynamic fallback
+    assert any("Atmakaraka Soul Signifier (+0.30)" in r for r in mars_rank["opportunity_reasons"])
+
+
+def test_jaimini_ak_and_amk_prominence_scoring():
+    """Verify that Atmakaraka gets +0.30, Amatyakaraka gets +0.15, and AK-AmK connection adds +0.15."""
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries", "longitude": 10.0},
+            "grahas": {
+                # Sun at 28.5° -> Atmakaraka (AK) in Leo (H5)
+                "Sun": {"sign": "Leo", "longitude": 148.5, "degree_0_to_30": 28.5},
+                # Mars at 24.0° -> Amatyakaraka (AmK) in Leo (H5 - conjunct AK!)
+                "Mars": {"sign": "Leo", "longitude": 144.0, "degree_0_to_30": 24.0},
+                # Venus at 20.0° -> Bhratrikaraka (BK) in Taurus (H2)
+                "Venus": {"sign": "Taurus", "longitude": 50.0, "degree_0_to_30": 20.0},
+                # Mercury at 15.0° -> Matrikaraka (MK) in Gemini (H3)
+                "Mercury": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0},
+                # Jupiter at 10.0° -> Putrakaraka (PK) in Cancer (H4)
+                "Jupiter": {"sign": "Cancer", "longitude": 100.0, "degree_0_to_30": 10.0},
+                # Saturn at 5.0° -> Gnatikaraka (GK) in Libra (H7)
+                "Saturn": {"sign": "Libra", "longitude": 185.0, "degree_0_to_30": 5.0},
+                # Moon at 1.0° -> Darakaraka (DK) in Aries (H1)
+                "Moon": {"sign": "Aries", "longitude": 1.0, "degree_0_to_30": 1.0}
+            },
+            "cusps": [{"longitude": i * 30.0} for i in range(12)]
+        }
+    }
+
+    mock_shadbala = {
+        p: {"Total_Rupas": 5.0, "Total_Virupas": 300.0, "Pct_Required_Total": 100.0}
+        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+    }
+
+    rankings = compute_planetary_prominence_rankings(mock_vargas, mock_shadbala, {})
+    board = {item["planet"]: item for item in rankings["leaderboard"]}
+
+    sun_reasons = board["Sun"]["opportunity_reasons"]
+    mars_reasons = board["Mars"]["opportunity_reasons"]
+    venus_reasons = board["Venus"]["opportunity_reasons"]
+
+    # 1. Sun is AK (+0.30) and conjunct AmK (+0.15)
+    assert any("Atmakaraka Soul Signifier (+0.30)" in r for r in sun_reasons)
+    assert any("Jaimini Raja Yoga: AK-AmK Connection (+0.15)" in r for r in sun_reasons)
+
+    # 2. Mars is AmK (+0.15) and conjunct AK (+0.15)
+    assert any("Amatyakaraka Executive Mind (+0.15)" in r for r in mars_reasons)
+    assert any("Jaimini Raja Yoga: AK-AmK Connection (+0.15)" in r for r in mars_reasons)
+
+    # 3. Venus (BK) and lower Karakas must NOT receive arbitrary Jaimini stage bonuses
+    assert not any("Karaka" in r for r in venus_reasons)
+
+

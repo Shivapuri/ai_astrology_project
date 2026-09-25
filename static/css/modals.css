@@ -298,10 +298,10 @@
             min-height: 220px;
             max-width: 98vw;
             max-height: 94vh;
-            width: 820px;
+            width: 900px;
             height: 580px;
             top: 60px;
-            left: calc(50% - 410px);
+            left: calc(50% - 450px);
             z-index: 10051;
             animation: modalFadeIn 0.18s ease-out;
         }
