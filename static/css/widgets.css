@@ -1561,3 +1561,17 @@
         flex-wrap: wrap;
     }
 }
+
+.temperament-dossier-drawer {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    animation: fadeInReport 0.2s ease-in-out;
+}
+
+.temperament-ribbon-card:hover {
+    filter: brightness(0.96);
+}
+
+.temperament-deviation-row:hover {
+    background: rgba(59, 130, 246, 0.05) !important;
+}
+

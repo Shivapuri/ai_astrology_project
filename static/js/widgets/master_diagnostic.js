@@ -3521,7 +3521,9 @@ if (typeof window !== 'undefined') {
     window.toggleExpandAspects = toggleExpandAspects;
     window.renderNakshatraCell = renderNakshatraCell;
     window.renderContinuousAspectSvg = renderContinuousAspectSvg;
-    window.renderUnifiedGrahaCockpitDrawer = renderUnifiedGrahaCockpitDrawer;
+    if (typeof renderUnifiedGrahaCockpitDrawer !== 'undefined') {
+        window.renderUnifiedGrahaCockpitDrawer = renderUnifiedGrahaCockpitDrawer;
+    }
     window.calculateContinuousDrishti = calculateContinuousDrishti;
     window.DIGNITY_MEANINGS = DIGNITY_MEANINGS;
     window.NAKSHATRA_DATA = NAKSHATRA_DATA;

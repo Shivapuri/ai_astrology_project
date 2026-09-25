@@ -15,6 +15,7 @@ from jyotish.nakshatras.lore import (
     get_nakshatra_lore,
     get_nakshatra_group,
     NAKSHATRA_GROUP_METADATA,
+    NAKSHATRA_TEMPERAMENT_DOSSIER,
     ALL_NAKSHATRA_GROUPS
 )
 
@@ -154,8 +155,8 @@ def compute_nakshatra_dominance(
 
     # Map classical Parashari classes to the 7 canonical display labels
     TEMPERAMENT_CANONICAL = [
-        {"group": "Chara", "label": "Mobile", "sanskrit": "Cara"},
-        {"group": "Laghu", "label": "Quick", "sanskrit": "Laghu / Kṣipra"},
+        {"group": "Chara", "label": "Mobile", "sanskrit": "Cara / Cala"},
+        {"group": "Laghu", "label": "Quick", "sanskrit": "Kṣipra / Laghu"},
         {"group": "Mridu", "label": "Sweet", "sanskrit": "Mṛdu"},
         {"group": "Dhruva", "label": "Enduring", "sanskrit": "Dhruva / Sthira"},
         {"group": "Ugra", "label": "Strong", "sanskrit": "Ugra / Krūra"},
@@ -177,6 +178,7 @@ def compute_nakshatra_dominance(
         pct = round((pts / grand_total) * 100.0, 1)
         deviation = round(pct - expected_baseline, 1)
         orig_meta = NAKSHATRA_GROUP_METADATA.get(g, {})
+        dossier = NAKSHATRA_TEMPERAMENT_DOSSIER.get(g, {})
 
         # Color coding: Green for surplus, Coral/Red for deficit, Sage for neutral
         if deviation > 2.0:
@@ -204,7 +206,8 @@ def compute_nakshatra_dominance(
             "deviation_pct": deviation,
             "status": status,
             "color": color,
-            "bg": bg
+            "bg": bg,
+            "dossier": dossier
         })
 
     dominant_temperament = max(temperament_breakdown, key=lambda x: x["points"]) if temperament_breakdown else None
