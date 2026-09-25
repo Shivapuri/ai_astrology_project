@@ -143,31 +143,62 @@ def compute_nakshatra_dominance(
         item["rank"] = idx + 1
         item["dominance_pct"] = round((item["total_points"] / grand_total) * 100.0, 1)
 
-    # 7-Group Temperament Distribution
-    group_totals: Dict[str, float] = {g: 0.0 for g in ALL_NAKSHATRA_GROUPS}
+    # Map classical Parashari classes to the 7 canonical display labels
+    TEMPERAMENT_CANONICAL = [
+        {"group": "Chara", "label": "Mobile", "sanskrit": "Cara"},
+        {"group": "Laghu", "label": "Quick", "sanskrit": "Laghu / Kṣipra"},
+        {"group": "Mridu", "label": "Sweet", "sanskrit": "Mṛdu"},
+        {"group": "Dhruva", "label": "Enduring", "sanskrit": "Dhruva / Sthira"},
+        {"group": "Ugra", "label": "Strong", "sanskrit": "Ugra / Krūra"},
+        {"group": "Tikshna", "label": "Bitter", "sanskrit": "Tīkṣṇa / Dāruṇa"},
+        {"group": "Mishra", "label": "Mixed", "sanskrit": "Miśra / Sādhāraṇa"}
+    ]
+
+    expected_baseline = round(100.0 / 7.0, 1)  # 14.3%
+    group_totals: Dict[str, float] = {g["group"]: 0.0 for g in TEMPERAMENT_CANONICAL}
     for item in sorted_nakshatras:
         g = item["group"]
         if g in group_totals:
             group_totals[g] += item["total_points"]
 
     temperament_breakdown: List[Dict[str, Any]] = []
-    for g in ALL_NAKSHATRA_GROUPS:
+    for meta in TEMPERAMENT_CANONICAL:
+        g = meta["group"]
         pts = round(group_totals[g], 2)
         pct = round((pts / grand_total) * 100.0, 1)
-        meta = NAKSHATRA_GROUP_METADATA.get(g, {})
+        deviation = round(pct - expected_baseline, 1)
+        orig_meta = NAKSHATRA_GROUP_METADATA.get(g, {})
+
+        # Color coding: Green for surplus, Coral/Red for deficit, Sage for neutral
+        if deviation > 2.0:
+            status = "Surplus"
+            color = "#16a34a"  # Green
+            bg = "#dcfce7"
+        elif deviation < -2.0:
+            status = "Deficit"
+            color = "#dc2626"  # Coral / Red
+            bg = "#fee2e2"
+        else:
+            status = "Balanced"
+            color = "#65a30d"  # Sage / Olive
+            bg = "#f7fee7"
+
         temperament_breakdown.append({
             "group": g,
-            "label": meta.get("label", g),
-            "sanskrit": meta.get("sanskrit", ""),
-            "nature": meta.get("nature", ""),
-            "color": meta.get("color", "#64748b"),
-            "bg": meta.get("bg", "#f8fafc"),
+            "display_name": meta["label"],
+            "sanskrit": meta["sanskrit"],
+            "label": f"{meta['label']} ({meta['sanskrit']})",
+            "nature": orig_meta.get("nature", ""),
             "points": pts,
-            "percentage": pct
+            "percentage": pct,
+            "baseline_pct": expected_baseline,
+            "deviation_pct": deviation,
+            "status": status,
+            "color": color,
+            "bg": bg
         })
 
-    temperament_breakdown.sort(key=lambda x: x["points"], reverse=True)
-    dominant_temperament = temperament_breakdown[0] if temperament_breakdown else None
+    dominant_temperament = max(temperament_breakdown, key=lambda x: x["points"]) if temperament_breakdown else None
     dominant_nakshatra = sorted_nakshatras[0] if sorted_nakshatras else None
 
     return {

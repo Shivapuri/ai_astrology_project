@@ -208,31 +208,116 @@ function updateReportWidget(cell, chartData) {
         `;
     }
 
-    // 1.5 Classical 7-Temperament Distribution
+    // 1.5 Balance of Nakṣatra Types (Vic DiCara Style Bi-Directional Chart)
     const tempContainer = cell.querySelector('.temperament-distribution-container');
     if (tempContainer && nakDominance.temperament_breakdown) {
-        let barsHtml = '';
-        let legendHtml = '';
+        const tb = nakDominance.temperament_breakdown;
 
-        nakDominance.temperament_breakdown.forEach(t => {
-            if (t.percentage > 0) {
-                barsHtml += `<div style="height:100%; width:${t.percentage}%; background:${t.color};" title="${t.label}: ${t.percentage}% (${t.points} pts)"></div>`;
+        // 1. Top Proportional Ribbon
+        let ribbonCardsHtml = '';
+        const maxPct = Math.max(...tb.map(t => t.percentage), 14.3);
+
+        tb.forEach(t => {
+            const isDominant = (t.percentage === maxPct && t.percentage > 18.0);
+            const isSevereDeficit = (t.percentage <= 2.0);
+            
+            // Highlight dominant (taller & vivid green) and deficit (pale coral)
+            let cardBg = t.percentage > 14.3 ? '#86efac' : '#fecaca';
+            let cardText = t.percentage > 14.3 ? '#14532d' : '#7f1d1d';
+            let minH = isDominant ? '48px' : '38px';
+            let border = isDominant ? '2px solid #16a34a' : '1px solid rgba(0,0,0,0.08)';
+
+            if (isSevereDeficit) {
+                cardBg = '#fee2e2';
+                cardText = '#991b1b';
             }
-            legendHtml += `
-                <div style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:#334155;">
-                    <span style="width:10px; height:10px; border-radius:2px; background:${t.color}; display:inline-block;"></span>
-                    <strong>${t.group}</strong> (${t.percentage}%): <span style="color:#64748b;">${t.label}</span>
+
+            ribbonCardsHtml += `
+                <div style="flex: ${Math.max(t.percentage, 7)}; min-height:${minH}; background:${cardBg}; color:${cardText}; border:${border}; border-radius:6px; padding:4px 6px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; transition:all 0.2s ease;">
+                    <span style="font-size:11.5px; font-weight:700; white-space:nowrap;">${t.display_name}</span>
+                    <span style="font-size:11px; font-weight:600; opacity:0.9;">${t.percentage}%</span>
+                </div>
+            `;
+        });
+
+        // 2. Bottom Bi-Directional Deviation Rows
+        // Center is 14.3% baseline (50% position).
+        // Category label is centered above the bar (matching Vic DiCara's chart).
+        const MAX_RANGE = 25.0; // +/- 25% deviation covers extreme charts
+        const MAX_BAR_WIDTH_PCT = 36; // Leaves 14% breathing room for outer percentage labels
+
+        let deviationRowsHtml = '';
+        tb.forEach(t => {
+            const dev = t.deviation_pct; // e.g. +12.7% or -13.3%
+            const isRight = dev >= 0;
+            const absDev = Math.abs(dev);
+            
+            // Calculate proportional bar width with safe bounds
+            let barWidthPct = Math.min(MAX_BAR_WIDTH_PCT, (absDev / MAX_RANGE) * MAX_BAR_WIDTH_PCT);
+            if (absDev > 0.1 && barWidthPct < 2.0) {
+                barWidthPct = 2.0; // Minimum visible bar indicator
+            }
+
+            const barColor = isRight ? '#4ade80' : '#f87171'; // Green for surplus, Salmon/Coral for deficit
+            const valueColor = isRight ? '#16a34a' : '#dc2626';
+
+            deviationRowsHtml += `
+                <div style="position:relative; margin-bottom:8px;">
+                    <!-- Centered Category Label above the bar (matches reference chart) -->
+                    <div style="text-align:center; line-height:1.2; margin-bottom:2px;">
+                        <span style="font-size:12px; font-weight:700; color:#1e293b; font-family:Georgia, serif; background:rgba(255,255,255,0.9); padding:0 6px; border-radius:3px;">
+                            ${t.display_name}
+                        </span>
+                    </div>
+
+                    <!-- Horizontal Bar & Percentage Row -->
+                    <div style="position:relative; height:16px; display:flex; align-items:center;">
+                        <!-- Left Deficit Bar (extends left from 50% baseline) -->
+                        ${!isRight ? `
+                            <div style="position:absolute; right:50%; width:${barWidthPct}%; height:13px; background:${barColor}; border-radius:7px 0 0 7px; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
+                            <span style="position:absolute; right:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
+                        ` : ''}
+
+                        <!-- Right Surplus Bar (extends right from 50% baseline) -->
+                        ${isRight ? `
+                            <div style="position:absolute; left:50%; width:${barWidthPct}%; height:13px; background:${barColor}; border-radius:0 7px 7px 0; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
+                            <span style="position:absolute; left:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
+                        ` : ''}
+                    </div>
                 </div>
             `;
         });
 
         tempContainer.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">🎭 7-Temperament Distribution (Bhat / Parashari Classes)</div>
-            <div style="height:14px; width:100%; background:#e2e8f0; border-radius:7px; overflow:hidden; display:flex; margin-bottom:10px;">
-                ${barsHtml}
+            <div style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:10px; font-family:Georgia, serif; display:flex; justify-content:space-between; align-items:center;">
+                <span>Balance of Nakṣatra Types</span>
+                <span style="font-size:11.5px; font-weight:600; color:#64748b; font-family:sans-serif;">Baseline: 14.3% per type</span>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:6px;">
-                ${legendHtml}
+
+            <!-- Top Proportional Ribbon -->
+            <div style="display:flex; gap:4px; align-items:flex-end; margin-bottom:14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:6px;">
+                ${ribbonCardsHtml}
+            </div>
+
+            <!-- Bottom Bi-Directional Deviation Graph -->
+            <div style="position:relative; background:#ffffff; border:1px solid #e2e8f0; border-radius:8px; padding:14px 10px; overflow:hidden;">
+                <!-- Vertical Background Grid Lines -->
+                <div style="position:absolute; top:0; bottom:0; left:14%; width:1px; background:#f1f5f9;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:26%; width:1px; background:#f1f5f9;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:38%; width:1px; background:#f1f5f9;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:50%; width:2px; background:#1e293b; z-index:1;"></div> <!-- Black Center Baseline -->
+                <div style="position:absolute; top:0; bottom:0; left:62%; width:1px; background:#f1f5f9;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:74%; width:1px; background:#f1f5f9;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:86%; width:1px; background:#f1f5f9;"></div>
+
+                <!-- Subtle Background Tints -->
+                <div style="position:absolute; top:0; bottom:0; left:0; width:50%; background:rgba(239, 68, 68, 0.02); pointer-events:none;"></div>
+                <div style="position:absolute; top:0; bottom:0; left:50%; width:50%; background:rgba(34, 197, 94, 0.02); pointer-events:none;"></div>
+
+                <!-- Rows -->
+                <div style="position:relative; z-index:2;">
+                    ${deviationRowsHtml}
+                </div>
             </div>
         `;
     }
