@@ -56,6 +56,15 @@ SHADBALA_REQUIRED_RUPAS = {
     "Ketu": 5.0
 }
 
+SHADVARGA_ENVIRONMENTAL_WEIGHTS = {
+    "D1": 6.0,
+    "D9": 5.0,
+    "D3": 4.0,
+    "D2": 2.0,
+    "D12": 2.0,
+    "D30": 1.0
+}
+
 
 def compute_nakshatra_dominance(
     vargas_data: Dict[str, Any],
@@ -416,8 +425,9 @@ def compute_environmental_tally(
     prominence_map: Optional[Dict[str, float]] = None
 ) -> Dict[str, Any]:
     """
-    Tallies the placements of the 9 Grahas + Lagna across Elements, Gunas,
-    Sign Rise Orientations, and Ayurvedic Doshas, weighted by Planetary Prominence.
+    Tallies the balance of Elements, Gunas, Rising Orientations, and Ayurvedic Doshas
+    using Sage Parashara's 20-point Shadvarga harmonic matrix (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1),
+    scaled by Planetary Prominence.
     """
     d1_data = vargas_data.get("D1", {})
     d1_grahas = d1_data.get("grahas", {})
@@ -425,72 +435,86 @@ def compute_environmental_tally(
 
     entities = ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 
+    # D1 physical placement counts (for quick reference)
     elements_count = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
-    elements_points = {"Fire": 0.0, "Earth": 0.0, "Air": 0.0, "Water": 0.0}
-
     gunas_count = {"Rajas (Movable)": 0, "Tamas (Fixed)": 0, "Sattva (Dual)": 0}
-    gunas_points = {"Rajas (Movable)": 0.0, "Tamas (Fixed)": 0.0, "Sattva (Dual)": 0.0}
-
     rising_mode_count = {"Shirshodaya": 0, "Prishtodaya": 0, "Ubhayodaya": 0}
-    rising_mode_points = {"Shirshodaya": 0.0, "Prishtodaya": 0.0, "Ubhayodaya": 0.0}
-
     dosha_count = {"Vata": 0, "Pitta": 0, "Kapha": 0}
+
+    # Shadvarga-weighted thermodynamic points
+    elements_points = {"Fire": 0.0, "Earth": 0.0, "Air": 0.0, "Water": 0.0}
+    gunas_points = {"Rajas (Movable)": 0.0, "Tamas (Fixed)": 0.0, "Sattva (Dual)": 0.0}
+    rising_mode_points = {"Shirshodaya": 0.0, "Prishtodaya": 0.0, "Ubhayodaya": 0.0}
     dosha_points = {"Vata": 0.0, "Pitta": 0.0, "Kapha": 0.0}
 
-    # Planetary dosha signatures
-    graha_doshas = {
-        "Sun": "Pitta",
-        "Moon": "Vata/Kapha",
-        "Mars": "Pitta",
-        "Mercury": "Vata",
-        "Jupiter": "Kapha",
-        "Venus": "Kapha",
-        "Saturn": "Vata",
-        "Rahu": "Vata",
-        "Ketu": "Pitta",
-        "Lagna": "Vata"
-    }
+    TOTAL_SHADVARGA_WEIGHT = sum(SHADVARGA_ENVIRONMENTAL_WEIGHTS.values())  # 20.0
 
     for ent in entities:
+        # 1. Base Prominence
         if ent == "Lagna":
-            sign = d1_lagna.get("sign", "Aries")
-            score = 1.0
+            prom = 1.0
+            d1_sign = d1_lagna.get("sign", "Aries")
         else:
-            sign = d1_grahas.get(ent, {}).get("sign", "Aries")
-            score = float(prominence_map.get(ent, 1.0)) if prominence_map is not None else 1.0
+            prom = float(prominence_map.get(ent, 1.0)) if prominence_map is not None else 1.0
+            d1_sign = d1_grahas.get(ent, {}).get("sign", "Aries")
 
-        elem = ELEMENT_MAP.get(sign, "Fire")
-        elements_count[elem] += 1
-        elements_points[elem] += score
+        # 2. Record D1 counts
+        elem_d1 = ELEMENT_MAP.get(d1_sign, "Fire")
+        elements_count[elem_d1] += 1
 
-        guna = GUNA_MAP.get(sign, "Rajas (Movable)")
-        gunas_count[guna] += 1
-        gunas_points[guna] += score
+        guna_d1 = GUNA_MAP.get(d1_sign, "Rajas (Movable)")
+        gunas_count[guna_d1] += 1
 
-        rm = RISING_MODE_MAP.get(sign, "Shirshodaya")
-        if "Shirshodaya" in rm:
+        rm_d1 = RISING_MODE_MAP.get(d1_sign, "Shirshodaya")
+        if "Shirshodaya" in rm_d1:
             rising_mode_count["Shirshodaya"] += 1
-            rising_mode_points["Shirshodaya"] += score
-        elif "Prishtodaya" in rm:
+        elif "Prishtodaya" in rm_d1:
             rising_mode_count["Prishtodaya"] += 1
-            rising_mode_points["Prishtodaya"] += score
         else:
             rising_mode_count["Ubhayodaya"] += 1
-            rising_mode_points["Ubhayodaya"] += score
 
-        # Dosha allocation (blend sign element and graha nature)
-        if elem == "Fire":
+        if elem_d1 == "Fire":
             dosha_count["Pitta"] += 1
-            dosha_points["Pitta"] += score
-        elif elem == "Air":
+        elif elem_d1 == "Air":
             dosha_count["Vata"] += 1
-            dosha_points["Vata"] += score
-        elif elem == "Earth":
+        else:
             dosha_count["Kapha"] += 1
-            dosha_points["Kapha"] += score
-        elif elem == "Water":
-            dosha_count["Kapha"] += 1
-            dosha_points["Kapha"] += score
+
+        # 3. Accumulate weighted contributions across Shadvarga (D1, D9, D3, D2, D12, D30)
+        for v_code, v_weight in SHADVARGA_ENVIRONMENTAL_WEIGHTS.items():
+            v_data = vargas_data.get(v_code, {})
+            if ent == "Lagna":
+                v_sign = v_data.get("lagna", {}).get("sign") or d1_sign
+            else:
+                v_sign = v_data.get("grahas", {}).get(ent, {}).get("sign") or d1_sign
+
+            # Harmonic slice contribution
+            v_contrib = prom * (v_weight / TOTAL_SHADVARGA_WEIGHT)
+
+            # Element
+            elem = ELEMENT_MAP.get(v_sign, "Fire")
+            elements_points[elem] += v_contrib
+
+            # Guna / Modality
+            guna = GUNA_MAP.get(v_sign, "Rajas (Movable)")
+            gunas_points[guna] += v_contrib
+
+            # Rising Mode
+            rm = RISING_MODE_MAP.get(v_sign, "Shirshodaya")
+            if "Shirshodaya" in rm:
+                rising_mode_points["Shirshodaya"] += v_contrib
+            elif "Prishtodaya" in rm:
+                rising_mode_points["Prishtodaya"] += v_contrib
+            else:
+                rising_mode_points["Ubhayodaya"] += v_contrib
+
+            # Dosha
+            if elem == "Fire":
+                dosha_points["Pitta"] += v_contrib
+            elif elem == "Air":
+                dosha_points["Vata"] += v_contrib
+            else:
+                dosha_points["Kapha"] += v_contrib
 
     tot_elem_pts = sum(elements_points.values()) or 1.0
     tot_guna_pts = sum(gunas_points.values()) or 1.0
@@ -501,18 +525,109 @@ def compute_environmental_tally(
     dominant_guna = max(gunas_points, key=gunas_points.get)
     dominant_dosha = max(dosha_points, key=dosha_points.get)
 
+    # Structured breakdowns for visual bi-directional balance graphs
+    ELEMENTS_METADATA = [
+        {"key": "Fire", "display_name": "Fire (Agni)", "sanskrit": "Tejas / Agni", "icon": "🔥", "accent_color": "#ea580c"},
+        {"key": "Earth", "display_name": "Earth (Pṛthvī)", "sanskrit": "Pṛthvī", "icon": "🌍", "accent_color": "#059669"},
+        {"key": "Air", "display_name": "Air (Vāyu)", "sanskrit": "Vāyu", "icon": "💨", "accent_color": "#0284c7"},
+        {"key": "Water", "display_name": "Water (Jala)", "sanskrit": "Āpas / Jala", "icon": "💧", "accent_color": "#2563eb"}
+    ]
+    expected_elem_baseline = 25.0
+
+    elements_breakdown = []
+    for meta in ELEMENTS_METADATA:
+        k = meta["key"]
+        pts = round(elements_points[k], 2)
+        pct = round((elements_points[k] / tot_elem_pts) * 100.0, 1)
+        dev = round(pct - expected_elem_baseline, 1)
+        d1_c = elements_count.get(k, 0)
+        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
+        elements_breakdown.append({
+            "key": k,
+            "display_name": meta["display_name"],
+            "sanskrit": meta["sanskrit"],
+            "icon": meta["icon"],
+            "accent_color": meta["accent_color"],
+            "points": pts,
+            "d1_count": d1_c,
+            "percentage": pct,
+            "baseline_pct": expected_elem_baseline,
+            "deviation_pct": dev,
+            "status": status
+        })
+
+    GUNAS_METADATA = [
+        {"key": "Rajas (Movable)", "display_name": "Rajas (Movable)", "sanskrit": "Cara", "icon": "⚡", "accent_color": "#d97706"},
+        {"key": "Tamas (Fixed)", "display_name": "Tamas (Fixed)", "sanskrit": "Sthira", "icon": "🏔️", "accent_color": "#475569"},
+        {"key": "Sattva (Dual)", "display_name": "Sattva (Dual)", "sanskrit": "Dvisvabhāva", "icon": "⚖️", "accent_color": "#0d9488"}
+    ]
+    expected_guna_baseline = 33.3
+
+    gunas_breakdown = []
+    for meta in GUNAS_METADATA:
+        k = meta["key"]
+        pts = round(gunas_points[k], 2)
+        pct = round((gunas_points[k] / tot_guna_pts) * 100.0, 1)
+        dev = round(pct - expected_guna_baseline, 1)
+        d1_c = gunas_count.get(k, 0)
+        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
+        gunas_breakdown.append({
+            "key": k,
+            "display_name": meta["display_name"],
+            "sanskrit": meta["sanskrit"],
+            "icon": meta["icon"],
+            "accent_color": meta["accent_color"],
+            "points": pts,
+            "d1_count": d1_c,
+            "percentage": pct,
+            "baseline_pct": expected_guna_baseline,
+            "deviation_pct": dev,
+            "status": status
+        })
+
+    DOSHAS_METADATA = [
+        {"key": "Vata", "display_name": "Vāta (Air)", "sanskrit": "Vāta", "icon": "🌬️", "accent_color": "#0284c7"},
+        {"key": "Pitta", "display_name": "Pitta (Fire)", "sanskrit": "Pitta", "icon": "🔥", "accent_color": "#ea580c"},
+        {"key": "Kapha", "display_name": "Kapha (Earth/Water)", "sanskrit": "Kapha", "icon": "🌊", "accent_color": "#2563eb"}
+    ]
+    expected_dosha_baseline = 33.3
+
+    doshas_breakdown = []
+    for meta in DOSHAS_METADATA:
+        k = meta["key"]
+        pts = round(dosha_points[k], 2)
+        pct = round((dosha_points[k] / tot_dosha_pts) * 100.0, 1)
+        dev = round(pct - expected_dosha_baseline, 1)
+        d1_c = dosha_count.get(k, 0)
+        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
+        doshas_breakdown.append({
+            "key": k,
+            "display_name": meta["display_name"],
+            "sanskrit": meta["sanskrit"],
+            "icon": meta["icon"],
+            "accent_color": meta["accent_color"],
+            "points": pts,
+            "d1_count": d1_c,
+            "percentage": pct,
+            "baseline_pct": expected_dosha_baseline,
+            "deviation_pct": dev,
+            "status": status
+        })
+
     return {
         "elements": {
             "counts": elements_count,
             "points": {k: round(v, 2) for k, v in elements_points.items()},
             "percentages": {k: round((v / tot_elem_pts) * 100.0, 1) for k, v in elements_points.items()},
-            "dominant": dominant_element
+            "dominant": dominant_element,
+            "breakdown": elements_breakdown
         },
         "gunas": {
             "counts": gunas_count,
             "points": {k: round(v, 2) for k, v in gunas_points.items()},
             "percentages": {k: round((v / tot_guna_pts) * 100.0, 1) for k, v in gunas_points.items()},
-            "dominant": dominant_guna
+            "dominant": dominant_guna,
+            "breakdown": gunas_breakdown
         },
         "rising_modes": {
             "counts": rising_mode_count,
@@ -523,8 +638,13 @@ def compute_environmental_tally(
             "counts": dosha_count,
             "points": {k: round(v, 2) for k, v in dosha_points.items()},
             "percentages": {k: round((v / tot_dosha_pts) * 100.0, 1) for k, v in dosha_points.items()},
-            "dominant": dominant_dosha
-        }
+            "dominant": dominant_dosha,
+            "breakdown": doshas_breakdown
+        },
+        "elements_breakdown": elements_breakdown,
+        "gunas_breakdown": gunas_breakdown,
+        "doshas_breakdown": doshas_breakdown,
+        "methodology": "Parashari Shadvarga (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1) scaled by Prominence"
     }
 
 

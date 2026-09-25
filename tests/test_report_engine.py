@@ -276,6 +276,90 @@ def test_environmental_tally_prominence_weighted():
     assert elem["dominant"] == "Fire"
 
 
+def test_environmental_tally_shadvarga_weighted():
+    """
+    Verify that Macro Environmental Tally aggregates elements and gunas
+    across the Shadvarga matrix (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1).
+    """
+    # Native with Aries (Fire/Movable) Lagna in D1, but Pisces (Water/Dual) in D9
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},
+            "grahas": {p: {"sign": "Aries"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D9": {
+            "lagna": {"sign": "Pisces"},
+            "grahas": {p: {"sign": "Pisces"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D3": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D2": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D12": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D30": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        }
+    }
+
+    mock_prominence = {p: 1.0 for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+
+    tally = compute_environmental_tally(mock_vargas, prominence_map=mock_prominence)
+    elem = tally["elements"]
+    guna = tally["gunas"]
+
+    # 10 entities total with Prominence 1.0 each. Total Shadvarga points = 10.0
+    # D1 (Weight 6/20 = 0.30): All 10 bodies in Aries (Fire, Movable) -> 3.0 pts Fire
+    # D9 (Weight 5/20 = 0.25): All 10 bodies in Pisces (Water, Dual) -> 2.5 pts Water
+    # D3, D2, D12, D30 (Remaining 9/20 = 0.45): In Cancer (Water, Movable) -> 4.5 pts Water
+    # Total Water = 2.5 + 4.5 = 7.0 pts (70.0%)
+    # Total Fire = 3.0 pts (30.0%)
+
+    assert elem["counts"]["Fire"] == 10  # D1 count is 10
+    assert elem["counts"]["Water"] == 0   # D1 count is 0
+    assert elem["points"]["Fire"] == 3.0
+    assert elem["points"]["Water"] == 7.0
+    assert elem["percentages"]["Water"] == 70.0
+    assert elem["percentages"]["Fire"] == 30.0
+    assert elem["dominant"] == "Water"  # Deep Shadvarga water dominates surface fire!
+
+    # Movable (Aries 3.0 + Cancer 4.5 = 7.5 pts), Dual (Pisces 2.5 pts)
+    assert guna["points"]["Rajas (Movable)"] == 7.5
+    assert guna["points"]["Sattva (Dual)"] == 2.5
+    assert guna["dominant"] == "Rajas (Movable)"
+
+    # Visual bi-directional breakdown metrics
+    assert "breakdown" in elem
+    assert len(elem["breakdown"]) == 4
+    water_meta = next(x for x in elem["breakdown"] if x["key"] == "Water")
+    assert water_meta["percentage"] == 70.0
+    assert water_meta["baseline_pct"] == 25.0
+    assert water_meta["deviation_pct"] == 45.0
+    assert water_meta["status"] == "Surplus"
+
+    fire_meta = next(x for x in elem["breakdown"] if x["key"] == "Fire")
+    assert fire_meta["percentage"] == 30.0
+    assert fire_meta["baseline_pct"] == 25.0
+    assert fire_meta["deviation_pct"] == 5.0
+
+    earth_meta = next(x for x in elem["breakdown"] if x["key"] == "Earth")
+    assert earth_meta["percentage"] == 0.0
+    assert earth_meta["deviation_pct"] == -25.0
+    assert earth_meta["status"] == "Deficit"
+
+    assert len(guna["breakdown"]) == 3
+    assert len(tally["ayurvedic_doshas"]["breakdown"]) == 3
+
+
+
+
 def test_atmakaraka_prominence_weight_and_fallback():
     mock_vargas = {
         "D1": {
