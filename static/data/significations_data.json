@@ -1,0 +1,1453 @@
+{
+  "planets": {
+    "Sun": {
+      "name": "Sun",
+      "title": "Soul (Sun)",
+      "symbol": "☉",
+      "formula": "Vitality & Authority",
+      "pillars": [
+        {
+          "name": "radiance & vision",
+          "items": [
+            {
+              "id": "P_Soul",
+              "title": "Soul",
+              "sub": "core identity"
+            },
+            {
+              "id": "P_Light",
+              "title": "Light",
+              "sub": "day, public life"
+            },
+            {
+              "id": "P_Vitality",
+              "title": "Vitality",
+              "sub": "constitution, health"
+            },
+            {
+              "id": "P_Vision",
+              "title": "Vision",
+              "sub": "clarity, fame"
+            }
+          ]
+        },
+        {
+          "name": "will & command",
+          "items": [
+            {
+              "id": "P_Decisiveness",
+              "title": "Decisiveness",
+              "sub": "confidence"
+            },
+            {
+              "id": "P_Leadership",
+              "title": "Leadership",
+              "sub": "authority"
+            },
+            {
+              "id": "P_Career",
+              "title": "Career",
+              "sub": "authority figures"
+            },
+            {
+              "id": "P_Self",
+              "title": "Self",
+              "sub": "ego, center, stability"
+            }
+          ]
+        }
+      ]
+    },
+    "Moon": {
+      "name": "Moon",
+      "title": "Mind (Moon)",
+      "symbol": "☽",
+      "formula": "Receptivity & Flow",
+      "pillars": [
+        {
+          "name": "subjectivity & flow",
+          "items": [
+            {
+              "id": "P_Mind",
+              "title": "Mind",
+              "sub": "perceptual consciousness"
+            },
+            {
+              "id": "P_Subjectivity",
+              "title": "Subjectivity",
+              "sub": "personal filter"
+            },
+            {
+              "id": "P_Fluctuation",
+              "title": "Fluctuation",
+              "sub": "rhythm, concentration"
+            },
+            {
+              "id": "P_Emotion",
+              "title": "Emotion",
+              "sub": "feelings, desires, opinions"
+            }
+          ]
+        },
+        {
+          "name": "inner self & roots",
+          "items": [
+            {
+              "id": "P_InnerSelf",
+              "title": "Inner Self",
+              "sub": "feminine self"
+            },
+            {
+              "id": "P_Privacy",
+              "title": "Privacy",
+              "sub": "shyness, sanctuary"
+            },
+            {
+              "id": "P_Domestic",
+              "title": "Domestic",
+              "sub": "home roots, mother"
+            }
+          ]
+        }
+      ]
+    },
+    "Mars": {
+      "name": "Mars",
+      "title": "Mars",
+      "symbol": "♂",
+      "formula": "Force & Ambition",
+      "pillars": [
+        {
+          "name": "self-reliance",
+          "items": [
+            {
+              "id": "P_Masculinity",
+              "title": "Masculinity",
+              "sub": "vital initiative"
+            },
+            {
+              "id": "P_SelfReliance",
+              "title": "Self-Reliance",
+              "sub": "independence, freedom"
+            },
+            {
+              "id": "P_Strength",
+              "title": "Strength",
+              "sub": "courage, backbone"
+            },
+            {
+              "id": "P_Inception",
+              "title": "Inception",
+              "sub": "passion, ambition"
+            }
+          ]
+        },
+        {
+          "name": "combat & tools",
+          "items": [
+            {
+              "id": "P_Weapons",
+              "title": "Weapons",
+              "sub": "tools, instruments"
+            },
+            {
+              "id": "P_TheStrong",
+              "title": "The Strong",
+              "sub": "warriors, athletes"
+            },
+            {
+              "id": "P_Competition",
+              "title": "Competition",
+              "sub": "contest, war, violence"
+            }
+          ]
+        }
+      ]
+    },
+    "Mercury": {
+      "name": "Mercury",
+      "title": "Mercury",
+      "symbol": "☿",
+      "formula": "Pattern Matching & Commerce",
+      "pillars": [
+        {
+          "name": "intellect & decoding",
+          "items": [
+            {
+              "id": "P_Intellect",
+              "title": "Intellect",
+              "sub": "pattern matching"
+            },
+            {
+              "id": "P_Decoding",
+              "title": "Decoding",
+              "sub": "encoding, languages"
+            },
+            {
+              "id": "P_Communication",
+              "title": "Communication",
+              "sub": "speech, writing"
+            },
+            {
+              "id": "P_Interaction",
+              "title": "Interaction",
+              "sub": "trade, exchange"
+            }
+          ]
+        },
+        {
+          "name": "symmetry & social",
+          "items": [
+            {
+              "id": "P_Relationships",
+              "title": "Relationships",
+              "sub": "friendship"
+            },
+            {
+              "id": "P_Recreation",
+              "title": "Recreation",
+              "sub": "fun, wit, youth"
+            },
+            {
+              "id": "P_Organization",
+              "title": "Organization",
+              "sub": "neatness, efficiency"
+            },
+            {
+              "id": "P_Balance",
+              "title": "Balance",
+              "sub": "symmetry, dexterity"
+            }
+          ]
+        }
+      ]
+    },
+    "Jupiter": {
+      "name": "Jupiter",
+      "title": "Jupiter",
+      "symbol": "♃",
+      "formula": "Positivity",
+      "pillars": [
+        {
+          "name": "'+' (increase)",
+          "items": [
+            {
+              "id": "P_Increase",
+              "title": "Increase",
+              "sub": "growth, success"
+            },
+            {
+              "id": "P_Creation",
+              "title": "Creation",
+              "sub": "reproduction, children"
+            },
+            {
+              "id": "P_Parenting",
+              "title": "Parenting",
+              "sub": "teaching, guiding"
+            },
+            {
+              "id": "P_Wisdom",
+              "title": "Wisdom",
+              "sub": "philosophy, religion"
+            }
+          ]
+        },
+        {
+          "name": "optimism",
+          "items": [
+            {
+              "id": "P_Trust",
+              "title": "Trust",
+              "sub": "faith"
+            },
+            {
+              "id": "P_Generosity",
+              "title": "Generosity",
+              "sub": "charity, virtue"
+            },
+            {
+              "id": "P_Honesty",
+              "title": "Honesty",
+              "sub": "lawfulness"
+            }
+          ]
+        }
+      ]
+    },
+    "Venus": {
+      "name": "Venus",
+      "title": "Venus",
+      "symbol": "♀",
+      "formula": "Harmonious Union",
+      "pillars": [
+        {
+          "name": "beauty & love",
+          "items": [
+            {
+              "id": "P_Femininity",
+              "title": "Femininity",
+              "sub": "gentle grace"
+            },
+            {
+              "id": "P_Beauty",
+              "title": "Beauty",
+              "sub": "arts, fashion, senses"
+            },
+            {
+              "id": "P_Love",
+              "title": "Love",
+              "sub": "romance, unity"
+            },
+            {
+              "id": "P_Harmony",
+              "title": "Harmony",
+              "sub": "partnership, peace"
+            }
+          ]
+        },
+        {
+          "name": "receptivity & grace",
+          "items": [
+            {
+              "id": "P_Receptivity",
+              "title": "Receptivity",
+              "sub": "sensitivity"
+            },
+            {
+              "id": "P_Learning",
+              "title": "Learning",
+              "sub": "listening"
+            },
+            {
+              "id": "P_Compassion",
+              "title": "Compassion",
+              "sub": "empathy, goodwill"
+            }
+          ]
+        }
+      ]
+    },
+    "Saturn": {
+      "name": "Saturn",
+      "title": "Saturn",
+      "symbol": "♄",
+      "formula": "Negativity & Scarcity",
+      "pillars": [
+        {
+          "name": "'-' (decrease)",
+          "items": [
+            {
+              "id": "P_Decrease",
+              "title": "Decrease",
+              "sub": "reduction, failure"
+            },
+            {
+              "id": "P_Scarcity",
+              "title": "Scarcity",
+              "sub": "poverty, neediness"
+            },
+            {
+              "id": "P_Destruction",
+              "title": "Destruction",
+              "sub": "restriction, boundaries"
+            },
+            {
+              "id": "P_Death",
+              "title": "Death",
+              "sub": "age, decay, illness"
+            },
+            {
+              "id": "P_Longevity",
+              "title": "Longevity",
+              "sub": "endurance, tenacity"
+            }
+          ]
+        },
+        {
+          "name": "pessimism & realism",
+          "items": [
+            {
+              "id": "P_Pessimism",
+              "title": "Pessimism",
+              "sub": "distrust, skepticism"
+            },
+            {
+              "id": "P_Critique",
+              "title": "Critique",
+              "sub": "logic, science"
+            },
+            {
+              "id": "P_Subordination",
+              "title": "Subordination",
+              "sub": "employee, masses"
+            },
+            {
+              "id": "P_Objectivity",
+              "title": "Objectivity",
+              "sub": "detachment, realism"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "signs": {
+    "Aries": {
+      "name": "Aries",
+      "title": "Aries",
+      "symbol": "♈",
+      "formula": "Mars + Fire + Cardinal",
+      "pillars": [
+        {
+          "name": "masculinity & force",
+          "items": [
+            {
+              "id": "S_Strength",
+              "title": "Strength",
+              "sub": "bravery, power"
+            },
+            {
+              "id": "S_Inceptivity",
+              "title": "Inceptivity",
+              "sub": "adventure, initiative"
+            }
+          ]
+        },
+        {
+          "name": "autonomy",
+          "items": [
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "sub": "freedom, autonomy"
+            },
+            {
+              "id": "S_Individualism",
+              "title": "Individualism",
+              "sub": "pioneering self"
+            }
+          ]
+        }
+      ]
+    },
+    "Taurus": {
+      "name": "Taurus",
+      "title": "Taurus",
+      "symbol": "♉",
+      "formula": "Venus + Earth + Fixed",
+      "pillars": [
+        {
+          "name": "love & loyalty",
+          "items": [
+            {
+              "id": "S_Love",
+              "title": "Love",
+              "sub": "unity, cooperation"
+            },
+            {
+              "id": "S_Loyalty",
+              "title": "Loyalty",
+              "sub": "endurance, stability"
+            }
+          ]
+        },
+        {
+          "name": "beauty & wealth",
+          "items": [
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "sub": "arts, sensuality"
+            },
+            {
+              "id": "S_Wealth",
+              "title": "Wealth",
+              "sub": "fertility, health"
+            }
+          ]
+        }
+      ]
+    },
+    "Gemini": {
+      "name": "Gemini",
+      "title": "Gemini",
+      "symbol": "♊",
+      "formula": "Mercury + Air + Dual",
+      "pillars": [
+        {
+          "name": "connectivity",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "sub": "curiosity"
+            },
+            {
+              "id": "S_Connectivity",
+              "title": "Connectivity",
+              "sub": "friendship, interaction"
+            },
+            {
+              "id": "S_Interaction",
+              "title": "Interaction",
+              "sub": "fun, wit, agility"
+            }
+          ]
+        },
+        {
+          "name": "exchange & skill",
+          "items": [
+            {
+              "id": "S_Cooperation",
+              "title": "Cooperation",
+              "sub": "diplomacy, talent"
+            },
+            {
+              "id": "S_Communication",
+              "title": "Communication",
+              "sub": "dialogue, flexibility"
+            },
+            {
+              "id": "S_Commerce",
+              "title": "Commerce",
+              "sub": "trade, barter"
+            }
+          ]
+        }
+      ]
+    },
+    "Cancer": {
+      "name": "Cancer",
+      "title": "Cancer",
+      "symbol": "♋",
+      "formula": "Moon + Water + Cardinal",
+      "pillars": [
+        {
+          "name": "shelter & roots",
+          "items": [
+            {
+              "id": "S_MatureFemininity",
+              "title": "Mature Femininity",
+              "sub": "nurturance"
+            },
+            {
+              "id": "S_Privacy",
+              "title": "Privacy",
+              "sub": "safe harbor"
+            },
+            {
+              "id": "S_Domestication",
+              "title": "Domestication",
+              "sub": "protected space"
+            }
+          ]
+        },
+        {
+          "name": "emotion & depth",
+          "items": [
+            {
+              "id": "S_Emotion",
+              "title": "Emotion",
+              "sub": "feeling, memory"
+            },
+            {
+              "id": "S_Introversion",
+              "title": "Introversion",
+              "sub": "shyness, sensitivity"
+            }
+          ]
+        }
+      ]
+    },
+    "Leo": {
+      "name": "Leo",
+      "title": "Leo",
+      "symbol": "♌",
+      "formula": "Sun + Fire + Fixed",
+      "pillars": [
+        {
+          "name": "confidence & power",
+          "items": [
+            {
+              "id": "S_Confidence",
+              "title": "Confidence",
+              "sub": "decisiveness"
+            },
+            {
+              "id": "S_Stability",
+              "title": "Stability",
+              "sub": "firm center"
+            },
+            {
+              "id": "S_Power",
+              "title": "Power",
+              "sub": "self-sufficiency"
+            }
+          ]
+        },
+        {
+          "name": "radiance & command",
+          "items": [
+            {
+              "id": "S_Leadership",
+              "title": "Leadership",
+              "sub": "authority, executive"
+            },
+            {
+              "id": "S_Charisma",
+              "title": "Charisma",
+              "sub": "fame, generosity"
+            }
+          ]
+        }
+      ]
+    },
+    "Virgo": {
+      "name": "Virgo",
+      "title": "Virgo",
+      "symbol": "♍",
+      "formula": "Mercury + Earth + Dual",
+      "pillars": [
+        {
+          "name": "discernment & detail",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "sub": "analytical study"
+            },
+            {
+              "id": "S_Detail",
+              "title": "Detail",
+              "sub": "patience, precision"
+            },
+            {
+              "id": "S_Prudence",
+              "title": "Prudence",
+              "sub": "caution, hygiene"
+            }
+          ]
+        },
+        {
+          "name": "craft & order",
+          "items": [
+            {
+              "id": "S_Practicality",
+              "title": "Practicality",
+              "sub": "efficiency"
+            },
+            {
+              "id": "S_Organization",
+              "title": "Organization",
+              "sub": "management"
+            },
+            {
+              "id": "S_Accounting",
+              "title": "Accounting",
+              "sub": "audit, purity"
+            }
+          ]
+        }
+      ]
+    },
+    "Libra": {
+      "name": "Libra",
+      "title": "Libra",
+      "symbol": "♎",
+      "formula": "Venus + Air + Cardinal",
+      "pillars": [
+        {
+          "name": "harmony & union",
+          "items": [
+            {
+              "id": "S_Harmony",
+              "title": "Harmony",
+              "sub": "partnership, marriage"
+            },
+            {
+              "id": "S_Diplomacy",
+              "title": "Diplomacy",
+              "sub": "tact, cooperation"
+            }
+          ]
+        },
+        {
+          "name": "aesthetics & justice",
+          "items": [
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "sub": "arts, balance"
+            },
+            {
+              "id": "S_Equilibrium",
+              "title": "Equilibrium",
+              "sub": "fairness, justice"
+            }
+          ]
+        }
+      ]
+    },
+    "Scorpio": {
+      "name": "Scorpio",
+      "title": "Scorpio",
+      "symbol": "♏",
+      "formula": "Mars + Water + Fixed",
+      "pillars": [
+        {
+          "name": "defiance & passion",
+          "items": [
+            {
+              "id": "S_Defiance",
+              "title": "Defiance",
+              "sub": "rebelliousness"
+            },
+            {
+              "id": "S_Passion",
+              "title": "Passion",
+              "sub": "depth, intensity"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "sub": "individuality"
+            }
+          ]
+        },
+        {
+          "name": "mystery & grit",
+          "items": [
+            {
+              "id": "S_Mysterious",
+              "title": "Mysterious",
+              "sub": "secretive, occult"
+            },
+            {
+              "id": "S_Strong",
+              "title": "Strong",
+              "sub": "emotional endurance"
+            }
+          ]
+        }
+      ]
+    },
+    "Sagittarius": {
+      "name": "Sagittarius",
+      "title": "Sagittarius",
+      "symbol": "♐",
+      "formula": "Jupiter + Fire + Dual",
+      "pillars": [
+        {
+          "name": "vision & faith",
+          "items": [
+            {
+              "id": "S_Aspiration",
+              "title": "Aspiration",
+              "sub": "ideals, purpose"
+            },
+            {
+              "id": "S_Optimism",
+              "title": "Optimism",
+              "sub": "enthusiasm, hope"
+            }
+          ]
+        },
+        {
+          "name": "dharma & expansion",
+          "items": [
+            {
+              "id": "S_Philosophy",
+              "title": "Philosophy",
+              "sub": "ethics, wisdom"
+            },
+            {
+              "id": "S_Expansion",
+              "title": "Expansion",
+              "sub": "foreign horizons, truth"
+            }
+          ]
+        }
+      ]
+    },
+    "Capricorn": {
+      "name": "Capricorn",
+      "title": "Capricorn",
+      "symbol": "♑",
+      "formula": "Saturn + Earth + Cardinal",
+      "pillars": [
+        {
+          "name": "critical realism",
+          "items": [
+            {
+              "id": "S_Critical",
+              "title": "Critical",
+              "sub": "exacting standards"
+            },
+            {
+              "id": "S_Realistic",
+              "title": "Realistic",
+              "sub": "pessimistic, sobriety"
+            },
+            {
+              "id": "S_Analytic",
+              "title": "Analytic",
+              "sub": "cold, detached"
+            }
+          ]
+        },
+        {
+          "name": "tenacity & duty",
+          "items": [
+            {
+              "id": "S_Tenacious",
+              "title": "Tenacious",
+              "sub": "stubborn persistence"
+            },
+            {
+              "id": "S_Practical",
+              "title": "Practical",
+              "sub": "pragmatic execution"
+            },
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "sub": "unstoppable builder"
+            }
+          ]
+        }
+      ]
+    },
+    "Aquarius": {
+      "name": "Aquarius",
+      "title": "Aquarius",
+      "symbol": "♒",
+      "formula": "Saturn + Air + Fixed",
+      "pillars": [
+        {
+          "name": "humanity & intellect",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "sub": "scientific logic"
+            },
+            {
+              "id": "S_Humanity",
+              "title": "Humanity",
+              "sub": "social welfare, collective"
+            }
+          ]
+        },
+        {
+          "name": "reform & detachment",
+          "items": [
+            {
+              "id": "S_Objectivity",
+              "title": "Objectivity",
+              "sub": "impartiality"
+            },
+            {
+              "id": "S_Reform",
+              "title": "Reform",
+              "sub": "unconventional progress"
+            }
+          ]
+        }
+      ]
+    },
+    "Pisces": {
+      "name": "Pisces",
+      "title": "Pisces",
+      "symbol": "♓",
+      "formula": "Jupiter + Water + Dual",
+      "pillars": [
+        {
+          "name": "empathy & vision",
+          "items": [
+            {
+              "id": "S_Compassion",
+              "title": "Compassion",
+              "sub": "boundless empathy"
+            },
+            {
+              "id": "S_Imagination",
+              "title": "Imagination",
+              "sub": "intuition, artistic dreams"
+            }
+          ]
+        },
+        {
+          "name": "transcendence",
+          "items": [
+            {
+              "id": "S_Devotion",
+              "title": "Devotion",
+              "sub": "faith, surrender"
+            },
+            {
+              "id": "S_Liberation",
+              "title": "Liberation",
+              "sub": "dissolution, mokṣa"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "houses": {
+    "1": {
+      "number": 1,
+      "sanskrit": "Tanu Bhāva",
+      "title": "First House",
+      "formula": "Sunrise",
+      "anatomy": "Head, Brain, Scalp, Skull, Eyes & Constitution",
+      "pillars": [
+        {
+          "name": "beginning",
+          "items": [
+            {
+              "id": "H1_Birth",
+              "title": "Birth",
+              "sub": "foundation"
+            },
+            {
+              "id": "H1_Body",
+              "title": "Body",
+              "sub": "health"
+            },
+            {
+              "id": "H1_Self",
+              "title": "Self",
+              "sub": "identity"
+            }
+          ]
+        },
+        {
+          "name": "visibility",
+          "items": [
+            {
+              "id": "H1_Manifestation",
+              "title": "Manifestation",
+              "sub": "tangibility"
+            },
+            {
+              "id": "H1_Traits",
+              "title": "Traits",
+              "sub": "appearance, character"
+            }
+          ]
+        }
+      ]
+    },
+    "2": {
+      "number": 2,
+      "sanskrit": "Dhana Bhāva",
+      "title": "Second House",
+      "formula": "Supporting the Sunrise",
+      "anatomy": "Face, Throat, Neck, Mouth, Teeth, Tongue & Right Eye",
+      "pillars": [
+        {
+          "name": "Pro-start",
+          "items": [
+            {
+              "id": "H2_Foundations",
+              "title": "Foundations",
+              "sub": "stability"
+            },
+            {
+              "id": "H2_Family",
+              "title": "Family",
+              "sub": "supporters, friends"
+            },
+            {
+              "id": "H2_Wealth",
+              "title": "Wealth",
+              "sub": "health, nutrition"
+            }
+          ]
+        },
+        {
+          "name": "Pro-visibility",
+          "items": [
+            {
+              "id": "H2_Knowledge",
+              "title": "Knowledge",
+              "sub": ""
+            },
+            {
+              "id": "H2_Realism",
+              "title": "Realism",
+              "sub": "practicality"
+            }
+          ]
+        }
+      ]
+    },
+    "3": {
+      "number": 3,
+      "sanskrit": "Sahaja Bhāva",
+      "title": "Third House",
+      "formula": "Expressing the Interior",
+      "anatomy": "Shoulders, Arms, Hands, Fingers, Collarbone & Right Ear",
+      "pillars": [
+        {
+          "name": "external",
+          "items": [
+            {
+              "id": "H3_Strength",
+              "title": "Strength",
+              "sub": "force, impact"
+            },
+            {
+              "id": "H3_Skill",
+              "title": "Skill",
+              "sub": "ability"
+            },
+            {
+              "id": "H3_Contest",
+              "title": "Contest",
+              "sub": "siblings, peers"
+            }
+          ]
+        },
+        {
+          "name": "internal",
+          "items": [
+            {
+              "id": "H3_Decision",
+              "title": "Decision",
+              "sub": "confidence, discipline"
+            },
+            {
+              "id": "H3_Ambition",
+              "title": "Ambition",
+              "sub": "hunger, lust"
+            },
+            {
+              "id": "H3_SelfFocus",
+              "title": "Self-Focus",
+              "sub": "independence"
+            }
+          ]
+        }
+      ]
+    },
+    "4": {
+      "number": 4,
+      "sanskrit": "Bandhu Bhāva",
+      "title": "Fourth House",
+      "formula": "Below Ground ~ Inner Self",
+      "anatomy": "Chest, Breasts, Heart, Lungs, Ribs & Diaphragm",
+      "pillars": [
+        {
+          "name": "Emotion",
+          "items": [
+            {
+              "id": "H4_Happiness",
+              "title": "Happiness",
+              "sub": "mental health"
+            },
+            {
+              "id": "H4_Devotion",
+              "title": "Devotion",
+              "sub": "love"
+            }
+          ]
+        },
+        {
+          "name": "Privacy",
+          "items": [
+            {
+              "id": "H4_Shyness",
+              "title": "Shyness",
+              "sub": "modesty"
+            },
+            {
+              "id": "H4_Home",
+              "title": "Home",
+              "sub": "property, rest"
+            },
+            {
+              "id": "H4_Femininity",
+              "title": "Femininity",
+              "sub": "internality"
+            }
+          ]
+        },
+        {
+          "name": "Roots",
+          "items": [
+            {
+              "id": "H4_Stability",
+              "title": "Stability",
+              "sub": ""
+            },
+            {
+              "id": "H4_Ancestry",
+              "title": "Ancestry",
+              "sub": "mother, culture"
+            }
+          ]
+        }
+      ]
+    },
+    "5": {
+      "number": 5,
+      "sanskrit": "Putra Bhāva",
+      "title": "Fifth House",
+      "formula": "West-Below ~ Inner » Others",
+      "anatomy": "Upper Abdomen, Stomach, Solar Plexus, Liver & Spleen",
+      "pillars": [
+        {
+          "name": "Empathy",
+          "items": [
+            {
+              "id": "H5_Intelligence",
+              "title": "Intelligence",
+              "sub": "comprehension"
+            },
+            {
+              "id": "H5_Compassion",
+              "title": "Compassion",
+              "sub": "sympathy"
+            },
+            {
+              "id": "H5_Love",
+              "title": "Love",
+              "sub": "affection"
+            }
+          ]
+        },
+        {
+          "name": "Interaction",
+          "items": [
+            {
+              "id": "H5_Communication",
+              "title": "Communication",
+              "sub": "language, symbols"
+            },
+            {
+              "id": "H5_Expression",
+              "title": "Expression",
+              "sub": "creativity, art"
+            },
+            {
+              "id": "H5_Children",
+              "title": "Children",
+              "sub": "productivity"
+            }
+          ]
+        }
+      ]
+    },
+    "6": {
+      "number": 6,
+      "sanskrit": "Ari Bhāva",
+      "title": "Sixth House",
+      "formula": "Support of the West",
+      "anatomy": "Navel, Small Intestines, Colon, Kidneys & Abdominal Wall",
+      "pillars": [
+        {
+          "name": "-> disappear",
+          "items": [
+            {
+              "id": "H6_Uncertainty",
+              "title": "Uncertainty",
+              "sub": "doubt, problems"
+            },
+            {
+              "id": "H6_Illness",
+              "title": "Illness",
+              "sub": "digestion"
+            }
+          ]
+        },
+        {
+          "name": "-> others",
+          "items": [
+            {
+              "id": "H6_Enemies",
+              "title": "Enemies",
+              "sub": "enmity, fighting"
+            },
+            {
+              "id": "H6_Duties",
+              "title": "Duties",
+              "sub": "chores, work"
+            },
+            {
+              "id": "H6_Debt",
+              "title": "Debt",
+              "sub": "servitude"
+            }
+          ]
+        }
+      ]
+    },
+    "7": {
+      "number": 7,
+      "sanskrit": "Yuvati Bhāva",
+      "title": "Seventh House",
+      "formula": "Sunset",
+      "anatomy": "Pelvis, Internal Reproductive Organs, Bladder & Uterus",
+      "pillars": [
+        {
+          "name": "Dis.appr.",
+          "items": [
+            {
+              "id": "H7_Endings",
+              "title": "Endings",
+              "sub": "death"
+            },
+            {
+              "id": "H7_Dispersion",
+              "title": "Dispersion",
+              "sub": "travel"
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "items": [
+            {
+              "id": "H7_Partners",
+              "title": "Partners",
+              "sub": "marriage"
+            },
+            {
+              "id": "H7_Intercourse",
+              "title": "Intercourse",
+              "sub": "cooperation"
+            },
+            {
+              "id": "H7_Exchange",
+              "title": "Exchange",
+              "sub": "commerce"
+            }
+          ]
+        }
+      ]
+    },
+    "8": {
+      "number": 8,
+      "sanskrit": "Randhra Bhāva",
+      "title": "Eighth House",
+      "formula": "Erosion of the West",
+      "anatomy": "External Genitals, Excretory Organs, Anus & Perineum",
+      "pillars": [
+        {
+          "name": "- disappearance",
+          "items": [
+            {
+              "id": "H8_Mysticism",
+              "title": "Mysticism",
+              "sub": "occult, psychic-intuition"
+            },
+            {
+              "id": "H8_Insight",
+              "title": "Insight",
+              "sub": "analytic, research"
+            },
+            {
+              "id": "H8_Death",
+              "title": "- Death",
+              "sub": "vitality, sex (planet IN 8th disappears)"
+            }
+          ]
+        },
+        {
+          "name": "- others",
+          "items": [
+            {
+              "id": "H8_PersonalGain",
+              "title": "Personal Gain",
+              "sub": "inheritance, gifts, donations"
+            },
+            {
+              "id": "H8_Individuality",
+              "title": "Individuality",
+              "sub": "defiance"
+            }
+          ]
+        }
+      ]
+    },
+    "9": {
+      "number": 9,
+      "sanskrit": "Dharma Bhāva",
+      "title": "Ninth House",
+      "formula": "Above (action) West (others)",
+      "anatomy": "Hips, Thighs, Femoral Arteries, Sacroiliac & Marrow",
+      "pillars": [
+        {
+          "name": "values",
+          "items": [
+            {
+              "id": "H9_Philosophy",
+              "title": "Philosophy",
+              "sub": "religion, ethics, morals"
+            },
+            {
+              "id": "H9_Education",
+              "title": "Education",
+              "sub": "source of above"
+            },
+            {
+              "id": "H9_Educators",
+              "title": "Educators",
+              "sub": "teachers, elders, guides"
+            }
+          ]
+        },
+        {
+          "name": "integrity",
+          "items": [
+            {
+              "id": "H9_GoodDeeds",
+              "title": "Good Deeds",
+              "sub": "responsibility, generosity"
+            },
+            {
+              "id": "H9_GoodResults",
+              "title": "Good Results",
+              "sub": "prosperity, fortune"
+            }
+          ]
+        }
+      ]
+    },
+    "10": {
+      "number": 10,
+      "sanskrit": "Karma Bhāva",
+      "title": "Tenth House",
+      "formula": "Open Sky",
+      "anatomy": "Knees, Kneecaps, Knee Joints, Bones & Framework",
+      "pillars": [
+        {
+          "name": "visibility",
+          "items": [
+            {
+              "id": "H10_Extroverse",
+              "title": "Extroverse",
+              "sub": "male, public, society"
+            },
+            {
+              "id": "H10_Fame",
+              "title": "Fame",
+              "sub": "status, career"
+            },
+            {
+              "id": "H10_Influence",
+              "title": "Influence",
+              "sub": "authority"
+            }
+          ]
+        },
+        {
+          "name": "wind",
+          "items": [
+            {
+              "id": "H10_Movement",
+              "title": "Movement",
+              "sub": "travel"
+            },
+            {
+              "id": "H10_Instability",
+              "title": "Instability",
+              "sub": "dispersion, evaporation"
+            }
+          ]
+        }
+      ]
+    },
+    "11": {
+      "number": 11,
+      "sanskrit": "Lābha Bhāva",
+      "title": "Eleventh House",
+      "formula": "Support of the Open Sky",
+      "anatomy": "Calves, Shins, Ankles, Left Ear & Circulation",
+      "pillars": [
+        {
+          "name": "realization",
+          "items": [
+            {
+              "id": "H11_Attainment",
+              "title": "Attainment",
+              "sub": "desires fulfilled"
+            },
+            {
+              "id": "H11_Income",
+              "title": "Income",
+              "sub": "profit, surplus"
+            },
+            {
+              "id": "H11_Expansion",
+              "title": "Expansion",
+              "sub": "abundance"
+            }
+          ]
+        },
+        {
+          "name": "alliances",
+          "items": [
+            {
+              "id": "H11_Community",
+              "title": "Community",
+              "sub": "friends, large groups"
+            },
+            {
+              "id": "H11_Aspirations",
+              "title": "Aspirations",
+              "sub": "future plans"
+            }
+          ]
+        }
+      ]
+    },
+    "12": {
+      "number": 12,
+      "sanskrit": "Vyaya Bhāva",
+      "title": "Twelfth House",
+      "formula": "Pre-Sunrise ~ Night Sky",
+      "anatomy": "Feet, Toes, Lymphatic System, Left Eye & Sleep",
+      "pillars": [
+        {
+          "name": "disappearance",
+          "items": [
+            {
+              "id": "H12_Release",
+              "title": "Release",
+              "sub": "loss, expenses"
+            },
+            {
+              "id": "H12_Solitude",
+              "title": "Solitude",
+              "sub": "seclusion, retreat"
+            },
+            {
+              "id": "H12_Liberation",
+              "title": "Liberation",
+              "sub": "mokṣa"
+            }
+          ]
+        },
+        {
+          "name": "interior",
+          "items": [
+            {
+              "id": "H12_Subconscious",
+              "title": "Subconscious",
+              "sub": "dreams, sleep"
+            },
+            {
+              "id": "H12_ForeignLands",
+              "title": "Foreign Lands",
+              "sub": "distant displacement"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

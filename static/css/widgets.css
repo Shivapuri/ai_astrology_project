@@ -1590,75 +1590,155 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.cockpit-unified-container {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+.synth-stage-wrapper {
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.cockpit-unified-body .mermaid-target {
+.synth-card {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.synth-card:hover {
+    border-color: #94a3b8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.synth-card-header {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    min-height: 280px;
-    width: 100%;
+    border-bottom: 1px solid #f1ece1;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
 }
 
-.cockpit-unified-body .mermaid-target svg,
-.cockpit-triptych-grid .mermaid-target svg {
-    max-width: 100% !important;
-    height: auto !important;
-    font-family: inherit !important;
+.synth-card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-.cockpit-unified-body .sub,
-.cockpit-triptych-grid .sub {
+.synth-card-symbol {
+    font-size: 18px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    border-radius: 6px;
+}
+
+.synth-card-title {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.synth-card-formula {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    max-width: 190px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.synth-pillars-container {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+    flex: 1;
+}
+
+.synth-pillar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 6px;
+    padding: 10px 8px;
+    min-width: 0;
+}
+
+.synth-pillar-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b;
+    margin-bottom: 4px;
+    text-align: center;
+    border-bottom: 1px dashed #e2e8f0;
+    padding-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.synth-node-box {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 10px;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s ease;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.synth-node-box:hover {
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
+}
+
+.synth-node-box.selected-first {
+    border-color: #2563eb !important;
+    background: #eff6ff !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25) !important;
+}
+
+.synth-node-box.selected-second {
+    border-color: #7c3aed !important;
+    background: #f5f3ff !important;
+    box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25) !important;
+}
+
+.synth-node-title {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.synth-node-sub {
     font-size: 11px;
     color: #64748b;
     font-style: italic;
-    display: block;
     margin-top: 2px;
+    line-height: 1.2;
 }
 
-.cockpit-unified-body .tag,
-.cockpit-triptych-grid .tag {
-    display: inline-block;
-    padding: 1px 5px;
-    border-radius: 4px;
-    font-size: 10.5px;
-    font-weight: 600;
-    margin-bottom: 2px;
-}
-.cockpit-unified-body .tag-red, .cockpit-triptych-grid .tag-red { background: #fee2e2; color: #b91c1c; }
-.cockpit-unified-body .tag-green, .cockpit-triptych-grid .tag-green { background: #dcfce7; color: #15803d; }
-.cockpit-unified-body .tag-blue, .cockpit-triptych-grid .tag-blue { background: #e0f2fe; color: #0369a1; }
-
-/* Interactive SVG Nodes in Unified Canvas */
-.cockpit-unified-diagram .node {
-    cursor: pointer;
-    transition: all 0.15s ease;
-}
-
-.cockpit-unified-diagram .node:hover rect,
-.cockpit-unified-diagram .node:hover polygon,
-.cockpit-unified-diagram .node:hover circle,
-.cockpit-unified-diagram .node:hover path {
-    stroke-width: 2.5px !important;
-    stroke: #3b82f6 !important;
-}
-
-.cockpit-unified-diagram .node.selected-source rect,
-.cockpit-unified-diagram .node.selected-source polygon,
-.cockpit-unified-diagram .node.selected-source circle {
-    stroke-width: 3px !important;
-    stroke: #2563eb !important;
-    fill: #eff6ff !important;
-}
-
-.cockpit-unified-diagram .node.selected-target rect,
-.cockpit-unified-diagram .node.selected-target polygon,
-.cockpit-unified-diagram .node.selected-target circle {
-    stroke-width: 3px !important;
-    stroke: #7c3aed !important;
-    fill: #f5f3ff !important;
+.synth-anatomy-footer {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 11.5px;
+    color: #0369a1;
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 /* Synthesis Connection Chips */

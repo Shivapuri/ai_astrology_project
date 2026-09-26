@@ -829,6 +829,7 @@ def compute_planetary_prominence_rankings(
 
 
 _SIGNIFICATIONS_FLOWCHARTS_CACHE: Optional[Dict[str, Any]] = None
+_SIGNIFICATIONS_DATA_CACHE: Optional[Dict[str, Any]] = None
 
 
 def get_significations_flowcharts() -> Dict[str, Any]:
@@ -846,6 +847,26 @@ def get_significations_flowcharts() -> Dict[str, Any]:
             with open(json_path, "r", encoding="utf-8") as f:
                 _SIGNIFICATIONS_FLOWCHARTS_CACHE = json.load(f)
                 return _SIGNIFICATIONS_FLOWCHARTS_CACHE
+        except Exception:
+            pass
+    return {"planets": {}, "signs": {}, "houses": {}}
+
+
+def get_significations_data() -> Dict[str, Any]:
+    """
+    Loads and caches jyotish/report/significations_data.json containing
+    the structured multi-pillar definitions for planets, signs, and houses.
+    """
+    global _SIGNIFICATIONS_DATA_CACHE
+    if _SIGNIFICATIONS_DATA_CACHE is not None:
+        return _SIGNIFICATIONS_DATA_CACHE
+
+    json_path = os.path.join(os.path.dirname(__file__), "significations_data.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                _SIGNIFICATIONS_DATA_CACHE = json.load(f)
+                return _SIGNIFICATIONS_DATA_CACHE
         except Exception:
             pass
     return {"planets": {}, "signs": {}, "houses": {}}
@@ -904,5 +925,6 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "environmental_tally": env_tally,
         "planetary_rankings": planetary_rankings,
         "synthesis_ingredients": synthesis_ingredients,
+        "significations_data": get_significations_data(),
         "flowcharts": get_significations_flowcharts()
     }

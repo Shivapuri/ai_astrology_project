@@ -517,5 +517,50 @@ def test_significations_flowchart_json_files_sync():
     assert len(d1["signs"]) == 12
 
 
+def test_significations_data_json_sync_and_structure():
+    """Verify backend and frontend significations_data.json are in sync and match multi-pillar schema."""
+    import json
+    from pathlib import Path
+    from jyotish.report import get_significations_data
+
+    backend_p = Path("jyotish/report/significations_data.json")
+    static_p = Path("static/data/significations_data.json")
+
+    assert backend_p.exists(), "Backend significations_data.json missing"
+    assert static_p.exists(), "Static significations_data.json missing"
+
+    with open(backend_p, "r", encoding="utf-8") as f1, open(static_p, "r", encoding="utf-8") as f2:
+        d1 = json.load(f1)
+        d2 = json.load(f2)
+
+    assert d1 == d2, "Backend and frontend significations_data JSON are not in sync"
+    assert len(d1["houses"]) == 12
+    assert len(d1["planets"]) == 7
+    assert len(d1["signs"]) == 12
+
+    # Check that houses contain pillars with items and anatomy
+    for h_num in range(1, 13):
+        h = str(h_num)
+        h_data = d1["houses"][h]
+        assert "pillars" in h_data
+        assert len(h_data["pillars"]) >= 2
+        assert "anatomy" in h_data
+        for pillar in h_data["pillars"]:
+            assert "name" in pillar
+            assert "items" in pillar
+            assert len(pillar["items"]) > 0
+            for item in pillar["items"]:
+                assert "id" in item
+                assert "title" in item
+
+    # Check integration with report payload
+    from jyotish.generate_jyotish import generate_kala_chart
+    chart_data = generate_kala_chart("Donald Trump", 1946, 6, 14, 10, 54, 40.6892, -73.8648, -4.0)
+    report = chart_data.get("report", {})
+    assert "significations_data" in report
+    assert "planets" in report["significations_data"]
+    assert "houses" in report["significations_data"]
+
+
 
 

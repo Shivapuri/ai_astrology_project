@@ -1834,33 +1834,46 @@ async function getSignificationsFlowcharts(chartData) {
 }
 
 // ============================================================================
-// Unified Synthesis Cockpit & Interactive Connection Engine
+// Fixed HTML/CSS Pillar Cards + Native SVG Connector Overlay Engine (Tab 4)
 // ============================================================================
 
+let _cachedSignificationsData = null;
+async function getSignificationsData(chartData) {
+    if (_cachedSignificationsData) return _cachedSignificationsData;
+    if (chartData && chartData.report && chartData.report.significations_data && chartData.report.significations_data.planets) {
+        _cachedSignificationsData = chartData.report.significations_data;
+        return _cachedSignificationsData;
+    }
+    try {
+        const resp = await fetch('/static/data/significations_data.json');
+        if (resp.ok) {
+            _cachedSignificationsData = await resp.json();
+            return _cachedSignificationsData;
+        }
+    } catch (err) {
+        console.warn("Could not fetch /static/data/significations_data.json:", err);
+    }
+    return { planets: {}, signs: {}, houses: {} };
+}
+
+// Backward-compatibility Mermaid helpers for legacy tests
 function stripOuterSubgraph(mermaidText) {
     if (!mermaidText) return '';
     const lines = mermaidText.split('\n');
     const cleaned = lines.filter(l => l.trim() && !l.trim().startsWith('flowchart'));
     if (!cleaned.length) return '';
-
     if (cleaned[0].trim().startsWith('subgraph')) {
         let depth = 0;
         let endIdx = null;
         for (let i = 0; i < cleaned.length; i++) {
             const s = cleaned[i].trim();
-            if (s.startsWith('subgraph')) {
-                depth++;
-            } else if (s === 'end') {
+            if (s.startsWith('subgraph')) depth++;
+            else if (s === 'end') {
                 depth--;
-                if (depth === 0) {
-                    endIdx = i;
-                    break;
-                }
+                if (depth === 0) { endIdx = i; break; }
             }
         }
-        if (endIdx === cleaned.length - 1) {
-            return cleaned.slice(1, endIdx).join('\n');
-        }
+        if (endIdx === cleaned.length - 1) return cleaned.slice(1, endIdx).join('\n');
     }
     return cleaned.join('\n');
 }
@@ -1870,59 +1883,33 @@ function prefixMermaidBlock(mermaidText, prefix) {
     const processedLines = [];
     let edgeCount = 0;
     const lines = mermaidText.split('\n');
-
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('flowchart') || trimmed.startsWith('direction')) {
-            continue;
-        }
-
-        const pad = '        '; // 8 spaces inside column subgraph
-
+        const trimmed = lines[i].trim();
+        if (!trimmed || trimmed.startsWith('%%') || trimmed.startsWith('flowchart') || trimmed.startsWith('direction')) continue;
+        const pad = '        ';
         if (trimmed.startsWith('subgraph')) {
             const match = trimmed.match(/^subgraph\s+([a-zA-Z0-9_]+)(.*)/);
-            if (match) {
-                processedLines.push(`${pad}subgraph ${prefix}${match[1]}${match[2]}`);
-            } else {
-                processedLines.push(pad + trimmed);
-            }
+            if (match) processedLines.push(`${pad}subgraph ${prefix}${match[1]}${match[2]}`);
+            else processedLines.push(pad + trimmed);
             continue;
         }
-
-        if (trimmed === 'end') {
-            processedLines.push(`${pad}end`);
-            continue;
-        }
-
+        if (trimmed === 'end') { processedLines.push(`${pad}end`); continue; }
         if (trimmed.includes('[') && trimmed.endsWith(']')) {
             const idx = trimmed.indexOf('[');
-            const rawId = trimmed.substring(0, idx).trim();
-            const rest = trimmed.substring(idx);
-            processedLines.push(`${pad}${prefix}${rawId}${rest}`);
+            processedLines.push(`${pad}${prefix}${trimmed.substring(0, idx).trim()}${trimmed.substring(idx)}`);
             continue;
         }
-
-        // Edge definition line
         const edgeMatches = trimmed.match(/(?:-->|-\.->|---|==>)/g);
-        if (edgeMatches) {
-            edgeCount += edgeMatches.length;
-        }
-
+        if (edgeMatches) edgeCount += edgeMatches.length;
         const parts = trimmed.split(/(\|[^\n|]*\|)/);
         const newParts = [];
         for (let j = 0; j < parts.length; j++) {
             const part = parts[j];
-            if (part.startsWith('|') && part.endsWith('|')) {
-                newParts.push(part);
-            } else {
-                const replaced = part.replace(/\b([a-zA-Z0-9_]+)\b/g, (m, id) => `${prefix}${id}`);
-                newParts.push(replaced);
-            }
+            if (part.startsWith('|') && part.endsWith('|')) newParts.push(part);
+            else newParts.push(part.replace(/\b([a-zA-Z0-9_]+)\b/g, (m, id) => `${prefix}${id}`));
         }
         processedLines.push(pad + newParts.join(''));
     }
-
     return { code: processedLines.join('\n'), edges: edgeCount };
 }
 
@@ -1930,42 +1917,72 @@ function extractFlowchartNodes(mermaidText, prefix, groupName) {
     if (!mermaidText) return [];
     const nodes = [];
     const lines = mermaidText.split('\n');
-
     for (let i = 0; i < lines.length; i++) {
         const trimmed = lines[i].trim();
-        if (!trimmed || trimmed.startsWith('subgraph') || trimmed.startsWith('%%') || trimmed.startsWith('flowchart') || trimmed === 'end' || trimmed.startsWith('direction')) {
-            continue;
-        }
+        if (!trimmed || trimmed.startsWith('subgraph') || trimmed.startsWith('%%') || trimmed.startsWith('flowchart') || trimmed === 'end' || trimmed.startsWith('direction')) continue;
         if (trimmed.includes('[') && trimmed.endsWith(']')) {
             const idx = trimmed.indexOf('[');
             const rawId = trimmed.substring(0, idx).trim();
             let content = trimmed.substring(idx + 1, trimmed.length - 1);
-            if (content.startsWith('"') && content.endsWith('"')) {
-                content = content.substring(1, content.length - 1);
-            }
-
+            if (content.startsWith('"') && content.endsWith('"')) content = content.substring(1, content.length - 1);
             const bMatch = content.match(/<b>(.*?)<\/b>/);
             const title = bMatch ? bMatch[1].replace(/<br\s*\/?>/gi, ' ').trim() : rawId;
-
             const subMatch = content.match(/<span class=['"]sub['"]>(.*?)<\/span>/);
             const sub = subMatch ? subMatch[1].trim() : '';
-
             let cleanLabel = sub ? `${title} (${sub})` : title;
             cleanLabel = cleanLabel.replace(/<[^>]+>/g, '').trim();
             const cleanTitle = title.replace(/<[^>]+>/g, '').trim();
-
-            nodes.push({
-                id: `${prefix}${rawId}`,
-                rawId: rawId,
-                title: cleanTitle,
-                sub: sub,
-                label: cleanLabel,
-                group: groupName
-            });
+            nodes.push({ id: `${prefix}${rawId}`, rawId: rawId, title: cleanTitle, sub: sub, label: cleanLabel, group: groupName });
         }
     }
     return nodes;
 }
+
+function buildUnifiedMermaidCode(pData, sData, hData, planetName, signName, houseNum, links) {
+    const pRaw = stripOuterSubgraph(pData.mermaid || '');
+    const sRaw = stripOuterSubgraph(sData.mermaid || '');
+    const hRaw = stripOuterSubgraph(hData.mermaid || '');
+    const pBlock = prefixMermaidBlock(pRaw, 'P_');
+    const sBlock = prefixMermaidBlock(sRaw, 'S_');
+    const hBlock = prefixMermaidBlock(hRaw, 'H_');
+    const pSym = pData.symbol || '🪐';
+    const sSym = sData.symbol || '♈';
+    const pTitle = pData.title ? `${pSym} ${pData.title}` : `${pSym} Planet: ${planetName}`;
+    const sTitle = sData.title ? `${sSym} ${sData.title}` : `${sSym} Sign: ${signName}`;
+    const hTitle = hData.title ? `🏛️ House ${houseNum} (${hData.formula || hData.sanskrit || ''})` : `🏛️ House ${houseNum}`;
+
+    let code = `flowchart LR\n`;
+    code += `    subgraph ColPlanet ["${pTitle}"]\n        direction TB\n${pBlock.code}\n    end\n`;
+    code += `    subgraph ColSign ["${sTitle}"]\n        direction TB\n${sBlock.code}\n    end\n`;
+    code += `    subgraph ColHouse ["${hTitle}"]\n        direction TB\n${hBlock.code}\n    end\n`;
+    code += `\n    ColPlanet ~~~ ColSign\n    ColSign ~~~ ColHouse\n`;
+
+    const baseEdgeCount = pBlock.edges + sBlock.edges + hBlock.edges + 2;
+    if (links && links.length > 0) {
+        code += `\n    %% User Cross-Connections\n`;
+        links.forEach((link) => {
+            if (link.type === 'dissonance') {
+                code += `    ${link.from} -.->|<span style="color:#b91c1c;font-weight:bold;">Clashes</span>| ${link.to}\n`;
+            } else {
+                code += `    ${link.from} ==>|<span style="color:#15803d;font-weight:bold;">Resonates</span>| ${link.to}\n`;
+            }
+        });
+        code += `\n`;
+        links.forEach((link, idx) => {
+            const edgeIndex = baseEdgeCount + idx;
+            if (link.type === 'dissonance') {
+                code += `    linkStyle ${edgeIndex} stroke:#dc2626,stroke-width:2.5px,stroke-dasharray: 5 5;\n`;
+            } else {
+                code += `    linkStyle ${edgeIndex} stroke:#16a34a,stroke-width:3px;\n`;
+            }
+        });
+    }
+    return code;
+}
+
+// ----------------------------------------------------------------------------
+// Local Storage Persistence for Synthesis Links
+// ----------------------------------------------------------------------------
 
 function getSynthesisPlanetLinks(nativeId, planetName) {
     const key = `astra_synth_links_${nativeId}_${planetName}`;
@@ -1990,62 +2007,82 @@ function saveSynthesisPlanetLinks(nativeId, planetName, links) {
     }
 }
 
-function buildUnifiedMermaidCode(pData, sData, hData, planetName, signName, houseNum, links) {
-    const pRaw = stripOuterSubgraph(pData.mermaid || '');
-    const sRaw = stripOuterSubgraph(sData.mermaid || '');
-    const hRaw = stripOuterSubgraph(hData.mermaid || '');
+// ----------------------------------------------------------------------------
+// Native SVG Connector Overlay: Bézier Curve Math & Path Rendering
+// ----------------------------------------------------------------------------
 
-    const pBlock = prefixMermaidBlock(pRaw, 'P_');
-    const sBlock = prefixMermaidBlock(sRaw, 'S_');
-    const hBlock = prefixMermaidBlock(hRaw, 'H_');
+function redrawAllConnections(cockpitContainer, links) {
+    if (!cockpitContainer) return;
+    const stageWrapper = cockpitContainer.querySelector('#synth-stage-wrapper') || cockpitContainer.querySelector('.synth-stage-wrapper');
+    const pathsGroup = cockpitContainer.querySelector('#synth-paths-group');
+    if (!stageWrapper || !pathsGroup) return;
 
-    const pSym = pData.symbol || '🪐';
-    const sSym = sData.symbol || '♈';
-    const pTitle = pData.title ? `${pSym} ${pData.title}` : `${pSym} Planet: ${planetName}`;
-    const sTitle = sData.title ? `${sSym} ${sData.title}` : `${sSym} Sign: ${signName}`;
-    const hTitle = hData.title ? `🏛️ House ${houseNum} (${hData.formula || hData.sanskrit || ''})` : `🏛️ House ${houseNum}`;
+    pathsGroup.innerHTML = '';
+    if (!links || links.length === 0) return;
 
-    let code = `flowchart LR\n`;
-    code += `    subgraph ColPlanet ["${pTitle}"]\n        direction TB\n${pBlock.code}\n    end\n`;
-    code += `    subgraph ColSign ["${sTitle}"]\n        direction TB\n${sBlock.code}\n    end\n`;
-    code += `    subgraph ColHouse ["${hTitle}"]\n        direction TB\n${hBlock.code}\n    end\n`;
+    const stageRect = stageWrapper.getBoundingClientRect();
+    if (stageRect.width === 0 || stageRect.height === 0) return;
 
-    code += `\n    %% Horizontal alignment across the 3 archetypal columns\n`;
-    code += `    ColPlanet ~~~ ColSign\n`;
-    code += `    ColSign ~~~ ColHouse\n`;
+    links.forEach(link => {
+        const fromEl = stageWrapper.querySelector(`.synth-node-box[data-node-id="${link.from}"]`);
+        const toEl = stageWrapper.querySelector(`.synth-node-box[data-node-id="${link.to}"]`);
+        if (!fromEl || !toEl) return;
 
-    const baseEdgeCount = pBlock.edges + sBlock.edges + hBlock.edges + 2;
+        const r1 = fromEl.getBoundingClientRect();
+        const r2 = toEl.getBoundingClientRect();
 
-    if (links && links.length > 0) {
-        code += `\n    %% User Cross-Connections\n`;
-        links.forEach((link) => {
-            if (link.type === 'dissonance') {
-                code += `    ${link.from} -.->|<span style="color:#b91c1c;font-weight:bold;">Clashes</span>| ${link.to}\n`;
-            } else {
-                code += `    ${link.from} ==>|<span style="color:#15803d;font-weight:bold;">Resonates</span>| ${link.to}\n`;
-            }
-        });
+        let x1, y1, x2, y2, d;
+        const isDissonance = link.type === 'dissonance';
+        const strokeColor = isDissonance ? '#dc2626' : '#16a34a';
+        const markerUrl = isDissonance ? 'url(#arrow-red)' : 'url(#arrow-green)';
 
-        code += `\n`;
-        links.forEach((link, idx) => {
-            const edgeIndex = baseEdgeCount + idx;
-            if (link.type === 'dissonance') {
-                code += `    linkStyle ${edgeIndex} stroke:#dc2626,stroke-width:2.5px,stroke-dasharray: 5 5;\n`;
-            } else {
-                code += `    linkStyle ${edgeIndex} stroke:#16a34a,stroke-width:3px;\n`;
-            }
-        });
-    }
+        // If in approximately the same card column, loop outward to the right
+        if (Math.abs(r1.left - r2.left) < 30) {
+            x1 = r1.right - stageRect.left;
+            y1 = r1.top + r1.height / 2 - stageRect.top;
+            x2 = r2.right - stageRect.left;
+            y2 = r2.top + r2.height / 2 - stageRect.top;
+            const loopX = Math.max(x1, x2) + 36;
+            d = `M ${x1} ${y1} C ${loopX} ${y1}, ${loopX} ${y2}, ${x2} ${y2}`;
+        } else if (r1.left < r2.left) {
+            // Source is to the left: dock right edge of source to left edge of target
+            x1 = r1.right - stageRect.left;
+            y1 = r1.top + r1.height / 2 - stageRect.top;
+            x2 = r2.left - stageRect.left;
+            y2 = r2.top + r2.height / 2 - stageRect.top;
+            const dx = Math.max(35, (x2 - x1) * 0.45);
+            d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
+        } else {
+            // Source is to the right: dock left edge of source to right edge of target
+            x1 = r1.left - stageRect.left;
+            y1 = r1.top + r1.height / 2 - stageRect.top;
+            x2 = r2.right - stageRect.left;
+            y2 = r2.top + r2.height / 2 - stageRect.top;
+            const dx = Math.max(35, (x1 - x2) * 0.45);
+            d = `M ${x1} ${y1} C ${x1 - dx} ${y1}, ${x2 + dx} ${y2}, ${x2} ${y2}`;
+        }
 
-    return code;
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', d);
+        pathEl.setAttribute('fill', 'none');
+        pathEl.setAttribute('stroke', strokeColor);
+        pathEl.setAttribute('stroke-width', '2.5');
+        if (isDissonance) {
+            pathEl.setAttribute('stroke-dasharray', '6 4');
+        }
+        pathEl.setAttribute('marker-end', markerUrl);
+        pathEl.setAttribute('data-from', link.from);
+        pathEl.setAttribute('data-to', link.to);
+        pathsGroup.appendChild(pathEl);
+    });
 }
 
 function renderConnectionsChips(cockpitContainer, links, onRemove) {
-    const listEl = cockpitContainer.querySelector('.cockpit-connections-list') || cockpitContainer.querySelector('#cockpit-connections-list');
+    const listEl = cockpitContainer.querySelector('#cockpit-connections-list') || cockpitContainer.querySelector('.cockpit-connections-list');
     if (!listEl) return;
 
     if (!links || links.length === 0) {
-        listEl.innerHTML = `<span class="no-links-msg" style="font-size: 11.5px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two nodes in the diagram or choose from the dropdowns above to link them.</span>`;
+        listEl.innerHTML = `<span class="no-links-msg" style="font-size: 11.5px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two boxes across the cards to link them.</span>`;
         return;
     }
 
@@ -2056,7 +2093,7 @@ function renderConnectionsChips(cockpitContainer, links, onRemove) {
         const typeLabel = isDis ? 'Clashes' : 'Resonates';
         html += `
             <div class="synth-conn-chip ${l.type}" data-idx="${idx}">
-                <span>${icon} <strong>${l.fromLabel}</strong> ⟷ <strong>${l.toLabel}</strong> (${typeLabel})</span>
+                <span>${icon} <strong>${l.fromLabel || l.from}</strong> ⟷ <strong>${l.toLabel || l.to}</strong> (${typeLabel})</span>
                 <button type="button" class="btn-del-conn" data-idx="${idx}" title="Remove link">×</button>
             </div>
         `;
@@ -2074,49 +2111,247 @@ function renderConnectionsChips(cockpitContainer, links, onRemove) {
     });
 }
 
-function updateSvgNodeHighlights(cockpitContainer, sourceId, targetId) {
-    const targetEl = cockpitContainer.querySelector('.cockpit-unified-diagram') || cockpitContainer.querySelector('#cockpit-unified-diagram');
-    if (!targetEl) return;
+// ----------------------------------------------------------------------------
+// Card Rendering Engine: Multi-Pillar HTML Architecture
+// ----------------------------------------------------------------------------
 
-    targetEl.querySelectorAll('.node').forEach(nodeEl => {
-        const nId = nodeEl.getAttribute('data-node-id');
-        if (sourceId && nId === sourceId) {
-            nodeEl.classList.add('selected-source');
-        } else {
-            nodeEl.classList.remove('selected-source');
-        }
+function renderPillarCard(targetCol, cardData, entityType, displayTitle, symbol) {
+    if (!targetCol || !cardData) return;
 
-        if (targetId && nId === targetId) {
-            nodeEl.classList.add('selected-target');
-        } else {
-            nodeEl.classList.remove('selected-target');
-        }
+    const sym = symbol || cardData.symbol || (entityType === 'house' ? '🏛️' : (entityType === 'planet' ? '🪐' : '♈'));
+    const title = displayTitle || cardData.title || cardData.name || '';
+    const formula = cardData.formula || (cardData.sanskrit ? `${cardData.sanskrit}` : '');
+
+    let html = `
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="synth-card-symbol">${sym}</span>
+                <div>
+                    <div class="synth-card-title">${title}</div>
+                    ${cardData.sanskrit ? `<div style="font-size: 11px; color: #64748b; font-style: italic;">${cardData.sanskrit}</div>` : ''}
+                </div>
+            </div>
+            ${formula ? `<span class="synth-card-formula" title="${formula}">${formula}</span>` : ''}
+        </div>
+        <div class="synth-pillars-container">
+    `;
+
+    const pillars = cardData.pillars || [];
+    pillars.forEach(pillar => {
+        html += `
+            <div class="synth-pillar-col">
+                <div class="synth-pillar-title" title="${pillar.name}">${pillar.name}</div>
+                <div style="display: flex; flex-direction: column; gap: 6px;">
+        `;
+        (pillar.items || []).forEach(item => {
+            html += `
+                <div class="synth-node-box" data-node-id="${item.id}" data-node-title="${item.title}" data-node-sub="${item.sub || ''}" data-node-group="${displayTitle || cardData.name || entityType}">
+                    <div class="synth-node-title">${item.title}</div>
+                    ${item.sub ? `<div class="synth-node-sub">${item.sub}</div>` : ''}
+                </div>
+            `;
+        });
+        html += `
+                </div>
+            </div>
+        `;
     });
+
+    html += `</div>`;
+
+    if (cardData.anatomy) {
+        html += `
+            <div class="synth-anatomy-footer">
+                <span>🏛️</span>
+                <span><strong>Kalapurusha Anatomy:</strong> ${cardData.anatomy}</span>
+            </div>
+        `;
+    }
+
+    targetCol.innerHTML = html;
 }
 
-function attachSvgNodeInteractions(cockpitContainer, allNodes, onNodeClick) {
-    const targetEl = cockpitContainer.querySelector('.cockpit-unified-diagram') || cockpitContainer.querySelector('#cockpit-unified-diagram');
-    if (!targetEl) return;
+// ----------------------------------------------------------------------------
+// Interactive Selection & Action Bar Engine
+// ----------------------------------------------------------------------------
 
-    const nodeEls = targetEl.querySelectorAll('.node');
-    nodeEls.forEach(nodeEl => {
-        const elId = nodeEl.id || '';
-        let matchedNode = allNodes.find(n => elId.startsWith(`flowchart-${n.id}-`) || elId === n.id || elId.includes(n.id));
-        if (!matchedNode) {
-            const text = nodeEl.textContent || '';
-            matchedNode = allNodes.find(n => n.title && text.includes(n.title));
+function setupSelectionEngine(cockpitContainer, nativeId, planetName, currentData, triggerAutoSaveNotes) {
+    const stageWrapper = cockpitContainer.querySelector('#synth-stage-wrapper') || cockpitContainer.querySelector('.synth-stage-wrapper');
+    const actionBar = cockpitContainer.querySelector('#synth-action-bar');
+    const selLabel = cockpitContainer.querySelector('#synth-selection-label');
+    const btnRes = cockpitContainer.querySelector('#btn-action-res');
+    const btnDis = cockpitContainer.querySelector('#btn-action-dis');
+    const btnCancel = cockpitContainer.querySelector('#btn-action-cancel');
+    const txtResonance = cockpitContainer.querySelector('#txt-resonance') || cockpitContainer.querySelector('.txt-resonance');
+    const txtDissonance = cockpitContainer.querySelector('#txt-dissonance') || cockpitContainer.querySelector('.txt-dissonance');
+
+    if (!stageWrapper) return;
+
+    cockpitContainer._selectedBoxes = cockpitContainer._selectedBoxes || [];
+
+    const updateVisuals = () => {
+        const allBoxes = stageWrapper.querySelectorAll('.synth-node-box');
+        allBoxes.forEach(b => {
+            b.classList.remove('selected-first', 'selected-second');
+        });
+
+        const selected = cockpitContainer._selectedBoxes;
+        if (selected[0] && selected[0].el) {
+            selected[0].el.classList.add('selected-first');
+        }
+        if (selected[1] && selected[1].el) {
+            selected[1].el.classList.add('selected-second');
         }
 
-        if (matchedNode) {
-            nodeEl.setAttribute('data-node-id', matchedNode.id);
-            nodeEl.style.cursor = 'pointer';
-            nodeEl.onclick = (e) => {
+        if (actionBar && selLabel) {
+            if (selected.length === 2) {
+                selLabel.textContent = `${selected[0].group}: ${selected[0].title} ⟷ ${selected[1].group}: ${selected[1].title}`;
+                actionBar.style.display = 'flex';
+            } else {
+                actionBar.style.display = 'none';
+            }
+        }
+    };
+
+    const attachBoxClicks = () => {
+        const boxes = stageWrapper.querySelectorAll('.synth-node-box');
+        boxes.forEach(box => {
+            box.onclick = (e) => {
                 e.stopPropagation();
-                onNodeClick(matchedNode.id);
+                const id = box.getAttribute('data-node-id');
+                const title = box.getAttribute('data-node-title');
+                const sub = box.getAttribute('data-node-sub');
+                const group = box.getAttribute('data-node-group');
+
+                const existingIdx = cockpitContainer._selectedBoxes.findIndex(b => b.id === id);
+                if (existingIdx >= 0) {
+                    cockpitContainer._selectedBoxes.splice(existingIdx, 1);
+                } else {
+                    if (cockpitContainer._selectedBoxes.length >= 2) {
+                        cockpitContainer._selectedBoxes = [{ id, title, sub, group, el: box }];
+                    } else {
+                        cockpitContainer._selectedBoxes.push({ id, title, sub, group, el: box });
+                    }
+                }
+                updateVisuals();
             };
+        });
+    };
+
+    const onRemoveLink = (idx) => {
+        let links = getSynthesisPlanetLinks(nativeId, planetName);
+        links.splice(idx, 1);
+        saveSynthesisPlanetLinks(nativeId, planetName, links);
+        renderConnectionsChips(cockpitContainer, links, onRemoveLink);
+        redrawAllConnections(cockpitContainer, links);
+    };
+
+    const commitLink = (type) => {
+        const selected = cockpitContainer._selectedBoxes;
+        if (selected.length < 2) return;
+
+        const b1 = selected[0];
+        const b2 = selected[1];
+        const fromLabel = `${b1.group}: ${b1.title}`;
+        const toLabel = `${b2.group}: ${b2.title}`;
+
+        let links = getSynthesisPlanetLinks(nativeId, planetName);
+        const existingIdx = links.findIndex(l => (l.from === b1.id && l.to === b2.id) || (l.from === b2.id && l.to === b1.id));
+        if (existingIdx >= 0) {
+            links[existingIdx].type = type;
+            links[existingIdx].fromLabel = fromLabel;
+            links[existingIdx].toLabel = toLabel;
+        } else {
+            links.push({
+                from: b1.id,
+                to: b2.id,
+                fromLabel: fromLabel,
+                toLabel: toLabel,
+                type: type
+            });
         }
-    });
+        saveSynthesisPlanetLinks(nativeId, planetName, links);
+
+        // Append bullet note to scratchpad
+        if (type === 'resonance' && txtResonance) {
+            const bullet = `• ${fromLabel} resonates with ${toLabel}`;
+            if (!txtResonance.value.includes(b1.title) || !txtResonance.value.includes(b2.title)) {
+                txtResonance.value = txtResonance.value ? `${txtResonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
+                if (triggerAutoSaveNotes) triggerAutoSaveNotes();
+            }
+        } else if (type === 'dissonance' && txtDissonance) {
+            const bullet = `• ${fromLabel} clashes with ${toLabel}`;
+            if (!txtDissonance.value.includes(b1.title) || !txtDissonance.value.includes(b2.title)) {
+                txtDissonance.value = txtDissonance.value ? `${txtDissonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
+                if (triggerAutoSaveNotes) triggerAutoSaveNotes();
+            }
+        }
+
+        cockpitContainer._selectedBoxes = [];
+        updateVisuals();
+        renderConnectionsChips(cockpitContainer, links, onRemoveLink);
+        redrawAllConnections(cockpitContainer, links);
+    };
+
+    if (btnRes) {
+        btnRes.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            commitLink('resonance');
+        };
+    }
+    if (btnDis) {
+        btnDis.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            commitLink('dissonance');
+        };
+    }
+    if (btnCancel) {
+        btnCancel.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            cockpitContainer._selectedBoxes = [];
+            updateVisuals();
+        };
+    }
+
+    const btnClear = cockpitContainer.querySelector('#btn-clear-connections') || cockpitContainer.querySelector('.btn-clear-connections');
+    if (btnClear) {
+        btnClear.onclick = (e) => {
+            e.preventDefault();
+            saveSynthesisPlanetLinks(nativeId, planetName, []);
+            cockpitContainer._selectedBoxes = [];
+            updateVisuals();
+            renderConnectionsChips(cockpitContainer, [], onRemoveLink);
+            redrawAllConnections(cockpitContainer, []);
+        };
+    }
+
+    attachBoxClicks();
+    updateVisuals();
+
+    // Initial chips & SVG path render
+    const currentLinks = getSynthesisPlanetLinks(nativeId, planetName);
+    renderConnectionsChips(cockpitContainer, currentLinks, onRemoveLink);
+
+    setTimeout(() => {
+        redrawAllConnections(cockpitContainer, currentLinks);
+    }, 60);
+
+    // Setup ResizeObserver for zero-jitter docking on resize
+    if (!cockpitContainer._synthResizeObserver && window.ResizeObserver) {
+        cockpitContainer._synthResizeObserver = new ResizeObserver(() => {
+            const l = getSynthesisPlanetLinks(nativeId, planetName);
+            redrawAllConnections(cockpitContainer, l);
+        });
+        cockpitContainer._synthResizeObserver.observe(stageWrapper);
+    }
 }
+
+// ----------------------------------------------------------------------------
+// Cockpit Lifecycle Orchestration
+// ----------------------------------------------------------------------------
 
 function initSynthesisCockpit(cell, chartData) {
     const cockpitContainer = cell.querySelector('.synthesis-cockpit-container');
@@ -2135,7 +2370,7 @@ function initSynthesisCockpit(cell, chartData) {
     const classicalPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
     const availableLeaderboard = leaderboard.filter(p => classicalPlanets.includes(p.planet));
 
-    // Determine initial selected planet: Commander if in classical 7, else first in availableLeaderboard, else 'Sun'
+    // Determine initial selected planet: Commander if classical, else first available, else Sun
     let commanderPlanet = (planetRank.chart_commander && planetRank.chart_commander.planet) || '';
     if (!classicalPlanets.includes(commanderPlanet)) {
         commanderPlanet = availableLeaderboard.length > 0 ? availableLeaderboard[0].planet : 'Sun';
@@ -2144,7 +2379,7 @@ function initSynthesisCockpit(cell, chartData) {
     const currentVal = selectPlanet.value;
     const initialPlanet = (currentVal && classicalPlanets.includes(currentVal)) ? currentVal : commanderPlanet;
 
-    // Populate dropdown options
+    // Populate Focus Graha dropdown
     let optionsHtml = '';
     availableLeaderboard.forEach(p => {
         const isSelected = p.planet === initialPlanet ? 'selected' : '';
@@ -2154,7 +2389,7 @@ function initSynthesisCockpit(cell, chartData) {
     selectPlanet.innerHTML = optionsHtml;
     selectPlanet.value = initialPlanet;
 
-    // Populate ambient context
+    // Populate ambient context strip
     const ambientText = cockpitContainer.querySelector('.context-ambient-text');
     if (ambientText) {
         const polCore = report.polarity_core || {};
@@ -2163,168 +2398,13 @@ function initSynthesisCockpit(cell, chartData) {
         ambientText.innerHTML = `<strong>${ascNak.name || '--'}</strong> Lagna (${ascNak.group || '--'}) <span style="margin:0 4px; color:#b45309;">⟷</span> <strong>${moonNak.name || '--'}</strong> Moon (${moonNak.group || '--'})`;
     }
 
-    // Setup scratchpad notes save handler
-    const nativeId = (currentData.subject_info && currentData.subject_info.name)
-        ? currentData.subject_info.name.replace(/[^a-zA-Z0-9_-]/g, '_')
-        : (currentData.id || 'default_chart');
-
-    const btnSave = cockpitContainer.querySelector('.btn-save-synthesis');
-    const saveStatus = cockpitContainer.querySelector('.synth-save-status');
-    const txtResonance = cockpitContainer.querySelector('.txt-resonance') || cockpitContainer.querySelector('#txt-resonance');
-    const txtDissonance = cockpitContainer.querySelector('.txt-dissonance') || cockpitContainer.querySelector('#txt-dissonance');
-    const txtSynthesis = cockpitContainer.querySelector('.txt-synthesis') || cockpitContainer.querySelector('#txt-synthesis');
-
-    const saveNotes = () => {
-        const curP = selectPlanet.value;
-        if (!curP) return;
-        const key = `astra_synth_${nativeId}_${curP}`;
-        const payload = {
-            resonance: txtResonance ? txtResonance.value : '',
-            dissonance: txtDissonance ? txtDissonance.value : '',
-            synthesis: txtSynthesis ? txtSynthesis.value : '',
-            updatedAt: new Date().toISOString()
-        };
-        try {
-            localStorage.setItem(key, JSON.stringify(payload));
-            if (saveStatus) {
-                saveStatus.textContent = 'Saved to local cache ✓';
-                saveStatus.style.opacity = '1';
-                setTimeout(() => { if (saveStatus) saveStatus.style.opacity = '0'; }, 2000);
-            }
-        } catch (e) {
-            console.error("Error writing to localStorage:", e);
-        }
-    };
-
-    if (btnSave) {
-        btnSave.onclick = (e) => {
-            e.preventDefault();
-            saveNotes();
-        };
-    }
-
-    let debounceTimer = null;
-    const triggerAutoSave = () => {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(saveNotes, 600);
-    };
-
-    if (txtResonance) txtResonance.oninput = triggerAutoSave;
-    if (txtDissonance) txtDissonance.oninput = triggerAutoSave;
-    if (txtSynthesis) txtSynthesis.oninput = triggerAutoSave;
-
-    // Connection Toolbar Elements & Actions
-    const selSource = cockpitContainer.querySelector('#select-conn-source') || cockpitContainer.querySelector('.select-conn-source');
-    const selTarget = cockpitContainer.querySelector('#select-conn-target') || cockpitContainer.querySelector('.select-conn-target');
-    const btnAddRes = cockpitContainer.querySelector('#btn-add-resonance') || cockpitContainer.querySelector('.btn-add-resonance');
-    const btnAddDis = cockpitContainer.querySelector('#btn-add-dissonance') || cockpitContainer.querySelector('.btn-add-dissonance');
-    const btnClear = cockpitContainer.querySelector('#btn-clear-connections') || cockpitContainer.querySelector('.btn-clear-connections');
-
-    const handleAddLink = async (type) => {
-        const curP = selectPlanet.value;
-        if (!curP) return;
-        const sourceId = selSource ? selSource.value : '';
-        const targetId = selTarget ? selTarget.value : '';
-        if (!sourceId || !targetId) {
-            alert("Please select both a source node and a target node to connect.");
-            return;
-        }
-        if (sourceId === targetId) {
-            alert("Source and target node cannot be the same.");
-            return;
-        }
-
-        const allNodesMap = cockpitContainer._allNodesMap || {};
-        const fromNode = allNodesMap[sourceId] || { group: 'Node', label: sourceId, title: sourceId };
-        const toNode = allNodesMap[targetId] || { group: 'Node', label: targetId, title: targetId };
-
-        const fromLabel = `${fromNode.group}: ${fromNode.label}`;
-        const toLabel = `${toNode.group}: ${toNode.label}`;
-
-        let links = getSynthesisPlanetLinks(nativeId, curP);
-        const existingIdx = links.findIndex(l => (l.from === sourceId && l.to === targetId) || (l.from === targetId && l.to === sourceId));
-        if (existingIdx >= 0) {
-            links[existingIdx].type = type;
-            links[existingIdx].fromLabel = fromLabel;
-            links[existingIdx].toLabel = toLabel;
-        } else {
-            links.push({
-                from: sourceId,
-                to: targetId,
-                fromLabel: fromLabel,
-                toLabel: toLabel,
-                type: type
-            });
-        }
-        saveSynthesisPlanetLinks(nativeId, curP, links);
-
-        // Synchronize with Scratchpad notes
-        if (type === 'resonance' && txtResonance) {
-            const bullet = `• ${fromLabel} resonates with ${toLabel}`;
-            if (!txtResonance.value.includes(fromNode.title) || !txtResonance.value.includes(toNode.title)) {
-                txtResonance.value = txtResonance.value ? `${txtResonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
-                saveNotes();
-            }
-        } else if (type === 'dissonance' && txtDissonance) {
-            const bullet = `• ${fromLabel} clashes with ${toLabel}`;
-            if (!txtDissonance.value.includes(fromNode.title) || !txtDissonance.value.includes(toNode.title)) {
-                txtDissonance.value = txtDissonance.value ? `${txtDissonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
-                saveNotes();
-            }
-        }
-
-        if (selTarget) selTarget.value = '';
-        updateSvgNodeHighlights(cockpitContainer, selSource ? selSource.value : '', '');
-
-        await renderSynthesisCockpit(cell, curP, currentData);
-    };
-
-    if (btnAddRes) {
-        btnAddRes.onclick = (e) => {
-            e.preventDefault();
-            handleAddLink('resonance');
-        };
-    }
-
-    if (btnAddDis) {
-        btnAddDis.onclick = (e) => {
-            e.preventDefault();
-            handleAddLink('dissonance');
-        };
-    }
-
-    if (btnClear) {
-        btnClear.onclick = async (e) => {
-            e.preventDefault();
-            const curP = selectPlanet.value;
-            if (!curP) return;
-            saveSynthesisPlanetLinks(nativeId, curP, []);
-            if (selSource) selSource.value = '';
-            if (selTarget) selTarget.value = '';
-            await renderSynthesisCockpit(cell, curP, currentData);
-        };
-    }
-
-    if (selSource) {
-        selSource.onchange = () => {
-            updateSvgNodeHighlights(cockpitContainer, selSource.value, selTarget ? selTarget.value : '');
-        };
-    }
-
-    if (selTarget) {
-        selTarget.onchange = () => {
-            updateSvgNodeHighlights(cockpitContainer, selSource ? selSource.value : '', selTarget.value);
-        };
-    }
-
     // Change event on Focus Graha dropdown
     selectPlanet.onchange = () => {
-        if (selSource) selSource.value = '';
-        if (selTarget) selTarget.value = '';
+        cockpitContainer._selectedBoxes = [];
         renderSynthesisCockpit(cell, selectPlanet.value, currentData);
     };
 
-    // Render initial unified cockpit
+    // Render initial synthesis cockpit
     renderSynthesisCockpit(cell, initialPlanet, currentData);
 }
 
@@ -2355,13 +2435,13 @@ async function renderSynthesisCockpit(cell, planetName, chartData) {
     const N = pEntry.nakshatra || '--';
     const NL = pEntry.nakshatra_lord || '--';
 
-    // 1. Update Placement Flavor Context Strip
+    // 1. Placement Flavor Context Strip
     const focusText = cockpitContainer.querySelector('.context-focus-text');
     if (focusText) {
         focusText.innerHTML = `<strong>${planetName}</strong> in <strong>${S}</strong> (House ${H}) • <em>${N}</em> (Lord: ${NL})`;
     }
 
-    // 2. Load Scratchpad Notes for this planet
+    // 2. Setup Scratchpad Notes Persistence
     const nativeId = (currentData.subject_info && currentData.subject_info.name)
         ? currentData.subject_info.name.replace(/[^a-zA-Z0-9_-]/g, '_')
         : (currentData.id || 'default_chart');
@@ -2369,6 +2449,44 @@ async function renderSynthesisCockpit(cell, planetName, chartData) {
     const txtResonance = cockpitContainer.querySelector('.txt-resonance') || cockpitContainer.querySelector('#txt-resonance');
     const txtDissonance = cockpitContainer.querySelector('.txt-dissonance') || cockpitContainer.querySelector('#txt-dissonance');
     const txtSynthesis = cockpitContainer.querySelector('.txt-synthesis') || cockpitContainer.querySelector('#txt-synthesis');
+    const btnSave = cockpitContainer.querySelector('.btn-save-synthesis');
+    const saveStatus = cockpitContainer.querySelector('.synth-save-status');
+
+    const saveNotes = () => {
+        const payload = {
+            resonance: txtResonance ? txtResonance.value : '',
+            dissonance: txtDissonance ? txtDissonance.value : '',
+            synthesis: txtSynthesis ? txtSynthesis.value : '',
+            updatedAt: new Date().toISOString()
+        };
+        try {
+            localStorage.setItem(noteKey, JSON.stringify(payload));
+            if (saveStatus) {
+                saveStatus.textContent = 'Saved to local cache ✓';
+                saveStatus.style.opacity = '1';
+                setTimeout(() => { if (saveStatus) saveStatus.style.opacity = '0'; }, 2000);
+            }
+        } catch (e) {
+            console.error("Error writing to localStorage:", e);
+        }
+    };
+
+    if (btnSave) {
+        btnSave.onclick = (e) => {
+            e.preventDefault();
+            saveNotes();
+        };
+    }
+
+    let debounceTimer = null;
+    const triggerAutoSave = () => {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(saveNotes, 600);
+    };
+
+    if (txtResonance) txtResonance.oninput = triggerAutoSave;
+    if (txtDissonance) txtDissonance.oninput = triggerAutoSave;
+    if (txtSynthesis) txtSynthesis.oninput = triggerAutoSave;
 
     try {
         const rawNote = localStorage.getItem(noteKey);
@@ -2386,119 +2504,29 @@ async function renderSynthesisCockpit(cell, planetName, chartData) {
         console.warn("Could not read notes from localStorage:", e);
     }
 
-    // 3. Load Flowchart Definitions
-    const flowcharts = await getSignificationsFlowcharts(currentData);
-    const pData = (flowcharts.planets && flowcharts.planets[planetName]) || {};
-    const sData = (flowcharts.signs && flowcharts.signs[S]) || {};
-    const hData = (flowcharts.houses && flowcharts.houses[H]) || {};
+    // 3. Load Significations Data
+    const data = await getSignificationsData(currentData);
+    const pData = (data.planets && data.planets[planetName]) || {};
+    const sData = (data.signs && data.signs[S]) || {};
+    const hData = (data.houses && data.houses[H]) || {};
 
-    // 4. Extract Nodes for Connection Dropdowns & Interactivity
-    const pNodes = extractFlowchartNodes(pData.mermaid, 'P_', `Planet (${planetName})`);
-    const sNodes = extractFlowchartNodes(sData.mermaid, 'S_', `Sign (${S})`);
-    const hNodes = extractFlowchartNodes(hData.mermaid, 'H_', `House ${H}`);
-    const allNodes = [...pNodes, ...sNodes, ...hNodes];
+    // 4. Render Fixed HTML/CSS Pillar Cards
+    const cardColPlanet = cockpitContainer.querySelector('#card-col-planet');
+    const cardColSign = cockpitContainer.querySelector('#card-col-sign');
+    const cardColHouse = cockpitContainer.querySelector('#card-col-house');
 
-    const allNodesMap = {};
-    allNodes.forEach(n => { allNodesMap[n.id] = n; });
-    cockpitContainer._allNodesMap = allNodesMap;
-
-    // 5. Populate Connection Dropdowns
-    const selSource = cockpitContainer.querySelector('#select-conn-source') || cockpitContainer.querySelector('.select-conn-source');
-    const selTarget = cockpitContainer.querySelector('#select-conn-target') || cockpitContainer.querySelector('.select-conn-target');
-
-    const buildOptionsHtml = (selectedVal) => {
-        let optHtml = '<option value="">Select Node...</option>';
-        optHtml += `<optgroup label="🪐 Planet: ${planetName}">`;
-        pNodes.forEach(n => {
-            optHtml += `<option value="${n.id}" ${n.id === selectedVal ? 'selected' : ''}>${n.label}</option>`;
-        });
-        optHtml += `</optgroup>`;
-
-        optHtml += `<optgroup label="♈ Sign: ${S}">`;
-        sNodes.forEach(n => {
-            optHtml += `<option value="${n.id}" ${n.id === selectedVal ? 'selected' : ''}>${n.label}</option>`;
-        });
-        optHtml += `</optgroup>`;
-
-        optHtml += `<optgroup label="🏛️ House ${H}">`;
-        hNodes.forEach(n => {
-            optHtml += `<option value="${n.id}" ${n.id === selectedVal ? 'selected' : ''}>${n.label}</option>`;
-        });
-        optHtml += `</optgroup>`;
-        return optHtml;
-    };
-
-    if (selSource) {
-        const curSrc = selSource.value;
-        selSource.innerHTML = buildOptionsHtml(curSrc);
-        if (curSrc && allNodesMap[curSrc]) selSource.value = curSrc;
-        else selSource.value = '';
+    if (cardColPlanet) {
+        renderPillarCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '🪐');
     }
-    if (selTarget) {
-        const curTgt = selTarget.value;
-        selTarget.innerHTML = buildOptionsHtml(curTgt);
-        if (curTgt && allNodesMap[curTgt]) selTarget.value = curTgt;
-        else selTarget.value = '';
+    if (cardColSign) {
+        renderPillarCard(cardColSign, sData, 'sign', sData.title || `Sign: ${S}`, sData.symbol || '♈');
+    }
+    if (cardColHouse) {
+        renderPillarCard(cardColHouse, hData, 'house', hData.title || `House ${H}`, '🏛️');
     }
 
-    // 6. Load and Render Active Links / Chips
-    const links = getSynthesisPlanetLinks(nativeId, planetName);
-    renderConnectionsChips(cockpitContainer, links, async (removeIdx) => {
-        let updatedLinks = getSynthesisPlanetLinks(nativeId, planetName);
-        updatedLinks.splice(removeIdx, 1);
-        saveSynthesisPlanetLinks(nativeId, planetName, updatedLinks);
-        await renderSynthesisCockpit(cell, planetName, currentData);
-    });
-
-    // 7. Render Unified Mermaid Diagram
-    const targetEl = cockpitContainer.querySelector('.cockpit-unified-diagram') || cockpitContainer.querySelector('#cockpit-unified-diagram');
-    if (!targetEl) return;
-
-    await ensureMermaidReady();
-
-    const unifiedCode = buildUnifiedMermaidCode(pData, sData, hData, planetName, S, H, links);
-
-    if (typeof mermaid === 'undefined') {
-        targetEl.innerHTML = `<pre style="font-size:11px; color:#475569; overflow:auto;">${unifiedCode}</pre>`;
-        return;
-    }
-
-    const uniqueId = `svg-cockpit-unified-${planetName}-${S}-H${H}-${Math.floor(Math.random() * 100000)}`;
-    try {
-        const { svg } = await mermaid.render(uniqueId, unifiedCode);
-        targetEl.innerHTML = svg;
-        const svgEl = targetEl.querySelector('svg');
-        if (svgEl) {
-            svgEl.style.width = '100%';
-            svgEl.style.maxWidth = '100%';
-            svgEl.style.height = 'auto';
-            svgEl.style.display = 'block';
-            svgEl.style.margin = '0 auto';
-        }
-
-        // 8. Attach Node Click Listeners & Highlight Initial States
-        attachSvgNodeInteractions(cockpitContainer, allNodes, (clickedNodeId) => {
-            if (!selSource || !selTarget) return;
-            if (!selSource.value) {
-                selSource.value = clickedNodeId;
-            } else if (selSource.value === clickedNodeId) {
-                selSource.value = '';
-            } else if (!selTarget.value) {
-                selTarget.value = clickedNodeId;
-            } else if (selTarget.value === clickedNodeId) {
-                selTarget.value = '';
-            } else {
-                selTarget.value = clickedNodeId;
-            }
-            updateSvgNodeHighlights(cockpitContainer, selSource.value, selTarget.value);
-        });
-
-        updateSvgNodeHighlights(cockpitContainer, selSource ? selSource.value : '', selTarget ? selTarget.value : '');
-
-    } catch (err) {
-        console.error("Mermaid render error on unified synthesis diagram:", err);
-        targetEl.innerHTML = `<div style="font-size:12px; color:#b91c1c; padding:15px; text-align:center;">Unified diagram render failed. <pre style="text-align:left; font-size:10px; max-height:120px; overflow:auto;">${err.message || err}</pre></div>`;
-    }
+    // 5. Setup Interactive Selection & SVG Overlay Engine
+    setupSelectionEngine(cockpitContainer, nativeId, planetName, currentData, triggerAutoSave);
 }
 
 // Backward-compatibility alias
@@ -2571,8 +2599,10 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.renderSynthesisTriptych = renderSynthesisTriptych;
     window.renderSynthesisCockpit = renderSynthesisCockpit;
     window.getSignificationsFlowcharts = getSignificationsFlowcharts;
+    window.getSignificationsData = getSignificationsData;
     window.buildUnifiedMermaidCode = buildUnifiedMermaidCode;
     window.getSynthesisPlanetLinks = getSynthesisPlanetLinks;
     window.saveSynthesisPlanetLinks = saveSynthesisPlanetLinks;
+    window.redrawAllConnections = redrawAllConnections;
 }
 
