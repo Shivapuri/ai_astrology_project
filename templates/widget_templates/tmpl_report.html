@@ -10,7 +10,7 @@
                     <button type="button" class="report-pill-btn active" data-tab="polarity" onclick="switchReportTab(this, 'polarity')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌟 Polarity &amp; Stars</button>
                     <button type="button" class="report-pill-btn" data-tab="environment" onclick="switchReportTab(this, 'environment')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌿 Elements &amp; Axis</button>
                     <button type="button" class="report-pill-btn" data-tab="prominence" onclick="switchReportTab(this, 'prominence')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">👑 Planetary Rank</button>
-                    <button type="button" class="report-pill-btn" data-tab="synthesis" onclick="switchReportTab(this, 'synthesis')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🧪 Synthesis Desk</button>
+                    <button type="button" class="report-pill-btn" data-tab="synthesis" onclick="switchReportTab(this, 'synthesis')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🔮 Triad Synthesis Engine</button>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
@@ -63,17 +63,17 @@
                 <div class="prominence-table-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 10px;"></div>
             </div>
 
-            <!-- Tab 4: Synthesis Desk & 3-Way Cockpit -->
+            <!-- Tab 4: Triad Synthesis Engine (Graha · Rāśi · Bhāva Archetypal Integration) -->
             <div class="report-tab-pane tab-synthesis" style="display: none; flex-direction: column; gap: 12px;">
-                <!-- 3-Way Synthesis Cockpit -->
+                <!-- Triad Synthesis Container -->
                 <div class="synthesis-cockpit-container" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 6px; padding: 12px;">
                     <!-- Header Bar -->
                     <div class="cockpit-header-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #f1ece1;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 16px;">🎯</span>
+                            <span style="font-size: 17px;">🔮</span>
                             <div>
-                                <div style="font-size: 14px; font-weight: 700; color: #1e293b;">3-Way Synthesis Cockpit</div>
-                                <div style="font-size: 12px; color: #64748b;">Planet + Sign + House Flowchart Triptych</div>
+                                <div style="font-size: 14.5px; font-weight: 700; color: #1e293b; letter-spacing: -0.2px;">Triad Synthesis Engine</div>
+                                <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">Graha · Rāśi · Bhāva Archetypal Integration</div>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -104,40 +104,62 @@
                         <button type="button" id="btn-clear-connections" class="btn-clear-connections" style="background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Clear Links</button>
                     </div>
 
-                    <!-- The 3-Column Canvas Stage with SVG Overlay -->
-                    <div id="synth-stage-wrapper" class="synth-stage-wrapper" style="position: relative; min-height: 480px; margin-top: 8px; background: #fafaf9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; overflow: hidden;">
-                        <!-- Transparent SVG Line Overlay -->
-                        <svg id="synth-connector-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;">
+                    <!-- The 3-Column Flowchart Canvas Stage with Underlaid SVG Overlay -->
+                    <div id="synth-stage-wrapper" class="synth-stage-wrapper" style="position: relative; min-height: 480px; margin-top: 8px; background: #fafaf9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; overflow: visible;">
+                        <!-- Transparent SVG Line Overlay (Layer 1: z-index 3 Behind Nodes, in front of card background) -->
+                        <svg id="synth-connector-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;">
                             <defs>
+                                <!-- Subtle Slate Base Arrowhead for Internal Tree Flow -->
+                                <marker id="arrow-base-slate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94a3b8" />
+                                </marker>
+                                <!-- Accent Feedback Arrowhead (e.g. Scorpio loop) -->
+                                <marker id="arrow-base-loop" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ea580c" />
+                                </marker>
+                                <!-- User Harmonic Green Arrowhead -->
+                                <marker id="arrow-harmonic" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#15803d" />
+                                </marker>
+                                <!-- User Dissonant Red Arrowhead -->
+                                <marker id="arrow-dissonant" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#b91c1c" />
+                                </marker>
+                                <!-- Backward-compatibility aliases -->
                                 <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#15803d" />
                                 </marker>
                                 <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                                    <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626" />
+                                    <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#b91c1c" />
                                 </marker>
                             </defs>
+                            <!-- Group 1: Permanent Internal Base Tree Flow Arrows -->
+                            <g id="synth-base-arrows-group"></g>
+                            <!-- Group 2: Dynamic User Cross-Connections -->
+                            <g id="synth-user-arrows-group"></g>
+                            <!-- Compatibility alias -->
                             <g id="synth-paths-group"></g>
                         </svg>
 
-                        <!-- 3-Column HTML Grid -->
-                        <div id="synth-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 16px; position: relative; z-index: 1;">
+                        <!-- 3-Column HTML Flowchart Grid (Layer 2: z-index auto container with z-index 5 Opaque Nodes) -->
+                        <div id="synth-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 16px; position: relative;">
                             <!-- Column 1: Planet Card -->
-                            <div id="card-col-planet" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"></div>
+                            <div id="card-col-planet" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
 
                             <!-- Column 2: Sign Card -->
-                            <div id="card-col-sign" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"></div>
+                            <div id="card-col-sign" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
 
-                            <!-- Column 3: House Card (Multi-Pillar Architecture) -->
-                            <div id="card-col-house" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);"></div>
+                            <!-- Column 3: House Card (Multi-Pillar / Subgraph Architecture) -->
+                            <div id="card-col-house" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
                         </div>
                     </div>
 
                     <!-- Selection Action Floating Bar -->
                     <div id="synth-action-bar" style="display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #ffffff; border-radius: 30px; padding: 8px 18px; box-shadow: 0 8px 24px rgba(0,0,0,0.35); z-index: 1000; align-items: center; gap: 12px;">
                         <span id="synth-selection-label" style="font-size: 12.5px; font-weight: 600;"></span>
-                        <button type="button" id="btn-action-res" style="background: #16a34a; color: #ffffff; border: none; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease;">+ Resonates (Green)</button>
-                        <button type="button" id="btn-action-dis" style="background: #dc2626; color: #ffffff; border: none; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease;">− Clashes (Red)</button>
-                        <button type="button" id="btn-action-cancel" style="background: transparent; color: #94a3b8; border: none; font-size: 14px; cursor: pointer; padding: 0 4px;">✕</button>
+                        <button type="button" id="btn-action-res" style="background: #15803d; color: #ffffff; border: none; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease;">+ Resonates (Harmonic)</button>
+                        <button type="button" id="btn-action-dis" style="background: #b91c1c; color: #ffffff; border: none; border-radius: 16px; padding: 6px 14px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s ease;">− Clashes (Dissonant)</button>
+                        <button type="button" id="btn-action-cancel" style="background: transparent; color: #94a3b8; border: none; font-size: 14px; cursor: pointer; padding: 0 4px;" title="Cancel selection">✕</button>
                     </div>
 
                     <!-- Interactive Interpretation Scratchpad -->

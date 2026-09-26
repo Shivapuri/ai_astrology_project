@@ -1617,6 +1617,22 @@
     gap: 8px;
 }
 
+/* ============================================================================
+   Triad Synthesis Engine (Graha · Rāśi · Bhāva Archetypal Integration)
+   ============================================================================ */
+
+.synth-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .synth-card-symbol {
     font-size: 18px;
     width: 28px;
@@ -1626,6 +1642,7 @@
     justify-content: center;
     background: #f1f5f9;
     border-radius: 6px;
+    flex-shrink: 0;
 }
 
 .synth-card-title {
@@ -1643,10 +1660,43 @@
     border-radius: 4px;
     font-size: 11px;
     font-weight: 600;
-    max-width: 190px;
+    max-width: 210px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* Authentic Subgraph Header Banner (e.g. Sunrise, Positivity, Negativity) */
+.synth-banner-header {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 6px 12px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 12.5px;
+    color: #1e293b;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    position: relative;
+    z-index: 6;
+}
+
+/* Pinned Note / Sticky Formula (e.g. Cancer = Moon+Water+Cardinal, ☽ Moon) */
+.synth-pinned-note {
+    background: #fffdf5;
+    border: 1px solid #fef08a;
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #854d0e;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    position: relative;
+    z-index: 6;
 }
 
 .synth-pillars-container {
@@ -1666,6 +1716,7 @@
     border-radius: 6px;
     padding: 10px 8px;
     min-width: 0;
+    position: relative;
 }
 
 .synth-pillar-title {
@@ -1683,8 +1734,9 @@
     text-overflow: ellipsis;
 }
 
+/* Individual Flowchart Node Box (Layer 2: Opaque & Solid) */
 .synth-node-box {
-    background: #ffffff;
+    background: #ffffff !important;
     border: 1.5px solid #cbd5e1;
     border-radius: 6px;
     padding: 8px 10px;
@@ -1692,15 +1744,18 @@
     user-select: none;
     transition: all 0.15s ease;
     position: relative;
+    z-index: 5; /* Ensures card sits in front of SVG vector paths */
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    text-align: center;
 }
 
 .synth-node-box:hover {
     border-color: #3b82f6;
     transform: translateY(-1px);
-    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.08);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.12);
 }
 
+/* Selection Highlights */
 .synth-node-box.selected-first {
     border-color: #2563eb !important;
     background: #eff6ff !important;
@@ -1711,6 +1766,60 @@
     border-color: #7c3aed !important;
     background: #f5f3ff !important;
     box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.25) !important;
+}
+
+/* Badges (e.g. Bravery, Adventure, INNER CORE) */
+.synth-node-badge {
+    position: absolute;
+    top: -7px;
+    right: -4px;
+    background: #f0fdf4;
+    border: 1px solid #86efac;
+    color: #166534;
+    font-size: 9.5px;
+    font-weight: 700;
+    padding: 0.5px 5px;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 1.2;
+}
+
+/* Color variations from source slides */
+.synth-node-box.color-gold {
+    border-color: #facc15;
+    background: #fefce8 !important;
+}
+
+.synth-node-box.color-green {
+    border-color: #86efac;
+    background: #f0fdf4 !important;
+}
+
+.synth-node-box.color-blue {
+    border-color: #93c5fd;
+    background: #eff6ff !important;
+}
+
+.synth-node-box.badge-circled {
+    box-shadow: 0 0 0 2px #f97316, 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Callout Bubble (e.g. House 8: planet IN 8th disappears) */
+.synth-callout-bubble {
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-top: 4px;
+    display: inline-block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+    position: relative;
+    z-index: 6;
+    text-align: center;
 }
 
 .synth-node-title {
@@ -1739,6 +1848,8 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    position: relative;
+    z-index: 6;
 }
 
 /* Synthesis Connection Chips */

@@ -562,5 +562,62 @@ def test_significations_data_json_sync_and_structure():
     assert "houses" in report["significations_data"]
 
 
+def test_triad_synthesis_graph_topology():
+    """Verify complete graph topology: directed edges, banners, pinned notes, and callouts."""
+    import json
+    from pathlib import Path
+
+    p = Path("jyotish/report/significations_data.json")
+    with open(p, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    # 1. All 12 houses have edges, columns/pillars, and anatomy
+    for h_num in range(1, 13):
+        h = str(h_num)
+        h_data = data["houses"][h]
+        assert "edges" in h_data, f"House {h} missing edges"
+        assert len(h_data["edges"]) >= 2, f"House {h} should have at least 2 directed edges"
+        for edge in h_data["edges"]:
+            assert "from" in edge and "to" in edge
+            assert edge["from"].startswith(f"H{h}_")
+            assert edge["to"].startswith(f"H{h}_")
+
+    # House 1 Sunrise banner, House 8 callout
+    assert data["houses"]["1"]["banner"] == "Sunrise"
+    h8_callout = data["houses"]["8"].get("callout", "")
+    h8_text = h8_callout.get("text", "") if isinstance(h8_callout, dict) else h8_callout
+    assert "disappears" in h8_text
+
+    # 2. All 12 signs have edges
+    signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
+    for s_name in signs:
+        s_data = data["signs"][s_name]
+        assert "edges" in s_data, f"Sign {s_name} missing edges"
+        assert len(s_data["edges"]) >= 3, f"Sign {s_name} should have directed edges"
+        for edge in s_data["edges"]:
+            assert "from" in edge and "to" in edge
+            assert edge["from"].startswith("S_")
+
+    # Scorpio has dashed_loop feedback edge and Circled badge on Mysterious
+    scorpio_edges = data["signs"]["Scorpio"]["edges"]
+    assert any((e.get("style") == "dashed_loop" or e.get("type") == "dashed_loop") and e["from"] == "S_Strong" and e["to"] == "S_Defiance" for e in scorpio_edges)
+    scorpio_nodes = {n["id"]: n for n in data["signs"]["Scorpio"]["nodes"]}
+    assert scorpio_nodes["S_Mysterious"].get("badge") == "Circled"
+
+    # Cancer has pinned_note
+    assert "Cancer = Moon" in data["signs"]["Cancer"].get("pinned_note", "")
+
+    # 3. All 7 classical planets have edges
+    planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    for p_name in planets:
+        p_data = data["planets"][p_name]
+        assert "edges" in p_data, f"Planet {p_name} missing edges"
+        assert len(p_data["edges"]) >= 5, f"Planet {p_name} should have directed edges"
+        for edge in p_data["edges"]:
+            assert "from" in edge and "to" in edge
+            assert edge["from"].startswith("P_")
+
+
+
 
 

@@ -2008,20 +2008,129 @@ function saveSynthesisPlanetLinks(nativeId, planetName, links) {
 }
 
 // ----------------------------------------------------------------------------
+// Perimeter Docking Coordinates & Internal Base Tree Flow Math
+// ----------------------------------------------------------------------------
+
+function getNodeDockPoint(nodeRect, stageRect, dockSide) {
+    switch (dockSide) {
+        case 'top':
+            return {
+                x: nodeRect.left + nodeRect.width / 2 - stageRect.left,
+                y: nodeRect.top - stageRect.top
+            };
+        case 'bottom':
+            return {
+                x: nodeRect.left + nodeRect.width / 2 - stageRect.left,
+                y: nodeRect.bottom - stageRect.top
+            };
+        case 'left':
+            return {
+                x: nodeRect.left - stageRect.left,
+                y: nodeRect.top + nodeRect.height / 2 - stageRect.top
+            };
+        case 'right':
+        default:
+            return {
+                x: nodeRect.right - stageRect.left,
+                y: nodeRect.top + nodeRect.height / 2 - stageRect.top
+            };
+    }
+}
+
+function drawBaseInternalArrows(cardElement, entityData, baseGroup, stageRect) {
+    if (!cardElement || !entityData || !baseGroup || !stageRect) return;
+    const edges = entityData.edges || [];
+    if (!edges.length) return;
+
+    edges.forEach(edge => {
+        const fromEl = cardElement.querySelector(`.synth-node-box[data-node-id="${edge.from}"]`);
+        const toEl = cardElement.querySelector(`.synth-node-box[data-node-id="${edge.to}"]`);
+        if (!fromEl || !toEl) return;
+
+        const r1 = fromEl.getBoundingClientRect();
+        const r2 = toEl.getBoundingClientRect();
+        if (r1.width === 0 || r2.width === 0) return;
+
+        let d = '';
+        let strokeColor = '#94a3b8';
+        let strokeWidth = '1.5';
+        let strokeDash = '';
+        let markerUrl = 'url(#arrow-base-slate)';
+
+        // Special feedback loop (e.g. Scorpio: Strong -> Defiance)
+        if (edge.type === 'dashed_loop' || edge.style === 'dashed_loop') {
+            const p1 = getNodeDockPoint(r1, stageRect, 'left');
+            const p2 = getNodeDockPoint(r2, stageRect, 'left');
+            const loopX = Math.min(p1.x, p2.x) - 22;
+            d = `M ${p1.x} ${p1.y} C ${loopX} ${p1.y}, ${loopX} ${p2.y}, ${p2.x} ${p2.y}`;
+            strokeColor = '#ea580c';
+            strokeDash = '4 3';
+            markerUrl = 'url(#arrow-base-loop)';
+        } else if (r1.bottom <= r2.top + 6) {
+            // Vertical descent: bottom of parent to top of child
+            const p1 = getNodeDockPoint(r1, stageRect, 'bottom');
+            const p2 = getNodeDockPoint(r2, stageRect, 'top');
+            const dy = Math.max(14, (p2.y - p1.y) * 0.5);
+            d = `M ${p1.x} ${p1.y} C ${p1.x} ${p1.y + dy}, ${p2.x} ${p2.y - dy}, ${p2.x} ${p2.y}`;
+        } else if (r1.right < r2.left) {
+            // Side branch: left to right
+            const p1 = getNodeDockPoint(r1, stageRect, 'right');
+            const p2 = getNodeDockPoint(r2, stageRect, 'left');
+            const dx = Math.max(14, (p2.x - p1.x) * 0.5);
+            d = `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y}, ${p2.x - dx} ${p2.y}, ${p2.x} ${p2.y}`;
+        } else {
+            // Side branch: right to left
+            const p1 = getNodeDockPoint(r1, stageRect, 'left');
+            const p2 = getNodeDockPoint(r2, stageRect, 'right');
+            const dx = Math.max(14, (p1.x - p2.x) * 0.5);
+            d = `M ${p1.x} ${p1.y} C ${p1.x - dx} ${p1.y}, ${p2.x + dx} ${p2.y}, ${p2.x} ${p2.y}`;
+        }
+
+        const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        pathEl.setAttribute('d', d);
+        pathEl.setAttribute('fill', 'none');
+        pathEl.setAttribute('stroke', strokeColor);
+        pathEl.setAttribute('stroke-width', strokeWidth);
+        if (strokeDash) {
+            pathEl.setAttribute('stroke-dasharray', strokeDash);
+        }
+        pathEl.setAttribute('marker-end', markerUrl);
+        pathEl.setAttribute('data-from', edge.from);
+        pathEl.setAttribute('data-to', edge.to);
+        baseGroup.appendChild(pathEl);
+    });
+}
+
+// ----------------------------------------------------------------------------
 // Native SVG Connector Overlay: Bézier Curve Math & Path Rendering
 // ----------------------------------------------------------------------------
 
 function redrawAllConnections(cockpitContainer, links) {
     if (!cockpitContainer) return;
     const stageWrapper = cockpitContainer.querySelector('#synth-stage-wrapper') || cockpitContainer.querySelector('.synth-stage-wrapper');
-    const pathsGroup = cockpitContainer.querySelector('#synth-paths-group');
-    if (!stageWrapper || !pathsGroup) return;
+    if (!stageWrapper) return;
 
-    pathsGroup.innerHTML = '';
-    if (!links || links.length === 0) return;
+    const baseGroup = cockpitContainer.querySelector('#synth-base-arrows-group');
+    const userGroup = cockpitContainer.querySelector('#synth-user-arrows-group') || cockpitContainer.querySelector('#synth-paths-group');
+    if (!userGroup) return;
 
     const stageRect = stageWrapper.getBoundingClientRect();
     if (stageRect.width === 0 || stageRect.height === 0) return;
+
+    // 1. Draw base internal arrows inside each card
+    if (baseGroup) {
+        baseGroup.innerHTML = '';
+        ['#card-col-planet', '#card-col-sign', '#card-col-house'].forEach(selector => {
+            const cardEl = cockpitContainer.querySelector(selector);
+            if (cardEl && cardEl._entityData) {
+                drawBaseInternalArrows(cardEl, cardEl._entityData, baseGroup, stageRect);
+            }
+        });
+    }
+
+    // 2. Draw user cross-connections
+    userGroup.innerHTML = '';
+    if (!links || links.length === 0) return;
 
     links.forEach(link => {
         const fromEl = stageWrapper.querySelector(`.synth-node-box[data-node-id="${link.from}"]`);
@@ -2030,38 +2139,50 @@ function redrawAllConnections(cockpitContainer, links) {
 
         const r1 = fromEl.getBoundingClientRect();
         const r2 = toEl.getBoundingClientRect();
+        if (r1.width === 0 || r2.width === 0) return;
 
-        let x1, y1, x2, y2, d;
+        let p1, p2, d;
         const isDissonance = link.type === 'dissonance';
-        const strokeColor = isDissonance ? '#dc2626' : '#16a34a';
-        const markerUrl = isDissonance ? 'url(#arrow-red)' : 'url(#arrow-green)';
+        const strokeColor = isDissonance ? '#b91c1c' : '#15803d';
+        const markerUrl = isDissonance ? 'url(#arrow-dissonant)' : 'url(#arrow-harmonic)';
 
-        // If in approximately the same card column, loop outward to the right
-        if (Math.abs(r1.left - r2.left) < 30) {
-            x1 = r1.right - stageRect.left;
-            y1 = r1.top + r1.height / 2 - stageRect.top;
-            x2 = r2.right - stageRect.left;
-            y2 = r2.top + r2.height / 2 - stageRect.top;
-            const loopX = Math.max(x1, x2) + 36;
-            d = `M ${x1} ${y1} C ${loopX} ${y1}, ${loopX} ${y2}, ${x2} ${y2}`;
-        } else if (r1.left < r2.left) {
+        // Docking logic: outer perimeter docking with zero text occlusion
+        if (Math.abs(r1.left - r2.left) < 40) {
+            // Vertically aligned / same column: loop out to the right gutter
+            p1 = getNodeDockPoint(r1, stageRect, 'right');
+            p2 = getNodeDockPoint(r2, stageRect, 'right');
+            const loopX = Math.max(p1.x, p2.x) + 36;
+            d = `M ${p1.x} ${p1.y} C ${loopX} ${p1.y}, ${loopX} ${p2.y}, ${p2.x} ${p2.y}`;
+        } else if (r1.right + 20 < r2.left) {
             // Source is to the left: dock right edge of source to left edge of target
-            x1 = r1.right - stageRect.left;
-            y1 = r1.top + r1.height / 2 - stageRect.top;
-            x2 = r2.left - stageRect.left;
-            y2 = r2.top + r2.height / 2 - stageRect.top;
-            const dx = Math.max(35, (x2 - x1) * 0.45);
-            d = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
-        } else {
+            p1 = getNodeDockPoint(r1, stageRect, 'right');
+            p2 = getNodeDockPoint(r2, stageRect, 'left');
+            const dx = Math.max(35, (p2.x - p1.x) * 0.45);
+            d = `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y}, ${p2.x - dx} ${p2.y}, ${p2.x} ${p2.y}`;
+        } else if (r2.right + 20 < r1.left) {
             // Source is to the right: dock left edge of source to right edge of target
-            x1 = r1.left - stageRect.left;
-            y1 = r1.top + r1.height / 2 - stageRect.top;
-            x2 = r2.right - stageRect.left;
-            y2 = r2.top + r2.height / 2 - stageRect.top;
-            const dx = Math.max(35, (x1 - x2) * 0.45);
-            d = `M ${x1} ${y1} C ${x1 - dx} ${y1}, ${x2 + dx} ${y2}, ${x2} ${y2}`;
+            p1 = getNodeDockPoint(r1, stageRect, 'left');
+            p2 = getNodeDockPoint(r2, stageRect, 'right');
+            const dx = Math.max(35, (p1.x - p2.x) * 0.45);
+            d = `M ${p1.x} ${p1.y} C ${p1.x - dx} ${p1.y}, ${p2.x + dx} ${p2.y}, ${p2.x} ${p2.y}`;
+        } else {
+            p1 = getNodeDockPoint(r1, stageRect, 'right');
+            p2 = getNodeDockPoint(r2, stageRect, 'left');
+            const dx = Math.max(25, Math.abs(p2.x - p1.x) * 0.5);
+            d = `M ${p1.x} ${p1.y} C ${p1.x + dx} ${p1.y}, ${p2.x - dx} ${p2.y}, ${p2.x} ${p2.y}`;
         }
 
+        // Layer 1 halo (white under-path for maximum contrast and zero text clash)
+        const haloEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        haloEl.setAttribute('d', d);
+        haloEl.setAttribute('fill', 'none');
+        haloEl.setAttribute('stroke', '#ffffff');
+        haloEl.setAttribute('stroke-width', '5.5');
+        haloEl.setAttribute('stroke-linecap', 'round');
+        haloEl.setAttribute('opacity', '0.9');
+        userGroup.appendChild(haloEl);
+
+        // Layer 2 core vector connector
         const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         pathEl.setAttribute('d', d);
         pathEl.setAttribute('fill', 'none');
@@ -2073,7 +2194,7 @@ function redrawAllConnections(cockpitContainer, links) {
         pathEl.setAttribute('marker-end', markerUrl);
         pathEl.setAttribute('data-from', link.from);
         pathEl.setAttribute('data-to', link.to);
-        pathsGroup.appendChild(pathEl);
+        userGroup.appendChild(pathEl);
     });
 }
 
@@ -2090,7 +2211,7 @@ function renderConnectionsChips(cockpitContainer, links, onRemove) {
     links.forEach((l, idx) => {
         const isDis = l.type === 'dissonance';
         const icon = isDis ? '⚡' : '🔗';
-        const typeLabel = isDis ? 'Clashes' : 'Resonates';
+        const typeLabel = isDis ? 'Dissonant' : 'Harmonic';
         html += `
             <div class="synth-conn-chip ${l.type}" data-idx="${idx}">
                 <span>${icon} <strong>${l.fromLabel || l.from}</strong> ⟷ <strong>${l.toLabel || l.to}</strong> (${typeLabel})</span>
@@ -2112,15 +2233,22 @@ function renderConnectionsChips(cockpitContainer, links, onRemove) {
 }
 
 // ----------------------------------------------------------------------------
-// Card Rendering Engine: Multi-Pillar HTML Architecture
+// Authentic Flowchart Card Rendering Engine (Banners, Notes, Badges, Columns)
 // ----------------------------------------------------------------------------
 
-function renderPillarCard(targetCol, cardData, entityType, displayTitle, symbol) {
+function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle, symbol) {
     if (!targetCol || !cardData) return;
+    targetCol._entityData = cardData;
 
     const sym = symbol || cardData.symbol || (entityType === 'house' ? '🏛️' : (entityType === 'planet' ? '🪐' : '♈'));
     const title = displayTitle || cardData.title || cardData.name || '';
-    const formula = cardData.formula || (cardData.sanskrit ? `${cardData.sanskrit}` : '');
+    const sanskrit = cardData.sanskrit || '';
+    const formula = cardData.formula || '';
+    const pinnedNote = cardData.pinned_note || cardData.sticky_note || '';
+    const banner = cardData.banner || '';
+    const rawCallout = cardData.callout || '';
+    const callout = (typeof rawCallout === 'object' && rawCallout.text) ? rawCallout.text : (typeof rawCallout === 'string' ? rawCallout : '');
+    const anatomy = cardData.anatomy || '';
 
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
@@ -2128,24 +2256,44 @@ function renderPillarCard(targetCol, cardData, entityType, displayTitle, symbol)
                 <span class="synth-card-symbol">${sym}</span>
                 <div>
                     <div class="synth-card-title">${title}</div>
-                    ${cardData.sanskrit ? `<div style="font-size: 11px; color: #64748b; font-style: italic;">${cardData.sanskrit}</div>` : ''}
+                    ${sanskrit ? `<div style="font-size: 11px; color: #64748b; font-style: italic;">${sanskrit}</div>` : ''}
                 </div>
             </div>
             ${formula ? `<span class="synth-card-formula" title="${formula}">${formula}</span>` : ''}
         </div>
-        <div class="synth-pillars-container">
     `;
 
-    const pillars = cardData.pillars || [];
-    pillars.forEach(pillar => {
+    if (pinnedNote) {
+        html += `
+            <div class="synth-pinned-note">
+                <span>📌</span>
+                <span>${pinnedNote}</span>
+            </div>
+        `;
+    }
+
+    if (banner) {
+        html += `<div class="synth-banner-header">${banner}</div>`;
+    }
+
+    html += `<div class="synth-pillars-container">`;
+
+    const cols = cardData.columns || cardData.pillars || cardData.subgraphs || [];
+    cols.forEach(col => {
         html += `
             <div class="synth-pillar-col">
-                <div class="synth-pillar-title" title="${pillar.name}">${pillar.name}</div>
-                <div style="display: flex; flex-direction: column; gap: 6px;">
+                ${col.name ? `<div class="synth-pillar-title" title="${col.name}">${col.name}</div>` : ''}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
         `;
-        (pillar.items || []).forEach(item => {
+        const nodes = col.nodes || col.items || [];
+        nodes.forEach(item => {
+            const badge = item.badge || '';
+            const colorClass = item.color ? `color-${item.color}` : '';
+            const circledClass = badge === 'Circled' ? 'badge-circled' : '';
+
             html += `
-                <div class="synth-node-box" data-node-id="${item.id}" data-node-title="${item.title}" data-node-sub="${item.sub || ''}" data-node-group="${displayTitle || cardData.name || entityType}">
+                <div class="synth-node-box ${colorClass} ${circledClass}" data-node-id="${item.id}" data-node-title="${item.title}" data-node-sub="${item.sub || ''}" data-node-group="${displayTitle || cardData.title || cardData.name || entityType}">
+                    ${badge && badge !== 'Circled' ? `<span class="synth-node-badge">${badge}</span>` : ''}
                     <div class="synth-node-title">${item.title}</div>
                     ${item.sub ? `<div class="synth-node-sub">${item.sub}</div>` : ''}
                 </div>
@@ -2159,17 +2307,28 @@ function renderPillarCard(targetCol, cardData, entityType, displayTitle, symbol)
 
     html += `</div>`;
 
-    if (cardData.anatomy) {
+    if (callout) {
+        html += `
+            <div class="synth-callout-bubble">
+                ⚠️ ${callout}
+            </div>
+        `;
+    }
+
+    if (anatomy) {
         html += `
             <div class="synth-anatomy-footer">
                 <span>🏛️</span>
-                <span><strong>Kalapurusha Anatomy:</strong> ${cardData.anatomy}</span>
+                <span><strong>Kalapurusha Anatomy:</strong> ${anatomy}</span>
             </div>
         `;
     }
 
     targetCol.innerHTML = html;
 }
+
+// Backward-compatibility alias
+const renderPillarCard = renderEntityFlowchartCard;
 
 // ----------------------------------------------------------------------------
 // Interactive Selection & Action Bar Engine
@@ -2274,13 +2433,13 @@ function setupSelectionEngine(cockpitContainer, nativeId, planetName, currentDat
 
         // Append bullet note to scratchpad
         if (type === 'resonance' && txtResonance) {
-            const bullet = `• ${fromLabel} resonates with ${toLabel}`;
+            const bullet = `• Harmonic: ${fromLabel} resonates with ${toLabel}`;
             if (!txtResonance.value.includes(b1.title) || !txtResonance.value.includes(b2.title)) {
                 txtResonance.value = txtResonance.value ? `${txtResonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
                 if (triggerAutoSaveNotes) triggerAutoSaveNotes();
             }
         } else if (type === 'dissonance' && txtDissonance) {
-            const bullet = `• ${fromLabel} clashes with ${toLabel}`;
+            const bullet = `• Dissonant: ${fromLabel} clashes with ${toLabel}`;
             if (!txtDissonance.value.includes(b1.title) || !txtDissonance.value.includes(b2.title)) {
                 txtDissonance.value = txtDissonance.value ? `${txtDissonance.value.trim()}\n${bullet}: ` : `${bullet}: `;
                 if (triggerAutoSaveNotes) triggerAutoSaveNotes();
@@ -2510,19 +2669,19 @@ async function renderSynthesisCockpit(cell, planetName, chartData) {
     const sData = (data.signs && data.signs[S]) || {};
     const hData = (data.houses && data.houses[H]) || {};
 
-    // 4. Render Fixed HTML/CSS Pillar Cards
+    // 4. Render Fixed HTML/CSS Flowchart Cards
     const cardColPlanet = cockpitContainer.querySelector('#card-col-planet');
     const cardColSign = cockpitContainer.querySelector('#card-col-sign');
     const cardColHouse = cockpitContainer.querySelector('#card-col-house');
 
     if (cardColPlanet) {
-        renderPillarCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '🪐');
+        renderEntityFlowchartCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '🪐');
     }
     if (cardColSign) {
-        renderPillarCard(cardColSign, sData, 'sign', sData.title || `Sign: ${S}`, sData.symbol || '♈');
+        renderEntityFlowchartCard(cardColSign, sData, 'sign', sData.title || `Sign: ${S}`, sData.symbol || '♈');
     }
     if (cardColHouse) {
-        renderPillarCard(cardColHouse, hData, 'house', hData.title || `House ${H}`, '🏛️');
+        renderEntityFlowchartCard(cardColHouse, hData, 'house', hData.title || `House ${H}`, '🏛️');
     }
 
     // 5. Setup Interactive Selection & SVG Overlay Engine
@@ -2604,5 +2763,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.getSynthesisPlanetLinks = getSynthesisPlanetLinks;
     window.saveSynthesisPlanetLinks = saveSynthesisPlanetLinks;
     window.redrawAllConnections = redrawAllConnections;
+    window.renderEntityFlowchartCard = renderEntityFlowchartCard;
+    window.renderPillarCard = renderPillarCard;
+    window.drawBaseInternalArrows = drawBaseInternalArrows;
+    window.getNodeDockPoint = getNodeDockPoint;
 }
 

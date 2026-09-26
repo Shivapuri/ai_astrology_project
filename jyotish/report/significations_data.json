@@ -1,907 +1,68 @@
 {
-  "planets": {
-    "Sun": {
-      "name": "Sun",
-      "title": "Soul (Sun)",
-      "symbol": "☉",
-      "formula": "Vitality & Authority",
-      "pillars": [
-        {
-          "name": "radiance & vision",
-          "items": [
-            {
-              "id": "P_Soul",
-              "title": "Soul",
-              "sub": "core identity"
-            },
-            {
-              "id": "P_Light",
-              "title": "Light",
-              "sub": "day, public life"
-            },
-            {
-              "id": "P_Vitality",
-              "title": "Vitality",
-              "sub": "constitution, health"
-            },
-            {
-              "id": "P_Vision",
-              "title": "Vision",
-              "sub": "clarity, fame"
-            }
-          ]
-        },
-        {
-          "name": "will & command",
-          "items": [
-            {
-              "id": "P_Decisiveness",
-              "title": "Decisiveness",
-              "sub": "confidence"
-            },
-            {
-              "id": "P_Leadership",
-              "title": "Leadership",
-              "sub": "authority"
-            },
-            {
-              "id": "P_Career",
-              "title": "Career",
-              "sub": "authority figures"
-            },
-            {
-              "id": "P_Self",
-              "title": "Self",
-              "sub": "ego, center, stability"
-            }
-          ]
-        }
-      ]
-    },
-    "Moon": {
-      "name": "Moon",
-      "title": "Mind (Moon)",
-      "symbol": "☽",
-      "formula": "Receptivity & Flow",
-      "pillars": [
-        {
-          "name": "subjectivity & flow",
-          "items": [
-            {
-              "id": "P_Mind",
-              "title": "Mind",
-              "sub": "perceptual consciousness"
-            },
-            {
-              "id": "P_Subjectivity",
-              "title": "Subjectivity",
-              "sub": "personal filter"
-            },
-            {
-              "id": "P_Fluctuation",
-              "title": "Fluctuation",
-              "sub": "rhythm, concentration"
-            },
-            {
-              "id": "P_Emotion",
-              "title": "Emotion",
-              "sub": "feelings, desires, opinions"
-            }
-          ]
-        },
-        {
-          "name": "inner self & roots",
-          "items": [
-            {
-              "id": "P_InnerSelf",
-              "title": "Inner Self",
-              "sub": "feminine self"
-            },
-            {
-              "id": "P_Privacy",
-              "title": "Privacy",
-              "sub": "shyness, sanctuary"
-            },
-            {
-              "id": "P_Domestic",
-              "title": "Domestic",
-              "sub": "home roots, mother"
-            }
-          ]
-        }
-      ]
-    },
-    "Mars": {
-      "name": "Mars",
-      "title": "Mars",
-      "symbol": "♂",
-      "formula": "Force & Ambition",
-      "pillars": [
-        {
-          "name": "self-reliance",
-          "items": [
-            {
-              "id": "P_Masculinity",
-              "title": "Masculinity",
-              "sub": "vital initiative"
-            },
-            {
-              "id": "P_SelfReliance",
-              "title": "Self-Reliance",
-              "sub": "independence, freedom"
-            },
-            {
-              "id": "P_Strength",
-              "title": "Strength",
-              "sub": "courage, backbone"
-            },
-            {
-              "id": "P_Inception",
-              "title": "Inception",
-              "sub": "passion, ambition"
-            }
-          ]
-        },
-        {
-          "name": "combat & tools",
-          "items": [
-            {
-              "id": "P_Weapons",
-              "title": "Weapons",
-              "sub": "tools, instruments"
-            },
-            {
-              "id": "P_TheStrong",
-              "title": "The Strong",
-              "sub": "warriors, athletes"
-            },
-            {
-              "id": "P_Competition",
-              "title": "Competition",
-              "sub": "contest, war, violence"
-            }
-          ]
-        }
-      ]
-    },
-    "Mercury": {
-      "name": "Mercury",
-      "title": "Mercury",
-      "symbol": "☿",
-      "formula": "Pattern Matching & Commerce",
-      "pillars": [
-        {
-          "name": "intellect & decoding",
-          "items": [
-            {
-              "id": "P_Intellect",
-              "title": "Intellect",
-              "sub": "pattern matching"
-            },
-            {
-              "id": "P_Decoding",
-              "title": "Decoding",
-              "sub": "encoding, languages"
-            },
-            {
-              "id": "P_Communication",
-              "title": "Communication",
-              "sub": "speech, writing"
-            },
-            {
-              "id": "P_Interaction",
-              "title": "Interaction",
-              "sub": "trade, exchange"
-            }
-          ]
-        },
-        {
-          "name": "symmetry & social",
-          "items": [
-            {
-              "id": "P_Relationships",
-              "title": "Relationships",
-              "sub": "friendship"
-            },
-            {
-              "id": "P_Recreation",
-              "title": "Recreation",
-              "sub": "fun, wit, youth"
-            },
-            {
-              "id": "P_Organization",
-              "title": "Organization",
-              "sub": "neatness, efficiency"
-            },
-            {
-              "id": "P_Balance",
-              "title": "Balance",
-              "sub": "symmetry, dexterity"
-            }
-          ]
-        }
-      ]
-    },
-    "Jupiter": {
-      "name": "Jupiter",
-      "title": "Jupiter",
-      "symbol": "♃",
-      "formula": "Positivity",
-      "pillars": [
-        {
-          "name": "'+' (increase)",
-          "items": [
-            {
-              "id": "P_Increase",
-              "title": "Increase",
-              "sub": "growth, success"
-            },
-            {
-              "id": "P_Creation",
-              "title": "Creation",
-              "sub": "reproduction, children"
-            },
-            {
-              "id": "P_Parenting",
-              "title": "Parenting",
-              "sub": "teaching, guiding"
-            },
-            {
-              "id": "P_Wisdom",
-              "title": "Wisdom",
-              "sub": "philosophy, religion"
-            }
-          ]
-        },
-        {
-          "name": "optimism",
-          "items": [
-            {
-              "id": "P_Trust",
-              "title": "Trust",
-              "sub": "faith"
-            },
-            {
-              "id": "P_Generosity",
-              "title": "Generosity",
-              "sub": "charity, virtue"
-            },
-            {
-              "id": "P_Honesty",
-              "title": "Honesty",
-              "sub": "lawfulness"
-            }
-          ]
-        }
-      ]
-    },
-    "Venus": {
-      "name": "Venus",
-      "title": "Venus",
-      "symbol": "♀",
-      "formula": "Harmonious Union",
-      "pillars": [
-        {
-          "name": "beauty & love",
-          "items": [
-            {
-              "id": "P_Femininity",
-              "title": "Femininity",
-              "sub": "gentle grace"
-            },
-            {
-              "id": "P_Beauty",
-              "title": "Beauty",
-              "sub": "arts, fashion, senses"
-            },
-            {
-              "id": "P_Love",
-              "title": "Love",
-              "sub": "romance, unity"
-            },
-            {
-              "id": "P_Harmony",
-              "title": "Harmony",
-              "sub": "partnership, peace"
-            }
-          ]
-        },
-        {
-          "name": "receptivity & grace",
-          "items": [
-            {
-              "id": "P_Receptivity",
-              "title": "Receptivity",
-              "sub": "sensitivity"
-            },
-            {
-              "id": "P_Learning",
-              "title": "Learning",
-              "sub": "listening"
-            },
-            {
-              "id": "P_Compassion",
-              "title": "Compassion",
-              "sub": "empathy, goodwill"
-            }
-          ]
-        }
-      ]
-    },
-    "Saturn": {
-      "name": "Saturn",
-      "title": "Saturn",
-      "symbol": "♄",
-      "formula": "Negativity & Scarcity",
-      "pillars": [
-        {
-          "name": "'-' (decrease)",
-          "items": [
-            {
-              "id": "P_Decrease",
-              "title": "Decrease",
-              "sub": "reduction, failure"
-            },
-            {
-              "id": "P_Scarcity",
-              "title": "Scarcity",
-              "sub": "poverty, neediness"
-            },
-            {
-              "id": "P_Destruction",
-              "title": "Destruction",
-              "sub": "restriction, boundaries"
-            },
-            {
-              "id": "P_Death",
-              "title": "Death",
-              "sub": "age, decay, illness"
-            },
-            {
-              "id": "P_Longevity",
-              "title": "Longevity",
-              "sub": "endurance, tenacity"
-            }
-          ]
-        },
-        {
-          "name": "pessimism & realism",
-          "items": [
-            {
-              "id": "P_Pessimism",
-              "title": "Pessimism",
-              "sub": "distrust, skepticism"
-            },
-            {
-              "id": "P_Critique",
-              "title": "Critique",
-              "sub": "logic, science"
-            },
-            {
-              "id": "P_Subordination",
-              "title": "Subordination",
-              "sub": "employee, masses"
-            },
-            {
-              "id": "P_Objectivity",
-              "title": "Objectivity",
-              "sub": "detachment, realism"
-            }
-          ]
-        }
-      ]
-    }
-  },
-  "signs": {
-    "Aries": {
-      "name": "Aries",
-      "title": "Aries",
-      "symbol": "♈",
-      "formula": "Mars + Fire + Cardinal",
-      "pillars": [
-        {
-          "name": "masculinity & force",
-          "items": [
-            {
-              "id": "S_Strength",
-              "title": "Strength",
-              "sub": "bravery, power"
-            },
-            {
-              "id": "S_Inceptivity",
-              "title": "Inceptivity",
-              "sub": "adventure, initiative"
-            }
-          ]
-        },
-        {
-          "name": "autonomy",
-          "items": [
-            {
-              "id": "S_Independence",
-              "title": "Independence",
-              "sub": "freedom, autonomy"
-            },
-            {
-              "id": "S_Individualism",
-              "title": "Individualism",
-              "sub": "pioneering self"
-            }
-          ]
-        }
-      ]
-    },
-    "Taurus": {
-      "name": "Taurus",
-      "title": "Taurus",
-      "symbol": "♉",
-      "formula": "Venus + Earth + Fixed",
-      "pillars": [
-        {
-          "name": "love & loyalty",
-          "items": [
-            {
-              "id": "S_Love",
-              "title": "Love",
-              "sub": "unity, cooperation"
-            },
-            {
-              "id": "S_Loyalty",
-              "title": "Loyalty",
-              "sub": "endurance, stability"
-            }
-          ]
-        },
-        {
-          "name": "beauty & wealth",
-          "items": [
-            {
-              "id": "S_Beauty",
-              "title": "Beauty",
-              "sub": "arts, sensuality"
-            },
-            {
-              "id": "S_Wealth",
-              "title": "Wealth",
-              "sub": "fertility, health"
-            }
-          ]
-        }
-      ]
-    },
-    "Gemini": {
-      "name": "Gemini",
-      "title": "Gemini",
-      "symbol": "♊",
-      "formula": "Mercury + Air + Dual",
-      "pillars": [
-        {
-          "name": "connectivity",
-          "items": [
-            {
-              "id": "S_Intellect",
-              "title": "Intellect",
-              "sub": "curiosity"
-            },
-            {
-              "id": "S_Connectivity",
-              "title": "Connectivity",
-              "sub": "friendship, interaction"
-            },
-            {
-              "id": "S_Interaction",
-              "title": "Interaction",
-              "sub": "fun, wit, agility"
-            }
-          ]
-        },
-        {
-          "name": "exchange & skill",
-          "items": [
-            {
-              "id": "S_Cooperation",
-              "title": "Cooperation",
-              "sub": "diplomacy, talent"
-            },
-            {
-              "id": "S_Communication",
-              "title": "Communication",
-              "sub": "dialogue, flexibility"
-            },
-            {
-              "id": "S_Commerce",
-              "title": "Commerce",
-              "sub": "trade, barter"
-            }
-          ]
-        }
-      ]
-    },
-    "Cancer": {
-      "name": "Cancer",
-      "title": "Cancer",
-      "symbol": "♋",
-      "formula": "Moon + Water + Cardinal",
-      "pillars": [
-        {
-          "name": "shelter & roots",
-          "items": [
-            {
-              "id": "S_MatureFemininity",
-              "title": "Mature Femininity",
-              "sub": "nurturance"
-            },
-            {
-              "id": "S_Privacy",
-              "title": "Privacy",
-              "sub": "safe harbor"
-            },
-            {
-              "id": "S_Domestication",
-              "title": "Domestication",
-              "sub": "protected space"
-            }
-          ]
-        },
-        {
-          "name": "emotion & depth",
-          "items": [
-            {
-              "id": "S_Emotion",
-              "title": "Emotion",
-              "sub": "feeling, memory"
-            },
-            {
-              "id": "S_Introversion",
-              "title": "Introversion",
-              "sub": "shyness, sensitivity"
-            }
-          ]
-        }
-      ]
-    },
-    "Leo": {
-      "name": "Leo",
-      "title": "Leo",
-      "symbol": "♌",
-      "formula": "Sun + Fire + Fixed",
-      "pillars": [
-        {
-          "name": "confidence & power",
-          "items": [
-            {
-              "id": "S_Confidence",
-              "title": "Confidence",
-              "sub": "decisiveness"
-            },
-            {
-              "id": "S_Stability",
-              "title": "Stability",
-              "sub": "firm center"
-            },
-            {
-              "id": "S_Power",
-              "title": "Power",
-              "sub": "self-sufficiency"
-            }
-          ]
-        },
-        {
-          "name": "radiance & command",
-          "items": [
-            {
-              "id": "S_Leadership",
-              "title": "Leadership",
-              "sub": "authority, executive"
-            },
-            {
-              "id": "S_Charisma",
-              "title": "Charisma",
-              "sub": "fame, generosity"
-            }
-          ]
-        }
-      ]
-    },
-    "Virgo": {
-      "name": "Virgo",
-      "title": "Virgo",
-      "symbol": "♍",
-      "formula": "Mercury + Earth + Dual",
-      "pillars": [
-        {
-          "name": "discernment & detail",
-          "items": [
-            {
-              "id": "S_Intellect",
-              "title": "Intellect",
-              "sub": "analytical study"
-            },
-            {
-              "id": "S_Detail",
-              "title": "Detail",
-              "sub": "patience, precision"
-            },
-            {
-              "id": "S_Prudence",
-              "title": "Prudence",
-              "sub": "caution, hygiene"
-            }
-          ]
-        },
-        {
-          "name": "craft & order",
-          "items": [
-            {
-              "id": "S_Practicality",
-              "title": "Practicality",
-              "sub": "efficiency"
-            },
-            {
-              "id": "S_Organization",
-              "title": "Organization",
-              "sub": "management"
-            },
-            {
-              "id": "S_Accounting",
-              "title": "Accounting",
-              "sub": "audit, purity"
-            }
-          ]
-        }
-      ]
-    },
-    "Libra": {
-      "name": "Libra",
-      "title": "Libra",
-      "symbol": "♎",
-      "formula": "Venus + Air + Cardinal",
-      "pillars": [
-        {
-          "name": "harmony & union",
-          "items": [
-            {
-              "id": "S_Harmony",
-              "title": "Harmony",
-              "sub": "partnership, marriage"
-            },
-            {
-              "id": "S_Diplomacy",
-              "title": "Diplomacy",
-              "sub": "tact, cooperation"
-            }
-          ]
-        },
-        {
-          "name": "aesthetics & justice",
-          "items": [
-            {
-              "id": "S_Beauty",
-              "title": "Beauty",
-              "sub": "arts, balance"
-            },
-            {
-              "id": "S_Equilibrium",
-              "title": "Equilibrium",
-              "sub": "fairness, justice"
-            }
-          ]
-        }
-      ]
-    },
-    "Scorpio": {
-      "name": "Scorpio",
-      "title": "Scorpio",
-      "symbol": "♏",
-      "formula": "Mars + Water + Fixed",
-      "pillars": [
-        {
-          "name": "defiance & passion",
-          "items": [
-            {
-              "id": "S_Defiance",
-              "title": "Defiance",
-              "sub": "rebelliousness"
-            },
-            {
-              "id": "S_Passion",
-              "title": "Passion",
-              "sub": "depth, intensity"
-            },
-            {
-              "id": "S_Independence",
-              "title": "Independence",
-              "sub": "individuality"
-            }
-          ]
-        },
-        {
-          "name": "mystery & grit",
-          "items": [
-            {
-              "id": "S_Mysterious",
-              "title": "Mysterious",
-              "sub": "secretive, occult"
-            },
-            {
-              "id": "S_Strong",
-              "title": "Strong",
-              "sub": "emotional endurance"
-            }
-          ]
-        }
-      ]
-    },
-    "Sagittarius": {
-      "name": "Sagittarius",
-      "title": "Sagittarius",
-      "symbol": "♐",
-      "formula": "Jupiter + Fire + Dual",
-      "pillars": [
-        {
-          "name": "vision & faith",
-          "items": [
-            {
-              "id": "S_Aspiration",
-              "title": "Aspiration",
-              "sub": "ideals, purpose"
-            },
-            {
-              "id": "S_Optimism",
-              "title": "Optimism",
-              "sub": "enthusiasm, hope"
-            }
-          ]
-        },
-        {
-          "name": "dharma & expansion",
-          "items": [
-            {
-              "id": "S_Philosophy",
-              "title": "Philosophy",
-              "sub": "ethics, wisdom"
-            },
-            {
-              "id": "S_Expansion",
-              "title": "Expansion",
-              "sub": "foreign horizons, truth"
-            }
-          ]
-        }
-      ]
-    },
-    "Capricorn": {
-      "name": "Capricorn",
-      "title": "Capricorn",
-      "symbol": "♑",
-      "formula": "Saturn + Earth + Cardinal",
-      "pillars": [
-        {
-          "name": "critical realism",
-          "items": [
-            {
-              "id": "S_Critical",
-              "title": "Critical",
-              "sub": "exacting standards"
-            },
-            {
-              "id": "S_Realistic",
-              "title": "Realistic",
-              "sub": "pessimistic, sobriety"
-            },
-            {
-              "id": "S_Analytic",
-              "title": "Analytic",
-              "sub": "cold, detached"
-            }
-          ]
-        },
-        {
-          "name": "tenacity & duty",
-          "items": [
-            {
-              "id": "S_Tenacious",
-              "title": "Tenacious",
-              "sub": "stubborn persistence"
-            },
-            {
-              "id": "S_Practical",
-              "title": "Practical",
-              "sub": "pragmatic execution"
-            },
-            {
-              "id": "S_Worker",
-              "title": "Worker",
-              "sub": "unstoppable builder"
-            }
-          ]
-        }
-      ]
-    },
-    "Aquarius": {
-      "name": "Aquarius",
-      "title": "Aquarius",
-      "symbol": "♒",
-      "formula": "Saturn + Air + Fixed",
-      "pillars": [
-        {
-          "name": "humanity & intellect",
-          "items": [
-            {
-              "id": "S_Intellect",
-              "title": "Intellect",
-              "sub": "scientific logic"
-            },
-            {
-              "id": "S_Humanity",
-              "title": "Humanity",
-              "sub": "social welfare, collective"
-            }
-          ]
-        },
-        {
-          "name": "reform & detachment",
-          "items": [
-            {
-              "id": "S_Objectivity",
-              "title": "Objectivity",
-              "sub": "impartiality"
-            },
-            {
-              "id": "S_Reform",
-              "title": "Reform",
-              "sub": "unconventional progress"
-            }
-          ]
-        }
-      ]
-    },
-    "Pisces": {
-      "name": "Pisces",
-      "title": "Pisces",
-      "symbol": "♓",
-      "formula": "Jupiter + Water + Dual",
-      "pillars": [
-        {
-          "name": "empathy & vision",
-          "items": [
-            {
-              "id": "S_Compassion",
-              "title": "Compassion",
-              "sub": "boundless empathy"
-            },
-            {
-              "id": "S_Imagination",
-              "title": "Imagination",
-              "sub": "intuition, artistic dreams"
-            }
-          ]
-        },
-        {
-          "name": "transcendence",
-          "items": [
-            {
-              "id": "S_Devotion",
-              "title": "Devotion",
-              "sub": "faith, surrender"
-            },
-            {
-              "id": "S_Liberation",
-              "title": "Liberation",
-              "sub": "dissolution, mokṣa"
-            }
-          ]
-        }
-      ]
-    }
-  },
   "houses": {
     "1": {
       "number": 1,
-      "sanskrit": "Tanu Bhāva",
       "title": "First House",
-      "formula": "Sunrise",
-      "anatomy": "Head, Brain, Scalp, Skull, Eyes & Constitution",
+      "banner": "Sunrise",
+      "sanskrit": "Tanu Bhāva / Lagna",
+      "formula": "Sunrise • Beginning & Visibility",
+      "anatomy": "Head, Brain, Skull, Scalp, Eyes & General Constitution",
+      "columns": [
+        {
+          "name": "beginning",
+          "nodes": [
+            {
+              "id": "H1_Birth",
+              "title": "Birth",
+              "sub": "foundation",
+              "tier": 1
+            },
+            {
+              "id": "H1_Body",
+              "title": "Body",
+              "sub": "health",
+              "tier": 2
+            },
+            {
+              "id": "H1_Self",
+              "title": "Self",
+              "sub": "identity",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "visibility",
+          "nodes": [
+            {
+              "id": "H1_Manifestation",
+              "title": "Manifestation",
+              "sub": "tangibility",
+              "tier": 1
+            },
+            {
+              "id": "H1_Traits",
+              "title": "Traits",
+              "sub": "appearance, character",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H1_Birth",
+          "to": "H1_Body"
+        },
+        {
+          "from": "H1_Body",
+          "to": "H1_Self"
+        },
+        {
+          "from": "H1_Manifestation",
+          "to": "H1_Traits"
+        }
+      ],
       "pillars": [
         {
           "name": "beginning",
@@ -909,17 +70,20 @@
             {
               "id": "H1_Birth",
               "title": "Birth",
-              "sub": "foundation"
+              "sub": "foundation",
+              "tier": 1
             },
             {
               "id": "H1_Body",
               "title": "Body",
-              "sub": "health"
+              "sub": "health",
+              "tier": 2
             },
             {
               "id": "H1_Self",
               "title": "Self",
-              "sub": "identity"
+              "sub": "identity",
+              "tier": 3
             }
           ]
         },
@@ -929,23 +93,161 @@
             {
               "id": "H1_Manifestation",
               "title": "Manifestation",
-              "sub": "tangibility"
+              "sub": "tangibility",
+              "tier": 1
             },
             {
               "id": "H1_Traits",
               "title": "Traits",
-              "sub": "appearance, character"
+              "sub": "appearance, character",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "beginning",
+          "nodes": [
+            {
+              "id": "H1_Birth",
+              "title": "Birth",
+              "sub": "foundation",
+              "tier": 1
+            },
+            {
+              "id": "H1_Body",
+              "title": "Body",
+              "sub": "health",
+              "tier": 2
+            },
+            {
+              "id": "H1_Self",
+              "title": "Self",
+              "sub": "identity",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "visibility",
+          "nodes": [
+            {
+              "id": "H1_Manifestation",
+              "title": "Manifestation",
+              "sub": "tangibility",
+              "tier": 1
+            },
+            {
+              "id": "H1_Traits",
+              "title": "Traits",
+              "sub": "appearance, character",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H1_Birth",
+          "title": "Birth",
+          "sub": "foundation",
+          "tier": 1,
+          "col": "beginning"
+        },
+        {
+          "id": "H1_Body",
+          "title": "Body",
+          "sub": "health",
+          "tier": 2,
+          "col": "beginning"
+        },
+        {
+          "id": "H1_Self",
+          "title": "Self",
+          "sub": "identity",
+          "tier": 3,
+          "col": "beginning"
+        },
+        {
+          "id": "H1_Manifestation",
+          "title": "Manifestation",
+          "sub": "tangibility",
+          "tier": 1,
+          "col": "visibility"
+        },
+        {
+          "id": "H1_Traits",
+          "title": "Traits",
+          "sub": "appearance, character",
+          "tier": 2,
+          "col": "visibility"
         }
       ]
     },
     "2": {
       "number": 2,
-      "sanskrit": "Dhana Bhāva",
       "title": "Second House",
-      "formula": "Supporting the Sunrise",
-      "anatomy": "Face, Throat, Neck, Mouth, Teeth, Tongue & Right Eye",
+      "banner": "Supporting the Sunrise",
+      "sanskrit": "Dhana Bhāva",
+      "formula": "Supporting the Sunrise • Resources & Assets",
+      "anatomy": "Face, Eyes, Mouth, Teeth, Tongue, Throat & Vocal Cords",
+      "columns": [
+        {
+          "name": "Pro-start",
+          "nodes": [
+            {
+              "id": "H2_Foundations",
+              "title": "Foundations",
+              "sub": "stability",
+              "tier": 1
+            },
+            {
+              "id": "H2_Family",
+              "title": "Family",
+              "sub": "supporters, friends",
+              "tier": 2
+            },
+            {
+              "id": "H2_Wealth",
+              "title": "Wealth",
+              "sub": "health, nutrition",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Pro-visibility",
+          "nodes": [
+            {
+              "id": "H2_Knowledge",
+              "title": "Knowledge",
+              "sub": "",
+              "tier": 1
+            },
+            {
+              "id": "H2_Realism",
+              "title": "Realism",
+              "sub": "practicality",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H2_Foundations",
+          "to": "H2_Family"
+        },
+        {
+          "from": "H2_Family",
+          "to": "H2_Wealth"
+        },
+        {
+          "from": "H2_Knowledge",
+          "to": "H2_Realism"
+        }
+      ],
       "pillars": [
         {
           "name": "Pro-start",
@@ -953,17 +255,20 @@
             {
               "id": "H2_Foundations",
               "title": "Foundations",
-              "sub": "stability"
+              "sub": "stability",
+              "tier": 1
             },
             {
               "id": "H2_Family",
               "title": "Family",
-              "sub": "supporters, friends"
+              "sub": "supporters, friends",
+              "tier": 2
             },
             {
               "id": "H2_Wealth",
               "title": "Wealth",
-              "sub": "health, nutrition"
+              "sub": "health, nutrition",
+              "tier": 3
             }
           ]
         },
@@ -973,23 +278,171 @@
             {
               "id": "H2_Knowledge",
               "title": "Knowledge",
-              "sub": ""
+              "sub": "",
+              "tier": 1
             },
             {
               "id": "H2_Realism",
               "title": "Realism",
-              "sub": "practicality"
+              "sub": "practicality",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "Pro-start",
+          "nodes": [
+            {
+              "id": "H2_Foundations",
+              "title": "Foundations",
+              "sub": "stability",
+              "tier": 1
+            },
+            {
+              "id": "H2_Family",
+              "title": "Family",
+              "sub": "supporters, friends",
+              "tier": 2
+            },
+            {
+              "id": "H2_Wealth",
+              "title": "Wealth",
+              "sub": "health, nutrition",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Pro-visibility",
+          "nodes": [
+            {
+              "id": "H2_Knowledge",
+              "title": "Knowledge",
+              "sub": "",
+              "tier": 1
+            },
+            {
+              "id": "H2_Realism",
+              "title": "Realism",
+              "sub": "practicality",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H2_Foundations",
+          "title": "Foundations",
+          "sub": "stability",
+          "tier": 1,
+          "col": "Pro-start"
+        },
+        {
+          "id": "H2_Family",
+          "title": "Family",
+          "sub": "supporters, friends",
+          "tier": 2,
+          "col": "Pro-start"
+        },
+        {
+          "id": "H2_Wealth",
+          "title": "Wealth",
+          "sub": "health, nutrition",
+          "tier": 3,
+          "col": "Pro-start"
+        },
+        {
+          "id": "H2_Knowledge",
+          "title": "Knowledge",
+          "sub": "",
+          "tier": 1,
+          "col": "Pro-visibility"
+        },
+        {
+          "id": "H2_Realism",
+          "title": "Realism",
+          "sub": "practicality",
+          "tier": 2,
+          "col": "Pro-visibility"
         }
       ]
     },
     "3": {
       "number": 3,
-      "sanskrit": "Sahaja Bhāva",
       "title": "Third House",
-      "formula": "Expressing the Interior",
+      "banner": "Expressing the Interior",
+      "sanskrit": "Sahaja Bhāva",
+      "formula": "Expressing the Interior • Courage & Expression",
       "anatomy": "Shoulders, Arms, Hands, Fingers, Collarbone & Right Ear",
+      "columns": [
+        {
+          "name": "external",
+          "nodes": [
+            {
+              "id": "H3_Strength",
+              "title": "Strength",
+              "sub": "force, impact",
+              "tier": 1
+            },
+            {
+              "id": "H3_Skill",
+              "title": "Skill",
+              "sub": "ability",
+              "tier": 2
+            },
+            {
+              "id": "H3_Contest",
+              "title": "Contest",
+              "sub": "siblings, peers",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "internal",
+          "nodes": [
+            {
+              "id": "H3_Decision",
+              "title": "Decision",
+              "sub": "confidence, discipline",
+              "tier": 1
+            },
+            {
+              "id": "H3_Ambition",
+              "title": "Ambition",
+              "sub": "hunger, lust",
+              "tier": 2
+            },
+            {
+              "id": "H3_SelfFocus",
+              "title": "Self-Focus",
+              "sub": "independence",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H3_Strength",
+          "to": "H3_Skill"
+        },
+        {
+          "from": "H3_Skill",
+          "to": "H3_Contest"
+        },
+        {
+          "from": "H3_Decision",
+          "to": "H3_Ambition"
+        },
+        {
+          "from": "H3_Ambition",
+          "to": "H3_SelfFocus"
+        }
+      ],
       "pillars": [
         {
           "name": "external",
@@ -997,17 +450,20 @@
             {
               "id": "H3_Strength",
               "title": "Strength",
-              "sub": "force, impact"
+              "sub": "force, impact",
+              "tier": 1
             },
             {
               "id": "H3_Skill",
               "title": "Skill",
-              "sub": "ability"
+              "sub": "ability",
+              "tier": 2
             },
             {
               "id": "H3_Contest",
               "title": "Contest",
-              "sub": "siblings, peers"
+              "sub": "siblings, peers",
+              "tier": 3
             }
           ]
         },
@@ -1017,28 +473,201 @@
             {
               "id": "H3_Decision",
               "title": "Decision",
-              "sub": "confidence, discipline"
+              "sub": "confidence, discipline",
+              "tier": 1
             },
             {
               "id": "H3_Ambition",
               "title": "Ambition",
-              "sub": "hunger, lust"
+              "sub": "hunger, lust",
+              "tier": 2
             },
             {
               "id": "H3_SelfFocus",
               "title": "Self-Focus",
-              "sub": "independence"
+              "sub": "independence",
+              "tier": 3
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "external",
+          "nodes": [
+            {
+              "id": "H3_Strength",
+              "title": "Strength",
+              "sub": "force, impact",
+              "tier": 1
+            },
+            {
+              "id": "H3_Skill",
+              "title": "Skill",
+              "sub": "ability",
+              "tier": 2
+            },
+            {
+              "id": "H3_Contest",
+              "title": "Contest",
+              "sub": "siblings, peers",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "internal",
+          "nodes": [
+            {
+              "id": "H3_Decision",
+              "title": "Decision",
+              "sub": "confidence, discipline",
+              "tier": 1
+            },
+            {
+              "id": "H3_Ambition",
+              "title": "Ambition",
+              "sub": "hunger, lust",
+              "tier": 2
+            },
+            {
+              "id": "H3_SelfFocus",
+              "title": "Self-Focus",
+              "sub": "independence",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H3_Strength",
+          "title": "Strength",
+          "sub": "force, impact",
+          "tier": 1,
+          "col": "external"
+        },
+        {
+          "id": "H3_Skill",
+          "title": "Skill",
+          "sub": "ability",
+          "tier": 2,
+          "col": "external"
+        },
+        {
+          "id": "H3_Contest",
+          "title": "Contest",
+          "sub": "siblings, peers",
+          "tier": 3,
+          "col": "external"
+        },
+        {
+          "id": "H3_Decision",
+          "title": "Decision",
+          "sub": "confidence, discipline",
+          "tier": 1,
+          "col": "internal"
+        },
+        {
+          "id": "H3_Ambition",
+          "title": "Ambition",
+          "sub": "hunger, lust",
+          "tier": 2,
+          "col": "internal"
+        },
+        {
+          "id": "H3_SelfFocus",
+          "title": "Self-Focus",
+          "sub": "independence",
+          "tier": 3,
+          "col": "internal"
         }
       ]
     },
     "4": {
       "number": 4,
-      "sanskrit": "Bandhu Bhāva",
       "title": "Fourth House",
-      "formula": "Below Ground ~ Inner Self",
-      "anatomy": "Chest, Breasts, Heart, Lungs, Ribs & Diaphragm",
+      "banner": "Below Ground ~ Inner Self",
+      "sanskrit": "Sukha Bhāva / Matru Bhāva",
+      "formula": "Below Ground ~ Inner Self • Home & Emotion",
+      "anatomy": "Chest, Heart, Lungs, Breast & Diaphragm",
+      "columns": [
+        {
+          "name": "Emotion",
+          "nodes": [
+            {
+              "id": "H4_Happiness",
+              "title": "Happiness",
+              "sub": "mental health",
+              "tier": 1
+            },
+            {
+              "id": "H4_Devotion",
+              "title": "Devotion",
+              "sub": "love",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "Privacy",
+          "nodes": [
+            {
+              "id": "H4_Shyness",
+              "title": "Shyness",
+              "sub": "modesty",
+              "tier": 1
+            },
+            {
+              "id": "H4_Home",
+              "title": "Home",
+              "sub": "property, rest",
+              "tier": 2
+            },
+            {
+              "id": "H4_Femininity",
+              "title": "Femininity",
+              "sub": "internality",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Roots",
+          "nodes": [
+            {
+              "id": "H4_Stability",
+              "title": "Stability",
+              "sub": "",
+              "tier": 1
+            },
+            {
+              "id": "H4_Ancestry",
+              "title": "Ancestry",
+              "sub": "mother, culture",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H4_Happiness",
+          "to": "H4_Devotion"
+        },
+        {
+          "from": "H4_Shyness",
+          "to": "H4_Home"
+        },
+        {
+          "from": "H4_Home",
+          "to": "H4_Femininity"
+        },
+        {
+          "from": "H4_Stability",
+          "to": "H4_Ancestry"
+        }
+      ],
       "pillars": [
         {
           "name": "Emotion",
@@ -1046,12 +675,14 @@
             {
               "id": "H4_Happiness",
               "title": "Happiness",
-              "sub": "mental health"
+              "sub": "mental health",
+              "tier": 1
             },
             {
               "id": "H4_Devotion",
               "title": "Devotion",
-              "sub": "love"
+              "sub": "love",
+              "tier": 2
             }
           ]
         },
@@ -1061,17 +692,20 @@
             {
               "id": "H4_Shyness",
               "title": "Shyness",
-              "sub": "modesty"
+              "sub": "modesty",
+              "tier": 1
             },
             {
               "id": "H4_Home",
               "title": "Home",
-              "sub": "property, rest"
+              "sub": "property, rest",
+              "tier": 2
             },
             {
               "id": "H4_Femininity",
               "title": "Femininity",
-              "sub": "internality"
+              "sub": "internality",
+              "tier": 3
             }
           ]
         },
@@ -1081,23 +715,202 @@
             {
               "id": "H4_Stability",
               "title": "Stability",
-              "sub": ""
+              "sub": "",
+              "tier": 1
             },
             {
               "id": "H4_Ancestry",
               "title": "Ancestry",
-              "sub": "mother, culture"
+              "sub": "mother, culture",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "Emotion",
+          "nodes": [
+            {
+              "id": "H4_Happiness",
+              "title": "Happiness",
+              "sub": "mental health",
+              "tier": 1
+            },
+            {
+              "id": "H4_Devotion",
+              "title": "Devotion",
+              "sub": "love",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "Privacy",
+          "nodes": [
+            {
+              "id": "H4_Shyness",
+              "title": "Shyness",
+              "sub": "modesty",
+              "tier": 1
+            },
+            {
+              "id": "H4_Home",
+              "title": "Home",
+              "sub": "property, rest",
+              "tier": 2
+            },
+            {
+              "id": "H4_Femininity",
+              "title": "Femininity",
+              "sub": "internality",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Roots",
+          "nodes": [
+            {
+              "id": "H4_Stability",
+              "title": "Stability",
+              "sub": "",
+              "tier": 1
+            },
+            {
+              "id": "H4_Ancestry",
+              "title": "Ancestry",
+              "sub": "mother, culture",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H4_Happiness",
+          "title": "Happiness",
+          "sub": "mental health",
+          "tier": 1,
+          "col": "Emotion"
+        },
+        {
+          "id": "H4_Devotion",
+          "title": "Devotion",
+          "sub": "love",
+          "tier": 2,
+          "col": "Emotion"
+        },
+        {
+          "id": "H4_Shyness",
+          "title": "Shyness",
+          "sub": "modesty",
+          "tier": 1,
+          "col": "Privacy"
+        },
+        {
+          "id": "H4_Home",
+          "title": "Home",
+          "sub": "property, rest",
+          "tier": 2,
+          "col": "Privacy"
+        },
+        {
+          "id": "H4_Femininity",
+          "title": "Femininity",
+          "sub": "internality",
+          "tier": 3,
+          "col": "Privacy"
+        },
+        {
+          "id": "H4_Stability",
+          "title": "Stability",
+          "sub": "",
+          "tier": 1,
+          "col": "Roots"
+        },
+        {
+          "id": "H4_Ancestry",
+          "title": "Ancestry",
+          "sub": "mother, culture",
+          "tier": 2,
+          "col": "Roots"
         }
       ]
     },
     "5": {
       "number": 5,
-      "sanskrit": "Putra Bhāva",
       "title": "Fifth House",
-      "formula": "West-Below ~ Inner » Others",
-      "anatomy": "Upper Abdomen, Stomach, Solar Plexus, Liver & Spleen",
+      "banner": "West-Below - Inner >> Others",
+      "sanskrit": "Putra Bhāva",
+      "formula": "West-Below - Inner >> Others • Creativity & Intelligence",
+      "anatomy": "Stomach, Upper Abdomen, Spine & Solar Plexus",
+      "columns": [
+        {
+          "name": "Empathy",
+          "nodes": [
+            {
+              "id": "H5_Intelligence",
+              "title": "Intelligence",
+              "sub": "comprehension",
+              "tier": 1
+            },
+            {
+              "id": "H5_Compassion",
+              "title": "Compassion",
+              "sub": "sympathy",
+              "tier": 2
+            },
+            {
+              "id": "H5_Love",
+              "title": "Love",
+              "sub": "affection",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Interaction",
+          "nodes": [
+            {
+              "id": "H5_Communication",
+              "title": "Communication",
+              "sub": "language, symbols",
+              "tier": 1
+            },
+            {
+              "id": "H5_Expression",
+              "title": "Expression",
+              "sub": "creativity, art",
+              "tier": 2
+            },
+            {
+              "id": "H5_Children",
+              "title": "Children",
+              "sub": "productivity",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H5_Intelligence",
+          "to": "H5_Compassion"
+        },
+        {
+          "from": "H5_Compassion",
+          "to": "H5_Love"
+        },
+        {
+          "from": "H5_Communication",
+          "to": "H5_Expression"
+        },
+        {
+          "from": "H5_Expression",
+          "to": "H5_Children"
+        }
+      ],
       "pillars": [
         {
           "name": "Empathy",
@@ -1105,17 +918,20 @@
             {
               "id": "H5_Intelligence",
               "title": "Intelligence",
-              "sub": "comprehension"
+              "sub": "comprehension",
+              "tier": 1
             },
             {
               "id": "H5_Compassion",
               "title": "Compassion",
-              "sub": "sympathy"
+              "sub": "sympathy",
+              "tier": 2
             },
             {
               "id": "H5_Love",
               "title": "Love",
-              "sub": "affection"
+              "sub": "affection",
+              "tier": 3
             }
           ]
         },
@@ -1125,28 +941,180 @@
             {
               "id": "H5_Communication",
               "title": "Communication",
-              "sub": "language, symbols"
+              "sub": "language, symbols",
+              "tier": 1
             },
             {
               "id": "H5_Expression",
               "title": "Expression",
-              "sub": "creativity, art"
+              "sub": "creativity, art",
+              "tier": 2
             },
             {
               "id": "H5_Children",
               "title": "Children",
-              "sub": "productivity"
+              "sub": "productivity",
+              "tier": 3
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "Empathy",
+          "nodes": [
+            {
+              "id": "H5_Intelligence",
+              "title": "Intelligence",
+              "sub": "comprehension",
+              "tier": 1
+            },
+            {
+              "id": "H5_Compassion",
+              "title": "Compassion",
+              "sub": "sympathy",
+              "tier": 2
+            },
+            {
+              "id": "H5_Love",
+              "title": "Love",
+              "sub": "affection",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "Interaction",
+          "nodes": [
+            {
+              "id": "H5_Communication",
+              "title": "Communication",
+              "sub": "language, symbols",
+              "tier": 1
+            },
+            {
+              "id": "H5_Expression",
+              "title": "Expression",
+              "sub": "creativity, art",
+              "tier": 2
+            },
+            {
+              "id": "H5_Children",
+              "title": "Children",
+              "sub": "productivity",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H5_Intelligence",
+          "title": "Intelligence",
+          "sub": "comprehension",
+          "tier": 1,
+          "col": "Empathy"
+        },
+        {
+          "id": "H5_Compassion",
+          "title": "Compassion",
+          "sub": "sympathy",
+          "tier": 2,
+          "col": "Empathy"
+        },
+        {
+          "id": "H5_Love",
+          "title": "Love",
+          "sub": "affection",
+          "tier": 3,
+          "col": "Empathy"
+        },
+        {
+          "id": "H5_Communication",
+          "title": "Communication",
+          "sub": "language, symbols",
+          "tier": 1,
+          "col": "Interaction"
+        },
+        {
+          "id": "H5_Expression",
+          "title": "Expression",
+          "sub": "creativity, art",
+          "tier": 2,
+          "col": "Interaction"
+        },
+        {
+          "id": "H5_Children",
+          "title": "Children",
+          "sub": "productivity",
+          "tier": 3,
+          "col": "Interaction"
         }
       ]
     },
     "6": {
       "number": 6,
-      "sanskrit": "Ari Bhāva",
       "title": "Sixth House",
-      "formula": "Support of the West",
+      "banner": "Support of the West",
+      "sanskrit": "Ari Bhāva / Shatru Bhāva",
+      "formula": "Support of the West • Obstacles & Service",
       "anatomy": "Navel, Small Intestines, Colon, Kidneys & Abdominal Wall",
+      "columns": [
+        {
+          "name": "-> disappear",
+          "nodes": [
+            {
+              "id": "H6_Uncertainty",
+              "title": "Uncertainty",
+              "sub": "doubt, problems",
+              "tier": 1
+            },
+            {
+              "id": "H6_Illness",
+              "title": "Illness",
+              "sub": "digestion",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "-> others",
+          "nodes": [
+            {
+              "id": "H6_Enemies",
+              "title": "Enemies",
+              "sub": "enmity, fighting",
+              "tier": 1
+            },
+            {
+              "id": "H6_Duties",
+              "title": "Duties",
+              "sub": "chores, work",
+              "tier": 2
+            },
+            {
+              "id": "H6_Debt",
+              "title": "Debt",
+              "sub": "servitude",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H6_Uncertainty",
+          "to": "H6_Illness"
+        },
+        {
+          "from": "H6_Enemies",
+          "to": "H6_Duties"
+        },
+        {
+          "from": "H6_Duties",
+          "to": "H6_Debt"
+        }
+      ],
       "pillars": [
         {
           "name": "-> disappear",
@@ -1154,12 +1122,14 @@
             {
               "id": "H6_Uncertainty",
               "title": "Uncertainty",
-              "sub": "doubt, problems"
+              "sub": "doubt, problems",
+              "tier": 1
             },
             {
               "id": "H6_Illness",
               "title": "Illness",
-              "sub": "digestion"
+              "sub": "digestion",
+              "tier": 2
             }
           ]
         },
@@ -1169,28 +1139,167 @@
             {
               "id": "H6_Enemies",
               "title": "Enemies",
-              "sub": "enmity, fighting"
+              "sub": "enmity, fighting",
+              "tier": 1
             },
             {
               "id": "H6_Duties",
               "title": "Duties",
-              "sub": "chores, work"
+              "sub": "chores, work",
+              "tier": 2
             },
             {
               "id": "H6_Debt",
               "title": "Debt",
-              "sub": "servitude"
+              "sub": "servitude",
+              "tier": 3
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "-> disappear",
+          "nodes": [
+            {
+              "id": "H6_Uncertainty",
+              "title": "Uncertainty",
+              "sub": "doubt, problems",
+              "tier": 1
+            },
+            {
+              "id": "H6_Illness",
+              "title": "Illness",
+              "sub": "digestion",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "-> others",
+          "nodes": [
+            {
+              "id": "H6_Enemies",
+              "title": "Enemies",
+              "sub": "enmity, fighting",
+              "tier": 1
+            },
+            {
+              "id": "H6_Duties",
+              "title": "Duties",
+              "sub": "chores, work",
+              "tier": 2
+            },
+            {
+              "id": "H6_Debt",
+              "title": "Debt",
+              "sub": "servitude",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H6_Uncertainty",
+          "title": "Uncertainty",
+          "sub": "doubt, problems",
+          "tier": 1,
+          "col": "-> disappear"
+        },
+        {
+          "id": "H6_Illness",
+          "title": "Illness",
+          "sub": "digestion",
+          "tier": 2,
+          "col": "-> disappear"
+        },
+        {
+          "id": "H6_Enemies",
+          "title": "Enemies",
+          "sub": "enmity, fighting",
+          "tier": 1,
+          "col": "-> others"
+        },
+        {
+          "id": "H6_Duties",
+          "title": "Duties",
+          "sub": "chores, work",
+          "tier": 2,
+          "col": "-> others"
+        },
+        {
+          "id": "H6_Debt",
+          "title": "Debt",
+          "sub": "servitude",
+          "tier": 3,
+          "col": "-> others"
         }
       ]
     },
     "7": {
       "number": 7,
-      "sanskrit": "Yuvati Bhāva",
       "title": "Seventh House",
-      "formula": "Sunset",
-      "anatomy": "Pelvis, Internal Reproductive Organs, Bladder & Uterus",
+      "banner": "Sunset",
+      "sanskrit": "Yuvati Bhāva / Descendant",
+      "formula": "Sunset • Partnership & The Other",
+      "anatomy": "Pelvis, Bladder, Internal Reproductive Organs & Lower Back",
+      "columns": [
+        {
+          "name": "Dis.appr.",
+          "nodes": [
+            {
+              "id": "H7_Endings",
+              "title": "Endings",
+              "sub": "death",
+              "tier": 1
+            },
+            {
+              "id": "H7_Dispersion",
+              "title": "Dispersion",
+              "sub": "travel",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "nodes": [
+            {
+              "id": "H7_Partners",
+              "title": "Partners",
+              "sub": "marriage",
+              "tier": 1
+            },
+            {
+              "id": "H7_Intercourse",
+              "title": "Intercourse",
+              "sub": "cooperation",
+              "tier": 2
+            },
+            {
+              "id": "H7_Exchange",
+              "title": "Exchange",
+              "sub": "commerce",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H7_Endings",
+          "to": "H7_Dispersion"
+        },
+        {
+          "from": "H7_Partners",
+          "to": "H7_Intercourse"
+        },
+        {
+          "from": "H7_Intercourse",
+          "to": "H7_Exchange"
+        }
+      ],
       "pillars": [
         {
           "name": "Dis.appr.",
@@ -1198,12 +1307,14 @@
             {
               "id": "H7_Endings",
               "title": "Endings",
-              "sub": "death"
+              "sub": "death",
+              "tier": 1
             },
             {
               "id": "H7_Dispersion",
               "title": "Dispersion",
-              "sub": "travel"
+              "sub": "travel",
+              "tier": 2
             }
           ]
         },
@@ -1213,28 +1324,171 @@
             {
               "id": "H7_Partners",
               "title": "Partners",
-              "sub": "marriage"
+              "sub": "marriage",
+              "tier": 1
             },
             {
               "id": "H7_Intercourse",
               "title": "Intercourse",
-              "sub": "cooperation"
+              "sub": "cooperation",
+              "tier": 2
             },
             {
               "id": "H7_Exchange",
               "title": "Exchange",
-              "sub": "commerce"
+              "sub": "commerce",
+              "tier": 3
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "Dis.appr.",
+          "nodes": [
+            {
+              "id": "H7_Endings",
+              "title": "Endings",
+              "sub": "death",
+              "tier": 1
+            },
+            {
+              "id": "H7_Dispersion",
+              "title": "Dispersion",
+              "sub": "travel",
+              "tier": 2
+            }
+          ]
+        },
+        {
+          "name": "Others",
+          "nodes": [
+            {
+              "id": "H7_Partners",
+              "title": "Partners",
+              "sub": "marriage",
+              "tier": 1
+            },
+            {
+              "id": "H7_Intercourse",
+              "title": "Intercourse",
+              "sub": "cooperation",
+              "tier": 2
+            },
+            {
+              "id": "H7_Exchange",
+              "title": "Exchange",
+              "sub": "commerce",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H7_Endings",
+          "title": "Endings",
+          "sub": "death",
+          "tier": 1,
+          "col": "Dis.appr."
+        },
+        {
+          "id": "H7_Dispersion",
+          "title": "Dispersion",
+          "sub": "travel",
+          "tier": 2,
+          "col": "Dis.appr."
+        },
+        {
+          "id": "H7_Partners",
+          "title": "Partners",
+          "sub": "marriage",
+          "tier": 1,
+          "col": "Others"
+        },
+        {
+          "id": "H7_Intercourse",
+          "title": "Intercourse",
+          "sub": "cooperation",
+          "tier": 2,
+          "col": "Others"
+        },
+        {
+          "id": "H7_Exchange",
+          "title": "Exchange",
+          "sub": "commerce",
+          "tier": 3,
+          "col": "Others"
         }
       ]
     },
     "8": {
       "number": 8,
-      "sanskrit": "Randhra Bhāva",
       "title": "Eighth House",
-      "formula": "Erosion of the West",
-      "anatomy": "External Genitals, Excretory Organs, Anus & Perineum",
+      "banner": "Erosion of the West",
+      "sanskrit": "Randhra Bhāva",
+      "formula": "Erosion of the West • Transformation, Mystery & Research",
+      "anatomy": "External Genitalia, Excretory Organs & Perineum",
+      "callout": {
+        "text": "planet IN 8th disappears",
+        "targetId": "H8_Death"
+      },
+      "columns": [
+        {
+          "name": "- disappearance",
+          "nodes": [
+            {
+              "id": "H8_Mysticism",
+              "title": "Mysticism",
+              "sub": "occult, psychic-intuition",
+              "tier": 1
+            },
+            {
+              "id": "H8_Insight",
+              "title": "Insight",
+              "sub": "analytic, research",
+              "tier": 2
+            },
+            {
+              "id": "H8_Death",
+              "title": "- Death",
+              "sub": "vitality, sex",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "- others",
+          "nodes": [
+            {
+              "id": "H8_PersonalGain",
+              "title": "Personal Gain",
+              "sub": "inheritence, gifts, donations",
+              "tier": 1
+            },
+            {
+              "id": "H8_Individuality",
+              "title": "Individuality",
+              "sub": "defiance",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H8_Mysticism",
+          "to": "H8_Insight"
+        },
+        {
+          "from": "H8_Insight",
+          "to": "H8_Death"
+        },
+        {
+          "from": "H8_PersonalGain",
+          "to": "H8_Individuality"
+        }
+      ],
       "pillars": [
         {
           "name": "- disappearance",
@@ -1242,17 +1496,20 @@
             {
               "id": "H8_Mysticism",
               "title": "Mysticism",
-              "sub": "occult, psychic-intuition"
+              "sub": "occult, psychic-intuition",
+              "tier": 1
             },
             {
               "id": "H8_Insight",
               "title": "Insight",
-              "sub": "analytic, research"
+              "sub": "analytic, research",
+              "tier": 2
             },
             {
               "id": "H8_Death",
               "title": "- Death",
-              "sub": "vitality, sex (planet IN 8th disappears)"
+              "sub": "vitality, sex",
+              "tier": 3
             }
           ]
         },
@@ -1262,23 +1519,161 @@
             {
               "id": "H8_PersonalGain",
               "title": "Personal Gain",
-              "sub": "inheritance, gifts, donations"
+              "sub": "inheritence, gifts, donations",
+              "tier": 1
             },
             {
               "id": "H8_Individuality",
               "title": "Individuality",
-              "sub": "defiance"
+              "sub": "defiance",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "- disappearance",
+          "nodes": [
+            {
+              "id": "H8_Mysticism",
+              "title": "Mysticism",
+              "sub": "occult, psychic-intuition",
+              "tier": 1
+            },
+            {
+              "id": "H8_Insight",
+              "title": "Insight",
+              "sub": "analytic, research",
+              "tier": 2
+            },
+            {
+              "id": "H8_Death",
+              "title": "- Death",
+              "sub": "vitality, sex",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "- others",
+          "nodes": [
+            {
+              "id": "H8_PersonalGain",
+              "title": "Personal Gain",
+              "sub": "inheritence, gifts, donations",
+              "tier": 1
+            },
+            {
+              "id": "H8_Individuality",
+              "title": "Individuality",
+              "sub": "defiance",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H8_Mysticism",
+          "title": "Mysticism",
+          "sub": "occult, psychic-intuition",
+          "tier": 1,
+          "col": "- disappearance"
+        },
+        {
+          "id": "H8_Insight",
+          "title": "Insight",
+          "sub": "analytic, research",
+          "tier": 2,
+          "col": "- disappearance"
+        },
+        {
+          "id": "H8_Death",
+          "title": "- Death",
+          "sub": "vitality, sex",
+          "tier": 3,
+          "col": "- disappearance"
+        },
+        {
+          "id": "H8_PersonalGain",
+          "title": "Personal Gain",
+          "sub": "inheritence, gifts, donations",
+          "tier": 1,
+          "col": "- others"
+        },
+        {
+          "id": "H8_Individuality",
+          "title": "Individuality",
+          "sub": "defiance",
+          "tier": 2,
+          "col": "- others"
         }
       ]
     },
     "9": {
       "number": 9,
-      "sanskrit": "Dharma Bhāva",
       "title": "Ninth House",
-      "formula": "Above (action) West (others)",
-      "anatomy": "Hips, Thighs, Femoral Arteries, Sacroiliac & Marrow",
+      "banner": "Above (action) West (others)",
+      "sanskrit": "Dharma Bhāva",
+      "formula": "Above (action) West (others) • Higher Knowledge & Virtue",
+      "anatomy": "Hips, Thighs, Sacrum & Arterial System",
+      "columns": [
+        {
+          "name": "values",
+          "nodes": [
+            {
+              "id": "H9_Philosophy",
+              "title": "Philosophy",
+              "sub": "religion, ethics, morals",
+              "tier": 1
+            },
+            {
+              "id": "H9_Education",
+              "title": "Education",
+              "sub": "(source of above)",
+              "tier": 2
+            },
+            {
+              "id": "H9_Educators",
+              "title": "Educators",
+              "sub": "teachers, elders, guides",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "integrity",
+          "nodes": [
+            {
+              "id": "H9_GoodDeeds",
+              "title": "Good Deeds",
+              "sub": "responsibility, generousity",
+              "tier": 1
+            },
+            {
+              "id": "H9_GoodResults",
+              "title": "Good Results",
+              "sub": "prosperity, fortune",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H9_Philosophy",
+          "to": "H9_Education"
+        },
+        {
+          "from": "H9_Education",
+          "to": "H9_Educators"
+        },
+        {
+          "from": "H9_GoodDeeds",
+          "to": "H9_GoodResults"
+        }
+      ],
       "pillars": [
         {
           "name": "values",
@@ -1286,17 +1681,20 @@
             {
               "id": "H9_Philosophy",
               "title": "Philosophy",
-              "sub": "religion, ethics, morals"
+              "sub": "religion, ethics, morals",
+              "tier": 1
             },
             {
               "id": "H9_Education",
               "title": "Education",
-              "sub": "source of above"
+              "sub": "(source of above)",
+              "tier": 2
             },
             {
               "id": "H9_Educators",
               "title": "Educators",
-              "sub": "teachers, elders, guides"
+              "sub": "teachers, elders, guides",
+              "tier": 3
             }
           ]
         },
@@ -1306,23 +1704,161 @@
             {
               "id": "H9_GoodDeeds",
               "title": "Good Deeds",
-              "sub": "responsibility, generosity"
+              "sub": "responsibility, generousity",
+              "tier": 1
             },
             {
               "id": "H9_GoodResults",
               "title": "Good Results",
-              "sub": "prosperity, fortune"
+              "sub": "prosperity, fortune",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "values",
+          "nodes": [
+            {
+              "id": "H9_Philosophy",
+              "title": "Philosophy",
+              "sub": "religion, ethics, morals",
+              "tier": 1
+            },
+            {
+              "id": "H9_Education",
+              "title": "Education",
+              "sub": "(source of above)",
+              "tier": 2
+            },
+            {
+              "id": "H9_Educators",
+              "title": "Educators",
+              "sub": "teachers, elders, guides",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "integrity",
+          "nodes": [
+            {
+              "id": "H9_GoodDeeds",
+              "title": "Good Deeds",
+              "sub": "responsibility, generousity",
+              "tier": 1
+            },
+            {
+              "id": "H9_GoodResults",
+              "title": "Good Results",
+              "sub": "prosperity, fortune",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H9_Philosophy",
+          "title": "Philosophy",
+          "sub": "religion, ethics, morals",
+          "tier": 1,
+          "col": "values"
+        },
+        {
+          "id": "H9_Education",
+          "title": "Education",
+          "sub": "(source of above)",
+          "tier": 2,
+          "col": "values"
+        },
+        {
+          "id": "H9_Educators",
+          "title": "Educators",
+          "sub": "teachers, elders, guides",
+          "tier": 3,
+          "col": "values"
+        },
+        {
+          "id": "H9_GoodDeeds",
+          "title": "Good Deeds",
+          "sub": "responsibility, generousity",
+          "tier": 1,
+          "col": "integrity"
+        },
+        {
+          "id": "H9_GoodResults",
+          "title": "Good Results",
+          "sub": "prosperity, fortune",
+          "tier": 2,
+          "col": "integrity"
         }
       ]
     },
     "10": {
       "number": 10,
-      "sanskrit": "Karma Bhāva",
       "title": "Tenth House",
-      "formula": "Open Sky",
-      "anatomy": "Knees, Kneecaps, Knee Joints, Bones & Framework",
+      "banner": "Open Sky",
+      "sanskrit": "Karma Bhāva / MC",
+      "formula": "Open Sky • Status & Action in the World",
+      "anatomy": "Knees, Joints, Skeletal Framework & Kneecaps",
+      "columns": [
+        {
+          "name": "visibility",
+          "nodes": [
+            {
+              "id": "H10_Extroverse",
+              "title": "Extroverse",
+              "sub": "male, public, society",
+              "tier": 1
+            },
+            {
+              "id": "H10_Fame",
+              "title": "Fame",
+              "sub": "status, career",
+              "tier": 2
+            },
+            {
+              "id": "H10_Influence",
+              "title": "Influence",
+              "sub": "authority",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "wind",
+          "nodes": [
+            {
+              "id": "H10_Movement",
+              "title": "Movement",
+              "sub": "travel",
+              "tier": 1
+            },
+            {
+              "id": "H10_Instability",
+              "title": "Instability",
+              "sub": "dispersion, evaporation",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H10_Extroverse",
+          "to": "H10_Fame"
+        },
+        {
+          "from": "H10_Fame",
+          "to": "H10_Influence"
+        },
+        {
+          "from": "H10_Movement",
+          "to": "H10_Instability"
+        }
+      ],
       "pillars": [
         {
           "name": "visibility",
@@ -1330,17 +1866,20 @@
             {
               "id": "H10_Extroverse",
               "title": "Extroverse",
-              "sub": "male, public, society"
+              "sub": "male, public, society",
+              "tier": 1
             },
             {
               "id": "H10_Fame",
               "title": "Fame",
-              "sub": "status, career"
+              "sub": "status, career",
+              "tier": 2
             },
             {
               "id": "H10_Influence",
               "title": "Influence",
-              "sub": "authority"
+              "sub": "authority",
+              "tier": 3
             }
           ]
         },
@@ -1350,100 +1889,4776 @@
             {
               "id": "H10_Movement",
               "title": "Movement",
-              "sub": "travel"
+              "sub": "travel",
+              "tier": 1
             },
             {
               "id": "H10_Instability",
               "title": "Instability",
-              "sub": "dispersion, evaporation"
+              "sub": "dispersion, evaporation",
+              "tier": 2
             }
           ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "visibility",
+          "nodes": [
+            {
+              "id": "H10_Extroverse",
+              "title": "Extroverse",
+              "sub": "male, public, society",
+              "tier": 1
+            },
+            {
+              "id": "H10_Fame",
+              "title": "Fame",
+              "sub": "status, career",
+              "tier": 2
+            },
+            {
+              "id": "H10_Influence",
+              "title": "Influence",
+              "sub": "authority",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "wind",
+          "nodes": [
+            {
+              "id": "H10_Movement",
+              "title": "Movement",
+              "sub": "travel",
+              "tier": 1
+            },
+            {
+              "id": "H10_Instability",
+              "title": "Instability",
+              "sub": "dispersion, evaporation",
+              "tier": 2
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H10_Extroverse",
+          "title": "Extroverse",
+          "sub": "male, public, society",
+          "tier": 1,
+          "col": "visibility"
+        },
+        {
+          "id": "H10_Fame",
+          "title": "Fame",
+          "sub": "status, career",
+          "tier": 2,
+          "col": "visibility"
+        },
+        {
+          "id": "H10_Influence",
+          "title": "Influence",
+          "sub": "authority",
+          "tier": 3,
+          "col": "visibility"
+        },
+        {
+          "id": "H10_Movement",
+          "title": "Movement",
+          "sub": "travel",
+          "tier": 1,
+          "col": "wind"
+        },
+        {
+          "id": "H10_Instability",
+          "title": "Instability",
+          "sub": "dispersion, evaporation",
+          "tier": 2,
+          "col": "wind"
         }
       ]
     },
     "11": {
       "number": 11,
-      "sanskrit": "Lābha Bhāva",
       "title": "Eleventh House",
-      "formula": "Support of the Open Sky",
-      "anatomy": "Calves, Shins, Ankles, Left Ear & Circulation",
-      "pillars": [
+      "banner": "Upper East: Benefits of Society",
+      "sanskrit": "Lābha Bhāva",
+      "formula": "Upper East: Benefits of Society • Gains, Communities & Aspirations",
+      "anatomy": "Shins, Calves, Ankles & Left Ear",
+      "columns": [
         {
-          "name": "realization",
-          "items": [
+          "name": "social",
+          "nodes": [
             {
-              "id": "H11_Attainment",
-              "title": "Attainment",
-              "sub": "desires fulfilled"
+              "id": "H11_Friends",
+              "title": "Friends",
+              "sub": "parties",
+              "tier": 1
+            },
+            {
+              "id": "H11_Contacts",
+              "title": "Contacts",
+              "sub": "networks",
+              "tier": 2
             },
             {
               "id": "H11_Income",
               "title": "Income",
-              "sub": "profit, surplus"
-            },
-            {
-              "id": "H11_Expansion",
-              "title": "Expansion",
-              "sub": "abundance"
+              "sub": "profit, assets",
+              "tier": 3
             }
           ]
         },
         {
-          "name": "alliances",
-          "items": [
+          "name": "cultural",
+          "nodes": [
             {
-              "id": "H11_Community",
-              "title": "Community",
-              "sub": "friends, large groups"
+              "id": "H11_Arts",
+              "title": "Arts",
+              "sub": "entertainment",
+              "tier": 1
             },
             {
-              "id": "H11_Aspirations",
-              "title": "Aspirations",
-              "sub": "future plans"
+              "id": "H11_Talent",
+              "title": "Talent",
+              "sub": "taste, refinement",
+              "tier": 2
+            },
+            {
+              "id": "H11_Pleasure",
+              "title": "Pleasure",
+              "sub": "enjoyment",
+              "tier": 3
             }
           ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H11_Friends",
+          "to": "H11_Contacts"
+        },
+        {
+          "from": "H11_Contacts",
+          "to": "H11_Income"
+        },
+        {
+          "from": "H11_Arts",
+          "to": "H11_Talent"
+        },
+        {
+          "from": "H11_Talent",
+          "to": "H11_Pleasure"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "social",
+          "items": [
+            {
+              "id": "H11_Friends",
+              "title": "Friends",
+              "sub": "parties",
+              "tier": 1
+            },
+            {
+              "id": "H11_Contacts",
+              "title": "Contacts",
+              "sub": "networks",
+              "tier": 2
+            },
+            {
+              "id": "H11_Income",
+              "title": "Income",
+              "sub": "profit, assets",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "cultural",
+          "items": [
+            {
+              "id": "H11_Arts",
+              "title": "Arts",
+              "sub": "entertainment",
+              "tier": 1
+            },
+            {
+              "id": "H11_Talent",
+              "title": "Talent",
+              "sub": "taste, refinement",
+              "tier": 2
+            },
+            {
+              "id": "H11_Pleasure",
+              "title": "Pleasure",
+              "sub": "enjoyment",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "social",
+          "nodes": [
+            {
+              "id": "H11_Friends",
+              "title": "Friends",
+              "sub": "parties",
+              "tier": 1
+            },
+            {
+              "id": "H11_Contacts",
+              "title": "Contacts",
+              "sub": "networks",
+              "tier": 2
+            },
+            {
+              "id": "H11_Income",
+              "title": "Income",
+              "sub": "profit, assets",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "cultural",
+          "nodes": [
+            {
+              "id": "H11_Arts",
+              "title": "Arts",
+              "sub": "entertainment",
+              "tier": 1
+            },
+            {
+              "id": "H11_Talent",
+              "title": "Talent",
+              "sub": "taste, refinement",
+              "tier": 2
+            },
+            {
+              "id": "H11_Pleasure",
+              "title": "Pleasure",
+              "sub": "enjoyment",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H11_Friends",
+          "title": "Friends",
+          "sub": "parties",
+          "tier": 1,
+          "col": "social"
+        },
+        {
+          "id": "H11_Contacts",
+          "title": "Contacts",
+          "sub": "networks",
+          "tier": 2,
+          "col": "social"
+        },
+        {
+          "id": "H11_Income",
+          "title": "Income",
+          "sub": "profit, assets",
+          "tier": 3,
+          "col": "social"
+        },
+        {
+          "id": "H11_Arts",
+          "title": "Arts",
+          "sub": "entertainment",
+          "tier": 1,
+          "col": "cultural"
+        },
+        {
+          "id": "H11_Talent",
+          "title": "Talent",
+          "sub": "taste, refinement",
+          "tier": 2,
+          "col": "cultural"
+        },
+        {
+          "id": "H11_Pleasure",
+          "title": "Pleasure",
+          "sub": "enjoyment",
+          "tier": 3,
+          "col": "cultural"
         }
       ]
     },
     "12": {
       "number": 12,
-      "sanskrit": "Vyaya Bhāva",
       "title": "Twelfth House",
-      "formula": "Pre-Sunrise ~ Night Sky",
-      "anatomy": "Feet, Toes, Lymphatic System, Left Eye & Sleep",
-      "pillars": [
+      "banner": "Erosion of the East",
+      "sanskrit": "Vyaya Bhāva",
+      "formula": "Erosion of the East • Dissolution, Subconscious & Moksha",
+      "anatomy": "Feet, Toes, Lymphatic System & Left Eye",
+      "columns": [
         {
-          "name": "disappearance",
-          "items": [
+          "name": "'-' sunrise",
+          "nodes": [
             {
-              "id": "H12_Release",
-              "title": "Release",
-              "sub": "loss, expenses"
+              "id": "H12_Invisible",
+              "title": "Invisible",
+              "sub": "abstract, unreal, spirit",
+              "tier": 1
             },
             {
-              "id": "H12_Solitude",
-              "title": "Solitude",
-              "sub": "seclusion, retreat"
+              "id": "H12_Unknown",
+              "title": "Unknown",
+              "sub": "alien, foreign",
+              "tier": 2
             },
             {
-              "id": "H12_Liberation",
-              "title": "Liberation",
-              "sub": "mokṣa"
+              "id": "H12_Decline",
+              "title": "Decline",
+              "sub": "expense, loss",
+              "tier": 3
             }
           ]
         },
         {
-          "name": "interior",
-          "items": [
+          "name": "'-' self",
+          "nodes": [
             {
-              "id": "H12_Subconscious",
-              "title": "Subconscious",
-              "sub": "dreams, sleep"
+              "id": "H12_Humility",
+              "title": "Humility",
+              "sub": "isolation",
+              "tier": 1
             },
             {
-              "id": "H12_ForeignLands",
-              "title": "Foreign Lands",
-              "sub": "distant displacement"
+              "id": "H12_Enemies",
+              "title": "Enemies",
+              "sub": "detractors, critics",
+              "tier": 2
+            },
+            {
+              "id": "H12_Weakness",
+              "title": "Weakness",
+              "sub": "fatigue, giving up",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "H12_Invisible",
+          "to": "H12_Unknown"
+        },
+        {
+          "from": "H12_Unknown",
+          "to": "H12_Decline"
+        },
+        {
+          "from": "H12_Humility",
+          "to": "H12_Enemies"
+        },
+        {
+          "from": "H12_Enemies",
+          "to": "H12_Weakness"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "'-' sunrise",
+          "items": [
+            {
+              "id": "H12_Invisible",
+              "title": "Invisible",
+              "sub": "abstract, unreal, spirit",
+              "tier": 1
+            },
+            {
+              "id": "H12_Unknown",
+              "title": "Unknown",
+              "sub": "alien, foreign",
+              "tier": 2
+            },
+            {
+              "id": "H12_Decline",
+              "title": "Decline",
+              "sub": "expense, loss",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "'-' self",
+          "items": [
+            {
+              "id": "H12_Humility",
+              "title": "Humility",
+              "sub": "isolation",
+              "tier": 1
+            },
+            {
+              "id": "H12_Enemies",
+              "title": "Enemies",
+              "sub": "detractors, critics",
+              "tier": 2
+            },
+            {
+              "id": "H12_Weakness",
+              "title": "Weakness",
+              "sub": "fatigue, giving up",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "'-' sunrise",
+          "nodes": [
+            {
+              "id": "H12_Invisible",
+              "title": "Invisible",
+              "sub": "abstract, unreal, spirit",
+              "tier": 1
+            },
+            {
+              "id": "H12_Unknown",
+              "title": "Unknown",
+              "sub": "alien, foreign",
+              "tier": 2
+            },
+            {
+              "id": "H12_Decline",
+              "title": "Decline",
+              "sub": "expense, loss",
+              "tier": 3
+            }
+          ]
+        },
+        {
+          "name": "'-' self",
+          "nodes": [
+            {
+              "id": "H12_Humility",
+              "title": "Humility",
+              "sub": "isolation",
+              "tier": 1
+            },
+            {
+              "id": "H12_Enemies",
+              "title": "Enemies",
+              "sub": "detractors, critics",
+              "tier": 2
+            },
+            {
+              "id": "H12_Weakness",
+              "title": "Weakness",
+              "sub": "fatigue, giving up",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "H12_Invisible",
+          "title": "Invisible",
+          "sub": "abstract, unreal, spirit",
+          "tier": 1,
+          "col": "'-' sunrise"
+        },
+        {
+          "id": "H12_Unknown",
+          "title": "Unknown",
+          "sub": "alien, foreign",
+          "tier": 2,
+          "col": "'-' sunrise"
+        },
+        {
+          "id": "H12_Decline",
+          "title": "Decline",
+          "sub": "expense, loss",
+          "tier": 3,
+          "col": "'-' sunrise"
+        },
+        {
+          "id": "H12_Humility",
+          "title": "Humility",
+          "sub": "isolation",
+          "tier": 1,
+          "col": "'-' self"
+        },
+        {
+          "id": "H12_Enemies",
+          "title": "Enemies",
+          "sub": "detractors, critics",
+          "tier": 2,
+          "col": "'-' self"
+        },
+        {
+          "id": "H12_Weakness",
+          "title": "Weakness",
+          "sub": "fatigue, giving up",
+          "tier": 3,
+          "col": "'-' self"
+        }
+      ]
+    }
+  },
+  "signs": {
+    "Aries": {
+      "title": "Aries",
+      "symbol": "♈",
+      "sanskrit": "Meṣa",
+      "formula": "Mars / Fire / Movable",
+      "nodes": [
+        {
+          "id": "S_Masculinity",
+          "title": "Masculinity",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Strength",
+          "title": "Strength",
+          "badge": "Bravery",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Independence",
+          "title": "Independence",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "S_Inceptivity",
+          "title": "Inceptivity",
+          "badge": "Adventure",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Individualism",
+          "title": "Individualism",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Freedom",
+          "title": "Freedom",
+          "tier": 3,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Masculinity",
+          "to": "S_Strength"
+        },
+        {
+          "from": "S_Masculinity",
+          "to": "S_Independence"
+        },
+        {
+          "from": "S_Masculinity",
+          "to": "S_Inceptivity"
+        },
+        {
+          "from": "S_Independence",
+          "to": "S_Individualism"
+        },
+        {
+          "from": "S_Independence",
+          "to": "S_Freedom"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Strength",
+              "title": "Strength",
+              "badge": "Bravery",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Individualism",
+              "title": "Individualism",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Inceptivity",
+              "title": "Inceptivity",
+              "badge": "Adventure",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Freedom",
+              "title": "Freedom",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Strength",
+              "title": "Strength",
+              "badge": "Bravery",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Individualism",
+              "title": "Individualism",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Inceptivity",
+              "title": "Inceptivity",
+              "badge": "Adventure",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Freedom",
+              "title": "Freedom",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Taurus": {
+      "title": "Taurus",
+      "symbol": "♉",
+      "sanskrit": "Vṛṣabha",
+      "formula": "Venus / Earth / Fixed",
+      "nodes": [
+        {
+          "id": "S_Femininity",
+          "title": "Femininity",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Love",
+          "title": "Love",
+          "badge": "Unity, Cooperation",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Beauty",
+          "title": "Beauty",
+          "badge": "Wealth",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "S_Loyalty",
+          "title": "Loyalty",
+          "badge": "Endurance, stability",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Arts",
+          "title": "Arts",
+          "badge": "Learning",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Health",
+          "title": "Health",
+          "badge": "Fertility",
+          "tier": 3,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Femininity",
+          "to": "S_Love"
+        },
+        {
+          "from": "S_Femininity",
+          "to": "S_Beauty"
+        },
+        {
+          "from": "S_Femininity",
+          "to": "S_Loyalty"
+        },
+        {
+          "from": "S_Beauty",
+          "to": "S_Arts"
+        },
+        {
+          "from": "S_Beauty",
+          "to": "S_Health"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Femininity",
+              "title": "Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "badge": "Wealth",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Love",
+              "title": "Love",
+              "badge": "Unity, Cooperation",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Arts",
+              "title": "Arts",
+              "badge": "Learning",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Loyalty",
+              "title": "Loyalty",
+              "badge": "Endurance, stability",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Health",
+              "title": "Health",
+              "badge": "Fertility",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Femininity",
+              "title": "Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "badge": "Wealth",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Love",
+              "title": "Love",
+              "badge": "Unity, Cooperation",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Arts",
+              "title": "Arts",
+              "badge": "Learning",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Loyalty",
+              "title": "Loyalty",
+              "badge": "Endurance, stability",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Health",
+              "title": "Health",
+              "badge": "Fertility",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Gemini": {
+      "title": "Gemini",
+      "symbol": "♊",
+      "sanskrit": "Mithuna",
+      "formula": "Mercury / Air / Dual",
+      "nodes": [
+        {
+          "id": "S_Intellect",
+          "title": "Intellect",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Connectivity",
+          "title": "Connectivity",
+          "badge": "Friendship",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Interaction",
+          "title": "Interaction",
+          "badge": "Fun, Wit",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Cooperation",
+          "title": "Cooperation",
+          "sub": "Flexibility",
+          "badge": "Diplomacy, Talent",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Communication",
+          "title": "Communication",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Commerce",
+          "title": "Commerce",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Intellect",
+          "to": "S_Connectivity"
+        },
+        {
+          "from": "S_Intellect",
+          "to": "S_Interaction"
+        },
+        {
+          "from": "S_Connectivity",
+          "to": "S_Cooperation"
+        },
+        {
+          "from": "S_Connectivity",
+          "to": "S_Communication"
+        },
+        {
+          "from": "S_Connectivity",
+          "to": "S_Commerce"
+        },
+        {
+          "from": "S_Interaction",
+          "to": "S_Cooperation"
+        },
+        {
+          "from": "S_Interaction",
+          "to": "S_Communication"
+        },
+        {
+          "from": "S_Interaction",
+          "to": "S_Commerce"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Commerce",
+              "title": "Commerce",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Connectivity",
+              "title": "Connectivity",
+              "badge": "Friendship",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Cooperation",
+              "title": "Cooperation",
+              "sub": "Flexibility",
+              "badge": "Diplomacy, Talent",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Interaction",
+              "title": "Interaction",
+              "badge": "Fun, Wit",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Communication",
+              "title": "Communication",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Commerce",
+              "title": "Commerce",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Connectivity",
+              "title": "Connectivity",
+              "badge": "Friendship",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Cooperation",
+              "title": "Cooperation",
+              "sub": "Flexibility",
+              "badge": "Diplomacy, Talent",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Interaction",
+              "title": "Interaction",
+              "badge": "Fun, Wit",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Communication",
+              "title": "Communication",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Cancer": {
+      "title": "Cancer",
+      "symbol": "♋",
+      "sanskrit": "Karka",
+      "formula": "Moon / Water / Cardinal",
+      "pinned_note": "Cancer = Moon + Water + Cardinal",
+      "nodes": [
+        {
+          "id": "S_MatureFem",
+          "title": "Mature Femininity",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Privacy",
+          "title": "Privacy",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Domestication",
+          "title": "Domestication",
+          "sub": "Protected Space",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Emotion",
+          "title": "Emotion",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Feelings",
+          "title": "Feelings, desires, opinions",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Introversion",
+          "title": "Introversion",
+          "sub": "Shyness",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_MatureFem",
+          "to": "S_Privacy"
+        },
+        {
+          "from": "S_Privacy",
+          "to": "S_Domestication"
+        },
+        {
+          "from": "S_MatureFem",
+          "to": "S_Emotion"
+        },
+        {
+          "from": "S_Emotion",
+          "to": "S_Feelings"
+        },
+        {
+          "from": "S_Privacy",
+          "to": "S_Introversion"
+        },
+        {
+          "from": "S_Emotion",
+          "to": "S_Introversion"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureFem",
+              "title": "Mature Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Introversion",
+              "title": "Introversion",
+              "sub": "Shyness",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Privacy",
+              "title": "Privacy",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Domestication",
+              "title": "Domestication",
+              "sub": "Protected Space",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Emotion",
+              "title": "Emotion",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Feelings",
+              "title": "Feelings, desires, opinions",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureFem",
+              "title": "Mature Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Introversion",
+              "title": "Introversion",
+              "sub": "Shyness",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Privacy",
+              "title": "Privacy",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Domestication",
+              "title": "Domestication",
+              "sub": "Protected Space",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Emotion",
+              "title": "Emotion",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Feelings",
+              "title": "Feelings, desires, opinions",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Leo": {
+      "title": "Leo",
+      "symbol": "♌",
+      "sanskrit": "Siṃha",
+      "formula": "Sun / Fire / Fixed",
+      "nodes": [
+        {
+          "id": "S_MatureMasc",
+          "title": "Mature Masculinity",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Confidence",
+          "title": "Confidence",
+          "sub": "Decisiveness",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Power",
+          "title": "Power",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Stability",
+          "title": "Stability",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_SelfSufficiency",
+          "title": "Self-Sufficiency",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Leadership",
+          "title": "Leadership",
+          "sub": "Charisma, Fame",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_MatureMasc",
+          "to": "S_Confidence"
+        },
+        {
+          "from": "S_MatureMasc",
+          "to": "S_Power"
+        },
+        {
+          "from": "S_Confidence",
+          "to": "S_Stability"
+        },
+        {
+          "from": "S_Power",
+          "to": "S_SelfSufficiency"
+        },
+        {
+          "from": "S_Confidence",
+          "to": "S_Leadership"
+        },
+        {
+          "from": "S_Power",
+          "to": "S_Leadership"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureMasc",
+              "title": "Mature Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Leadership",
+              "title": "Leadership",
+              "sub": "Charisma, Fame",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Confidence",
+              "title": "Confidence",
+              "sub": "Decisiveness",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Stability",
+              "title": "Stability",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Power",
+              "title": "Power",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_SelfSufficiency",
+              "title": "Self-Sufficiency",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureMasc",
+              "title": "Mature Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Leadership",
+              "title": "Leadership",
+              "sub": "Charisma, Fame",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Confidence",
+              "title": "Confidence",
+              "sub": "Decisiveness",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Stability",
+              "title": "Stability",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Power",
+              "title": "Power",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_SelfSufficiency",
+              "title": "Self-Sufficiency",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Virgo": {
+      "title": "Virgo",
+      "symbol": "♍",
+      "sanskrit": "Kanyā",
+      "formula": "Mercury / Earth / Dual",
+      "nodes": [
+        {
+          "id": "S_Intellect",
+          "title": "Intellect",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "S_Practicality",
+          "title": "Practicality",
+          "tier": 1,
+          "col": "right"
+        },
+        {
+          "id": "S_Detail",
+          "title": "Detail",
+          "sub": "Patience",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Organization",
+          "title": "Organization",
+          "sub": "Management",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Prudence",
+          "title": "Prudence",
+          "sub": "Caution, Study",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Accounting",
+          "title": "Accounting",
+          "sub": "Finance",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Cleanliness",
+          "title": "Cleanliness",
+          "sub": "Purity",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Intellect",
+          "to": "S_Detail"
+        },
+        {
+          "from": "S_Detail",
+          "to": "S_Prudence"
+        },
+        {
+          "from": "S_Practicality",
+          "to": "S_Organization"
+        },
+        {
+          "from": "S_Organization",
+          "to": "S_Accounting"
+        },
+        {
+          "from": "S_Organization",
+          "to": "S_Cleanliness"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Detail",
+              "title": "Detail",
+              "sub": "Patience",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Prudence",
+              "title": "Prudence",
+              "sub": "Caution, Study",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Practicality",
+              "title": "Practicality",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Organization",
+              "title": "Organization",
+              "sub": "Management",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Accounting",
+              "title": "Accounting",
+              "sub": "Finance",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Cleanliness",
+              "title": "Cleanliness",
+              "sub": "Purity",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Detail",
+              "title": "Detail",
+              "sub": "Patience",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Prudence",
+              "title": "Prudence",
+              "sub": "Caution, Study",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Practicality",
+              "title": "Practicality",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Organization",
+              "title": "Organization",
+              "sub": "Management",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Accounting",
+              "title": "Accounting",
+              "sub": "Finance",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Cleanliness",
+              "title": "Cleanliness",
+              "sub": "Purity",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "Libra": {
+      "title": "Libra",
+      "symbol": "♎",
+      "sanskrit": "Tulā",
+      "formula": "Venus / Air / Cardinal",
+      "nodes": [
+        {
+          "id": "S_Sensitivity",
+          "title": "Sensitivity",
+          "sub": "Empathy, Acuity",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "S_Equality",
+          "title": "Equality",
+          "sub": "Fairness, Balance",
+          "tier": 1,
+          "col": "right"
+        },
+        {
+          "id": "S_Artful",
+          "title": "Artful",
+          "sub": "Intelligent",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Justice",
+          "title": "Justice",
+          "sub": "Liberty",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Cooperation",
+          "title": "Cooperation",
+          "sub": "Peace",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "S_Exchange",
+          "title": "Exchange",
+          "sub": "Trade",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Sensitivity",
+          "to": "S_Artful"
+        },
+        {
+          "from": "S_Equality",
+          "to": "S_Justice"
+        },
+        {
+          "from": "S_Equality",
+          "to": "S_Cooperation"
+        },
+        {
+          "from": "S_Cooperation",
+          "to": "S_Exchange"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Sensitivity",
+              "title": "Sensitivity",
+              "sub": "Empathy, Acuity",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Artful",
+              "title": "Artful",
+              "sub": "Intelligent",
+              "tier": 2,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Equality",
+              "title": "Equality",
+              "sub": "Fairness, Balance",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Justice",
+              "title": "Justice",
+              "sub": "Liberty",
+              "tier": 2,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Cooperation",
+              "title": "Cooperation",
+              "sub": "Peace",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "S_Exchange",
+              "title": "Exchange",
+              "sub": "Trade",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Sensitivity",
+              "title": "Sensitivity",
+              "sub": "Empathy, Acuity",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Artful",
+              "title": "Artful",
+              "sub": "Intelligent",
+              "tier": 2,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Equality",
+              "title": "Equality",
+              "sub": "Fairness, Balance",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Justice",
+              "title": "Justice",
+              "sub": "Liberty",
+              "tier": 2,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Cooperation",
+              "title": "Cooperation",
+              "sub": "Peace",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "S_Exchange",
+              "title": "Exchange",
+              "sub": "Trade",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "Scorpio": {
+      "title": "Scorpio",
+      "symbol": "♏",
+      "sanskrit": "Vṛścika",
+      "formula": "Mars / Water / Fixed",
+      "nodes": [
+        {
+          "id": "S_Defiance",
+          "title": "Defiance",
+          "sub": "Rebelliousness",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "S_Passion",
+          "title": "Passion",
+          "sub": "Depth",
+          "tier": 1,
+          "col": "right"
+        },
+        {
+          "id": "S_Independence",
+          "title": "Independence",
+          "sub": "Individuality",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Mysterious",
+          "title": "Mysterious",
+          "sub": "Secretive",
+          "tier": 2,
+          "col": "right",
+          "badge": "Circled"
+        },
+        {
+          "id": "S_Strong",
+          "title": "Strong",
+          "sub": "emotionally",
+          "tier": 3,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Defiance",
+          "to": "S_Independence"
+        },
+        {
+          "from": "S_Passion",
+          "to": "S_Mysterious"
+        },
+        {
+          "from": "S_Independence",
+          "to": "S_Strong"
+        },
+        {
+          "from": "S_Mysterious",
+          "to": "S_Strong"
+        },
+        {
+          "from": "S_Strong",
+          "to": "S_Defiance",
+          "style": "dashed_loop"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Defiance",
+              "title": "Defiance",
+              "sub": "Rebelliousness",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "sub": "Individuality",
+              "tier": 2,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Passion",
+              "title": "Passion",
+              "sub": "Depth",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Mysterious",
+              "title": "Mysterious",
+              "sub": "Secretive",
+              "tier": 2,
+              "col": "right",
+              "badge": "Circled"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Strong",
+              "title": "Strong",
+              "sub": "emotionally",
+              "tier": 3,
+              "col": "center"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Defiance",
+              "title": "Defiance",
+              "sub": "Rebelliousness",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "sub": "Individuality",
+              "tier": 2,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Passion",
+              "title": "Passion",
+              "sub": "Depth",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Mysterious",
+              "title": "Mysterious",
+              "sub": "Secretive",
+              "tier": 2,
+              "col": "right",
+              "badge": "Circled"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Strong",
+              "title": "Strong",
+              "sub": "emotionally",
+              "tier": 3,
+              "col": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "Sagittarius": {
+      "title": "Sagittarius",
+      "symbol": "♐",
+      "sanskrit": "Dhanu",
+      "formula": "Jupiter / Fire / Dual",
+      "nodes": [
+        {
+          "id": "S_LoftyInterests",
+          "title": "Lofty Interests",
+          "sub": "Ethics, Wisdom",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Education",
+          "title": "Education",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_WellInformed",
+          "title": "Well-Informed",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "S_Teaching",
+          "title": "Teaching",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_HungryForIdeas",
+          "title": "Hungry for Ideas",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_EagerToShare",
+          "title": "Eager to Share",
+          "tier": 3,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_LoftyInterests",
+          "to": "S_Education"
+        },
+        {
+          "from": "S_LoftyInterests",
+          "to": "S_WellInformed"
+        },
+        {
+          "from": "S_LoftyInterests",
+          "to": "S_Teaching"
+        },
+        {
+          "from": "S_Education",
+          "to": "S_HungryForIdeas"
+        },
+        {
+          "from": "S_Teaching",
+          "to": "S_EagerToShare"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_LoftyInterests",
+              "title": "Lofty Interests",
+              "sub": "Ethics, Wisdom",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_WellInformed",
+              "title": "Well-Informed",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Education",
+              "title": "Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_HungryForIdeas",
+              "title": "Hungry for Ideas",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Teaching",
+              "title": "Teaching",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_EagerToShare",
+              "title": "Eager to Share",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_LoftyInterests",
+              "title": "Lofty Interests",
+              "sub": "Ethics, Wisdom",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_WellInformed",
+              "title": "Well-Informed",
+              "tier": 2,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Education",
+              "title": "Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_HungryForIdeas",
+              "title": "Hungry for Ideas",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Teaching",
+              "title": "Teaching",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_EagerToShare",
+              "title": "Eager to Share",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Capricorn": {
+      "title": "Capricorn",
+      "symbol": "♑",
+      "sanskrit": "Makara",
+      "formula": "Saturn / Earth / Cardinal",
+      "pinned_note": "Capricorn = Saturn + Earth + Cardinal",
+      "nodes": [
+        {
+          "id": "S_Critical",
+          "title": "Critical",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "S_Tenacious",
+          "title": "Tenacious",
+          "tier": 1,
+          "col": "right"
+        },
+        {
+          "id": "S_Realistic",
+          "title": "Realistic",
+          "sub": "Pessimistic",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Practical",
+          "title": "Practical",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Analytic",
+          "title": "Analytic",
+          "sub": "Cold, Detached",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Worker",
+          "title": "Worker",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Unstoppable",
+          "title": "Unstoppable",
+          "sub": "Stubborn",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Critical",
+          "to": "S_Realistic"
+        },
+        {
+          "from": "S_Realistic",
+          "to": "S_Analytic"
+        },
+        {
+          "from": "S_Tenacious",
+          "to": "S_Practical"
+        },
+        {
+          "from": "S_Tenacious",
+          "to": "S_Worker"
+        },
+        {
+          "from": "S_Tenacious",
+          "to": "S_Unstoppable"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Critical",
+              "title": "Critical",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Realistic",
+              "title": "Realistic",
+              "sub": "Pessimistic",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Analytic",
+              "title": "Analytic",
+              "sub": "Cold, Detached",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Tenacious",
+              "title": "Tenacious",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Practical",
+              "title": "Practical",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Unstoppable",
+              "title": "Unstoppable",
+              "sub": "Stubborn",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Critical",
+              "title": "Critical",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Realistic",
+              "title": "Realistic",
+              "sub": "Pessimistic",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Analytic",
+              "title": "Analytic",
+              "sub": "Cold, Detached",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Tenacious",
+              "title": "Tenacious",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Practical",
+              "title": "Practical",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Unstoppable",
+              "title": "Unstoppable",
+              "sub": "Stubborn",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "Aquarius": {
+      "title": "Aquarius",
+      "symbol": "♒",
+      "sanskrit": "Kumbha",
+      "formula": "Saturn / Air / Fixed",
+      "pinned_note": "Aquarius = Saturn + Air + Fixed",
+      "nodes": [
+        {
+          "id": "S_Eclectic",
+          "title": "Eclectic",
+          "sub": "Curious-Skeptic",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "S_Service",
+          "title": "Service",
+          "tier": 1,
+          "col": "right"
+        },
+        {
+          "id": "S_Humility",
+          "title": "Humility",
+          "sub": "Meekness",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Simplicity",
+          "title": "Simplicity",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_SelfSacrifice",
+          "title": "Self-sacrifice",
+          "sub": "Group-identity",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "S_Worker",
+          "title": "Worker",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Service",
+          "to": "S_Humility"
+        },
+        {
+          "from": "S_Humility",
+          "to": "S_Simplicity"
+        },
+        {
+          "from": "S_Humility",
+          "to": "S_SelfSacrifice"
+        },
+        {
+          "from": "S_SelfSacrifice",
+          "to": "S_Worker"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Eclectic",
+              "title": "Eclectic",
+              "sub": "Curious-Skeptic",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Simplicity",
+              "title": "Simplicity",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Service",
+              "title": "Service",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Humility",
+              "title": "Humility",
+              "sub": "Meekness",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_SelfSacrifice",
+              "title": "Self-sacrifice",
+              "sub": "Group-identity",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Eclectic",
+              "title": "Eclectic",
+              "sub": "Curious-Skeptic",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "S_Simplicity",
+              "title": "Simplicity",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Service",
+              "title": "Service",
+              "tier": 1,
+              "col": "right"
+            },
+            {
+              "id": "S_Humility",
+              "title": "Humility",
+              "sub": "Meekness",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_SelfSacrifice",
+              "title": "Self-sacrifice",
+              "sub": "Group-identity",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        }
+      ]
+    },
+    "Pisces": {
+      "title": "Pisces",
+      "symbol": "♓",
+      "sanskrit": "Mīna",
+      "formula": "Jupiter / Water / Dual",
+      "pinned_note": "Pisces = Jupiter + Water + Dual",
+      "nodes": [
+        {
+          "id": "S_Depth",
+          "title": "Depth",
+          "badge": "INNER CORE",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "S_Introspection",
+          "title": "Introspection",
+          "sub": "Research, Education",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "S_Intuition",
+          "title": "Intuition",
+          "sub": "Abstraction & Dream",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "S_Thoughtful",
+          "title": "Thoughtful",
+          "sub": "Quiet, Shy, Careful",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "S_Indecisive",
+          "title": "Indecisive",
+          "sub": "Inconclusive",
+          "tier": 3,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "S_Depth",
+          "to": "S_Introspection"
+        },
+        {
+          "from": "S_Introspection",
+          "to": "S_Thoughtful"
+        },
+        {
+          "from": "S_Depth",
+          "to": "S_Intuition"
+        },
+        {
+          "from": "S_Intuition",
+          "to": "S_Indecisive"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Depth",
+              "title": "Depth",
+              "badge": "INNER CORE",
+              "tier": 1,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Introspection",
+              "title": "Introspection",
+              "sub": "Research, Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Thoughtful",
+              "title": "Thoughtful",
+              "sub": "Quiet, Shy, Careful",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Intuition",
+              "title": "Intuition",
+              "sub": "Abstraction & Dream",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Indecisive",
+              "title": "Indecisive",
+              "sub": "Inconclusive",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Depth",
+              "title": "Depth",
+              "badge": "INNER CORE",
+              "tier": 1,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Introspection",
+              "title": "Introspection",
+              "sub": "Research, Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_Thoughtful",
+              "title": "Thoughtful",
+              "sub": "Quiet, Shy, Careful",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "S_Intuition",
+              "title": "Intuition",
+              "sub": "Abstraction & Dream",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "S_Indecisive",
+              "title": "Indecisive",
+              "sub": "Inconclusive",
+              "tier": 3,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "planets": {
+    "Sun": {
+      "title": "☉ Soul",
+      "symbol": "☉",
+      "sanskrit": "Sūrya / Ātman",
+      "formula": "Vitality & Authority",
+      "nodes": [
+        {
+          "id": "P_Consciousness",
+          "title": "Consciousness",
+          "color": "green",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_Light",
+          "title": "Light",
+          "color": "blue",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "P_Self",
+          "title": "Self",
+          "sub": "Ego / Self-Esteem",
+          "color": "green",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_Day",
+          "title": "Day",
+          "sub": "Public",
+          "color": "blue",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "P_Masculinity",
+          "title": "Masculinity",
+          "sub": "Extroverting",
+          "color": "blue",
+          "tier": 4,
+          "col": "left"
+        },
+        {
+          "id": "P_Vitality",
+          "title": "Vitality",
+          "sub": "Health",
+          "color": "gold",
+          "tier": 4,
+          "col": "center"
+        },
+        {
+          "id": "P_Vision",
+          "title": "Vision",
+          "sub": "Clarity",
+          "color": "blue",
+          "tier": 5,
+          "col": "left"
+        },
+        {
+          "id": "P_Visibility",
+          "title": "Visibility",
+          "sub": "Fame",
+          "color": "blue",
+          "tier": 5,
+          "col": "center"
+        },
+        {
+          "id": "P_Decisiveness",
+          "title": "Decisiveness",
+          "sub": "Confidence",
+          "color": "blue",
+          "tier": 6,
+          "col": "left"
+        },
+        {
+          "id": "P_Leadership",
+          "title": "Leadership",
+          "sub": "Authority",
+          "color": "blue",
+          "tier": 6,
+          "col": "center"
+        },
+        {
+          "id": "P_Center",
+          "title": "Center",
+          "color": "green",
+          "tier": 6,
+          "col": "right"
+        },
+        {
+          "id": "P_Career",
+          "title": "Career",
+          "color": "blue",
+          "tier": 7,
+          "col": "left"
+        },
+        {
+          "id": "P_AuthorityFigures",
+          "title": "Authority Figures",
+          "color": "blue",
+          "tier": 7,
+          "col": "center"
+        },
+        {
+          "id": "P_Stability",
+          "title": "Stability",
+          "sub": "Reliability",
+          "color": "green",
+          "tier": 7,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Consciousness",
+          "to": "P_Light"
+        },
+        {
+          "from": "P_Consciousness",
+          "to": "P_Self"
+        },
+        {
+          "from": "P_Light",
+          "to": "P_Day"
+        },
+        {
+          "from": "P_Day",
+          "to": "P_Masculinity"
+        },
+        {
+          "from": "P_Masculinity",
+          "to": "P_Vitality"
+        },
+        {
+          "from": "P_Masculinity",
+          "to": "P_Vision"
+        },
+        {
+          "from": "P_Masculinity",
+          "to": "P_Visibility"
+        },
+        {
+          "from": "P_Vision",
+          "to": "P_Decisiveness"
+        },
+        {
+          "from": "P_Vision",
+          "to": "P_Leadership"
+        },
+        {
+          "from": "P_Decisiveness",
+          "to": "P_Leadership"
+        },
+        {
+          "from": "P_Decisiveness",
+          "to": "P_Career"
+        },
+        {
+          "from": "P_Leadership",
+          "to": "P_Career"
+        },
+        {
+          "from": "P_Leadership",
+          "to": "P_AuthorityFigures"
+        },
+        {
+          "from": "P_Leadership",
+          "to": "P_Center"
+        },
+        {
+          "from": "P_Self",
+          "to": "P_Center"
+        },
+        {
+          "from": "P_Center",
+          "to": "P_Stability"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Consciousness",
+              "title": "Consciousness",
+              "color": "green",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Vitality",
+              "title": "Vitality",
+              "sub": "Health",
+              "color": "gold",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Visibility",
+              "title": "Visibility",
+              "sub": "Fame",
+              "color": "blue",
+              "tier": 5,
+              "col": "center"
+            },
+            {
+              "id": "P_Leadership",
+              "title": "Leadership",
+              "sub": "Authority",
+              "color": "blue",
+              "tier": 6,
+              "col": "center"
+            },
+            {
+              "id": "P_AuthorityFigures",
+              "title": "Authority Figures",
+              "color": "blue",
+              "tier": 7,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Light",
+              "title": "Light",
+              "color": "blue",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Day",
+              "title": "Day",
+              "sub": "Public",
+              "color": "blue",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Masculinity",
+              "title": "Masculinity",
+              "sub": "Extroverting",
+              "color": "blue",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Vision",
+              "title": "Vision",
+              "sub": "Clarity",
+              "color": "blue",
+              "tier": 5,
+              "col": "left"
+            },
+            {
+              "id": "P_Decisiveness",
+              "title": "Decisiveness",
+              "sub": "Confidence",
+              "color": "blue",
+              "tier": 6,
+              "col": "left"
+            },
+            {
+              "id": "P_Career",
+              "title": "Career",
+              "color": "blue",
+              "tier": 7,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Self",
+              "title": "Self",
+              "sub": "Ego / Self-Esteem",
+              "color": "green",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Center",
+              "title": "Center",
+              "color": "green",
+              "tier": 6,
+              "col": "right"
+            },
+            {
+              "id": "P_Stability",
+              "title": "Stability",
+              "sub": "Reliability",
+              "color": "green",
+              "tier": 7,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Consciousness",
+              "title": "Consciousness",
+              "color": "green",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Vitality",
+              "title": "Vitality",
+              "sub": "Health",
+              "color": "gold",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Visibility",
+              "title": "Visibility",
+              "sub": "Fame",
+              "color": "blue",
+              "tier": 5,
+              "col": "center"
+            },
+            {
+              "id": "P_Leadership",
+              "title": "Leadership",
+              "sub": "Authority",
+              "color": "blue",
+              "tier": 6,
+              "col": "center"
+            },
+            {
+              "id": "P_AuthorityFigures",
+              "title": "Authority Figures",
+              "color": "blue",
+              "tier": 7,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Light",
+              "title": "Light",
+              "color": "blue",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Day",
+              "title": "Day",
+              "sub": "Public",
+              "color": "blue",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Masculinity",
+              "title": "Masculinity",
+              "sub": "Extroverting",
+              "color": "blue",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Vision",
+              "title": "Vision",
+              "sub": "Clarity",
+              "color": "blue",
+              "tier": 5,
+              "col": "left"
+            },
+            {
+              "id": "P_Decisiveness",
+              "title": "Decisiveness",
+              "sub": "Confidence",
+              "color": "blue",
+              "tier": 6,
+              "col": "left"
+            },
+            {
+              "id": "P_Career",
+              "title": "Career",
+              "color": "blue",
+              "tier": 7,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Self",
+              "title": "Self",
+              "sub": "Ego / Self-Esteem",
+              "color": "green",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Center",
+              "title": "Center",
+              "color": "green",
+              "tier": 6,
+              "col": "right"
+            },
+            {
+              "id": "P_Stability",
+              "title": "Stability",
+              "sub": "Reliability",
+              "color": "green",
+              "tier": 7,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Moon": {
+      "title": "Mind (Moon)",
+      "symbol": "☽",
+      "sanskrit": "Candra / Manas",
+      "formula": "Receptivity & Flow",
+      "sticky_note": "☽ Moon",
+      "nodes": [
+        {
+          "id": "P_Mind",
+          "title": "Mind",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_Subjectivity",
+          "title": "Subjectivity",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "P_InnerSelf",
+          "title": "Inner Self",
+          "sub": "Feminine Self",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_Opinion",
+          "title": "Opinion",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "P_Privacy",
+          "title": "Privacy",
+          "sub": "Shyness",
+          "badge": "Circled",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "P_Fluctuation",
+          "title": "Fluctuation / Concentration",
+          "tier": 4,
+          "col": "left"
+        },
+        {
+          "id": "P_Desire",
+          "title": "Desire",
+          "tier": 4,
+          "col": "center"
+        },
+        {
+          "id": "P_Domestic",
+          "title": "Domestic",
+          "tier": 4,
+          "col": "right"
+        },
+        {
+          "id": "P_Rhythm",
+          "title": "Rhythm & Timing",
+          "tier": 5,
+          "col": "left"
+        },
+        {
+          "id": "P_Emotion",
+          "title": "Emotion",
+          "tier": 5,
+          "col": "center"
+        },
+        {
+          "id": "P_Mother",
+          "title": "Mother",
+          "tier": 5,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Mind",
+          "to": "P_Subjectivity"
+        },
+        {
+          "from": "P_Mind",
+          "to": "P_InnerSelf"
+        },
+        {
+          "from": "P_Subjectivity",
+          "to": "P_Opinion"
+        },
+        {
+          "from": "P_Opinion",
+          "to": "P_Desire"
+        },
+        {
+          "from": "P_Desire",
+          "to": "P_Emotion"
+        },
+        {
+          "from": "P_Opinion",
+          "to": "P_Fluctuation"
+        },
+        {
+          "from": "P_Fluctuation",
+          "to": "P_Rhythm"
+        },
+        {
+          "from": "P_InnerSelf",
+          "to": "P_Privacy"
+        },
+        {
+          "from": "P_Privacy",
+          "to": "P_Domestic"
+        },
+        {
+          "from": "P_Domestic",
+          "to": "P_Mother"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Mind",
+              "title": "Mind",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Subjectivity",
+              "title": "Subjectivity",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Opinion",
+              "title": "Opinion",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Desire",
+              "title": "Desire",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Emotion",
+              "title": "Emotion",
+              "tier": 5,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_InnerSelf",
+              "title": "Inner Self",
+              "sub": "Feminine Self",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Privacy",
+              "title": "Privacy",
+              "sub": "Shyness",
+              "badge": "Circled",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Domestic",
+              "title": "Domestic",
+              "tier": 4,
+              "col": "right"
+            },
+            {
+              "id": "P_Mother",
+              "title": "Mother",
+              "tier": 5,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Fluctuation",
+              "title": "Fluctuation / Concentration",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Rhythm",
+              "title": "Rhythm & Timing",
+              "tier": 5,
+              "col": "left"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Mind",
+              "title": "Mind",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Subjectivity",
+              "title": "Subjectivity",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Opinion",
+              "title": "Opinion",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Desire",
+              "title": "Desire",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Emotion",
+              "title": "Emotion",
+              "tier": 5,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_InnerSelf",
+              "title": "Inner Self",
+              "sub": "Feminine Self",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Privacy",
+              "title": "Privacy",
+              "sub": "Shyness",
+              "badge": "Circled",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Domestic",
+              "title": "Domestic",
+              "tier": 4,
+              "col": "right"
+            },
+            {
+              "id": "P_Mother",
+              "title": "Mother",
+              "tier": 5,
+              "col": "right"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Fluctuation",
+              "title": "Fluctuation / Concentration",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Rhythm",
+              "title": "Rhythm & Timing",
+              "tier": 5,
+              "col": "left"
+            }
+          ]
+        }
+      ]
+    },
+    "Mars": {
+      "title": "♂ Mars",
+      "symbol": "♂",
+      "sanskrit": "Maṅgala / Kuja",
+      "formula": "Drive & Strategy",
+      "nodes": [
+        {
+          "id": "P_Masculinity",
+          "title": "Masculinity",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_SelfReliance",
+          "title": "Self-Reliance",
+          "sub": "Independence, Freedom",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "P_Strength",
+          "title": "Strength",
+          "sub": "Courage",
+          "badge": "Circled",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "P_Inception",
+          "title": "Inception",
+          "sub": "Ambition, Passion",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_Weapons",
+          "title": "Weapons",
+          "sub": "Tools",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "P_TheStrong",
+          "title": "The Strong",
+          "sub": "Warriors, Athletes",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "P_Competition",
+          "title": "Competition",
+          "sub": "War, Violence",
+          "tier": 4,
+          "col": "center"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Masculinity",
+          "to": "P_SelfReliance"
+        },
+        {
+          "from": "P_Masculinity",
+          "to": "P_Strength"
+        },
+        {
+          "from": "P_Masculinity",
+          "to": "P_Inception"
+        },
+        {
+          "from": "P_SelfReliance",
+          "to": "P_Weapons"
+        },
+        {
+          "from": "P_Strength",
+          "to": "P_Weapons"
+        },
+        {
+          "from": "P_Strength",
+          "to": "P_TheStrong"
+        },
+        {
+          "from": "P_Inception",
+          "to": "P_TheStrong"
+        },
+        {
+          "from": "P_Weapons",
+          "to": "P_TheStrong"
+        },
+        {
+          "from": "P_TheStrong",
+          "to": "P_Competition"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Strength",
+              "title": "Strength",
+              "sub": "Courage",
+              "badge": "Circled",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_TheStrong",
+              "title": "The Strong",
+              "sub": "Warriors, Athletes",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Competition",
+              "title": "Competition",
+              "sub": "War, Violence",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_SelfReliance",
+              "title": "Self-Reliance",
+              "sub": "Independence, Freedom",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Weapons",
+              "title": "Weapons",
+              "sub": "Tools",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Inception",
+              "title": "Inception",
+              "sub": "Ambition, Passion",
+              "tier": 2,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Strength",
+              "title": "Strength",
+              "sub": "Courage",
+              "badge": "Circled",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_TheStrong",
+              "title": "The Strong",
+              "sub": "Warriors, Athletes",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Competition",
+              "title": "Competition",
+              "sub": "War, Violence",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_SelfReliance",
+              "title": "Self-Reliance",
+              "sub": "Independence, Freedom",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Weapons",
+              "title": "Weapons",
+              "sub": "Tools",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Inception",
+              "title": "Inception",
+              "sub": "Ambition, Passion",
+              "tier": 2,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Mercury": {
+      "title": "☿ Mercury",
+      "symbol": "☿",
+      "sanskrit": "Budha",
+      "formula": "Discrimination & Commerce",
+      "nodes": [
+        {
+          "id": "P_Intellect",
+          "title": "☆Intellect☆",
+          "sub": "Pattern Matching",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_Decoding",
+          "title": "Decoding",
+          "sub": "Encoding",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "P_Relationships",
+          "title": "Relationships",
+          "sub": "Friendship",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "P_Organization",
+          "title": "Organization",
+          "sub": "Neatness, Efficiency",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_Communication",
+          "title": "Communication",
+          "sub": "Languages",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "P_Recreation",
+          "title": "Recreation",
+          "sub": "Fun, Wit, Social",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "P_Balance",
+          "title": "Balance",
+          "sub": "Neutrality, Dexterity",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "P_Interaction",
+          "title": "Interaction",
+          "sub": "Exchange, Trade",
+          "tier": 4,
+          "col": "left"
+        },
+        {
+          "id": "P_Youth",
+          "title": "Youth",
+          "tier": 4,
+          "col": "center"
+        },
+        {
+          "id": "P_Symmetry",
+          "title": "Symmetry",
+          "sub": "Beauty",
+          "tier": 4,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Intellect",
+          "to": "P_Decoding"
+        },
+        {
+          "from": "P_Decoding",
+          "to": "P_Communication"
+        },
+        {
+          "from": "P_Communication",
+          "to": "P_Interaction"
+        },
+        {
+          "from": "P_Intellect",
+          "to": "P_Relationships"
+        },
+        {
+          "from": "P_Relationships",
+          "to": "P_Recreation"
+        },
+        {
+          "from": "P_Recreation",
+          "to": "P_Youth"
+        },
+        {
+          "from": "P_Intellect",
+          "to": "P_Organization"
+        },
+        {
+          "from": "P_Organization",
+          "to": "P_Balance"
+        },
+        {
+          "from": "P_Balance",
+          "to": "P_Symmetry"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Intellect",
+              "title": "☆Intellect☆",
+              "sub": "Pattern Matching",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Relationships",
+              "title": "Relationships",
+              "sub": "Friendship",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Recreation",
+              "title": "Recreation",
+              "sub": "Fun, Wit, Social",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Youth",
+              "title": "Youth",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decoding",
+              "title": "Decoding",
+              "sub": "Encoding",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Communication",
+              "title": "Communication",
+              "sub": "Languages",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Interaction",
+              "title": "Interaction",
+              "sub": "Exchange, Trade",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Organization",
+              "title": "Organization",
+              "sub": "Neatness, Efficiency",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Balance",
+              "title": "Balance",
+              "sub": "Neutrality, Dexterity",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Symmetry",
+              "title": "Symmetry",
+              "sub": "Beauty",
+              "tier": 4,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Intellect",
+              "title": "☆Intellect☆",
+              "sub": "Pattern Matching",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Relationships",
+              "title": "Relationships",
+              "sub": "Friendship",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Recreation",
+              "title": "Recreation",
+              "sub": "Fun, Wit, Social",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Youth",
+              "title": "Youth",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decoding",
+              "title": "Decoding",
+              "sub": "Encoding",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Communication",
+              "title": "Communication",
+              "sub": "Languages",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Interaction",
+              "title": "Interaction",
+              "sub": "Exchange, Trade",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Organization",
+              "title": "Organization",
+              "sub": "Neatness, Efficiency",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Balance",
+              "title": "Balance",
+              "sub": "Neutrality, Dexterity",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Symmetry",
+              "title": "Symmetry",
+              "sub": "Beauty",
+              "tier": 4,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Jupiter": {
+      "title": "♃ Jupiter",
+      "symbol": "♃",
+      "banner": "Positivity",
+      "sanskrit": "Guru / Bṛhaspati",
+      "formula": "Expansion & Wisdom",
+      "columns": [
+        {
+          "name": "'+'",
+          "nodes": [
+            {
+              "id": "P_Increase",
+              "title": "Increase",
+              "sub": "growth, success",
+              "tier": 1
+            },
+            {
+              "id": "P_Creation",
+              "title": "Creation",
+              "sub": "reproduction, children",
+              "tier": 2
+            },
+            {
+              "id": "P_Parenting",
+              "title": "Parenting",
+              "sub": "teaching, guiding",
+              "tier": 3
+            },
+            {
+              "id": "P_Wisdom",
+              "title": "Wisdom",
+              "sub": "philosophy, religion",
+              "tier": 4
+            }
+          ]
+        },
+        {
+          "name": "optimism",
+          "nodes": [
+            {
+              "id": "P_Trust",
+              "title": "Trust",
+              "sub": "faith",
+              "tier": 1
+            },
+            {
+              "id": "P_Generousity",
+              "title": "Generousity",
+              "sub": "charity, virtue",
+              "tier": 2
+            },
+            {
+              "id": "P_Honesty",
+              "title": "Honesty",
+              "sub": "lawfulness",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Increase",
+          "to": "P_Creation"
+        },
+        {
+          "from": "P_Creation",
+          "to": "P_Parenting"
+        },
+        {
+          "from": "P_Parenting",
+          "to": "P_Wisdom"
+        },
+        {
+          "from": "P_Trust",
+          "to": "P_Generousity"
+        },
+        {
+          "from": "P_Generousity",
+          "to": "P_Honesty"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "'+'",
+          "items": [
+            {
+              "id": "P_Increase",
+              "title": "Increase",
+              "sub": "growth, success",
+              "tier": 1
+            },
+            {
+              "id": "P_Creation",
+              "title": "Creation",
+              "sub": "reproduction, children",
+              "tier": 2
+            },
+            {
+              "id": "P_Parenting",
+              "title": "Parenting",
+              "sub": "teaching, guiding",
+              "tier": 3
+            },
+            {
+              "id": "P_Wisdom",
+              "title": "Wisdom",
+              "sub": "philosophy, religion",
+              "tier": 4
+            }
+          ]
+        },
+        {
+          "name": "optimism",
+          "items": [
+            {
+              "id": "P_Trust",
+              "title": "Trust",
+              "sub": "faith",
+              "tier": 1
+            },
+            {
+              "id": "P_Generousity",
+              "title": "Generousity",
+              "sub": "charity, virtue",
+              "tier": 2
+            },
+            {
+              "id": "P_Honesty",
+              "title": "Honesty",
+              "sub": "lawfulness",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "subgraphs": [
+        {
+          "name": "'+'",
+          "nodes": [
+            {
+              "id": "P_Increase",
+              "title": "Increase",
+              "sub": "growth, success",
+              "tier": 1
+            },
+            {
+              "id": "P_Creation",
+              "title": "Creation",
+              "sub": "reproduction, children",
+              "tier": 2
+            },
+            {
+              "id": "P_Parenting",
+              "title": "Parenting",
+              "sub": "teaching, guiding",
+              "tier": 3
+            },
+            {
+              "id": "P_Wisdom",
+              "title": "Wisdom",
+              "sub": "philosophy, religion",
+              "tier": 4
+            }
+          ]
+        },
+        {
+          "name": "optimism",
+          "nodes": [
+            {
+              "id": "P_Trust",
+              "title": "Trust",
+              "sub": "faith",
+              "tier": 1
+            },
+            {
+              "id": "P_Generousity",
+              "title": "Generousity",
+              "sub": "charity, virtue",
+              "tier": 2
+            },
+            {
+              "id": "P_Honesty",
+              "title": "Honesty",
+              "sub": "lawfulness",
+              "tier": 3
+            }
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "id": "P_Increase",
+          "title": "Increase",
+          "sub": "growth, success",
+          "tier": 1,
+          "col": "'+'"
+        },
+        {
+          "id": "P_Creation",
+          "title": "Creation",
+          "sub": "reproduction, children",
+          "tier": 2,
+          "col": "'+'"
+        },
+        {
+          "id": "P_Parenting",
+          "title": "Parenting",
+          "sub": "teaching, guiding",
+          "tier": 3,
+          "col": "'+'"
+        },
+        {
+          "id": "P_Wisdom",
+          "title": "Wisdom",
+          "sub": "philosophy, religion",
+          "tier": 4,
+          "col": "'+'"
+        },
+        {
+          "id": "P_Trust",
+          "title": "Trust",
+          "sub": "faith",
+          "tier": 1,
+          "col": "optimism"
+        },
+        {
+          "id": "P_Generousity",
+          "title": "Generousity",
+          "sub": "charity, virtue",
+          "tier": 2,
+          "col": "optimism"
+        },
+        {
+          "id": "P_Honesty",
+          "title": "Honesty",
+          "sub": "lawfulness",
+          "tier": 3,
+          "col": "optimism"
+        }
+      ]
+    },
+    "Venus": {
+      "title": "♀ Venus",
+      "symbol": "♀",
+      "sanskrit": "Śukra",
+      "formula": "Devotion & Refinement",
+      "nodes": [
+        {
+          "id": "P_Femininity",
+          "title": "Femininity",
+          "badge": "Circled",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_Beauty",
+          "title": "Beauty",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "P_Love",
+          "title": "Love",
+          "sub": "Unity, Romance",
+          "tier": 2,
+          "col": "center"
+        },
+        {
+          "id": "P_Receptivity",
+          "title": "Receptivity",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_BeautifulThings",
+          "title": "Beautiful Things",
+          "sub": "Arts, Fashion, etc.",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "P_Harmony",
+          "title": "Harmony",
+          "sub": "Partnership, Marriage",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "P_Learning",
+          "title": "Learning",
+          "sub": "Listening, Sensitivity",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "P_Senses",
+          "title": "Senses",
+          "sub": "Sensuality",
+          "tier": 4,
+          "col": "left"
+        },
+        {
+          "id": "P_Peace",
+          "title": "Peace",
+          "sub": "Cooperation",
+          "tier": 4,
+          "col": "center"
+        },
+        {
+          "id": "P_Compassion",
+          "title": "Compassion",
+          "tier": 4,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Femininity",
+          "to": "P_Beauty"
+        },
+        {
+          "from": "P_Beauty",
+          "to": "P_BeautifulThings"
+        },
+        {
+          "from": "P_BeautifulThings",
+          "to": "P_Senses"
+        },
+        {
+          "from": "P_Femininity",
+          "to": "P_Love"
+        },
+        {
+          "from": "P_Love",
+          "to": "P_Harmony"
+        },
+        {
+          "from": "P_Harmony",
+          "to": "P_Peace"
+        },
+        {
+          "from": "P_Femininity",
+          "to": "P_Receptivity"
+        },
+        {
+          "from": "P_Receptivity",
+          "to": "P_Learning"
+        },
+        {
+          "from": "P_Learning",
+          "to": "P_Compassion"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Femininity",
+              "title": "Femininity",
+              "badge": "Circled",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Love",
+              "title": "Love",
+              "sub": "Unity, Romance",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Harmony",
+              "title": "Harmony",
+              "sub": "Partnership, Marriage",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Peace",
+              "title": "Peace",
+              "sub": "Cooperation",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Beauty",
+              "title": "Beauty",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_BeautifulThings",
+              "title": "Beautiful Things",
+              "sub": "Arts, Fashion, etc.",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Senses",
+              "title": "Senses",
+              "sub": "Sensuality",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Receptivity",
+              "title": "Receptivity",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Learning",
+              "title": "Learning",
+              "sub": "Listening, Sensitivity",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Compassion",
+              "title": "Compassion",
+              "tier": 4,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Femininity",
+              "title": "Femininity",
+              "badge": "Circled",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Love",
+              "title": "Love",
+              "sub": "Unity, Romance",
+              "tier": 2,
+              "col": "center"
+            },
+            {
+              "id": "P_Harmony",
+              "title": "Harmony",
+              "sub": "Partnership, Marriage",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Peace",
+              "title": "Peace",
+              "sub": "Cooperation",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Beauty",
+              "title": "Beauty",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_BeautifulThings",
+              "title": "Beautiful Things",
+              "sub": "Arts, Fashion, etc.",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Senses",
+              "title": "Senses",
+              "sub": "Sensuality",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Receptivity",
+              "title": "Receptivity",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Learning",
+              "title": "Learning",
+              "sub": "Listening, Sensitivity",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Compassion",
+              "title": "Compassion",
+              "tier": 4,
+              "col": "right"
+            }
+          ]
+        }
+      ]
+    },
+    "Saturn": {
+      "title": "♄ Saturn",
+      "symbol": "♄",
+      "banner": "Negativity",
+      "sanskrit": "Śani",
+      "formula": "Endurance & Realism",
+      "nodes": [
+        {
+          "id": "P_Decrease",
+          "title": "'-' Decrease",
+          "sub": "reduction, failure",
+          "tier": 1,
+          "col": "left"
+        },
+        {
+          "id": "P_Scarcity",
+          "title": "Scarcity",
+          "sub": "poverty, neediness",
+          "tier": 1,
+          "col": "center"
+        },
+        {
+          "id": "P_Destruction",
+          "title": "Destruction",
+          "sub": "restriction",
+          "tier": 2,
+          "col": "left"
+        },
+        {
+          "id": "P_Pessimism",
+          "title": "Pessimism",
+          "sub": "distrust",
+          "tier": 2,
+          "col": "right"
+        },
+        {
+          "id": "P_Death",
+          "title": "Death",
+          "sub": "age, decay, illness",
+          "tier": 3,
+          "col": "left"
+        },
+        {
+          "id": "P_Subordination",
+          "title": "Sub-ordination",
+          "tier": 3,
+          "col": "center"
+        },
+        {
+          "id": "P_Critique",
+          "title": "Critique",
+          "sub": "logic, science",
+          "tier": 3,
+          "col": "right"
+        },
+        {
+          "id": "P_Longevity",
+          "title": "Longevity",
+          "sub": "endurance, tenacity",
+          "tier": 4,
+          "col": "left"
+        },
+        {
+          "id": "P_Subordinate",
+          "title": "Subordinate",
+          "sub": "employee, masses",
+          "tier": 4,
+          "col": "center"
+        },
+        {
+          "id": "P_Objectivity",
+          "title": "Objectivity",
+          "sub": "detachment, realism",
+          "tier": 4,
+          "col": "right"
+        }
+      ],
+      "edges": [
+        {
+          "from": "P_Decrease",
+          "to": "P_Scarcity"
+        },
+        {
+          "from": "P_Decrease",
+          "to": "P_Destruction"
+        },
+        {
+          "from": "P_Destruction",
+          "to": "P_Death"
+        },
+        {
+          "from": "P_Destruction",
+          "to": "P_Subordination"
+        },
+        {
+          "from": "P_Death",
+          "to": "P_Longevity"
+        },
+        {
+          "from": "P_Subordination",
+          "to": "P_Subordinate"
+        },
+        {
+          "from": "P_Pessimism",
+          "to": "P_Critique"
+        },
+        {
+          "from": "P_Critique",
+          "to": "P_Objectivity"
+        }
+      ],
+      "pillars": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decrease",
+              "title": "'-' Decrease",
+              "sub": "reduction, failure",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "P_Destruction",
+              "title": "Destruction",
+              "sub": "restriction",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Death",
+              "title": "Death",
+              "sub": "age, decay, illness",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Longevity",
+              "title": "Longevity",
+              "sub": "endurance, tenacity",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Scarcity",
+              "title": "Scarcity",
+              "sub": "poverty, neediness",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Subordination",
+              "title": "Sub-ordination",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Subordinate",
+              "title": "Subordinate",
+              "sub": "employee, masses",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Pessimism",
+              "title": "Pessimism",
+              "sub": "distrust",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Critique",
+              "title": "Critique",
+              "sub": "logic, science",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Objectivity",
+              "title": "Objectivity",
+              "sub": "detachment, realism",
+              "tier": 4,
+              "col": "right"
+            }
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decrease",
+              "title": "'-' Decrease",
+              "sub": "reduction, failure",
+              "tier": 1,
+              "col": "left"
+            },
+            {
+              "id": "P_Destruction",
+              "title": "Destruction",
+              "sub": "restriction",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Death",
+              "title": "Death",
+              "sub": "age, decay, illness",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Longevity",
+              "title": "Longevity",
+              "sub": "endurance, tenacity",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Scarcity",
+              "title": "Scarcity",
+              "sub": "poverty, neediness",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Subordination",
+              "title": "Sub-ordination",
+              "tier": 3,
+              "col": "center"
+            },
+            {
+              "id": "P_Subordinate",
+              "title": "Subordinate",
+              "sub": "employee, masses",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
+          "name": "right",
+          "items": [
+            {
+              "id": "P_Pessimism",
+              "title": "Pessimism",
+              "sub": "distrust",
+              "tier": 2,
+              "col": "right"
+            },
+            {
+              "id": "P_Critique",
+              "title": "Critique",
+              "sub": "logic, science",
+              "tier": 3,
+              "col": "right"
+            },
+            {
+              "id": "P_Objectivity",
+              "title": "Objectivity",
+              "sub": "detachment, realism",
+              "tier": 4,
+              "col": "right"
             }
           ]
         }
