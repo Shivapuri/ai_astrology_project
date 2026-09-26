@@ -8,6 +8,10 @@
 
 (function() {
     function updateVimshopakaWidget(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="vimshopaka"]');
+        }
+        if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const tbody = cell.querySelector('tbody');
         if (!tbody || !currentData) return;
@@ -81,8 +85,11 @@
             title: 'Varga Vimshopaka (20pt)',
             icon: '⭐',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateVimshopakaWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
-                updateVimshopakaWidget(cell);
+                updateVimshopakaWidget(cell, chartData);
             }
         });
     }

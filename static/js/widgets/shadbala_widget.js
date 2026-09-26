@@ -146,8 +146,11 @@
             title: 'Shad Bala Breakdown',
             icon: '⚖️',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateShadbalaTableWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
-                updateShadbalaTableWidget(cell);
+                updateShadbalaTableWidget(cell, chartData);
             }
         });
     }

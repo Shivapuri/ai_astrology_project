@@ -3,7 +3,7 @@
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <span style="color: #4a3325; font-weight: bold; font-size: 12px; white-space: nowrap;">Sign Attributes & Anatomy</span>
-                    <select class="varga-select" onchange="updateSignAttributesWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 105px;">
+                    <select class="varga-select" onchange="updateSignAttributesWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeContainer'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 105px;">
                         <option value="D1" selected>D1 - Rāśi</option>
                         <option value="D2">D2 - Horā</option>
                         <option value="D3">D3 - Drekkāṇa</option>
@@ -29,7 +29,7 @@
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <label style="font-size: 10.5px; font-weight: 600; color: #6b5a4b; display: flex; align-items: center; gap: 3px; cursor: pointer;" title="Include Lagna (Ascendant) in numeric counts">
-                        <input type="checkbox" class="chk-count-lagna" onchange="updateSignAttributesWidget(this.closest('.grid-cell'))" style="cursor: pointer;"/> + Lagna
+                        <input type="checkbox" class="chk-count-lagna" onchange="updateSignAttributesWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeContainer'))" style="cursor: pointer;"/> + Lagna
                     </label>
                     <button type="button" class="btn-widget-maximize" title="Maximize View" onclick="maximizeTableFromWidget(this)">⛶</button>
                 </div>

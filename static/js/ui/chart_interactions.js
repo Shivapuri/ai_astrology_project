@@ -653,11 +653,22 @@
         if (!cell) return;
         const widgetType = cell.dataset.widget;
         const modal = document.getElementById('widgetMaximizeModal');
+        const card = document.getElementById('widgetMaximizeCard');
         const titleEl = document.getElementById('widgetMaximizeModalTitle');
         const container = document.getElementById('widgetMaximizeContainer');
         if (!modal || !titleEl || !container) return;
 
         resetFloatingWindowPosition();
+
+        if (card) {
+            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita'].includes(widgetType);
+            const w = isWide ? Math.min(1480, window.innerWidth - 40) : Math.min(1000, window.innerWidth - 40);
+            const h = Math.min(840, window.innerHeight - 60);
+            card.style.width = w + 'px';
+            card.style.height = h + 'px';
+            card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+            card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+        }
 
         const titleText = cell.querySelector('.chart-toolbar strong, .chart-toolbar .context-info-title, .chart-toolbar .aspect-table-title')?.textContent || 'Table';
         const currentData = window.currentChartData;
@@ -665,16 +676,61 @@
         titleEl.textContent = subjectPrefix + titleText;
 
         const navPills = {
+            'master-diagnostic': 'nav-btn-master-diag',
+            'aspects-bhava-chalita': 'nav-btn-bhava',
             'planetary-info': 'nav-btn-planet',
+            'nakshatras': 'nav-btn-planet',
+            'shadbala-table': 'nav-btn-shadbala',
+            'yoga-judgment': 'nav-btn-yoga',
             'ashtakavarga': 'nav-btn-ashtaka',
-            'shadbala-table': 'nav-btn-shadbala'
+            'planetary-evaluation': 'nav-btn-evaluation',
+            'classical-yogas': 'nav-btn-classical-yogas'
         };
         setActiveFloatingNav(navPills[widgetType] || null);
 
         const tmpl = document.getElementById('tmpl-' + widgetType);
         if (tmpl) {
             container.innerHTML = '';
+            container.dataset.widget = widgetType;
             const clone = tmpl.content.cloneNode(true);
+
+            // Sync form control values from originating cell to clone
+            const srcVarga = cell.querySelector('.varga-select');
+            if (srcVarga) {
+                const dstVarga = clone.querySelector('.varga-select');
+                if (dstVarga) dstVarga.value = srcVarga.value;
+            }
+            const srcAv = cell.querySelector('.av-view-select');
+            if (srcAv) {
+                const dstAv = clone.querySelector('.av-view-select');
+                if (dstAv) dstAv.value = srcAv.value;
+            }
+            const srcMatrix = cell.querySelector('.matrix-type-select');
+            if (srcMatrix) {
+                const dstMatrix = clone.querySelector('.matrix-type-select');
+                if (dstMatrix) dstMatrix.value = srcMatrix.value;
+            }
+            const srcYogaCat = cell.querySelector('.yoga-category-filter');
+            if (srcYogaCat) {
+                const dstYogaCat = clone.querySelector('.yoga-category-filter');
+                if (dstYogaCat) dstYogaCat.value = srcYogaCat.value;
+            }
+            const srcYogaStat = cell.querySelector('.yoga-status-filter');
+            if (srcYogaStat) {
+                const dstYogaStat = clone.querySelector('.yoga-status-filter');
+                if (dstYogaStat) dstYogaStat.value = srcYogaStat.value;
+            }
+            const srcSignWidget = cell.querySelector('.widget-sign-attributes');
+            if (srcSignWidget && srcSignWidget.dataset.activeTab) {
+                const dstSignWidget = clone.querySelector('.widget-sign-attributes');
+                if (dstSignWidget) dstSignWidget.dataset.activeTab = srcSignWidget.dataset.activeTab;
+            }
+            const srcChkLagna = cell.querySelector('.chk-count-lagna');
+            if (srcChkLagna) {
+                const dstChkLagna = clone.querySelector('.chk-count-lagna');
+                if (dstChkLagna) dstChkLagna.checked = srcChkLagna.checked;
+            }
+
             container.appendChild(clone);
             
             // Delegate update
@@ -682,6 +738,7 @@
                 window.widgetRegistry.renderWidget(widgetType, container, currentData);
             }
             modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
     }
 

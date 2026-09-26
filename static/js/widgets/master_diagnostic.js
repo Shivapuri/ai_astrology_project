@@ -3505,6 +3505,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         title: 'Master Graha Diagnostics',
         icon: '★',
         category: 'Diagnostics',
+        render: function(container, chartData, options) {
+            updateMasterDiagnosticWidget(container);
+        },
         onUpdate: function(cell, chartData) {
             updateMasterDiagnosticWidget(cell);
         }

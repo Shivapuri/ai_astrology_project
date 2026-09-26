@@ -7,6 +7,10 @@
 
 (function() {
     function updateAshtakavargaWidget(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="ashtakavarga"]');
+        }
+        if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const tbody = cell.querySelector('tbody');
         if (!tbody || !currentData || !currentData.ashtakavarga) return;
@@ -120,8 +124,11 @@
             title: 'Ashtakavarga & Reductions',
             icon: '🔢',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateAshtakavargaWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
-                updateAshtakavargaWidget(cell);
+                updateAshtakavargaWidget(cell, chartData);
             }
         });
     }

@@ -148,6 +148,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         title: 'Dignities in Vargas',
         icon: '👑',
         category: 'Dignity',
+        render: function(container, chartData, options) {
+            updateVargaDignitiesTable(container, chartData);
+        },
         onUpdate: function(cell, chartData) {
             updateVargaDignitiesTable(cell, chartData);
         }

@@ -7,6 +7,10 @@
  */
 
 function updatePlanetaryEvaluationWidget(cell, chartData) {
+    if (!cell) {
+        cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="planetary-evaluation"]');
+    }
+    if (!cell) return;
     const currentData = chartData || window.currentChartData;
     if (!currentData || !currentData.planetary_evaluation) return;
     const evalData = currentData.planetary_evaluation;
@@ -353,6 +357,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         icon: '🌟',
         category: 'Diagnostics',
         isScrollable: true,
+        render: function(container, chartData, options) {
+            updatePlanetaryEvaluationWidget(container, chartData);
+        },
         onUpdate: function(cell, chartData) {
             updatePlanetaryEvaluationWidget(cell, chartData);
         }

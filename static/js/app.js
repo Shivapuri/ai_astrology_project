@@ -831,20 +831,23 @@ function updateAllWidgets() {
     // Update floating modal if active
     const modal = document.getElementById('widgetMaximizeModal');
     if (modal && modal.style.display === 'flex') {
-        const navBtnDiag = document.getElementById('nav-btn-master-diag');
-        if (navBtnDiag?.classList.contains('active')) {
-            const cont = document.getElementById('widgetMaximizeContainer');
-            if (cont && typeof populateMasterDiagnosticTable === 'function') populateMasterDiagnosticTable(cont);
-        }
-        const navBtn = document.getElementById('nav-btn-evaluation');
-        if (navBtn?.classList.contains('active')) {
-            const cont = document.getElementById('widgetMaximizeContainer');
-            if (cont && typeof updatePlanetaryEvaluationWidget === 'function') updatePlanetaryEvaluationWidget(cont);
-        }
-        const navBtnYogas = document.getElementById('nav-btn-classical-yogas');
-        if (navBtnYogas?.classList.contains('active')) {
-            const cont = document.getElementById('widgetMaximizeContainer');
-            if (cont && typeof updateClassicalYogasWidget === 'function') updateClassicalYogasWidget(cont);
+        const cont = document.getElementById('widgetMaximizeContainer');
+        const widgetType = cont?.dataset?.widget;
+        if (widgetType && window.widgetRegistry) {
+            window.widgetRegistry.renderWidget(widgetType, cont, chartData);
+        } else {
+            const navBtnDiag = document.getElementById('nav-btn-master-diag');
+            if (navBtnDiag?.classList.contains('active')) {
+                if (cont && typeof populateMasterDiagnosticTable === 'function') populateMasterDiagnosticTable(cont);
+            }
+            const navBtn = document.getElementById('nav-btn-evaluation');
+            if (navBtn?.classList.contains('active')) {
+                if (cont && typeof updatePlanetaryEvaluationWidget === 'function') updatePlanetaryEvaluationWidget(cont);
+            }
+            const navBtnYogas = document.getElementById('nav-btn-classical-yogas');
+            if (navBtnYogas?.classList.contains('active')) {
+                if (cont && typeof updateClassicalYogasWidget === 'function') updateClassicalYogasWidget(cont);
+            }
         }
     }
 }

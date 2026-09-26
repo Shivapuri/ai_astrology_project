@@ -7,6 +7,10 @@
 
 (function() {
     function updateDashaTimelineWidget(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="dashas-timeline"]');
+        }
+        if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const tbody = cell.querySelector('tbody');
         if (!tbody || !currentData || !currentData.vimshottari_dasha) return;
@@ -80,6 +84,9 @@
             title: 'Daśā Timeline',
             icon: '⏳',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateDashaTimelineWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateDashaTimelineWidget(cell, chartData);
             }

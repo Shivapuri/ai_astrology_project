@@ -172,6 +172,10 @@
     }
 
     function updateAspectsWidgetForCell(cell) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget^="aspects-"]');
+        }
+        if (!cell) return;
         const currentData = window.currentChartData;
         if (!currentData) return;
         const widgetType = cell.dataset.widget;
@@ -228,6 +232,9 @@
             title: 'Aspects (Planets)',
             icon: '👁️',
             category: 'Positions',
+            render: function(container, chartData, options) {
+                updateAspectsWidgetForCell(container);
+            },
             onUpdate: function(cell, chartData) {
                 updateAspectsWidgetForCell(cell);
             }
@@ -238,6 +245,9 @@
             title: 'Aspects (Equal Houses)',
             icon: '📐',
             category: 'Positions',
+            render: function(container, chartData, options) {
+                updateAspectsWidgetForCell(container);
+            },
             onUpdate: function(cell, chartData) {
                 updateAspectsWidgetForCell(cell);
             }
@@ -248,6 +258,9 @@
             title: 'Aspects (Bhava Chalita)',
             icon: '🏛️',
             category: 'Positions',
+            render: function(container, chartData, options) {
+                updateAspectsWidgetForCell(container);
+            },
             onUpdate: function(cell, chartData) {
                 updateAspectsWidgetForCell(cell);
             }

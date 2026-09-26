@@ -233,6 +233,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         title: 'Planetary Information',
         icon: '🪐',
         category: 'Positions',
+        render: function(container, chartData, options) {
+            populatePlanetaryInfoTable(container, chartData);
+        },
         onUpdate: function(cell, chartData) {
             populatePlanetaryInfoTable(cell, chartData);
         }
@@ -243,6 +246,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         title: 'Nakshatras & Speed',
         icon: '✨',
         category: 'Positions',
+        render: function(container, chartData, options) {
+            populatePlanetaryInfoTable(container, chartData);
+        },
         onUpdate: function(cell, chartData) {
             populatePlanetaryInfoTable(cell, chartData);
         }

@@ -62,8 +62,15 @@ class WidgetRegistry {
             return false;
         }
 
+        if (container && container.dataset) {
+            container.dataset.widget = id;
+        }
+
         if (typeof def.render === 'function') {
             def.render(container, chartData, options);
+            return true;
+        } else if (typeof def.onUpdate === 'function') {
+            def.onUpdate(container, chartData);
             return true;
         }
         return false;

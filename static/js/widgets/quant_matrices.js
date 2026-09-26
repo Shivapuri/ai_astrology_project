@@ -7,6 +7,10 @@
 
 (function() {
     function updateQuantMatricesTableForCell(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="quant-matrices"]');
+        }
+        if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const tbody = cell.querySelector('tbody');
         const tfoot = cell.querySelector('tfoot');
@@ -278,6 +282,9 @@
             title: 'Strength Matrices',
             icon: '🔢',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateQuantMatricesTableForCell(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateQuantMatricesTableForCell(cell, chartData);
             }

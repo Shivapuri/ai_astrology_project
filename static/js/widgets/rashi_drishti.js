@@ -9,6 +9,9 @@
 
 (function() {
     function updateRashiDrishtiWidget(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="rashi-drishti"]');
+        }
         if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const tbody = cell.querySelector('.rashi-drishti-table tbody');
@@ -123,6 +126,9 @@
             title: 'Rāśi Dṛṣṭi (Sign Aspects)',
             icon: '👁️',
             category: 'Aspects',
+            render: function(container, chartData, options) {
+                updateRashiDrishtiWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateRashiDrishtiWidget(cell, chartData);
             }

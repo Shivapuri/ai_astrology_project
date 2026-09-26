@@ -170,6 +170,9 @@
             icon: '👑',
             category: 'Yogas',
             isScrollable: true,
+            render: function(container, chartData, options) {
+                updateClassicalYogasWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateClassicalYogasWidget(cell, chartData);
             }

@@ -3,7 +3,7 @@
             <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 6px;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                     <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Rāśi Dṛṣṭi (Jaimini Sign Aspects)</span>
-                    <select class="varga-select" onchange="updateRashiDrishtiWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 110px;">
+                    <select class="varga-select" onchange="updateRashiDrishtiWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeContainer'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600; max-width: 110px;">
                         <option value="D1" selected>D1 - Rāśi</option>
                         <option value="D2">D2 - Horā</option>
                         <option value="D3">D3 - Drekkāṇa</option>

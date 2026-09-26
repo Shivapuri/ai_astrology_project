@@ -361,17 +361,22 @@
             const content = cell.querySelector('.grid-cell-content');
             if (!content) return;
             const modal = document.getElementById('widgetMaximizeModal');
-            const body = document.getElementById('maximizeModalBody');
-            const title = document.getElementById('maximizeModalTitle');
-            if (!modal || !body) return;
+            const container = document.getElementById('widgetMaximizeContainer');
+            const title = document.getElementById('widgetMaximizeModalTitle');
+            if (!modal || !container) return;
+
+            resetFloatingWindowPosition();
             
-            title.textContent = `📝 Astrological Notes & Journal — ${currentLoadedNative ? currentLoadedNative.name : ''}`;
-            body.innerHTML = '';
+            const currentNative = (window.currentChartData && window.currentChartData.subject_info) ? window.currentChartData.subject_info.name : (typeof currentLoadedNative !== 'undefined' && currentLoadedNative ? currentLoadedNative.name : '');
+            if (title) title.textContent = `📝 Astrological Notes & Journal — ${currentNative}`;
+            container.innerHTML = '';
+            container.dataset.widget = 'notes';
             
-            // Clone notes widget into modal body
+            // Clone notes widget into modal container
             const clone = content.cloneNode(true);
-            body.appendChild(clone);
+            container.appendChild(clone);
             modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
         }
 
 

@@ -183,6 +183,9 @@
             title: 'Yoga Judgment (Ishta/Kashta)',
             icon: '⚖️',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateYogaJudgmentWidget(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateYogaJudgmentWidget(cell, chartData);
             }

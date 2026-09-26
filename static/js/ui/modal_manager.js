@@ -151,6 +151,8 @@ function closeMaximizeModal(e) {
 
 function closeWidgetMaximizeModal(e) {
     if (!e || e.target === document.getElementById('widgetMaximizeModal') || e.target.closest('.modal-close-btn') || e.target.closest('.btn-close-floating')) {
+        const cont = document.getElementById('widgetMaximizeContainer');
+        if (cont) cont.dataset.widget = '';
         modalManager.closeModal('widgetMaximizeModal');
     }
 }

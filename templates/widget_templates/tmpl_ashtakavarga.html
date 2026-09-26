@@ -6,7 +6,7 @@
                     <span id="savTotalBadge" style="font-size: 10px; background: #eadecc; color: #5a4233; padding: 1px 5px; border-radius: 3px; font-weight: bold;">SAV: 337</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 4px;">
-                    <select class="av-view-select" onchange="updateAshtakavargaWidget(this.closest('.grid-cell'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                    <select class="av-view-select" onchange="updateAshtakavargaWidget(this.closest('.grid-cell') || this.closest('#widgetMaximizeContainer'))" style="padding: 2px 4px; font-size: 11px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
                         <option value="raw" selected>Raw Bindus (BAV/SAV)</option>
                         <option value="trikona">After Trikona Shodhana</option>
                         <option value="ekadhipatya">After Ekadhipatya Shodhana</option>

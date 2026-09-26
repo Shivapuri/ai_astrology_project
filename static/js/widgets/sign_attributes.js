@@ -102,7 +102,7 @@
             btn.style.background = '#fffdfa';
             btn.style.color = '#4a3325';
             widget.dataset.activeTab = tabName;
-            updateSignAttributesWidget(btn.closest('.grid-cell'));
+            updateSignAttributesWidget(btn.closest('.grid-cell') || btn.closest('#widgetMaximizeContainer') || widget);
         };
 
         function calculateClientSignDistributions(varga = 'D1', countLagna = false) {
@@ -490,6 +490,9 @@
         }
 
         function updateSignAttributesWidget(cell, chartData) {
+            if (!cell) {
+                cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="sign-attributes"]');
+            }
             if (!cell) return;
             const content = cell.querySelector('.sign-attr-content');
             if (!content) return;
@@ -587,6 +590,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
         title: 'Sign Attributes & Anatomy',
         icon: '♈',
         category: 'Signs',
+        render: function(container, chartData, options) {
+            updateSignAttributesWidget(container, chartData);
+        },
         onUpdate: function(cell, chartData) {
             updateSignAttributesWidget(cell, chartData);
         }

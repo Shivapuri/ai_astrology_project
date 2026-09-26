@@ -71,6 +71,8 @@
             background: #f7f3eb;
             border-bottom: 1px solid #e5dccb;
             flex-shrink: 0;
+            position: relative;
+            z-index: 5;
         }
         .chart-hotkeys {
             display: flex;

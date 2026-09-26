@@ -48,6 +48,10 @@
     }
 
     function updateAvasthasCalcTableForCell(cell, chartData) {
+        if (!cell) {
+            cell = document.getElementById('widgetMaximizeContainer') || document.querySelector('.grid-cell[data-widget="avasthas-calc"]');
+        }
+        if (!cell) return;
         const currentData = chartData || window.currentChartData;
         const vargaSelect = cell.querySelector('.varga-select');
         const varga = vargaSelect ? vargaSelect.value : 'D1';
@@ -241,6 +245,9 @@
             title: 'Qualitative Avasthas',
             icon: '🧘',
             category: 'Strengths',
+            render: function(container, chartData, options) {
+                updateAvasthasCalcTableForCell(container, chartData);
+            },
             onUpdate: function(cell, chartData) {
                 updateAvasthasCalcTableForCell(cell, chartData);
             }
