@@ -1,0 +1,274 @@
+{
+  "planets": {
+    "Sun": {
+      "name": "Sun",
+      "title": "Soul (Sun)",
+      "symbol": "☉",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Soul[\"<b>Soul</b>\"]\n\n    Light[\"<b>Light</b>\"]\n    Vitality[\"<b>Vitality</b><br/><span class='sub'>Health</span>\"]\n    Consciousness[\"<b>Conscious-<br/>ness</b>\"]\n\n    Soul --> Light\n    Soul --> Vitality\n    Soul --> Consciousness\n\n    Day[\"<b>Day</b><br/><span class='sub'>Public</span>\"]\n    Light --> Day\n\n    Vision[\"<b>Vision</b><br/><span class='sub'>Clarity</span>\"]\n    Visibility[\"<b>Visibility</b><br/><span class='sub'>Fame</span>\"]\n    Day --> Vision\n    Day --> Visibility\n\n    Decisiveness[\"<b>Decisiveness</b><br/><span class='sub'>Confidence</span>\"]\n    Leadership[\"<b>Leadership</b><br/><span class='sub'>Authority</span>\"]\n    Vision --> Decisiveness\n    Vision --> Leadership\n\n    Career[\"<b>Career</b>\"]\n    AuthorityFigures[\"<b>Authority<br/>Figures</b>\"]\n    Decisiveness --> Career\n    Leadership --> Career\n    Leadership --> AuthorityFigures\n\n    Self[\"<b>Self</b><br/><span class='sub'>Ego / Self-Esteem</span>\"]\n    Center[\"<b>Center</b>\"]\n    Stability[\"<b>Stability</b><br/><span class='sub'>Reliability</span>\"]\n\n    Consciousness --> Self\n    Self --> Center\n    Center --> Stability"
+    },
+    "Moon": {
+      "name": "Moon",
+      "title": "Mind (Moon)",
+      "symbol": "☽",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Mind[\"<b>Mind</b>\"]\n    \n    Subjectivity[\"<b>Subjectivity</b>\"]\n    Fluctuation[\"<b>Fluctuation / Concentration</b>\"]\n    Rhythm[\"<b>Rhythm & Timing</b>\"]\n    \n    Opinion[\"<b>Opinion</b>\"]\n    Desire[\"<b>Desire</b>\"]\n    Emotion[\"<b>Emotion</b>\"]\n    \n    InnerSelf[\"<b>Inner Self</b><br/><span class='sub'>Feminine Self</span>\"]\n    Privacy[\"<b>Privacy</b><br/><span class='sub'>Shyness</span>\"]\n    Domestic[\"<b>Domestic</b>\"]\n    Mother[\"<b>Mother</b>\"]\n    \n    Mind --> Subjectivity\n    Mind --> InnerSelf\n    \n    Subjectivity --> Fluctuation\n    Fluctuation --> Rhythm\n    \n    Subjectivity --> Opinion\n    Opinion --> Desire\n    Desire --> Emotion\n    \n    InnerSelf --> Privacy\n    Privacy --> Domestic\n    Domestic --> Mother"
+    },
+    "Mars": {
+      "name": "Mars",
+      "title": "Mars",
+      "symbol": "♂",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Masculinity[\"<b>Masculinity</b>\"]\n    \n    SelfReliance[\"<b>Self-Reliance</b><br/><span class='sub'>Independence, Freedom</span>\"]\n    Strength[\"<b>Strength</b><br/><span class='sub'>Courage</span>\"]\n    Inception[\"<b>Inception</b><br/><span class='sub'>Ambition, Passion</span>\"]\n    \n    Weapons[\"<b>Weapons</b><br/><span class='sub'>Tools</span>\"]\n    TheStrong[\"<b>The Strong</b><br/><span class='sub'>Warriors, Athletes</span>\"]\n    \n    Competition[\"<b>Competition</b><br/><span class='sub'>War, Violence</span>\"]\n    \n    Masculinity --> SelfReliance\n    Masculinity --> Strength\n    Masculinity --> Inception\n    \n    Strength --> Weapons\n    Strength --> TheStrong\n    SelfReliance -.-> Weapons\n    Inception -.-> TheStrong\n    \n    Weapons --> Competition\n    TheStrong --> Competition"
+    },
+    "Mercury": {
+      "name": "Mercury",
+      "title": "Mercury",
+      "symbol": "☿",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Intellect[\"<b>☆Intellect☆</b><br/><span class='sub'>Pattern Matching</span>\"]\n    \n    Decoding[\"<b>Decoding</b><br/><span class='sub'>Encoding</span>\"]\n    Communication[\"<b>Communication</b><br/><span class='sub'>Languages</span>\"]\n    Interaction[\"<b>Interaction</b><br/><span class='sub'>Exchange, Trade</span>\"]\n    \n    Relationships[\"<b>Relationships</b><br/><span class='sub'>Friendship</span>\"]\n    Recreation[\"<b>Recreation</b><br/><span class='sub'>Fun, Wit, Social</span>\"]\n    Youth[\"<b>Youth</b>\"]\n    \n    Organization[\"<b>Organization</b><br/><span class='sub'>Neatness, Efficiency</span>\"]\n    Balance[\"<b>Balance</b><br/><span class='sub'>Neutrality, Dexterity</span>\"]\n    Symmetry[\"<b>Symmetry</b><br/><span class='sub'>Beauty</span>\"]\n    \n    Intellect --> Decoding\n    Decoding --> Communication\n    Communication --> Interaction\n    \n    Intellect --> Relationships\n    Relationships --> Recreation\n    Recreation --> Youth\n    \n    Intellect --> Organization\n    Organization --> Balance\n    Balance --> Symmetry"
+    },
+    "Jupiter": {
+      "name": "Jupiter",
+      "title": "Jupiter",
+      "symbol": "♃",
+      "formula": "Positivity",
+      "mermaid": "flowchart TD\n    subgraph Positivity [\"Jupiter\"]\n        direction TB\n        subgraph ColPlus [\"'+'\"]\n            Increase[\"<b>Increase</b><br/><span class='sub'>growth, success</span>\"]\n            Creation[\"<b>Creation</b><br/><span class='sub'>reproduction, children</span>\"]\n            Parenting[\"<b>Parenting</b><br/><span class='sub'>teaching, guiding</span>\"]\n            Wisdom[\"<b>Wisdom</b><br/><span class='sub'>philosophy, religion</span>\"]\n            Increase --- Creation --- Parenting --- Wisdom\n        end\n        subgraph ColOpt [\"optimism\"]\n            Trust[\"<b>Trust</b><br/><span class='sub'>faith</span>\"]\n            Generosity[\"<b>Generosity</b><br/><span class='sub'>charity, virtue</span>\"]\n            Honesty[\"<b>Honesty</b><br/><span class='sub'>lawfulness</span>\"]\n            Trust --- Generosity --- Honesty\n        end\n    end"
+    },
+    "Venus": {
+      "name": "Venus",
+      "title": "Venus",
+      "symbol": "♀",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Femininity[\"<b>Femininity</b>\"]\n    \n    Beauty[\"<b>Beauty</b>\"]\n    BeautifulThings[\"<b>Beautiful Things</b><br/><span class='sub'>Arts, Fashion, etc.</span>\"]\n    Senses[\"<b>Senses</b><br/><span class='sub'>Sensuality</span>\"]\n    \n    Love[\"<b>Love</b><br/><span class='sub'>Unity, Romance</span>\"]\n    Harmony[\"<b>Harmony</b><br/><span class='sub'>Partnership, Marriage</span>\"]\n    Peace[\"<b>Peace</b><br/><span class='sub'>Cooperation</span>\"]\n    \n    Receptivity[\"<b>Receptivity</b>\"]\n    Learning[\"<b>Learning</b><br/><span class='sub'>Listening, Sensitivity</span>\"]\n    Compassion[\"<b>Compassion</b>\"]\n    \n    Femininity --> Beauty\n    Beauty --> BeautifulThings\n    BeautifulThings --> Senses\n    \n    Femininity --> Love\n    Love --> Harmony\n    Harmony --> Peace\n    \n    Femininity --> Receptivity\n    Receptivity --> Learning\n    Learning --> Compassion"
+    },
+    "Saturn": {
+      "name": "Saturn",
+      "title": "Saturn",
+      "symbol": "♄",
+      "formula": "",
+      "mermaid": "flowchart TD\n    %% Negativity Box (Top Node)\n    Negativity[\"<b>Negativity</b>\"]\n    \n    %% Row 1: Decrease and Scarcity\n    Decrease[\"<b>'-' Decrease</b><br/><span class='sub'>reduction, failure</span>\"]\n    Scarcity[\"<b>Scarcity</b><br/><span class='sub'>poverty, neediness</span>\"]\n    \n    %% Row 2: Destruction and Pessimism\n    Destruction[\"<b>Destruction</b><br/><span class='sub'>restriction</span>\"]\n    Pessimism[\"<b>Pessimism</b><br/><span class='sub'>distrust</span>\"]\n    \n    %% Row 3: Death, Sub-ordination, Critique\n    Death[\"<b>Death</b><br/><span class='sub'>age, decay, illness</span>\"]\n    Subordination[\"<b>Sub-<br/>ordination</b>\"]\n    Critique[\"<b>Critique</b><br/><span class='sub'>logic, science</span>\"]\n    \n    %% Row 4: Longevity, Subordinate, Objectivity\n    Longevity[\"<b>Longevity</b><br/><span class='sub'>endurance, tenacity</span>\"]\n    Subordinate[\"<b>Subordinate</b><br/><span class='sub'>employee, masses</span>\"]\n    Objectivity[\"<b>Objectivity</b><br/><span class='sub'>detachment, realism</span>\"]\n    \n    %% Top Connections from Negativity\n    Negativity --> Decrease\n    Negativity --> Pessimism\n    \n    %% Decrease connections\n    Decrease --> Scarcity\n    Decrease --> Destruction\n    \n    %% Destruction & Pessimism splits\n    Destruction --> Death\n    Destruction --> Subordination\n    Pessimism --> Critique\n    \n    %% Terminal rows\n    Death --> Longevity\n    Subordination --> Subordinate\n    Critique --> Objectivity"
+    }
+  },
+  "signs": {
+    "Aries": {
+      "name": "Aries",
+      "title": "Aries",
+      "symbol": "♈",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Masculinity[\"<b>Masculinity</b>\"]\n    \n    Strength[\"<span class='tag tag-red'>Bravery</span><br/><b>Strength</b>\"]\n    Inceptivity[\"<span class='tag tag-red'>Adventure</span><br/><b>Inceptivity</b>\"]\n    \n    Independence[\"<b>Independence</b>\"]\n    Individualism[\"<b>Individualism</b>\"]\n    Freedom[\"<b>Freedom</b>\"]\n    \n    Masculinity --> Strength\n    Masculinity --> Inceptivity\n    \n    Strength --> Independence\n    Inceptivity --> Independence\n    \n    Independence --> Individualism\n    Independence --> Freedom"
+    },
+    "Taurus": {
+      "name": "Taurus",
+      "title": "Taurus",
+      "symbol": "♉",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Femininity[\"<b>Femininity</b>\"]\n    \n    Love[\"<span class='tag tag-green'>Unity, Cooperation</span><br/><b>Love</b>\"]\n    Loyalty[\"<span class='tag tag-green'>Endurance, stability</span><br/><b>Loyalty</b>\"]\n    \n    Beauty[\"<span class='tag tag-green'>Wealth</span><br/><b>Beauty</b>\"]\n    \n    Arts[\"<span class='tag tag-green'>Learning</span><br/><b>Arts</b>\"]\n    Health[\"<span class='tag tag-green'>Fertility</span><br/><b>Health</b>\"]\n    \n    Femininity --> Love\n    Femininity --> Loyalty\n    \n    Love --> Beauty\n    Loyalty --> Beauty\n    \n    Beauty --> Arts\n    Beauty --> Health"
+    },
+    "Gemini": {
+      "name": "Gemini",
+      "title": "Gemini",
+      "symbol": "♊",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Intellect[\"<b>Intellect</b>\"]\n    \n    Connectivity[\"<span class='tag tag-blue'>Friendship</span><br/><b>Connectivity</b>\"]\n    Interaction[\"<span class='tag tag-blue'>Fun, Wit</span><br/><b>Interaction</b>\"]\n    \n    Cooperation[\"<span class='tag tag-blue'>Diplomacy</span> <span class='tag tag-blue'>Talent</span><br/><b>Cooperation</b><br/><span class='sub'>Flexiblity</span>\"]\n    Communication[\"<b>Communica-tion</b>\"]\n    \n    Commerce[\"<b>Commerce</b>\"]\n    \n    Intellect --> Connectivity\n    Intellect --> Interaction\n    \n    Connectivity --> Cooperation\n    Connectivity --> Communication\n    Interaction --> Cooperation\n    Interaction --> Communication\n    \n    Cooperation --> Commerce\n    Communication --> Commerce"
+    },
+    "Cancer": {
+      "name": "Cancer",
+      "title": "Cancer",
+      "symbol": "♋",
+      "formula": "Cancer = Moon + Water + Cardinal",
+      "mermaid": "flowchart TD\n    MatureFemininity[\"<b>Mature Femininity</b>\"]\n    \n    Privacy[\"<b>Privacy</b>\"]\n    Domestication[\"<b>Domestication</b><br/><span class='sub'>Protected Space</span>\"]\n    \n    Emotion[\"<b>Emotion</b>\"]\n    Feelings[\"<b>Feelings, desires, opinions</b>\"]\n    \n    Introversion[\"<b>Introversion</b><br/><span class='sub'>Shyness</span>\"]\n    \n    MatureFemininity --> Privacy\n    Privacy --> Domestication\n    \n    MatureFemininity --> Emotion\n    Emotion --> Feelings\n    \n    Privacy --> Introversion\n    Emotion --> Introversion"
+    },
+    "Leo": {
+      "name": "Leo",
+      "title": "Leo",
+      "symbol": "♌",
+      "formula": "",
+      "mermaid": "flowchart TD\n    MatureMasculinity[\"<b>Mature Masculinity</b>\"]\n    \n    Confidence[\"<b>Confidence</b><br/><span class='sub'>Decisiveness</span>\"]\n    Stability[\"<b>Stability</b>\"]\n    \n    Power[\"<b>Power</b>\"]\n    SelfSufficiency[\"<b>Self-Sufficiency</b>\"]\n    \n    Leadership[\"<b>Leadership</b><br/><span class='sub'>Charisma, Fame</span>\"]\n    \n    MatureMasculinity --> Confidence\n    Confidence --> Stability\n    \n    MatureMasculinity --> Power\n    Power --> SelfSufficiency\n    \n    Confidence --> Leadership\n    Power --> Leadership"
+    },
+    "Virgo": {
+      "name": "Virgo",
+      "title": "Virgo",
+      "symbol": "♍",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Intellect[\"<b>Intellect</b>\"]\n    Practicality[\"<b>Practicality</b>\"]\n    \n    Detail[\"<b>Detail</b><br/><span class='sub'>Patience</span>\"]\n    Prudence[\"<b>Prudence</b><br/><span class='sub'>Caution, Study</span>\"]\n    \n    Organization[\"<b>Organization</b><br/><span class='sub'>Management</span>\"]\n    Accounting[\"<b>Accounting</b><br/><span class='sub'>Finance</span>\"]\n    Cleanliness[\"<b>Cleanliness</b><br/><span class='sub'>Purity</span>\"]\n    \n    Intellect --> Detail\n    Detail --> Prudence\n    \n    Practicality --> Organization\n    Organization --> Accounting\n    Organization --> Cleanliness"
+    },
+    "Libra": {
+      "name": "Libra",
+      "title": "Libra",
+      "symbol": "♎",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Sensitivity[\"<b>Sensitivity</b><br/><span class='sub'>Empathy, Acuity</span>\"]\n    Equality[\"<b>Equality</b><br/><span class='sub'>Fairness, Balance</span>\"]\n    \n    Artful[\"<b>Artful</b><br/><span class='sub'>Intelligent</span>\"]\n    Justice[\"<b>Justice</b><br/><span class='sub'>Liberty</span>\"]\n    \n    Cooperation[\"<b>Cooperation</b><br/><span class='sub'>Peace</span>\"]\n    Exchange[\"<b>Exchange</b><br/><span class='sub'>Trade</span>\"]\n    \n    Sensitivity --> Artful\n    Equality --> Justice\n    Equality --> Cooperation\n    Cooperation --> Exchange"
+    },
+    "Scorpio": {
+      "name": "Scorpio",
+      "title": "Scorpio",
+      "symbol": "♏",
+      "formula": "",
+      "mermaid": "flowchart TD\n    Defiance[\"<b>Defiance</b><br/><span class='sub'>Rebelliousness</span>\"]\n    Passion[\"<b>Passion</b><br/><span class='sub'>Depth</span>\"]\n    \n    Independence[\"<b>Independence</b><br/><span class='sub'>Individuality</span>\"]\n    Mysterious[\"<b>Mysterious</b><br/><span class='sub'>Secretive</span>\"]\n    \n    Strong[\"<b>Strong</b><br/><span class='sub'>emotionally</span>\"]\n    \n    Defiance --> Independence\n    Passion --> Mysterious\n    \n    Independence --> Strong\n    Mysterious --> Strong\n    \n    Strong -.->|loops back| Defiance"
+    },
+    "Sagittarius": {
+      "name": "Sagittarius",
+      "title": "Sagittarius",
+      "symbol": "♐",
+      "formula": "",
+      "mermaid": "flowchart TD\n    LoftyInterests[\"<b>Lofty Interests</b><br/><span class='sub'>Ethics, Wisdom</span>\"]\n    \n    Education[\"<b>Education</b>\"]\n    WellInformed[\"<b>Well-Informed</b>\"]\n    HungryForIdeas[\"<b>Hungry for Ideas</b>\"]\n    \n    Teaching[\"<b>Teaching</b>\"]\n    EagerToShare[\"<b>Eager to Share</b>\"]\n    \n    LoftyInterests --> Education\n    LoftyInterests --> WellInformed\n    WellInformed --> HungryForIdeas\n    \n    LoftyInterests --> Teaching\n    Teaching --> EagerToShare"
+    },
+    "Capricorn": {
+      "name": "Capricorn",
+      "title": "Capricorn",
+      "symbol": "♑",
+      "formula": "Capricorn = Saturn + Earth + Cardinal",
+      "mermaid": "flowchart TD\n    Critical[\"<b>Critical</b>\"]\n    Realistic[\"<b>Realistic</b><br/><span class='sub'>Pessimistic</span>\"]\n    Analytic[\"<b>Analytic</b><br/><span class='sub'>Cold, Detached</span>\"]\n    \n    Tenacious[\"<b>Tenacious</b>\"]\n    Practical[\"<b>Practical</b>\"]\n    Worker[\"<b>Worker</b>\"]\n    Unstoppable[\"<b>Unstoppable</b><br/><span class='sub'>Stubborn</span>\"]\n    \n    Critical --> Realistic\n    Realistic --> Analytic\n    \n    Tenacious --> Practical\n    Tenacious --> Worker\n    Tenacious --> Unstoppable"
+    },
+    "Aquarius": {
+      "name": "Aquarius",
+      "title": "Aquarius",
+      "symbol": "♒",
+      "formula": "Aquarius = Saturn + Air + Fixed",
+      "mermaid": "flowchart TD\n    Eclectic[\"<b>Eclectic</b><br/><span class='sub'>Curious-Skeptic</span>\"]\n    Service[\"<b>Service</b>\"]\n    \n    Humility[\"<b>Humility</b><br/><span class='sub'>Meekness</span>\"]\n    Simplicity[\"<b>Simplicity</b>\"]\n    SelfSacrifice[\"<b>Self-sacrifice</b><br/><span class='sub'>Group-identity</span>\"]\n    Worker[\"<b>Worker</b>\"]\n    \n    Service --> Humility\n    Humility --> Simplicity\n    Humility --> SelfSacrifice\n    SelfSacrifice --> Worker"
+    },
+    "Pisces": {
+      "name": "Pisces",
+      "title": "Pisces",
+      "symbol": "♓",
+      "formula": "Pisces = Jupiter + Water + Dual",
+      "mermaid": "flowchart TD\n    Depth[\"<span class='tag tag-green'>INNER CORE</span><br/><b>Depth</b>\"]\n    \n    Introspection[\"<b>Introspection</b><br/><span class='sub'>Research, Education</span>\"]\n    Thoughtful[\"<b>Thoughtful</b><br/><span class='sub'>Quiet, Shy, Careful</span>\"]\n    \n    Intuition[\"<b>Intuition</b><br/><span class='sub'>Abstraction & Dream</span>\"]\n    Indecisive[\"<b>Indecisive</b><br/><span class='sub'>Inconclusive</span>\"]\n    \n    Depth --> Introspection\n    Introspection --> Thoughtful\n    \n    Depth --> Intuition\n    Intuition --> Indecisive"
+    }
+  },
+  "houses": {
+    "1": {
+      "number": 1,
+      "sanskrit": "Tanu Bhāva",
+      "title": "First House",
+      "formula": "Sunrise",
+      "pillars": [
+        "beginning",
+        "visibility"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House1 [\"First House — Sunrise\"]\n        direction TB\n        subgraph ColBeg [\"beginning\"]\n            Birth[\"<b>Birth</b><br/><span class='sub'>foundation</span>\"]\n            Body[\"<b>Body</b><br/><span class='sub'>health</span>\"]\n            Self[\"<b>Self</b><br/><span class='sub'>identity</span>\"]\n            Birth --- Body --- Self\n        end\n        subgraph ColVis [\"visibility\"]\n            Manifestation[\"<b>Manifestation</b><br/><span class='sub'>tangibility</span>\"]\n            Traits[\"<b>Traits</b><br/><span class='sub'>appearance, character</span>\"]\n            Manifestation --- Traits\n        end\n    end"
+    },
+    "2": {
+      "number": 2,
+      "sanskrit": "Dhana Bhāva",
+      "title": "Second House",
+      "formula": "Supporting the Sunrise",
+      "pillars": [
+        "Pro-start",
+        "Pro-visibility"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House2 [\"Second House — Supporting the Sunrise\"]\n        direction TB\n        subgraph ColProStart [\"Pro-start\"]\n            Foundations[\"<b>Foundations</b><br/><span class='sub'>stability</span>\"]\n            Family[\"<b>Family</b><br/><span class='sub'>supporters, friends</span>\"]\n            Wealth[\"<b>Wealth</b><br/><span class='sub'>health, nutrition</span>\"]\n            Foundations --- Family --- Wealth\n        end\n        subgraph ColProVis [\"Pro-visibility\"]\n            Knowledge[\"<b>Knowledge</b>\"]\n            Realism[\"<b>Realism</b><br/><span class='sub'>practicality</span>\"]\n            Knowledge --- Realism\n        end\n    end"
+    },
+    "3": {
+      "number": 3,
+      "sanskrit": "Sahaja Bhāva",
+      "title": "Third House",
+      "formula": "Expressing the Interior",
+      "pillars": [
+        "external",
+        "internal"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House3 [\"Third House — Expressing the Interior\"]\n        direction TB\n        subgraph ColExternal [\"external\"]\n            Strength[\"<b>Strength</b><br/><span class='sub'>force, impact</span>\"]\n            Skill[\"<b>Skill</b><br/><span class='sub'>ability</span>\"]\n            Contest[\"<b>Contest</b><br/><span class='sub'>siblings, peers</span>\"]\n            Strength --- Skill --- Contest\n        end\n        subgraph ColInternal [\"internal\"]\n            Decision[\"<b>Decision</b><br/><span class='sub'>confidence, discipline</span>\"]\n            Ambition[\"<b>Ambition</b><br/><span class='sub'>hunger, lust</span>\"]\n            SelfFocus[\"<b>Self-Focus</b><br/><span class='sub'>independence</span>\"]\n            Decision --- Ambition --- SelfFocus\n        end\n    end"
+    },
+    "4": {
+      "number": 4,
+      "sanskrit": "Bandhu Bhāva",
+      "title": "Fourth House",
+      "formula": "Below Ground ~ Inner Self",
+      "pillars": [
+        "Emotion",
+        "Privacy",
+        "Roots"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House4 [\"Fourth House — Below Ground ~ Inner Self\"]\n        direction TB\n        subgraph ColEmotion [\"Emotion\"]\n            Happiness[\"<b>Happiness</b><br/><span class='sub'>mental health</span>\"]\n            Devotion[\"<b>Devotion</b><br/><span class='sub'>love</span>\"]\n            Happiness --- Devotion\n        end\n        subgraph ColPrivacy [\"Privacy\"]\n            Shyness[\"<b>Shyness</b><br/><span class='sub'>modesty</span>\"]\n            Home[\"<b>Home</b><br/><span class='sub'>property, rest</span>\"]\n            Femininity[\"<b>Femininity</b><br/><span class='sub'>internality</span>\"]\n            Shyness --- Home --- Femininity\n        end\n        subgraph ColRoots [\"Roots\"]\n            Stability[\"<b>Stability</b>\"]\n            Ancestry[\"<b>Ancestry</b><br/><span class='sub'>mother, culture</span>\"]\n            Stability --- Ancestry\n        end\n    end"
+    },
+    "5": {
+      "number": 5,
+      "sanskrit": "Putra Bhāva",
+      "title": "Fifth House",
+      "formula": "West-Below ~ Inner » Others",
+      "pillars": [
+        "Empathy",
+        "Interaction"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House5 [\"Fifth House — West-Below ~ Inner » Others\"]\n        direction TB\n        subgraph ColEmpathy [\"Empathy\"]\n            Intelligence[\"<b>Intelligence</b><br/><span class='sub'>comprehension</span>\"]\n            Compassion[\"<b>Compassion</b><br/><span class='sub'>sympathy</span>\"]\n            Love[\"<b>Love</b><br/><span class='sub'>affection</span>\"]\n            Intelligence --- Compassion --- Love\n        end\n        subgraph ColInteraction [\"Interaction\"]\n            Communication[\"<b>Communication</b><br/><span class='sub'>language, symbols</span>\"]\n            Expression[\"<b>Expression</b><br/><span class='sub'>creativity, art</span>\"]\n            Children[\"<b>Children</b><br/><span class='sub'>productivity</span>\"]\n            Communication --- Expression --- Children\n        end\n    end"
+    },
+    "6": {
+      "number": 6,
+      "sanskrit": "Ari Bhāva",
+      "title": "Sixth House",
+      "formula": "Support of the West",
+      "pillars": [
+        "-> disappear",
+        "-> others"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House6 [\"Sixth House — Support of the West\"]\n        direction TB\n        subgraph ColDisappear [\"-> disappear\"]\n            Uncertainty[\"<b>Uncertainty</b><br/><span class='sub'>doubt, problems</span>\"]\n            Illness[\"<b>Illness</b><br/><span class='sub'>digestion</span>\"]\n            Uncertainty --- Illness\n        end\n        subgraph ColOthers [\"-> others\"]\n            Enemies[\"<b>Enemies</b><br/><span class='sub'>enmity, fighting</span>\"]\n            Duties[\"<b>Duties</b><br/><span class='sub'>chores, work</span>\"]\n            Debt[\"<b>Debt</b><br/><span class='sub'>servitude</span>\"]\n            Enemies --- Duties --- Debt\n        end\n    end"
+    },
+    "7": {
+      "number": 7,
+      "sanskrit": "Yuvati Bhāva",
+      "title": "Seventh House",
+      "formula": "Sunset",
+      "pillars": [
+        "Dis.appr.",
+        "Others"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House7 [\"Seventh House — Sunset\"]\n        direction TB\n        subgraph ColDisappr [\"Dis.appr.\"]\n            Endings[\"<b>Endings</b><br/><span class='sub'>death</span>\"]\n            Dispersion[\"<b>Dispersion</b><br/><span class='sub'>travel</span>\"]\n            Endings --- Dispersion\n        end\n        subgraph ColOthers7 [\"Others\"]\n            Partners[\"<b>Partners</b><br/><span class='sub'>marriage</span>\"]\n            Intercourse[\"<b>Intercourse</b><br/><span class='sub'>cooperation</span>\"]\n            Exchange[\"<b>Exchange</b><br/><span class='sub'>commerce</span>\"]\n            Partners --- Intercourse --- Exchange\n        end\n    end"
+    },
+    "8": {
+      "number": 8,
+      "sanskrit": "Randhra Bhāva",
+      "title": "Eighth House",
+      "formula": "Erosion of the West",
+      "pillars": [
+        "- disappearance",
+        "- others"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House8 [\"Eighth House — Erosion of the West\"]\n        direction TB\n        subgraph ColDisappearance8 [\"- disappearance\"]\n            Mysticism[\"<b>Mysticism</b><br/><span class='sub'>occult, psychic-intuition</span>\"]\n            Insight[\"<b>Insight</b><br/><span class='sub'>analytic, research</span>\"]\n            Death[\"<b>- Death</b><br/><span class='sub'>vitality, sex</span><br/><span class='tag tag-red'>planet IN 8th disappears</span>\"]\n            Mysticism --- Insight --- Death\n        end\n        subgraph ColOthers8 [\"- others\"]\n            PersonalGain[\"<b>Personal Gain</b><br/><span class='sub'>inheritance, gifts, donations</span>\"]\n            Individuality[\"<b>Individuality</b><br/><span class='sub'>defiance</span>\"]\n            PersonalGain --- Individuality\n        end\n    end"
+    },
+    "9": {
+      "number": 9,
+      "sanskrit": "Dharma Bhāva",
+      "title": "Ninth House",
+      "formula": "Above (action) West (others)",
+      "pillars": [
+        "values",
+        "integrity"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House9 [\"Ninth House — Above (action) West (others)\"]\n        direction TB\n        subgraph ColValues [\"values\"]\n            Philosophy[\"<b>Philosophy</b><br/><span class='sub'>religion, ethics, morals</span>\"]\n            Education[\"<b>Education</b><br/><span class='sub'>source of above</span>\"]\n            Educators[\"<b>Educators</b><br/><span class='sub'>teachers, elders, guides</span>\"]\n            Philosophy --- Education --- Educators\n        end\n        subgraph ColIntegrity [\"integrity\"]\n            GoodDeeds[\"<b>Good Deeds</b><br/><span class='sub'>responsibility, generosity</span>\"]\n            GoodResults[\"<b>Good Results</b><br/><span class='sub'>prosperity, fortune</span>\"]\n            GoodDeeds --- GoodResults\n        end\n    end"
+    },
+    "10": {
+      "number": 10,
+      "sanskrit": "Karma Bhāva",
+      "title": "Tenth House",
+      "formula": "Open Sky",
+      "pillars": [
+        "visibility",
+        "wind"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House10 [\"Tenth House — Open Sky\"]\n        direction TB\n        subgraph ColVisibility10 [\"visibility\"]\n            Extroverse[\"<b>Extroverse</b><br/><span class='sub'>male, public, society</span>\"]\n            Fame[\"<b>Fame</b><br/><span class='sub'>status, career</span>\"]\n            Influence[\"<b>Influence</b><br/><span class='sub'>authority</span>\"]\n            Extroverse --- Fame --- Influence\n        end\n        subgraph ColWind [\"wind\"]\n            Movement[\"<b>Movement</b><br/><span class='sub'>travel</span>\"]\n            Instability[\"<b>Instability</b><br/><span class='sub'>dispersion, evaporation</span>\"]\n            Movement --- Instability\n        end\n    end"
+    },
+    "11": {
+      "number": 11,
+      "sanskrit": "Lābha Bhāva",
+      "title": "Eleventh House",
+      "formula": "Support of the Open Sky",
+      "pillars": [
+        "realization",
+        "alliances"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House11 [\"Eleventh House — Support of the Open Sky\"]\n        direction TB\n        subgraph ColRealization [\"realization\"]\n            Attainment[\"<b>Attainment</b><br/><span class='sub'>desires fulfilled</span>\"]\n            Income[\"<b>Income</b><br/><span class='sub'>profit, surplus</span>\"]\n            Expansion[\"<b>Expansion</b><br/><span class='sub'>abundance</span>\"]\n            Attainment --- Income --- Expansion\n        end\n        subgraph ColAlliances [\"alliances\"]\n            Community[\"<b>Community</b><br/><span class='sub'>friends, large groups</span>\"]\n            Aspirations[\"<b>Aspirations</b><br/><span class='sub'>future plans</span>\"]\n            Community --- Aspirations\n        end\n    end"
+    },
+    "12": {
+      "number": 12,
+      "sanskrit": "Vyaya Bhāva",
+      "title": "Twelfth House",
+      "formula": "Pre-Sunrise ~ Night Sky",
+      "pillars": [
+        "disappearance",
+        "interior"
+      ],
+      "mermaid": "flowchart TD\n    subgraph House12 [\"Twelfth House — Pre-Sunrise ~ Night Sky\"]\n        direction TB\n        subgraph ColDisappearance12 [\"disappearance\"]\n            Release[\"<b>Release</b><br/><span class='sub'>loss, expenses</span>\"]\n            Solitude[\"<b>Solitude</b><br/><span class='sub'>seclusion, retreat</span>\"]\n            Liberation[\"<b>Liberation</b><br/><span class='sub'>mokṣa</span>\"]\n            Release --- Solitude --- Liberation\n        end\n        subgraph ColInterior12 [\"interior\"]\n            Subconscious[\"<b>Subconscious</b><br/><span class='sub'>dreams, sleep</span>\"]\n            ForeignLands[\"<b>Foreign Lands</b><br/><span class='sub'>distant displacement</span>\"]\n            Subconscious --- ForeignLands\n        end\n    end"
+    }
+  }
+}

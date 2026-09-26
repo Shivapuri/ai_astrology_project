@@ -1575,3 +1575,72 @@
     background: rgba(59, 130, 246, 0.05) !important;
 }
 
+/* ==========================================================================
+   Astrological Synthesis Cockpit & Flowchart Styling
+   ========================================================================== */
+.synthesis-cockpit-container .formula-banner {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fde68a;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.cockpit-triptych-grid .mermaid-target {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+    width: 100%;
+}
+
+.cockpit-triptych-grid .mermaid-target svg {
+    max-width: 100% !important;
+    height: auto !important;
+    font-family: inherit !important;
+}
+
+.cockpit-triptych-grid .sub {
+    font-size: 11px;
+    color: #64748b;
+    font-style: italic;
+    display: block;
+    margin-top: 2px;
+}
+
+.cockpit-triptych-grid .tag {
+    display: inline-block;
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+.cockpit-triptych-grid .tag-red { background: #fee2e2; color: #b91c1c; }
+.cockpit-triptych-grid .tag-green { background: #dcfce7; color: #15803d; }
+.cockpit-triptych-grid .tag-blue { background: #e0f2fe; color: #0369a1; }
+
+.cockpit-card {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cockpit-card:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.txt-resonance:focus, .txt-dissonance:focus, .txt-synthesis:focus {
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+@media (max-width: 900px) {
+    .cockpit-triptych-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+

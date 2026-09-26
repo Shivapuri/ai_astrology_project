@@ -439,3 +439,58 @@ def test_jaimini_ak_and_amk_prominence_scoring():
     assert not any("Karaka" in r for r in venus_reasons)
 
 
+def test_significations_flowcharts_and_cockpit_payload():
+    """Verify Master Flowchart definitions and Cockpit payload integrity."""
+    from jyotish.report import get_significations_flowcharts
+
+    flowcharts = get_significations_flowcharts()
+    assert "planets" in flowcharts
+    assert "signs" in flowcharts
+    assert "houses" in flowcharts
+
+    # Check 7 planets
+    expected_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    for p in expected_planets:
+        assert p in flowcharts["planets"], f"Missing planet {p}"
+        assert "mermaid" in flowcharts["planets"][p]
+        assert len(flowcharts["planets"][p]["mermaid"]) > 20
+
+    # Check 12 signs
+    expected_signs = [
+        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    ]
+    for s in expected_signs:
+        assert s in flowcharts["signs"], f"Missing sign {s}"
+        assert "mermaid" in flowcharts["signs"][s]
+        assert len(flowcharts["signs"][s]["mermaid"]) > 20
+
+    # Check 12 houses
+    for h in range(1, 13):
+        h_key = str(h)
+        assert h_key in flowcharts["houses"], f"Missing house {h_key}"
+        assert "mermaid" in flowcharts["houses"][h_key]
+        assert "pillars" in flowcharts["houses"][h_key]
+        assert len(flowcharts["houses"][h_key]["mermaid"]) > 20
+
+    # Verify end-to-end integration with generate_report_payload
+    from jyotish.generate_jyotish import generate_kala_chart
+    chart_data = generate_kala_chart("Donald Trump", 1946, 6, 14, 10, 54, 40.6892, -73.8648, -4.0)
+    report = chart_data.get("report", {})
+    assert "flowcharts" in report
+    leaderboard = report.get("planetary_rankings", {}).get("leaderboard", [])
+    assert len(leaderboard) >= 7
+
+    for entry in leaderboard:
+        assert "planet" in entry
+        assert "sign" in entry
+        assert "house" in entry
+        assert "nakshatra" in entry
+        assert "nakshatra_lord" in entry
+        assert "prominence_score" in entry
+        assert "rank" in entry
+        if entry["planet"] in ["Sun", "Moon", "Mars"]:
+            assert entry["nakshatra"] != "--"
+
+
+

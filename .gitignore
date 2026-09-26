@@ -38,6 +38,8 @@ database/backups/
 !source-material/software-setup/sample-case/angelina-jolie-pdfs/**
 !source-material/software-setup/sample-case/*.csv
 !source-material/software-setup/sample-case/*.json
+!jyotish/report/significations_flowcharts.json
+!static/data/significations_flowcharts.json
 source-material/sanskrit_texts/**/__pycache__/
 *.db
 *_database.json

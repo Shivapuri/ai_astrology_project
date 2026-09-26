@@ -9,6 +9,8 @@ Computes the multi-layered chart baseline profile:
 """
 
 import math
+import os
+import json
 from typing import Dict, Any, List, Optional
 import jyotish.relationships.relationships as rel
 from jyotish.nakshatras.lore import (
@@ -654,7 +656,8 @@ def compute_environmental_tally(
 def compute_planetary_prominence_rankings(
     vargas_data: Dict[str, Any],
     shadbala_data: Optional[Dict[str, Any]],
-    planetary_eval: Optional[Dict[str, Any]]
+    planetary_eval: Optional[Dict[str, Any]],
+    nakshatras_grahas: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """
     Ranks planets along two vectors:
@@ -712,6 +715,9 @@ def compute_planetary_prominence_rankings(
         p_lon = p_data.get("longitude", 0.0)
         p_sign = p_data.get("sign", "Aries")
         p_eval = eval_planets.get(p, {})
+        p_nak_node = (nakshatras_grahas or {}).get(p, {})
+        p_nakshatra = p_nak_node.get("nakshatra", "--")
+        p_nak_lord = p_nak_node.get("nakshatra_lord", "--")
 
         # 1. Shadbala Ratio (SBR)
         sb_entry = (shadbala_data or {}).get(p, {})
@@ -795,6 +801,8 @@ def compute_planetary_prominence_rankings(
             "planet": p,
             "sign": p_sign,
             "house": house_num,
+            "nakshatra": p_nakshatra,
+            "nakshatra_lord": p_nak_lord,
             "prominence_score": prominence_score,
             "shadbala_rupas": round(calculated_rupas, 2),
             "shadbala_ratio": sbr,
@@ -820,6 +828,29 @@ def compute_planetary_prominence_rankings(
     }
 
 
+_SIGNIFICATIONS_FLOWCHARTS_CACHE: Optional[Dict[str, Any]] = None
+
+
+def get_significations_flowcharts() -> Dict[str, Any]:
+    """
+    Loads and caches jyotish/report/significations_flowcharts.json containing
+    the raw Mermaid flowchart definitions for planets, signs, and houses.
+    """
+    global _SIGNIFICATIONS_FLOWCHARTS_CACHE
+    if _SIGNIFICATIONS_FLOWCHARTS_CACHE is not None:
+        return _SIGNIFICATIONS_FLOWCHARTS_CACHE
+
+    json_path = os.path.join(os.path.dirname(__file__), "significations_flowcharts.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                _SIGNIFICATIONS_FLOWCHARTS_CACHE = json.load(f)
+                return _SIGNIFICATIONS_FLOWCHARTS_CACHE
+        except Exception:
+            pass
+    return {"planets": {}, "signs": {}, "houses": {}}
+
+
 def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Master orchestrator: Builds the complete Astrological Synthesis Report payload.
@@ -830,8 +861,10 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     shadbala_data = chart_data.get("shadbala", {})
     planetary_eval = chart_data.get("planetary_evaluation", {})
 
-    # 1. Calculate Prominence first
-    planetary_rankings = compute_planetary_prominence_rankings(vargas_data, shadbala_data, planetary_eval)
+    # 1. Calculate Prominence first (with Nakshatras for planetary rankings)
+    planetary_rankings = compute_planetary_prominence_rankings(
+        vargas_data, shadbala_data, planetary_eval, nakshatras_grahas=nakshatras_grahas
+    )
     prominence_map = {
         p["planet"]: p["prominence_score"]
         for p in planetary_rankings.get("leaderboard", [])
@@ -870,5 +903,6 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "operational_axis": operational_axis,
         "environmental_tally": env_tally,
         "planetary_rankings": planetary_rankings,
-        "synthesis_ingredients": synthesis_ingredients
+        "synthesis_ingredients": synthesis_ingredients,
+        "flowcharts": get_significations_flowcharts()
     }
