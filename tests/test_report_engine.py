@@ -465,12 +465,15 @@ def test_significations_flowcharts_and_cockpit_payload():
         assert "mermaid" in flowcharts["signs"][s]
         assert len(flowcharts["signs"][s]["mermaid"]) > 20
 
-    # Check 12 houses
+    # Check 12 houses (vertical layout and Kalapurusha anatomy)
     for h in range(1, 13):
         h_key = str(h)
         assert h_key in flowcharts["houses"], f"Missing house {h_key}"
         assert "mermaid" in flowcharts["houses"][h_key]
         assert "pillars" in flowcharts["houses"][h_key]
+        assert "anatomy" in flowcharts["houses"][h_key], f"Missing anatomy field in house {h_key}"
+        assert f"Anat{h}" in flowcharts["houses"][h_key]["mermaid"], f"Missing Anat{h} node in house {h_key} flowchart"
+        assert "direction TB" in flowcharts["houses"][h_key]["mermaid"], f"House {h_key} must use vertical direction TB layout"
         assert len(flowcharts["houses"][h_key]["mermaid"]) > 20
 
     # Verify end-to-end integration with generate_report_payload
@@ -491,6 +494,28 @@ def test_significations_flowcharts_and_cockpit_payload():
         assert "rank" in entry
         if entry["planet"] in ["Sun", "Moon", "Mars"]:
             assert entry["nakshatra"] != "--"
+
+
+def test_significations_flowchart_json_files_sync():
+    """Verify backend and frontend static JSON database files are in perfect sync."""
+    import json
+    from pathlib import Path
+
+    backend_p = Path("jyotish/report/significations_flowcharts.json")
+    static_p = Path("static/data/significations_flowcharts.json")
+
+    assert backend_p.exists(), "Backend significations_flowcharts.json missing"
+    assert static_p.exists(), "Static significations_flowcharts.json missing"
+
+    with open(backend_p, "r", encoding="utf-8") as f1, open(static_p, "r", encoding="utf-8") as f2:
+        d1 = json.load(f1)
+        d2 = json.load(f2)
+
+    assert d1 == d2, "Backend and frontend significations flowcharts JSON are not in sync"
+    assert len(d1["houses"]) == 12
+    assert len(d1["planets"]) == 7
+    assert len(d1["signs"]) == 12
+
 
 
 

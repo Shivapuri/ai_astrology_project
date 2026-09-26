@@ -1590,20 +1590,26 @@
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
-.cockpit-triptych-grid .mermaid-target {
+.cockpit-unified-container {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.cockpit-unified-body .mermaid-target {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 180px;
+    min-height: 280px;
     width: 100%;
 }
 
+.cockpit-unified-body .mermaid-target svg,
 .cockpit-triptych-grid .mermaid-target svg {
     max-width: 100% !important;
     height: auto !important;
     font-family: inherit !important;
 }
 
+.cockpit-unified-body .sub,
 .cockpit-triptych-grid .sub {
     font-size: 11px;
     color: #64748b;
@@ -1612,6 +1618,7 @@
     margin-top: 2px;
 }
 
+.cockpit-unified-body .tag,
 .cockpit-triptych-grid .tag {
     display: inline-block;
     padding: 1px 5px;
@@ -1620,9 +1627,96 @@
     font-weight: 600;
     margin-bottom: 2px;
 }
-.cockpit-triptych-grid .tag-red { background: #fee2e2; color: #b91c1c; }
-.cockpit-triptych-grid .tag-green { background: #dcfce7; color: #15803d; }
-.cockpit-triptych-grid .tag-blue { background: #e0f2fe; color: #0369a1; }
+.cockpit-unified-body .tag-red, .cockpit-triptych-grid .tag-red { background: #fee2e2; color: #b91c1c; }
+.cockpit-unified-body .tag-green, .cockpit-triptych-grid .tag-green { background: #dcfce7; color: #15803d; }
+.cockpit-unified-body .tag-blue, .cockpit-triptych-grid .tag-blue { background: #e0f2fe; color: #0369a1; }
+
+/* Interactive SVG Nodes in Unified Canvas */
+.cockpit-unified-diagram .node {
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.cockpit-unified-diagram .node:hover rect,
+.cockpit-unified-diagram .node:hover polygon,
+.cockpit-unified-diagram .node:hover circle,
+.cockpit-unified-diagram .node:hover path {
+    stroke-width: 2.5px !important;
+    stroke: #3b82f6 !important;
+}
+
+.cockpit-unified-diagram .node.selected-source rect,
+.cockpit-unified-diagram .node.selected-source polygon,
+.cockpit-unified-diagram .node.selected-source circle {
+    stroke-width: 3px !important;
+    stroke: #2563eb !important;
+    fill: #eff6ff !important;
+}
+
+.cockpit-unified-diagram .node.selected-target rect,
+.cockpit-unified-diagram .node.selected-target polygon,
+.cockpit-unified-diagram .node.selected-target circle {
+    stroke-width: 3px !important;
+    stroke: #7c3aed !important;
+    fill: #f5f3ff !important;
+}
+
+/* Synthesis Connection Chips */
+.synth-conn-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 14px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid;
+    transition: all 0.15s ease;
+}
+
+.synth-conn-chip.resonance {
+    background: #f0fdf4;
+    border-color: #86efac;
+    color: #166534;
+}
+
+.synth-conn-chip.dissonance {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+.synth-conn-chip .btn-del-conn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    padding: 0 2px;
+    border-radius: 50%;
+    opacity: 0.65;
+    color: inherit;
+    transition: opacity 0.15s, transform 0.15s;
+}
+
+.synth-conn-chip .btn-del-conn:hover {
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+.btn-add-resonance:hover {
+    background: #15803d !important;
+}
+
+.btn-add-dissonance:hover {
+    background: #b91c1c !important;
+}
+
+.btn-clear-connections:hover {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+    border-color: #94a3b8 !important;
+}
 
 .cockpit-card {
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -1638,8 +1732,12 @@
 }
 
 @media (max-width: 900px) {
-    .cockpit-triptych-grid {
-        grid-template-columns: 1fr !important;
+    .cockpit-connector-bar {
+        flex-direction: column;
+        align-items: stretch !important;
+    }
+    .cockpit-connector-bar select {
+        max-width: 100% !important;
     }
 }
 

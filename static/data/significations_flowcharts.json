@@ -141,134 +141,146 @@
       "number": 1,
       "sanskrit": "Tanu Bhāva",
       "title": "First House",
-      "formula": "Sunrise",
+      "formula": "Sunrise • Beginning & Visibility",
+      "anatomy": "Head, Brain, Skull, Scalp, Eyes & General Constitution",
       "pillars": [
-        "beginning",
-        "visibility"
+        "Beginning",
+        "Visibility"
       ],
-      "mermaid": "flowchart TD\n    subgraph House1 [\"First House — Sunrise\"]\n        direction TB\n        subgraph ColBeg [\"beginning\"]\n            Birth[\"<b>Birth</b><br/><span class='sub'>foundation</span>\"]\n            Body[\"<b>Body</b><br/><span class='sub'>health</span>\"]\n            Self[\"<b>Self</b><br/><span class='sub'>identity</span>\"]\n            Birth --- Body --- Self\n        end\n        subgraph ColVis [\"visibility\"]\n            Manifestation[\"<b>Manifestation</b><br/><span class='sub'>tangibility</span>\"]\n            Traits[\"<b>Traits</b><br/><span class='sub'>appearance, character</span>\"]\n            Manifestation --- Traits\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H1 [\"First House (Sunrise)\"]\n        direction TB\n        Birth[\"<b>Birth</b><br/><span class='sub'>foundation</span>\"]\n        Body[\"<b>Body & Form</b><br/><span class='sub'>health, vitality</span>\"]\n        Anat1[\"<b>Anatomy: Head</b><br/><span class='sub'>brain, skull, scalp, eyes</span>\"]\n        Self[\"<b>Self</b><br/><span class='sub'>identity, ego</span>\"]\n        Manifestation[\"<b>Manifestation</b><br/><span class='sub'>tangibility</span>\"]\n        Traits[\"<b>Traits</b><br/><span class='sub'>appearance, character</span>\"]\n        Birth --> Body\n        Body --> Anat1\n        Anat1 --> Self\n        Self -.-> Manifestation\n        Manifestation --> Traits\n    end"
     },
     "2": {
       "number": 2,
       "sanskrit": "Dhana Bhāva",
       "title": "Second House",
-      "formula": "Supporting the Sunrise",
+      "formula": "Supporting the Sunrise • Pro-Start & Pro-Visibility",
+      "anatomy": "Face, Throat, Neck, Mouth, Teeth, Tongue, Vocal Cords & Right Eye",
       "pillars": [
-        "Pro-start",
-        "Pro-visibility"
+        "Pro-Start",
+        "Pro-Visibility"
       ],
-      "mermaid": "flowchart TD\n    subgraph House2 [\"Second House — Supporting the Sunrise\"]\n        direction TB\n        subgraph ColProStart [\"Pro-start\"]\n            Foundations[\"<b>Foundations</b><br/><span class='sub'>stability</span>\"]\n            Family[\"<b>Family</b><br/><span class='sub'>supporters, friends</span>\"]\n            Wealth[\"<b>Wealth</b><br/><span class='sub'>health, nutrition</span>\"]\n            Foundations --- Family --- Wealth\n        end\n        subgraph ColProVis [\"Pro-visibility\"]\n            Knowledge[\"<b>Knowledge</b>\"]\n            Realism[\"<b>Realism</b><br/><span class='sub'>practicality</span>\"]\n            Knowledge --- Realism\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H2 [\"Second House (Support of Sunrise)\"]\n        direction TB\n        Foundations[\"<b>Foundations</b><br/><span class='sub'>stability</span>\"]\n        Family[\"<b>Family</b><br/><span class='sub'>supporters, friends</span>\"]\n        Wealth[\"<b>Wealth</b><br/><span class='sub'>nutrition, resources</span>\"]\n        Anat2[\"<b>Anatomy: Face & Throat</b><br/><span class='sub'>mouth, teeth, tongue, right eye</span>\"]\n        Knowledge[\"<b>Knowledge</b>\"]\n        Realism[\"<b>Realism</b><br/><span class='sub'>practicality</span>\"]\n        Foundations --> Family\n        Family --> Wealth\n        Wealth --> Anat2\n        Anat2 -.-> Knowledge\n        Knowledge --> Realism\n    end"
     },
     "3": {
       "number": 3,
       "sanskrit": "Sahaja Bhāva",
       "title": "Third House",
-      "formula": "Expressing the Interior",
+      "formula": "Expressing the Interior • External & Internal",
+      "anatomy": "Shoulders, Arms, Hands, Fingers, Collarbones, Right Ear & Upper Respiratory",
       "pillars": [
-        "external",
-        "internal"
+        "External",
+        "Internal"
       ],
-      "mermaid": "flowchart TD\n    subgraph House3 [\"Third House — Expressing the Interior\"]\n        direction TB\n        subgraph ColExternal [\"external\"]\n            Strength[\"<b>Strength</b><br/><span class='sub'>force, impact</span>\"]\n            Skill[\"<b>Skill</b><br/><span class='sub'>ability</span>\"]\n            Contest[\"<b>Contest</b><br/><span class='sub'>siblings, peers</span>\"]\n            Strength --- Skill --- Contest\n        end\n        subgraph ColInternal [\"internal\"]\n            Decision[\"<b>Decision</b><br/><span class='sub'>confidence, discipline</span>\"]\n            Ambition[\"<b>Ambition</b><br/><span class='sub'>hunger, lust</span>\"]\n            SelfFocus[\"<b>Self-Focus</b><br/><span class='sub'>independence</span>\"]\n            Decision --- Ambition --- SelfFocus\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H3 [\"Third House (Expressing Interior)\"]\n        direction TB\n        Decision[\"<b>Decision</b><br/><span class='sub'>confidence, discipline</span>\"]\n        Ambition[\"<b>Ambition</b><br/><span class='sub'>hunger, lust</span>\"]\n        SelfFocus[\"<b>Self-Focus</b><br/><span class='sub'>independence</span>\"]\n        Strength[\"<b>Strength</b><br/><span class='sub'>force, impact</span>\"]\n        Skill[\"<b>Skill & Dexterity</b><br/><span class='sub'>manual ability</span>\"]\n        Anat3[\"<b>Anatomy: Arms & Hands</b><br/><span class='sub'>shoulders, collarbone, right ear</span>\"]\n        Contest[\"<b>Contest</b><br/><span class='sub'>siblings, peers</span>\"]\n        Decision --> Ambition\n        Ambition --> SelfFocus\n        SelfFocus -.-> Strength\n        Strength --> Skill\n        Skill --> Anat3\n        Anat3 --> Contest\n    end"
     },
     "4": {
       "number": 4,
       "sanskrit": "Bandhu Bhāva",
       "title": "Fourth House",
-      "formula": "Below Ground ~ Inner Self",
+      "formula": "Below Ground ~ Inner Self • Emotion, Privacy & Roots",
+      "anatomy": "Chest, Breasts, Lungs, Heart, Ribs & Diaphragm",
       "pillars": [
         "Emotion",
         "Privacy",
         "Roots"
       ],
-      "mermaid": "flowchart TD\n    subgraph House4 [\"Fourth House — Below Ground ~ Inner Self\"]\n        direction TB\n        subgraph ColEmotion [\"Emotion\"]\n            Happiness[\"<b>Happiness</b><br/><span class='sub'>mental health</span>\"]\n            Devotion[\"<b>Devotion</b><br/><span class='sub'>love</span>\"]\n            Happiness --- Devotion\n        end\n        subgraph ColPrivacy [\"Privacy\"]\n            Shyness[\"<b>Shyness</b><br/><span class='sub'>modesty</span>\"]\n            Home[\"<b>Home</b><br/><span class='sub'>property, rest</span>\"]\n            Femininity[\"<b>Femininity</b><br/><span class='sub'>internality</span>\"]\n            Shyness --- Home --- Femininity\n        end\n        subgraph ColRoots [\"Roots\"]\n            Stability[\"<b>Stability</b>\"]\n            Ancestry[\"<b>Ancestry</b><br/><span class='sub'>mother, culture</span>\"]\n            Stability --- Ancestry\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H4 [\"Fourth House (Below Ground ~ Inner Self)\"]\n        direction TB\n        Stability[\"<b>Stability</b>\"]\n        Ancestry[\"<b>Ancestry</b><br/><span class='sub'>mother, culture</span>\"]\n        Shyness[\"<b>Shyness</b><br/><span class='sub'>modesty</span>\"]\n        Home[\"<b>Home & Land</b><br/><span class='sub'>property, rest</span>\"]\n        Femininity[\"<b>Femininity</b><br/><span class='sub'>internality</span>\"]\n        Happiness[\"<b>Happiness</b><br/><span class='sub'>mental health</span>\"]\n        Anat4[\"<b>Anatomy: Chest & Heart</b><br/><span class='sub'>lungs, breasts, ribs, diaphragm</span>\"]\n        Devotion[\"<b>Devotion</b><br/><span class='sub'>love</span>\"]\n        Stability --> Ancestry\n        Ancestry -.-> Shyness\n        Shyness --> Home\n        Home --> Femininity\n        Femininity -.-> Happiness\n        Happiness --> Anat4\n        Anat4 --> Devotion\n    end"
     },
     "5": {
       "number": 5,
       "sanskrit": "Putra Bhāva",
       "title": "Fifth House",
-      "formula": "West-Below ~ Inner » Others",
+      "formula": "West-Below ~ Inner » Others • Empathy & Interaction",
+      "anatomy": "Upper Abdomen, Stomach, Solar Plexus, Liver, Gallbladder & Spleen",
       "pillars": [
         "Empathy",
         "Interaction"
       ],
-      "mermaid": "flowchart TD\n    subgraph House5 [\"Fifth House — West-Below ~ Inner » Others\"]\n        direction TB\n        subgraph ColEmpathy [\"Empathy\"]\n            Intelligence[\"<b>Intelligence</b><br/><span class='sub'>comprehension</span>\"]\n            Compassion[\"<b>Compassion</b><br/><span class='sub'>sympathy</span>\"]\n            Love[\"<b>Love</b><br/><span class='sub'>affection</span>\"]\n            Intelligence --- Compassion --- Love\n        end\n        subgraph ColInteraction [\"Interaction\"]\n            Communication[\"<b>Communication</b><br/><span class='sub'>language, symbols</span>\"]\n            Expression[\"<b>Expression</b><br/><span class='sub'>creativity, art</span>\"]\n            Children[\"<b>Children</b><br/><span class='sub'>productivity</span>\"]\n            Communication --- Expression --- Children\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H5 [\"Fifth House (Inner » Others)\"]\n        direction TB\n        Intelligence[\"<b>Intelligence</b><br/><span class='sub'>comprehension</span>\"]\n        Compassion[\"<b>Compassion</b><br/><span class='sub'>sympathy</span>\"]\n        Love[\"<b>Love</b><br/><span class='sub'>affection</span>\"]\n        Anat5[\"<b>Anatomy: Stomach</b><br/><span class='sub'>solar plexus, liver, spleen</span>\"]\n        Communication[\"<b>Communication</b><br/><span class='sub'>language, symbols</span>\"]\n        Expression[\"<b>Expression</b><br/><span class='sub'>creativity, art</span>\"]\n        Children[\"<b>Children</b><br/><span class='sub'>productivity</span>\"]\n        Intelligence --> Compassion\n        Compassion --> Love\n        Love --> Anat5\n        Anat5 -.-> Communication\n        Communication --> Expression\n        Expression --> Children\n    end"
     },
     "6": {
       "number": 6,
       "sanskrit": "Ari Bhāva",
       "title": "Sixth House",
-      "formula": "Support of the West",
+      "formula": "Support of the West • Disappear & Others",
+      "anatomy": "Navel, Small Intestines, Colon, Digestive Tract, Kidneys & Abdominal Wall",
       "pillars": [
-        "-> disappear",
-        "-> others"
+        "Disappear",
+        "Others"
       ],
-      "mermaid": "flowchart TD\n    subgraph House6 [\"Sixth House — Support of the West\"]\n        direction TB\n        subgraph ColDisappear [\"-> disappear\"]\n            Uncertainty[\"<b>Uncertainty</b><br/><span class='sub'>doubt, problems</span>\"]\n            Illness[\"<b>Illness</b><br/><span class='sub'>digestion</span>\"]\n            Uncertainty --- Illness\n        end\n        subgraph ColOthers [\"-> others\"]\n            Enemies[\"<b>Enemies</b><br/><span class='sub'>enmity, fighting</span>\"]\n            Duties[\"<b>Duties</b><br/><span class='sub'>chores, work</span>\"]\n            Debt[\"<b>Debt</b><br/><span class='sub'>servitude</span>\"]\n            Enemies --- Duties --- Debt\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H6 [\"Sixth House (Support of the West)\"]\n        direction TB\n        Uncertainty[\"<b>Uncertainty</b><br/><span class='sub'>doubt, problems</span>\"]\n        Illness[\"<b>Illness</b><br/><span class='sub'>acute disorders</span>\"]\n        Anat6[\"<b>Anatomy: Intestines</b><br/><span class='sub'>navel, digestion, kidneys</span>\"]\n        Enemies[\"<b>Enemies</b><br/><span class='sub'>enmity, fighting</span>\"]\n        Duties[\"<b>Duties</b><br/><span class='sub'>chores, work</span>\"]\n        Debt[\"<b>Debt</b><br/><span class='sub'>servitude</span>\"]\n        Uncertainty --> Illness\n        Illness --> Anat6\n        Anat6 -.-> Enemies\n        Enemies --> Duties\n        Duties --> Debt\n    end"
     },
     "7": {
       "number": 7,
       "sanskrit": "Yuvati Bhāva",
       "title": "Seventh House",
-      "formula": "Sunset",
+      "formula": "Sunset • Disappearance & Others",
+      "anatomy": "Pelvis, Lumbar Region, Internal Reproductive Organs, Bladder & Uterus",
       "pillars": [
-        "Dis.appr.",
+        "Disappearance",
         "Others"
       ],
-      "mermaid": "flowchart TD\n    subgraph House7 [\"Seventh House — Sunset\"]\n        direction TB\n        subgraph ColDisappr [\"Dis.appr.\"]\n            Endings[\"<b>Endings</b><br/><span class='sub'>death</span>\"]\n            Dispersion[\"<b>Dispersion</b><br/><span class='sub'>travel</span>\"]\n            Endings --- Dispersion\n        end\n        subgraph ColOthers7 [\"Others\"]\n            Partners[\"<b>Partners</b><br/><span class='sub'>marriage</span>\"]\n            Intercourse[\"<b>Intercourse</b><br/><span class='sub'>cooperation</span>\"]\n            Exchange[\"<b>Exchange</b><br/><span class='sub'>commerce</span>\"]\n            Partners --- Intercourse --- Exchange\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H7 [\"Seventh House (Sunset)\"]\n        direction TB\n        Partners[\"<b>Partners</b><br/><span class='sub'>marriage</span>\"]\n        Intercourse[\"<b>Intercourse</b><br/><span class='sub'>cooperation</span>\"]\n        Anat7[\"<b>Anatomy: Pelvis</b><br/><span class='sub'>internal reproductive, bladder</span>\"]\n        Exchange[\"<b>Exchange</b><br/><span class='sub'>commerce</span>\"]\n        Endings[\"<b>Endings</b><br/><span class='sub'>death</span>\"]\n        Dispersion[\"<b>Dispersion</b><br/><span class='sub'>travel</span>\"]\n        Partners --> Intercourse\n        Intercourse --> Anat7\n        Anat7 --> Exchange\n        Exchange -.-> Endings\n        Endings --> Dispersion\n    end"
     },
     "8": {
       "number": 8,
       "sanskrit": "Randhra Bhāva",
       "title": "Eighth House",
-      "formula": "Erosion of the West",
+      "formula": "Erosion of the West • Disappearance & Others",
+      "anatomy": "External Genitals, Excretory Organs, Anus, Perineum & Vital Sexual Prāna",
       "pillars": [
-        "- disappearance",
-        "- others"
+        "Disappearance",
+        "Others"
       ],
-      "mermaid": "flowchart TD\n    subgraph House8 [\"Eighth House — Erosion of the West\"]\n        direction TB\n        subgraph ColDisappearance8 [\"- disappearance\"]\n            Mysticism[\"<b>Mysticism</b><br/><span class='sub'>occult, psychic-intuition</span>\"]\n            Insight[\"<b>Insight</b><br/><span class='sub'>analytic, research</span>\"]\n            Death[\"<b>- Death</b><br/><span class='sub'>vitality, sex</span><br/><span class='tag tag-red'>planet IN 8th disappears</span>\"]\n            Mysticism --- Insight --- Death\n        end\n        subgraph ColOthers8 [\"- others\"]\n            PersonalGain[\"<b>Personal Gain</b><br/><span class='sub'>inheritance, gifts, donations</span>\"]\n            Individuality[\"<b>Individuality</b><br/><span class='sub'>defiance</span>\"]\n            PersonalGain --- Individuality\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H8 [\"Eighth House (Erosion of the West)\"]\n        direction TB\n        Mysticism[\"<b>Mysticism</b><br/><span class='sub'>occult, intuition</span>\"]\n        Insight[\"<b>Insight</b><br/><span class='sub'>analytic research</span>\"]\n        Death[\"<b>- Death</b><br/><span class='sub'>loss of vitality</span>\"]\n        Anat8[\"<b>Anatomy: Excretory Organs</b><br/><span class='sub'>genitals, perineum, anus</span>\"]\n        PersonalGain[\"<b>Personal Gain</b><br/><span class='sub'>inheritance, gifts</span>\"]\n        Individuality[\"<b>Individuality</b><br/><span class='sub'>defiance</span>\"]\n        Mysticism --> Insight\n        Insight --> Death\n        Death --> Anat8\n        Anat8 -.-> PersonalGain\n        PersonalGain --> Individuality\n    end"
     },
     "9": {
       "number": 9,
       "sanskrit": "Dharma Bhāva",
       "title": "Ninth House",
-      "formula": "Above (action) West (others)",
+      "formula": "Above (Action) West (Others) • Values & Integrity",
+      "anatomy": "Hips, Thighs, Femoral Arteries, Sacroiliac Joints & Bone Marrow",
       "pillars": [
-        "values",
-        "integrity"
+        "Values",
+        "Integrity"
       ],
-      "mermaid": "flowchart TD\n    subgraph House9 [\"Ninth House — Above (action) West (others)\"]\n        direction TB\n        subgraph ColValues [\"values\"]\n            Philosophy[\"<b>Philosophy</b><br/><span class='sub'>religion, ethics, morals</span>\"]\n            Education[\"<b>Education</b><br/><span class='sub'>source of above</span>\"]\n            Educators[\"<b>Educators</b><br/><span class='sub'>teachers, elders, guides</span>\"]\n            Philosophy --- Education --- Educators\n        end\n        subgraph ColIntegrity [\"integrity\"]\n            GoodDeeds[\"<b>Good Deeds</b><br/><span class='sub'>responsibility, generosity</span>\"]\n            GoodResults[\"<b>Good Results</b><br/><span class='sub'>prosperity, fortune</span>\"]\n            GoodDeeds --- GoodResults\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H9 [\"Ninth House (Values & Integrity)\"]\n        direction TB\n        Philosophy[\"<b>Philosophy</b><br/><span class='sub'>religion, ethics, morals</span>\"]\n        Education[\"<b>Education</b><br/><span class='sub'>source of values</span>\"]\n        Educators[\"<b>Educators</b><br/><span class='sub'>teachers, guides</span>\"]\n        Anat9[\"<b>Anatomy: Thighs & Hips</b><br/><span class='sub'>femoral arteries, marrow</span>\"]\n        GoodDeeds[\"<b>Good Deeds</b><br/><span class='sub'>responsibility</span>\"]\n        GoodResults[\"<b>Good Results</b><br/><span class='sub'>fortune, prosperity</span>\"]\n        Philosophy --> Education\n        Education --> Educators\n        Educators --> Anat9\n        Anat9 -.-> GoodDeeds\n        GoodDeeds --> GoodResults\n    end"
     },
     "10": {
       "number": 10,
       "sanskrit": "Karma Bhāva",
       "title": "Tenth House",
-      "formula": "Open Sky",
+      "formula": "Open Sky • Visibility & Wind",
+      "anatomy": "Knees, Kneecaps, Knee Joints, Skeletal Framework & Bones",
       "pillars": [
-        "visibility",
-        "wind"
+        "Visibility",
+        "Wind"
       ],
-      "mermaid": "flowchart TD\n    subgraph House10 [\"Tenth House — Open Sky\"]\n        direction TB\n        subgraph ColVisibility10 [\"visibility\"]\n            Extroverse[\"<b>Extroverse</b><br/><span class='sub'>male, public, society</span>\"]\n            Fame[\"<b>Fame</b><br/><span class='sub'>status, career</span>\"]\n            Influence[\"<b>Influence</b><br/><span class='sub'>authority</span>\"]\n            Extroverse --- Fame --- Influence\n        end\n        subgraph ColWind [\"wind\"]\n            Movement[\"<b>Movement</b><br/><span class='sub'>travel</span>\"]\n            Instability[\"<b>Instability</b><br/><span class='sub'>dispersion, evaporation</span>\"]\n            Movement --- Instability\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H10 [\"Tenth House (Open Sky)\"]\n        direction TB\n        Extroverse[\"<b>Extroverse</b><br/><span class='sub'>male, public, society</span>\"]\n        Fame[\"<b>Fame</b><br/><span class='sub'>status, career</span>\"]\n        Influence[\"<b>Influence</b><br/><span class='sub'>authority</span>\"]\n        Anat10[\"<b>Anatomy: Knees</b><br/><span class='sub'>joints, skeletal system</span>\"]\n        Movement[\"<b>Movement</b><br/><span class='sub'>travel</span>\"]\n        Instability[\"<b>Instability</b><br/><span class='sub'>dispersion</span>\"]\n        Extroverse --> Fame\n        Fame --> Influence\n        Influence --> Anat10\n        Anat10 -.-> Movement\n        Movement --> Instability\n    end"
     },
     "11": {
       "number": 11,
       "sanskrit": "Lābha Bhāva",
       "title": "Eleventh House",
-      "formula": "Support of the Open Sky",
+      "formula": "Support of the Open Sky • Realization & Alliances",
+      "anatomy": "Calves, Shins, Ankles, Left Ear & Peripheral Blood Circulation",
       "pillars": [
-        "realization",
-        "alliances"
+        "Realization",
+        "Alliances"
       ],
-      "mermaid": "flowchart TD\n    subgraph House11 [\"Eleventh House — Support of the Open Sky\"]\n        direction TB\n        subgraph ColRealization [\"realization\"]\n            Attainment[\"<b>Attainment</b><br/><span class='sub'>desires fulfilled</span>\"]\n            Income[\"<b>Income</b><br/><span class='sub'>profit, surplus</span>\"]\n            Expansion[\"<b>Expansion</b><br/><span class='sub'>abundance</span>\"]\n            Attainment --- Income --- Expansion\n        end\n        subgraph ColAlliances [\"alliances\"]\n            Community[\"<b>Community</b><br/><span class='sub'>friends, large groups</span>\"]\n            Aspirations[\"<b>Aspirations</b><br/><span class='sub'>future plans</span>\"]\n            Community --- Aspirations\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H11 [\"Eleventh House (Support of Open Sky)\"]\n        direction TB\n        Attainment[\"<b>Attainment</b><br/><span class='sub'>desires fulfilled</span>\"]\n        Income[\"<b>Income</b><br/><span class='sub'>profit, surplus</span>\"]\n        Expansion[\"<b>Expansion</b><br/><span class='sub'>abundance</span>\"]\n        Anat11[\"<b>Anatomy: Calves & Ankles</b><br/><span class='sub'>shins, left ear, circulation</span>\"]\n        Community[\"<b>Community</b><br/><span class='sub'>friends, alliances</span>\"]\n        Aspirations[\"<b>Aspirations</b><br/><span class='sub'>ideals</span>\"]\n        Attainment --> Income\n        Income --> Expansion\n        Expansion --> Anat11\n        Anat11 -.-> Community\n        Community --> Aspirations\n    end"
     },
     "12": {
       "number": 12,
       "sanskrit": "Vyaya Bhāva",
       "title": "Twelfth House",
-      "formula": "Pre-Sunrise ~ Night Sky",
+      "formula": "Pre-Sunrise ~ Night Sky • Disappearance & Interior",
+      "anatomy": "Feet, Toes, Lymphatic Fluid System, Left Eye & Sleep Neurochemistry",
       "pillars": [
-        "disappearance",
-        "interior"
+        "Disappearance",
+        "Interior"
       ],
-      "mermaid": "flowchart TD\n    subgraph House12 [\"Twelfth House — Pre-Sunrise ~ Night Sky\"]\n        direction TB\n        subgraph ColDisappearance12 [\"disappearance\"]\n            Release[\"<b>Release</b><br/><span class='sub'>loss, expenses</span>\"]\n            Solitude[\"<b>Solitude</b><br/><span class='sub'>seclusion, retreat</span>\"]\n            Liberation[\"<b>Liberation</b><br/><span class='sub'>mokṣa</span>\"]\n            Release --- Solitude --- Liberation\n        end\n        subgraph ColInterior12 [\"interior\"]\n            Subconscious[\"<b>Subconscious</b><br/><span class='sub'>dreams, sleep</span>\"]\n            ForeignLands[\"<b>Foreign Lands</b><br/><span class='sub'>distant displacement</span>\"]\n            Subconscious --- ForeignLands\n        end\n    end"
+      "mermaid": "flowchart TB\n    subgraph H12 [\"Twelfth House (Pre-Sunrise ~ Night Sky)\"]\n        direction TB\n        Release[\"<b>Release</b><br/><span class='sub'>loss, expenses</span>\"]\n        Solitude[\"<b>Solitude</b><br/><span class='sub'>seclusion, retreat</span>\"]\n        Liberation[\"<b>Liberation</b><br/><span class='sub'>mokṣa</span>\"]\n        Anat12[\"<b>Anatomy: Feet</b><br/><span class='sub'>toes, lymphatics, left eye</span>\"]\n        Subconscious[\"<b>Subconscious</b><br/><span class='sub'>dreams, sleep</span>\"]\n        ForeignLands[\"<b>Foreign Lands</b><br/><span class='sub'>displacement</span>\"]\n        Release --> Solitude\n        Solitude --> Liberation\n        Liberation --> Anat12\n        Anat12 -.-> Subconscious\n        Subconscious --> ForeignLands\n    end"
     }
   }
 }
