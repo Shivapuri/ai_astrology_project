@@ -2480,23 +2480,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Masculinity",
-              "title": "Masculinity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Independence",
-              "title": "Independence",
-              "tier": 2,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2511,6 +2494,23 @@
               "title": "Individualism",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "tier": 2,
+              "col": "center"
             }
           ]
         },
@@ -2535,23 +2535,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Masculinity",
-              "title": "Masculinity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Independence",
-              "title": "Independence",
-              "tier": 2,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2566,6 +2549,23 @@
               "title": "Individualism",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Masculinity",
+              "title": "Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Independence",
+              "title": "Independence",
+              "tier": 2,
+              "col": "center"
             }
           ]
         },
@@ -2661,24 +2661,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Femininity",
-              "title": "Femininity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Beauty",
-              "title": "Beauty",
-              "badge": "Wealth",
-              "tier": 2,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2694,6 +2676,24 @@
               "badge": "Learning",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Femininity",
+              "title": "Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "badge": "Wealth",
+              "tier": 2,
+              "col": "center"
             }
           ]
         },
@@ -2719,24 +2719,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Femininity",
-              "title": "Femininity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Beauty",
-              "title": "Beauty",
-              "badge": "Wealth",
-              "tier": 2,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2752,6 +2734,24 @@
               "badge": "Learning",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Femininity",
+              "title": "Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Beauty",
+              "title": "Beauty",
+              "badge": "Wealth",
+              "tier": 2,
+              "col": "center"
             }
           ]
         },
@@ -2859,23 +2859,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Intellect",
-              "title": "Intellect",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Commerce",
-              "title": "Commerce",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2892,6 +2875,23 @@
               "badge": "Diplomacy, Talent",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Commerce",
+              "title": "Commerce",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -2916,23 +2916,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Intellect",
-              "title": "Intellect",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Commerce",
-              "title": "Commerce",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -2949,6 +2932,23 @@
               "badge": "Diplomacy, Talent",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Intellect",
+              "title": "Intellect",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Commerce",
+              "title": "Commerce",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -3046,24 +3046,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_MatureFem",
-              "title": "Mature Femininity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Introversion",
-              "title": "Introversion",
-              "sub": "Shyness",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -3078,6 +3060,24 @@
               "sub": "Protected Space",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureFem",
+              "title": "Mature Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Introversion",
+              "title": "Introversion",
+              "sub": "Shyness",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -3101,24 +3101,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_MatureFem",
-              "title": "Mature Femininity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Introversion",
-              "title": "Introversion",
-              "sub": "Shyness",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -3133,6 +3115,24 @@
               "sub": "Protected Space",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureFem",
+              "title": "Mature Femininity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Introversion",
+              "title": "Introversion",
+              "sub": "Shyness",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -3228,24 +3228,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_MatureMasc",
-              "title": "Mature Masculinity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Leadership",
-              "title": "Leadership",
-              "sub": "Charisma, Fame",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -3260,6 +3242,24 @@
               "title": "Stability",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureMasc",
+              "title": "Mature Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Leadership",
+              "title": "Leadership",
+              "sub": "Charisma, Fame",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -3283,24 +3283,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_MatureMasc",
-              "title": "Mature Masculinity",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "S_Leadership",
-              "title": "Leadership",
-              "sub": "Charisma, Fame",
-              "tier": 4,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -3315,6 +3297,24 @@
               "title": "Stability",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_MatureMasc",
+              "title": "Mature Masculinity",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "S_Leadership",
+              "title": "Leadership",
+              "sub": "Charisma, Fame",
+              "tier": 4,
+              "col": "center"
             }
           ]
         },
@@ -3461,18 +3461,13 @@
               "sub": "Finance",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Cleanliness",
               "title": "Cleanliness",
               "sub": "Purity",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3525,18 +3520,13 @@
               "sub": "Finance",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Cleanliness",
               "title": "Cleanliness",
               "sub": "Purity",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3645,25 +3635,20 @@
               "sub": "Liberty",
               "tier": 2,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Cooperation",
               "title": "Cooperation",
               "sub": "Peace",
               "tier": 3,
-              "col": "center"
+              "col": "right"
             },
             {
               "id": "S_Exchange",
               "title": "Exchange",
               "sub": "Trade",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3704,25 +3689,20 @@
               "sub": "Liberty",
               "tier": 2,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Cooperation",
               "title": "Cooperation",
               "sub": "Peace",
               "tier": 3,
-              "col": "center"
+              "col": "right"
             },
             {
               "id": "S_Exchange",
               "title": "Exchange",
               "sub": "Trade",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3811,6 +3791,13 @@
               "sub": "Individuality",
               "tier": 2,
               "col": "left"
+            },
+            {
+              "id": "S_Strong",
+              "title": "Strong",
+              "sub": "emotionally",
+              "tier": 3,
+              "col": "left"
             }
           ]
         },
@@ -3828,21 +3815,9 @@
               "id": "S_Mysterious",
               "title": "Mysterious",
               "sub": "Secretive",
+              "badge": "Circled",
               "tier": 2,
-              "col": "right",
-              "badge": "Circled"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Strong",
-              "title": "Strong",
-              "sub": "emotionally",
-              "tier": 3,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3864,6 +3839,13 @@
               "sub": "Individuality",
               "tier": 2,
               "col": "left"
+            },
+            {
+              "id": "S_Strong",
+              "title": "Strong",
+              "sub": "emotionally",
+              "tier": 3,
+              "col": "left"
             }
           ]
         },
@@ -3881,21 +3863,9 @@
               "id": "S_Mysterious",
               "title": "Mysterious",
               "sub": "Secretive",
+              "badge": "Circled",
               "tier": 2,
-              "col": "right",
-              "badge": "Circled"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Strong",
-              "title": "Strong",
-              "sub": "emotionally",
-              "tier": 3,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -3969,6 +3939,23 @@
       ],
       "pillars": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Education",
+              "title": "Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_HungryForIdeas",
+              "title": "Hungry for Ideas",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -3983,23 +3970,6 @@
               "title": "Well-Informed",
               "tier": 2,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "S_Education",
-              "title": "Education",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "S_HungryForIdeas",
-              "title": "Hungry for Ideas",
-              "tier": 3,
-              "col": "left"
             }
           ]
         },
@@ -4023,6 +3993,23 @@
       ],
       "columns": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "S_Education",
+              "title": "Education",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "S_HungryForIdeas",
+              "title": "Hungry for Ideas",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -4037,23 +4024,6 @@
               "title": "Well-Informed",
               "tier": 2,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "S_Education",
-              "title": "Education",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "S_HungryForIdeas",
-              "title": "Hungry for Ideas",
-              "tier": 3,
-              "col": "left"
             }
           ]
         },
@@ -4197,18 +4167,13 @@
               "title": "Worker",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Unstoppable",
               "title": "Unstoppable",
               "sub": "Stubborn",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -4259,18 +4224,13 @@
               "title": "Worker",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
+            },
             {
               "id": "S_Unstoppable",
               "title": "Unstoppable",
               "sub": "Stubborn",
               "tier": 4,
-              "col": "center"
+              "col": "right"
             }
           ]
         }
@@ -4361,6 +4321,17 @@
           ]
         },
         {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
           "name": "right",
           "items": [
             {
@@ -4382,17 +4353,6 @@
               "sub": "Group-identity",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Worker",
-              "title": "Worker",
-              "tier": 4,
-              "col": "center"
             }
           ]
         }
@@ -4417,6 +4377,17 @@
           ]
         },
         {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Worker",
+              "title": "Worker",
+              "tier": 4,
+              "col": "center"
+            }
+          ]
+        },
+        {
           "name": "right",
           "items": [
             {
@@ -4438,17 +4409,6 @@
               "sub": "Group-identity",
               "tier": 3,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Worker",
-              "title": "Worker",
-              "tier": 4,
-              "col": "center"
             }
           ]
         }
@@ -4517,18 +4477,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Depth",
-              "title": "Depth",
-              "badge": "INNER CORE",
-              "tier": 1,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -4544,6 +4492,18 @@
               "sub": "Quiet, Shy, Careful",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Depth",
+              "title": "Depth",
+              "badge": "INNER CORE",
+              "tier": 1,
+              "col": "center"
             }
           ]
         },
@@ -4569,18 +4529,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "S_Depth",
-              "title": "Depth",
-              "badge": "INNER CORE",
-              "tier": 1,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -4596,6 +4544,18 @@
               "sub": "Quiet, Shy, Careful",
               "tier": 3,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "S_Depth",
+              "title": "Depth",
+              "badge": "INNER CORE",
+              "tier": 1,
+              "col": "center"
             }
           ]
         },
@@ -4804,49 +4764,6 @@
       ],
       "pillars": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "P_Consciousness",
-              "title": "Consciousness",
-              "color": "green",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "P_Vitality",
-              "title": "Vitality",
-              "sub": "Health",
-              "color": "gold",
-              "tier": 4,
-              "col": "center"
-            },
-            {
-              "id": "P_Visibility",
-              "title": "Visibility",
-              "sub": "Fame",
-              "color": "blue",
-              "tier": 5,
-              "col": "center"
-            },
-            {
-              "id": "P_Leadership",
-              "title": "Leadership",
-              "sub": "Authority",
-              "color": "blue",
-              "tier": 6,
-              "col": "center"
-            },
-            {
-              "id": "P_AuthorityFigures",
-              "title": "Authority Figures",
-              "color": "blue",
-              "tier": 7,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -4894,6 +4811,49 @@
               "color": "blue",
               "tier": 7,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Consciousness",
+              "title": "Consciousness",
+              "color": "green",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Vitality",
+              "title": "Vitality",
+              "sub": "Health",
+              "color": "gold",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Visibility",
+              "title": "Visibility",
+              "sub": "Fame",
+              "color": "blue",
+              "tier": 5,
+              "col": "center"
+            },
+            {
+              "id": "P_Leadership",
+              "title": "Leadership",
+              "sub": "Authority",
+              "color": "blue",
+              "tier": 6,
+              "col": "center"
+            },
+            {
+              "id": "P_AuthorityFigures",
+              "title": "Authority Figures",
+              "color": "blue",
+              "tier": 7,
+              "col": "center"
             }
           ]
         },
@@ -4928,49 +4888,6 @@
       ],
       "columns": [
         {
-          "name": "center",
-          "items": [
-            {
-              "id": "P_Consciousness",
-              "title": "Consciousness",
-              "color": "green",
-              "tier": 1,
-              "col": "center"
-            },
-            {
-              "id": "P_Vitality",
-              "title": "Vitality",
-              "sub": "Health",
-              "color": "gold",
-              "tier": 4,
-              "col": "center"
-            },
-            {
-              "id": "P_Visibility",
-              "title": "Visibility",
-              "sub": "Fame",
-              "color": "blue",
-              "tier": 5,
-              "col": "center"
-            },
-            {
-              "id": "P_Leadership",
-              "title": "Leadership",
-              "sub": "Authority",
-              "color": "blue",
-              "tier": 6,
-              "col": "center"
-            },
-            {
-              "id": "P_AuthorityFigures",
-              "title": "Authority Figures",
-              "color": "blue",
-              "tier": 7,
-              "col": "center"
-            }
-          ]
-        },
-        {
           "name": "left",
           "items": [
             {
@@ -5018,6 +4935,49 @@
               "color": "blue",
               "tier": 7,
               "col": "left"
+            }
+          ]
+        },
+        {
+          "name": "center",
+          "items": [
+            {
+              "id": "P_Consciousness",
+              "title": "Consciousness",
+              "color": "green",
+              "tier": 1,
+              "col": "center"
+            },
+            {
+              "id": "P_Vitality",
+              "title": "Vitality",
+              "sub": "Health",
+              "color": "gold",
+              "tier": 4,
+              "col": "center"
+            },
+            {
+              "id": "P_Visibility",
+              "title": "Visibility",
+              "sub": "Fame",
+              "color": "blue",
+              "tier": 5,
+              "col": "center"
+            },
+            {
+              "id": "P_Leadership",
+              "title": "Leadership",
+              "sub": "Authority",
+              "color": "blue",
+              "tier": 6,
+              "col": "center"
+            },
+            {
+              "id": "P_AuthorityFigures",
+              "title": "Authority Figures",
+              "color": "blue",
+              "tier": 7,
+              "col": "center"
             }
           ]
         },
@@ -5172,6 +5132,23 @@
       ],
       "pillars": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Fluctuation",
+              "title": "Fluctuation / Concentration",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Rhythm",
+              "title": "Rhythm & Timing",
+              "tier": 5,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5235,29 +5212,29 @@
               "title": "Mother",
               "tier": 5,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Fluctuation",
-              "title": "Fluctuation / Concentration",
-              "tier": 4,
-              "col": "left"
-            },
-            {
-              "id": "P_Rhythm",
-              "title": "Rhythm & Timing",
-              "tier": 5,
-              "col": "left"
             }
           ]
         }
       ],
       "columns": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Fluctuation",
+              "title": "Fluctuation / Concentration",
+              "tier": 4,
+              "col": "left"
+            },
+            {
+              "id": "P_Rhythm",
+              "title": "Rhythm & Timing",
+              "tier": 5,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5321,23 +5298,6 @@
               "title": "Mother",
               "tier": 5,
               "col": "right"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Fluctuation",
-              "title": "Fluctuation / Concentration",
-              "tier": 4,
-              "col": "left"
-            },
-            {
-              "id": "P_Rhythm",
-              "title": "Rhythm & Timing",
-              "tier": 5,
-              "col": "left"
             }
           ]
         }
@@ -5439,6 +5399,25 @@
       ],
       "pillars": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_SelfReliance",
+              "title": "Self-Reliance",
+              "sub": "Independence, Freedom",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Weapons",
+              "title": "Weapons",
+              "sub": "Tools",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5468,25 +5447,6 @@
               "sub": "War, Violence",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_SelfReliance",
-              "title": "Self-Reliance",
-              "sub": "Independence, Freedom",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_Weapons",
-              "title": "Weapons",
-              "sub": "Tools",
-              "tier": 3,
-              "col": "left"
             }
           ]
         },
@@ -5505,6 +5465,25 @@
       ],
       "columns": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_SelfReliance",
+              "title": "Self-Reliance",
+              "sub": "Independence, Freedom",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Weapons",
+              "title": "Weapons",
+              "sub": "Tools",
+              "tier": 3,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5534,25 +5513,6 @@
               "sub": "War, Violence",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_SelfReliance",
-              "title": "Self-Reliance",
-              "sub": "Independence, Freedom",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_Weapons",
-              "title": "Weapons",
-              "sub": "Tools",
-              "tier": 3,
-              "col": "left"
             }
           ]
         },
@@ -5686,6 +5646,32 @@
       ],
       "pillars": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decoding",
+              "title": "Decoding",
+              "sub": "Encoding",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Communication",
+              "title": "Communication",
+              "sub": "Languages",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Interaction",
+              "title": "Interaction",
+              "sub": "Exchange, Trade",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5714,32 +5700,6 @@
               "title": "Youth",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Decoding",
-              "title": "Decoding",
-              "sub": "Encoding",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_Communication",
-              "title": "Communication",
-              "sub": "Languages",
-              "tier": 3,
-              "col": "left"
-            },
-            {
-              "id": "P_Interaction",
-              "title": "Interaction",
-              "sub": "Exchange, Trade",
-              "tier": 4,
-              "col": "left"
             }
           ]
         },
@@ -5772,6 +5732,32 @@
       ],
       "columns": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Decoding",
+              "title": "Decoding",
+              "sub": "Encoding",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_Communication",
+              "title": "Communication",
+              "sub": "Languages",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Interaction",
+              "title": "Interaction",
+              "sub": "Exchange, Trade",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -5800,32 +5786,6 @@
               "title": "Youth",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Decoding",
-              "title": "Decoding",
-              "sub": "Encoding",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_Communication",
-              "title": "Communication",
-              "sub": "Languages",
-              "tier": 3,
-              "col": "left"
-            },
-            {
-              "id": "P_Interaction",
-              "title": "Interaction",
-              "sub": "Exchange, Trade",
-              "tier": 4,
-              "col": "left"
             }
           ]
         },
@@ -6213,6 +6173,31 @@
       ],
       "pillars": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Beauty",
+              "title": "Beauty",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_BeautifulThings",
+              "title": "Beautiful Things",
+              "sub": "Arts, Fashion, etc.",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Senses",
+              "title": "Senses",
+              "sub": "Sensuality",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -6242,31 +6227,6 @@
               "sub": "Cooperation",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Beauty",
-              "title": "Beauty",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_BeautifulThings",
-              "title": "Beautiful Things",
-              "sub": "Arts, Fashion, etc.",
-              "tier": 3,
-              "col": "left"
-            },
-            {
-              "id": "P_Senses",
-              "title": "Senses",
-              "sub": "Sensuality",
-              "tier": 4,
-              "col": "left"
             }
           ]
         },
@@ -6297,6 +6257,31 @@
       ],
       "columns": [
         {
+          "name": "left",
+          "items": [
+            {
+              "id": "P_Beauty",
+              "title": "Beauty",
+              "tier": 2,
+              "col": "left"
+            },
+            {
+              "id": "P_BeautifulThings",
+              "title": "Beautiful Things",
+              "sub": "Arts, Fashion, etc.",
+              "tier": 3,
+              "col": "left"
+            },
+            {
+              "id": "P_Senses",
+              "title": "Senses",
+              "sub": "Sensuality",
+              "tier": 4,
+              "col": "left"
+            }
+          ]
+        },
+        {
           "name": "center",
           "items": [
             {
@@ -6326,31 +6311,6 @@
               "sub": "Cooperation",
               "tier": 4,
               "col": "center"
-            }
-          ]
-        },
-        {
-          "name": "left",
-          "items": [
-            {
-              "id": "P_Beauty",
-              "title": "Beauty",
-              "tier": 2,
-              "col": "left"
-            },
-            {
-              "id": "P_BeautifulThings",
-              "title": "Beautiful Things",
-              "sub": "Arts, Fashion, etc.",
-              "tier": 3,
-              "col": "left"
-            },
-            {
-              "id": "P_Senses",
-              "title": "Senses",
-              "sub": "Sensuality",
-              "tier": 4,
-              "col": "left"
             }
           ]
         },

@@ -1840,10 +1840,6 @@ async function getSignificationsFlowcharts(chartData) {
 let _cachedSignificationsData = null;
 async function getSignificationsData(chartData) {
     if (_cachedSignificationsData) return _cachedSignificationsData;
-    if (chartData && chartData.report && chartData.report.significations_data && chartData.report.significations_data.planets) {
-        _cachedSignificationsData = chartData.report.significations_data;
-        return _cachedSignificationsData;
-    }
     try {
         const resp = await fetch('/static/data/significations_data.json');
         if (resp.ok) {
@@ -1852,6 +1848,10 @@ async function getSignificationsData(chartData) {
         }
     } catch (err) {
         console.warn("Could not fetch /static/data/significations_data.json:", err);
+    }
+    if (chartData && chartData.report && chartData.report.significations_data && chartData.report.significations_data.planets) {
+        _cachedSignificationsData = chartData.report.significations_data;
+        return _cachedSignificationsData;
     }
     return { planets: {}, signs: {}, houses: {} };
 }
@@ -2279,10 +2279,13 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     html += `<div class="synth-pillars-container">`;
 
     const cols = cardData.columns || cardData.pillars || cardData.subgraphs || [];
+    const genericColNames = ['left', 'center', 'right', 'main', 'col', 'column', 'default'];
     cols.forEach(col => {
+        const rawColName = (col.name || '').trim();
+        const hasDedicatedSubheader = rawColName && !genericColNames.includes(rawColName.toLowerCase());
         html += `
             <div class="synth-pillar-col">
-                ${col.name ? `<div class="synth-pillar-title" title="${col.name}">${col.name}</div>` : ''}
+                ${hasDedicatedSubheader ? `<div class="synth-pillar-title" title="${rawColName}">${rawColName}</div>` : ''}
                 <div style="display: flex; flex-direction: column; gap: 10px;">
         `;
         const nodes = col.nodes || col.items || [];
