@@ -241,3 +241,34 @@ def test_equidistant_spacing_algorithms():
     assert get_north_equidistant_t(2) == [0.26, 0.74]
     assert get_north_equidistant_t(3) == [0.20, 0.50, 0.80]
     assert get_north_equidistant_t(4) == [0.12, 0.37, 0.63, 0.88]
+
+
+def test_north_indian_house_colorization_and_border_geometry():
+    """
+    Safeguards that:
+    1. North Indian inner beige border is at x=18, y=18, w=464, h=464 so petal peaks just touch it.
+    2. 4 corner diagonal spines start at (18, 18), (482, 18), (18, 482), (482, 482).
+    3. Kendras (1, 4, 7, 10) have warm earthy sand/ochre fills (#ede1ce).
+    4. Trikonas (5, 9) have earthy warm olive-sage fills (#e7ece0).
+    5. Other houses (2, 3, 6, 8, 11, 12) have warm natural linen parchment fills (#f8f4ea).
+    """
+    items = [
+        {"type": "planet", "name": "Sun", "sign": "Aries", "degree": 10, "minute": 0, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    svg = generate_north_indian(items, varga_name="D1")
+
+    # 1. Inner beige border at 18
+    assert '<rect x="18" y="18" width="464" height="464"' in svg, "Inner beige border must be at 18 to let petal peaks touch"
+
+    # 2. Corner diagonal spines at 18 and 482
+    assert '<line x1="18" y1="18" x2="148" y2="148"' in svg
+    assert '<line x1="482" y1="18" x2="352" y2="148"' in svg
+    assert '<line x1="18" y1="482" x2="148" y2="352"' in svg
+    assert '<line x1="482" y1="482" x2="352" y2="352"' in svg
+
+    # 3. House color fills
+    assert svg.count('fill="#ede1ce"') == 4, "Must have exactly 4 Kendra house fills (#ede1ce)"
+    assert svg.count('fill="#e7ece0"') == 2, "Must have exactly 2 Trikona house fills (#e7ece0)"
+    assert svg.count('fill="#f8f4ea"') == 6, "Must have exactly 6 Other house fills (#f8f4ea)"
+

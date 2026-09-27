@@ -50,8 +50,8 @@
                 </div>
                 <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 4px;">
                     <button type="button" class="hotkey-btn btn-south-matrix" onclick="cycleSouthCenterFromWidget(this)" title="Cycle South Indian Center: Title / 4x3 Sign Matrix / Anatomy" style="padding: 2px 6px; font-weight: bold; font-size: 12px;">Center [↺]</button>
-                    <button type="button" class="hotkey-btn active btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
-                    <button type="button" class="hotkey-btn btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
+                    <button type="button" class="hotkey-btn btn-south" onclick="switchWidgetChartType(this, 'south')" title="South Indian (S)">S</button>
+                    <button type="button" class="hotkey-btn active btn-north" onclick="switchWidgetChartType(this, 'north')" title="North Indian (N)">N</button>
                     <button type="button" class="hotkey-btn btn-circular" onclick="switchWidgetChartType(this, 'circular')" title="Circular (C)">C</button>
                     <button type="button" class="hotkey-btn btn-biwheel" onclick="switchWidgetChartType(this, 'biwheel')" title="Harmonic Bi-Wheel (B)">B</button>
                     <button type="button" class="btn-widget-maximize" title="Maximize Chart (Full Screen)" onclick="maximizeChartFromWidget(this)">⛶</button>
@@ -77,10 +77,10 @@
                     <button type="button" class="widget-zoom-btn" onclick="zoomWidgetChartFromBtn(this, 0.15)" title="Zoom In (or wheel up)">+</button>
                     <button type="button" class="widget-zoom-btn btn-zoom-reset" onclick="resetWidgetChartZoomFromBtn(this)" title="Reset Zoom & Pan (or double-click chart)" style="display:none;">⌖</button>
                 </div>
-                <div class="view-south chart-view active" style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                <div class="view-south chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                     <div class="chart-svg-container svg-south" style="width:100%; height:100%;"></div>
                 </div>
-                <div class="view-north chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">
+                <div class="view-north chart-view active" style="flex:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;">
                     <div class="chart-svg-container svg-north" style="width:100%; height:100%;"></div>
                 </div>
                 <div class="view-circular chart-view" style="flex:1; display:none; align-items:center; justify-content:center; position:relative; overflow:hidden;">

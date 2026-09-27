@@ -199,8 +199,8 @@ function saveLayoutState() {
     const cells = Array.from(document.querySelectorAll('.grid-cell')).map(c => {
         const vSel = c.querySelector('.varga-select');
         const outerSel = c.querySelector('.biwheel-outer-select');
-        let chartStyle = 'south';
-        if (c.querySelector('.view-north.active')) chartStyle = 'north';
+        let chartStyle = 'north';
+        if (c.querySelector('.view-south.active')) chartStyle = 'south';
         else if (c.querySelector('.view-circular.active')) chartStyle = 'circular';
         else if (c.querySelector('.view-biwheel.active')) chartStyle = 'biwheel';
         return {

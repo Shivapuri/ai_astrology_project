@@ -1058,15 +1058,40 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     # Parchment Ground
     svg += '<rect width="500" height="500" fill="#fffdfa"/>\n'
 
-    # Crisp Double Outer Square (Clean edges, no outer rounding)
+    ni_paths = [
+        "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
+        "M 18 18 L 250 19 C 224 55, 150 78, 148 148 L 18 18 Z",
+        "M 18 18 L 148 148 C 78 150, 55 224, 19 250 L 18 18 Z",
+        "M 19 250 C 55 224, 78 150, 148 148 L 250 250 L 148 352 C 78 350, 55 276, 19 250 Z",
+        "M 19 250 C 55 276, 78 350, 148 352 L 18 482 L 19 250 Z",
+        "M 18 482 L 148 352 C 150 422, 224 445, 250 481 L 18 482 Z",
+        "M 250 481 C 224 445, 150 422, 148 352 L 250 250 L 352 352 C 350 422, 276 445, 250 481 Z",
+        "M 250 481 C 276 445, 350 422, 352 352 L 482 482 L 250 481 Z",
+        "M 482 482 L 352 352 C 422 350, 445 276, 481 250 L 482 482 Z",
+        "M 481 250 C 445 224, 422 150, 352 148 L 250 250 L 352 352 C 422 350, 445 276, 481 250 Z",
+        "M 482 18 L 481 250 C 445 224, 422 150, 352 148 L 482 18 Z",
+        "M 482 18 L 352 148 C 350 78, 276 55, 250 19 L 482 18 Z"
+    ]
+
+    # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
+    for h in range(12):
+        if h in (0, 3, 6, 9):       # Kendras: 1, 4, 7, 10 (Warm Earthy Sand / Ochre Parchment)
+            fill_col = "#ede1ce"
+        elif h in (4, 8):           # Trikonas: 5, 9 (Warm Earthy Olive-Sage Parchment)
+            fill_col = "#e7ece0"
+        else:                       # Other houses: 2, 3, 6, 8, 11, 12 (Warm Natural Linen Parchment)
+            fill_col = "#f8f4ea"
+        svg += f'<path d="{ni_paths[h]}" fill="{fill_col}"/>\n'
+
+    # Crisp Double Outer Square (Clean edges, inner border placed at 18 to let petal peak just touch it)
     svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
-    svg += '<rect x="19" y="19" width="462" height="462" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
+    svg += '<rect x="18" y="18" width="464" height="464" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
 
     # 4 Diagonal Spines from Corners to Inner Cusp Vertices
-    svg += '<line x1="19" y1="19" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="481" y1="19" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="19" y1="481" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="481" y1="481" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="18" y1="18" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="482" y1="18" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="18" y1="482" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="482" y1="482" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
 
     # Diagonal Spines from Cusp Vertices to Center
     svg += '<line x1="148" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
@@ -1156,20 +1181,6 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "is_retrograde": item.get("is_retrograde", False)
             })
 
-    ni_paths = [
-        "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
-        "M 19 19 L 250 19 C 224 55, 150 78, 148 148 L 19 19 Z",
-        "M 19 19 L 148 148 C 78 150, 55 224, 19 250 L 19 19 Z",
-        "M 19 250 C 55 224, 78 150, 148 148 L 250 250 L 148 352 C 78 350, 55 276, 19 250 Z",
-        "M 19 250 C 55 276, 78 350, 148 352 L 19 481 L 19 250 Z",
-        "M 19 481 L 148 352 C 150 422, 224 445, 250 481 L 19 481 Z",
-        "M 250 481 C 224 445, 150 422, 148 352 L 250 250 L 352 352 C 350 422, 276 445, 250 481 Z",
-        "M 250 481 C 276 445, 350 422, 352 352 L 481 481 L 250 481 Z",
-        "M 481 481 L 352 352 C 422 350, 445 276, 481 250 L 481 481 Z",
-        "M 481 250 C 445 224, 422 150, 352 148 L 250 250 L 352 352 C 422 350, 445 276, 481 250 Z",
-        "M 481 19 L 481 250 C 445 224, 422 150, 352 148 L 481 19 Z",
-        "M 481 19 L 352 148 C 350 78, 276 55, 250 19 L 481 19 Z"
-    ]
 
     for h in range(12):
         s_idx = (anchor_index + h) % 12
