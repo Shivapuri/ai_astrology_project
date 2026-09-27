@@ -1075,12 +1075,12 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
 
     # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
     for h in range(12):
-        if h in (0, 3, 6, 9):       # Kendras: 1, 4, 7, 10 (Warm Earthy Sand / Ochre Parchment)
-            fill_col = "#ede1ce"
-        elif h in (4, 8):           # Trikonas: 5, 9 (Warm Earthy Olive-Sage Parchment)
-            fill_col = "#e7ece0"
-        else:                       # Other houses: 2, 3, 6, 8, 11, 12 (Warm Natural Linen Parchment)
-            fill_col = "#f8f4ea"
+        if h in (0, 3, 6, 9):       # Kendras: 1, 4, 7, 10 (Baked Terracotta Sand)
+            fill_col = "#eedec9"
+        elif h in (4, 8):           # Trikonas: 5, 9 (Sunlit Apricot Champagne)
+            fill_col = "#faede0"
+        else:                       # Other houses: 2, 3, 6, 8, 11, 12 (Soft Warm Vellum)
+            fill_col = "#f9f5eb"
         svg += f'<path d="{ni_paths[h]}" fill="{fill_col}"/>\n'
 
     # Crisp Double Outer Square (Clean edges, inner border placed at 18 to let petal peak just touch it)

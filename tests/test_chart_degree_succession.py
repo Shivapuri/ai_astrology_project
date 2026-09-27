@@ -248,9 +248,9 @@ def test_north_indian_house_colorization_and_border_geometry():
     Safeguards that:
     1. North Indian inner beige border is at x=18, y=18, w=464, h=464 so petal peaks just touch it.
     2. 4 corner diagonal spines start at (18, 18), (482, 18), (18, 482), (482, 482).
-    3. Kendras (1, 4, 7, 10) have warm earthy sand/ochre fills (#ede1ce).
-    4. Trikonas (5, 9) have earthy warm olive-sage fills (#e7ece0).
-    5. Other houses (2, 3, 6, 8, 11, 12) have warm natural linen parchment fills (#f8f4ea).
+    3. Kendras (1, 4, 7, 10) have baked terracotta sand fills (#eedec9).
+    4. Trikonas (5, 9) have sunlit apricot champagne fills (#faede0).
+    5. Other houses (2, 3, 6, 8, 11, 12) have soft warm vellum fills (#f9f5eb).
     """
     items = [
         {"type": "planet", "name": "Sun", "sign": "Aries", "degree": 10, "minute": 0, "is_retrograde": False},
@@ -267,8 +267,8 @@ def test_north_indian_house_colorization_and_border_geometry():
     assert '<line x1="18" y1="482" x2="148" y2="352"' in svg
     assert '<line x1="482" y1="482" x2="352" y2="352"' in svg
 
-    # 3. House color fills
-    assert svg.count('fill="#ede1ce"') == 4, "Must have exactly 4 Kendra house fills (#ede1ce)"
-    assert svg.count('fill="#e7ece0"') == 2, "Must have exactly 2 Trikona house fills (#e7ece0)"
-    assert svg.count('fill="#f8f4ea"') == 6, "Must have exactly 6 Other house fills (#f8f4ea)"
+    # 3. House color fills (Option 4)
+    assert svg.count('fill="#eedec9"') == 4, "Must have exactly 4 Kendra house fills (#eedec9)"
+    assert svg.count('fill="#faede0"') == 2, "Must have exactly 2 Trikona house fills (#faede0)"
+    assert svg.count('fill="#f9f5eb"') == 6, "Must have exactly 6 Other house fills (#f9f5eb)"
 
