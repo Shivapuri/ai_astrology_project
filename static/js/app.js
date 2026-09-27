@@ -22,10 +22,13 @@ let showSiSigns = true;
 let currentD10Mode = localStorage.getItem('astra_d10_mode') || "reverse";
 let currentD24Mode = localStorage.getItem('astra_d24_mode') || "reverse";
 let currentNakshatraSystem = localStorage.getItem('astra_nakshatra_system') || "ERNST_DHRUVA";
+let currentDebilitationMode = localStorage.getItem('astra_debilitation_mode') || "kala_degree";
 
 if (typeof window !== 'undefined' && window.astraStore) {
     window.astraStore.on('change:d10Mode', val => { currentD10Mode = val; window.currentD10Mode = val; });
+    window.astraStore.on('change:d24Mode', val => { currentD24Mode = val; window.currentD24Mode = val; });
     window.astraStore.on('change:nakshatraSystem', val => { currentNakshatraSystem = val; window.currentNakshatraSystem = val; });
+    window.astraStore.on('change:debilitationMode', val => { currentDebilitationMode = val; window.currentDebilitationMode = val; });
     window.astraStore.on('change:notation', val => { currentNotation = val; window.currentNotation = val; });
 }
 
@@ -763,12 +766,12 @@ function updateWidget(cell) {
                 } else {
                     const natId = (typeof window.currentLoadedNative !== 'undefined' && window.currentLoadedNative?.id) || document.getElementById('nativeSelect')?.value || '';
                     const offsetSec = activePreviewOffsetSeconds || 0;
-                    const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${currentNakshatraSystem}_${offsetSec}`;
+                    const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${currentNakshatraSystem}_${currentDebilitationMode}_${offsetSec}`;
                     if (window.biwheelDynamicCache && window.biwheelDynamicCache[cacheKey]) {
                         b.innerHTML = window.biwheelDynamicCache[cacheKey];
                     } else if (natId) {
                         if (!window.biwheelDynamicCache) window.biwheelDynamicCache = {};
-                        const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&nakshatra_system=${currentNakshatraSystem}&offset_seconds=${offsetSec}`;
+                        const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&nakshatra_system=${currentNakshatraSystem}&debilitation_mode=${currentDebilitationMode}&offset_seconds=${offsetSec}`;
                         fetch(url)
                             .then(res => res.json())
                             .then(data => {
@@ -1063,9 +1066,10 @@ async function applyBirthTimeOffset(nativeId, offsetSeconds) {
         const d10 = window.currentD10Mode || currentD10Mode || 'reverse';
         const d24 = currentD24Mode || 'reverse';
         const nak = window.currentNakshatraSystem || currentNakshatraSystem || 'ERNST_DHRUVA';
+        const deb = window.currentDebilitationMode || currentDebilitationMode || 'kala_degree';
 
         const response = await fetch(
-            `/api/chart/${nativeId}?mode=${notMode}&d10_mode=${d10}&d24_mode=${d24}&nakshatra_system=${nak}&offset_seconds=${offsetSeconds}`,
+            `/api/chart/${nativeId}?mode=${notMode}&d10_mode=${d10}&d24_mode=${d24}&nakshatra_system=${nak}&debilitation_mode=${deb}&offset_seconds=${offsetSeconds}`,
             { signal: stepperAbortController.signal }
         );
         const result = await response.json();
@@ -1217,6 +1221,34 @@ function syncNakshatraSystemUI() {
             ? 'Chitra Paksha Sidereal Ecliptic (Vic DiCara). Click to switch to Ernst Wilhelm Dhruva Equatorial.'
             : 'Dhruva Galactic Center Equatorial (Ernst Wilhelm). Click to switch to Vic DiCara Chitra Sidereal.';
     });
+    updateMenuCheckmarks();
+}
+
+async function setDebilitationMode(mode) {
+    if (currentDebilitationMode === mode && window.astraStore?.state?.debilitationMode === mode) return;
+    currentDebilitationMode = mode;
+    window.currentDebilitationMode = mode;
+    localStorage.setItem('astra_debilitation_mode', currentDebilitationMode);
+    if (window.astraStore) {
+        window.astraStore.setState({ debilitationMode: mode });
+    }
+    syncDebilitationModeUI();
+    window.currentSvgs = null;
+    if (typeof window.loadChart === 'function') await window.loadChart();
+}
+
+async function toggleDebilitationMode() {
+    const nextMode = (currentDebilitationMode === 'kala_degree') ? 'whole_sign' : 'kala_degree';
+    await setDebilitationMode(nextMode);
+}
+
+function syncDebilitationModeUI() {
+    const radioKala = document.getElementById('radio-deb-kala');
+    const radioWhole = document.getElementById('radio-deb-whole');
+    if (radioKala && radioWhole) {
+        if (currentDebilitationMode === 'whole_sign' || currentDebilitationMode === 'traditional') radioWhole.checked = true;
+        else radioKala.checked = true;
+    }
     updateMenuCheckmarks();
 }
 
@@ -1379,6 +1411,14 @@ function updateMenuCheckmarks() {
     const nakMode = currentNakshatraSystem || (localStorage.getItem('astra_nakshatra_system') || 'ERNST_DHRUVA');
     document.querySelectorAll('#settingsMenuDropdown .menu-row[data-nakshatra-system]').forEach(row => {
         const isAct = row.getAttribute('data-nakshatra-system') === nakMode;
+        row.classList.toggle('active', isAct);
+        const check = row.querySelector('.menu-check');
+        if (check) check.textContent = isAct ? '✓' : '';
+    });
+
+    const debMode = currentDebilitationMode || (localStorage.getItem('astra_debilitation_mode') || 'kala_degree');
+    document.querySelectorAll('#settingsMenuDropdown .menu-row[data-debilitation-mode]').forEach(row => {
+        const isAct = row.getAttribute('data-debilitation-mode') === debMode;
         row.classList.toggle('active', isAct);
         const check = row.querySelector('.menu-check');
         if (check) check.textContent = isAct ? '✓' : '';
@@ -1869,6 +1909,9 @@ if (typeof window !== 'undefined') {
     window.setNakshatraSystem = setNakshatraSystem;
     window.toggleNakshatraSystem = toggleNakshatraSystem;
     window.syncNakshatraSystemUI = syncNakshatraSystemUI;
+    window.setDebilitationMode = setDebilitationMode;
+    window.toggleDebilitationMode = toggleDebilitationMode;
+    window.syncDebilitationModeUI = syncDebilitationModeUI;
     window.setD10Mode = setD10Mode;
     window.toggleD10Mode = toggleD10Mode;
     window.syncD10ModeUI = syncD10ModeUI;

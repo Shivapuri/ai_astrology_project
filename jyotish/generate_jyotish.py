@@ -226,7 +226,8 @@ def generate_kala_chart(
     d24_mode: str = "reverse",
     place: str = "",
     second: int = 0,
-    nakshatra_system: str = "ERNST_DHRUVA"
+    nakshatra_system: str = "ERNST_DHRUVA",
+    debilitation_mode: str = "kala_degree"
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -413,8 +414,8 @@ def generate_kala_chart(
                 tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                 cmp = rel.get_compound_relationship(nat, tmp)
                 p_deg = p_data["degree_0_to_30"]
-                nat_dig = rel.get_dignity(p_name, sign, nat, p_deg)
-                cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg)
+                nat_dig = rel.get_dignity(p_name, sign, nat, p_deg, debilitation_mode=debilitation_mode)
+                cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg, debilitation_mode=debilitation_mode)
                 
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
@@ -431,7 +432,7 @@ def generate_kala_chart(
                 if sign_lord == p_name:
                     nat, tmp, cmp = "Self", "Self", "Self"
                     p_deg = p_data["degree_0_to_30"]
-                    nat_dig = rel.get_dignity(p_name, sign, "Self", p_deg)
+                    nat_dig = rel.get_dignity(p_name, sign, "Self", p_deg, debilitation_mode=debilitation_mode)
                     cmp_dig = nat_dig
                 else:
                     p_v_idx = ZODIAC_SIGNS.index(sign)
@@ -444,8 +445,8 @@ def generate_kala_chart(
                     tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
                     cmp = rel.get_compound_relationship(nat, tmp)
                     p_deg = p_data["degree_0_to_30"]
-                    nat_dig = rel.get_dignity(p_name, sign, nat, p_deg)
-                    cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg)
+                    nat_dig = rel.get_dignity(p_name, sign, nat, p_deg, debilitation_mode=debilitation_mode)
+                    cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg, debilitation_mode=debilitation_mode)
                     
                 p_data["dignity_breakdown"] = {
                     "sign_lord": sign_lord,
@@ -851,7 +852,7 @@ def generate_kala_chart(
         )
         
     # 5. Shadbala (6-fold strength)
-    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude)
+    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude, debilitation_mode=debilitation_mode)
     
     # 6. Assemble JSON Context
 
@@ -954,6 +955,7 @@ def generate_kala_chart(
         "calculation_settings": {
             "d10_mode": d10_mode,
             "d24_mode": d24_mode,
+            "debilitation_mode": debilitation_mode,
             "nakshatra_system": nakshatra_system,
             "ayanamsa_name": "Lahiri / Chitra Paksha" if nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)"
         },

@@ -110,6 +110,14 @@ function openSettingsModal() {
         if (nak === 'VIC_CHITRA') radioChitra.checked = true;
         else radioDhruva.checked = true;
     }
+
+    const deb = (window.astraStore && window.astraStore.state.debilitationMode) || window.currentDebilitationMode || 'kala_degree';
+    const radioKala = document.getElementById('radio-deb-kala');
+    const radioWhole = document.getElementById('radio-deb-whole');
+    if (radioKala && radioWhole) {
+        if (deb === 'whole_sign' || deb === 'traditional') radioWhole.checked = true;
+        else radioKala.checked = true;
+    }
     
     modalManager.openModal('settingsModal');
 }

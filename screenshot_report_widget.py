@@ -61,6 +61,18 @@ async def main():
         await page.locator("#cell1").screenshot(path="screenshot_report_cell1_environment.png")
         print("Captured screenshot_report_cell1_environment.png")
 
+        # 2a. Switch environmental mode to Polarity
+        await page.evaluate("""
+            const polBtn = document.querySelector('#cell1 .btn-env-mode-pol');
+            if (polBtn) polBtn.click();
+        """)
+        await page.wait_for_timeout(500)
+        pol_dist = page.locator("#cell1 .environmental-distribution-container")
+        if await pol_dist.count() > 0:
+            await pol_dist.screenshot(path="screenshot_report_env_polarity.png")
+            print("Captured screenshot_report_env_polarity.png")
+
+
         # 3. Switch to Tab 3 (Planetary Rank)
         await page.evaluate("""
             const btn = document.querySelector('#cell1 .report-pill-btn[data-tab="prominence"]');

@@ -5,21 +5,13 @@ scripts/export_codebase.py
 Aggregates Astra's complete codebase into a single, high-density, structured text export
 optimized for AI evaluation, architectural auditing, and pair-programming ingestion.
 
-Features:
-- Strict size enforcement (< 1.5 MB hard cap)
-- Executive Architecture Guide & Data Flow Map for evaluating AIs
-- Detailed Table of Contents / File Manifest with line counts, byte sizes, and subsystem roles
-- Standardized machine-readable file delimiters with contextual metadata
-- Complete inclusion of:
-  * Core Jyotish mathematical engines & twin markdown specifications
-  * Flask REST API, application server, and interactive HTML UI
-  * Automated regression, math, API, and UI test suites
-  * Architecture Decision Records (ADRs 001-008) and system blueprints
-  * Astrological knowledge base references & Kala software verification baselines
-- Intelligent exclusion of:
-  * Binary formats (.pdf, .epub, .mp3, .png, etc.)
-  * External book text dumps and raw audio transcripts
-  * Duplicate files and peripheral third-party tools
+Scopes supported:
+- 'all': Unified application export (backend engines + frontend UI, tests excluded by default)
+- 'jyotish': Pure calculation engine (/jyotish/) sorted into 14 pedagogical chapters with section headers
+- 'backend': Jyotish engines + Flask application server and blueprints (tests excluded)
+- 'frontend': Split.js workspace layout, CSS design tokens, HTML partials, and JS widgets
+- 'report': Synthesis report desk (Polarity core, 4-step Nakshatra scoring, and interactive cockpit)
+- 'split': Generates both frontend and backend exports in a single command
 """
 
 import os
@@ -31,10 +23,13 @@ DEFAULT_OUTPUT_FILE = "codebase_export.txt"
 DEFAULT_FRONTEND_OUTPUT_FILE = "codebase_export_frontend.txt"
 DEFAULT_BACKEND_OUTPUT_FILE = "codebase_export_backend.txt"
 DEFAULT_REPORT_OUTPUT_FILE = "codebase_export_report.txt"
-DEFAULT_MAX_SIZE_MB = 2.5
+DEFAULT_JYOTISH_OUTPUT_FILE = "codebase_export_jyotish.txt"
+
+DEFAULT_MAX_SIZE_MB = 2.8
 DEFAULT_FRONTEND_MAX_SIZE_MB = 1.0
-DEFAULT_BACKEND_MAX_SIZE_MB = 1.5
+DEFAULT_BACKEND_MAX_SIZE_MB = 1.6
 DEFAULT_REPORT_MAX_SIZE_MB = 0.5
+DEFAULT_JYOTISH_MAX_SIZE_MB = 2.0
 
 EXCLUDED_DIRS = {
     ".git",
@@ -60,6 +55,7 @@ EXCLUDED_DIRS = {
     "lajjitadi_transcription",
     "ascendant_reports",
     "scratch",
+    "tests",  # Automated test suites excluded by default from production exports
 }
 
 EXCLUDED_FILES = {
@@ -68,6 +64,7 @@ EXCLUDED_FILES = {
     "codebase_export_frontend.txt",
     "codebase_export_backend.txt",
     "codebase_export_report.txt",
+    "codebase_export_jyotish.txt",
     "commits_export.txt",
     "commits_export.md",
     "package-lock.json",
@@ -122,7 +119,7 @@ EXCLUDED_FILES = {
     "master_graha_diagnostics_table.md",
     "matrix_reading_guide.md",
     "ui_scaling_guidelines.md",
-    # Playwright browser UI clicker tests (UI verification handled via dedicated runs)
+    # Playwright browser UI clicker tests
     "test_ui_e2e.py",
     "test_new_widgets_ui.py",
     "test_workspaces_and_kala_menu.py",
@@ -135,7 +132,7 @@ EXCLUDED_FILES = {
     "test_shadbala_widget_ui.py",
     "test_search_krishna_chart.py",
     "test_master_diagnostic_ui.py",
-    # Granular secondary sub-unit tests (core coverage preserved in main test suites)
+    # Sub-unit tests
     "test_planetary_evaluation.py",
     "test_tripod_and_interpretations.py",
     "test_varga_avasthas.py",
@@ -192,6 +189,178 @@ ALLOWED_EXTENSIONS = {
     ".yaml",
 }
 
+# 14 Pedagogical Chapters for Jyotish Calculation Engine Export
+JYOTISH_SECTIONS = [
+    (
+        "1. Core Astronomical Math & Calculation Orchestrator",
+        [
+            "jyotish/GEMINI.md",
+            "jyotish/jyotish_rules.txt",
+            "jyotish/calc_utils.py",
+            "jyotish/generate_jyotish.md",
+            "jyotish/generate_jyotish.py",
+            "jyotish/draw_chart.py",
+        ],
+    ),
+    (
+        "2. Planetary Relationships & Aspects (Maitri & Drishti)",
+        [
+            "jyotish/relationships/relationships.md",
+            "jyotish/relationships/relationships.py",
+            "jyotish/aspects/aspects.md",
+            "jyotish/aspects/aspects.py",
+        ],
+    ),
+    (
+        "3. Planetary & House Strengths (Shadbala & Bhava Bala)",
+        [
+            "jyotish/shadbala/__init__.py",
+            "jyotish/shadbala/shadbala.md",
+            "jyotish/shadbala/shadbala.py",
+            "jyotish/shadbala/bhava_bala.py",
+        ],
+    ),
+    (
+        "4. Planetary Conditions & States (Avasthas)",
+        [
+            "jyotish/avasthas/GEMINI.md",
+            "jyotish/avasthas/__init__.py",
+            "jyotish/avasthas/quantitative.md",
+            "jyotish/avasthas/quantitative.py",
+            "jyotish/avasthas/bala.md",
+            "jyotish/avasthas/bala.py",
+            "jyotish/avasthas/jagrat.md",
+            "jyotish/avasthas/jagrat.py",
+            "jyotish/avasthas/deepti.md",
+            "jyotish/avasthas/deepti.py",
+            "jyotish/avasthas/lajjita.md",
+            "jyotish/avasthas/lajjita.py",
+            "jyotish/avasthas/shayana.md",
+            "jyotish/avasthas/shayana.py",
+        ],
+    ),
+    (
+        "5. Divisional Harmonic Strength (Vimshopaka Bala)",
+        [
+            "jyotish/vimshopaka/__init__.py",
+            "jyotish/vimshopaka/vimshopaka.md",
+            "jyotish/vimshopaka/vimshopaka.py",
+        ],
+    ),
+    (
+        "6. Planetary Evaluation, Nine-Tier Archetypes & Lagna Vitality",
+        [
+            "jyotish/planetary_evaluation/__init__.py",
+            "jyotish/planetary_evaluation/planetary_evaluation.md",
+            "jyotish/planetary_evaluation/planetary_evaluation.py",
+            "jyotish/planetary_evaluation/lagna_evaluation.py",
+            "jyotish/planetary_evaluation/adr/README.md",
+            "jyotish/planetary_evaluation/adr/001-nine-tier-archetype-and-neutral-tilt.md",
+            "jyotish/planetary_evaluation/adr/002-strict-neecha-bhanga-exclusivity.md",
+            "jyotish/planetary_evaluation/adr/003-functional-ascendant-and-chandal-resynthesis.md",
+            "jyotish/planetary_evaluation/adr/004-graha-yuddha-and-venus-invariance.md",
+            "jyotish/planetary_evaluation/adr/005-recursive-drishti-dampening.md",
+            "jyotish/planetary_evaluation/adr/006-inherent-dignity-vs-house-field.md",
+            "jyotish/planetary_evaluation/adr/007-nodal-dispositor-proxy-and-conjunction-orbs.md",
+            "jyotish/planetary_evaluation/adr/008-baladi-avastha-biological-efficiency.md",
+            "jyotish/planetary_evaluation/adr/009-audit-metered-twice-decoupling.md",
+            "jyotish/planetary_evaluation/adr/010-aspect-vision-badges-and-twenty-virupa-rule.md",
+        ],
+    ),
+    (
+        "7. Classical Yogas & Breakers",
+        [
+            "jyotish/yogas/__init__.py",
+            "jyotish/yogas/yogas.md",
+            "jyotish/yogas/models.py",
+            "jyotish/yogas/evaluator.py",
+            "jyotish/yogas/raja_yogas.py",
+            "jyotish/yogas/dhana_daridrya.py",
+            "jyotish/yogas/pancha_mahapurusha.py",
+            "jyotish/yogas/lunar_solar_yogas.py",
+            "jyotish/yogas/viparita.py",
+            "jyotish/yogas/parivartana.py",
+            "jyotish/yogas/kartari.py",
+            "jyotish/yogas/chandal_yogas.py",
+            "jyotish/yogas/breakers.py",
+        ],
+    ),
+    (
+        "8. Ashtakavarga Assessment",
+        [
+            "jyotish/ashtakavarga/__init__.py",
+            "jyotish/ashtakavarga/ashtakavarga.md",
+            "jyotish/ashtakavarga/ashtakavarga.py",
+        ],
+    ),
+    (
+        "9. Equatorial Sidereal Nakshatras & Lore",
+        [
+            "jyotish/nakshatra_metadata.md",
+            "jyotish/nakshatra_metadata.py",
+            "jyotish/nakshatras/__init__.py",
+            "jyotish/nakshatras/lore.py",
+            "jyotish/nakshatras/nakshatra_data.py",
+            "jyotish/nakshatras/nakshatra_database.json",
+        ],
+    ),
+    (
+        "10. Vimshottari Dasha Progression",
+        [
+            "jyotish/dashas/__init__.py",
+            "jyotish/dashas/vimshottari.md",
+            "jyotish/dashas/vimshottari.py",
+        ],
+    ),
+    (
+        "11. Karakas & Sign Attributes",
+        [
+            "jyotish/karakas.md",
+            "jyotish/karakas.py",
+            "jyotish/sign_attributes.md",
+            "jyotish/sign_attributes.py",
+        ],
+    ),
+    (
+        "12. Astrological Synthesis Report Subsystem",
+        [
+            "jyotish/report/__init__.py",
+            "jyotish/report/report_engine.py",
+            "jyotish/report/significations_data.json",
+            "jyotish/report/significations_flowcharts.json",
+        ],
+    ),
+    (
+        "13. Scripture Databases & Native Management",
+        [
+            "jyotish/bphs_db.py",
+            "jyotish/scripture_db.py",
+            "jyotish/native_manager.py",
+        ],
+    ),
+    (
+        "14. Publication-Grade PDF Exporter",
+        [
+            "jyotish/pdf_exporter.md",
+            "jyotish/pdf_exporter.py",
+        ],
+    ),
+]
+
+JYOTISH_FILE_SECTION_MAP = {}
+JYOTISH_SORT_KEY_MAP = {}
+for _sec_idx, (_sec_title, _flist) in enumerate(JYOTISH_SECTIONS, 1):
+    for _f_idx, _fpath in enumerate(_flist, 1):
+        JYOTISH_FILE_SECTION_MAP[_fpath] = _sec_title
+        JYOTISH_SORT_KEY_MAP[_fpath] = (_sec_idx, _f_idx)
+
+
+def get_jyotish_sort_key(rel_path: str):
+    if rel_path in JYOTISH_SORT_KEY_MAP:
+        return JYOTISH_SORT_KEY_MAP[rel_path]
+    return (99, 99, rel_path)
+
+
 FILE_METADATA_REGISTRY = {
     "Gemini.md": (
         "AI Agent Guidelines",
@@ -225,171 +394,355 @@ FILE_METADATA_REGISTRY = {
         "Configuration",
         "Git ignore patterns for ephemeris cache, virtualenvs, and temp files",
     ),
-    # Core engines
-    "jyotish/generate_jyotish.py": (
-        "Core Math Engine",
-        "Central orchestrator computing tropical placements, harmonic vargas, Campanus cusps, dignities, and dashas",
-    ),
-    "jyotish/generate_jyotish.md": (
-        "Core Math Spec",
-        "Mathematical specification, Campanus house algorithm, and coordinate foundations",
-    ),
-    "jyotish/calc_utils.py": (
-        "Core Math Engine",
-        "High-precision coordinate transformation, angle normalizations, and cusp utilities",
-    ),
-    "jyotish/draw_chart.py": (
-        "Chart Visualization",
-        "SVG chart diagram generator (North/South Indian styles, glyphs, dynamic house sizing)",
-    ),
-    "jyotish/pdf_exporter.py": (
-        "Report Generation",
-        "Publication-grade astrological PDF export engine (A3 Master Plan and A4 Dossier with vector SVGs)",
-    ),
-    "jyotish/pdf_exporter.md": (
-        "Architecture & Design",
-        "Architectural specification for the publication-grade PDF exporter",
-    ),
-    # Report Engine & Nakshatras
-    "jyotish/report/__init__.py": (
-        "Report Subsystem",
-        "Package initialization exposing generate_report_payload",
-    ),
-    "jyotish/report/report_engine.py": (
-        "Core Math: Report Engine",
-        "Synthesizes Polarity Core, 4-step Nakshatra scoring, Operational Axis, Macro Environment, and Planetary Prominence",
-    ),
-    "jyotish/nakshatras/__init__.py": (
-        "Nakshatras & Lore",
-        "Package initialization exposing Nakshatra query APIs",
-    ),
-    "jyotish/nakshatras/lore.py": (
-        "Nakshatras & Lore",
-        "Authoritative lookup and normalization module for all 27 Nakshatras and 7 groups",
-    ),
-    "jyotish/nakshatras/nakshatra_data.py": (
-        "Nakshatras & Lore",
-        "Authoritative data store containing Sanskrit lore, deities, symbols, and psychological profiles",
-    ),
-    "jyotish/scripture_db.py": (
-        "Scripture & Database",
-        "Sanskrit scripture database query interface and translation mappings",
-    ),
-    "jyotish/bphs_db.py": (
-        "Scripture & Database",
-        "Brihat Parashara Hora Shastra SQLite query layer",
-    ),
-    "jyotish/native_manager.py": (
-        "Data Management",
-        "Native profile and birth data persistence manager",
+    # Section 1: Core Orchestration & Astronomy
+    "jyotish/GEMINI.md": (
+        "AI Agent Guidelines",
+        "Module-specific calculation rules, scriptural authority, and architecture instructions for Jyotish engine",
     ),
     "jyotish/jyotish_rules.txt": (
         "Core Math Spec",
-        "Concise rule definitions for vargas, relationships, and karakas",
+        "Concise foundational rules for vargas, planetary relationships, karakas, and aspects",
     ),
-    "jyotish/knowledge_base.json": (
-        "Astrological Reference",
-        "Precompiled JSON database of planets, signs, houses, and nakshatras",
+    "jyotish/calc_utils.py": (
+        "Core Math Engine",
+        "Astronomical coordinate transformations, angle normalizations, cusp utilities, and speed calculations",
     ),
-    "jyotish/GEMINI.md": (
-        "AI Agent Guidelines",
-        "Module-specific instructions for jyotish calculation engine",
-    ),
-    # Shadbala
-    "jyotish/shadbala/__init__.py": (
-        "Core Math: Shadbala",
-        "Shadbala module initialization",
-    ),
-    "jyotish/shadbala/shadbala.py": (
-        "Core Math: Shadbala",
-        "Complete 6-fold planetary strength calculation (Sthana, Dig, Kala, Cheshta, Naisargika, Drik)",
-    ),
-    "jyotish/shadbala/shadbala.md": (
+    "jyotish/generate_jyotish.md": (
         "Core Math Spec",
-        "Mathematical formulas and Sanskrit definitions for all Shadbala components",
+        "Mathematical specification, Campanus house algorithm, coordinate foundations, and varga algorithms",
     ),
-    # Avasthas
-    "jyotish/avasthas/__init__.py": (
-        "Core Math: Avasthas",
-        "Avasthas module initialization",
+    "jyotish/generate_jyotish.py": (
+        "Core Math Engine",
+        "Central calculation orchestrator computing tropical placements, harmonic vargas, Campanus bhavas, dignities, and dashas",
     ),
-    "jyotish/avasthas/GEMINI.md": (
-        "AI Agent Guidelines",
-        "Module-specific guidelines for avastha implementations",
+    "jyotish/draw_chart.py": (
+        "Chart Visualization",
+        "SVG chart diagram generator (North and South Indian styles, planetary glyphs, dynamic house sizing)",
     ),
-    "jyotish/avasthas/quantitative.py": (
-        "Core Math: Avasthas",
-        "Quantitative avasthas matrix calculations (Uccha, Dig, Cheshta, Subha, Ishta, Drishti Yuti, Veda)",
-    ),
-    "jyotish/avasthas/quantitative.md": (
-        "Core Math Spec",
-        "Mathematical specification for quantitative avasthas matrices and net modifiers",
-    ),
-    "jyotish/avasthas/bala.py": (
-        "Core Math: Avasthas",
-        "Baladi avasthas calculation (Infant, Youthful, Adolescent, Old, Dead)",
-    ),
-    "jyotish/avasthas/bala.md": (
-        "Core Math Spec",
-        "Mathematical rules and degree bands for Baladi avasthas",
-    ),
-    "jyotish/avasthas/jagrat.py": (
-        "Core Math: Avasthas",
-        "Jagradadi avasthas calculation (Awake, Dreaming, Sleeping)",
-    ),
-    "jyotish/avasthas/jagrat.md": (
-        "Core Math Spec",
-        "Rules linking dignities to Jagrat, Svapna, and Sushupti states",
-    ),
-    "jyotish/avasthas/deepti.py": (
-        "Core Math: Avasthas",
-        "Deeptadi avasthas calculation (9 dignities from Exalted to Debilitated)",
-    ),
-    "jyotish/avasthas/deepti.md": (
-        "Core Math Spec",
-        "Sanskrit definitions and rules for Deeptadi dignities",
-    ),
-    "jyotish/avasthas/lajjita.py": (
-        "Core Math: Avasthas",
-        "Lajjitadi avasthas calculation (Proud, Starved, Thirsty, Agitated, Ashamed, Delighted)",
-    ),
-    "jyotish/avasthas/lajjita.md": (
-        "Core Math Spec",
-        "Sanskrit definitions and planetary condition rules for Lajjitadi avasthas",
-    ),
-    "jyotish/avasthas/shayana.py": (
-        "Core Math: Avasthas",
-        "Shayanadi 12 avasthas calculation (Resting, Sitting, Eating, Pleasure, etc.)",
-    ),
-    "jyotish/avasthas/shayana.md": (
-        "Core Math Spec",
-        "Formulas and modifier calculations for Shayanadi avasthas",
-    ),
-    # Relationships & Aspects
-    "jyotish/relationships/relationships.py": (
-        "Core Math: Maitri",
-        "Natural, temporary (tatkalika), and compound five-fold (panchadha maitri) relationships",
-    ),
+    # Section 2: Relationships & Aspects
     "jyotish/relationships/relationships.md": (
         "Core Math Spec",
-        "Mathematical matrix rules for planetary friendships",
+        "Mathematical specification for Panchadha Maitri (5-fold natural, temporary, and compound friendship)",
+    ),
+    "jyotish/relationships/relationships.py": (
+        "Core Math: Maitri",
+        "Planetary friendship engine calculating natural (naisargika), temporary (tatkalika), and 5-fold (panchadha) maitri",
+    ),
+    "jyotish/aspects/aspects.md": (
+        "Core Math Spec",
+        "Parashari Drishti (aspect rays) mathematical formulas and degree-based aspect weights",
     ),
     "jyotish/aspects/aspects.py": (
         "Core Math: Drishti",
         "Planetary and house aspect calculation engine according to classical Parashari rules",
     ),
-    "jyotish/aspects/aspects.md": (
-        "Core Math Spec",
-        "Drishti computation formulas and degree-based aspect weights",
+    # Section 3: Shadbala & Bhava Bala
+    "jyotish/shadbala/__init__.py": (
+        "Core Math: Shadbala",
+        "Package initialization for 6-fold planetary strength calculation",
     ),
-    # Sign Attributes & Kalapurusha
-    "jyotish/sign_attributes.py": (
-        "Core Math Engine",
-        "Sign distributions (Elements, Mobility, Polarity, Varnas, Doshas, Rising) and Kalapurusha anatomy",
+    "jyotish/shadbala/shadbala.md": (
+        "Core Math Spec",
+        "Mathematical formulas and Sanskrit proofs for all 6 Shadbala strengths (Sthana, Dig, Kala, Cheshta, Naisargika, Drik)",
+    ),
+    "jyotish/shadbala/shadbala.py": (
+        "Core Math: Shadbala",
+        "Complete 6-fold planetary strength calculation engine validating against Kala software baselines",
+    ),
+    "jyotish/shadbala/bhava_bala.py": (
+        "Core Math: Shadbala",
+        "Comprehensive 12-house strength assessment (Bhava Adhipati, Bhava Dig, Bhava Drishti Bala)",
+    ),
+    # Section 4: Avasthas
+    "jyotish/avasthas/GEMINI.md": (
+        "AI Agent Guidelines",
+        "Module-specific guidelines and scriptural baselines for planetary avastha implementations",
+    ),
+    "jyotish/avasthas/__init__.py": (
+        "Core Math: Avasthas",
+        "Package initialization for planetary conditions and states (Avasthas)",
+    ),
+    "jyotish/avasthas/quantitative.md": (
+        "Core Math Spec",
+        "Mathematical specification for quantitative avastha matrices and net operational modifiers",
+    ),
+    "jyotish/avasthas/quantitative.py": (
+        "Core Math: Avasthas",
+        "Quantitative avasthas matrix calculations (Uccha, Dig, Cheshta, Subha, Ishta, Drishti Yuti, Veda)",
+    ),
+    "jyotish/avasthas/bala.md": (
+        "Core Math Spec",
+        "Mathematical rules and degree bands for Baladi avasthas (Infant, Youthful, Adolescent, Old, Dead)",
+    ),
+    "jyotish/avasthas/bala.py": (
+        "Core Math: Avasthas",
+        "Baladi avasthas calculation engine measuring physical/biological maturity",
+    ),
+    "jyotish/avasthas/jagrat.md": (
+        "Core Math Spec",
+        "Mathematical rules linking planetary dignities to Jagrat (Awake), Svapna (Dreaming), and Sushupti (Sleeping) states",
+    ),
+    "jyotish/avasthas/jagrat.py": (
+        "Core Math: Avasthas",
+        "Jagradadi avasthas calculation engine measuring alertness and consciousness",
+    ),
+    "jyotish/avasthas/deepti.md": (
+        "Core Math Spec",
+        "Sanskrit definitions and rules for Deeptadi 9 essential dignities (Exalted to Debilitated)",
+    ),
+    "jyotish/avasthas/deepti.py": (
+        "Core Math: Avasthas",
+        "Deeptadi avasthas calculation engine determining planetary luminous condition",
+    ),
+    "jyotish/avasthas/lajjita.md": (
+        "Core Math Spec",
+        "Sanskrit definitions and planetary condition rules for Lajjitadi avasthas (Proud, Starved, Thirsty, Agitated, Ashamed, Delighted)",
+    ),
+    "jyotish/avasthas/lajjita.py": (
+        "Core Math: Avasthas",
+        "Lajjitadi avasthas calculation engine measuring emotional and psychological feeling states",
+    ),
+    "jyotish/avasthas/shayana.md": (
+        "Core Math Spec",
+        "Formulas and modifier calculations for Shayanadi 12 avasthas (Resting, Sitting, Eating, Pleasure, etc.)",
+    ),
+    "jyotish/avasthas/shayana.py": (
+        "Core Math: Avasthas",
+        "Shayanadi 12 avasthas calculation engine determining day-to-day behavioral activities",
+    ),
+    # Section 5: Vimshopaka Bala
+    "jyotish/vimshopaka/__init__.py": (
+        "Core Math: Vimshopaka",
+        "Package initialization for divisional varga harmonic strength assessment",
+    ),
+    "jyotish/vimshopaka/vimshopaka.md": (
+        "Core Math Spec",
+        "20-point divisional varga weighting specification across Shadvarga, Saptavarga, Dashavarga, and Shodashavarga",
+    ),
+    "jyotish/vimshopaka/vimshopaka.py": (
+        "Core Math: Vimshopaka",
+        "Vimshopaka Bala calculation engine computing planetary strength across divisional harmonic charts",
+    ),
+    # Section 6: Planetary Evaluation & Dignities
+    "jyotish/planetary_evaluation/__init__.py": (
+        "Planetary Evaluation",
+        "Package initialization for planetary evaluation and archetype assessment",
+    ),
+    "jyotish/planetary_evaluation/planetary_evaluation.md": (
+        "Planetary Evaluation Spec",
+        "Nine-tier dignity archetype specification, directional tilts, Neecha Bhanga, and Graha Yuddha rules",
+    ),
+    "jyotish/planetary_evaluation/planetary_evaluation.py": (
+        "Planetary Evaluation Engine",
+        "Comprehensive planetary dignity evaluation engine classifying grahas into 9 classical archetypes with vitality scoring",
+    ),
+    "jyotish/planetary_evaluation/lagna_evaluation.py": (
+        "Planetary Evaluation Engine",
+        "Ascendant vitality, physical body resilience, and life force assessment",
+    ),
+    "jyotish/planetary_evaluation/adr/README.md": (
+        "Architecture Decisions",
+        "Index of Architectural Decision Records for planetary evaluation rules",
+    ),
+    "jyotish/planetary_evaluation/adr/001-nine-tier-archetype-and-neutral-tilt.md": (
+        "Architecture Decisions",
+        "ADR 001: Nine-tier dignity archetype spectrum and neutral directional tilt",
+    ),
+    "jyotish/planetary_evaluation/adr/002-strict-neecha-bhanga-exclusivity.md": (
+        "Architecture Decisions",
+        "ADR 002: Strict Neecha Bhanga cancellation exclusivity and dignity upgrade rules",
+    ),
+    "jyotish/planetary_evaluation/adr/003-functional-ascendant-and-chandal-resynthesis.md": (
+        "Architecture Decisions",
+        "ADR 003: Functional nature by Ascendant and Guru-Chandal yoga resynthesis",
+    ),
+    "jyotish/planetary_evaluation/adr/004-graha-yuddha-and-venus-invariance.md": (
+        "Architecture Decisions",
+        "ADR 004: Planetary war (Graha Yuddha) victor determination and Venus invariance",
+    ),
+    "jyotish/planetary_evaluation/adr/005-recursive-drishti-dampening.md": (
+        "Architecture Decisions",
+        "ADR 005: Recursive aspectual drishti dampening to prevent feedback oscillations",
+    ),
+    "jyotish/planetary_evaluation/adr/006-inherent-dignity-vs-house-field.md": (
+        "Architecture Decisions",
+        "ADR 006: Inherent planetary dignity vs accidental house placement field separation",
+    ),
+    "jyotish/planetary_evaluation/adr/007-nodal-dispositor-proxy-and-conjunction-orbs.md": (
+        "Architecture Decisions",
+        "ADR 007: Rahu/Ketu dispositor proxy behavior and conjunction orb thresholds",
+    ),
+    "jyotish/planetary_evaluation/adr/008-baladi-avastha-biological-efficiency.md": (
+        "Architecture Decisions",
+        "ADR 008: Baladi avastha biological efficiency modifiers on functional expression",
+    ),
+    "jyotish/planetary_evaluation/adr/009-audit-metered-twice-decoupling.md": (
+        "Architecture Decisions",
+        "ADR 009: Decoupling of evaluation meter audits from raw calculation pipelines",
+    ),
+    "jyotish/planetary_evaluation/adr/010-aspect-vision-badges-and-twenty-virupa-rule.md": (
+        "Architecture Decisions",
+        "ADR 010: Aspect vision badge display and 20-virupa significance threshold",
+    ),
+    # Section 7: Classical Yogas & Breakers
+    "jyotish/yogas/__init__.py": (
+        "Classical Yogas",
+        "Package initialization for classical planetary yoga detection",
+    ),
+    "jyotish/yogas/yogas.md": (
+        "Classical Yogas Spec",
+        "Comprehensive catalog and mathematical logic for classical Parashari yogas and breakers",
+    ),
+    "jyotish/yogas/models.py": (
+        "Classical Yogas",
+        "Data structures, enums, and dataclasses representing detected yogas and their attributes",
+    ),
+    "jyotish/yogas/evaluator.py": (
+        "Classical Yogas",
+        "Master yoga evaluation orchestrator running detection pipelines across all yoga categories",
+    ),
+    "jyotish/yogas/raja_yogas.py": (
+        "Classical Yogas",
+        "Detection engine for Kendra and Trikona lord associations forming Raja Yogas",
+    ),
+    "jyotish/yogas/dhana_daridrya.py": (
+        "Classical Yogas",
+        "Detection engine for Dhana (wealth-producing) and Daridrya (poverty/deprivation) yogas",
+    ),
+    "jyotish/yogas/pancha_mahapurusha.py": (
+        "Classical Yogas",
+        "Detection engine for 5 Great Person yogas (Ruchaka, Bhadra, Hamsa, Malavya, Sasa)",
+    ),
+    "jyotish/yogas/lunar_solar_yogas.py": (
+        "Classical Yogas",
+        "Detection engine for Sun and Moon phase combinations (Sunapha, Anapha, Durudhara, Kemadruma, etc.)",
+    ),
+    "jyotish/yogas/viparita.py": (
+        "Classical Yogas",
+        "Detection engine for Viparita Raja Yogas (Harsha, Sarala, Vimala through 6th, 8th, 12th lords in Dusthanas)",
+    ),
+    "jyotish/yogas/parivartana.py": (
+        "Classical Yogas",
+        "Detection engine for mutual house exchanges (Maha, Khala, and Dainya Parivartana)",
+    ),
+    "jyotish/yogas/kartari.py": (
+        "Classical Yogas",
+        "Detection engine for beneficial (Shubha Kartari) and malefic (Papa Kartari) hemming conditions",
+    ),
+    "jyotish/yogas/chandal_yogas.py": (
+        "Classical Yogas",
+        "Detection engine for Guru Chandal and nodal contamination yogas",
+    ),
+    "jyotish/yogas/breakers.py": (
+        "Classical Yogas",
+        "Classical yoga cancellation engine (Yoga Bhanga) evaluating debilitation, combustion, and malefic aspects",
+    ),
+    # Section 8: Ashtakavarga
+    "jyotish/ashtakavarga/__init__.py": (
+        "Ashtakavarga",
+        "Package initialization for Ashtakavarga 8-fold assessment",
+    ),
+    "jyotish/ashtakavarga/ashtakavarga.md": (
+        "Ashtakavarga Spec",
+        "Classical rules and bindu distribution matrices for Bhinnashtakavarga and Sarvashtakavarga",
+    ),
+    "jyotish/ashtakavarga/ashtakavarga.py": (
+        "Ashtakavarga Engine",
+        "Complete Ashtakavarga calculation engine computing individual and total bindu scores for transit evaluation",
+    ),
+    # Section 9: Nakshatras & Lore
+    "jyotish/nakshatra_metadata.md": (
+        "Nakshatras & Lore Spec",
+        "Astronomical anchor specification for Dhruva Galactic Center equatorial sidereal nakshatras",
+    ),
+    "jyotish/nakshatra_metadata.py": (
+        "Nakshatras & Lore",
+        "Star coordinate mappings, ecliptic projections, and nakshatra boundary algorithms",
+    ),
+    "jyotish/nakshatras/__init__.py": (
+        "Nakshatras & Lore",
+        "Package initialization exposing Nakshatra query and lookup APIs",
+    ),
+    "jyotish/nakshatras/lore.py": (
+        "Nakshatras & Lore",
+        "Authoritative lookup and normalization module for all 27 Nakshatras and 7 temperament groups",
+    ),
+    "jyotish/nakshatras/nakshatra_data.py": (
+        "Nakshatras & Lore",
+        "Authoritative data store containing Sanskrit lore, deities, symbols, and psychological profiles",
+    ),
+    "jyotish/nakshatras/nakshatra_database.json": (
+        "Nakshatras & Lore Data",
+        "Structured JSON database containing complete botanical, animal, deity, and directional nakshatra correspondences",
+    ),
+    # Section 10: Dashas
+    "jyotish/dashas/__init__.py": (
+        "Dashas & Timelines",
+        "Package initialization for planetary period calculation",
+    ),
+    "jyotish/dashas/vimshottari.md": (
+        "Dashas & Timelines Spec",
+        "Mathematical formulas for the 120-year Vimshottari Dasha progression and balance of dasha at birth",
+    ),
+    "jyotish/dashas/vimshottari.py": (
+        "Dashas & Timelines Engine",
+        "Vimshottari Dasha engine computing Mahadasha, Antardasha, and Pratyantardasha periods with exact date intervals",
+    ),
+    # Section 11: Karakas & Sign Attributes
+    "jyotish/karakas.md": (
+        "Karakas Spec",
+        "Classical Parashari and Jaimini rules for Sthira (fixed) and Chara (variable 7/8) Karakas",
+    ),
+    "jyotish/karakas.py": (
+        "Karakas Engine",
+        "Calculation engine determining Atmakaraka, Amatyakaraka, and remaining significators according to Parashara and Jaimini",
     ),
     "jyotish/sign_attributes.md": (
-        "Core Math Spec",
-        "Mathematical specification and classical definitions for sign attributes and anatomy",
+        "Sign Attributes Spec",
+        "Mathematical specification for 12 zodiac sign distributions (Elements, Mobility, Polarity, Varnas, Doshas) and Kalapurusha anatomy",
+    ),
+    "jyotish/sign_attributes.py": (
+        "Sign Attributes Engine",
+        "Calculates element, modality, and guna balances along with Kalapurusha bodily governance mappings",
+    ),
+    # Section 12: Astrological Synthesis Report Subsystem
+    "jyotish/report/__init__.py": (
+        "Report Subsystem",
+        "Package initialization exposing generate_report_payload",
+    ),
+    "jyotish/report/report_engine.py": (
+        "Synthesis Report Engine",
+        "Synthesizes Polarity Core (Ahamkara ⟷ Manas), 4-step Nakshatra scoring, Operational Axis, Macro Environment, and Planetary Prominence",
+    ),
+    "jyotish/report/significations_data.json": (
+        "Synthesis Report Data",
+        "Structured database of planetary and house significations, anatomical correlations, and psychological themes",
+    ),
+    "jyotish/report/significations_flowcharts.json": (
+        "Synthesis Report Flowcharts",
+        "Authentic flowchart triptych nodes and interactive dependency edges for deep visual synthesis",
+    ),
+    # Section 13: Scripture Databases & Native Management
+    "jyotish/bphs_db.py": (
+        "Scripture & Database",
+        "Brihat Parashara Hora Shastra SQLite query layer providing textual shloka references for calculated yogas and avasthas",
+    ),
+    "jyotish/scripture_db.py": (
+        "Scripture & Database",
+        "Sanskrit scripture database query interface and translation mappings",
+    ),
+    "jyotish/native_manager.py": (
+        "Data Management",
+        "Native profile and birth data persistence manager handling chart storage and retrieval",
+    ),
+    # Section 14: PDF Exporter
+    "jyotish/pdf_exporter.md": (
+        "Report Generation Spec",
+        "Architectural specification for publication-grade astrological PDF export (A3 Master Plan and A4 Dossier)",
+    ),
+    "jyotish/pdf_exporter.py": (
+        "Report Generation Engine",
+        "Publication-grade astrological PDF export engine rendering vector SVGs, diagnostic tables, and typography",
     ),
     # Frontend Architecture & Modular UI
     "templates/index.html": (
@@ -444,178 +797,6 @@ FILE_METADATA_REGISTRY = {
         "Widget Templates",
         "HTML5 blueprint for the 4-tab astrological synthesis report",
     ),
-    "screenshot_report_widget.py": (
-        "Developer Tooling",
-        "Playwright automated visual regression screenshot script for the Report widget",
-    ),
-    # Tests
-    "tests/__init__.py": (
-        "Verification Suite",
-        "Test package initialization",
-    ),
-    "tests/test_report_engine.py": (
-        "Verification Suite",
-        "Unit test suite validating 4-step scoring, polarity, and report engine calculations",
-    ),
-    "tests/test_api.py": (
-        "Verification Suite",
-        "Flask REST API endpoint tests validating status codes and response schemas",
-    ),
-    "tests/test_math_engines.py": (
-        "Verification Suite",
-        "Regression tests verifying core vargas, lagna, and avasthas against reference charts",
-    ),
-    "tests/test_quantitative_avasthas.py": (
-        "Verification Suite",
-        "Regression tests verifying quantitative avasthas against Kala ground truth",
-    ),
-    "tests/test_quantitative_subvalues.py": (
-        "Verification Suite",
-        "Unit tests validating individual subvalues of quantitative avasthas",
-    ),
-    "tests/test_shadbala.py": (
-        "Verification Suite",
-        "Unit tests validating all 6 Shadbala strengths against benchmark calculations",
-    ),
-    "tests/test_dignities.py": (
-        "Verification Suite",
-        "Unit tests validating essential and temporal dignities",
-    ),
-    "tests/test_drishti.py": (
-        "Verification Suite",
-        "Unit tests validating planetary aspect rays and mutual drishti matrices",
-    ),
-    "tests/test_aspects.py": (
-        "Verification Suite",
-        "Unit tests validating planetary and special aspects",
-    ),
-    "tests/test_house_aspects.py": (
-        "Verification Suite",
-        "Unit tests validating Bhava Chalita and equal house aspects",
-    ),
-    "tests/test_svg_generation.py": (
-        "Verification Suite",
-        "Unit tests validating SVG chart structure, viewBox, and transparency",
-    ),
-    "tests/test_sign_attributes.py": (
-        "Verification Suite",
-        "Unit tests validating sign attributes, matrix distributions, and Kalapurusha anatomy",
-    ),
-    "tests/test_ui_e2e.py": (
-        "Verification Suite",
-        "Playwright end-to-end tests verifying UI layout, Split.js, tabs, and hotkeys",
-    ),
-    "tests/test_aspect_tables_ui.py": (
-        "Verification Suite",
-        "UI tests verifying aspect table rendering in frontend",
-    ),
-    "tests/test_shadbala_widget_ui.py": (
-        "Verification Suite",
-        "UI tests verifying Shadbala widget display and data binding",
-    ),
-    # Documentations
-    "documentations/BLUEPRINT.md": (
-        "Architecture & Design",
-        "Comprehensive system architecture and technical roadmap",
-    ),
-    "documentations/HANDOFF.md": (
-        "Architecture & Design",
-        "Context handoff detailing recent mathematical refinements",
-    ),
-    "documentations/ASTRO_ENGINES_OVERVIEW.md": (
-        "Architecture & Design",
-        "Overview of astronomical and astrological computation engines",
-    ),
-    "documentations/reference_kala_software_system.md": (
-        "Architecture & Design",
-        "Detailed comparative analysis against Ernst Wilhelm's Kala software",
-    ),
-    "documentations/vargas_functioning.md": (
-        "Architecture & Design",
-        "Mathematical principles of harmonic varga divisions and deity rulers",
-    ),
-    "documentations/shadbala_audit_report.md": (
-        "Architecture & Design",
-        "Audit report on Shadbala calculations, deviations, and fixes",
-    ),
-    "documentations/avasthas.md": (
-        "Architecture & Design",
-        "Comprehensive overview of all avastha systems implemented in Astra",
-    ),
-    "documentations/avasthas_remaining_tasks.md": (
-        "Architecture & Design",
-        "Task list for remaining avastha enhancements",
-    ),
-    "documentations/Horoscope_Interpretation_Framework.md": (
-        "Architecture & Design",
-        "Framework for holistic horoscope interpretation based on calculated values",
-    ),
-    # ADRs
-    "documentations/adr/001-house-system-campanus.md": (
-        "Architecture Decisions",
-        "ADR 001: Selection of Campanus house system",
-    ),
-    "documentations/adr/002-nakshatra-equatorial-sidereal.md": (
-        "Architecture Decisions",
-        "ADR 002: Equatorial sidereal nakshatras anchored to Dhruva Galactic Center",
-    ),
-    "documentations/adr/003-visual-chart-rendering-and-intercepted-signs.md": (
-        "Architecture Decisions",
-        "ADR 003: Visual chart rendering and intercepted signs",
-    ),
-    "documentations/adr/004-unified-engine-architecture.md": (
-        "Architecture Decisions",
-        "ADR 004: Unified engine architecture and deprecation of dual engines",
-    ),
-    "documentations/adr/005-vargas-functioning-and-calculations.md": (
-        "Architecture Decisions",
-        "ADR 005: Divisional charts (vargas) mathematical formulation",
-    ),
-    "documentations/adr/006-circular-chart-ui-and-text-alignment.md": (
-        "Architecture Decisions",
-        "ADR 006: Circular chart UI design and text alignment",
-    ),
-    "documentations/adr/007-temporary-friendship-rasi.md": (
-        "Architecture Decisions",
-        "ADR 007: Temporary friendship based on rasi placements",
-    ),
-    "documentations/adr/008-lajjitadi-natural-friendship.md": (
-        "Architecture Decisions",
-        "ADR 008: Lajjitadi avasthas using natural vs compound friendship",
-    ),
-    # Knowledge Base
-    "knowledge_base/GEMINI.md": (
-        "AI Agent Guidelines",
-        "Guidelines for knowledge base maintenance",
-    ),
-    "knowledge_base/Graha_Sutras_Reference.md": (
-        "Astrological Reference",
-        "Classical planetary characteristics, deities, gunas, and significations",
-    ),
-    "knowledge_base/The_Twelve_Bhavas_Reference.md": (
-        "Astrological Reference",
-        "Significations, themes, and anatomical correlations for all 12 houses",
-    ),
-    "knowledge_base/The_Twelve_Rasis_Reference.md": (
-        "Astrological Reference",
-        "Detailed profiles of the 12 tropical zodiac signs",
-    ),
-    "knowledge_base/The_Twenty_Seven_Nakshatras_Reference.md": (
-        "Astrological Reference",
-        "Reference guide for the 27 Dhruva Galactic Center nakshatras",
-    ),
-    "knowledge_base/Simple_House_Explanation.md": (
-        "Astrological Reference",
-        "Introductory guide to house meanings and classifications",
-    ),
-    "knowledge_base/simple_calculations/avasthas_explained.md": (
-        "Astrological Reference",
-        "Calculation walk-through for Baladi, Jagradadi, and Deeptadi avasthas",
-    ),
-    "knowledge_base/simple_calculations/shayanadi_explained.md": (
-        "Astrological Reference",
-        "Calculation walk-through for Shayanadi avasthas",
-    ),
     # Scripts
     "scripts/audit_shadbala.py": (
         "Developer Tooling",
@@ -633,25 +814,17 @@ FILE_METADATA_REGISTRY = {
         "Developer Tooling",
         "Master orchestrator for building scripture and reference databases",
     ),
-    "scripts/build_full_epub.py": (
-        "Developer Tooling",
-        "Epub compilation utility",
-    ),
-    "scripts/generate_epub.py": (
-        "Developer Tooling",
-        "Epub builder script",
-    ),
-    "scripts/generate_first_house_pdf.py": (
-        "Developer Tooling",
-        "Publication-grade first house chart PDF report generator using Playwright",
-    ),
-    "scripts/generate_learning_style_pdf.py": (
-        "Developer Tooling",
-        "Publication-grade learning style chart PDF report generator using Playwright",
-    ),
     "scripts/export_codebase.py": (
         "Developer Tooling",
         "High-density codebase aggregator with architecture manifest and size limits",
+    ),
+    "scripts/export_jyotish.py": (
+        "Developer Tooling",
+        "Dedicated Jyotish calculation engine exporter with pedagogical section sorting",
+    ),
+    "scripts/export_report_codebase.py": (
+        "Developer Tooling",
+        "Dedicated Astrological Synthesis Report subsystem aggregator",
     ),
     "scripts/export_commits.py": (
         "Developer Tooling",
@@ -730,6 +903,15 @@ def get_file_metadata(rel_path: str):
     if rel_path.startswith("jyotish/shadbala/"):
         return ("Core Math: Shadbala", "Shadbala planetary strength module")
 
+    if rel_path.startswith("jyotish/yogas/"):
+        return ("Classical Yogas", "Classical yoga detection and analysis module")
+
+    if rel_path.startswith("jyotish/planetary_evaluation/"):
+        return ("Planetary Evaluation", "Planetary dignity archetype and vitality evaluation module")
+
+    if rel_path.startswith("jyotish/nakshatras/"):
+        return ("Nakshatras & Lore", "Equatorial sidereal nakshatra calculation and star lore module")
+
     if rel_path.startswith("jyotish/"):
         return ("Core Math Engine", "Jyotish calculation engine component")
 
@@ -746,22 +928,23 @@ def get_file_metadata(rel_path: str):
 
 
 def is_frontend_file(rel_path: str) -> bool:
+    if rel_path.startswith("static/data/"):
+        return False
     if rel_path.startswith(("static/", "templates/")):
         return True
     if rel_path in ("screenshot.py", "Gemini.md", "README.md"):
-        return True
-    if rel_path.startswith("tests/") and ("ui" in rel_path or "screenshot" in rel_path):
         return True
     return False
 
 
 def is_backend_file(rel_path: str) -> bool:
-    if rel_path.startswith(("jyotish/", "documentations/", "knowledge_base/", "source-material/")):
+    if rel_path.startswith("jyotish/"):
         return True
     if rel_path in ("app.py", "run.py", "Gemini.md", "README.md"):
         return True
-    if rel_path.startswith("tests/") and not ("ui" in rel_path or "screenshot" in rel_path):
+    if rel_path.startswith(("documentations/", "knowledge_base/", "source-material/")):
         return True
+    # Tests are NOT included in backend production export
     return False
 
 
@@ -774,27 +957,49 @@ def is_report_file(rel_path: str) -> bool:
         "templates/partials/context_menu.html",
         "templates/partials/top_toolbar.html",
         "templates/partials/widget_templates.html",
-        "tests/test_report_engine.py",
-        "screenshot_report_widget.py",
     ):
         return True
     return False
 
 
-def collect_codebase_files(project_root: str, scope: str = "all"):
+def collect_codebase_files(project_root: str, scope: str = "all", include_tests: bool = False):
     """
-    Collects essential codebase files filtered by subsystem scope ('all', 'frontend', 'backend', 'report').
-    Filters out binaries, caches, raw books, transcripts, and duplicates.
+    Collects essential codebase files filtered by subsystem scope:
+    - 'jyotish': Pure calculation engine (/jyotish/), sorted pedagogically across 14 chapters
+    - 'report': Synthesis report engine, nakshatra lore, and report widget
+    - 'frontend': UI templates, stylesheets, and widget controllers
+    - 'backend': Jyotish engines + Flask app server and blueprints (tests excluded)
+    - 'all': Unified application export (tests excluded unless include_tests=True)
     """
+    if scope == "jyotish":
+        jyotish_files = []
+        for root, dirs, files in os.walk(os.path.join(project_root, "jyotish")):
+            dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+            for file in sorted(files):
+                if file in EXCLUDED_FILES or file.startswith(("codebase_export", "code_export", "commits_export")):
+                    continue
+                _, ext = os.path.splitext(file)
+                ext_lower = ext.lower()
+                if ext_lower in EXCLUDED_EXTENSIONS or ext_lower not in ALLOWED_EXTENSIONS:
+                    continue
+                full_path = os.path.join(root, file)
+                rel_path = os.path.relpath(full_path, project_root)
+                jyotish_files.append(rel_path)
+        jyotish_files.sort(key=get_jyotish_sort_key)
+        return jyotish_files
+
     if scope == "report":
         report_files = [
             # Core Report Engine
             "jyotish/report/__init__.py",
             "jyotish/report/report_engine.py",
+            "jyotish/report/significations_data.json",
+            "jyotish/report/significations_flowcharts.json",
             # Nakshatra Lore & Database
             "jyotish/nakshatras/__init__.py",
             "jyotish/nakshatras/lore.py",
             "jyotish/nakshatras/nakshatra_data.py",
+            "jyotish/nakshatras/nakshatra_database.json",
             # Foundational Mathematical Dependencies
             "jyotish/relationships/relationships.py",
             "jyotish/relationships/relationships.md",
@@ -806,9 +1011,6 @@ def collect_codebase_files(project_root: str, scope: str = "all"):
             "templates/partials/context_menu.html",
             "templates/partials/top_toolbar.html",
             "templates/partials/widget_templates.html",
-            # Verification & Testing
-            "tests/test_report_engine.py",
-            "screenshot_report_widget.py",
         ]
         return [f for f in report_files if os.path.exists(os.path.join(project_root, f))]
 
@@ -836,6 +1038,14 @@ def collect_codebase_files(project_root: str, scope: str = "all"):
 
             # Avoid root duplicate file
             if rel_path == "Shivapuri_Learning_Style_Analysis.md":
+                continue
+
+            # Exclude duplicate static data files (already in jyotish/report/)
+            if rel_path.startswith("static/data/"):
+                continue
+
+            # Exclude tests by default from exports
+            if not include_tests and rel_path.startswith("tests/"):
                 continue
 
             # In source-material, strictly include relevant setup docs and test fixtures
@@ -877,6 +1087,7 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         "frontend": "FRONTEND CODEBASE EXPORT",
         "backend": "BACKEND CODEBASE EXPORT",
         "report": "REPORT CODEBASE EXPORT",
+        "jyotish": "JYOTISH CALCULATION ENGINE EXPORT",
         "all": "CODEBASE EXPORT",
     }.get(scope, "CODEBASE EXPORT")
 
@@ -888,7 +1099,34 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
     header.append("=" * 80)
     header.append("")
 
-    if scope == "report":
+    if scope == "jyotish":
+        header.append("## 1. Executive Summary & Astrological Paradigm")
+        header.append("This export aggregates Astra's complete Jyotish calculation engine (/jyotish/).")
+        header.append("It contains all core mathematical computation engines, twin markdown specifications,")
+        header.append("astronomical coordinate algorithms, and scripture databases. Strictly implements Ernst Wilhelm's 'Kala' methodology:")
+        header.append("- **Tropical Rasis (Signs)**: Used for all core planetary placements and harmonic Vargas (divisional charts).")
+        header.append("- **Campanus House System**: Houses are computed by dividing the prime vertical into 30° equal segments, projected onto the ecliptic.")
+        header.append("- **Sidereal Equatorial Nakshatras**: Nakshatras are equatorial and anchored to the Dhruva Galactic Center (Middle of Mula at 0° Sagittarius).")
+        header.append("- **Swiss Ephemeris (`pyswisseph`) Base**: Pure astronomical calculation using True Node and high-precision planetary ephemerides. ZERO hard-coding.")
+        header.append("- **The Twin Markdown Pattern**: Every core mathematical module in `jyotish/` is paired with an authoritative companion `.md` file containing mathematical formulas, algorithm steps, and classical BPHS Sanskrit shloka references.")
+        header.append("")
+        header.append("## 2. Calculation Subsystems Overview (14 Pedagogical Chapters)")
+        header.append("1. **Core Astronomical Math & Orchestrator**: High-precision coordinates, Campanus cusps, planetary speeds, vargas, and SVG rendering.")
+        header.append("2. **Planetary Relationships & Aspects (Maitri & Drishti)**: 5-fold friendship matrices (Panchadha Maitri) and classical Parashari aspect rays.")
+        header.append("3. **Planetary & House Strengths (Shadbala & Bhava Bala)**: Complete 6-fold planetary strength calculation and 12-house strength assessment.")
+        header.append("4. **Planetary Conditions & States (Avasthas)**: Baladi, Jagradadi, Deeptadi, Lajjitadi, Shayanadi, and quantitative operational matrices.")
+        header.append("5. **Divisional Harmonic Strength (Vimshopaka Bala)**: 20-point divisional varga weighting (Shadvarga, Saptavarga, Dashavarga, Shodashavarga).")
+        header.append("6. **Planetary Evaluation & Lagna Vitality**: 9-tier dignity archetypes, directional tilts, Neecha Bhanga, Graha Yuddha, and Ascendant life-force.")
+        header.append("7. **Classical Yogas & Breakers**: Kendra/Trikona Raja Yogas, Dhana/Daridrya, Pancha Mahapurusha, Lunar/Solar, Viparita, and cancellation rules.")
+        header.append("8. **Ashtakavarga Assessment**: Bhinnashtakavarga and Sarvashtakavarga 8-fold bindu distribution matrices.")
+        header.append("9. **Equatorial Sidereal Nakshatras & Lore**: 27 Dhruva Nakshatras across 7 classical families (Tikshna, Ugra, Dhruva, Mridu, Laghu, Chara, Mishra).")
+        header.append("10. **Vimshottari Dasha Progression**: 120-year planetary period progression and birth balance timeline.")
+        header.append("11. **Karakas & Sign Attributes**: Jaimini Chara Karakas, Parashari Sthira Karakas, and Kalapurusha bodily governance.")
+        header.append("12. **Astrological Synthesis Report Subsystem**: Polarity Core, 4-step Nakshatra scoring, Operational Axis, Macro Environmental balances, and Flowcharts.")
+        header.append("13. **Scripture Databases & Native Management**: BPHS SQLite database, scripture translation tables, and chart storage.")
+        header.append("14. **Publication-Grade PDF Exporter**: Publication-quality vector SVGs, A3 Master Plan, and A4 Dossier reporting.")
+        header.append("")
+    elif scope == "report":
         header.append("## 1. Executive Summary: Astrological Synthesis Report Subsystem")
         header.append("This export aggregates all files comprising Astra's Astrological Synthesis Report desk,")
         header.append("synthesizing Tropical Signs, Campanus Houses, and Sidereal Dhruva Nakshatras into an interactive cockpit:")
@@ -920,14 +1158,10 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         header.append("This export aggregates Astra's core mathematical computation engines, calculation specifications,")
         header.append("scripture databases, and REST API server. Strictly implements Ernst Wilhelm's 'Kala' methodology:")
         header.append("- **Tropical Rasis (Signs)**: Used for all core planetary placements and harmonic Vargas (divisional charts).")
-        header.append("- **Campanus House System**: Houses are computed by dividing the prime vertical into 30° equal segments,")
-        header.append("  projected onto the ecliptic. Accurately handles intercepted signs and house shifts.")
-        header.append("- **Sidereal Equatorial Nakshatras**: Nakshatras are equatorial and anchored to the Dhruva Galactic Center")
-        header.append("  (Middle of Mula at 0° Sagittarius / Galactic Center).")
-        header.append("- **Swiss Ephemeris (`pyswisseph`) Base**: Pure astronomical calculation using True Node and high-precision")
-        header.append("  planetary ephemerides. Strictly ZERO hardcoded outputs.")
-        header.append("- **The Twin Markdown Pattern**: Every mathematical module in `jyotish/` is paired with an authoritative")
-        header.append("  companion `.md` file containing mathematical formulas, algorithm steps, and classical BPHS Sanskrit shloka references.")
+        header.append("- **Campanus House System**: Houses are computed by dividing the prime vertical into 30° equal segments, projected onto the ecliptic.")
+        header.append("- **Sidereal Equatorial Nakshatras**: Nakshatras are equatorial and anchored to the Dhruva Galactic Center (Middle of Mula at 0° Sagittarius).")
+        header.append("- **Swiss Ephemeris (`pyswisseph`) Base**: Pure astronomical calculation using True Node and high-precision planetary ephemerides. ZERO hardcoded outputs.")
+        header.append("- **The Twin Markdown Pattern**: Every mathematical module in `jyotish/` is paired with an authoritative companion `.md` file containing formulas, algorithms, and classical BPHS shloka references.")
         header.append("- **Flask REST API (`app.py`)**: Exposes chart calculation endpoints and on-demand lazy SVG generation.")
         header.append("")
     else:
@@ -935,27 +1169,22 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         header.append("Astra is a precision astrological calculation engine and interactive chart viewer")
         header.append("built in Python and JavaScript. It strictly implements Ernst Wilhelm's 'Kala' methodology:")
         header.append("- **Tropical Rasis (Signs)**: Used for all core planetary placements and harmonic Vargas (divisional charts).")
-        header.append("- **Campanus House System**: Houses are computed by dividing the prime vertical into 30° equal segments,")
-        header.append("  projected onto the ecliptic. Accurately handles intercepted signs and house shifts.")
-        header.append("- **Sidereal Equatorial Nakshatras**: Nakshatras are equatorial and anchored to the Dhruva Galactic Center")
-        header.append("  (Middle of Mula at 0° Sagittarius / Galactic Center).")
-        header.append("- **Swiss Ephemeris (`pyswisseph`) Base**: Pure astronomical calculation using True Node and high-precision")
-        header.append("  planetary ephemerides. Strictly ZERO hardcoded outputs.")
+        header.append("- **Campanus House System**: Houses are computed by dividing the prime vertical into 30° equal segments, projected onto the ecliptic.")
+        header.append("- **Sidereal Equatorial Nakshatras**: Nakshatras are equatorial and anchored to the Dhruva Galactic Center (Middle of Mula at 0° Sagittarius).")
+        header.append("- **Swiss Ephemeris (`pyswisseph`) Base**: Pure astronomical calculation using True Node and high-precision planetary ephemerides. ZERO hardcoded outputs.")
         header.append("")
         header.append("## 2. Core Architectural Invariants")
         header.append("1. **The Twin Markdown Pattern**: Every core mathematical module in `jyotish/` is paired with an authoritative")
         header.append("   companion `.md` file containing mathematical formulas, algorithm steps, and classical BPHS Sanskrit shloka references.")
         header.append("2. **Zero Hard-Coding**: Values must NEVER be faked to pass tests. All outputs are dynamically derived.")
-        header.append("3. **Test-Driven Rigor**: Includes 13 automated test suites covering core math, avasthas, shadbala, drishti,")
-        header.append("   dignities, API schemas, and SVG generation, validated against Kala ground-truth fixtures.")
+        header.append("3. **Decoupled Architecture**: Clear separation between core astronomical calculation (/jyotish/), Flask API (app.py), and modular frontend (static/ & templates/).")
         header.append("")
         header.append("## 3. Subsystem Architecture Map")
-        header.append("- **`jyotish/` (Core Math Engine)**: Central calculation orchestrator (`generate_jyotish.py`), SVG chart generator")
-        header.append("  (`draw_chart.py`), coordinate math (`calc_utils.py`), and BPHS scripture database querying (`bphs_db.py`).")
+        header.append("- **`jyotish/` (Core Math Engine)**: Central calculation orchestrator (`generate_jyotish.py`), SVG chart generator (`draw_chart.py`), coordinate math (`calc_utils.py`), and BPHS scripture database querying (`bphs_db.py`).")
         header.append("- **`jyotish/shadbala/`**: Complete 6-fold planetary strength calculation (Sthana, Dig, Kala, Cheshta, Naisargika, Drik).")
         header.append("- **`jyotish/avasthas/`**: Comprehensive planetary states (Baladi, Jagradadi, Deeptadi, Lajjitadi, Shayanadi, and Quantitative matrices).")
         header.append("- **`app.py` & API**: Flask application server exposing calculation endpoints and on-demand lazy SVG generation (`/api/chart/<id>/svg`).")
-        header.append("- **`static/css/` & `static/js/`**: Modular presentation layer featuring 5 Pergamon stylesheets, Pluggable Widget Registry (`widget_registry.js`), declarative table builders, and 11 isolated widget modules.")
+        header.append("- **`static/css/` & `static/js/`**: Modular presentation layer featuring 5 Pergamon stylesheets, Pluggable Widget Registry (`widget_registry.js`), declarative table builders, and isolated widget modules.")
         header.append("- **`templates/`**: Decoupled layout skeleton (`index.html`), modular Jinja2 partials (`top_toolbar.html`, `context_menu.html`, `modals/`), and reusable DOM templates (`widget_templates/`).")
         header.append("- **`documentations/adr/`**: Architecture Decision Records (ADRs 001-008) explaining foundational technical choices.")
         header.append("- **`knowledge_base/`**: Curated astrological definitions and classical significations.")
@@ -963,16 +1192,27 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         header.append("")
 
     header.append("## 4. Codebase Table of Contents / File Manifest")
-    header.append("| # | Subsystem | Path | Lines | Size (KB) | Role & Description |")
-    header.append("|---|---|---|---:|---:|---|")
-
-    for i, item in enumerate(manifest, 1):
-        rel = item["rel_path"]
-        subsystem = item["subsystem"]
-        lines = item["lines"]
-        size_kb = item["bytes"] / 1024
-        desc = item["description"]
-        header.append(f"| {i} | {subsystem} | `{rel}` | {lines} | {size_kb:.1f} | {desc} |")
+    if scope == "jyotish":
+        header.append("| # | Chapter | Subsystem | Path | Lines | Size (KB) | Role & Description |")
+        header.append("|---|---|---|---|---:|---:|---|")
+        for i, item in enumerate(manifest, 1):
+            rel = item["rel_path"]
+            chapter = JYOTISH_FILE_SECTION_MAP.get(rel, "General Jyotish")
+            subsystem = item["subsystem"]
+            lines = item["lines"]
+            size_kb = item["bytes"] / 1024
+            desc = item["description"]
+            header.append(f"| {i} | {chapter} | {subsystem} | `{rel}` | {lines} | {size_kb:.1f} | {desc} |")
+    else:
+        header.append("| # | Subsystem | Path | Lines | Size (KB) | Role & Description |")
+        header.append("|---|---|---|---:|---:|---|")
+        for i, item in enumerate(manifest, 1):
+            rel = item["rel_path"]
+            subsystem = item["subsystem"]
+            lines = item["lines"]
+            size_kb = item["bytes"] / 1024
+            desc = item["description"]
+            header.append(f"| {i} | {subsystem} | `{rel}` | {lines} | {size_kb:.1f} | {desc} |")
 
     header.append("")
     header.append("=" * 80)
@@ -985,18 +1225,9 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
 
 def condense_index_html(content: str) -> str:
     """
-    Condenses the 13,000+ line templates/index.html file for export budget compliance (< 1.2 MB).
-    Preserves:
-    - Complete page layout, toolbars, and workspace navigation
-    - All modal overlay containers and essential form controls
-    - Core <template> UI component architectures
-    - All JavaScript application state, calculation API bridges, and function signatures
-    Condenses:
-    - CSS styles into a structured architectural summary
-    - Repetitive <option> dropdown lists
-    - Repetitive table rendering DOM logic inside function bodies
+    Condenses the 13,000+ line templates/index.html file for export budget compliance.
+    Preserves page layout, navigation, templates, and script signatures.
     """
-    # 1. Condense CSS styles
     content = re.sub(
         r'<style>.*?</style>',
         '<style>\n    /* [Astra UI CSS styling (Split.js multi-pane, grid cells, dark/light themes, widgets, tables, modals) condensed for export budget] */\n</style>',
@@ -1004,7 +1235,6 @@ def condense_index_html(content: str) -> str:
         flags=re.DOTALL,
     )
 
-    # 2. Condense repetitive <option> lists
     def repl_opts(m):
         opts = re.findall(r'<option.*?</option>', m.group(0), flags=re.DOTALL)
         if len(opts) > 3:
@@ -1012,7 +1242,6 @@ def condense_index_html(content: str) -> str:
         return m.group(0)
     content = re.sub(r'(<option.*?</option>\s*){4,}', repl_opts, content, flags=re.DOTALL)
 
-    # 3. Condense large modal interiors
     def repl_modal(m):
         m_id = m.group(1)
         body = m.group(2)
@@ -1022,7 +1251,6 @@ def condense_index_html(content: str) -> str:
         return m.group(0)
     content = re.sub(r'<div class="modal-overlay[^"]*"\s+id="([^"]+)"[^>]*>(.*?)(?=\n\s*<!--\s*[A-Z]|\n\s*<div id="main-container")', repl_modal, content, flags=re.DOTALL)
 
-    # 4. Condense large <template> markup
     def repl_tmpl(m):
         tmpl_id = m.group(1)
         body = m.group(2)
@@ -1032,7 +1260,6 @@ def condense_index_html(content: str) -> str:
         return m.group(0)
     content = re.sub(r'<template id="(.*?)">(.*?)</template>', repl_tmpl, content, flags=re.DOTALL)
 
-    # 5. Condense JavaScript function bodies while preserving signatures, state, and event bindings
     marker_start = '<script>\n        let allSavedNatives'
     idx_script = content.find(marker_start)
     if idx_script == -1:
@@ -1078,11 +1305,8 @@ def condense_index_html(content: str) -> str:
 
 def condense_javascript_widget(content: str) -> str:
     """
-    Condenses multi-thousand line DOM generation in oversized JS widgets (like master_diagnostic.js)
-    while strictly preserving:
-    - Module exports and global window registrations
-    - WidgetRegistry.register calls and metadata
-    - Core calculation functions and all function signatures
+    Condenses multi-thousand line DOM generation in oversized JS widgets
+    while strictly preserving module exports, widget registry calls, and function signatures.
     """
     lines = content.splitlines()
     out = []
@@ -1090,7 +1314,7 @@ def condense_javascript_widget(content: str) -> str:
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
-        if (stripped.startswith('function ') or ' = function(' in stripped or stripped.startswith('async function ')) and '{' in line:
+        if (stripped.startswith('function ') or ' = function(' in stripped or ' = async function(' in stripped or stripped.startswith('async function ')) and '{' in line:
             func_sig = line
             out.append(line)
             brace_count = line.count('{') - line.count('}')
@@ -1104,7 +1328,7 @@ def condense_javascript_widget(content: str) -> str:
                 out.extend(func_lines[1:])
             else:
                 indent = ' ' * (len(func_sig) - len(stripped) + 4)
-                out.append(f'{indent}// ... [{len(func_lines)-2} lines of Master Diagnostics DOM rendering logic condensed for export budget; full implementation in repo] ...')
+                out.append(f'{indent}// ... [{len(func_lines)-2} lines of DOM rendering logic condensed for export budget; full implementation in repo] ...')
                 out.append(func_lines[-1])
             continue
         out.append(line)
@@ -1122,7 +1346,10 @@ def get_file_export_content(rel_path: str, full_path: str) -> str:
             content = f.read()
         if rel_path == "templates/index.html":
             content = condense_index_html(content)
-        elif rel_path == "static/js/widgets/master_diagnostic.js":
+        elif rel_path in (
+            "static/js/widgets/master_diagnostic.js",
+            "static/js/widgets/report_widget.js",
+        ):
             content = condense_javascript_widget(content)
         return content
     except Exception as e:
@@ -1135,10 +1362,16 @@ def export_codebase(
     project_root: str = None,
     summary_only: bool = False,
     scope: str = "all",
+    include_tests: bool = False,
 ):
     """
-    Executes the codebase export for a specified scope ('all', 'frontend', 'backend', or 'split').
-    Returns a dict with statistics: {files_count, total_lines, total_bytes, output_path}.
+    Executes the codebase export for a specified scope:
+    - 'all': unified application export (tests excluded by default)
+    - 'jyotish': pure calculation engine (/jyotish/) sorted into 14 chapters
+    - 'backend': Jyotish math + Flask REST API & blueprints
+    - 'frontend': UI templates, stylesheets, and widget controllers
+    - 'report': Astrological synthesis report subsystem
+    - 'split': generates both frontend and backend exports in a single run
     """
     if project_root is None:
         project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -1158,6 +1391,7 @@ def export_codebase(
             project_root=project_root,
             summary_only=summary_only,
             scope="frontend",
+            include_tests=include_tests,
         )
         print("\n")
         be_res = export_codebase(
@@ -1166,6 +1400,7 @@ def export_codebase(
             project_root=project_root,
             summary_only=summary_only,
             scope="backend",
+            include_tests=include_tests,
         )
         return {
             "frontend": fe_res,
@@ -1183,6 +1418,8 @@ def export_codebase(
             output_file = DEFAULT_BACKEND_OUTPUT_FILE
         elif scope == "report":
             output_file = DEFAULT_REPORT_OUTPUT_FILE
+        elif scope == "jyotish":
+            output_file = DEFAULT_JYOTISH_OUTPUT_FILE
         else:
             output_file = DEFAULT_OUTPUT_FILE
 
@@ -1193,6 +1430,8 @@ def export_codebase(
             max_size_mb = DEFAULT_BACKEND_MAX_SIZE_MB
         elif scope == "report":
             max_size_mb = DEFAULT_REPORT_MAX_SIZE_MB
+        elif scope == "jyotish":
+            max_size_mb = DEFAULT_JYOTISH_MAX_SIZE_MB
         else:
             max_size_mb = DEFAULT_MAX_SIZE_MB
 
@@ -1201,7 +1440,7 @@ def export_codebase(
     else:
         output_path = os.path.join(project_root, output_file)
 
-    rel_files = collect_codebase_files(project_root, scope=scope)
+    rel_files = collect_codebase_files(project_root, scope=scope, include_tests=include_tests)
 
     manifest = []
     for rel in rel_files:
@@ -1231,6 +1470,7 @@ def export_codebase(
 
     header_text = generate_executive_header(manifest, project_root, scope=scope)
 
+    last_section = None
     with open(output_path, "w", encoding="utf-8") as out:
         out.write(header_text)
 
@@ -1240,6 +1480,15 @@ def export_codebase(
             lines = item["lines"]
             size_kb = item["bytes"] / 1024
             desc = item["description"]
+
+            # Section header in jyotish scope
+            if scope == "jyotish":
+                sec_title = JYOTISH_FILE_SECTION_MAP.get(rel, "15. Additional Jyotish Modules")
+                if sec_title != last_section:
+                    last_section = sec_title
+                    out.write("\n" + "#" * 80 + "\n")
+                    out.write(f"### CHAPTER: {sec_title.upper()}\n")
+                    out.write("#" * 80 + "\n\n")
 
             # File separator banner
             out.write("=" * 80 + "\n")
@@ -1286,25 +1535,30 @@ def main():
         "-o",
         "--output",
         default=None,
-        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt, codebase_export_report.txt based on scope)",
+        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt, codebase_export_report.txt, codebase_export_jyotish.txt)",
     )
     parser.add_argument(
         "-m",
         "--max-size-mb",
         type=float,
         default=None,
-        help="Maximum allowable output size in megabytes (defaults: 2.5 for all, 1.0 for frontend, 1.5 for backend, 0.5 for report)",
+        help="Maximum allowable output size in megabytes (defaults: 2.8 for all, 1.0 for frontend, 1.6 for backend, 0.5 for report, 2.0 for jyotish)",
     )
     parser.add_argument(
         "--scope",
-        choices=["all", "frontend", "backend", "report", "split"],
+        choices=["all", "frontend", "backend", "report", "jyotish", "split"],
         default="all",
-        help="Subsystem scope to export: 'all' (unified), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), 'report' (astrological synthesis report), or 'split' (both files)",
+        help="Subsystem scope to export: 'all' (unified), 'jyotish' (pure calculation engine), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), 'report' (synthesis report), or 'split' (both files)",
     )
     parser.add_argument(
         "--split",
         action="store_true",
         help="Shorthand for --scope split: generates both frontend and backend exports in a single command",
+    )
+    parser.add_argument(
+        "--include-tests",
+        action="store_true",
+        help="Include automated test suites in export (default: False)",
     )
     parser.add_argument(
         "--summary",
@@ -1320,9 +1574,9 @@ def main():
         max_size_mb=args.max_size_mb,
         summary_only=args.summary,
         scope=effective_scope,
+        include_tests=args.include_tests,
     )
 
 
 if __name__ == "__main__":
     main()
-

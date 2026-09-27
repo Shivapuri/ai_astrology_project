@@ -84,7 +84,7 @@ def get_compound_relationship(natural: str, temporary: str) -> str:
     
     return "Neutral"
 
-def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) -> str:
+def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0, debilitation_mode: str = "kala_degree") -> str:
     """Evaluates final planetary dignity based on sign, precise degree (for MT/OH), and compound relationship to sign lord."""
     if planet == "Sun":
         if sign == "Aries": return "Exalted"
@@ -97,8 +97,9 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) 
             if degree <= 3: return "Exalted"
             else: return "Moolatrikona"
         if sign == "Scorpio":
-            if degree <= 3: return "Debilitated"
-            # If > 3 degrees, it falls back to the sign lord relationship
+            if debilitation_mode in ("traditional", "whole_sign") or degree <= 3:
+                return "Debilitated"
+            # If > 3 degrees in kala_degree mode, falls back to sign lord relationship below
         if sign == "Cancer": return "Own Sign"
     elif planet == "Mars":
         if sign == "Capricorn": return "Exalted"
@@ -113,8 +114,9 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0) 
             elif degree <= 20: return "Moolatrikona"
             else: return "Own Sign"
         if sign == "Pisces":
-            if degree <= 15: return "Debilitated"
-            # If > 15 degrees, falls back to sign lord
+            if debilitation_mode in ("traditional", "whole_sign") or degree <= 15:
+                return "Debilitated"
+            # If > 15 degrees in kala_degree mode, falls back to sign lord relationship below
         if sign == "Gemini": return "Own Sign"
     elif planet == "Jupiter":
         if sign == "Cancer": return "Exalted"

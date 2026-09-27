@@ -90,7 +90,7 @@ def calculate_saptavarga_bala(planet: str, planet_positions: dict) -> float:
         
     return total_virupas
 
-def calculate_subha_phala(planet: str, planet_positions: dict) -> float:
+def calculate_subha_phala(planet: str, planet_positions: dict, debilitation_mode: str = "kala_degree") -> float:
     from jyotish.generate_jyotish import calculate_varga_longitude
     from jyotish.relationships.relationships import get_dignity
     
@@ -122,7 +122,7 @@ def calculate_subha_phala(planet: str, planet_positions: dict) -> float:
             compound = get_compound_relationship(natural, temporary)
             
         deg_in_sign = varga_lon % 30.0
-        dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign)
+        dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
         
         if "Exalted" in dignity: pts = 60.0
         elif "Moolatrikona" in dignity: pts = 45.0
@@ -688,7 +688,7 @@ def calculate_yuddha_bala(
                 
     return adjustments
 
-def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: float, birth_time_jd: float, lon: float = 0.0, lat: float = 0.0) -> dict:
+def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: float, birth_time_jd: float, lon: float = 0.0, lat: float = 0.0, debilitation_mode: str = "kala_degree") -> dict:
     """
     Master function to calculate the full Kala Shadbala breakdown for all 7 primary planets.
     Includes all 6 pillars + Ayana Bala, sub-pillars, required benchmarks, percentages, and ranks.
@@ -842,7 +842,7 @@ def calculate_shadbala(planet_positions: dict, ascendant_lon: float, mc_lon: flo
         total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik, 1)
         total_rupas = round(total_virupas / 60.0, 2)
         
-        subha_phala = calculate_subha_phala(p, planet_positions)
+        subha_phala = calculate_subha_phala(p, planet_positions, debilitation_mode=debilitation_mode)
         asubha_phala = max(0.0, 60.0 - subha_phala)
         
         req_sthana = REQUIRED_STHANA.get(p, 100.0)

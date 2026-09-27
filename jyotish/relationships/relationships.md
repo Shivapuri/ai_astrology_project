@@ -51,7 +51,11 @@ The rules in this file are directly grounded in the **Brihat Parashara Hora Shas
 ## 4. Special Astrological Exceptions & Limits
 As implemented in `generate_jyotish.py` and `relationships.py`:
 - **Varga Specific Distances (Tatkalika):** Tatkalika (Temporary Friendship) is ALWAYS calculated using the planetary positions in the D1 (Rasi) chart, even when determining Dignity for higher Vargas like D9 or D60.
-- **Deep Debilitation Limits:** A planet is only considered 'Debilitated' (DB) if it falls within specific degree limits. If it exceeds these limits, it reverts to standard compound friendship with the sign lord.
-  - **Moon:** Only debilitated between 0° and 3° of Scorpio.
-  - **Mercury:** Only debilitated between 0° and 15° of Pisces.
+- **Debilitation Calculation Modes (`debilitation_mode`):**
+  - `kala_degree` (Default):
+    - Moon: Debilitated strictly between 0° and 3° Scorpio. Beyond 3°, reverts to Panchadha Maitri with Mars.
+    - Mercury: Debilitated strictly between 0° and 15° Pisces. Beyond 15°, reverts to Panchadha Maitri with Jupiter.
+  - `whole_sign` / `traditional`:
+    - Moon: Debilitated across all 0°–30° of Scorpio.
+    - Mercury: Debilitated across all 0°–30° of Pisces.
 - **Even Rasi Varga Reversals:** Dasamsa (D10) and Chaturvimsamsa (D24) strictly follow the Parashara rule: "Reverse for Even Rasis". This means for Even signs, we start from the 9th sign (or Cancer for D24) and count **backwards** instead of forwards.

@@ -618,6 +618,133 @@ def test_triad_synthesis_graph_topology():
             assert edge["from"].startswith("P_")
 
 
+def test_polarity_core_bidirectional_friendship():
+    """
+    Verify that Polarity Core bidirectional friendship prevents one-way bias.
+    Moon views Mercury as Friend, while Mercury views Moon as Enemy.
+    Whether Moon rules the Lagna star or the Moon star, the mutual friction should be symmetric.
+    """
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},
+            "grahas": {
+                "Moon": {"sign": "Aries"},
+                "Mercury": {"sign": "Aries"}
+            }
+        }
+    }
+    # Orientation 1: Lagna star ruled by Moon, Moon star ruled by Mercury
+    nakshatras_1 = {
+        "Lagna": {"nakshatra": "Rohini", "nakshatra_lord": "Moon", "pada": 1},
+        "Moon": {"nakshatra": "Ashlesha", "nakshatra_lord": "Mercury", "pada": 1}
+    }
+    pol_1 = compute_polarity_core(mock_vargas, nakshatras_1)
+
+    # Orientation 2: Lagna star ruled by Mercury, Moon star ruled by Moon
+    nakshatras_2 = {
+        "Lagna": {"nakshatra": "Ashlesha", "nakshatra_lord": "Mercury", "pada": 1},
+        "Moon": {"nakshatra": "Rohini", "nakshatra_lord": "Moon", "pada": 1}
+    }
+    pol_2 = compute_polarity_core(mock_vargas, nakshatras_2)
+
+    # In both directions, the mutual base friction must be identical!
+    assert pol_1["relationship"]["friction_score"] == pol_2["relationship"]["friction_score"]
+    # Moon views Mercury: Friend, Mercury views Moon: Enemy
+    assert "Moon views Mercury: Friend" in pol_1["relationship"]["friendship_status"]
+    assert "Mercury views Moon: Enemy" in pol_1["relationship"]["friendship_status"]
+
+
+def test_polarity_core_conjunction_awareness():
+    """
+    Verify that when star lords are conjunct in the same D1 sign (distance = 0),
+    temporary relationship is treated as Friend (allied focus) rather than Enemy.
+    """
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},
+            "grahas": {
+                "Sun": {"sign": "Leo"},
+                "Mars": {"sign": "Leo"}  # Sun and Mars conjunct in Leo (distance = 0)
+            }
+        }
+    }
+    mock_nakshatras = {
+        "Lagna": {"nakshatra": "Krittika", "nakshatra_lord": "Sun", "pada": 1},
+        "Moon": {"nakshatra": "Mrigashira", "nakshatra_lord": "Mars", "pada": 1}
+    }
+    polarity = compute_polarity_core(mock_vargas, mock_nakshatras)
+    rel_info = polarity["relationship"]
+    assert "Temp: Friend" in rel_info["friendship_status"]
+    # Sun and Mars are natural Friends, and temporary Friends -> Great Friend
+    assert "Great Friend" in rel_info["panchadha_maitri"]
+    assert rel_info["friction_score"] <= 35
+
+
+def test_polarity_core_same_ruler_elemental_clash():
+    """
+    Verify that when star lords are identical (p1 == p2),
+    an elemental clash (Fire Lagna vs Water Moon) triggers Severe Clashing
+    and prevents the status from claiming 'Harmonic Flow'.
+    """
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},       # Fire
+            "grahas": {
+                "Moon": {"sign": "Cancer"},   # Water
+                "Mars": {"sign": "Aries"}
+            }
+        }
+    }
+    # Both stars ruled by Mars
+    mock_nakshatras = {
+        "Lagna": {"nakshatra": "Chitra", "nakshatra_lord": "Mars", "pada": 1},
+        "Moon": {"nakshatra": "Mrigashira", "nakshatra_lord": "Mars", "pada": 1}
+    }
+    polarity = compute_polarity_core(mock_vargas, mock_nakshatras)
+    rel_info = polarity["relationship"]
+    assert "Unified Consciousness" in rel_info["friendship_status"]
+    assert rel_info["tattva_harmonic"] is False
+    assert "Severe Clashing" in rel_info["tattva_status"]
+    # With base 15 + clash 25 = 40, state must not be Harmonic Flow
+    assert rel_info["state"] != "Harmonic Flow"
+    assert rel_info["state"] == "Dynamic Creative Tension"
+
+
+def test_environmental_tally_macro_polarity():
+    """
+    Verify that Macro Polarity (Active/Masculine/Odd vs Passive/Feminine/Even)
+    is properly calculated in compute_environmental_tally.
+    """
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},       # Odd (Active)
+            "grahas": {
+                "Sun": {"sign": "Gemini"},    # Odd (Active)
+                "Moon": {"sign": "Leo"},      # Odd (Active)
+                "Mars": {"sign": "Libra"},    # Odd (Active)
+                "Mercury": {"sign": "Aquarius"}, # Odd (Active)
+                "Jupiter": {"sign": "Sagittarius"}, # Odd (Active)
+                "Venus": {"sign": "Taurus"},  # Even (Passive)
+                "Saturn": {"sign": "Cancer"}, # Even (Passive)
+                "Rahu": {"sign": "Virgo"},    # Even (Passive)
+                "Ketu": {"sign": "Pisces"}    # Even (Passive)
+            }
+        }
+    }
+    tally = compute_environmental_tally(mock_vargas)
+    assert "polarity" in tally
+    pol = tally["polarity"]
+    assert pol["counts"]["Active"] == 6
+    assert pol["counts"]["Passive"] == 4
+    assert pol["dominant"] == "Active"
+    assert "breakdown" in pol
+    assert len(pol["breakdown"]) == 2
+    active_entry = next(x for x in pol["breakdown"] if x["key"] == "Active")
+    assert active_entry["percentage"] > 50.0
+    assert active_entry["status"] == "Surplus"
+
+
+
 
 
 

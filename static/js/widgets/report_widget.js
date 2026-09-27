@@ -1065,7 +1065,7 @@ function updateReportWidget(cell, chartData) {
                         <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:12px; background:${badgeColor}; color:#ffffff;">Friction: ${rel.friction_score}/100</span>
                     </div>
                     <div style="font-size:12.5px; font-weight:600; color:#475569;">
-                        Rulers: <strong>${rel.ruler_asc}</strong> vs <strong>${rel.ruler_moon}</strong> (${rel.panchadha_maitri}) • Elements: <strong>${rel.elements}</strong> (${rel.tattva_status})
+                        Rulers: <strong>${rel.ruler_asc}</strong> vs <strong>${rel.ruler_moon}</strong> (${rel.panchadha_maitri}) • Rāśi Tattvas: <strong>${rel.elements}</strong> (${rel.tattva_status})
                     </div>
                 </div>
                 <div style="font-size:13px; color:#334155; margin-top:6px; line-height:1.45;">
@@ -1085,15 +1085,15 @@ function updateReportWidget(cell, chartData) {
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#2563eb; letter-spacing:0.5px;">🚩 Ascendant Star (Ahaṃkāra / Bodily Action)</div>
-                        <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${a.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${a.pada} in ${a.sign})</span></div>
+                        <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${a.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${a.pada} • Tropical ${a.sign} [${a.element}])</span></div>
                     </div>
                     <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">${a.group} Class</span>
                 </div>
                 <div style="font-size:12.5px; color:#475569; background:#f8fafc; border-radius:4px; padding:6px 8px;">
-                    <div><strong>Star:</strong> ${lore.astronomical_star || '--'} • <strong>Span:</strong> ${lore.zodiacal_span || '--'}</div>
+                    <div><strong>Star:</strong> ${lore.astronomical_star || '--'} • <strong>Sidereal Span:</strong> ${lore.zodiacal_span || '--'}</div>
+                    <div style="margin-top:2px;"><strong>Tropical Rāśi:</strong> ${a.sign} (${a.element} Tattva) • <strong>Lord / Sublord:</strong> ${a.ruler} / ${a.sub_lord}</div>
                     <div style="margin-top:2px;"><strong>Deity:</strong> ${lore.presiding_deity || '--'}</div>
                     <div style="margin-top:2px;"><strong>Symbol:</strong> ${lore.symbol_etymology || '--'}</div>
-                    <div style="margin-top:2px;"><strong>Lord/Sublord:</strong> ${a.ruler} / ${a.sub_lord}</div>
                 </div>
                 <div style="font-size:13px; color:#1e293b; line-height:1.45; margin-top:2px;">
                     <strong>Core Action Drive:</strong> ${lore.core_psychology || '--'}
@@ -1115,15 +1115,15 @@ function updateReportWidget(cell, chartData) {
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
                         <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#7c3aed; letter-spacing:0.5px;">🌙 Moon Star (Manas / Sensory Mind &amp; Feeling)</div>
-                        <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${m.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${m.pada} in ${m.sign})</span></div>
+                        <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${m.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${m.pada} • Tropical ${m.sign} [${m.element}])</span></div>
                     </div>
                     <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe;">${m.group} Class</span>
                 </div>
                 <div style="font-size:12.5px; color:#475569; background:#f8fafc; border-radius:4px; padding:6px 8px;">
-                    <div><strong>Star:</strong> ${lore.astronomical_star || '--'} • <strong>Span:</strong> ${lore.zodiacal_span || '--'}</div>
+                    <div><strong>Star:</strong> ${lore.astronomical_star || '--'} • <strong>Sidereal Span:</strong> ${lore.zodiacal_span || '--'}</div>
+                    <div style="margin-top:2px;"><strong>Tropical Rāśi:</strong> ${m.sign} (${m.element} Tattva) • <strong>Lord / Sublord:</strong> ${m.ruler} / ${m.sub_lord}</div>
                     <div style="margin-top:2px;"><strong>Deity:</strong> ${lore.presiding_deity || '--'}</div>
                     <div style="margin-top:2px;"><strong>Symbol:</strong> ${lore.symbol_etymology || '--'}</div>
-                    <div style="margin-top:2px;"><strong>Lord/Sublord:</strong> ${m.ruler} / ${m.sub_lord}</div>
                 </div>
                 <div style="font-size:13px; color:#1e293b; line-height:1.45; margin-top:2px;">
                     <strong>Varāhamihira Moon Reading:</strong> <em>"${lore.varahamihira_moon || '--'}"</em>
@@ -1447,6 +1447,11 @@ function updateReportWidget(cell, chartData) {
                 baselineLabel = 'Equilibrium Baseline: 33.3% (1/3rd)';
                 baselinePct = 33.3;
                 items = envTally.gunas?.breakdown || [];
+            } else if (mode === 'polarity') {
+                title = '⚖️ Balance of Macro Polarity (Active vs. Passive)';
+                baselineLabel = 'Equilibrium Baseline: 50.0% (1/2)';
+                baselinePct = 50.0;
+                items = envTally.polarity?.breakdown || [];
             } else if (mode === 'doshas') {
                 title = '🍵 Balance of Ayurvedic Doshas (Prakṛti)';
                 baselineLabel = 'Equilibrium Baseline: 33.3% (1/3rd)';
@@ -1536,6 +1541,7 @@ function updateReportWidget(cell, chartData) {
             // Pills active styles
             const activeElemStyle = mode === 'elements' ? 'background:#ffffff; color:#1e293b; font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,0.08);' : 'background:transparent; color:#64748b; font-weight:600;';
             const activeGunaStyle = mode === 'gunas' ? 'background:#ffffff; color:#1e293b; font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,0.08);' : 'background:transparent; color:#64748b; font-weight:600;';
+            const activePolStyle = mode === 'polarity' ? 'background:#ffffff; color:#1e293b; font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,0.08);' : 'background:transparent; color:#64748b; font-weight:600;';
             const activeDoshaStyle = mode === 'doshas' ? 'background:#ffffff; color:#1e293b; font-weight:700; box-shadow:0 1px 2px rgba(0,0,0,0.08);' : 'background:transparent; color:#64748b; font-weight:600;';
 
             envDistContainer.innerHTML = `
@@ -1551,6 +1557,7 @@ function updateReportWidget(cell, chartData) {
                     <div class="env-mode-pills" style="display:inline-flex; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:2px; gap:2px;">
                         <button type="button" class="btn-env-mode-elem" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeElemStyle}">🔥 Elements</button>
                         <button type="button" class="btn-env-mode-guna" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeGunaStyle}">🌀 Guṇas</button>
+                        <button type="button" class="btn-env-mode-pol" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activePolStyle}">⚖️ Polarity</button>
                         <button type="button" class="btn-env-mode-dosha" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeDoshaStyle}">🍵 Doshas</button>
                     </div>
                 </div>
@@ -1585,10 +1592,12 @@ function updateReportWidget(cell, chartData) {
             // Attach click listeners to pills
             const btnElem = envDistContainer.querySelector('.btn-env-mode-elem');
             const btnGuna = envDistContainer.querySelector('.btn-env-mode-guna');
+            const btnPol = envDistContainer.querySelector('.btn-env-mode-pol');
             const btnDosha = envDistContainer.querySelector('.btn-env-mode-dosha');
 
             if (btnElem) btnElem.onclick = (e) => { e.stopPropagation(); renderEnvDistribution('elements'); };
             if (btnGuna) btnGuna.onclick = (e) => { e.stopPropagation(); renderEnvDistribution('gunas'); };
+            if (btnPol) btnPol.onclick = (e) => { e.stopPropagation(); renderEnvDistribution('polarity'); };
             if (btnDosha) btnDosha.onclick = (e) => { e.stopPropagation(); renderEnvDistribution('doshas'); };
         };
 
@@ -1600,6 +1609,7 @@ function updateReportWidget(cell, chartData) {
     if (envContainer && envTally.elements) {
         const e = envTally.elements;
         const g = envTally.gunas;
+        const p = envTally.polarity || { counts: { Active: 0, Passive: 0 }, points: { Active: 0, Passive: 0 }, percentages: { Active: 0, Passive: 0 }, dominant: 'Active' };
         const d = envTally.ayurvedic_doshas;
 
         envContainer.innerHTML = `
@@ -1607,7 +1617,7 @@ function updateReportWidget(cell, chartData) {
                 <span>🌿 Macro Environmental Tally (Ṣaḍvarga Weighted)</span>
                 <span style="font-size:11.5px; font-weight:600; color:#64748b;">D1:6 • D9:5 • D3:4 • D2:2 • D12:2 • D30:1</span>
             </div>
-            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px;">
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px;">
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🔥 Five Great Elements (Tattvas)</div>
                     <div style="font-size:12.5px; color:#475569;">
@@ -1626,6 +1636,14 @@ function updateReportWidget(cell, chartData) {
                         <div>Sattva (Dual): <strong>${g.percentages['Sattva (Dual)']}%</strong> <span style="font-size:11.5px; color:#64748b;">(${g.points['Sattva (Dual)']} pt)</span></div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#0d9488; margin-top:6px;">Dominant Guṇa: ${g.dominant}</div>
+                </div>
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
+                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">⚖️ Macro Polarity (Odd / Even)</div>
+                    <div style="font-size:12.5px; color:#475569;">
+                        <div>Active (Odd): <strong>${p.percentages.Active}%</strong> <span style="font-size:11.5px; color:#64748b;">(${p.points.Active} pt | D1: ${p.counts.Active})</span></div>
+                        <div>Passive (Even): <strong>${p.percentages.Passive}%</strong> <span style="font-size:11.5px; color:#64748b;">(${p.points.Passive} pt | D1: ${p.counts.Passive})</span></div>
+                    </div>
+                    <div style="font-size:13px; font-weight:700; color:#ea580c; margin-top:6px;">Dominant Polarity: ${p.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🍵 Ayurvedic Constitution (Prakṛti)</div>
@@ -1736,7 +1754,7 @@ function updateReportWidget(cell, chartData) {
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;">5. Environmental Field</div>
-                    <div style="font-size:15px; font-weight:700; color:#0f172a; margin-top:2px;">${synthesis.dominant_element} • ${synthesis.dominant_guna}</div>
+                    <div style="font-size:15px; font-weight:700; color:#0f172a; margin-top:2px;">${synthesis.dominant_element} • ${synthesis.dominant_guna} • ${synthesis.dominant_polarity || 'Active'} Polarity</div>
                     <div style="font-size:12.5px; color:#475569; margin-top:4px;">Prakṛti Dosha: <strong>${synthesis.dominant_dosha}</strong> • Vargottama: ${synthesis.is_vargottama ? 'Yes (+30%)' : 'No'}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
@@ -1746,9 +1764,9 @@ function updateReportWidget(cell, chartData) {
                 </div>
             </div>
             <div style="margin-top:14px; padding:12px; background:#fffdf5; border:1px solid #fef3c7; border-radius:6px;">
-                <div style="font-size:13.5px; font-weight:700; color:#78350f; margin-bottom:4px;">✨ Astrologer Synthesis Synthesis Blueprint:</div>
+                <div style="font-size:13.5px; font-weight:700; color:#78350f; margin-bottom:4px;">✨ Astrologer Synthesis Blueprint:</div>
                 <div style="font-size:13px; color:#451a03; line-height:1.5;">
-                    The native acts upon the world through the <strong>${synthesis.action_mode}</strong> archetype (${synthesis.action_group}), while emotionally experiencing reality through <strong>${synthesis.perception_mode}</strong> (${synthesis.perception_group}). With a polarity index of <strong>${synthesis.polarity_friction}/100</strong>, life manifests through <em>${synthesis.polarity_state}</em>. When navigating crises, the chart draws supreme authority from <strong>${synthesis.chart_commander}</strong>, operating within an environment grounded in <strong>${synthesis.dominant_element}</strong> and <strong>${synthesis.dominant_guna}</strong>.
+                    The native acts upon the world through the <strong>${synthesis.action_mode}</strong> archetype (${synthesis.action_group}), while emotionally experiencing reality through <strong>${synthesis.perception_mode}</strong> (${synthesis.perception_group}). With a polarity index of <strong>${synthesis.polarity_friction}/100</strong>, life manifests through <em>${synthesis.polarity_state}</em>. When navigating crises, the chart draws supreme authority from <strong>${synthesis.chart_commander}</strong>, operating within an environment grounded in <strong>${synthesis.dominant_element}</strong>, <strong>${synthesis.dominant_guna}</strong>, and <strong>${synthesis.dominant_polarity || 'Active'} Polarity</strong>.
                 </div>
             </div>
         `;

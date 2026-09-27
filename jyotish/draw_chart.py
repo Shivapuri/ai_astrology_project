@@ -742,7 +742,7 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
     lines_svg += '  </g>\n'
     return lines_svg
 
-def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna"):
+def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree"):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
@@ -938,7 +938,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                     temp = get_temporary_relationship(signs_list.index(p_sign), signs_list.index(lord_p["sign"]))
                     compound = get_compound_relationship(nat, temp)
                     deg = p_info["lon"] % 30.0
-                    dignity_map[p_name] = get_dignity(p_name, p_sign, compound, deg)
+                    dignity_map[p_name] = get_dignity(p_name, p_sign, compound, deg, debilitation_mode=debilitation_mode)
                 else:
                     dignity_map[p_name] = "Neutral"
 
@@ -948,7 +948,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     svg += '</svg>\n'
     return svg
 
-def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna"):
+def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree"):
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
@@ -1116,7 +1116,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                     temp = get_temporary_relationship(signs_list.index(p_sign), signs_list.index(lord_p["sign"]))
                     compound = get_compound_relationship(nat, temp)
                     deg = p_info["lon"] % 30.0
-                    dignity_map[p_name] = get_dignity(p_name, p_sign, compound, deg)
+                    dignity_map[p_name] = get_dignity(p_name, p_sign, compound, deg, debilitation_mode=debilitation_mode)
                 else:
                     dignity_map[p_name] = "Neutral"
 
@@ -1283,7 +1283,7 @@ def relax_planet_angles(planets, has_ascendant_barrier=True, is_outer=False):
     for i in range(n):
         planets[i]["draw_angle"] = pos[i] % 360
 
-def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna"):
+def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree"):
     svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
     # SVG Defs for Aspect Arrowheads (Benefic/Exalted/Malefic/Neutral)
@@ -1485,7 +1485,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
                     temp = get_temporary_relationship(p_info["sign_idx"], lord_p["sign_idx"])
                     compound = get_compound_relationship(nat, temp)
                     deg = p_info["item"]["degree"] + p_info["item"]["minute"] / 60.0
-                    dignity_map[p_name] = get_dignity(p_name, sign, compound, deg)
+                    dignity_map[p_name] = get_dignity(p_name, sign, compound, deg, debilitation_mode=debilitation_mode)
                 else:
                     dignity_map[p_name] = "Neutral"
 
@@ -1554,7 +1554,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
     return svg
 
 
-def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D9", mode="symbol", ayanamsha=0, root_planet="Lagna"):
+def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D9", mode="symbol", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree"):
     """
     Generates a concentric dual-wheel Harmonic Bi-Wheel SVG chart (Vic DiCara / Ernst Wilhelm style).
     - Inner Ring (Radius ~62 to ~138): Natal Chart (D1 / Rashi).
@@ -1832,7 +1832,7 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
                     temp = get_temporary_relationship(p_info["sign_idx"], lord_p["sign_idx"])
                     compound = get_compound_relationship(nat, temp)
                     deg = p_info["item"]["degree"] + p_info["item"]["minute"] / 60.0
-                    dignity_map[p_name] = get_dignity(p_name, sign, compound, deg)
+                    dignity_map[p_name] = get_dignity(p_name, sign, compound, deg, debilitation_mode=debilitation_mode)
                 else:
                     dignity_map[p_name] = "Neutral"
 

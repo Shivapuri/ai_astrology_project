@@ -21,6 +21,7 @@ class Store {
             d10Mode: localStorage.getItem('astra_d10_mode') || 'reverse',
             d24Mode: localStorage.getItem('astra_d24_mode') || 'reverse',
             nakshatraSystem: localStorage.getItem('astra_nakshatra_system') || 'ERNST_DHRUVA',
+            debilitationMode: localStorage.getItem('astra_debilitation_mode') || 'kala_degree',
             notation: localStorage.getItem('astra_notation') || 'symbol',
             showSiSigns: localStorage.getItem('astra_show_si_signs') !== 'false'
         };
@@ -60,6 +61,10 @@ class Store {
         if (updates.nakshatraSystem !== undefined) {
             window.currentNakshatraSystem = updates.nakshatraSystem;
             localStorage.setItem('astra_nakshatra_system', updates.nakshatraSystem);
+        }
+        if (updates.debilitationMode !== undefined) {
+            window.currentDebilitationMode = updates.debilitationMode;
+            localStorage.setItem('astra_debilitation_mode', updates.debilitationMode);
         }
         if (updates.notation !== undefined) {
             window.currentNotation = updates.notation;

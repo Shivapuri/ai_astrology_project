@@ -123,6 +123,29 @@
             </div>
 
             <div class="setting-section">
+                <h4>Debilitation Calculation Mode</h4>
+                <div style="margin-bottom: 8px; font-size: 11px; color: #6b5a4b;">
+                    Rule for evaluating planetary debilitation in Scorpio (Moon) and Pisces (Mercury)
+                </div>
+
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-deb-kala').click()">
+                    <input type="radio" id="radio-deb-kala" name="modalDebMode" value="kala_degree" checked onchange="setDebilitationMode('kala_degree')">
+                    <label for="radio-deb-kala">
+                        <strong>Kala Degree Limits (Ernst Wilhelm *)</strong>
+                        <span class="setting-chip">Moon: 0°–3° Scorpio; Mercury: 0°–15° Pisces (Beyond degrees, evaluates lord friendship)</span>
+                    </label>
+                </div>
+
+                <div class="setting-option-card" onclick="if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'LABEL' && !event.target.closest('label')) document.getElementById('radio-deb-whole').click()">
+                    <input type="radio" id="radio-deb-whole" name="modalDebMode" value="whole_sign" onchange="setDebilitationMode('whole_sign')">
+                    <label for="radio-deb-whole">
+                        <strong>Traditional Whole-Sign (BPHS Standard)</strong>
+                        <span class="setting-chip">Moon: All of Scorpio (0°–30°); Mercury: All of Pisces (0°–30°)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
                 <h4>Astrological PDF Export</h4>
                 <div class="setting-option-card" onclick="closeSettingsModal(); openExportModal();" style="border-left: 3px solid #2563eb;">
                     <span style="font-size: 18px; margin-right: 10px;">📄</span>

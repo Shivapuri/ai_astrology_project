@@ -47,6 +47,14 @@ RISING_MODE_MAP = {
     "Pisces": "Ubhayodaya (Both-Ways)"
 }
 
+POLARITY_MAP = {
+    "Aries": "Active", "Gemini": "Active", "Leo": "Active",
+    "Libra": "Active", "Sagittarius": "Active", "Aquarius": "Active",
+    "Taurus": "Passive", "Cancer": "Passive", "Virgo": "Passive",
+    "Scorpio": "Passive", "Capricorn": "Passive", "Pisces": "Passive"
+}
+
+
 SHADBALA_REQUIRED_RUPAS = {
     "Sun": 5.0,
     "Moon": 6.0,
@@ -232,8 +240,8 @@ def compute_polarity_core(
     """
     Evaluates the Polarity Core:
     Ascendant Nakshatra (Action / Ahamkara) ⟷ Moon Nakshatra (Perception / Manas).
-    Computes Five-Fold Friendship (Panchadha Maitri) between rulers,
-    elemental compatibility (Tattvas), and an intuitive friction index.
+    Computes bidirectional Five-Fold Friendship (Panchadha Maitri) between rulers,
+    conjunction harmonic awareness, elemental compatibility, and friction score.
     """
     d1_data = vargas_data.get("D1", {})
     d1_lagna = d1_data.get("lagna", {})
@@ -255,42 +263,60 @@ def compute_polarity_core(
     moon_sign = d1_grahas.get("Moon", {}).get("sign", "Taurus")
 
     asc_element = ELEMENT_MAP.get(asc_sign, "Fire")
-    moon_element = ELEMENT_MAP.get(moon_sign, "Water")
+    moon_element = ELEMENT_MAP.get(moon_sign, "Earth")  # Consistent fallback: Taurus is Earth
 
-    # Evaluate Five-Fold Friendship between Ascendant Star Lord and Moon Star Lord
     p1 = asc_ruler
     p2 = moon_ruler
 
+    rel_friction = {
+        "Great Friend": 10,
+        "Friend": 25,
+        "Neutral": 50,
+        "Enemy": 75,
+        "Great Enemy": 95
+    }
+
     if p1 == p2:
-        nat_rel = "Self"
-        tmp_rel = "Self"
+        friendship_status = f"Unified Consciousness (Both stars ruled by {p1})"
+        base_friction = 15  # Base unity
         cmp_rel = "Self"
-        friendship_status = "Unified Consciousness (Same Planetary Ruler)"
-        friction_points = 0
     else:
-        nat_rel = rel.get_natural_relationship(p1, p2)
-        # Temporary relationship based on D1 placement
+        # 1. Bidirectional Natural Friendship (P1 -> P2 and P2 -> P1)
+        nat_1_to_2 = rel.get_natural_relationship(p1, p2)
+        nat_2_to_1 = rel.get_natural_relationship(p2, p1)
+
+        # 2. Temporary Relationship (Tatkalika) with Conjunction Awareness
         p1_sign = d1_grahas.get(p1, {}).get("sign", asc_sign)
         p2_sign = d1_grahas.get(p2, {}).get("sign", moon_sign)
         p1_idx = ZODIAC_SIGNS.index(p1_sign) if p1_sign in ZODIAC_SIGNS else 0
         p2_idx = ZODIAC_SIGNS.index(p2_sign) if p2_sign in ZODIAC_SIGNS else 0
-        tmp_rel = rel.get_temporary_relationship(p1_idx, p2_idx)
-        cmp_rel = rel.get_compound_relationship(nat_rel, tmp_rel)
 
-        rel_friction = {
-            "Great Friend": 10,
-            "Friend": 25,
-            "Neutral": 45,
-            "Enemy": 75,
-            "Great Enemy": 95
-        }
-        friction_points = rel_friction.get(cmp_rel, 50)
-        friendship_status = f"{cmp_rel} (Natural {nat_rel} + Temporary {tmp_rel})"
+        distance = (p2_idx - p1_idx) % 12
+        if distance == 0:
+            # Conjunct in D1: In psychological synthesis, conjunct rulers create intense focus,
+            # not blind hostility. We treat mutual presence as cooperative alliance.
+            tmp_rel = "Friend"
+        elif distance in [1, 2, 3, 9, 10, 11]:
+            tmp_rel = "Friend"
+        else:
+            tmp_rel = "Enemy"
 
-    # Elemental Compatibility (Tattva)
+        # 3. Bidirectional Compound Synthesis
+        cmp_1 = rel.get_compound_relationship(nat_1_to_2, tmp_rel)
+        cmp_2 = rel.get_compound_relationship(nat_2_to_1, tmp_rel)
+
+        f1 = rel_friction.get(cmp_1, 50)
+        f2 = rel_friction.get(cmp_2, 50)
+        base_friction = round((f1 + f2) / 2.0)
+
+        cmp_rel = cmp_1 if cmp_1 == cmp_2 else f"{cmp_1} / {cmp_2}"
+        friendship_status = f"{cmp_rel} ({p1} views {p2}: {nat_1_to_2} | {p2} views {p1}: {nat_2_to_1} + Temp: {tmp_rel})"
+
+    friction_points = base_friction
+
+    # 4. Elemental Compatibility (Tattva)
     element_pair = f"{asc_element} + {moon_element}"
     tattva_harmonic = True
-    tattva_note = ""
 
     if (asc_element == "Fire" and moon_element == "Air") or (asc_element == "Air" and moon_element == "Fire"):
         tattva_status = "Dynamic Resonance"
@@ -306,34 +332,39 @@ def compute_polarity_core(
         friction_points = max(0, friction_points - 15)
     elif (asc_element == "Fire" and moon_element == "Water") or (asc_element == "Water" and moon_element == "Fire"):
         tattva_status = "Severe Clashing (Fire vs Water)"
-        tattva_note = "Water extinguishes Fire / Fire boils Water: internal emotional needs contradict external execution, creating sudden mood swings or emotional burnout."
+        tattva_note = "Water extinguishes Fire / Fire boils Water: internal emotional needs contradict external execution."
         tattva_harmonic = False
-        friction_points = min(100, friction_points + 20)
+        friction_points = min(100, friction_points + 25)
     elif (asc_element == "Fire" and moon_element == "Earth") or (asc_element == "Earth" and moon_element == "Fire"):
         tattva_status = "Smoldering Dissonance"
-        tattva_note = "Earth smothers Fire: impulsive ambitions run into heavy, cautious hesitation."
+        tattva_note = "Earth smothers Fire: impulsive ambitions run into heavy hesitation."
+        tattva_harmonic = False
         friction_points = min(100, friction_points + 10)
     elif (asc_element == "Air" and moon_element == "Earth") or (asc_element == "Earth" and moon_element == "Air"):
         tattva_status = "Dry Friction"
-        tattva_note = "Air vs Earth: abstract conceptual theories clash with stubborn physical realities."
+        tattva_note = "Air vs Earth: abstract concepts clash with physical realities."
+        tattva_harmonic = False
         friction_points = min(100, friction_points + 10)
     elif (asc_element == "Air" and moon_element == "Water") or (asc_element == "Water" and moon_element == "Air"):
         tattva_status = "Turbulent Mist"
-        tattva_note = "Air vs Water: intellectual detachment vaporized by deep tides of feeling, creating mental restlessness."
+        tattva_note = "Air vs Water: intellectual detachment challenged by emotional tides."
+        tattva_harmonic = False
         friction_points = min(100, friction_points + 10)
     else:
         tattva_status = "Neutral Alignment"
         tattva_note = "Balanced environmental exchange."
 
     friction_score = min(100, max(0, friction_points))
-    if friction_score <= 35:
+
+    # Evaluate State based on combined friction and harmony flag
+    if friction_score <= 35 and tattva_harmonic:
         polarity_state = "Harmonic Flow"
         polarity_badge = "success"
         polarity_summary = "External actions seamlessly satisfy internal emotional desires with minimal internal contradiction."
     elif friction_score <= 65:
         polarity_state = "Dynamic Creative Tension"
         polarity_badge = "warning"
-        polarity_summary = "Occasional friction between how you instinctively act and what you privately feel, driving continuous growth and problem-solving."
+        polarity_summary = "Occasional friction between how you instinctively act and what you privately feel, driving continuous growth."
     else:
         polarity_state = "Internal Friction Baseline"
         polarity_badge = "danger"
@@ -347,7 +378,9 @@ def compute_polarity_core(
             "sub_lord": asc_nak_data.get("sub_lord", "--"),
             "group": get_nakshatra_group(asc_nak_name),
             "sign": asc_sign,
+            "tropical_sign": asc_sign,
             "element": asc_element,
+            "sign_element": asc_element,
             "role": "Action / Ahaṃkāra (External Approach & Bodily Vehicle)",
             "lore": asc_lore
         },
@@ -358,7 +391,9 @@ def compute_polarity_core(
             "sub_lord": moon_nak_data.get("sub_lord", "--"),
             "group": get_nakshatra_group(moon_nak_name),
             "sign": moon_sign,
+            "tropical_sign": moon_sign,
             "element": moon_element,
+            "sign_element": moon_element,
             "role": "Perception / Manas (Sensory Mind & Emotional Digest)",
             "lore": moon_lore
         },
@@ -443,12 +478,14 @@ def compute_environmental_tally(
     # D1 physical placement counts (for quick reference)
     elements_count = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
     gunas_count = {"Rajas (Movable)": 0, "Tamas (Fixed)": 0, "Sattva (Dual)": 0}
+    polarity_count = {"Active": 0, "Passive": 0}
     rising_mode_count = {"Shirshodaya": 0, "Prishtodaya": 0, "Ubhayodaya": 0}
     dosha_count = {"Vata": 0, "Pitta": 0, "Kapha": 0}
 
     # Shadvarga-weighted thermodynamic points
     elements_points = {"Fire": 0.0, "Earth": 0.0, "Air": 0.0, "Water": 0.0}
     gunas_points = {"Rajas (Movable)": 0.0, "Tamas (Fixed)": 0.0, "Sattva (Dual)": 0.0}
+    polarity_points = {"Active": 0.0, "Passive": 0.0}
     rising_mode_points = {"Shirshodaya": 0.0, "Prishtodaya": 0.0, "Ubhayodaya": 0.0}
     dosha_points = {"Vata": 0.0, "Pitta": 0.0, "Kapha": 0.0}
 
@@ -469,6 +506,9 @@ def compute_environmental_tally(
 
         guna_d1 = GUNA_MAP.get(d1_sign, "Rajas (Movable)")
         gunas_count[guna_d1] += 1
+
+        pol_d1 = POLARITY_MAP.get(d1_sign, "Active")
+        polarity_count[pol_d1] += 1
 
         rm_d1 = RISING_MODE_MAP.get(d1_sign, "Shirshodaya")
         if "Shirshodaya" in rm_d1:
@@ -504,6 +544,10 @@ def compute_environmental_tally(
             guna = GUNA_MAP.get(v_sign, "Rajas (Movable)")
             gunas_points[guna] += v_contrib
 
+            # Polarity
+            pol = POLARITY_MAP.get(v_sign, "Active")
+            polarity_points[pol] += v_contrib
+
             # Rising Mode
             rm = RISING_MODE_MAP.get(v_sign, "Shirshodaya")
             if "Shirshodaya" in rm:
@@ -523,11 +567,13 @@ def compute_environmental_tally(
 
     tot_elem_pts = sum(elements_points.values()) or 1.0
     tot_guna_pts = sum(gunas_points.values()) or 1.0
+    tot_pol_pts = sum(polarity_points.values()) or 1.0
     tot_rm_pts = sum(rising_mode_points.values()) or 1.0
     tot_dosha_pts = sum(dosha_points.values()) or 1.0
 
     dominant_element = max(elements_points, key=elements_points.get)
     dominant_guna = max(gunas_points, key=gunas_points.get)
+    dominant_polarity = max(polarity_points, key=polarity_points.get)
     dominant_dosha = max(dosha_points, key=dosha_points.get)
 
     # Structured breakdowns for visual bi-directional balance graphs
@@ -590,6 +636,34 @@ def compute_environmental_tally(
             "status": status
         })
 
+    POLARITY_METADATA = [
+        {"key": "Active", "display_name": "Active / Masculine (Odd)", "sanskrit": "Odd / Puruṣa / Day", "icon": "☀️", "accent_color": "#ea580c"},
+        {"key": "Passive", "display_name": "Passive / Feminine (Even)", "sanskrit": "Even / Strī / Night", "icon": "🌙", "accent_color": "#6366f1"}
+    ]
+    expected_pol_baseline = 50.0
+
+    polarity_breakdown = []
+    for meta in POLARITY_METADATA:
+        k = meta["key"]
+        pts = round(polarity_points[k], 2)
+        pct = round((polarity_points[k] / tot_pol_pts) * 100.0, 1)
+        dev = round(pct - expected_pol_baseline, 1)
+        d1_c = polarity_count.get(k, 0)
+        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
+        polarity_breakdown.append({
+            "key": k,
+            "display_name": meta["display_name"],
+            "sanskrit": meta["sanskrit"],
+            "icon": meta["icon"],
+            "accent_color": meta["accent_color"],
+            "points": pts,
+            "d1_count": d1_c,
+            "percentage": pct,
+            "baseline_pct": expected_pol_baseline,
+            "deviation_pct": dev,
+            "status": status
+        })
+
     DOSHAS_METADATA = [
         {"key": "Vata", "display_name": "Vāta (Air)", "sanskrit": "Vāta", "icon": "🌬️", "accent_color": "#0284c7"},
         {"key": "Pitta", "display_name": "Pitta (Fire)", "sanskrit": "Pitta", "icon": "🔥", "accent_color": "#ea580c"},
@@ -634,6 +708,13 @@ def compute_environmental_tally(
             "dominant": dominant_guna,
             "breakdown": gunas_breakdown
         },
+        "polarity": {
+            "counts": polarity_count,
+            "points": {k: round(v, 2) for k, v in polarity_points.items()},
+            "percentages": {k: round((v / tot_pol_pts) * 100.0, 1) for k, v in polarity_points.items()},
+            "dominant": dominant_polarity,
+            "breakdown": polarity_breakdown
+        },
         "rising_modes": {
             "counts": rising_mode_count,
             "points": {k: round(v, 2) for k, v in rising_mode_points.items()},
@@ -648,6 +729,7 @@ def compute_environmental_tally(
         },
         "elements_breakdown": elements_breakdown,
         "gunas_breakdown": gunas_breakdown,
+        "polarity_breakdown": polarity_breakdown,
         "doshas_breakdown": doshas_breakdown,
         "methodology": "Parashari Shadvarga (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1) scaled by Prominence"
     }
@@ -911,6 +993,7 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "dominant_temperament": nak_dominance["dominant_temperament"]["label"] if nak_dominance["dominant_temperament"] else "--",
         "dominant_element": env_tally["elements"]["dominant"],
         "dominant_guna": env_tally["gunas"]["dominant"],
+        "dominant_polarity": env_tally["polarity"]["dominant"],
         "dominant_dosha": env_tally["ayurvedic_doshas"]["dominant"],
         "chart_commander": planetary_rankings["chart_commander"]["planet"] if planetary_rankings["chart_commander"] else "--",
         "commander_prominence": planetary_rankings["chart_commander"]["prominence_score"] if planetary_rankings["chart_commander"] else "--",

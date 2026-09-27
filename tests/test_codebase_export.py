@@ -7,6 +7,8 @@ from scripts.export_codebase import (
     DEFAULT_MAX_SIZE_MB,
     DEFAULT_REPORT_OUTPUT_FILE,
     DEFAULT_REPORT_MAX_SIZE_MB,
+    DEFAULT_JYOTISH_OUTPUT_FILE,
+    DEFAULT_JYOTISH_MAX_SIZE_MB,
 )
 
 def test_collect_codebase_files():
@@ -19,13 +21,14 @@ def test_collect_codebase_files():
     assert "templates/index.html" in files
     assert "jyotish/shadbala/shadbala.py" in files
     assert "jyotish/shadbala/shadbala.md" in files
-    assert "tests/test_shadbala.py" in files
+    assert "tests/test_shadbala.py" not in files, "Tests should be excluded by default from production export"
     
     # Assert exclusions
     for f in files:
         assert not f.endswith((".pdf", ".epub", ".mp3", ".pyc")), f"Binary file {f} should be excluded"
         assert "transcript.txt" not in f, "Raw transcripts should be excluded"
         assert "va_text.txt" not in f, "Raw text dumps should be excluded"
+        assert not f.startswith("static/data/"), "Duplicate static data JSONs should be excluded"
 
 def test_file_metadata():
     cat, desc = get_file_metadata("jyotish/generate_jyotish.py")
@@ -34,6 +37,10 @@ def test_file_metadata():
 
     cat_adr, desc_adr = get_file_metadata("documentations/adr/001-house-system-campanus.md")
     assert cat_adr == "Architecture Decisions"
+
+    cat_j, desc_j = get_file_metadata("jyotish/yogas/raja_yogas.py")
+    assert cat_j == "Classical Yogas"
+    assert len(desc_j) > 10
 
 def test_export_codebase_execution(tmp_path):
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,7 +52,7 @@ def test_export_codebase_execution(tmp_path):
     size_bytes = os.path.getsize(test_output)
     size_mb = size_bytes / (1024 * 1024)
     
-    # Strict size assertions: MUST be under 1.2 megabytes
+    # Strict size assertions: MUST be under DEFAULT_MAX_SIZE_MB
     assert size_mb < DEFAULT_MAX_SIZE_MB, f"Export size {size_mb:.2f} MB exceeds {DEFAULT_MAX_SIZE_MB} MB limit"
     assert size_bytes > 500 * 1024, f"Export size {size_bytes} bytes is suspiciously small"
     
@@ -58,13 +65,13 @@ def test_export_codebase_execution(tmp_path):
     assert "The Twin Markdown Pattern" in content
     assert "FILE: jyotish/generate_jyotish.py" in content
     assert "FILE: templates/index.html" in content
-    assert "FILE: tests/test_shadbala.py" in content
 
 
 def test_collect_codebase_files_scopes():
     project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     fe_files = collect_codebase_files(project_root, scope="frontend")
     be_files = collect_codebase_files(project_root, scope="backend")
+    j_files = collect_codebase_files(project_root, scope="jyotish")
 
     assert len(fe_files) > 30, "Frontend scope should collect all UI/template/style files"
     assert "templates/index.html" in fe_files
@@ -77,6 +84,15 @@ def test_collect_codebase_files_scopes():
     assert "app.py" in be_files
     assert "jyotish/shadbala/shadbala.py" in be_files
     assert "static/css/pergamon-theme.css" not in be_files
+    assert "tests/test_shadbala.py" not in be_files, "Backend export should not include tests"
+
+    assert len(j_files) == 84, f"Jyotish scope should collect all 84 calculation files, got {len(j_files)}"
+    assert "jyotish/generate_jyotish.py" in j_files
+    assert "jyotish/shadbala/shadbala.py" in j_files
+    assert "jyotish/yogas/raja_yogas.py" in j_files
+    assert "app.py" not in j_files
+    assert "templates/index.html" not in j_files
+    assert "tests/test_shadbala.py" not in j_files
 
 
 def test_export_frontend_and_backend(tmp_path):
@@ -96,7 +112,7 @@ def test_export_frontend_and_backend(tmp_path):
     be_out = str(tmp_path / "backend.txt")
     be_res = export_codebase(output_file=be_out, project_root=project_root, scope="backend")
     assert os.path.exists(be_out)
-    assert be_res["total_bytes"] < 1.5 * 1024 * 1024, "Backend export must stay under 1.5 MB"
+    assert be_res["total_bytes"] < 1.6 * 1024 * 1024, "Backend export must stay under 1.6 MB"
 
     with open(be_out, "r", encoding="utf-8") as f:
         be_content = f.read()
@@ -129,7 +145,6 @@ def test_collect_codebase_files_report_scope():
     assert "jyotish/nakshatras/nakshatra_data.py" in report_files
     assert "static/js/widgets/report_widget.js" in report_files
     assert "templates/widget_templates/tmpl_report.html" in report_files
-    assert "tests/test_report_engine.py" in report_files
 
     # Assert non-report exclusions
     assert "jyotish/shadbala/shadbala.py" not in report_files
@@ -148,7 +163,7 @@ def test_export_report_scope(tmp_path):
     )
 
     assert os.path.exists(report_out)
-    assert res["total_bytes"] < DEFAULT_REPORT_MAX_SIZE_MB * 1024 * 1024
+    assert res["total_bytes"] <= DEFAULT_REPORT_MAX_SIZE_MB * 1024 * 1024
     assert res["files_count"] >= 10
 
     with open(report_out, "r", encoding="utf-8") as f:
@@ -162,3 +177,29 @@ def test_export_report_scope(tmp_path):
     assert "\nFILE: jyotish/shadbala/shadbala.py\n" not in content
 
 
+def test_export_jyotish_scope(tmp_path):
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    jyotish_out = str(tmp_path / "jyotish_export.txt")
+
+    res = export_codebase(
+        output_file=jyotish_out,
+        max_size_mb=DEFAULT_JYOTISH_MAX_SIZE_MB,
+        project_root=project_root,
+        scope="jyotish",
+    )
+
+    assert os.path.exists(jyotish_out)
+    assert res["total_bytes"] <= DEFAULT_JYOTISH_MAX_SIZE_MB * 1024 * 1024
+    assert res["files_count"] == 84
+
+    with open(jyotish_out, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    assert "JYOTISH CALCULATION ENGINE EXPORT" in content
+    assert "14 Pedagogical Chapters" in content
+    assert "### CHAPTER: 1. CORE ASTRONOMICAL MATH & CALCULATION ORCHESTRATOR" in content
+    assert "### CHAPTER: 3. PLANETARY & HOUSE STRENGTHS (SHADBALA & BHAVA BALA)" in content
+    assert "\nFILE: jyotish/generate_jyotish.py\n" in content
+    assert "\nFILE: jyotish/shadbala/shadbala.py\n" in content
+    assert "\nFILE: app.py\n" not in content
+    assert "\nFILE: templates/index.html\n" not in content

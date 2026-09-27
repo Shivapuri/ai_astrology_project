@@ -201,6 +201,16 @@
                             <span class="menu-check"></span>
                         </div>
                         <div class="menu-separator"></div>
+                        <div class="menu-header-label">Debilitation Calculation</div>
+                        <div class="menu-row active" data-debilitation-mode="kala_degree" onclick="setDebilitationMode('kala_degree'); updateMenuCheckmarks();">
+                            <span>Kala Degrees (Moon 0-3°, Merc 0-15°)</span>
+                            <span class="menu-check">✓</span>
+                        </div>
+                        <div class="menu-row" data-debilitation-mode="whole_sign" onclick="setDebilitationMode('whole_sign'); updateMenuCheckmarks();">
+                            <span>Traditional Whole-Sign (0-30°)</span>
+                            <span class="menu-check"></span>
+                        </div>
+                        <div class="menu-separator"></div>
                         <div class="menu-header-label">South Indian Display</div>
                         <div class="menu-row active" id="menuRowSiSigns" onclick="toggleSiSignsFromMenu();">
                             <span>Show Signs in Corners</span>

@@ -52,6 +52,7 @@
         if (document.getElementById('expIncD24')?.checked) additionalVargas.push('D24');
 
         const currentNakshatraSystem = window.currentNakshatraSystem || 'ERNST_DHRUVA';
+        const currentDebilitationMode = window.currentDebilitationMode || (window.astraStore && window.astraStore.state.debilitationMode) || 'kala_degree';
 
         const options = {
             preset: preset,
@@ -82,7 +83,8 @@
             include_dasha: true,
             include_vimshopaka: document.getElementById('expIncVimshopaka')?.checked ?? true,
             additional_vargas: additionalVargas,
-            nakshatra_system: currentNakshatraSystem
+            nakshatra_system: currentNakshatraSystem,
+            debilitation_mode: currentDebilitationMode
         };
 
         const nativeId = document.getElementById('editNativeId')?.value || document.getElementById('nativeSelect')?.value;
@@ -91,7 +93,8 @@
             native_id: nativeId,
             chart_data: currentData,
             options: options,
-            nakshatra_system: currentNakshatraSystem
+            nakshatra_system: currentNakshatraSystem,
+            debilitation_mode: currentDebilitationMode
         };
 
         const statusMsg = document.getElementById('exportStatusMsg');
