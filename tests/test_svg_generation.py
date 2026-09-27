@@ -292,6 +292,22 @@ def test_north_equidistant_t_spacing():
     assert get_north_equidistant_t(4) == [0.12, 0.37, 0.63, 0.88]
 
 
+def test_north_indian_kendra_positions():
+    from jyotish.draw_chart import generate_north_indian
+    items = [
+        {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 15, "minute": 0, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    svg_str = generate_north_indian(items, varga_name="D1")
+    # Lagna in H1 track at y=144 (py=144-2=142 for glyph text)
+    assert 'y="142.0"' in svg_str or 'y="142"' in svg_str
+    # Star (Sign glyph) at (250, 226) near center
+    assert 'x="250" y="226" font-size="10.5"' in svg_str
+    # Square (Cusp number) at (250, 202) behind star
+    assert 'x="250" y="202" font-family="sans-serif" font-size="10"' in svg_str
+
+
+
 
 
 

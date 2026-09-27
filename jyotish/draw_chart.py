@@ -1096,36 +1096,36 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     anchor_index = signs_list.index(anchor_sign)
 
     # North Indian Geometry:
-    # - Kendras: 1, 4, 7, 10 (Strictly H or V across waist; sign/cusp at outer apex)
+    # - Kendras: 1, 4, 7, 10 (Strictly H or V across waist, pushed slightly outward; sign/cusp near center medallion)
     # - Outer Triangles: 2, 3, 5, 6, 8, 9, 11, 12 (Strictly H or V along outer border at 44px offset)
     #   Sign (Star) placed in inner corner, Cusp (Square) placed radially outward
     north_house_configs = [
-        # H1 (Top Kendra) - Horizontal line across waist
-        {"type": "kendra", "orientation": "horizontal", "start": (330, 150), "end": (170, 150), "apex": (250, 46), "cusp": (250, 60)},
+        # H1 (Top Kendra) - Horizontal line pushed slightly up (y=144)
+        {"type": "kendra", "orientation": "horizontal", "start": (330, 144), "end": (170, 144), "apex": (250, 226), "cusp": (250, 202)},
         # H2 (Outer Triangle) - Horizontal line near top border (y = 44)
         # Sign (Star) at (140, 120), Cusp (Square) above star at (140, 95)
         {"type": "triangle", "orientation": "horizontal", "start": (215, 44),  "end": (65, 44),   "apex": (140, 120), "cusp": (140, 95)},
         # H3 (Outer Triangle) - Vertical line near left border (x = 44)
         # Sign (Star) at (126, 140), Cusp (Square) left of star at (100, 140)
         {"type": "triangle", "orientation": "vertical",   "start": (44, 65),   "end": (44, 215),  "apex": (126, 140), "cusp": (100, 140)},
-        # H4 (Left Kendra) - Vertical line across waist
-        {"type": "kendra", "orientation": "vertical",   "start": (150, 170), "end": (150, 330), "apex": (46, 250), "cusp": (60, 250)},
+        # H4 (Left Kendra) - Vertical line pushed slightly left (x=144)
+        {"type": "kendra", "orientation": "vertical",   "start": (144, 170), "end": (144, 330), "apex": (226, 250), "cusp": (202, 250)},
         # H5 (Outer Triangle) - Vertical line near left border (x = 44)
         # Sign (Star) at (126, 360), Cusp (Square) left of star at (100, 360)
         {"type": "triangle", "orientation": "vertical",   "start": (44, 285),  "end": (44, 435),  "apex": (126, 360), "cusp": (100, 360)},
         # H6 (Outer Triangle) - Horizontal line near bottom border (y = 456)
         # Sign (Star) at (140, 380), Cusp (Square) below star at (140, 405)
         {"type": "triangle", "orientation": "horizontal", "start": (65, 456),  "end": (215, 456), "apex": (140, 380), "cusp": (140, 405)},
-        # H7 (Bottom Kendra) - Horizontal line across waist
-        {"type": "kendra", "orientation": "horizontal", "start": (170, 350), "end": (330, 350), "apex": (250, 454), "cusp": (250, 440)},
+        # H7 (Bottom Kendra) - Horizontal line pushed slightly down (y=356)
+        {"type": "kendra", "orientation": "horizontal", "start": (170, 356), "end": (330, 356), "apex": (250, 274), "cusp": (250, 298)},
         # H8 (Outer Triangle) - Horizontal line near bottom border (y = 456)
         # Sign (Star) at (360, 380), Cusp (Square) below star at (360, 405)
         {"type": "triangle", "orientation": "horizontal", "start": (285, 456), "end": (435, 456), "apex": (360, 380), "cusp": (360, 405)},
         # H9 (Outer Triangle) - Vertical line near right border (x = 456)
         # Sign (Star) at (374, 360), Cusp (Square) right of star at (400, 360)
         {"type": "triangle", "orientation": "vertical",   "start": (456, 435), "end": (456, 285), "apex": (374, 360), "cusp": (400, 360)},
-        # H10 (Right Kendra) - Vertical line across waist
-        {"type": "kendra", "orientation": "vertical",   "start": (350, 330), "end": (350, 170), "apex": (454, 250), "cusp": (440, 250)},
+        # H10 (Right Kendra) - Vertical line pushed slightly right (x=356)
+        {"type": "kendra", "orientation": "vertical",   "start": (356, 330), "end": (356, 170), "apex": (274, 250), "cusp": (298, 250)},
         # H11 (Outer Triangle) - Vertical line near right border (x = 456)
         # Sign (Star) at (374, 140), Cusp (Square) right of star at (400, 140)
         {"type": "triangle", "orientation": "vertical",   "start": (456, 215), "end": (456, 65),  "apex": (374, 140), "cusp": (400, 140)},
