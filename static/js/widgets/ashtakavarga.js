@@ -21,7 +21,9 @@
         const viewMode = viewSelect ? viewSelect.value : 'raw';
 
         const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Lagna"];
-        const signNames = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+        const signNames = (typeof window !== 'undefined' && window.AstroCatalog)
+            ? window.AstroCatalog.signs.map(s => s.name)
+            : ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
         let grid = (viewMode === 'trikona') ? avData.trikona_shodhana :
                    (viewMode === 'ekadhipatya') ? avData.ekadhipatya_shodhana : avData.bav;
 
@@ -122,7 +124,7 @@
         window.widgetRegistry.register('ashtakavarga', {
             id: 'ashtakavarga',
             title: 'Ashtakavarga & Reductions',
-            icon: '🔢',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateAshtakavargaWidget(container, chartData);

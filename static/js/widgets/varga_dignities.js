@@ -146,7 +146,7 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('dignities', {
         id: 'dignities',
         title: 'Dignities in Vargas',
-        icon: '👑',
+        icon: '',
         category: 'Dignity',
         render: function(container, chartData, options) {
             updateVargaDignitiesTable(container, chartData);

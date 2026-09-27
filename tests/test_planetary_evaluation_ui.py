@@ -23,7 +23,7 @@ def check_server():
         pytest.skip("Flask server is not running on port 5001")
 
 def init_page(page: Page):
-    page.goto(FLASK_URL)
+    page.goto(FLASK_URL, wait_until="domcontentloaded")
     page.wait_for_timeout(800)
     page.evaluate(f"loadChart('{CHART_ID}')")
     page.wait_for_timeout(1200)
@@ -59,7 +59,7 @@ def test_planetary_evaluation_math_drawer_toggle(page: Page):
     # Verify drawer is now displayed
     drawer = page.locator("#cell2 .eval-calc-drawer-row").first
     assert drawer.is_visible()
-    assert "📐" in drawer.inner_text()
+    assert "Step-by-Step Calculation" in drawer.inner_text()
     assert "Base" in drawer.inner_text()
 
 def test_planetary_evaluation_floating_modal(page: Page):

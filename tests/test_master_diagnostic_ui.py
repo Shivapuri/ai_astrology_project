@@ -28,7 +28,7 @@ def check_server():
 
 
 def init_page(page: Page):
-    page.goto(FLASK_URL)
+    page.goto(FLASK_URL, wait_until="domcontentloaded")
     page.wait_for_function("typeof loadChart === 'function'")
     page.evaluate(f"loadChart('{CHART_ID}')")
     page.wait_for_function("typeof currentChartData !== 'undefined' && currentChartData !== null && currentChartData.planetary_evaluation")

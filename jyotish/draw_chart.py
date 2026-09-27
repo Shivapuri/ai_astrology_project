@@ -6,6 +6,8 @@ from jyotish.relationships.relationships import (
     get_temporary_relationship, SIGN_LORDS
 )
 
+ASTRO_FONT_STACK = '"STIX Two Math", "Cambria Math", "DejaVu Sans", "Noto Sans Symbols 2", "Apple Symbols", "Segoe UI Symbol", sans-serif'
+
 planet_notations = {
     "Lagna": {
         "symbol": "Asc",
@@ -15,7 +17,7 @@ planet_notations = {
         "full_en": "Ascendant",
         "full_sa": "Lagna",
         "dev_full": "लग्न",
-        "color": "#a93226"
+        "color": "#0284c7"
     },
     "Sun": {
         "symbol": "☉\uFE0E",
@@ -25,7 +27,7 @@ planet_notations = {
         "full_en": "Sun",
         "full_sa": "Sūrya",
         "dev_full": "सूर्य",
-        "color": "#d35400"
+        "color": "#ea580c"
     },
     "Moon": {
         "symbol": "☽\uFE0E",
@@ -35,7 +37,7 @@ planet_notations = {
         "full_en": "Moon",
         "full_sa": "Chandra",
         "dev_full": "चन्द्र",
-        "color": "#4a5568"
+        "color": "#475569"
     },
     "Mars": {
         "symbol": "♂\uFE0E",
@@ -45,7 +47,7 @@ planet_notations = {
         "full_en": "Mars",
         "full_sa": "Mangala",
         "dev_full": "मङ्गल",
-        "color": "#c0392b"
+        "color": "#dc2626"
     },
     "Mercury": {
         "symbol": "☿\uFE0E",
@@ -55,7 +57,7 @@ planet_notations = {
         "full_en": "Mercury",
         "full_sa": "Budha",
         "dev_full": "बुध",
-        "color": "#1e824c"
+        "color": "#16a34a"
     },
     "Jupiter": {
         "symbol": "♃\uFE0E",
@@ -65,7 +67,7 @@ planet_notations = {
         "full_en": "Jupiter",
         "full_sa": "Guru",
         "dev_full": "गुरु",
-        "color": "#b7791f"
+        "color": "#d97706"
     },
     "Venus": {
         "symbol": "♀\uFE0E",
@@ -75,7 +77,7 @@ planet_notations = {
         "full_en": "Venus",
         "full_sa": "Śukra",
         "dev_full": "शुक्र",
-        "color": "#8d6e63"
+        "color": "#db2777"
     },
     "Saturn": {
         "symbol": "♄\uFE0E",
@@ -85,7 +87,7 @@ planet_notations = {
         "full_en": "Saturn",
         "full_sa": "Śani",
         "dev_full": "शनि",
-        "color": "#2c3e50"
+        "color": "#334155"
     },
     "Rahu": {
         "symbol": "☊\uFE0E",
@@ -95,7 +97,7 @@ planet_notations = {
         "full_en": "North Node",
         "full_sa": "Rāhu",
         "dev_full": "राहु",
-        "color": "#5d6d7e"
+        "color": "#4f46e5"
     },
     "Ketu": {
         "symbol": "☋\uFE0E",
@@ -105,7 +107,37 @@ planet_notations = {
         "full_en": "South Node",
         "full_sa": "Ketu",
         "dev_full": "केतु",
-        "color": "#34495e"
+        "color": "#78716c"
+    },
+    "Uranus": {
+        "symbol": "♅\uFE0E",
+        "english": "Ur",
+        "devanagari": "यू",
+        "translit": "Ur",
+        "full_en": "Uranus",
+        "full_sa": "Harṣala",
+        "dev_full": "हर्षल",
+        "color": "#0284c7"
+    },
+    "Neptune": {
+        "symbol": "♆\uFE0E",
+        "english": "Ne",
+        "devanagari": "ने",
+        "translit": "Ne",
+        "full_en": "Neptune",
+        "full_sa": "Varuṇa",
+        "dev_full": "वरुण",
+        "color": "#0d9488"
+    },
+    "Pluto": {
+        "symbol": "♇\uFE0E",
+        "english": "Pl",
+        "devanagari": "प्ल",
+        "translit": "Pl",
+        "full_en": "Pluto",
+        "full_sa": "Yama",
+        "dev_full": "यम",
+        "color": "#7c3aed"
     }
 }
 
@@ -403,22 +435,23 @@ def generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode="sy
             center_x = cx + col_w / 2
             center_y = ry + row_h / 2
 
+            font_fam = ASTRO_FONT_STACK if mode == "symbol" else "sans-serif"
             if not items_to_render:
                 svg += f'    <g><title>{tooltip_str}</title><rect x="{cx}" y="{ry}" width="{col_w}" height="{row_h}" fill="transparent"/></g>\n'
             elif len(items_to_render) == 1:
                 tspan_str = render_tspan(items_to_render[0][0], items_to_render[0][1], 11.5)
-                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family={font_fam} font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{tspan_str}</text></g>\n'
             elif len(items_to_render) == 2:
                 tspan_str = "  ".join([render_tspan(g, n, 10.5) for g, n in items_to_render])
-                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family={font_fam} font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{tspan_str}</text></g>\n'
             elif len(items_to_render) == 3:
                 tspan_str = " ".join([render_tspan(g, n, 9.5) for g, n in items_to_render])
-                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{tspan_str}</text></g>\n'
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y}" font-family={font_fam} font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{tspan_str}</text></g>\n'
             else:
                 mid = (len(items_to_render) + 1) // 2
                 line1 = " ".join([render_tspan(g, n, 8.5) for g, n in items_to_render[:mid]])
                 line2 = " ".join([render_tspan(g, n, 8.5) for g, n in items_to_render[mid:]])
-                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y - 5}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{line1}</text><text x="{center_x}" y="{center_y + 6}" font-family="sans-serif" font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central">{line2}</text></g>\n'
+                svg += f'    <g><title>{tooltip_str}</title><text x="{center_x}" y="{center_y - 5}" font-family={font_fam} font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{line1}</text><text x="{center_x}" y="{center_y + 6}" font-family={font_fam} font-weight="bold" fill="{elem_color}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{line2}</text></g>\n'
 
     # 4. Grid lines
     svg += f'    <line x1="189" y1="157" x2="189" y2="261" stroke="#d5c8b2" stroke-width="0.8"/>\n'
@@ -428,7 +461,7 @@ def generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode="sy
     svg += f'    <line x1="149" y1="235" x2="269" y2="235" stroke="#d5c8b2" stroke-width="0.8"/>\n'
     svg += f'    <rect x="149" y="157" width="120" height="104" fill="none" stroke="#b59472" stroke-width="1"/>\n'
 
-    svg += '    <text x="200" y="281" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to view Kalapurusha Anatomy ➔</text>\n'
+    svg += '    <text x="200" y="281" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to view Kalapurusha Anatomy →</text>\n'
     svg += '  </g>\n'
 
     # VIEW 3: KALAPURUSHA ANATOMY
@@ -468,7 +501,7 @@ def generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode="sy
 
     svg += f'    <rect x="102" y="268" width="196" height="16" fill="#eae1d1"/>\n'
     svg += f'    <text x="200" y="280" font-family="sans-serif" font-size="8" font-weight="bold" fill="#4a3325" text-anchor="middle">Active: {len(active_regions)}/12 Body Limbs</text>\n'
-    svg += '    <text x="200" y="294" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to return to Title ➔</text>\n'
+    svg += '    <text x="200" y="294" font-family="sans-serif" font-size="7.5" fill="#8c7b64" text-anchor="middle">Click to return to Title →</text>\n'
     svg += '  </g>\n'
 
     svg += '</g>\n'
@@ -483,6 +516,10 @@ def get_aspect_defs_svg():
         '  <defs>\n'
         '    <style>\n'
         '      .aspects-hidden:not(.aspects-filtered) .aspect-lines { display: none; }\n'
+        '      .zodiac-line-glyph, .natal-sign-glyph, .outer-sign-glyph, .sub-sign-symbol, .glyph-symbol, .graha-glyph {\n'
+        f'        font-family: {ASTRO_FONT_STACK} !important;\n'
+        '        font-variant-emoji: text !important;\n'
+        '      }\n'
         '    </style>\n'
         '    <marker id="arrow-benefic" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/></marker>\n'
         '    <marker id="arrow-exalted" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#D4AC0D"/></marker>\n'
@@ -719,7 +756,7 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
                 badge_y = round((t_inv ** 2) * y1_arr + 2 * t_inv * t * cy + (t ** 2) * y2_arr, 1)
                 
             tip = (
-                f"{name_from} ➔ {name_to}: {vir_round} Virūpas ({deg_round}° separation)\n"
+                f"{name_from} → {name_to}: {vir_round} Virūpas ({deg_round}° separation)\n"
                 f"• Rule: {rule_exp}\n"
                 f"• Potency: {vir_round} / 60 Virūpas\n"
                 f"• Influence: {nature_label}\n"
@@ -828,7 +865,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
 
         # Draw Rasi Sign (Inner Corner)
         s_sym, s_col, _ = sign_symbols[sign]
-        svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family="sans-serif" font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
+        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family={ASTRO_FONT_STACK} font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
 
         # If this is anchor sign for non-Lagna root, draw the diagonal badge
         if root_planet != "Lagna" and sign == anchor_sign:
@@ -898,14 +935,12 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
-            font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
-            extra_stroke = ""
-            if mode == "symbol" and p["name"] in ["Mars", "Venus"]:
-                font_sz = "16"
-                extra_stroke = f' stroke="{info["color"]}" stroke-width="0.8" paint-order="stroke fill"'
+            font_sz = "18" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+            glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
+            font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
             
-            svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py - 2}" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}"{extra_stroke} text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+            svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family={font_fam} font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 14}" font-family="sans-serif" font-size="10" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
@@ -949,15 +984,41 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     return svg
 
 def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree"):
-    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg = '<svg width="100%" height="100%" viewBox="0 0 500 500" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
-    svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="200" y1="0" x2="400" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
+    # Parchment Ground
+    svg += '<rect width="500" height="500" fill="#fffdfa"/>\n'
+
+    # Crisp Double Outer Square (Clean edges, no outer rounding)
+    svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
+    svg += '<rect x="19" y="19" width="462" height="462" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
+
+    # 4 Diagonal Spines from Corners to Inner Cusp Vertices
+    svg += '<line x1="19" y1="19" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="481" y1="19" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="19" y1="481" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="481" y1="481" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+
+    # Diagonal Spines from Cusp Vertices to Center
+    svg += '<line x1="148" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="352" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="148" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="352" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+
+    # Central Lotus Kendra Petals (Convex Belly Splines)
+    svg += '<g stroke="#3e2819" stroke-width="1.5" fill="none" stroke-linecap="round">\n'
+    svg += '  <path d="M 250 19 C 224 55, 150 78, 148 148"/>\n'
+    svg += '  <path d="M 250 19 C 276 55, 350 78, 352 148"/>\n'
+    svg += '  <path d="M 19 250 C 55 224, 78 150, 148 148"/>\n'
+    svg += '  <path d="M 19 250 C 55 276, 78 350, 148 352"/>\n'
+    svg += '  <path d="M 250 481 C 224 445, 150 422, 148 352"/>\n'
+    svg += '  <path d="M 250 481 C 276 445, 350 422, 352 352"/>\n'
+    svg += '  <path d="M 481 250 C 445 224, 422 150, 352 148"/>\n'
+    svg += '  <path d="M 481 250 C 445 276, 422 350, 352 352"/>\n'
+    svg += '</g>\n'
+
+    # Center Bindu Medallion Ring
+    svg += '<circle cx="250" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
 
     anchor_item = next((it for it in items if it.get("name") == root_planet), None)
     if not anchor_item:
@@ -966,20 +1027,20 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     anchor_index = signs_list.index(anchor_sign)
 
     ni_centers = [
-        (200, 100), (100, 45),  (48, 100),  (100, 200),
-        (48, 300),  (100, 355), (200, 300), (300, 355),
-        (352, 300), (300, 200), (352, 100), (300, 45)
+        (250, 125), (125, 58),  (60, 125),  (125, 250),
+        (60, 375),  (125, 442), (250, 375), (375, 442),
+        (440, 375), (375, 250), (440, 125), (375, 58)
     ]
     sign_pos = [
-        (200, 175), (145, 25),  (25, 145),  (175, 200),
-        (25, 255),  (145, 375), (200, 225), (255, 375),
-        (375, 255), (225, 200), (375, 145), (255, 25)
+        (250, 218), (180, 35),  (35, 180),  (218, 250),
+        (35, 320),  (180, 465), (250, 282), (320, 465),
+        (465, 320), (282, 250), (465, 180), (320, 35)
     ]
 
     # Header label in House 1 if non-Lagna root
     if root_planet != "Lagna":
         badge_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else root_planet)
-        svg += f'<text x="200" y="24" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C0392B" text-anchor="middle">{badge_title}</text>\n'
+        svg += f'<text x="250" y="34" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C0392B" text-anchor="middle">{badge_title}</text>\n'
 
     items_by_house = [[] for _ in range(12)]
     
@@ -998,19 +1059,19 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "is_retrograde": item.get("is_retrograde", False)
             })
 
-    ni_polys = [
-        "200,0 100,100 200,200 300,100",  # H1 (top diamond)
-        "0,0 200,0 100,100",              # H2 (top left triangle)
-        "0,0 100,100 0,200",              # H3 (left top triangle)
-        "0,200 100,100 200,200 100,300",  # H4 (left diamond)
-        "0,200 100,300 0,400",            # H5 (left bottom triangle)
-        "0,400 100,300 200,400",          # H6 (bottom left triangle)
-        "200,200 100,300 200,400 300,300",# H7 (bottom diamond)
-        "200,400 300,300 400,400",        # H8 (bottom right triangle)
-        "400,400 300,300 400,200",        # H9 (right bottom triangle)
-        "200,200 300,100 400,200 300,300",# H10 (right diamond)
-        "400,200 300,100 400,0",          # H11 (right top triangle)
-        "400,0 300,100 200,0"             # H12 (top right triangle)
+    ni_paths = [
+        "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
+        "M 19 19 L 250 19 C 224 55, 150 78, 148 148 L 19 19 Z",
+        "M 19 19 L 148 148 C 78 150, 55 224, 19 250 L 19 19 Z",
+        "M 19 250 C 55 224, 78 150, 148 148 L 250 250 L 148 352 C 78 350, 55 276, 19 250 Z",
+        "M 19 250 C 55 276, 78 350, 148 352 L 19 481 L 19 250 Z",
+        "M 19 481 L 148 352 C 150 422, 224 445, 250 481 L 19 481 Z",
+        "M 250 481 C 224 445, 150 422, 148 352 L 250 250 L 352 352 C 350 422, 276 445, 250 481 Z",
+        "M 250 481 C 276 445, 350 422, 352 352 L 481 481 L 250 481 Z",
+        "M 481 481 L 352 352 C 422 350, 445 276, 481 250 L 481 481 Z",
+        "M 481 250 C 445 224, 422 150, 352 148 L 250 250 L 352 352 C 422 350, 445 276, 481 250 Z",
+        "M 481 19 L 481 250 C 445 224, 422 150, 352 148 L 481 19 Z",
+        "M 481 19 L 352 148 C 350 78, 276 55, 250 19 L 481 19 Z"
     ]
 
     for h in range(12):
@@ -1018,11 +1079,11 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         sign = signs_list[s_idx]
         s_sym, s_col, _ = sign_symbols[sign]
         
-        # Background hit polygon for interactive sign selection and highlighting
-        svg += f'<polygon class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h + 1}" points="{ni_polys[h]}" fill="transparent" style="cursor: pointer;"><title>House {h + 1} ({sign})</title></polygon>\n'
+        # Background hit path for interactive sign selection and highlighting
+        svg += f'<path class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h + 1}" d="{ni_paths[h]}" fill="transparent" style="cursor: pointer;"><title>House {h + 1} ({sign})</title></path>\n'
 
         sx, sy = sign_pos[h]
-        svg += f'<text class="interactive" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
+        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="14" font-family={ASTRO_FONT_STACK} fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
 
         cx, cy = ni_centers[h]
         house_items = items_by_house[h]
@@ -1046,18 +1107,16 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             })
             label = info.get(mode, info["symbol"])
             if len(planets) > 4:
-                font_sz = "16" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
+                font_sz = "15" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
                 deg_sz = "9"
                 retro_sz = "8"
             else:
-                font_sz = "20" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+                font_sz = "18" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
                 deg_sz = "10"
                 retro_sz = "9"
             
-            extra_stroke = ""
-            if mode == "symbol" and p["name"] in ["Mars", "Venus"]:
-                font_sz = "16"
-                extra_stroke = f' stroke="{info["color"]}" stroke-width="0.8" paint-order="stroke fill"'
+            glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
+            font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
                 
             dev_name = info.get('dev_full', '')
             is_retro = p.get("is_retrograde", False)
@@ -1065,8 +1124,8 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
-            svg += f'<g class="interactive" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{info["color"]}"{extra_stroke}>{label}</text>\n'
+            svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family={font_fam} font-size="{font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 14}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
@@ -1127,40 +1186,63 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     return svg
 
 def generate_bhava_chalita_north(bhavas, mode="symbol"):
-    svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
-    svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="0" y1="0" x2="400" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="400" y1="0" x2="0" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="200" y1="0" x2="400" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="400" y1="200" x2="200" y2="400" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="200" y1="400" x2="0" y2="200" stroke="#5C4433" stroke-width="2"/>\n'
-    svg += '<line x1="0" y1="200" x2="200" y2="0" stroke="#5C4433" stroke-width="2"/>\n'
+    svg = '<svg width="100%" height="100%" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg += '<rect width="500" height="500" fill="#fffdfa"/>\n'
+    svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
+    svg += '<rect x="19" y="19" width="462" height="462" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
+
+    # 4 Diagonal Spines from Corners to Inner Cusp Vertices
+    svg += '<line x1="19" y1="19" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="481" y1="19" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="19" y1="481" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="481" y1="481" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+
+    # Diagonal Spines from Cusp Vertices to Center
+    svg += '<line x1="148" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="352" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="148" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += '<line x1="352" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+
+    # Central Lotus Kendra Petals (Convex Belly Splines)
+    svg += '<g stroke="#3e2819" stroke-width="1.5" fill="none" stroke-linecap="round">\n'
+    svg += '  <path d="M 250 19 C 224 55, 150 78, 148 148"/>\n'
+    svg += '  <path d="M 250 19 C 276 55, 350 78, 352 148"/>\n'
+    svg += '  <path d="M 19 250 C 55 224, 78 150, 148 148"/>\n'
+    svg += '  <path d="M 19 250 C 55 276, 78 350, 148 352"/>\n'
+    svg += '  <path d="M 250 481 C 224 445, 150 422, 148 352"/>\n'
+    svg += '  <path d="M 250 481 C 276 445, 350 422, 352 352"/>\n'
+    svg += '  <path d="M 481 250 C 445 224, 422 150, 352 148"/>\n'
+    svg += '  <path d="M 481 250 C 445 276, 422 350, 352 352"/>\n'
+    svg += '</g>\n'
+
+    # Center Bindu Medallion Ring
+    svg += '<circle cx="250" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
     
     ni_centers = [
-        (200, 100), (100, 45),  (48, 100),  (100, 200),
-        (48, 300),  (100, 355), (200, 300), (300, 355),
-        (352, 300), (300, 200), (352, 100), (300, 45)
+        (250, 125), (125, 58),  (60, 125),  (125, 250),
+        (60, 375),  (125, 442), (250, 375), (375, 442),
+        (440, 375), (375, 250), (440, 125), (375, 58)
     ]
     
     sign_pos = [
-        (200, 175), (145, 25),  (25, 145),  (175, 200),
-        (25, 255),  (145, 375), (200, 225), (255, 375),
-        (375, 255), (225, 200), (375, 145), (255, 25)
+        (250, 218), (180, 35),  (35, 180),  (218, 250),
+        (35, 320),  (180, 465), (250, 282), (320, 465),
+        (465, 320), (282, 250), (465, 180), (320, 35)
     ]
     
-    ni_polys = [
-        "200,0 100,100 200,200 300,100",  # H1 (top diamond)
-        "0,0 200,0 100,100",              # H2 (top left triangle)
-        "0,0 100,100 0,200",              # H3 (left top triangle)
-        "0,200 100,100 200,200 100,300",  # H4 (left diamond)
-        "0,200 100,300 0,400",            # H5 (left bottom triangle)
-        "0,400 100,300 200,400",          # H6 (bottom left triangle)
-        "200,200 100,300 200,400 300,300",# H7 (bottom diamond)
-        "200,400 300,300 400,400",        # H8 (bottom right triangle)
-        "400,400 300,300 400,200",        # H9 (right bottom triangle)
-        "200,200 300,100 400,200 300,300",# H10 (right diamond)
-        "400,200 300,100 400,0",          # H11 (right top triangle)
-        "400,0 300,100 200,0"             # H12 (top right triangle)
+    ni_paths = [
+        "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
+        "M 19 19 L 250 19 C 224 55, 150 78, 148 148 L 19 19 Z",
+        "M 19 19 L 148 148 C 78 150, 55 224, 19 250 L 19 19 Z",
+        "M 19 250 C 55 224, 78 150, 148 148 L 250 250 L 148 352 C 78 350, 55 276, 19 250 Z",
+        "M 19 250 C 55 276, 78 350, 148 352 L 19 481 L 19 250 Z",
+        "M 19 481 L 148 352 C 150 422, 224 445, 250 481 L 19 481 Z",
+        "M 250 481 C 224 445, 150 422, 148 352 L 250 250 L 352 352 C 350 422, 276 445, 250 481 Z",
+        "M 250 481 C 276 445, 350 422, 352 352 L 481 481 L 250 481 Z",
+        "M 481 481 L 352 352 C 422 350, 445 276, 481 250 L 481 481 Z",
+        "M 481 250 C 445 224, 422 150, 352 148 L 250 250 L 352 352 C 422 350, 445 276, 481 250 Z",
+        "M 481 19 L 481 250 C 445 224, 422 150, 352 148 L 481 19 Z",
+        "M 481 19 L 352 148 C 350 78, 276 55, 250 19 L 481 19 Z"
     ]
     
     for h_idx in range(12):
@@ -1171,10 +1253,10 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
         sign_idx = int(cusp_lon // 30)
         s_sym, s_col, _ = sign_symbols[signs_list[sign_idx]]
         
-        svg += f'<polygon class="interactive sign-cell-bg" data-type="sign" data-id="{signs_list[sign_idx]}" data-house="{h_idx + 1}" points="{ni_polys[h_idx]}" fill="transparent" style="cursor: pointer;"><title>House {h_idx + 1} ({signs_list[sign_idx]})</title></polygon>\n'
+        svg += f'<path class="interactive sign-cell-bg" data-type="sign" data-id="{signs_list[sign_idx]}" data-house="{h_idx + 1}" d="{ni_paths[h_idx]}" fill="transparent" style="cursor: pointer;"><title>House {h_idx + 1} ({signs_list[sign_idx]})</title></path>\n'
         
         sx, sy = sign_pos[h_idx]
-        svg += f'<text class="interactive" data-type="sign" data-id="{signs_list[sign_idx]}" x="{sx}" y="{sy}" font-size="14" font-family="sans-serif" fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
+        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{signs_list[sign_idx]}" x="{sx}" y="{sy}" font-size="14" font-family={ASTRO_FONT_STACK} fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
 
         items_in_house = bhava["planets"]
         
@@ -1194,15 +1276,16 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
                 "color": "#000"
             })
             label = info.get(mode, info["symbol"])
-            font_sz = "24" if (mode == "symbol" and p_name != "Lagna") else ("16" if mode == "devanagari" else "14")
+            glyph_cls = "graha-glyph" if mode == "symbol" and p_name != "Lagna" else ""
+            font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p_name != "Lagna") else "sans-serif"
+            font_sz = "20" if (mode == "symbol" and p_name != "Lagna") else ("16" if mode == "devanagari" else "14")
             tooltip = f"{info['full_sa']} ({info['full_en']})"
             
-            svg += f'<g class="interactive" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif">\n'
-            svg += f'  <tspan font-size="{font_sz}" font-weight="bold" fill="{info["color"]}">{label}</tspan>\n'
-            svg += f'</text></g>\n'
+            svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+            svg += f'<text class="{glyph_cls}" x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family={font_fam} font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text></g>\n'
             curr_y += item_height
 
+    svg += get_aspect_defs_svg()
     svg += "</svg>\n"
     return svg
 

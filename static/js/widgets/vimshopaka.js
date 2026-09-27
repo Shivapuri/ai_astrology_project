@@ -71,7 +71,7 @@
                     title = vData.vaisheshikamsa.Shodasavarga[p].honorific || '-';
                 }
                 const honorTip = `<strong>${p} — Vaiśeṣikāṁśa Title: ${title}</strong><br>Conferred for exceptional dignity across multiple harmonic divisions. Bestows royal honor, lasting respect, and distinct capability.`;
-                html += `<td class="tooltip-target" data-tooltip="${honorTip}" style="cursor:help;"><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:8px;">${title}</span></td>`;
+                html += `<td class="tooltip-target" data-tooltip="${honorTip}" style="cursor:help;"><span class="badge" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:12px;">${title}</span></td>`;
             });
 
             trHonor.innerHTML = html;
@@ -83,7 +83,7 @@
         window.widgetRegistry.register('vimshopaka', {
             id: 'vimshopaka',
             title: 'Varga Vimshopaka (20pt)',
-            icon: '⭐',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateVimshopakaWidget(container, chartData);

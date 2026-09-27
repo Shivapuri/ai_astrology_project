@@ -775,7 +775,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
 
         if (isOccupied) {
             occupancyBadge = `
-                <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; background:#eff6ff; color:#1d4ed8; border:1.5px solid #bfdbfe; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(37,99,235,0.1);">
+                <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:12px; background:#eff6ff; color:#1d4ed8; border:1.5px solid #bfdbfe; display:inline-flex; align-items:center; gap:4px; box-shadow:0 1px 2px rgba(37,99,235,0.1);">
                     ★ Occupied: ${occupants.join(', ')}
                 </span>
             `;
@@ -800,7 +800,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
                                 — <em>${sInfo.title || ''}</em>
                             </span>
                         </div>
-                        <div style="font-size:11.5px; color:#64748b; margin-top:2px;">
+                        <div style="font-size:12px; color:#64748b; margin-top:2px;">
                             <strong>Span:</strong> ${sInfo.span || '--'} • <strong>Deity &amp; Symbol:</strong> ${sInfo.deity_symbol || '--'}
                         </div>
                     </div>
@@ -812,7 +812,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
                     <!-- Positive Qualities -->
                     <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:5px; padding:8px 10px;">
                         <div style="font-size:12px; font-weight:700; color:#15803d; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                            <span>✨</span> (+) Integrated / Favorable
+                            <span></span> (+) Integrated / Favorable
                         </div>
                         <ul style="margin:0; padding-left:16px; font-size:12px; color:#14532d; line-height:1.4; display:flex; flex-direction:column; gap:3px;">
                             ${positivesList}
@@ -822,7 +822,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
                     <!-- Negative Qualities -->
                     <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:5px; padding:8px 10px;">
                         <div style="font-size:12px; font-weight:700; color:#b91c1c; margin-bottom:4px; display:flex; align-items:center; gap:5px;">
-                            <span>⚠️</span> (-) Shadow / When Afflicted
+                            <span>️</span> (-) Shadow / When Afflicted
                         </div>
                         <ul style="margin:0; padding-left:16px; font-size:12px; color:#7f1d1d; line-height:1.4; display:flex; flex-direction:column; gap:3px;">
                             ${negativesList}
@@ -843,7 +843,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
                         <span style="font-family:Georgia, serif; font-size:16px; font-weight:800; color:#0f172a;">
                             ${label} (${sanskrit}) Class
                         </span>
-                        <span style="font-size:11.5px; font-weight:700; padding:2px 8px; border-radius:12px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder};">
+                        <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:12px; background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder};">
                             ${badgeIcon} ${status} (${pct}%)
                         </span>
                     </div>
@@ -854,7 +854,7 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
                 <div style="display:flex; align-items:center; gap:10px;">
                     <div style="text-align:right;">
                         <span style="font-size:13.5px; font-weight:700; color:#1e293b;">${pts} pts</span>
-                        <div style="font-size:11px; color:#64748b;">${dev >= 0 ? '+' : ''}${dev}% vs baseline (14.3%)</div>
+                        <div style="font-size:12px; color:#64748b;">${dev >= 0 ? '+' : ''}${dev}% vs baseline (14.3%)</div>
                     </div>
                     <button type="button" onclick="selectTemperamentDossier('${group}')" style="background:transparent; border:none; color:#94a3b8; cursor:pointer; font-size:15px; padding:2px 6px; line-height:1; border-radius:4px;" title="Close Dossier">✕</button>
                 </div>
@@ -872,8 +872,8 @@ function renderTemperamentDrawerHtml(group, tbItem, chartData) {
         <!-- Tier 2: Star-by-Star Micro Dossier -->
         <div style="margin-top:14px;">
             <div style="font-family:Georgia, serif; font-size:14px; font-weight:700; color:#1e293b; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px;">
-                <span>✨ Constituent Stars in this Group (${starsList.length})</span>
-                <span style="font-size:11.5px; font-weight:600; color:#64748b;">Micro Dossier &amp; Natal Occupancy</span>
+                <span>Constituent Stars in this Group (${starsList.length})</span>
+                <span style="font-size:12px; font-weight:600; color:#64748b;">Micro Dossier &amp; Natal Occupancy</span>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:12px;">
                 ${starCardsHtml}
@@ -1061,7 +1061,7 @@ function updateReportWidget(cell, chartData) {
             <div style="background:${badgeBg}; border:1.5px solid ${borderColor}; border-radius:6px; padding:10px 14px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:15px; font-weight:700; color:#1e293b;">⚡ Polarity Core: ${rel.state}</span>
+                        <span style="font-size:15px; font-weight:700; color:#1e293b;"> Polarity Core: ${rel.state}</span>
                         <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:12px; background:${badgeColor}; color:#ffffff;">Friction: ${rel.friction_score}/100</span>
                     </div>
                     <div style="font-size:12.5px; font-weight:600; color:#475569;">
@@ -1084,7 +1084,7 @@ function updateReportWidget(cell, chartData) {
             <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #2563eb; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px; height:100%;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
-                        <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#2563eb; letter-spacing:0.5px;">🚩 Ascendant Star (Ahaṃkāra / Bodily Action)</div>
+                        <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#2563eb; letter-spacing:0.5px;"> Ascendant Star (Ahaṃkāra / Bodily Action)</div>
                         <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${a.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${a.pada} • Tropical ${a.sign} [${a.element}])</span></div>
                     </div>
                     <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe;">${a.group} Class</span>
@@ -1114,7 +1114,7 @@ function updateReportWidget(cell, chartData) {
             <div style="background:#ffffff; border:1px solid #e2e8f0; border-left:4px solid #7c3aed; border-radius:6px; padding:12px; display:flex; flex-direction:column; gap:8px; height:100%;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                     <div>
-                        <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#7c3aed; letter-spacing:0.5px;">🌙 Moon Star (Manas / Sensory Mind &amp; Feeling)</div>
+                        <div style="font-size:12px; font-weight:700; text-transform:uppercase; color:#7c3aed; letter-spacing:0.5px;"> Moon Star (Manas / Sensory Mind &amp; Feeling)</div>
                         <div style="font-size:16px; font-weight:800; color:#0f172a; margin-top:2px;">${m.name} <span style="font-size:13px; font-weight:600; color:#64748b;">(Pada ${m.pada} • Tropical ${m.sign} [${m.element}])</span></div>
                     </div>
                     <span style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe;">${m.group} Class</span>
@@ -1144,7 +1144,7 @@ function updateReportWidget(cell, chartData) {
         let rowsHtml = '';
         nakDominance.leaderboard.forEach(item => {
             const occBadges = item.occupants.map(o => {
-                const promTag = (o.prominence && o.prominence !== 1.0) ? ` <span style="font-weight:600; color:#64748b; font-size:11px;">(P:${o.prominence})</span>` : '';
+                const promTag = (o.prominence && o.prominence !== 1.0) ? ` <span style="font-weight:600; color:#64748b; font-size:12px;">(P:${o.prominence})</span>` : '';
                 return `<span style="font-weight:700; background:#e2e8f0; color:#1e293b; padding:1px 6px; border-radius:3px; font-size:12px;">${o.entity} ${o.weight}pt${promTag}</span>`;
             }).join(' ');
             
@@ -1169,7 +1169,7 @@ function updateReportWidget(cell, chartData) {
 
         domContainer.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <span style="font-size:14px; font-weight:700; color:#1e293b;">📊 Nakshatra Dominance Leaderboard</span>
+                <span style="font-size:14px; font-weight:700; color:#1e293b;"> Nakshatra Dominance Leaderboard</span>
                 <span style="font-size:12px; color:#64748b;">Prominence-Scaled Occupancy: Moon=8×P • Lagna=4pt • Sun=2×P • Grahas=1×P</span>
             </div>
             ${rowsHtml}
@@ -1219,8 +1219,8 @@ function updateReportWidget(cell, chartData) {
                      title="${rawTitleText.replace(/"/g, '&quot;')}"
                      onclick="selectTemperamentDossier('${t.group}')"
                      style="flex: ${Math.max(t.percentage, 7)}; min-height:${minH}; background:${cardBg}; color:${cardText}; border:${border}; border-radius:6px; padding:4px 6px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; cursor:pointer; transition:all 0.2s ease; user-select:none;">
-                    <span style="font-size:11.5px; font-weight:700; white-space:nowrap;">${t.display_name}</span>
-                    <span style="font-size:11px; font-weight:600; opacity:0.9;">${t.percentage}%</span>
+                    <span style="font-size:12px; font-weight:700; white-space:nowrap;">${t.display_name}</span>
+                    <span style="font-size:12px; font-weight:600; opacity:0.9;">${t.percentage}%</span>
                 </div>
             `;
         });
@@ -1274,13 +1274,13 @@ function updateReportWidget(cell, chartData) {
                         <!-- Left Deficit Bar (extends left from 50% baseline) -->
                         ${!isRight ? `
                             <div style="position:absolute; right:50%; width:${barWidthPct}%; height:13px; background:${barColor}; border-radius:7px 0 0 7px; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
-                            <span style="position:absolute; right:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
+                            <span style="position:absolute; right:calc(50% + ${barWidthPct}% + 6px); font-size:12px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
                         ` : ''}
 
                         <!-- Right Surplus Bar (extends right from 50% baseline) -->
                         ${isRight ? `
                             <div style="position:absolute; left:50%; width:${barWidthPct}%; height:13px; background:${barColor}; border-radius:0 7px 7px 0; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
-                            <span style="position:absolute; left:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
+                            <span style="position:absolute; left:calc(50% + ${barWidthPct}% + 6px); font-size:12px; font-weight:700; color:${valueColor}; white-space:nowrap;">${t.percentage}%</span>
                         ` : ''}
                     </div>
                 </div>
@@ -1290,7 +1290,7 @@ function updateReportWidget(cell, chartData) {
         tempContainer.innerHTML = `
             <div style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:10px; font-family:Georgia, serif; display:flex; justify-content:space-between; align-items:center;">
                 <span>Balance of Nakṣatra Types</span>
-                <span style="font-size:11.5px; font-weight:600; color:#64748b; font-family:sans-serif;">Baseline: 14.3% per type</span>
+                <span style="font-size:12px; font-weight:600; color:#64748b; font-family:sans-serif;">Baseline: 14.3% per type</span>
             </div>
 
             <!-- Top Proportional Ribbon -->
@@ -1375,7 +1375,7 @@ function updateReportWidget(cell, chartData) {
         });
 
         tableContainer.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">✨ Planetary Nakshatras &amp; Overlords</div>
+            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;"> Planetary Nakshatras &amp; Overlords</div>
             <table style="width:100%; border-collapse:collapse; text-align:left;">
                 <thead>
                     <tr style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; font-size:12px; color:#475569; text-transform:uppercase;">
@@ -1400,11 +1400,11 @@ function updateReportWidget(cell, chartData) {
         const r = operationalAxis.rashi_lagna;
         const n = operationalAxis.navamsha_lagna;
         const vBadge = operationalAxis.is_vargottama 
-            ? `<div style="background:#f0fdf4; border:1px solid #86efac; border-radius:4px; padding:6px 10px; margin-top:8px; font-size:13px; font-weight:700; color:#15803d;">🌟 VARGOTTAMA LAGNA DETECTED: +30% Vitality, Inner Consistency &amp; Resilience</div>` 
+            ? `<div style="background:#f0fdf4; border:1px solid #86efac; border-radius:4px; padding:6px 10px; margin-top:8px; font-size:13px; font-weight:700; color:#15803d;"> VARGOTTAMA LAGNA DETECTED: +30% Vitality, Inner Consistency &amp; Resilience</div>`
             : '';
 
         axisContainer.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">🌲 Operational Axis: Rāśi Tree vs. Navāṁśa Fruit</div>
+            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;"> Operational Axis: Rāśi Tree vs. Navāṁśa Fruit</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px;">
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:12px; font-weight:700; color:#2563eb; text-transform:uppercase;">D1 Rising Rāśi (The Outer Tree)</div>
@@ -1438,22 +1438,22 @@ function updateReportWidget(cell, chartData) {
             let items = [];
 
             if (mode === 'elements') {
-                title = '🔥 Balance of Four Elements (Tattvas)';
+                title = ' Balance of Four Elements (Tattvas)';
                 baselineLabel = 'Equilibrium Baseline: 25.0% (1/4th)';
                 baselinePct = 25.0;
                 items = envTally.elements?.breakdown || [];
             } else if (mode === 'gunas') {
-                title = '🌀 Balance of Three Guṇas (Modalities)';
+                title = ' Balance of Three Guṇas (Modalities)';
                 baselineLabel = 'Equilibrium Baseline: 33.3% (1/3rd)';
                 baselinePct = 33.3;
                 items = envTally.gunas?.breakdown || [];
             } else if (mode === 'polarity') {
-                title = '⚖️ Balance of Macro Polarity (Active vs. Passive)';
+                title = ' Balance of Macro Polarity (Active vs. Passive)';
                 baselineLabel = 'Equilibrium Baseline: 50.0% (1/2)';
                 baselinePct = 50.0;
                 items = envTally.polarity?.breakdown || [];
             } else if (mode === 'doshas') {
-                title = '🍵 Balance of Ayurvedic Doshas (Prakṛti)';
+                title = ' Balance of Ayurvedic Doshas (Prakṛti)';
                 baselineLabel = 'Equilibrium Baseline: 33.3% (1/3rd)';
                 baselinePct = 33.3;
                 items = envTally.ayurvedic_doshas?.breakdown || [];
@@ -1481,8 +1481,8 @@ function updateReportWidget(cell, chartData) {
 
                 ribbonCardsHtml += `
                     <div style="flex: ${Math.max(t.percentage, 8)}; min-height:${minH}; background:${cardBg}; color:${cardText}; border:${border}; border-radius:6px; padding:4px 6px; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; transition:all 0.2s ease;">
-                        <span style="font-size:11.5px; font-weight:700; white-space:nowrap;">${t.icon || ''} ${t.display_name}</span>
-                        <span style="font-size:11px; font-weight:600; opacity:0.9;">${t.percentage}% <span style="font-size:10px; opacity:0.8;">(${t.points} pt)</span></span>
+                        <span style="font-size:12px; font-weight:700; white-space:nowrap;">${t.icon || ''} ${t.display_name}</span>
+                        <span style="font-size:12px; font-weight:600; opacity:0.9;">${t.percentage}% <span style="font-size:12px; opacity:0.8;">(${t.points} pt)</span></span>
                     </div>
                 `;
             });
@@ -1512,7 +1512,7 @@ function updateReportWidget(cell, chartData) {
                         <!-- Centered Category Label above the bar -->
                         <div style="text-align:center; line-height:1.2; margin-bottom:2px;">
                             <span style="font-size:12px; font-weight:700; color:#1e293b; font-family:Georgia, serif; background:rgba(255,255,255,0.95); padding:1px 8px; border-radius:3px; border:1px solid #f1f5f9; box-shadow:0 1px 2px rgba(0,0,0,0.03);">
-                                ${t.icon || ''} ${t.display_name} <span style="font-size:11px; color:#64748b; font-weight:500;">(${t.sanskrit || ''})</span>
+                                ${t.icon || ''} ${t.display_name} <span style="font-size:12px; color:#64748b; font-weight:500;">(${t.sanskrit || ''})</span>
                             </span>
                         </div>
 
@@ -1521,16 +1521,16 @@ function updateReportWidget(cell, chartData) {
                             <!-- Left Deficit Bar -->
                             ${!isRight ? `
                                 <div style="position:absolute; right:50%; width:${barWidthPct}%; height:14px; background:${barColor}; border-radius:7px 0 0 7px; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
-                                <span style="position:absolute; right:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">
-                                    ${t.percentage}% <span style="font-size:10px; font-weight:600; opacity:0.85;">(${signPrefix}${dev}% | ${t.points} pt${d1Info})</span>
+                                <span style="position:absolute; right:calc(50% + ${barWidthPct}% + 6px); font-size:12px; font-weight:700; color:${valueColor}; white-space:nowrap;">
+                                    ${t.percentage}% <span style="font-size:12px; font-weight:600; opacity:0.85;">(${signPrefix}${dev}% | ${t.points} pt${d1Info})</span>
                                 </span>
                             ` : ''}
 
                             <!-- Right Surplus Bar -->
                             ${isRight ? `
                                 <div style="position:absolute; left:50%; width:${barWidthPct}%; height:14px; background:${barColor}; border-radius:0 7px 7px 0; box-shadow:0 1px 2px rgba(0,0,0,0.06);"></div>
-                                <span style="position:absolute; left:calc(50% + ${barWidthPct}% + 6px); font-size:11px; font-weight:700; color:${valueColor}; white-space:nowrap;">
-                                    ${t.percentage}% <span style="font-size:10px; font-weight:600; opacity:0.85;">(${signPrefix}${dev}% | ${t.points} pt${d1Info})</span>
+                                <span style="position:absolute; left:calc(50% + ${barWidthPct}% + 6px); font-size:12px; font-weight:700; color:${valueColor}; white-space:nowrap;">
+                                    ${t.percentage}% <span style="font-size:12px; font-weight:600; opacity:0.85;">(${signPrefix}${dev}% | ${t.points} pt${d1Info})</span>
                                 </span>
                             ` : ''}
                         </div>
@@ -1548,17 +1548,17 @@ function updateReportWidget(cell, chartData) {
                 <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
                     <div>
                         <div style="font-size:15px; font-weight:700; color:#1e293b; font-family:Georgia, serif;">${title}</div>
-                        <div style="font-size:11.5px; font-weight:600; color:#64748b; font-family:sans-serif; margin-top:1px;">
+                        <div style="font-size:12px; font-weight:600; color:#64748b; font-family:sans-serif; margin-top:1px;">
                             ${baselineLabel} • Ṣaḍvarga (20-pt Harmonic Matrix)
                         </div>
                     </div>
 
                     <!-- Mode Switcher Pills -->
                     <div class="env-mode-pills" style="display:inline-flex; background:#f1f5f9; border:1px solid #e2e8f0; border-radius:6px; padding:2px; gap:2px;">
-                        <button type="button" class="btn-env-mode-elem" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeElemStyle}">🔥 Elements</button>
-                        <button type="button" class="btn-env-mode-guna" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeGunaStyle}">🌀 Guṇas</button>
-                        <button type="button" class="btn-env-mode-pol" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activePolStyle}">⚖️ Polarity</button>
-                        <button type="button" class="btn-env-mode-dosha" style="border:none; border-radius:4px; padding:3px 9px; font-size:11.5px; cursor:pointer; ${activeDoshaStyle}">🍵 Doshas</button>
+                        <button type="button" class="btn-env-mode-elem" style="border:none; border-radius:4px; padding:3px 9px; font-size:12px; cursor:pointer; ${activeElemStyle}">Elements</button>
+                        <button type="button" class="btn-env-mode-guna" style="border:none; border-radius:4px; padding:3px 9px; font-size:12px; cursor:pointer; ${activeGunaStyle}">Guṇas</button>
+                        <button type="button" class="btn-env-mode-pol" style="border:none; border-radius:4px; padding:3px 9px; font-size:12px; cursor:pointer; ${activePolStyle}">Polarity</button>
+                        <button type="button" class="btn-env-mode-dosha" style="border:none; border-radius:4px; padding:3px 9px; font-size:12px; cursor:pointer; ${activeDoshaStyle}">Doshas</button>
                     </div>
                 </div>
 
@@ -1614,43 +1614,43 @@ function updateReportWidget(cell, chartData) {
 
         envContainer.innerHTML = `
             <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                <span>🌿 Macro Environmental Tally (Ṣaḍvarga Weighted)</span>
-                <span style="font-size:11.5px; font-weight:600; color:#64748b;">D1:6 • D9:5 • D3:4 • D2:2 • D12:2 • D30:1</span>
+                <span>Macro Environmental Tally (Ṣaḍvarga Weighted)</span>
+                <span style="font-size:12px; font-weight:600; color:#64748b;">D1:6 • D9:5 • D3:4 • D2:2 • D12:2 • D30:1</span>
             </div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:10px;">
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🔥 Five Great Elements (Tattvas)</div>
+                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">Five Great Elements (Tattvas)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Fire: <strong>${e.percentages.Fire}%</strong> <span style="font-size:11.5px; color:#64748b;">(${e.points.Fire} pt | D1: ${e.counts.Fire})</span></div>
-                        <div>Earth: <strong>${e.percentages.Earth}%</strong> <span style="font-size:11.5px; color:#64748b;">(${e.points.Earth} pt | D1: ${e.counts.Earth})</span></div>
-                        <div>Air: <strong>${e.percentages.Air}%</strong> <span style="font-size:11.5px; color:#64748b;">(${e.points.Air} pt | D1: ${e.counts.Air})</span></div>
-                        <div>Water: <strong>${e.percentages.Water}%</strong> <span style="font-size:11.5px; color:#64748b;">(${e.points.Water} pt | D1: ${e.counts.Water})</span></div>
+                        <div>Fire: <strong>${e.percentages.Fire}%</strong> <span style="font-size:12px; color:#64748b;">(${e.points.Fire} pt | D1: ${e.counts.Fire})</span></div>
+                        <div>Earth: <strong>${e.percentages.Earth}%</strong> <span style="font-size:12px; color:#64748b;">(${e.points.Earth} pt | D1: ${e.counts.Earth})</span></div>
+                        <div>Air: <strong>${e.percentages.Air}%</strong> <span style="font-size:12px; color:#64748b;">(${e.points.Air} pt | D1: ${e.counts.Air})</span></div>
+                        <div>Water: <strong>${e.percentages.Water}%</strong> <span style="font-size:12px; color:#64748b;">(${e.points.Water} pt | D1: ${e.counts.Water})</span></div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#b91c1c; margin-top:6px;">Dominant Tattva: ${e.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🌀 Three Guṇas (Modality)</div>
+                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">Three Guṇas (Modality)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Rajas (Movable): <strong>${g.percentages['Rajas (Movable)']}%</strong> <span style="font-size:11.5px; color:#64748b;">(${g.points['Rajas (Movable)']} pt)</span></div>
-                        <div>Tamas (Fixed): <strong>${g.percentages['Tamas (Fixed)']}%</strong> <span style="font-size:11.5px; color:#64748b;">(${g.points['Tamas (Fixed)']} pt)</span></div>
-                        <div>Sattva (Dual): <strong>${g.percentages['Sattva (Dual)']}%</strong> <span style="font-size:11.5px; color:#64748b;">(${g.points['Sattva (Dual)']} pt)</span></div>
+                        <div>Rajas (Movable): <strong>${g.percentages['Rajas (Movable)']}%</strong> <span style="font-size:12px; color:#64748b;">(${g.points['Rajas (Movable)']} pt)</span></div>
+                        <div>Tamas (Fixed): <strong>${g.percentages['Tamas (Fixed)']}%</strong> <span style="font-size:12px; color:#64748b;">(${g.points['Tamas (Fixed)']} pt)</span></div>
+                        <div>Sattva (Dual): <strong>${g.percentages['Sattva (Dual)']}%</strong> <span style="font-size:12px; color:#64748b;">(${g.points['Sattva (Dual)']} pt)</span></div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#0d9488; margin-top:6px;">Dominant Guṇa: ${g.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">⚖️ Macro Polarity (Odd / Even)</div>
+                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">Macro Polarity (Odd / Even)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Active (Odd): <strong>${p.percentages.Active}%</strong> <span style="font-size:11.5px; color:#64748b;">(${p.points.Active} pt | D1: ${p.counts.Active})</span></div>
-                        <div>Passive (Even): <strong>${p.percentages.Passive}%</strong> <span style="font-size:11.5px; color:#64748b;">(${p.points.Passive} pt | D1: ${p.counts.Passive})</span></div>
+                        <div>Active (Odd): <strong>${p.percentages.Active}%</strong> <span style="font-size:12px; color:#64748b;">(${p.points.Active} pt | D1: ${p.counts.Active})</span></div>
+                        <div>Passive (Even): <strong>${p.percentages.Passive}%</strong> <span style="font-size:12px; color:#64748b;">(${p.points.Passive} pt | D1: ${p.counts.Passive})</span></div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#ea580c; margin-top:6px;">Dominant Polarity: ${p.dominant}</div>
                 </div>
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
-                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">🍵 Ayurvedic Constitution (Prakṛti)</div>
+                    <div style="font-size:13px; font-weight:700; color:#0f172a; margin-bottom:4px;">Ayurvedic Constitution (Prakṛti)</div>
                     <div style="font-size:12.5px; color:#475569;">
-                        <div>Vāta (Air): <strong>${d.percentages.Vata}%</strong> <span style="font-size:11.5px; color:#64748b;">(${d.points.Vata} pt)</span></div>
-                        <div>Pitta (Fire): <strong>${d.percentages.Pitta}%</strong> <span style="font-size:11.5px; color:#64748b;">(${d.points.Pitta} pt)</span></div>
-                        <div>Kapha (Earth/Water): <strong>${d.percentages.Kapha}%</strong> <span style="font-size:11.5px; color:#64748b;">(${d.points.Kapha} pt)</span></div>
+                        <div>Vāta (Air): <strong>${d.percentages.Vata}%</strong> <span style="font-size:12px; color:#64748b;">(${d.points.Vata} pt)</span></div>
+                        <div>Pitta (Fire): <strong>${d.percentages.Pitta}%</strong> <span style="font-size:12px; color:#64748b;">(${d.points.Pitta} pt)</span></div>
+                        <div>Kapha (Earth/Water): <strong>${d.percentages.Kapha}%</strong> <span style="font-size:12px; color:#64748b;">(${d.points.Kapha} pt)</span></div>
                     </div>
                     <div style="font-size:13px; font-weight:700; color:#2563eb; margin-top:6px;">Prakṛti Baseline: ${d.dominant}</div>
                 </div>
@@ -1673,7 +1673,7 @@ function updateReportWidget(cell, chartData) {
             <div style="background:#fffbeb; border:1.5px solid #fde68a; border-radius:6px; padding:12px;">
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <div>
-                        <div style="font-size:12px; font-weight:700; color:#92400e; text-transform:uppercase;">👑 #1 Chart Commander (Highest Stage Volume)</div>
+                        <div style="font-size:12px; font-weight:700; color:#92400e; text-transform:uppercase;"> #1 Chart Commander (Highest Stage Volume)</div>
                         <div style="font-size:16px; font-weight:800; color:#78350f; margin-top:2px;">${c.planet} in House ${c.house} (${c.sign})</div>
                     </div>
                     <span style="font-size:13px; font-weight:700; padding:2px 8px; border-radius:4px; background:#fef3c7; color:#92400e; border:1px solid #fcd34d;">Score: ${c.prominence_score}</span>
@@ -1705,7 +1705,7 @@ function updateReportWidget(cell, chartData) {
         });
 
         promTable.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;">📊 Planetary Prominence vs. Dignity Leaderboard</div>
+            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:8px;"> Planetary Prominence vs. Dignity Leaderboard</div>
             <table style="width:100%; border-collapse:collapse; text-align:left;">
                 <thead>
                     <tr style="background:#f8fafc; border-bottom:1.5px solid #cbd5e1; font-size:12px; color:#475569; text-transform:uppercase;">
@@ -1730,7 +1730,7 @@ function updateReportWidget(cell, chartData) {
     const synDesk = cell.querySelector('.synthesis-desk-container');
     if (synDesk && synthesis.action_mode) {
         synDesk.innerHTML = `
-            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:10px;">🧪 Synthesis Desk: The Master Astrological Recipe</div>
+            <div style="font-size:14px; font-weight:700; color:#1e293b; margin-bottom:10px;"> Synthesis Desk: The Master Astrological Recipe</div>
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px;">
                 <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:6px; padding:10px;">
                     <div style="font-size:12px; font-weight:700; color:#64748b; text-transform:uppercase;">1. Bodily Action Vehicle</div>
@@ -1764,7 +1764,7 @@ function updateReportWidget(cell, chartData) {
                 </div>
             </div>
             <div style="margin-top:14px; padding:12px; background:#fffdf5; border:1px solid #fef3c7; border-radius:6px;">
-                <div style="font-size:13.5px; font-weight:700; color:#78350f; margin-bottom:4px;">✨ Astrologer Synthesis Blueprint:</div>
+                <div style="font-size:13.5px; font-weight:700; color:#78350f; margin-bottom:4px;"> Astrologer Synthesis Blueprint:</div>
                 <div style="font-size:13px; color:#451a03; line-height:1.5;">
                     The native acts upon the world through the <strong>${synthesis.action_mode}</strong> archetype (${synthesis.action_group}), while emotionally experiencing reality through <strong>${synthesis.perception_mode}</strong> (${synthesis.perception_group}). With a polarity index of <strong>${synthesis.polarity_friction}/100</strong>, life manifests through <em>${synthesis.polarity_state}</em>. When navigating crises, the chart draws supreme authority from <strong>${synthesis.chart_commander}</strong>, operating within an environment grounded in <strong>${synthesis.dominant_element}</strong>, <strong>${synthesis.dominant_guna}</strong>, and <strong>${synthesis.dominant_polarity || 'Active'} Polarity</strong>.
                 </div>
@@ -1963,11 +1963,11 @@ function buildUnifiedMermaidCode(pData, sData, hData, planetName, signName, hous
     const pBlock = prefixMermaidBlock(pRaw, 'P_');
     const sBlock = prefixMermaidBlock(sRaw, 'S_');
     const hBlock = prefixMermaidBlock(hRaw, 'H_');
-    const pSym = pData.symbol || '🪐';
+    const pSym = pData.symbol || '';
     const sSym = sData.symbol || '♈';
     const pTitle = pData.title ? `${pSym} ${pData.title}` : `${pSym} Planet: ${planetName}`;
     const sTitle = sData.title ? `${sSym} ${sData.title}` : `${sSym} Sign: ${signName}`;
-    const hTitle = hData.title ? `🏛️ House ${houseNum} (${hData.formula || hData.sanskrit || ''})` : `🏛️ House ${houseNum}`;
+    const hTitle = hData.title ? `️ House ${houseNum} (${hData.formula || hData.sanskrit || ''})` : `️ House ${houseNum}`;
 
     let code = `flowchart LR\n`;
     code += `    subgraph ColPlanet ["${pTitle}"]\n        direction TB\n${pBlock.code}\n    end\n`;
@@ -2221,18 +2221,17 @@ function renderConnectionsChips(cockpitContainer, links, onRemove) {
     if (!listEl) return;
 
     if (!links || links.length === 0) {
-        listEl.innerHTML = `<span class="no-links-msg" style="font-size: 11.5px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two boxes across the cards to link them.</span>`;
+        listEl.innerHTML = `<span class="no-links-msg" style="font-size: 12px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two boxes across the cards to link them.</span>`;
         return;
     }
 
     let html = '';
     links.forEach((l, idx) => {
         const isDis = l.type === 'dissonance';
-        const icon = isDis ? '⚡' : '🔗';
         const typeLabel = isDis ? 'Dissonant' : 'Harmonic';
         html += `
             <div class="synth-conn-chip ${l.type}" data-idx="${idx}">
-                <span>${icon} <strong>${l.fromLabel || l.from}</strong> ⟷ <strong>${l.toLabel || l.to}</strong> (${typeLabel})</span>
+                <span><strong>${l.fromLabel || l.from}</strong> ⟷ <strong>${l.toLabel || l.to}</strong> (${typeLabel})</span>
                 <button type="button" class="btn-del-conn" data-idx="${idx}" title="Remove link">×</button>
             </div>
         `;
@@ -2258,9 +2257,9 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     if (!targetCol || !cardData) return;
     targetCol._entityData = cardData;
 
-    const sym = symbol || cardData.symbol || (entityType === 'house' ? '🏛️' : (entityType === 'planet' ? '🪐' : '♈'));
+    const sym = symbol || cardData.symbol || '';
     const title = displayTitle || cardData.title || cardData.name || '';
-    const sanskrit = cardData.sanskrit || '';
+    const sansanskrit = cardData.sanskrit || '';
     const formula = cardData.formula || '';
     const pinnedNote = cardData.pinned_note || cardData.sticky_note || '';
     const banner = cardData.banner || '';
@@ -2271,10 +2270,10 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     let html = `
         <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span class="synth-card-symbol">${sym}</span>
+                ${sym ? `<span class="synth-card-symbol">${sym}</span>` : ''}
                 <div>
                     <div class="synth-card-title">${title}</div>
-                    ${sanskrit ? `<div style="font-size: 11px; color: #64748b; font-style: italic;">${sanskrit}</div>` : ''}
+                    ${sansanskrit ? `<div style="font-size: 12px; color: #64748b; font-style: italic;">${sansanskrit}</div>` : ''}
                 </div>
             </div>
             ${formula ? `<span class="synth-card-formula" title="${formula}">${formula}</span>` : ''}
@@ -2284,7 +2283,7 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     if (pinnedNote) {
         html += `
             <div class="synth-pinned-note">
-                <span>📌</span>
+                <span></span>
                 <span>${pinnedNote}</span>
             </div>
         `;
@@ -2331,7 +2330,7 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     if (callout) {
         html += `
             <div class="synth-callout-bubble">
-                ⚠️ ${callout}
+                ️ ${callout}
             </div>
         `;
     }
@@ -2339,7 +2338,7 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
     if (anatomy) {
         html += `
             <div class="synth-anatomy-footer">
-                <span>🏛️</span>
+                <span>️</span>
                 <span><strong>Kalapurusha Anatomy:</strong> ${anatomy}</span>
             </div>
         `;
@@ -2563,7 +2562,7 @@ function initSynthesisCockpit(cell, chartData) {
     let optionsHtml = '';
     availableLeaderboard.forEach(p => {
         const isSelected = p.planet === initialPlanet ? 'selected' : '';
-        const isCmdr = (planetRank.chart_commander && planetRank.chart_commander.planet === p.planet) ? ' 👑' : '';
+        const isCmdr = (planetRank.chart_commander && planetRank.chart_commander.planet === p.planet) ? ' ' : '';
         optionsHtml += `<option value="${p.planet}" ${isSelected}>#${p.rank} ${p.planet}${isCmdr} in ${p.sign} (House ${p.house}) — ${p.nakshatra}</option>`;
     });
     selectPlanet.innerHTML = optionsHtml;
@@ -2696,13 +2695,13 @@ async function renderSynthesisCockpit(cell, planetName, chartData) {
     const cardColHouse = cockpitContainer.querySelector('#card-col-house');
 
     if (cardColPlanet) {
-        renderEntityFlowchartCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '🪐');
+        renderEntityFlowchartCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '');
     }
     if (cardColSign) {
         renderEntityFlowchartCard(cardColSign, sData, 'sign', sData.title || `Sign: ${S}`, sData.symbol || '♈');
     }
     if (cardColHouse) {
-        renderEntityFlowchartCard(cardColHouse, hData, 'house', hData.title || `House ${H}`, '🏛️');
+        renderEntityFlowchartCard(cardColHouse, hData, 'house', hData.title || `House ${H}`, '️');
     }
 
     // 5. Setup Interactive Selection & SVG Overlay Engine
@@ -2753,7 +2752,7 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('report', {
         id: 'report',
         title: 'Astrological Synthesis Report',
-        icon: '📜',
+        icon: '',
         category: 'Diagnostics',
         templateId: 'tmpl-report',
         isScrollable: true,

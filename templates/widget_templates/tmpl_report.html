@@ -3,14 +3,12 @@
         <!-- Top Toolbar -->
         <div class="chart-toolbar report-toolbar" style="padding: 4px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
             <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="color: #4a3325; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">
-                    <span>📜</span> Astrological Synthesis Report
-                </span>
+                <span style="color: #4a3325; font-weight: 700; font-size: 13.5px; display: inline-flex; align-items: center; gap: 4px;">Astrological Synthesis Report</span>
                 <div class="report-tab-pills" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 2px; gap: 2px;">
-                    <button type="button" class="report-pill-btn active" data-tab="polarity" onclick="switchReportTab(this, 'polarity')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌟 Polarity &amp; Stars</button>
-                    <button type="button" class="report-pill-btn" data-tab="environment" onclick="switchReportTab(this, 'environment')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🌿 Elements &amp; Axis</button>
-                    <button type="button" class="report-pill-btn" data-tab="prominence" onclick="switchReportTab(this, 'prominence')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">👑 Planetary Rank</button>
-                    <button type="button" class="report-pill-btn" data-tab="synthesis" onclick="switchReportTab(this, 'synthesis')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">🔮 Triad Synthesis Engine</button>
+                    <button type="button" class="report-pill-btn active" data-tab="polarity" onclick="switchReportTab(this, 'polarity')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">Polarity &amp; Stars</button>
+                    <button type="button" class="report-pill-btn" data-tab="environment" onclick="switchReportTab(this, 'environment')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">Elements &amp; Axis</button>
+                    <button type="button" class="report-pill-btn" data-tab="prominence" onclick="switchReportTab(this, 'prominence')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">Planetary Rank</button>
+                    <button type="button" class="report-pill-btn" data-tab="synthesis" onclick="switchReportTab(this, 'synthesis')" style="border:none; background:transparent; color:#6b5a4b; font-weight:700; font-size:12px; padding:3px 8px; border-radius:3px; cursor:pointer;">Triad Synthesis Engine</button>
                 </div>
             </div>
             <div style="display: flex; align-items: center; gap: 6px;">
@@ -70,10 +68,9 @@
                     <!-- Header Bar -->
                     <div class="cockpit-header-bar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-bottom: 10px; border-bottom: 1px solid #f1ece1;">
                         <div style="display: flex; align-items: center; gap: 8px;">
-                            <span style="font-size: 17px;">🔮</span>
                             <div>
                                 <div style="font-size: 14.5px; font-weight: 700; color: #1e293b; letter-spacing: -0.2px;">Triad Synthesis Engine</div>
-                                <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">Graha · Rāśi · Bhāva Archetypal Integration</div>
+                                <div style="font-size: 12px; color: #64748b; font-weight: 500;">Graha · Rāśi · Bhāva Archetypal Integration</div>
                             </div>
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
@@ -87,11 +84,11 @@
                     <!-- Context Sub-strip -->
                     <div id="cockpit-context-strip" class="cockpit-context-strip" style="margin: 10px 0; padding: 8px 12px; background: #fffdf5; border: 1px solid #fde68a; border-radius: 6px; font-size: 12.5px; color: #78350f; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
                         <div class="context-ambient" style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 700;">🌌 Ambient Context:</span>
+                            <span style="font-weight: 700;">Ambient Context:</span>
                             <span class="context-ambient-text">--</span>
                         </div>
                         <div class="context-focus" style="display: flex; align-items: center; gap: 6px;">
-                            <span style="font-weight: 700;">🪐 Placement Flavor:</span>
+                            <span style="font-weight: 700;">Placement Flavor:</span>
                             <span class="context-focus-text">--</span>
                         </div>
                     </div>
@@ -99,9 +96,9 @@
                     <!-- Active Connections Bar & Clear Button -->
                     <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin: 10px 0 6px;">
                         <div id="cockpit-connections-list" style="display: flex; flex-wrap: wrap; gap: 6px; align-items: center; min-height: 24px;">
-                            <span class="no-links-msg" style="font-size: 11.5px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two boxes across the cards to link them.</span>
+                            <span class="no-links-msg" style="font-size: 12px; color: #94a3b8; font-style: italic;">No cross-symbol links created yet. Click any two boxes across the cards to link them.</span>
                         </div>
-                        <button type="button" id="btn-clear-connections" class="btn-clear-connections" style="background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 10px; font-size: 11.5px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Clear Links</button>
+                        <button type="button" id="btn-clear-connections" class="btn-clear-connections" style="background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Clear Links</button>
                     </div>
 
                     <!-- The 3-Column Flowchart Canvas Stage with Underlaid SVG Overlay -->
@@ -166,7 +163,6 @@
                     <div id="cockpit-scratchpad" class="cockpit-scratchpad" style="margin-top: 14px; background: #fbfcfe; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <div style="display: flex; align-items: center; gap: 6px;">
-                                <span style="font-size: 15px;">📝</span>
                                 <span style="font-size: 13.5px; font-weight: 700; color: #1e293b;">Synthesis Scratchpad &amp; Astrological Judgment</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 8px;">
@@ -178,27 +174,27 @@
                             <!-- Box 1: Resonance -->
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <label for="txt-resonance" style="font-size: 12px; font-weight: 700; color: #0369a1; display: flex; align-items: center; gap: 4px;">
-                                    <span>🔗 1. Resonance</span>
+                                    <span>1. Resonance</span>
                                 </label>
-                                <div style="font-size: 11.5px; color: #64748b;">Where do these 3 symbols share common ground / resonate?</div>
+                                <div style="font-size: 12px; color: #64748b;">Where do these 3 symbols share common ground / resonate?</div>
                                 <textarea id="txt-resonance" class="txt-resonance" placeholder="E.g. Jupiter (wisdom/guidance) in House 7 (advising others) and Scorpio (deep investigative truth)..." rows="3" style="width: 100%; box-sizing: border-box; font-family: inherit; font-size: 12.5px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: vertical; outline: none; background: #ffffff; color: #0f172a;"></textarea>
                             </div>
 
                             <!-- Box 2: Dissonance -->
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <label for="txt-dissonance" style="font-size: 12px; font-weight: 700; color: #b91c1c; display: flex; align-items: center; gap: 4px;">
-                                    <span>⚡ 2. Dissonance</span>
+                                    <span>2. Dissonance</span>
                                 </label>
-                                <div style="font-size: 11.5px; color: #64748b;">Where do they pull in opposite directions / clash?</div>
+                                <div style="font-size: 12px; color: #64748b;">Where do they pull in opposite directions / clash?</div>
                                 <textarea id="txt-dissonance" class="txt-dissonance" placeholder="E.g. Jupiter (open, trusting, student-receptive) clashes with Scorpio (secretive, skeptical)..." rows="3" style="width: 100%; box-sizing: border-box; font-family: inherit; font-size: 12.5px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: vertical; outline: none; background: #ffffff; color: #0f172a;"></textarea>
                             </div>
 
                             <!-- Box 3: Synthesis -->
                             <div style="display: flex; flex-direction: column; gap: 4px;">
                                 <label for="txt-synthesis" style="font-size: 12px; font-weight: 700; color: #15803d; display: flex; align-items: center; gap: 4px;">
-                                    <span>🔮 3. Synthesis</span>
+                                    <span>3. Synthesis</span>
                                 </label>
-                                <div style="font-size: 11.5px; color: #64748b;">Unified Astrological Judgment / Real-World Expression</div>
+                                <div style="font-size: 12px; color: #64748b;">Unified Astrological Judgment / Real-World Expression</div>
                                 <textarea id="txt-synthesis" class="txt-synthesis" placeholder="E.g. The native becomes an incisive, independent teacher who resists conventional orthodoxy..." rows="3" style="width: 100%; box-sizing: border-box; font-family: inherit; font-size: 12.5px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; resize: vertical; outline: none; background: #ffffff; color: #0f172a;"></textarea>
                             </div>
                         </div>

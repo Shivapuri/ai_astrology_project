@@ -108,8 +108,7 @@
                 if (chart && chart.vargas && chart.vargas.D1) {
                     const d1 = chart.vargas.D1;
                     const lagnaSign = d1.lagna ? d1.lagna.sign : "";
-                    const signLords = { 'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon', 'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars', 'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter' };
-                    const lLord = signLords[lagnaSign] || "";
+                    const lLord = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSignLord(lagnaSign) : "";
                     let lLordPlacement = "";
                     if (lLord && d1.grahas && d1.grahas[lLord]) {
                         lLordPlacement = `${lLord} in ${d1.grahas[lLord].sign}`;
@@ -150,8 +149,9 @@
             if (!housesContainer) return;
             housesContainer.innerHTML = '';
 
-            const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-            const signLords = { 'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon', 'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars', 'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter' };
+            const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? window.AstroCatalog.signs.map(s => s.name)
+                : ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
 
             const d1Data = (chart && chart.vargas && chart.vargas.D1) ? chart.vargas.D1 : null;
             const bhavas = d1Data ? (d1Data.bhavas || []) : [];
@@ -180,7 +180,7 @@
                 }
 
                 // Lord of house and placement
-                const lord = signLords[signName] || "";
+                const lord = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSignLord(signName) : "";
                 let lordPlacementStr = "";
                 if (lord && d1Grahas[lord]) {
                     const lData = d1Grahas[lord];
@@ -203,31 +203,31 @@
                 // Badges
                 let catBadgesHtml = '';
                 if (meta.categories.includes('kendra')) {
-                    catBadgesHtml += `<span style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Kendra</span> `;
+                    catBadgesHtml += `<span style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; border-radius:3px; padding:1px 6px; font-size:12px; font-weight:700;">Kendra</span> `;
                 }
                 if (meta.categories.includes('trikona')) {
-                    catBadgesHtml += `<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Trikona</span> `;
+                    catBadgesHtml += `<span style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; border-radius:3px; padding:1px 6px; font-size:12px; font-weight:700;">Trikona</span> `;
                 }
                 if (meta.categories.includes('dusthana')) {
-                    catBadgesHtml += `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Dusthana</span> `;
+                    catBadgesHtml += `<span style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; border-radius:3px; padding:1px 6px; font-size:12px; font-weight:700;">Dusthana</span> `;
                 }
                 if (meta.categories.includes('upachaya')) {
-                    catBadgesHtml += `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; border-radius:3px; padding:1px 5px; font-size:9.5px; font-weight:700;">Upachaya</span> `;
+                    catBadgesHtml += `<span style="background:#dcfce7; color:#166534; border:1px solid #86efac; border-radius:3px; padding:1px 6px; font-size:12px; font-weight:700;">Upachaya</span> `;
                 }
 
                 const existingText = (notesData.houses && notesData.houses[h]) ? notesData.houses[h] : "";
                 const hasNotesClass = existingText.trim().length > 0 ? " has-notes" : "";
                 const writtenBadgeHtml = existingText.trim().length > 0 
-                    ? `<span class="notes-status-badge" style="color:#0284c7; font-size:10px; font-weight:700;">✓ Notes Written</span>` 
-                    : `<span class="notes-status-badge" style="color:#94a3b8; font-size:10px;">Empty</span>`;
+                    ? `<span class="notes-status-badge" style="color:#0284c7; font-size:12px; font-weight:700;">✓ Notes Written</span>` 
+                    : `<span class="notes-status-badge" style="color:#94a3b8; font-size:12px;">Empty</span>`;
 
                 const cardHtml = `
                     <div class="notes-card house-card${hasNotesClass}" data-house="${h}" data-categories="${meta.categories.join(' ')}">
                         <div class="notes-card-header">
                             <div class="notes-card-title">
-                                <span style="background:#4a3325; color:#fffdfa; border-radius:4px; padding:1px 6px; font-size:11px; font-weight:bold;">H${h}</span>
+                                <span style="background:#4a3325; color:#fffdfa; border-radius:4px; padding:1px 6px; font-size:12px; font-weight:bold;">H${h}</span>
                                 <span>${meta.name}</span>
-                                <span style="font-size:11px; font-weight:normal; color:#78716c;">— ${meta.domain}</span>
+                                <span style="font-size:12px; font-weight:normal; color:#78716c;">— ${meta.domain}</span>
                             </div>
                             <div style="display:flex; align-items:center; gap:6px;">
                                 ${catBadgesHtml}
@@ -286,7 +286,7 @@
 
             // Update save status indicator
             document.querySelectorAll('.notes-save-badge').forEach(b => {
-                b.textContent = 'Saving... ⏳';
+                b.textContent = 'Saving... ';
                 b.style.color = '#d97706';
             });
 
@@ -312,14 +312,14 @@
                     });
                 } else {
                     document.querySelectorAll('.notes-save-badge').forEach(b => {
-                        b.textContent = 'Save failed ⚠️';
+                        b.textContent = 'Save failed ️';
                         b.style.color = '#dc2626';
                     });
                 }
             } catch(e) {
                 console.error("Error saving notes:", e);
                 document.querySelectorAll('.notes-save-badge').forEach(b => {
-                    b.textContent = 'Save failed ⚠️';
+                    b.textContent = 'Save failed ️';
                     b.style.color = '#dc2626';
                 });
             }
@@ -368,7 +368,7 @@
             resetFloatingWindowPosition();
             
             const currentNative = (window.currentChartData && window.currentChartData.subject_info) ? window.currentChartData.subject_info.name : (typeof currentLoadedNative !== 'undefined' && currentLoadedNative ? currentLoadedNative.name : '');
-            if (title) title.textContent = `📝 Astrological Notes & Journal — ${currentNative}`;
+            if (title) title.textContent = ` Astrological Notes & Journal — ${currentNative}`;
             container.innerHTML = '';
             container.dataset.widget = 'notes';
             
@@ -385,7 +385,7 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('notes', {
         id: 'notes',
         title: 'Astrological Notes & Journal',
-        icon: '📝',
+        icon: '',
         category: 'Journal',
         isScrollable: true,
         onUpdate: function(cell, chartData) {

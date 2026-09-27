@@ -28,7 +28,9 @@
         if (!aspects) return;
         
         const aspectingPlanets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
-        const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+        const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+            ? window.AstroCatalog.signs.map(s => s.name)
+            : ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
 
         tables.forEach(table => {
             const thead = table.querySelector('thead');
@@ -230,7 +232,7 @@
         window.widgetRegistry.register('aspects-planets', {
             id: 'aspects-planets',
             title: 'Aspects (Planets)',
-            icon: '👁️',
+            icon: '️',
             category: 'Positions',
             render: function(container, chartData, options) {
                 updateAspectsWidgetForCell(container);
@@ -243,7 +245,7 @@
         window.widgetRegistry.register('aspects-equal-houses', {
             id: 'aspects-equal-houses',
             title: 'Aspects (Equal Houses)',
-            icon: '📐',
+            icon: '',
             category: 'Positions',
             render: function(container, chartData, options) {
                 updateAspectsWidgetForCell(container);
@@ -256,7 +258,7 @@
         window.widgetRegistry.register('aspects-bhava-chalita', {
             id: 'aspects-bhava-chalita',
             title: 'Aspects (Bhava Chalita)',
-            icon: '🏛️',
+            icon: '️',
             category: 'Positions',
             render: function(container, chartData, options) {
                 updateAspectsWidgetForCell(container);

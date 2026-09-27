@@ -195,13 +195,13 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            font-size: 11px;
+            font-size: 12px;
             gap: 4px;
             user-select: none;
         }
         .house-highlight-btn {
             padding: 2px 7px;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: 600;
             border-radius: 4px;
             border: 1px solid #d5c8b2;
@@ -252,7 +252,7 @@
             box-shadow: 0 2px 6px rgba(74, 51, 37, 0.05);
         }
         .continuum-title {
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 0.8px;
@@ -310,7 +310,7 @@
             line-height: 1.35;
         }
         .tier-desc {
-            font-size: 11.5px;
+            font-size: 12px;
             line-height: 1.45;
             color: #554438;
         }
@@ -320,7 +320,7 @@
             color: #f7f3eb;
             padding: 10px 12px;
             border-radius: 6px;
-            font-size: 11px;
+            font-size: 12px;
             line-height: 1.45;
             overflow-x: auto;
             white-space: pre;

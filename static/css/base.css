@@ -278,3 +278,37 @@ th {
     color: #ffffff;
     box-shadow: 0 2px 6px var(--accent-focus);
 }
+
+/* ==========================================================================
+   Monochrome Astrological Line Glyphs (STIX Two Math Standard)
+   ========================================================================== */
+.glyph-symbol,
+.zodiac-line-glyph,
+.graha-glyph {
+    font-family: var(--font-astro-glyphs);
+    font-style: normal;
+    font-weight: 400;
+    font-size: 13.5px;
+    line-height: 1;
+    color: var(--text-heading);
+    background: transparent !important;
+    border: none !important;
+    padding: 0 2px 0 0;
+    vertical-align: -1px;
+    font-variant-emoji: text; /* W3C spec: force monochrome text representation */
+    text-rendering: optimizeLegibility;
+}
+
+/* Remove decorative badges from sign presentations */
+.sign-clean-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.sign-clean-text strong {
+    color: var(--text-heading);
+}

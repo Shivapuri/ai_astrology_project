@@ -93,7 +93,7 @@
                 else if (pl.includes('artha')) pClass = 'badge-artha';
                 else if (pl.includes('kama')) pClass = 'badge-kama';
                 else if (pl.includes('moksha')) pClass = 'badge-moksha';
-                badgesHtml += `<span class="prop-badge ${pClass}">📿 ${escapeHtml(p.purushartha.split(' - ')[0])}</span>`;
+                badgesHtml += `<span class="prop-badge ${pClass}"> ${escapeHtml(p.purushartha.split(' - ')[0])}</span>`;
             }
 
             if (Array.isArray(p.structural_classifications)) {
@@ -102,7 +102,7 @@
                     const scl = sc.toLowerCase();
                     if (scl.includes('kendra')) cClass = 'badge-kendra';
                     else if (scl.includes('trikona')) cClass = 'badge-trikona';
-                    badgesHtml += `<span class="prop-badge ${cClass}">🏛️ ${escapeHtml(sc.split(' (')[0])}</span>`;
+                    badgesHtml += `<span class="prop-badge ${cClass}">️ ${escapeHtml(sc.split(' (')[0])}</span>`;
                 });
             }
 
@@ -120,14 +120,14 @@
                 gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">System:</span><span class="astra-prop-val">Whole Sign Container + Campanus Cusp</span></div>`;
             }
         } else if (type === 'planet') {
-            if (p.guna) badgesHtml += `<span class="prop-badge badge-guna">🧘 ${escapeHtml(p.guna.split(' (')[0])}</span>`;
-            if (p.element) badgesHtml += `<span class="prop-badge badge-element">🔥 ${escapeHtml(p.element.split(' (')[0])}</span>`;
-            if (p.caste) badgesHtml += `<span class="prop-badge badge-neutral">🛡️ ${escapeHtml(p.caste.split(' (')[0])}</span>`;
-            if (p.gender) badgesHtml += `<span class="prop-badge badge-neutral">⚤ ${escapeHtml(p.gender)}</span>`;
+            if (p.guna) badgesHtml += `<span class="prop-badge badge-guna"> ${escapeHtml(p.guna.split(' (')[0])}</span>`;
+            if (p.element) badgesHtml += `<span class="prop-badge badge-element"> ${escapeHtml(p.element.split(' (')[0])}</span>`;
+            if (p.caste) badgesHtml += `<span class="prop-badge badge-neutral">${escapeHtml(p.caste.split(' (')[0])}</span>`;
+            if (p.gender) badgesHtml += `<span class="prop-badge badge-neutral">${escapeHtml(p.gender)}</span>`;
 
-            if (p.exaltation_sign) badgesHtml += `<span class="prop-badge badge-exalted">⬆ Exalted: ${escapeHtml(p.exaltation_sign)}</span>`;
-            if (p.debilitation_sign) badgesHtml += `<span class="prop-badge badge-debilitated">⬇ Debilitated: ${escapeHtml(p.debilitation_sign)}</span>`;
-            if (p.moolatrikona) badgesHtml += `<span class="prop-badge badge-moola">⚖ Moolatrikona: ${escapeHtml(p.moolatrikona)}</span>`;
+            if (p.exaltation_sign) badgesHtml += `<span class="prop-badge badge-exalted">↑ Exalted: ${escapeHtml(p.exaltation_sign)}</span>`;
+            if (p.debilitation_sign) badgesHtml += `<span class="prop-badge badge-debilitated">↓ Debilitated: ${escapeHtml(p.debilitation_sign)}</span>`;
+            if (p.moolatrikona) badgesHtml += `<span class="prop-badge badge-moola">Moolatrikona: ${escapeHtml(p.moolatrikona)}</span>`;
 
             if (Array.isArray(p.natural_karaka) && p.natural_karaka.length > 0) {
                 const karakas = p.natural_karaka.slice(0, 3).map(k => k.split(' (')[0]).join(', ');
@@ -157,7 +157,7 @@
         return `
             <div class="astra-props-card">
                 <div class="astra-props-header">
-                    <div class="astra-props-title">🏷️ ${headerTitle}</div>
+                    <div class="astra-props-title">️ ${headerTitle}</div>
                     <button type="button" class="raw-yaml-toggle-btn" onclick="toggleRawYaml(this)">▾ Show Raw YAML</button>
                 </div>
                 ${archetypeText ? `<div class="astra-props-archetype">"${escapeHtml(archetypeText)}"</div>` : ''}
@@ -177,30 +177,13 @@
             kbData = window.knowledgeBase.house[houseNum];
         }
 
-        const SIGNS = [
-            'Aries', 'Taurus', 'Gemini', 'Cancer',
-            'Leo', 'Virgo', 'Libra', 'Scorpio',
-            'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
-        ];
-        
-        const SIGN_LORDS = {
-            'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
-            'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
-            'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
-        };
-
-        const SIGN_ELEMENTS = {
-            'Aries': 'Fire (Agni)', 'Leo': 'Fire (Agni)', 'Sagittarius': 'Fire (Agni)',
-            'Taurus': 'Earth (Prithvi)', 'Virgo': 'Earth (Prithvi)', 'Capricorn': 'Earth (Prithvi)',
-            'Gemini': 'Air (Vayu)', 'Libra': 'Air (Vayu)', 'Aquarius': 'Air (Vayu)',
-            'Cancer': 'Water (Jala)', 'Scorpio': 'Water (Jala)', 'Pisces': 'Water (Jala)'
-        };
-
-        const SIGN_MODALITIES = {
-            'Aries': 'Movable (Chara)', 'Cancer': 'Movable (Chara)', 'Libra': 'Movable (Chara)', 'Capricorn': 'Movable (Chara)',
-            'Taurus': 'Fixed (Sthira)', 'Leo': 'Fixed (Sthira)', 'Scorpio': 'Fixed (Sthira)', 'Aquarius': 'Fixed (Sthira)',
-            'Gemini': 'Dual (Dwisvabhava)', 'Virgo': 'Dual (Dwisvabhava)', 'Sagittarius': 'Dual (Dwisvabhava)', 'Pisces': 'Dual (Dwisvabhava)'
-        };
+        const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+            ? window.AstroCatalog.signs.map(s => s.name)
+            : [
+                'Aries', 'Taurus', 'Gemini', 'Cancer',
+                'Leo', 'Virgo', 'Libra', 'Scorpio',
+                'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+            ];
 
         const BHAVA_NAMES = {
             1: { name: 'Tanu Bhāva', theme: 'Physical Self, Vitality & Appearance' },
@@ -256,9 +239,9 @@
 
         const vData = (currentData && currentData.vargas) ? currentData.vargas[varga] : null;
         const lagnaSign = (vData && vData.lagna && vData.lagna.sign) ? vData.lagna.sign : 'Aries';
-        const lagnaIdx = SIGNS.indexOf(lagnaSign);
+        const lagnaIdx = signsList.indexOf(lagnaSign);
         const houseSignIdx = (lagnaIdx + houseNum - 1) % 12;
-        const houseSign = SIGNS[houseSignIdx];
+        const houseSign = signsList[houseSignIdx];
         const bhavaInfo = BHAVA_NAMES[houseNum] || { name: `House ${houseNum}`, theme: '' };
 
         const occupants = [];
@@ -271,13 +254,13 @@
             }
         }
 
-        const lordName = SIGN_LORDS[houseSign] || 'Unknown';
+        const lordName = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSignLord(houseSign) : 'Unknown';
         let lordPlacement = 'Not found';
         let lordDignity = '-';
         let lordHouseNum = null;
         if (vData && vData.grahas && vData.grahas[lordName]) {
             const lg = vData.grahas[lordName];
-            const lordSignIdx = SIGNS.indexOf(lg.sign);
+            const lordSignIdx = signsList.indexOf(lg.sign);
             lordHouseNum = ((lordSignIdx - lagnaIdx + 12) % 12) + 1;
             lordDignity = (lg.dignity_breakdown && lg.dignity_breakdown.final_dignity) ? lg.dignity_breakdown.final_dignity : (lg.dignity || 'Neutral');
             const deg = lg.degree_0_to_30 !== undefined ? ` at ${lg.degree_0_to_30.toFixed(1)}°` : '';
@@ -288,14 +271,14 @@
         let padaHouse = null;
         if (vData && vData.grahas && vData.grahas[lordName]) {
             const lg = vData.grahas[lordName];
-            const lordSignIdx = SIGNS.indexOf(lg.sign);
+            const lordSignIdx = signsList.indexOf(lg.sign);
             const dist = (lordSignIdx - houseSignIdx + 12) % 12;
             let rawPadaIdx = (lordSignIdx + dist) % 12;
             const offsetFromHouse = (rawPadaIdx - houseSignIdx + 12) % 12;
             if (offsetFromHouse === 0 || offsetFromHouse === 6) {
                 rawPadaIdx = (rawPadaIdx + 9) % 12;
             }
-            padaSign = SIGNS[rawPadaIdx];
+            padaSign = signsList[rawPadaIdx];
             padaHouse = ((rawPadaIdx - lagnaIdx + 12) % 12) + 1;
         }
 
@@ -310,29 +293,35 @@
 
         const tabsNav = `
             <div class="astra-tab-bar">
-                <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')">📊 Live Chart</button>
-                <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')">⚡ Essence & Roots</button>
-                <button type="button" class="astra-tab-btn ${defaultTab === 'condition' ? 'active' : ''}" data-tab="condition" onclick="switchContextInfoTab('${containerUid}', 'condition')">⚖️ Condition</button>
-                <button type="button" class="astra-tab-btn ${defaultTab === 'manifestations' ? 'active' : ''}" data-tab="manifestations" onclick="switchContextInfoTab('${containerUid}', 'manifestations')">💼 Arenas</button>
-                <button type="button" class="astra-tab-btn ${defaultTab === 'diagnosis' ? 'active' : ''}" data-tab="diagnosis" onclick="switchContextInfoTab('${containerUid}', 'diagnosis')">🔗 Diagnosis</button>
-                <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')">🪔 Remedies</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')"> Live Chart</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')"> Essence & Roots</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'condition' ? 'active' : ''}" data-tab="condition" onclick="switchContextInfoTab('${containerUid}', 'condition')"> Condition</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'manifestations' ? 'active' : ''}" data-tab="manifestations" onclick="switchContextInfoTab('${containerUid}', 'manifestations')"> Arenas</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'diagnosis' ? 'active' : ''}" data-tab="diagnosis" onclick="switchContextInfoTab('${containerUid}', 'diagnosis')"> Diagnosis</button>
+                <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')"> Remedies</button>
             </div>
         `;
+
+        const hSignObj = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSign(houseSign) : null;
+        const elemMeta = (window.AstroCatalog && hSignObj && window.AstroCatalog.elements) ? window.AstroCatalog.elements[hSignObj.element] : null;
+        const elementLabel = hSignObj ? `${hSignObj.element}${elemMeta ? ' (' + elemMeta.sanskrit + ')' : ''}` : '';
+        const modMeta = (window.AstroCatalog && hSignObj && window.AstroCatalog.modalities) ? window.AstroCatalog.modalities[hSignObj.modality] : null;
+        const modalityLabel = hSignObj ? `${hSignObj.modality}${modMeta ? ' (' + modMeta.sanskrit + ')' : ''}` : '';
 
         const liveInspectorHtml = `
             <div class="bhava-inspector-card">
                 <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1.5px solid var(--border-strong); padding-bottom: 5px;">
                     <span style="font-size: 14px; font-weight: 800; color: var(--text-heading);">House ${houseNum} • ${bhavaInfo.name}</span>
-                    <span style="font-size: 11px; background: var(--bg-surface-muted); color: var(--text-heading); padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
+                    <span style="font-size: 12px; background: var(--bg-surface-muted); color: var(--text-heading); padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
                 </div>
-                <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 8px; font-style: italic;">
+                <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px; font-style: italic;">
                     ${bhavaInfo.theme}
                 </div>
 
                 <!-- Step 1: The Field -->
                 <div class="bhava-step">
                     <div class="bhava-step-title"><span>1. The Field (Kṣetra)</span></div>
-                    <div><strong>Sign:</strong> ${houseSign} (${SIGN_ELEMENTS[houseSign] || ''}, ${SIGN_MODALITIES[houseSign] || ''})</div>
+                    <div><strong>Sign:</strong> ${houseSign} (${elementLabel}, ${modalityLabel})</div>
                     <div><strong>Occupants:</strong> ${occupants.length > 0 ? `<span style="color: var(--status-benefic-dark); font-weight: 700;">${occupants.join(', ')}</span>` : '<span style="color: var(--text-subtle);">None (Empty House)</span>'}</div>
                 </div>
 
@@ -361,9 +350,9 @@
                     <div class="bhava-step-title"><span>5. Divisional Varga Link</span></div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
                         <div>
-                            <strong>${targetVarga.title}</strong>: <span style="font-size: 11px; color: var(--text-muted);">${targetVarga.desc}</span>
+                            <strong>${targetVarga.title}</strong>: <span style="font-size: 12px; color: var(--text-muted);">${targetVarga.desc}</span>
                         </div>
-                        <button type="button" class="btn-open-varga" onclick="openVargaFromInspector('${targetVarga.varga}')" style="background: var(--text-heading); color: var(--bg-surface); border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; white-space: nowrap;">
+                        <button type="button" class="btn-open-varga" onclick="openVargaFromInspector('${targetVarga.varga}')" style="background: var(--text-heading); color: var(--bg-surface); border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap;">
                             Open ${targetVarga.varga} ↗
                         </button>
                     </div>
@@ -418,24 +407,18 @@
             const vData = currentData && currentData.vargas ? currentData.vargas[varga] : null;
             const lagnaSign = (vData && vData.lagna && vData.lagna.sign) ? vData.lagna.sign : 'Aries';
 
-            const SIGNS = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
-            const PLANET_SIGNS = {
-                'Sun': ['Leo'],
-                'Moon': ['Cancer'],
-                'Mars': ['Aries', 'Scorpio'],
-                'Mercury': ['Gemini', 'Virgo'],
-                'Jupiter': ['Sagittarius', 'Pisces'],
-                'Venus': ['Taurus', 'Libra'],
-                'Saturn': ['Capricorn', 'Aquarius'],
-                'Rahu': ['Aquarius'],
-                'Ketu': ['Scorpio']
-            };
+            const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? window.AstroCatalog.signs.map(s => s.name)
+                : ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+            const ruledSignNames = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? window.AstroCatalog.getSignsRuledBy(id)
+                : [];
 
             const ruledHouses = [];
-            if (PLANET_SIGNS[id]) {
-                const lagnaIdx = SIGNS.indexOf(lagnaSign);
-                PLANET_SIGNS[id].forEach(s => {
-                    const sIdx = SIGNS.indexOf(s);
+            if (ruledSignNames.length > 0) {
+                const lagnaIdx = signsList.indexOf(lagnaSign);
+                ruledSignNames.forEach(s => {
+                    const sIdx = signsList.indexOf(s);
                     if (sIdx !== -1 && lagnaIdx !== -1) {
                         const hNum = ((sIdx - lagnaIdx + 12) % 12) + 1;
                         ruledHouses.push(`House ${hNum} (${s})`);
@@ -452,13 +435,13 @@
 
                 const tabsNav = `
                     <div class="astra-tab-bar">
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')">🪐 Live Chart</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')">⚡ Essence</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'psychology' ? 'active' : ''}" data-tab="psychology" onclick="switchContextInfoTab('${containerUid}', 'psychology')">🧠 Psychology</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'dignity' ? 'active' : ''}" data-tab="dignity" onclick="switchContextInfoTab('${containerUid}', 'dignity')">⚖️ Dignity</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'realworld' ? 'active' : ''}" data-tab="realworld" onclick="switchContextInfoTab('${containerUid}', 'realworld')">💼 Real-World</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'lagnas' ? 'active' : ''}" data-tab="lagnas" onclick="switchContextInfoTab('${containerUid}', 'lagnas')">👑 12 Lagnas</button>
-                        <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')">🪔 Remedies</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'live' ? 'active' : ''}" data-tab="live" onclick="switchContextInfoTab('${containerUid}', 'live')"> Live Chart</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'essence' ? 'active' : ''}" data-tab="essence" onclick="switchContextInfoTab('${containerUid}', 'essence')"> Essence</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'psychology' ? 'active' : ''}" data-tab="psychology" onclick="switchContextInfoTab('${containerUid}', 'psychology')"> Psychology</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'dignity' ? 'active' : ''}" data-tab="dignity" onclick="switchContextInfoTab('${containerUid}', 'dignity')"> Dignity</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'realworld' ? 'active' : ''}" data-tab="realworld" onclick="switchContextInfoTab('${containerUid}', 'realworld')"> Real-World</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'lagnas' ? 'active' : ''}" data-tab="lagnas" onclick="switchContextInfoTab('${containerUid}', 'lagnas')"> 12 Lagnas</button>
+                        <button type="button" class="astra-tab-btn ${defaultTab === 'remedies' ? 'active' : ''}" data-tab="remedies" onclick="switchContextInfoTab('${containerUid}', 'remedies')"> Remedies</button>
                     </div>
                 `;
 
@@ -466,7 +449,7 @@
                     <div class="bhava-inspector-card">
                         <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; border-bottom: 1.5px solid var(--border-strong); padding-bottom: 5px;">
                             <span style="font-size: 14px; font-weight: 800; color: var(--text-heading);">${escapeHtml(id)} • Live Placement</span>
-                            <span style="font-size: 11px; background: var(--bg-surface-muted); color: var(--text-heading); padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
+                            <span style="font-size: 12px; background: var(--bg-surface-muted); color: var(--text-heading); padding: 2px 6px; border-radius: 4px; font-weight: 700;">${varga}</span>
                         </div>
                 `;
 
@@ -538,7 +521,7 @@
                     liveCardHtml += `
                         <div class="bhava-step">
                             <div class="bhava-step-title"><span>4. Graha Dṛṣṭi Rays</span></div>
-                            <div style="font-size: 11.5px; line-height: 1.5; margin-top: 4px;">
+                            <div style="font-size: 12px; line-height: 1.5; margin-top: 4px;">
                                 <div><strong>Casting Sight (➔ Outgoing):</strong> ${outgoingRays.length > 0 ? outgoingRays.join(', ') : '<span style="color:var(--text-muted);">None</span>'}</div>
                                 <div style="margin-top: 3px;"><strong>Receiving Sight (⬅ Incoming):</strong> ${incomingRays.length > 0 ? incomingRays.join(', ') : '<span style="color:var(--text-muted);">None</span>'}</div>
                             </div>
@@ -559,9 +542,9 @@
                     const highlightBanner = `
                         <div class="lagna-highlight-box">
                             <div style="font-weight: 800; font-size: 12px; color: var(--status-neutral); margin-bottom: 2px;">
-                                👑 Native's Rising Sign: ${lagnaSign} Ascendant
+                                Native's Rising Sign: ${lagnaSign} Ascendant
                             </div>
-                            <div style="font-size: 11.5px; color: var(--text-heading);">
+                            <div style="font-size: 12px; color: var(--text-heading);">
                                 For this chart, ${escapeHtml(id)} governs <strong>${ruledHouses.join(' & ')}</strong>.
                             </div>
                         </div>

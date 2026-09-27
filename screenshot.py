@@ -280,6 +280,24 @@ async def main():
                     await chart_cell_varg.screenshot(path="screenshot_harmonic_biwheel_vargottama.png")
                     print("Captured screenshot_harmonic_biwheel_vargottama.png")
 
+            # 24. Master Diagnostic Table & Cockpit Drawer
+            await page.evaluate("loadChart('angelina-jolie')")
+            await page.wait_for_timeout(1500)
+            await page.evaluate("assignWidget('master-diagnostic', document.getElementById('cell1'))")
+            await page.wait_for_timeout(800)
+            diag_cell = page.locator("#cell1")
+            if await diag_cell.count() > 0:
+                await diag_cell.screenshot(path="screenshot_master_diagnostic_table.png")
+                print("Captured screenshot_master_diagnostic_table.png")
+
+                # Open drawer on Sun row
+                sun_row = page.locator("#cell1 tr.diagnostic-row").nth(1)
+                if await sun_row.count() > 0:
+                    await sun_row.click()
+                    await page.wait_for_timeout(600)
+                    await diag_cell.screenshot(path="screenshot_master_diagnostic_drawer.png")
+                    print("Captured screenshot_master_diagnostic_drawer.png")
+
 
         except Exception as e:
             print("Error:", e)

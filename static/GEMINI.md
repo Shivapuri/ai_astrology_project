@@ -45,3 +45,28 @@ This rulebook applies to all files inside `static/` and `templates/`. It enters 
 ## 8. On-Demand Lazy SVG Generation (`/api/chart/<native_id>/svg`)
 - Never eagerly generate hundreds of SVG permutations upfront on the backend.
 - Initial chart loads pre-render only the active workspace views. Additional vargas, modes (`symbol`, `english`, `devanagari`), styles (`south`, `north`, `circular`, `biwheel`), and root perspectives (`Lagna`, `Moon`, `Sun`) must be requested on-demand via the `/api/chart/<native_id>/svg` endpoint.
+
+## 9. Monochrome Line Glyphs (STIX Two Math Standard)
+- **Eliminate OS Emoji Boxes**: Never allow native OS color emoji presentation (such as Apple's purple zodiac squares or colored emoji planets) in tables, headers, or diagnostics.
+- **Unicode Variation Selector 15 (`\uFE0E`)**: All astrological zodiac and planetary symbols must be suffixed with `\uFE0E` to force monochrome text presentation.
+- **Font Stack & Spec**: Use `var(--font-astro-glyphs)` (`"STIX Two Math", "Cambria Math", "DejaVu Sans", "Noto Sans Symbols 2", "Apple Symbols", "Segoe UI Symbol", sans-serif`) and `font-variant-emoji: text;`.
+- **Classes**: Apply `.zodiac-line-glyph`, `.graha-glyph`, or `.glyph-symbol` to ensure clean monochrome rendering across macOS, Windows, and Linux/CI.
+
+## 10. De-Badging & Emoji Purge Protocol
+- **De-Badging Routine Data**: Routine tabular information (degrees, sign coordinates, house numbers, dispositor names, nakshatras) must NEVER be enclosed in colorful rounded pill badges (`.pill`, `.badge-pill`). Present clean tabular text with `font-variant-numeric: tabular-nums;`.
+- **Micro-Tag Semantic Scope**: Badges are strictly reserved for high-salience status indicators:
+  - Functional dignity: `.micro-tag.tag-benefic`, `.micro-tag.tag-malefic`, `.micro-tag.tag-neutral`, `.micro-tag.tag-alert`.
+  - Chara Karakas: `.micro-tag.tag-karaka`.
+  - Minimum font floor: All `.micro-tag` elements must strictly be at least `12px` (Rule 1).
+- **Emoji Purge**: Consumer emojis (`🔴`, `🟢`, `🟠`, `🟡`, `👑`, `💣`, `✨`, `🔥`, `🛡`, `😴`, `💤`, `⚡`, `⚔`) are strictly prohibited in data tables, drawers, and diagnostics.
+- **Semantic Micro-Dots**: Use `.status-indicator` with `.indicator-dot` (6px dot) for net aspect balance, dignity shifts, and vitality scores.
+- **Typographic Arrows**: Replace heavy or non-standard arrows (`➔`, `⬅`) with standard Unicode typographic arrows (`→`, `←`, `↔`).
+- **Exact Master Diagnostic Table Geometry**: The Master Diagnostic table (`tmpl_master_diagnostic.html` and `master_diagnostic.js`) has exactly **9 columns**. All 9 columns must be preserved with authoritative Sanskrit/Jyotish and Western technical headings; never drop the 9th column (*Archetype & Vitality*).
+
+## 11. Single Source of Truth (SSOT) for Astrological Catalog
+- **Zero Local Dictionaries**: NEVER declare private dictionaries or arrays for signs, planets, lords, elements, or glyphs inside individual widget files (e.g., `const signs = [...]`, `const signLords = {...}`, `const SIGN_SYMBOLS = {...}`).
+- **Mandatory Use of `window.AstroCatalog`**:
+  - Signs, modalities, elements, and lordships MUST be accessed via `window.AstroCatalog.getSign(nameOrNum)` or `window.AstroCatalog.getSignLord(signName)`.
+  - Planet glyphs, abbreviations, and colors MUST be accessed via `window.AstroCatalog.getPlanet(planetName)`.
+  - Rendering glyphs in DOM tables MUST go through `TableBuilder.renderZodiacGlyph(sign)` and `TableBuilder.renderPlanetGlyph(planet)`.
+- **Modifying Metadata**: Any global changes to glyph formatting, transliteration, or Sanskrit terms MUST be executed solely in `static/js/core/astro_constants.js`.

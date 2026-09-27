@@ -82,10 +82,20 @@
     --shadow-sm: 0 1px 3px rgba(74, 51, 37, 0.05);
     --shadow-md: 0 4px 18px rgba(74, 51, 37, 0.06);
     --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+    /* Primary font stack for all mathematical and astrological glyphs */
+    --font-astro-glyphs: "STIX Two Math", "Cambria Math", "DejaVu Sans", "Noto Sans Symbols 2", "Apple Symbols", "Segoe UI Symbol", sans-serif;
+    
+    /* Semantic Micro-Dot Tokens */
+    --dot-size: 6px;
+    --dot-benefic: var(--status-benefic);
+    --dot-malefic: var(--status-malefic);
+    --dot-neutral: var(--status-neutral);
+    --dot-alert: var(--status-alert);
 }
 
 /* ==========================================================================
-   Semantic Utility Classes
+   Semantic Utility Classes & Micro-Tags (Strict 12px Floor)
    ========================================================================== */
 
 .text-benefic {
@@ -113,7 +123,7 @@
     align-items: center;
     padding: 2px 7px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     background-color: var(--status-benefic-bg);
     color: var(--status-benefic-dark);
@@ -125,7 +135,7 @@
     align-items: center;
     padding: 2px 7px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     background-color: var(--status-malefic-bg);
     color: var(--status-malefic-dark);
@@ -137,7 +147,7 @@
     align-items: center;
     padding: 2px 7px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     background-color: var(--status-neutral-bg);
     color: var(--status-neutral);
@@ -149,11 +159,59 @@
     align-items: center;
     padding: 2px 7px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     background-color: var(--status-alert-bg);
     color: var(--status-alert);
     border: 1px solid var(--status-alert-border);
+}
+
+/* Base Micro-Tag (Strict 12px Typography Floor) */
+.micro-tag {
+    display: inline-flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--border-medium);
+    background: var(--bg-surface-alt);
+    color: var(--text-heading);
+    white-space: nowrap;
+}
+
+.micro-tag.tag-karaka {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    background: #f5ede0;
+    border-color: #dcb594;
+    color: #5c3d28;
+}
+
+.micro-tag.tag-benefic {
+    background: var(--status-benefic-bg);
+    color: var(--status-benefic-dark);
+    border-color: var(--status-benefic-border);
+}
+
+.micro-tag.tag-malefic {
+    background: var(--status-malefic-bg);
+    color: var(--status-malefic-dark);
+    border-color: var(--status-malefic-border);
+}
+
+.micro-tag.tag-neutral {
+    background: var(--status-neutral-bg);
+    color: #92400e;
+    border-color: var(--status-neutral-border);
+}
+
+.micro-tag.tag-alert {
+    background: var(--status-alert-bg);
+    color: var(--status-alert);
+    border-color: var(--status-alert-border);
 }
 
 /* Planetary Text Colors */

@@ -41,7 +41,13 @@ It utilizes a unified, **Integrated Approach**:
 - **Do Not Interrupt**: Do not come back to the user after every small, untested incremental update. Wait until the design subagent has fully verified the UI is polished and unbroken before responding.
 
 ## Frontend Architecture & UI Protocol
-Frontend Architecture & UI rules are strictly governed by `static/GEMINI.md`.
+Frontend Architecture & UI rules are strictly governed by `static/GEMINI.md` and `documentations/adr/ADR-006-professional-editorial-design-system.md`:
+- **Strict 12px Font Floor (`static/GEMINI.md` Rule 1)**: NEVER write or generate CSS font sizes below `12px` (equivalent to 9 pt). Sub-pixel text (`10px`, `10.5px`, `11px`, `11.5px`) is strictly prohibited across all tables, captions, micro-tags, and status readouts.
+- **Monochrome Line Glyphs (STIX Two Math Standard)**: Eliminate colored OS emoji boxes for signs/planets by enforcing Unicode Variation Selector 15 (`\uFE0E`), `font-variant-emoji: text;`, and the primary mathematical font stack (`var(--font-astro-glyphs)`).
+- **De-Badging & Anti-Pill Protocol**: Routine tabular data (degrees, coordinates, houses, dispositors, nakshatras) must NOT be wrapped in pill badges. Present clean tabular text (`font-variant-numeric: tabular-nums;`).
+- **Emoji Purge**: Strip consumer emojis (`🔴`, `🟢`, `🟠`, `🟡`, `👑`, `💣`, `✨`, `🔥`, `🛡`, `😴`, `💤`, `⚡`, `⚔`) in favor of semantic CSS micro-dots (`.status-indicator`), subtle square micro-tags (`.micro-tag`), and clean Unicode typographic arrows (`→`, `←`, `↔`).
+- **Exact 9-Column Master Diagnostic Geometry**: Retain all 9 columns in `tmpl_master_diagnostic.html` and `master_diagnostic.js` using authoritative Sanskrit/Jyotish and Western technical terminology.
+
 
 
 ## Test-Driven Development & Regression Testing (MANDATORY)

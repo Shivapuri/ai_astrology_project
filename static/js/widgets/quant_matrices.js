@@ -89,7 +89,7 @@
                         if (vimBase !== null && vimBase !== undefined) {
                             td.innerHTML = `
                                 <div class="quant-diagonal-stack" style="line-height: 1.1;">
-                                    <span style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;">Vimsho.</span>
+                                    <span style="font-size: 12px; color: var(--text-muted); text-transform: uppercase;">Vimsho.</span>
                                     <span class="text-black-bold" style="font-size: 12px;">${vimBase.toFixed(1)}${moolaFlag}</span>
                                 </div>
                             `;
@@ -280,7 +280,7 @@
         window.widgetRegistry.register('quant-matrices', {
             id: 'quant-matrices',
             title: 'Strength Matrices',
-            icon: '🔢',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateQuantMatricesTableForCell(container, chartData);

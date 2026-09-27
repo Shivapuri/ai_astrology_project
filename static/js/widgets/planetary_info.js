@@ -143,17 +143,17 @@ function populatePlanetaryInfoTable(cell, chartData) {
                     statusHtml = '<span style="color:#64748b;">Direct</span>';
                     statusDesc = `<strong>Status: Direct Motion (Sun)</strong><br>• The Sun is the self-luminous King and soul of the solar system; cannot be combust.<br>• Moves in continuous direct motion across the ecliptic.`;
                 } else if (graha === "Rahu" || graha === "Ketu") {
-                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span>';
+                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:12px; font-weight:bold;">Retro [R]</span>';
                     statusDesc = `<strong>Status: Retrograde [R] (Shadow Node)</strong><br>• ${graha} is a mathematical intersection point of orbital planes (chaya graha); always retrograde.<br>• Immune to combustion because it has no physical body or light to be burned.`;
                 } else if (isRetro && isCombust) {
-                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span> <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Cb [C]</span>';
+                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:12px; font-weight:bold;">Retro [R]</span> <span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:12px; font-weight:bold;">Cb [C]</span>';
                     statusDesc = `${combustSection}<br><br>${retroSection}`;
                 } else if (isRetro) {
-                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:10px; font-weight:bold;">Retro [R]</span>';
+                    statusHtml = '<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size:12px; font-weight:bold;">Retro [R]</span>';
                     const proxNote = (sunDist !== null && combOrb !== null) ? `<br>• <strong>Solar Separation:</strong> ${sunDistFormatted} — Safe outside combustion orb (${combOrb.toFixed(1)}°)` : '';
                     statusDesc = `<strong>Status:</strong> ${retroSection}${proxNote}`;
                 } else if (isCombust) {
-                    statusHtml = '<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:10px; font-weight:bold;">Combust [C]</span>';
+                    statusHtml = '<span class="badge" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:12px; font-weight:bold;">Combust [C]</span>';
                     statusDesc = combustSection;
                 } else {
                     const proxNote = (sunDist !== null && combOrb !== null) ? `<br>• <strong>Distance to Sun:</strong> ${sunDistFormatted} — Safe outside combustion orb (${combOrb.toFixed(1)}°)` : '';
@@ -231,7 +231,7 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('planetary-info', {
         id: 'planetary-info',
         title: 'Planetary Information',
-        icon: '🪐',
+        icon: '',
         category: 'Positions',
         render: function(container, chartData, options) {
             populatePlanetaryInfoTable(container, chartData);
@@ -244,7 +244,7 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.widgetRegistry.register('nakshatras', {
         id: 'nakshatras',
         title: 'Nakshatras & Speed',
-        icon: '✨',
+        icon: '',
         category: 'Positions',
         render: function(container, chartData, options) {
             populatePlanetaryInfoTable(container, chartData);

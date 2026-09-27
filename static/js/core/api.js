@@ -124,7 +124,7 @@ const AstraAPI = {
                         opt = document.createElement('option');
                         opt.value = result.native.id;
                         const isPinned = (result.native.in_dropdown !== false);
-                        const pinPrefix = isPinned ? '' : '📁 ';
+                        const pinPrefix = isPinned ? '' : ' ';
                         const dateFormatted = typeof window.formatToDDMMYYYY === 'function' ? window.formatToDDMMYYYY(result.native.date) : result.native.date;
                         opt.text = `${pinPrefix}${result.native.name} (${dateFormatted})`;
                         const openOpt = select.querySelector('option[value="__open_chart_dialog__"]');

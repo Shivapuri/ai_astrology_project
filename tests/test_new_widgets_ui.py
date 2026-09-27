@@ -18,7 +18,7 @@ def check_server():
         pytest.skip("Flask server is not running on port 5001")
 
 def init_page(page: Page):
-    page.goto(FLASK_URL)
+    page.goto(FLASK_URL, wait_until="domcontentloaded")
     page.wait_for_timeout(800)
     page.evaluate(f"loadChart('{CHART_ID}')")
     page.wait_for_timeout(1200)
@@ -221,8 +221,9 @@ def test_master_diagnostic_widget_renders(page: Page):
     assert "Lagna" in rows.first.inner_text()
     text = page.locator("#cell2 .master-diagnostic-table").inner_text()
     assert "Venus" in text
-    assert "Shadbala" in page.locator("#cell2 .master-diagnostic-table > thead").inner_text()
-    assert "Vitality" in page.locator("#cell2 .master-diagnostic-table > thead").inner_text()
+    thead_text = page.locator("#cell2 .master-diagnostic-table > thead").inner_text()
+    assert ("Ṣaḍbala" in thead_text or "Shadbala" in thead_text)
+    assert "Vitality" in thead_text
     assert "/ 10" in page.locator("#cell2 .master-diagnostic-table > tbody").inner_text()
     assert "Net" in page.locator("#cell2 .master-diagnostic-table > tbody").inner_text()
 

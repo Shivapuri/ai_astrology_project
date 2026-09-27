@@ -153,7 +153,7 @@
         }
         btn.style.display = 'inline-block';
         const isHidden = svg.classList.contains('aspects-hidden');
-        btn.textContent = isHidden ? '👁 Aspects: OFF' : '👁 Aspects: ON';
+        btn.textContent = isHidden ? ' Aspects: OFF' : ' Aspects: ON';
         btn.style.background = isHidden ? 'var(--bg-app)' : 'var(--bg-surface-muted)';
         btn.style.color = isHidden ? 'var(--text-muted)' : 'var(--text-heading)';
     }
@@ -562,34 +562,35 @@
         const cusps = (currentData.vargas && currentData.vargas.D1 && currentData.vargas.D1.cusps) || [];
         const bhavas = (currentData.vargas && currentData.vargas.D1 && currentData.vargas.D1.bhavas) || [];
         
-        const signsList = [
-            'Aries', 'Taurus', 'Gemini', 'Cancer',
-            'Leo', 'Virgo', 'Libra', 'Scorpio',
-            'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
-        ];
-        const signGlyphs = {
-            'Aries': '♈', 'Taurus': '♉', 'Gemini': '♊', 'Cancer': '♋',
-            'Leo': '♌', 'Virgo': '♍', 'Libra': '♎', 'Scorpio': '♏',
-            'Sagittarius': '♐', 'Capricorn': '♑', 'Aquarius': '♒', 'Pisces': '♓'
-        };
-        const signLords = {
-            'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
-            'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
-            'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
-        };
+        const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+            ? window.AstroCatalog.signs.map(s => s.name)
+            : [
+                'Aries', 'Taurus', 'Gemini', 'Cancer',
+                'Leo', 'Virgo', 'Libra', 'Scorpio',
+                'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'
+            ];
+
+        function getSignGlyphHtml(signName) {
+            if (typeof TableBuilder !== 'undefined' && TableBuilder.renderZodiacGlyph) {
+                return TableBuilder.renderZodiacGlyph(signName);
+            }
+            const s = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSign(signName) : null;
+            const g = s ? s.glyph : '';
+            return `<span class="zodiac-line-glyph">${g}</span>`;
+        }
 
         function formatLonDetails(lon) {
-            if (lon === undefined || lon === null || isNaN(lon)) return { glyph: '', sign: '—', degMin: '—', lonStr: '—' };
+            if (lon === undefined || lon === null || isNaN(lon)) return { glyphHtml: '', sign: '—', degMin: '—', lonStr: '—' };
             const normLon = ((lon % 360) + 360) % 360;
             const sIdx = Math.floor(normLon / 30) % 12;
             const sign = signsList[sIdx];
-            const glyph = signGlyphs[sign] || '';
+            const glyphHtml = getSignGlyphHtml(sign);
             const deg = normLon % 30;
             let d = Math.floor(deg);
             let m = Math.round((deg - d) * 60);
             if (m === 60) { d += 1; m = 0; }
             return {
-                glyph: glyph,
+                glyphHtml: glyphHtml,
                 sign: sign,
                 degMin: `${d.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`,
                 lonStr: normLon.toFixed(2) + '°'
@@ -612,12 +613,12 @@
                 <tbody>
         `;
         cusps.forEach((c, idx) => {
-            const lord = signLords[c.sign] || '—';
-            const glyph = signGlyphs[c.sign] || '';
+            const lord = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getSignLord(c.sign) : '—';
+            const glyphHtml = getSignGlyphHtml(c.sign);
             const bhavaData = bhavas[idx] || {};
             const planets = (bhavaData.planets || []).filter(p => p !== 'Asc');
             const planetsStr = planets.length > 0 
-                ? planets.map(p => `<span style="display:inline-block; padding:2px 8px; margin:1px; background:var(--bg-surface-muted); border:1px solid var(--border-medium); border-radius:10px; font-size:11px; font-weight:600; color:var(--text-heading);">${p}</span>`).join(' ')
+                ? planets.map(p => `<span class="micro-tag" style="margin:1px;">${p}</span>`).join(' ')
                 : `<span style="color:var(--text-subtle);">—</span>`;
             
             const startInfo = formatLonDetails(bhavaData.start);
@@ -629,15 +630,15 @@
                 <tr>
                     <td style="padding:7px 10px; white-space:nowrap;"><strong>House ${idx + 1}</strong></td>
                     <td style="padding:7px 10px; font-family:monospace; white-space:nowrap;" title="Start Longitude: ${startInfo.lonStr}">
-                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${startInfo.glyph}</span>${startInfo.degMin} <span style="font-size:11.5px; font-family:sans-serif; color:var(--text-muted);">${startInfo.sign}</span>
+                        <span style="font-weight:bold; margin-right:3px;">${startInfo.glyphHtml}</span>${startInfo.degMin} <span style="font-size:12px; font-family:sans-serif; color:var(--text-muted);">${startInfo.sign}</span>
                     </td>
                     <td style="padding:7px 10px; font-family:monospace; white-space:nowrap; background:var(--bg-surface-elevated, rgba(0,0,0,0.02));" title="Cusp Longitude: ${cuspInfo.lonStr}">
-                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${cuspInfo.glyph}</span><strong>${cuspInfo.degMin}</strong> <span style="font-size:11.5px; font-family:sans-serif; font-weight:600; color:var(--text-heading);">${cuspInfo.sign}</span>
+                        <span style="font-weight:bold; margin-right:3px;">${cuspInfo.glyphHtml}</span><strong>${cuspInfo.degMin}</strong> <span style="font-size:12px; font-family:sans-serif; font-weight:600; color:var(--text-heading);">${cuspInfo.sign}</span>
                     </td>
                     <td style="padding:7px 10px; font-family:monospace; white-space:nowrap;" title="End Longitude: ${endInfo.lonStr}">
-                        <span style="color:var(--border-highlight); font-weight:bold; margin-right:3px;">${endInfo.glyph}</span>${endInfo.degMin} <span style="font-size:11.5px; font-family:sans-serif; color:var(--text-muted);">${endInfo.sign}</span>
+                        <span style="font-weight:bold; margin-right:3px;">${endInfo.glyphHtml}</span>${endInfo.degMin} <span style="font-size:12px; font-family:sans-serif; color:var(--text-muted);">${endInfo.sign}</span>
                     </td>
-                    <td style="padding:7px 10px; white-space:nowrap;"><span style="color:var(--border-highlight); font-weight:bold; margin-right:4px;">${glyph}</span>${c.sign}</td>
+                    <td style="padding:7px 10px; white-space:nowrap;"><span style="font-weight:bold; margin-right:4px;">${glyphHtml}</span>${c.sign}</td>
                     <td style="padding:7px 10px; font-weight:600; color:var(--text-heading); white-space:nowrap;">${lord}</td>
                     <td style="padding:7px 10px;">${planetsStr}</td>
                 </tr>

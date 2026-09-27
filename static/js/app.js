@@ -1213,7 +1213,7 @@ function syncNakshatraSystemUI() {
     }
     document.querySelectorAll('.btn-nak-toggle').forEach(btn => {
         const isVic = (currentNakshatraSystem === 'VIC_CHITRA');
-        btn.innerHTML = isVic ? '✨ Chitra (Vic)' : '✨ Dhruva (Ernst)';
+        btn.innerHTML = isVic ? ' Chitra (Vic)' : ' Dhruva (Ernst)';
         btn.style.background = isVic ? '#fdf4ff' : '#ede9fe';
         btn.style.color = isVic ? '#86198f' : '#5b21b6';
         btn.style.borderColor = isVic ? '#f0abfc' : '#c4b5fd';

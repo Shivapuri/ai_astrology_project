@@ -89,10 +89,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             "Revati": { name: "Revati", deity: "Pushan", ruler: "Mercury", nature: "Mridu / Soft & Gentle", core_drive: "Gentle nourishment, safe guidance of journeys, and spiritual release." }
         };
 
-        function renderNakshatraCell(nakName, deity, ruler, nature, coreDrive) {
+        function renderNakshatraCell(nakName, deity, ruler, nature, coreDrive, pada) {
             const rawName = String(nakName || '—');
             const cleanUpper = rawName.toUpperCase();
-            const receiptText = `✨ ${cleanUpper}\n------------------------------------\n• Deity: ${deity || '—'}\n• Overlord: ${ruler || '—'} (Drives the underlying agenda)\n• Nature: ${nature || '—'}\n• Core Drive: ${coreDrive || 'Subconscious motivation and cosmic trajectory.'}`;
+            const padaText = pada ? ` (${pada})` : (deity ? ` (${deity})` : '');
+            const receiptText = `${cleanUpper}\n------------------------------------\n• Deity: ${deity || '—'}\n• Overlord: ${ruler || '—'} (Drives the underlying agenda)\n• Nature: ${nature || '—'}\n• Core Drive: ${coreDrive || 'Subconscious motivation and cosmic trajectory.'}`;
             const escReceipt = receiptText
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
@@ -106,13 +107,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             }
 
             return `
-                <div class="tooltip-target" data-tooltip="${escAttr(tooltipHtml)}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
-                    <div>
-                        <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size: 12px; padding:2px 6px;">✨ ${rawName} (${deity || '—'})</span>
-                    </div>
-                    <div style="font-size: 12px; color:#64748b; padding-left:2px;">
-                        ↳ Overlord: <strong style="color:#475569;">${ruler || '—'}</strong>
-                    </div>
+                <div class="diagnostic-table-cell-2line tooltip-target" data-tooltip="${escAttr(tooltipHtml)}" style="cursor:help;">
+                    <span><strong>${rawName}</strong>${padaText}</span>
+                    <span class="text-muted" style="font-size:12px;">Overlord: <strong style="color:var(--text-heading);">${ruler || '—'}</strong></span>
                 </div>
             `;
         }
@@ -178,7 +175,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
             const isExp = aspectCard.classList.toggle('is-expanded');
             btn.classList.toggle('active', isExp);
-            btn.innerHTML = isExp ? '🗗 Restore Width' : '⛶ Expand Aspect Waves';
+            btn.innerHTML = isExp ? 'Restore Width' : 'Expand Aspect Waves';
         }
 
         function updateMasterDiagnosticWidget(cell) {
@@ -229,12 +226,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
             const peData = currentChartData.planetary_evaluation || {};
 
-            const signsList = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
-            const signLords = {
-                'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
-                'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
-                'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
-            };
+            const signsList = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? window.AstroCatalog.signs.map(s => s.name)
+                : ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"];
+            const signLords = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.lord]))
+                : {
+                    'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+                    'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+                    'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+                };
 
             const oddSigns = new Set(["Aries", "Gemini", "Leo", "Libra", "Sagittarius", "Aquarius"]);
             const rahuStrongSigns = new Set(["Taurus", "Gemini", "Virgo", "Aquarius"]);
@@ -357,7 +358,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 if (isNeechaBhanga) {
                     return {
                         archetype: "The Transmuted Hero",
-                        badge: "⚡ Transmuted Hero",
+                        badge: "Transmuted Hero",
                         tier: "Alchemical Triumph",
                         subtext: "Alchemical Rescue (Neecha Bhanga)",
                         desc: "Transmuted weakness into sovereign brilliance. Rises through severe adversity with unbreakable resilience.",
@@ -377,7 +378,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     if (isHighMuscle) {
                         return {
                             archetype: "The Generous King",
-                            badge: "🌟 Generous King",
+                            badge: "Generous King",
                             tier: "Sovereign Blessing",
                             subtext: "High Quality + High Muscle",
                             desc: "High moral character equipped with immense executive horsepower. Bestows noble, durable, and expansive prosperity.",
@@ -387,7 +388,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else if (isBalancedMuscle) {
                         return {
                             archetype: "The Noble Guardian",
-                            badge: "🛡️ Noble Guardian",
+                            badge: "Noble Guardian",
                             tier: "Steadfast Protector",
                             subtext: "High Quality + Balanced Muscle",
                             desc: "High moral integrity with capable functional strength. Delivers steady, ethical results with dependability.",
@@ -397,7 +398,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else {
                         return {
                             archetype: "The Sincere Friend",
-                            badge: "🤝 Sincere Friend",
+                            badge: "Sincere Friend",
                             tier: "Noble Intent / Low Muscle",
                             subtext: "High Quality + Low Muscle",
                             desc: "Pure intentions and spiritual grace, but constrained kinetic stamina. Offers genuine solace and peace with modest worldly output.",
@@ -410,7 +411,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     if (isHighMuscle) {
                         return {
                             archetype: "The Pragmatic Executive",
-                            badge: "⚒️ Pragmatic Executive",
+                            badge: "Pragmatic Executive",
                             tier: "Tireless Champion",
                             subtext: "Neutral Quality + High Muscle",
                             desc: "Pragmatic balance equipped with formidable kinetic drive. A focused problem-solver who accomplishes ambitious tasks through relentless stamina.",
@@ -420,7 +421,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else if (isBalancedMuscle) {
                         return {
                             archetype: "The Dutiful Realist",
-                            badge: "⚖️ Dutiful Realist",
+                            badge: "Dutiful Realist",
                             tier: "Functional Workhorse",
                             subtext: "Neutral Quality + Balanced Muscle",
                             desc: "Balanced perspective with adequate strength. Reliable execution without dramatic highs or disruptive lows.",
@@ -430,7 +431,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else {
                         return {
                             archetype: "The Modest Citizen",
-                            badge: "🌱 Modest Citizen",
+                            badge: "Modest Citizen",
                             tier: "Quiet Observer",
                             subtext: "Neutral Quality + Low Muscle",
                             desc: "Moderate outlook with limited energy reserves. Functions quietly in low-pressure settings; avoids conflicts.",
@@ -443,7 +444,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     if (isHighMuscle) {
                         return {
                             archetype: "The Armed Dictator",
-                            badge: "⚔️ Armed Dictator",
+                            badge: "Armed Dictator",
                             tier: "Severe Hazard",
                             subtext: "Low Quality + High Muscle",
                             desc: "Severe inner frustration armed with dangerous kinetic weaponry. High risk of destructive aggression or collateral damage without conscious restraint.",
@@ -453,7 +454,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else if (isBalancedMuscle) {
                         return {
                             archetype: "The Embattled Striver",
-                            badge: "🌪️ Embattled Striver",
+                            badge: "Embattled Striver",
                             tier: "Strained Fighter",
                             subtext: "Low Quality + Balanced Muscle",
                             desc: "Compromised foundation battling through resistance. Works with effort and friction, bearing scars but enduring.",
@@ -463,7 +464,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     } else {
                         return {
                             archetype: "The Toothless Bully",
-                            badge: "⛓️ Toothless Bully",
+                            badge: "Toothless Bully",
                             tier: "Harmless Adversary",
                             subtext: "Low Quality + Low Muscle",
                             desc: "Frustrated disposition but completely deprived of physical muscle. Creates minor friction or internal complaints, but lacks power to cause real harm.",
@@ -545,7 +546,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 is_loser: false,
                                 opponent: loser,
                                 war_mod: 0.30,
-                                badge: `🏆 War Victor (Combat Stain: ${loser})`,
+                                badge: ` War Victor (Combat Stain: ${loser})`,
                                 reason: reason,
                                 orb_deg: Math.round(degDiff * 1000) / 1000,
                                 sign: s1,
@@ -557,7 +558,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 is_loser: true,
                                 opponent: winner,
                                 war_mod: -0.60,
-                                badge: `⚔️ Nipidita (War Defeat via ${winner})`,
+                                badge: `Nipidita (War Defeat via ${winner})`,
                                 reason: reason,
                                 orb_deg: Math.round(degDiff * 1000) / 1000,
                                 sign: s1,
@@ -578,7 +579,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const isSelfHosted = (hName === pName);
                 let effDig = digPct;
                 let effSb = pSbPct;
-                let rescueBadge = "⚖️ Neutral Host";
+                let rescueBadge = "Neutral Host";
                 let rescueClass = "neutral";
                 let rescueDesc = "Neutral host support; steady baseline.";
                 let isNeechaBhanga = false;
@@ -593,49 +594,49 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 } else if (isSelfHosted) {
                     effDig = digPct;
                     effSb = pSbPct;
-                    rescueBadge = "🏡 Self-Hosted";
+                    rescueBadge = "Self-Hosted";
                     rescueClass = "own";
                     rescueDesc = "Full domicile autonomy in own sign.";
                 } else if (isDebil) {
                     if (hDigPct >= 75.0 && hSbPct >= 90.0) {
                         isNeechaBhanga = true;
                         effDig = Math.max(12.5, Math.min(85.0, digPct + 45.0 * (hDigPct / 100.0)));
-                        rescueBadge = "✨ Rescued (Neecha Bhanga)";
+                        rescueBadge = "Rescued (Neecha Bhanga)";
                         rescueClass = "exalt";
                         rescueDesc = `Full alchemical cancellation: host ${hName} is dignified (${hDigPct.toFixed(0)}%) and potent (${hSbPct.toFixed(0)}% Shadbala).`;
                     } else if (hDigPct >= 55.0) {
                         effDig = Math.max(12.5, Math.min(65.0, digPct + 25.0 * (hDigPct / 100.0)));
-                        rescueBadge = "✨ Partial Rescue";
+                        rescueBadge = "Partial Rescue";
                         rescueClass = "exalt";
                         rescueDesc = `Partially rescued: host ${hName} provides capable backing (${hDigPct.toFixed(0)}% dignity).`;
                     } else if (hDigPct < 30.0) {
                         effDig = Math.max(5.0, digPct - 10.0);
-                        rescueBadge = "⚠️ Strained Host";
+                        rescueBadge = "Strained Host";
                         rescueClass = "debil";
                         rescueDesc = `Unsaved: host ${hName} is also debilitated/enemy sign, worsening distress.`;
                     } else {
-                        rescueBadge = "⚖️ Neutral Host";
+                        rescueBadge = "Neutral Host";
                         rescueClass = "neutral";
                         rescueDesc = "Neutral host backing.";
                     }
                 } else {
                     if (hDigPct >= 70.0) {
                         effDig = Math.min(100.0, digPct + 10.0 * (hDigPct / 100.0));
-                        rescueBadge = "🛡️ Fortified Host";
+                        rescueBadge = "Fortified Host";
                         rescueClass = "own";
                         rescueDesc = `Reinforced by dignified host ${hName}.`;
                     } else if (hDigPct < 35.0) {
                         effDig = Math.max(10.0, digPct - 8.0);
-                        rescueBadge = "⚠️ Strained Host";
+                        rescueBadge = "Strained Host";
                         rescueClass = "debil";
                         rescueDesc = `Under drag from strained host ${hName}.`;
                     } else if (hDigPct >= 50.0 && digPct < 35.0) {
                         effDig = Math.min(45.0, digPct + 6.0 * (hDigPct / 100.0));
-                        rescueBadge = "🌱 Stabilized Host";
+                        rescueBadge = "Stabilized Host";
                         rescueClass = "neutral";
                         rescueDesc = `Supported by competent host ${hName}.`;
                     } else {
-                        rescueBadge = "⚖️ Neutral Host";
+                        rescueBadge = "Neutral Host";
                         rescueClass = "neutral";
                         rescueDesc = "Neutral host foundation.";
                     }
@@ -697,7 +698,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         if (['Jupiter', 'Venus'].includes(fromP) && isDeb) {
                             isDistorted = true;
                             adjVir = (vir > 0) ? (vir * 0.5) : vir; // 50% positive dampening
-                            badge = (fromP === 'Jupiter') ? '⚠️ Compromised Guidance / Dogmatic Light' : '⚠️ Corrupted Indulgence / Compromised Harmony';
+                            badge = (fromP === 'Jupiter') ? '️ Compromised Guidance / Dogmatic Light' : '️ Corrupted Indulgence / Compromised Harmony';
                         }
                         totalAdjVir += adjVir;
                         processedAspDetails.push({
@@ -744,20 +745,20 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         if ((pName === 'Jupiter' && cp === 'Rahu') || (pName === 'Rahu' && cp === 'Jupiter')) {
                             isGuruChandal = true;
                             if (diff <= (10.0 / 3.0)) {
-                                guruChandalBadge = "⚡ Guru-Chāṇḍāla (Ideological Eclipse)";
+                                guruChandalBadge = " Guru-Chāṇḍāla (Ideological Eclipse)";
                                 nodeMod -= 0.35;
                             } else if (diff <= 10.0) {
-                                guruChandalBadge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)";
+                                guruChandalBadge = " Guru-Chāṇḍāla (Taboo Zeal / High Ambition)";
                                 nodeMod -= 0.20;
                             } else {
-                                guruChandalBadge = "⚡ Guru-Chāṇḍāla (Unorthodox Doctrine)";
+                                guruChandalBadge = " Guru-Chāṇḍāla (Unorthodox Doctrine)";
                                 conjMod -= 0.10;
                             }
                         }
                         // 2. Jupiter + Ketu (Guru-Ketu Jñāna Yoga)
                         else if ((pName === 'Jupiter' && cp === 'Ketu') || (pName === 'Ketu' && cp === 'Jupiter')) {
                             isGuruKetu = true;
-                            guruKetuBadge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)";
+                            guruKetuBadge = "️ Jñāna Catalyst (Inward Contemplation / Spiritualization)";
                             nodeMod += 0.15;
                         }
                         // 3. Standard Nodal Dynamics for other planets
@@ -803,11 +804,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         }
                         if ((pName === 'Jupiter' && cp === 'Rahu') || (pName === 'Rahu' && cp === 'Jupiter')) {
                             isGuruChandal = true;
-                            guruChandalBadge = "⚡ Guru-Chāṇḍāla (Taboo Zeal / High Ambition)";
+                            guruChandalBadge = " Guru-Chāṇḍāla (Taboo Zeal / High Ambition)";
                             nodeMod -= 0.20;
                         } else if ((pName === 'Jupiter' && cp === 'Ketu') || (pName === 'Ketu' && cp === 'Jupiter')) {
                             isGuruKetu = true;
-                            guruKetuBadge = "🕉️ Jñāna Catalyst (Inward Contemplation / Spiritualization)";
+                            guruKetuBadge = "️ Jñāna Catalyst (Inward Contemplation / Spiritualization)";
                             nodeMod += 0.15;
                         } else if (lagnaLord && cp === lagnaLord) {
                             conjMod += 0.35;
@@ -825,7 +826,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let vikalaMod = 0.0;
                 if (cruelConjoinedNames.length >= 2 && !['Rahu', 'Ketu'].includes(pName)) {
                     isVikala = true;
-                    vikalaBadge = `🩸 Vikala (Besieged by ${cruelConjoinedNames.join(', ')})`;
+                    vikalaBadge = ` Vikala (Besieged by ${cruelConjoinedNames.join(', ')})`;
                     vikalaMod = -0.30;
                 }
 
@@ -862,11 +863,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     if (isGuruChandal) {
                         quad.desc = `High executive capability and expansive mobilization muscle (rules ${(fnRole && fnRole.ruled_houses_str) || 'H11'}), harnessed to unorthodox, dogmatic, or ruthless ideological ambition (Guru-Chāṇḍāla). Massive administrative scale with high risk of ethical blind spots.`;
                         quad.tier = 'Ideological Mobilizer';
-                        quad.badge = '⚡ Ideological Mobilizer';
+                        quad.badge = ' Ideological Mobilizer';
                     } else if (isFunctionalMalefic && isTrishadaya && isVikala) {
                         quad.desc = `High organizational competence and resource power (rules ${(fnRole && fnRole.ruled_houses_str) || ''}), besieged by cruel planets into aggressive worldly appetite and intense friction.`;
                         quad.tier = 'Embattled Executive';
-                        quad.badge = '⚡ Embattled Executive';
+                        quad.badge = ' Embattled Executive';
                     }
                 }
 
@@ -874,28 +875,28 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let finalScore = 5.0 + (preScore - 5.0) * (0.6 + 0.4 * efficiency);
                 finalScore = Math.max(1.0, Math.min(10.0, Math.round(finalScore * 10) / 10));
 
-                let vTier = "🟡 Resilient";
+                let vTier = "Resilient";
                 let vBg = "#fef9c3";
                 let vCol = "#854d0e";
                 if (finalScore >= 8.5) {
-                    vTier = "🌟 Sovereign";
+                    vTier = "Sovereign";
                     vBg = "#fef3c7"; vCol = "#92400e";
                 } else if (finalScore >= 7.0) {
-                    vTier = "🟢 Capable";
+                    vTier = "Capable";
                     vBg = "#dcfce7"; vCol = "#15803d";
                 } else if (finalScore >= 5.5) {
-                    vTier = "🟡 Resilient";
+                    vTier = "Resilient";
                     vBg = "#fef9c3"; vCol = "#854d0e";
                 } else if (finalScore >= 4.0) {
-                    vTier = "🟠 Strained";
+                    vTier = "Strained";
                     vBg = "#ffedd5"; vCol = "#9a3412";
                 } else {
-                    vTier = (quad.archetype === "The Armed Dictator") ? "🔴 Severe Hazard" : "🔴 Fragile";
+                    vTier = (quad.archetype === "The Armed Dictator") ? "Severe Hazard" : "Fragile";
                     vBg = "#fee2e2"; vCol = "#991b1b";
                 }
 
                 const receiptLines = [
-                    "🧮 VITALITY SCORE CALCULATION RECEIPT",
+                    "VITALITY SCORE CALCULATION RECEIPT",
                     "------------------------------------",
                     `1. Base Engine:          ${baseVit.toFixed(1)} (${quad.archetype || 'Neutral'})`,
                     `   • Moral Intent / Dignity: ${effDig.toFixed(1)}% (${digName})`,
@@ -960,11 +961,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 };
             }
 
-            const grahaGlyphs = {
-                'Lagna': '🌅', 'Sun': '☉', 'Moon': '☽', 'Mars': '♂',
-                'Mercury': '☿', 'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄',
-                'Rahu': '☊', 'Ketu': '☋'
-            };
+            const grahaGlyphs = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? Object.fromEntries(Object.entries(window.AstroCatalog.planets).map(([k, v]) => [k, v.glyph]))
+                : {
+                    'Lagna': 'Asc', 'Sun': '☉', 'Moon': '☽', 'Mars': '♂',
+                    'Mercury': '☿', 'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄',
+                    'Rahu': '☊', 'Ketu': '☋'
+                };
 
             const grahaOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
 
@@ -980,20 +983,26 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 'Ketu': '<strong>☋ Ketu (South Node) — The Spiritual Liberator</strong><br>• <strong>Core Nature:</strong> Past-life mastery, spiritual detachment (Vairāgya), subtle perception, introspection, and ultimate liberation (Moksha).'
             };
 
-            const signInfo = {
-                'Aries': { element: 'Fire', quality: 'Movable (Cardinal)', ruler: 'Mars' },
-                'Taurus': { element: 'Earth', quality: 'Fixed', ruler: 'Venus' },
-                'Gemini': { element: 'Air', quality: 'Dual (Mutable)', ruler: 'Mercury' },
-                'Cancer': { element: 'Water', quality: 'Movable (Cardinal)', ruler: 'Moon' },
-                'Leo': { element: 'Fire', quality: 'Fixed', ruler: 'Sun' },
-                'Virgo': { element: 'Earth', quality: 'Dual (Mutable)', ruler: 'Mercury' },
-                'Libra': { element: 'Air', quality: 'Movable (Cardinal)', ruler: 'Venus' },
-                'Scorpio': { element: 'Water', quality: 'Fixed', ruler: 'Mars' },
-                'Sagittarius': { element: 'Fire', quality: 'Dual (Mutable)', ruler: 'Jupiter' },
-                'Capricorn': { element: 'Earth', quality: 'Movable (Cardinal)', ruler: 'Saturn' },
-                'Aquarius': { element: 'Air', quality: 'Fixed', ruler: 'Saturn' },
-                'Pisces': { element: 'Water', quality: 'Dual (Mutable)', ruler: 'Jupiter' }
-            };
+            const signInfo = (typeof window !== 'undefined' && window.AstroCatalog)
+                ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, {
+                    element: s.element,
+                    quality: s.modality === 'Movable' ? 'Movable (Cardinal)' : (s.modality === 'Dual' ? 'Dual (Mutable)' : 'Fixed'),
+                    ruler: s.lord
+                }]))
+                : {
+                    'Aries': { element: 'Fire', quality: 'Movable (Cardinal)', ruler: 'Mars' },
+                    'Taurus': { element: 'Earth', quality: 'Fixed', ruler: 'Venus' },
+                    'Gemini': { element: 'Air', quality: 'Dual (Mutable)', ruler: 'Mercury' },
+                    'Cancer': { element: 'Water', quality: 'Movable (Cardinal)', ruler: 'Moon' },
+                    'Leo': { element: 'Fire', quality: 'Fixed', ruler: 'Sun' },
+                    'Virgo': { element: 'Earth', quality: 'Dual (Mutable)', ruler: 'Mercury' },
+                    'Libra': { element: 'Air', quality: 'Movable (Cardinal)', ruler: 'Venus' },
+                    'Scorpio': { element: 'Water', quality: 'Fixed', ruler: 'Mars' },
+                    'Sagittarius': { element: 'Fire', quality: 'Dual (Mutable)', ruler: 'Jupiter' },
+                    'Capricorn': { element: 'Earth', quality: 'Movable (Cardinal)', ruler: 'Saturn' },
+                    'Aquarius': { element: 'Air', quality: 'Fixed', ruler: 'Saturn' },
+                    'Pisces': { element: 'Water', quality: 'Dual (Mutable)', ruler: 'Jupiter' }
+                };
 
             const houseMeanings = {
                 1: "House 1 (Tanū Bhāva): Self, vitality, appearance, perspective, and life foundation (Kendra / Dharma).",
@@ -1011,16 +1020,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             };
 
             function getDignityIcon(digStr) {
-                const d = (digStr || '').toLowerCase();
-                if (d.includes('exalt') || d.includes('uccha')) return '👑';
-                if (d.includes('moola')) return '🏛️';
-                if (d.includes('own') || d.includes('svastha')) return '🏡';
-                if (d.includes('great friend') || d.includes('adhi-mitra')) return '🤝';
-                if (d.includes('friend') || d.includes('mitra')) return '🙂';
-                if (d.includes('great enemy') || d.includes('adhi-shatru')) return '⚔️';
-                if (d.includes('enemy') || d.includes('shatru')) return '⚠️';
-                if (d.includes('debilit') || d.includes('neecha')) return '🔻';
-                return '⚖️';
+                return '';
             }
 
             function renderAspectVisionBadges(aspList) {
@@ -1047,10 +1047,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const aspG = asp.from_planet;
                         const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                         const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                        const natIcon = isNaturalBen ? '🟢' : '🔴';
                         const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
-                        const digIcon = getDignityIcon(asp.from_dignity_name);
-                        return `• ${natIcon} <strong>${aspG}:</strong> ${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
+                        return `• <strong>${aspG}:</strong> ${rawV} Virūpas (${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
                     }).join('<br>');
                     tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
                 }
@@ -1059,8 +1057,6 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const aspG = asp.from_planet;
                     const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                     const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                    const natIcon = isNaturalBen ? '🟢' : '🔴';
-                    const digIcon = getDignityIcon(asp.from_dignity_name);
 
                     const dName = (asp.from_dignity_name || '').toLowerCase();
                     const dPct = Number(asp.from_dignity_pct !== undefined ? asp.from_dignity_pct : 50);
@@ -1109,16 +1105,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     }
 
                     const distortNote = asp.is_distorted ? `<br>• <strong>Option A (Distorted Ray):</strong> ${asp.badge}. Originates from debilitated ${aspG}; positive light dampened by 50% (${(rawV * 0.5).toFixed(0)}v effective).` : '';
-                    const aspTip = `<strong>${asp.is_distorted ? '⚠️ ' : ''}${natIcon} ${aspG} (${rawV}v)</strong><br>` +
+                    const aspTip = `<strong>${asp.is_distorted ? '️ ' : ''}${aspG} (${rawV}v)</strong><br>` +
                         `• <strong>Vision Type:</strong> ${isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)'}<br>` +
-                        `• <strong>${aspG} Dignity:</strong> ${digIcon} ${asp.from_dignity_name || 'Neutral'} (${asp.from_dignity_pct ? asp.from_dignity_pct.toFixed(0) : '50'}%)<br>` +
+                        `• <strong>${aspG} Dignity:</strong> ${asp.from_dignity_name || 'Neutral'} (${asp.from_dignity_pct ? asp.from_dignity_pct.toFixed(0) : '50'}%)<br>` +
                         `• <strong>Qualitative Effect:</strong> ${synthesisText}${distortNote}<br>` +
                         `• <strong>Force Intensity:</strong> ${rawV} / 60 Virūpas (${((rawV / 60) * 100).toFixed(0)}% Decisive Force).`;
 
                     return `
                         <div class="tooltip-target aspect-badge-main" style="border: 1px solid ${bBorder}; background: ${bBg}; border-radius: 4px; padding: 2px 6px; margin: 2px 0; cursor: help;" data-tooltip="${escapeTooltipAttr(aspTip)}">
                             <div style="display: flex; align-items: center; gap: 4px; font-weight: bold; font-size: 12px; color: ${hCol};">
-                                <span>${natIcon} ${aspG} (${rawV}v)</span>
+                                <span class="status-indicator ${isNaturalBen ? 'benefic' : 'malefic'}"><span class="indicator-dot"></span><span>${aspG} (${rawV}v)</span></span>
                             </div>
                             <div style="font-size: 12px; color: ${sCol}; font-weight: 500; line-height: 1.2; margin-top: 1px;">
                                 ↳ ${synthesisText}
@@ -1751,13 +1747,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const lordHostSbEntry = shadbala[lordHost] || {};
                 const lordHostSb = Number(lordHostSbEntry.Pct_Required_Total !== undefined ? lordHostSbEntry.Pct_Required_Total : 100.0);
 
-                let lordRescueBadge = '<span class="badge" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size: 12px;">⚖️ Neutral Host</span>';
+                let lordRescueBadge = '<span class="micro-tag tag-neutral badge">Neutral Host</span>';
                 if (lordHost === lgLord) {
-                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold;">🏡 Self-Hosted</span>';
+                    lordRescueBadge = '<span class="micro-tag tag-benefic badge">Self-Hosted</span>';
                 } else if (lordHostDig >= 70.0) {
-                    lordRescueBadge = '<span class="badge" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold;">🛡️ Fortified Host</span>';
+                    lordRescueBadge = '<span class="micro-tag tag-benefic badge">Fortified Host</span>';
                 } else if (lordHostDig < 40.0) {
-                    lordRescueBadge = '<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold;">⚠️ Strained Host</span>';
+                    lordRescueBadge = '<span class="micro-tag tag-malefic badge">Strained Host</span>';
                 }
 
                 // Lord Shadbala Power
@@ -1788,9 +1784,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const isBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(cp);
                     const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu', 'Sun'].includes(cp);
                     const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
-                    const cIcon = isBen ? '🤝' : (isMal ? '⚔️' : '•');
                     const tip = `<strong>${cp} in House 1 (Ascendant)</strong><br>• Directly stamps its constitutional nature onto the physical body and personal perspective in ${varga}.`;
-                    return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${tip}">${cIcon} ${cp}</span>`;
+                    return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${tip}">${cp}</span>`;
                 }).join(', ');
 
                 // Flanking Kartari around H1
@@ -1806,10 +1801,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let kartariType = 'Neutral';
                 if (h2Bens.length > 0 && h12Bens.length > 0 && h2Mals.length === 0 && h12Mals.length === 0) {
                     kartariType = 'Śubha Kartarī';
-                    kartariBadge = `<span class="badge tooltip-target" style="background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>✨ Śubha Kartarī Yoga (Protective Hemming)</strong><br>• Benefics flank both H2 (${h2Bens.join(', ')}) and H12 (${h12Bens.join(', ')}), nurturing vitality and shielding destiny.">✨ Śubha Kartarī</span>`;
+                    kartariBadge = `<span class="micro-tag tag-benefic tooltip-target" style="cursor:help;" data-tooltip="<strong>Śubha Kartarī Yoga (Protective Hemming)</strong><br>• Benefics flank both H2 (${h2Bens.join(', ')}) and H12 (${h12Bens.join(', ')}), nurturing vitality and shielding destiny.">Śubha Kartarī</span>`;
                 } else if (h2Mals.length > 0 && h12Mals.length > 0 && h2Bens.length === 0 && h12Bens.length === 0) {
                     kartariType = 'Pāpa Kartarī';
-                    kartariBadge = `<span class="badge tooltip-target" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>⚔️ Pāpa Kartarī Yoga (Malefic Hemming)</strong><br>• Malefics flank both H2 (${h2Mals.join(', ')}) and H12 (${h12Mals.join(', ')}), pinching the personal field with chronic resistance.">⚔️ Pāpa Kartarī</span>`;
+                    kartariBadge = `<span class="micro-tag tag-malefic tooltip-target" style="cursor:help;" data-tooltip="<strong>Pāpa Kartarī Yoga (Malefic Hemming)</strong><br>• Malefics flank both H2 (${h2Mals.join(', ')}) and H12 (${h12Mals.join(', ')}), pinching the personal field with chronic resistance.">Pāpa Kartarī</span>`;
                 }
 
                 // -------------------------------------------------------------
@@ -1896,11 +1891,17 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 // Cusp aspect badges
                 let cuspDrishtiBadge = '';
                 if (c1Net >= 15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#f0fdf4; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:bold;">+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi</span>`;
+                    cuspDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'benefic', text: `+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi` })
+                        : `<span class="status-indicator benefic"><span class="indicator-dot"></span><span>+${c1Net.toFixed(1)} Vir Net Śubha Dṛṣṭi</span></span>`;
                 } else if (c1Net <= -15.0) {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#fef2f2; color:#b91c1c; border:1px solid #fca5a5; font-size: 12px; font-weight:bold;">${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi</span>`;
+                    cuspDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'malefic', text: `${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi` })
+                        : `<span class="status-indicator malefic"><span class="indicator-dot"></span><span>${c1Net.toFixed(1)} Vir Net Pāpa Dṛṣṭi</span></span>`;
                 } else {
-                    cuspDrishtiBadge = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; font-size: 12px;">${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span>`;
+                    cuspDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'neutral', text: `${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral` })
+                        : `<span class="status-indicator neutral"><span class="indicator-dot"></span><span>${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span></span>`;
                 }
                 
                 const lagnaAspList = [];
@@ -1938,7 +1939,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                             const aspG = asp.from_planet;
                             const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                            const natIcon = isNaturalBen ? '🟢' : '🔴';
+                            const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
                             const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
                             const aspStrengthPct = Math.round((rawV / 60.0) * 100);
 
@@ -1949,7 +1950,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     {
                                         name: 'Lagna',
                                         longitude: lgLon,
-                                        symbol: '🌅 Lagna',
+                                        symbol: 'Asc Lagna',
                                         is_target: true
                                     }
                                 ];
@@ -1959,7 +1960,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                         <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
                                             <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
                                                 <div>
-                                                    <span>${natIcon} <strong>${aspG}</strong> Aspect on Horizon</span>
+                                                    <span>${dotHtml}<strong>${aspG}</strong> Aspect on Horizon</span>
                                                     <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
                                                 </div>
                                                 <div style="font-size: 12px; font-weight: 600; color: #475569;">
@@ -1995,28 +1996,29 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const lgVitalityTip = `<strong>★ Lagna Vitality Score: ${lagnaVitScore.toFixed(1)} / 10 • ${lagnaTier}</strong><br>• <strong>Archetype:</strong> ${lagnaArchetype}<br>• <strong>Verdict:</strong> ${lagnaVerdict}`;
 
                 const lgShortSign = `${lgSign} ${lgDeg} • H1`;
-                const lgExprBadge = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:700;">High Expression (+25%)</span>`;
-                const lgCaptainBadge = `<span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size: 12px; padding:1px 5px;">${cleanLordDig} ${lordDigPct.toFixed(0)}%</span>`;
+                const lgExprBadge = `<span class="micro-tag tag-benefic">High Expression (+25%)</span>`;
+                const lgCaptainBadge = `<span class="micro-tag" style="background:${lordDigBg}; color:${lordDigColor}; border-color:${lordDigBorder};">${cleanLordDig} ${lordDigPct.toFixed(0)}%</span>`;
 
                 tbody.innerHTML += `
                     <tr class="interactive-table-row diagnostic-row" data-type="planet" data-id="Lagna" style="background:#faf7f2; border-bottom: 2px solid #dcb594; cursor: pointer;" onclick="toggleDiagnosticDrawer('drawer-Lagna', this)">
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#4a3325;">
-                                    <span style="font-size:14px;">🌅</span>
+                                    <span class="graha-glyph">Asc</span>
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lagnaTip)}" style="cursor:help;">Lagna</span>
                                 </div>
                                 <div>
-                                    <span class="badge" style="background:#e0e7ff; color:#3730a3; border:1px solid #c7d2fe; font-size: 12px; font-weight:bold;">Tanū Bhāva (H1)</span>
+                                    <span class="micro-tag tag-neutral badge">Tanū Bhāva (H1)</span>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
-                            <div class="diagnostic-table-cell-2line">
-                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
-                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lgPlacementTip)}" style="cursor:help;">${lgShortSign}</span>
+                            <div class="placement-readout">
+                                <div class="placement-line-primary">
+                                    ${typeof TableBuilder !== 'undefined' && TableBuilder.renderZodiacGlyph ? TableBuilder.renderZodiacGlyph(lgSign) : ''}
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lgPlacementTip)}" style="cursor:help;"><strong>${lgSign}</strong> ${lgDeg}</span>
                                 </div>
-                                <div>${lgExprBadge}</div>
+                                <div class="placement-line-secondary">House 1 • ${lgExprBadge}</div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
@@ -2025,7 +2027,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     Captain: ${lgCaptainBadge}
                                 </div>
                                 <div style="font-size: 12px; color:#475569; font-weight:600;">
-                                    ↳ Lord: <strong>${lgLord}</strong>
+                                    &rarr; Lord: <strong>${lgLord}</strong>
                                 </div>
                             </div>
                         </td>
@@ -2037,7 +2039,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
-                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
+                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap; font-variant-numeric: tabular-nums;">
                                     <strong>${sbVir}v</strong> <span style="font-size: 12px; color:${(sbPct || 0) >= 100 ? '#15803d' : '#b91c1c'}; font-weight:600;">(${sbPct !== null ? sbPct + '%' : '--'})</span>
                                 </div>
                                 <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap;">
@@ -2059,17 +2061,17 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgAvasthaTip)}">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span>
+                                    <span class="micro-tag tag-neutral tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(lgAvasthaTip)}">${lgBaladi.state} (${lgBaladi.efficiency_pct}%)</span>
                                 </div>
                                 <div style="font-size: 12px; color:#3730a3; font-weight:600;">
-                                    Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' (➔ B' + lordCHouse + ')' : ''}
+                                    Lord in H${lordWHouse}${lordCHouse !== lordWHouse ? ' (&rarr; B' + lordCHouse + ')' : ''}
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size: 12px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(lgVitalityTip)}">★ ${lagnaVitScore.toFixed(1)} • ${lagnaArchetype}</span>
+                                    <span class="micro-tag tooltip-target" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border-color:${lagnaTierBorder}; cursor:help;" data-tooltip="${escapeTooltipAttr(lgVitalityTip)}">★ ${lagnaVitScore.toFixed(1)} • ${lagnaArchetype}</span>
                                 </div>
                                 <div style="font-size: 12px; color:#475569; font-weight:600; white-space:nowrap;">
                                     ★ <strong style="color:#1e293b; font-size: 12px;">${lagnaVitScore.toFixed(1)}</strong> / 10 • <span style="font-size: 12px; color:#64748b;">Intent: ${lordDigPct.toFixed(0)}% | Power: ${sbPct !== null ? sbPct : '--'}%</span>
@@ -2082,11 +2084,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             <div class="drawer-container">
                                 <div class="drawer-view-bar">
                                     <div class="drawer-tabs-group">
-                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">👁️ All Side-by-Side</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">👑 Dignity</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">🏛️ House</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">🌊 Aspect Waves</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">🧘 Avasthas</button>
+                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">All Side-by-Side</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">Dignity</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">House</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">Aspect Waves</button>
+                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">Avasthas</button>
                                     </div>
                                     <div class="drawer-actions-group">
                                         <button type="button" class="drawer-action-btn expand-aspects-btn" onclick="toggleExpandAspects(this)">⛶ Expand Aspect Waves</button>
@@ -2095,19 +2097,19 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 <div class="drawer-grid">
                                     <div class="drawer-card" data-card="dignity">
                                         <div class="drawer-card-title">
-                                            <span>👑 Lagna Lord Foundation</span>
+                                            <span>Lagna Lord Foundation</span>
                                             <span style="font-size:12px; color:#78716c; font-weight:normal;">Lagneśa Authority</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Lagneśa (Ascendant Lord):</strong> ${lgLord} in ${lordSign} (House ${lordWHouse})</div>
-                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="badge" style="background:${lordDigBg}; color:${lordDigColor}; border:1px solid ${lordDigBorder}; font-weight:bold; font-size:12px;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
+                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="micro-tag" style="background:${lordDigBg}; color:${lordDigColor}; border-color:${lordDigBorder}; font-weight:bold;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
                                             <div style="margin-top:2px;"><strong>Dispositor of Captain:</strong> ${lordHost} (${lordHostDig.toFixed(0)}% dignity, ${lordHostSb.toFixed(0)}% muscle)</div>
                                             <div style="margin-top:4px; font-size:12px; color:#64748b;">The Lagna Lord serves as the captain of the physical vessel. Its dignity and stamina set the baseline capacity to manifest destiny.</div>
                                         </div>
                                     </div>
                                     <div class="drawer-card" data-card="house">
                                         <div class="drawer-card-title">
-                                            <span>🏡 Rising Field (Tanū Bhāva)</span>
+                                            <span>Rising Field (Tanū Bhāva)</span>
                                             <span style="font-size:12px; color:#78716c; font-weight:normal;">Physical Horizon</span>
                                         </div>
                                         <div class="drawer-card-body">
@@ -2119,7 +2121,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     </div>
                                     <div class="drawer-card drawer-card-aspects" data-card="aspect-weather">
                                         <div class="drawer-card-title">
-                                            <span>⚡ Horizon Inflowing Aspects</span>
+                                            <span>Horizon Inflowing Aspects</span>
                                             <span style="font-size:12px; color:#78716c; font-weight:normal;">Dṛṣṭi on Cusp 1</span>
                                         </div>
                                         <div class="drawer-card-body">
@@ -2132,20 +2134,20 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     </div>
                                     <div class="drawer-card" data-card="avasthas">
                                         <div class="drawer-card-title">
-                                            <span>🧠 Biological Fuel &amp; Archetype</span>
+                                            <span>Biological Fuel &amp; Archetype</span>
                                             <span style="font-size:12px; color:#78716c; font-weight:normal;">Physical Vessel</span>
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Biological Age:</strong> ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)</div>
                                             <div style="font-size:12px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
-                                            <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="badge" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border:1px solid ${lagnaTierBorder}; font-size:12px; font-weight:bold;">${lagnaArchetype}</span></div>
-                                            <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">🧠 ${lagnaVerdict}</div>
+                                            <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="micro-tag" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border-color:${lagnaTierBorder}; font-weight:bold;">${lagnaArchetype}</span></div>
+                                            <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">${lagnaVerdict}</div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="drawer-receipt">
-                                    <div class="drawer-receipt-header">🧮 Ascendant (Lagna) Vitality Audit Receipt</div>
-                                    <pre class="drawer-receipt-content">🧮 LAGNA VITALITY AUDIT RECEIPT
+                                    <div class="drawer-receipt-header">Ascendant (Lagna) Vitality Audit Receipt</div>
+                                    <pre class="drawer-receipt-content">LAGNA VITALITY AUDIT RECEIPT
 ------------------------------------
 • Ascendant Degree:  ${lgSign} ${lgDeg} (House 1)
 • Captain (Lagneśa): ${lgLord} in ${lordSign} [${cleanLordDig} ${lordDigPct.toFixed(0)}%]
@@ -2154,7 +2156,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 • Horizon Skylight:  Net ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas (${kartariType})
 • Biological Age:    ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)
 ------------------------------------
-★ Final Vitality:    ★ ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
+Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
 • Archetype:         ${lagnaArchetype}
 • Verdict:           ${lagnaVerdict}</pre>
                                 </div>
@@ -2179,24 +2181,24 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let masterLordBadgesHtml = '';
                 const mlBadges = [];
                 if (graha === lagnaLordPlanet) {
-                    const mlTip = `<strong>👑 Lagneśa (Ascendant Lord - D1)</strong><br>• Governs the D1 rising sign (${v_lagna.sign || '--'}).<br>• <strong>Master Authority:</strong> Physical vitality, constitution, and overall life mastery (Bhāgyavān Prabhu).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Lagneśa</span>`);
+                    const mlTip = `<strong>Lagneśa (Ascendant Lord - D1)</strong><br>• Governs the D1 rising sign (${v_lagna.sign || '--'}).<br>• <strong>Master Authority:</strong> Physical vitality, constitution, and overall life mastery (Bhāgyavān Prabhu).`;
+                    mlBadges.push(`<span class="micro-tag tag-neutral badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border-color:#c4b5fd; cursor:help;" data-tooltip="${mlTip}">LL</span>`);
                 }
                 if (graha === navamshaLordPlanet) {
                     const d9LgSign = (currentChartData.vargas && currentChartData.vargas.D9 && currentChartData.vargas.D9.lagna && currentChartData.vargas.D9.lagna.sign) || '';
-                    const mlTip = `<strong>👑 Navāṁśa Lord (D9 Lord of Fortune)</strong><br>• Rules the Navāṁśa rising sign (${d9LgSign || '--'}).<br>• <strong>Master Authority:</strong> Internal contentment, soul-level dharma, and spiritual happiness (Sukhī).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fdf4ff; color:#86198f; border:1px solid #f0abfc; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Navāṁśa Lord</span>`);
+                    const mlTip = `<strong>Navāṁśa Lord (D9 Lord of Fortune)</strong><br>• Rules the Navāṁśa rising sign (${d9LgSign || '--'}).<br>• <strong>Master Authority:</strong> Internal contentment, soul-level dharma, and spiritual happiness (Sukhī).`;
+                    mlBadges.push(`<span class="micro-tag tag-neutral badge tooltip-target" style="background:#fdf4ff; color:#86198f; border-color:#f0abfc; cursor:help;" data-tooltip="${mlTip}">D9L</span>`);
                 }
                 if (graha === drekkanaLordPlanet) {
                     const d3LgSign = (currentChartData.vargas && currentChartData.vargas.D3 && currentChartData.vargas.D3.lagna && currentChartData.vargas.D3.lagna.sign) || '';
-                    const mlTip = `<strong>👑 Drekkāṇa Lord (D3 Lord of Courage)</strong><br>• Rules the Drekkāṇa rising sign (${d3LgSign || '--'}).<br>• <strong>Master Authority:</strong> Bodily courage, competitiveness, and decisive worldly drive (Prabhu).`;
-                    mlBadges.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${mlTip}">👑 Drekkāṇa Lord</span>`);
+                    const mlTip = `<strong>Drekkāṇa Lord (D3 Lord of Courage)</strong><br>• Rules the Drekkāṇa rising sign (${d3LgSign || '--'}).<br>• <strong>Master Authority:</strong> Bodily courage, competitiveness, and decisive worldly drive (Prabhu).`;
+                    mlBadges.push(`<span class="micro-tag tag-neutral badge tooltip-target" style="background:#fef3c7; color:#92400e; border-color:#fcd34d; cursor:help;" data-tooltip="${mlTip}">D3L</span>`);
                 }
                 if (mlBadges.length > 0) {
                     masterLordBadgesHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${mlBadges.join('')}</div>`;
                 }
                 const gData = v_grahas[graha];
-                const glyph = grahaGlyphs[graha] || '★';
+                const glyph = (typeof TableBuilder !== 'undefined' && TableBuilder.renderPlanetGlyph) ? TableBuilder.renderPlanetGlyph(graha) : (grahaGlyphs[graha] || graha);
                 const sign = gData.sign || '--';
                 const degVal = Number(gData.degree_0_to_30 || 0.0);
                 const deg = formatDeg(degVal);
@@ -2215,7 +2217,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let statusBadges = '';
                 if (isRetro) {
                     const rTip = `<strong>Retrograde [R] (Vakra Motion)</strong><br>• <strong>Motional Power:</strong> Apparent backward movement places ${graha} closest to Earth, largest, and brightest (high Cheṣṭa Bala).<br>• <strong>Psychological Meaning:</strong> Energy turns deeply introspective, non-linear, and unconventional; challenges standard norms and re-evaluates its significations.`;
-                    statusBadges += ` <span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${rTip}">[R]</span>`;
+                    statusBadges += ` <span class="micro-tag tag-malefic badge tooltip-target" style="cursor:help;" data-tooltip="${rTip}">[R]</span>`;
                 }
                 if (isCombust) {
                     const sunDist = (gData.sun_distance !== undefined && gData.sun_distance !== null) ? Number(gData.sun_distance) : null;
@@ -2240,7 +2242,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         `• <strong>Severity:</strong> ${sevNote}<br>` +
                         (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (Combust planets mainly weaken or harm the houses they rule)<br>` : '') +
                         `• <strong>Core Teaching:</strong> Outward ego expression is absorbed and humbled by the solar will; urges the native to seek self-worth internally rather than from external validation.`;
-                    statusBadges += ` <span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${cTip}">[C]</span>`;
+                    statusBadges += ` <span class="micro-tag tag-alert badge tooltip-target" style="cursor:help;" data-tooltip="${cTip}">[C]</span>`;
                 }
 
                 // Moon Illumination & Phase (Graha & Soul column badge)
@@ -2266,7 +2268,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             illumination_pct: Math.round(illum * 10) / 10,
                             light_type: lType,
                             terrain_spectrum: sType,
-                            badge: `${isWax ? (illum > 80 ? '🌕' : '🌔') : (illum < 20 ? '🌑' : '🌘')} ${isWax ? 'Waxing' : 'Waning'} (${Math.round(illum)}%)`
+                            badge: `${isWax ? 'Waxing' : 'Waning'} (${Math.round(illum)}%)`
                         };
                     }
 
@@ -2296,19 +2298,18 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             spectrumDesc = `<strong>Continuous Malefic Scaling (Illum &lt; 50%):</strong> Scales gradually from 0.0% at 50% half-moon up to +25.0% at 0% new moon (BPHS 3.11 &amp; 28.11). Current factor: <strong>${gFac.toFixed(2)}x</strong> produces <strong>+${effMaxMod}%</strong> in Upachayas (3, 6, 10, 11) and <strong>-${effMaxMod}%</strong> in tender houses (1, 4, 5, 9).`;
                         }
 
-                        const moonTooltip = `<strong>${isWax ? '🌔 Shukla Paksha (Waxing Moon)' : '🌘 Krishna Paksha (Waning Moon)'}</strong><br>` +
+                        const moonTooltip = `<strong>${isWax ? 'Shukla Paksha (Waxing Moon)' : 'Krishna Paksha (Waning Moon)'}</strong><br>` +
                             `• <strong>Illumination:</strong> ${illum.toFixed(1)}% illuminated (${mPhase.elongation_deg}° from Sun)<br>` +
                             `• <strong>Light Category:</strong> ${mPhase.light_type || '--'}<br>` +
                             `• <strong>Continuous Spectrum:</strong> ${spectrumLabel}<br>` +
                             `• <strong>House Terrain Rule:</strong> ${spectrumDesc}<br>` +
                             `• <strong>Scriptural Proof:</strong> BPHS 28.10-11 (Paksha Bala Virupas), BPHS 35.9 (Pūrṇendu vs Kṣīṇendu), Saravali 5.43.`;
 
-                        const phaseIcon = isWax ? (illum > 80 ? '🌕' : '🌔') : (illum < 20 ? '🌑' : '🌘');
                         const phaseName = isWax ? 'Waxing' : 'Waning';
 
                         moonPhaseBadgeHtml = `<div style="margin-top:2px;">` +
-                            `<span class="badge tooltip-target" style="background:${badgeBg}; color:${badgeColor}; border:1px solid ${badgeBorder}; font-size: 12px; padding:1px 5px; border-radius:3px; cursor:help; font-weight:600; display:inline-flex; align-items:center; gap:2px;" data-tooltip="${escapeTooltipAttr(moonTooltip)}">` +
-                            `${phaseIcon} ${phaseName} ${illum.toFixed(0)}%` +
+                            `<span class="micro-tag tag-neutral badge tooltip-target" style="background:${badgeBg}; color:${badgeColor}; border-color:${badgeBorder}; cursor:help;" data-tooltip="${escapeTooltipAttr(moonTooltip)}">` +
+                            `${phaseName} ${illum.toFixed(0)}%` +
                             `</span>` +
                             `</div>`;
                     }
@@ -2319,40 +2320,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const houseTooltip = `<strong>${hDesc}</strong><br>• Whole Sign house placement counted from Lagna in ${varga}.`;
                 let houseHtml = `<span class="tooltip-target" data-tooltip="${houseTooltip}" style="cursor:help;">House ${wHouse}</span>`;
                 if (cHouse !== wHouse) {
-                    const shiftTip = `<strong>Campanus 3D Bhava Shift (➔ Bhava ${cHouse})</strong><br>• Whole sign is House ${wHouse}, but the 3D Campanus house cusp crosses into Bhava ${cHouse}.<br>• <strong>Interpretation:</strong> Outer circumstances follow House ${wHouse}, while internal psychological experience aligns with Bhava ${cHouse}.`;
-                    houseHtml += ` <span class="badge tooltip-target" style="background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${shiftTip}">➔ Bhava ${cHouse}</span>`;
+                    const shiftTip = `<strong>Campanus 3D Bhava Shift (&rarr; Bhava ${cHouse})</strong><br>• Whole sign is House ${wHouse}, but the 3D Campanus house cusp crosses into Bhava ${cHouse}.<br>• <strong>Interpretation:</strong> Outer circumstances follow House ${wHouse}, while internal psychological experience aligns with Bhava ${cHouse}.`;
+                    houseHtml += ` <span class="tooltip-target" style="color:var(--text-muted); font-size:12px; cursor:help;" data-tooltip="${shiftTip}">(&rarr; B${cHouse})</span>`;
                 }
 
                 // Chara Karaka
                 const ck = gData.chara_karaka || (currentChartData.karakas && currentChartData.karakas.chara && currentChartData.karakas.chara[graha]) || null;
                 let ckBadge = '';
                 if (ck && ck.karaka && ck.karaka !== '—') {
-                    let ckStyle = 'background:#f1f5f9; color:#334155; border:1px solid #cbd5e1;';
-                    let ckIcon = '';
-                    if (ck.karaka === 'AK') {
-                        ckStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold;';
-                        ckIcon = '👑 ';
-                    } else if (ck.karaka === 'AmK') {
-                        ckStyle = 'background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; font-weight:bold;';
-                        ckIcon = '💼 ';
-                    } else if (ck.karaka === 'DK') {
-                        ckStyle = 'background:#fdf2f8; color:#9d174d; border:1px solid #fbcfe8; font-weight:bold;';
-                        ckIcon = '💍 ';
-                    } else if (ck.karaka === 'BK') {
-                        ckStyle = 'background:#eff6ff; color:#1e40af; border:1px solid #bfdbfe; font-weight:600;';
-                        ckIcon = '📿 ';
-                    } else if (ck.karaka === 'MK') {
-                        ckStyle = 'background:#f5f3ff; color:#5b21b6; border:1px solid #ddd6fe; font-weight:600;';
-                        ckIcon = '🏡 ';
-                    } else if (ck.karaka === 'PK') {
-                        ckStyle = 'background:#fefce8; color:#854d0e; border:1px solid #fef08a; font-weight:600;';
-                        ckIcon = '🌱 ';
-                    } else if (ck.karaka === 'GK') {
-                        ckStyle = 'background:#fff1f2; color:#9f1239; border:1px solid #fecdd3; font-weight:600;';
-                        ckIcon = '⚔️ ';
-                    }
-                    const ckTooltip = `<strong>${ckIcon}${ck.name} (${ck.karaka}) • ${ck.title}</strong><br>• Rank: #${ck.rank} (Traversed ${ck.degree_in_sign}° in sign)<br>• ${ck.description}`;
-                    ckBadge = `<span class="badge tooltip-target" style="${ckStyle} font-size: 12px; padding:1px 5px; border-radius:3px; cursor:help;" data-tooltip="${ckTooltip}">${ckIcon}${ck.karaka}</span>`;
+                    const ckTooltip = `<strong>${ck.name} (${ck.karaka}) • ${ck.title}</strong><br>• Rank: #${ck.rank} (Traversed ${ck.degree_in_sign}° in sign)<br>• ${ck.description}`;
+                    ckBadge = `<span class="micro-tag tag-karaka badge tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(ckTooltip)}">${ck.karaka}</span>`;
                 }
 
                 // Functional Role
@@ -2365,23 +2342,23 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     
                     const bList = [];
                     if (fnRole.is_yogakaraka) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>⭐ Yogakāraka (Supreme Benefic)</strong><br>• Simultaneously rules Kendra & Trikona (${fnRole.ruled_houses_str})<br>• Unites action with divine grace, conferring high worldly and dharmic achievement.">⭐ Yogakāraka</span>`);
+                        bList.push(`<span class="micro-tag tag-benefic badge tooltip-target" style="cursor:help;" data-tooltip="<strong>Yogakāraka (Supreme Benefic)</strong><br>• Simultaneously rules Kendra & Trikona (${fnRole.ruled_houses_str})<br>• Unites action with divine grace, conferring high worldly and dharmic achievement.">Yogakāraka</span>`);
                     } else if (fnRole.is_lagnesha) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#ede9fe; color:#5b21b6; border:1px solid #c4b5fd; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="<strong>🛡️ Lagneśa (Ascendant Lord)</strong><br>• Rules House 1 (${fnRole.ruled_houses_str})<br>• Primary protector of self, health, and vitality.">🛡️ Lagneśa</span>`);
+                        bList.push(`<span class="micro-tag tag-benefic badge tooltip-target" style="cursor:help;" data-tooltip="<strong>Lagneśa (Ascendant Lord)</strong><br>• Rules House 1 (${fnRole.ruled_houses_str})<br>• Primary protector of self, health, and vitality.">Lagneśa</span>`);
                     }
                     
                     if (fnRole.is_maraka && !fnRole.is_yogakaraka) {
                         const marakaH = fnRole.ruled_houses.filter(h => h === 2 || h === 7);
-                        bList.push(`<span class="badge tooltip-target" style="background:#f1f5f9; color:#475569; border:1px solid #cbd5e1; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>Māraka (H${marakaH.join('/')})</strong><br>• Rules death/transformation threshold houses (H2/H7)<br>• Demands resource stewardship and governs transformative thresholds.">Māraka</span>`);
+                        bList.push(`<span class="micro-tag tag-neutral badge tooltip-target" style="cursor:help;" data-tooltip="<strong>Māraka (H${marakaH.join('/')})</strong><br>• Rules death/transformation threshold houses (H2/H7)<br>• Demands resource stewardship and governs transformative thresholds.">Māraka</span>`);
                     }
                     
                     if (fnRole.is_badhaka && !fnRole.is_yogakaraka && !fnRole.is_lagnesha) {
-                        bList.push(`<span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>Bādhaka (Obstacle Maker)</strong><br>• Rules the specific testing house for this sign<br>• Creates subtle karmic friction or blind spots requiring self-reflection.">Bādhaka</span>`);
+                        bList.push(`<span class="micro-tag tag-alert badge tooltip-target" style="cursor:help;" data-tooltip="<strong>Bādhaka (Obstacle Maker)</strong><br>• Rules the specific testing house for this sign<br>• Creates subtle karmic friction or blind spots requiring self-reflection.">Bādhaka</span>`);
                     }
 
                     if (fnRole.is_trishadaya && !fnRole.is_yogakaraka && !fnRole.is_lagnesha) {
                         const trishH = fnRole.ruled_houses.filter(h => [3, 6, 11].includes(h));
-                        bList.push(`<span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size: 12px; font-weight:600; cursor:help;" data-tooltip="<strong>⚡ Functional Malefic (Trishadāya H${trishH.join('/')})</strong><br>• Rules houses of intense worldly ambition, desire, or competitive drive (BPHS Ch. 34).<br>• Worldly appetite requires strong moral anchoring to prevent self-serving excess.">Trishadāya (H${trishH.join('/')})</span>`);
+                        bList.push(`<span class="micro-tag tag-malefic badge tooltip-target" style="cursor:help;" data-tooltip="<strong>Functional Malefic (Trishadāya H${trishH.join('/')})</strong><br>• Rules houses of intense worldly ambition, desire, or competitive drive (BPHS Ch. 34).<br>• Worldly appetite requires strong moral anchoring to prevent self-serving excess.">Trishadāya (H${trishH.join('/')})</span>`);
                     }
                     
                     if (bList.length > 0) {
@@ -2527,27 +2504,29 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let funcDigMathBlock = '';
                 if (funcDig && varga === 'D1') {
                     const stepItems = (funcDig.math_steps || []).map(step => {
-                        let iconMark = '🔹 ';
-                        if (step.includes('+')) iconMark = '➕ ';
-                        else if (step.includes('-')) iconMark = '➖ ';
+                        let iconMark = '• ';
+                        if (step.includes('+')) iconMark = '+ ';
+                        else if (step.includes('-')) iconMark = '- ';
                         return `&nbsp;&nbsp;${iconMark}<strong>${step}</strong>`;
                     }).join('<br>');
 
                     funcDigMathBlock = `<br><br>` +
                         `<div style="border-top:1px dashed rgba(255,255,255,0.35); padding-top:6px; margin-top:6px;">` +
-                        `<strong>📐 Functional Dignity & Lordship Evaluation:</strong><br>` +
+                        `<strong>Functional Dignity & Lordship Evaluation:</strong><br>` +
                         `${stepItems}<br>` +
                         `<div style="margin:4px 0; border-top:1px solid rgba(255,255,255,0.25); width:100%;"></div>` +
-                        `➔ <strong>Final Functional Evaluation: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</strong><br>` +
+                        `&rarr; <strong>Final Functional Evaluation: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</strong><br>` +
                         `<span style="font-size: 12px; opacity:0.9; font-family:monospace;">${escapeTooltipAttr(funcDig.math_formula)}</span>` +
                         `</div>`;
                 }
 
                 let digStyle = 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;';
                 let digIcon = '';
+                let digClass = 'tag-neutral';
                 if (isNode) {
                     digStyle = 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;';
                     digIcon = '';
+                    digClass = 'tag-neutral';
                     const nodeDigTip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
                         `• <strong>Why No 5-Fold Dignity:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical body or own sign.<br>` +
                         `• <strong>Effective Dignity:</strong> ${effDig.toFixed(0)}% (reflecting host ${signLord}'s ${hostDig.toFixed(0)}% dignity with sign affinity).<br>` +
@@ -2555,7 +2534,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         funcDigMathBlock;
                     digBadge = `
                         <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(nodeDigTip)}">
-                            <span class="badge" style="background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600; font-size: 12px;">Proxy (${signLord})</span>
+                            <span class="micro-tag tag-neutral">Proxy (${signLord})</span>
                             <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${effDig.toFixed(0)}% Dignity</div>
                             ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#64748b;">Chhāyā Reflection</div>`}
                         </div>
@@ -2574,50 +2553,32 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         whyReason = `• <strong>Sign Lord (Host):</strong> Governed by <strong>${signLord}</strong>.<br>` +
                             `• <strong>Natural Bond (Naisargika):</strong> <em>${natRel}</em>.<br>` +
                             `• <strong>Temporary Bond (Tātkālika):</strong> <em>${tempRel}</em>.<br>` +
-                            `• <strong>5-Fold Synthesis (Panchadhā):</strong> ${natRel} + ${tempRel} ➔ <strong>${compRel} (${cleanDig})</strong>.`;
+                            `• <strong>5-Fold Synthesis (Panchadhā):</strong> ${natRel} + ${tempRel} &rarr; <strong>${compRel} (${cleanDig})</strong>.`;
                     }
 
-                    const digTooltip = `<strong>👑 ${graha} Dignity in ${varga}: ${cleanDig} (${dignityPct.toFixed(0)}%)</strong><br>` +
+                    const digTooltip = `<strong>${graha} Dignity in ${varga}: ${cleanDig} (${dignityPct.toFixed(0)}%)</strong><br>` +
                         `${whyReason}<br><br>` +
                         `• <strong>How it feels:</strong> ${digMeaning}` +
                         funcDigMathBlock;
 
-                    if (rawDig.includes('Exalt')) {
-                        digIcon = '👑 '; digStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
-                    } else if (rawDig.includes('Moola')) {
-                        digIcon = '🏛️ '; digStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
-                    } else if (rawDig.includes('Own')) {
-                        digIcon = '🏡 '; digStyle = 'background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;';
-                    } else if (rawDig.includes('Great Friend')) {
-                        digIcon = '🤝 '; digStyle = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-weight:bold;';
-                    } else if (rawDig.includes('Friend')) {
-                        digIcon = '🙂 '; digStyle = 'background:#f0f9ff; color:#0284c7; border:1px solid #e0f2fe; font-weight:bold;';
-                    } else if (rawDig.includes('Neutral')) {
-                        digIcon = '⚖️ '; digStyle = 'background:#f5f5f4; color:#57534e; border:1px solid #e7e5e4; font-weight:600;';
-                    } else if (rawDig.includes('Great Enemy')) {
-                        digIcon = '⚔️ '; digStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;';
-                    } else if (rawDig.includes('Enemy')) {
-                        digIcon = '⚠️ '; digStyle = 'background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-weight:bold;';
-                    } else if (rawDig.includes('Debilit')) {
-                        digIcon = '🔻 '; digStyle = 'background:#fef2f2; color:#b91c1c; border:1px solid #f87171; font-weight:bold;';
-                    } else {
-                        digStyle = 'color:#78716c;';
+                    digClass = 'tag-neutral';
+                    if (rawDig.includes('Exalt') || rawDig.includes('Moola') || rawDig.includes('Own') || rawDig.includes('Friend')) {
+                        digClass = 'tag-benefic';
+                    } else if (rawDig.includes('Enemy') || rawDig.includes('Debilit')) {
+                        digClass = 'tag-malefic';
                     }
 
                     digBadge = `
                         <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
-                            <span class="badge" style="${digStyle}">${digIcon}${cleanDig}</span>
+                            <span class="micro-tag ${digClass}">${cleanDig}</span>
                             <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
-                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#78716c;">Nat: ${natRel.slice(0,3)} • Tmp: ${tempRel.slice(0,3)}</div>`}
+                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#78716c;">Nat: ${natRel.slice(0,3)} &bull; Tmp: ${tempRel.slice(0,3)}</div>`}
                         </div>
                     `;
                 }
 
                 // Cell 4: Host Dispositor HTML
-                let hostBadgeStyle = 'background:#f8fafc; color:#475569; border:1px solid #cbd5e1;';
-                if (rescueClass === 'exalt') hostBadgeStyle = 'background:#dcfce7; color:#15803d; border:1px solid #86efac; font-weight:bold;';
-                else if (rescueClass === 'own') hostBadgeStyle = 'background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; font-weight:bold;';
-                else if (rescueClass === 'debil') hostBadgeStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold;';
+                let hostTagClass = (rescueClass === 'exalt' || rescueClass === 'own') ? 'tag-benefic' : (rescueClass === 'debil' ? 'tag-malefic' : 'tag-neutral');
 
                 const hostTooltip = `<strong>Host Dispositor: ${signLord} for ${graha}</strong><br>` +
                     `• <strong>Host Essential Dignity:</strong> ${hostDig.toFixed(0)}% (${hostDigRaw})<br>` +
@@ -2630,7 +2591,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <div style="font-weight:600; font-size: 12px; color:#1e293b;">Host: ${signLord}</div>
                         <div style="font-size: 12px; color:#64748b;">${hostDig.toFixed(0)}% Dignity • ${hostSb.toFixed(0)}% Musc</div>
                         <div style="margin-top:2px;">
-                            <span class="badge tooltip-target" style="${hostBadgeStyle} font-size: 12px; cursor:help;" data-tooltip="${hostTooltip}">${rescueBadge}</span>
+                            <span class="micro-tag ${hostTagClass} tooltip-target" style="cursor:help;" data-tooltip="${hostTooltip}">${rescueBadge}</span>
                         </div>
                     </div>
                 `;
@@ -2638,14 +2599,14 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 // Cell 5: Shadbala Power HTML
                 let powerHtml = '';
                 if (isNode) {
-                    const nodeSbTip = `<strong>⚡ ${graha} — Shadbala Proxy Muscle</strong><br>` +
+                    const nodeSbTip = `<strong>${graha} — Shadbala Proxy Muscle</strong><br>` +
                         `• <strong>Why Proxy:</strong> Shadow nodes (Chhāyā Grahas) have no physical discs or independent orbital mass.<br>` +
                         `• <strong>Inherited Stamina:</strong> Inherits ~${effSb.toFixed(0)}% muscle from host <strong>${signLord}</strong> (${hostVir.toFixed(0)} Virūpas).`;
                     powerHtml = `
                         <div class="tooltip-target" data-tooltip="${nodeSbTip}" style="display:flex; flex-direction:column; gap:2px; cursor:help;">
                             <div style="display:flex; justify-content:space-between; align-items:center;">
                                 <strong style="font-size: 12px;">${effSb.toFixed(0)}%</strong>
-                                <span class="badge" style="background:#f1f5f9; color:#475569; font-size: 12px; font-weight:600;">Proxy</span>
+                                <span class="micro-tag tag-neutral">Proxy</span>
                             </div>
                             <div style="font-size: 12px; color:#15803d; font-weight:bold;">via ${signLord} (${hostVir.toFixed(0)}v)</div>
                             <div style="font-size: 12px; color:#64748b;">Chhāyā Proxy Muscle</div>
@@ -2660,16 +2621,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const isHigh = (sb.Pct_Required_Total >= 115);
                     const isLow = (sb.Pct_Required_Total < 100);
 
-                    let rankBadge = `<span class="badge" style="background:#f1f5f9; color:#334155; font-weight:bold; font-size: 12px;">#${rank}</span>`;
-                    if (rank === 1) rankBadge = `<span class="badge" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-weight:bold; font-size: 12px;">👑 Rank 1</span>`;
-                    else if (rank === 7) rankBadge = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size: 12px;">Rank 7</span>`;
+                    let rankBadge = `<span class="micro-tag tag-neutral">#${rank}</span>`;
+                    if (rank === 1) rankBadge = `<span class="micro-tag tag-benefic">Rank 1</span>`;
+                    else if (rank === 7) rankBadge = `<span class="micro-tag tag-malefic">Rank 7</span>`;
 
                     const pctColor = isHigh ? '#15803d' : (isLow ? '#b91c1c' : '#0369a1');
                     const capDesc = (sb.Pct_Required_Total >= 125) ? "Abundant" : ((sb.Pct_Required_Total >= 100) ? "Capable" : ((sb.Pct_Required_Total >= 85) ? "Mild Deficit" : "Deficit"));
                     const ishta = (sb.Ishta_Phala !== undefined) ? Number(sb.Ishta_Phala).toFixed(1) : '--';
                     const kashta = (sb.Kashta_Phala !== undefined) ? Number(sb.Kashta_Phala).toFixed(1) : '--';
 
-                    const sbTooltip = `<strong>⚡ ${graha} — Shadbala (6-Fold Potency): ${rupas} (${pctVal}%)</strong><br>` +
+                    const sbTooltip = `<strong>${graha} — Shadbala (6-Fold Potency): ${rupas} (${pctVal}%)</strong><br>` +
                         `• <strong>Chart Ranking:</strong> Rank #${rank} of 7 physical planets<br>` +
                         `• <strong>Total Virūpas:</strong> ${virupas} / ${reqVirupas} required minimum (${pctVal}%)<br>` +
                         `• <strong>Karmic Harvest:</strong> Ishta ${ishta} / Kashta ${kashta}<br><br>` +
@@ -2698,25 +2659,28 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 // Cell 6: Aspect Weather & Environmental Badges HTML (ADR-010)
                 let netDrishtiBadge = '';
                 if (netVal >= 12.0) {
-                    const netTip = `<strong>🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle, supportive rays from friendly allies.<br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Demanding friction from tough aspects.<br>• <strong>Atmosphere:</strong> Clear skies and encouraging vision predominate.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#dcfce7; color:#166534; border:1px solid #86efac; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🟢 Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>Net Śubha Dṛṣṭi (+${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle, supportive rays from friendly allies.<br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Demanding friction from tough aspects.<br>• <strong>Atmosphere:</strong> Clear skies and encouraging vision predominate.`;
+                    netDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'benefic', text: `Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)`, tooltip: netTip })
+                        : `<span class="status-indicator benefic tooltip-target" data-tooltip="${escapeTooltipAttr(netTip)}"><span class="indicator-dot"></span><span>Net Śubha Dṛṣṭi (+${Math.round(netVal)}v)</span></span>`;
                 } else if (netVal <= -12.0) {
-                    const netTip = `<strong>🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)} Virūpas)</strong><br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Heavy demands, delays, or friction from difficult aspects.<br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle support received.<br>• <strong>Atmosphere:</strong> High-resistance vision; demands extra discipline and mindful patience.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">🔴 Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>Net Pāpa Dṛṣṭi (${Math.round(netVal)} Virūpas)</strong><br>• <strong>Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v):</strong> Heavy demands, delays, or friction from difficult aspects.<br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v):</strong> Gentle support received.<br>• <strong>Atmosphere:</strong> High-resistance vision; demands extra discipline and mindful patience.`;
+                    netDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'malefic', text: `Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)`, tooltip: netTip })
+                        : `<span class="status-indicator malefic tooltip-target" data-tooltip="${escapeTooltipAttr(netTip)}"><span class="indicator-dot"></span><span>Net Pāpa Dṛṣṭi (${Math.round(netVal)}v)</span></span>`;
                 } else {
-                    const netTip = `<strong>⚖️ Net Neutral Vision (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v) vs Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental vision without extreme bias.`;
-                    netDrishtiBadge = `<span class="badge tooltip-target" style="background:#fef9c3; color:#854d0e; border:1px solid #fef08a; font-weight:bold; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(netTip)}">⚖️ Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span>`;
+                    const netTip = `<strong>Net Neutral Vision (${netVal >= 0 ? '+' : ''}${Math.round(netVal)} Virūpas)</strong><br>• <strong>Śubha Dṛṣṭi (Supportive Vision, +${plusVal}v) vs Pāpa Dṛṣṭi (Confrontational Vision, -${minusVal}v)</strong><br>• <strong>Atmosphere:</strong> Moderate, balanced environmental vision without extreme bias.`;
+                    netDrishtiBadge = (typeof TableBuilder !== 'undefined' && TableBuilder.createStatusIndicator)
+                        ? TableBuilder.createStatusIndicator({ type: 'neutral', text: `Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)`, tooltip: netTip })
+                        : `<span class="status-indicator neutral tooltip-target" data-tooltip="${escapeTooltipAttr(netTip)}"><span class="indicator-dot"></span><span>Net Neutral (${netVal >= 0 ? '+' : ''}${Math.round(netVal)}v)</span></span>`;
                 }
 
                 // Planetary War Environmental Badge
                 let warBadgeHtml = '';
                 const wInfo = vitRes.war_info || warInfo;
                 if (wInfo && wInfo.badge) {
-                    const wBg = wInfo.is_loser ? '#fee2e2' : '#eff6ff';
-                    const wCol = wInfo.is_loser ? '#991b1b' : '#1d4ed8';
-                    const wBorder = wInfo.is_loser ? '#fca5a5' : '#93c5fd';
                     const warTip = `<strong>${wInfo.badge}</strong><br>• <strong>Graha Yuddha (Phaladeepika 4.2):</strong> ${wInfo.details}<br>• <strong>Determination:</strong> ${wInfo.reason}<br>• <strong>Vitality Impact:</strong> ${wInfo.war_mod >= 0 ? '+' : ''}${Number(wInfo.war_mod).toFixed(2)} pts.`;
-                    warBadgeHtml = `<div><span class="badge tooltip-target" style="background:${wBg}; color:${wCol}; border:1px solid ${wBorder}; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(warTip)}">${wInfo.badge}</span></div>`;
+                    warBadgeHtml = `<div><span class="micro-tag ${wInfo.is_loser ? 'tag-malefic' : 'tag-benefic'} tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(warTip)}">${wInfo.badge}</span></div>`;
                 }
 
                 // Combustion Environmental Badge
@@ -2733,29 +2697,32 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const fnRoleLocal = gData.functional_role || (currentChartData.karakas && currentChartData.karakas.functional && currentChartData.karakas.functional[graha]) || null;
                     const rHousesLocal = (fnRoleLocal && fnRoleLocal.ruled_houses) || gData.ruled_houses || [];
                     const rHousesText = rHousesLocal.length > 0 ? `Rules House ${rHousesLocal.join(' &amp; House ')}` : '';
-                    const combTip = `<strong>🔥 Combust [C] (Asta / Astangata)</strong><br>` +
+                    const combTip = `<strong>Combust [C] (Asta / Astangata)</strong><br>` +
                         `• <strong>Distance to Sun:</strong> ${sunDistFormatted}<br>` +
                         `• <strong>Combustion Orbit:</strong> ${combOrb !== null ? combOrb.toFixed(1) + '°' : '--'} threshold (Surya Siddhanta baseline)<br>` +
                         `• <strong>Severity:</strong> ${sevNote}<br>` +
                         (rHousesText ? `• <strong>Ruled Houses:</strong> ${rHousesText} (harms outward manifestation)<br>` : '') +
                         `• <strong>Vitality Impact:</strong> -0.50 pts (Sun absorbs outward rays).`;
-                    combustionBadgeHtml = `<div><span class="badge tooltip-target" style="background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(combTip)}">🔥 Combust (${sunDist !== null ? sunDist.toFixed(1) + '°' : ''} to ☉)</span></div>`;
+                    combustionBadgeHtml = `<div><span class="micro-tag tag-alert tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(combTip)}">Combust (${sunDist !== null ? sunDist.toFixed(1) + '°' : ''} to ☉)</span></div>`;
                 }
 
                 // Classical Affliction Badges
                 let afflictionBadgesHtml = '';
                 const affList = [];
                 if (vitRes.guru_chandal_badge) {
-                    const gcTip = `<strong>${vitRes.guru_chandal_badge}</strong><br>• <strong>Guru-Chāṇḍāla Yoga (Phaladeepika 6.34):</strong> Conjoined with Rahu, eclipsing traditional philosophy into unconventional, dogmatic, or revolutionary crusades.<br>• <strong>Vitality Impact:</strong> Modifies ethical expression and executive alignment.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gcTip)}">${vitRes.guru_chandal_badge}</span></div>`);
+                    const cleanGC = vitRes.guru_chandal_badge.replace(/^[\p{Emoji}\u2600-\u27BF\uFE0F\s]+/u, '');
+                    const gcTip = `<strong>${cleanGC}</strong><br>• <strong>Guru-Chāṇḍāla Yoga (Phaladeepika 6.34):</strong> Conjoined with Rahu, eclipsing traditional philosophy into unconventional, dogmatic, or revolutionary crusades.<br>• <strong>Vitality Impact:</strong> Modifies ethical expression and executive alignment.`;
+                    affList.push(`<div><span class="micro-tag tag-malefic tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(gcTip)}">${cleanGC}</span></div>`);
                 }
                 if (vitRes.guru_ketu_badge) {
-                    const gkTip = `<strong>${vitRes.guru_ketu_badge}</strong><br>• <strong>Guru-Ketu Jñāna Yoga:</strong> Conjoined with Ketu, spiritualizing philosophical wisdom into deep inward contemplation, esoteric research, and detachment from worldly dogma.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(gkTip)}">${vitRes.guru_ketu_badge}</span></div>`);
+                    const cleanGK = vitRes.guru_ketu_badge.replace(/^[\p{Emoji}\u2600-\u27BF\uFE0F\s]+/u, '');
+                    const gkTip = `<strong>${cleanGK}</strong><br>• <strong>Guru-Ketu Jñāna Yoga:</strong> Conjoined with Ketu, spiritualizing philosophical wisdom into deep inward contemplation, esoteric research, and detachment from worldly dogma.`;
+                    affList.push(`<div><span class="micro-tag tag-benefic tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(gkTip)}">${cleanGK}</span></div>`);
                 }
                 if (vitRes.vikala_badge) {
-                    const vkTip = `<strong>${vitRes.vikala_badge}</strong><br>• <strong>Deeptādi Vikala Avasthā (BPHS Ch. 45):</strong> Besieged by multiple cruel malefics (Bahu-Pāpa-Yuta), inducing severe environmental friction and harshness into planetary expression.<br>• <strong>Vitality Impact:</strong> -0.30 pts.`;
-                    affList.push(`<div><span class="badge tooltip-target" style="background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size: 12px; font-weight:bold; cursor:help;" data-tooltip="${escapeTooltipAttr(vkTip)}">${vitRes.vikala_badge}</span></div>`);
+                    const cleanVK = vitRes.vikala_badge.replace(/^[\p{Emoji}\u2600-\u27BF\uFE0F\s]+/u, '');
+                    const vkTip = `<strong>${cleanVK}</strong><br>• <strong>Deeptādi Vikala Avasthā (BPHS Ch. 45):</strong> Besieged by multiple cruel malefics (Bahu-Pāpa-Yuta), inducing severe environmental friction and harshness into planetary expression.<br>• <strong>Vitality Impact:</strong> -0.30 pts.`;
+                    affList.push(`<div><span class="micro-tag tag-malefic tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(vkTip)}">${cleanVK}</span></div>`);
                 }
                 if (affList.length > 0) {
                     afflictionBadgesHtml = affList.join('');
@@ -2768,13 +2735,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const isBen = ['Jupiter', 'Venus'].includes(cp);
                         const isMal = ['Saturn', 'Mars', 'Rahu', 'Ketu'].includes(cp);
                         const cColor = isBen ? '#15803d' : (isMal ? '#b91c1c' : '#475569');
-                        const orbTag = cItem.orb_band.startsWith("Exact") ? "⚡" : "";
-                        const cmdTag = cItem.commands ? "👑 " : "";
                         const nature = isBen ? 'Benefic ally: offers grace, diplomacy, and resources.' : (isMal ? 'Malefic pressure: introduces intensity, demands, or discipline.' : 'Neutral companion.');
                         const cmdNote = cItem.commands ? `<br>• <strong>Commanding Precedence:</strong> ${cp} has higher Shadbala (${cItem.shadbala_pct.toFixed(0)}%) and dominates the house agenda.` : '';
                         const orbNote = `<br>• <strong>Orb:</strong> ${cItem.degree_diff.toFixed(2)}° (${cItem.orb_band})`;
-                        const yTip = `<strong>${cmdTag}Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.${orbNote}${cmdNote}<br>• ${nature}`;
-                        return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(yTip)}">${orbTag}${cmdTag}${cp}</span>`;
+                        const yTip = `<strong>Conjunction (Yuti) with ${cp}</strong><br>• Sharing the same sign and space in ${varga}.${orbNote}${cmdNote}<br>• ${nature}`;
+                        return `<span class="tooltip-target" style="color:${cColor}; font-weight:600; cursor:help;" data-tooltip="${escapeTooltipAttr(yTip)}">${cp}</span>`;
                     }).join(', ');
                     yutiHtml = `<div><span style="color:#64748b; font-size: 12px; font-weight:bold;">YUTI:</span> ${companionBadges}</div>`;
                 }
@@ -2885,10 +2850,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         let nuanceNote = '';
                         let feelingExp = '';
 
-                        const causeGlyphs = {
-                            'Sun': '☉', 'Moon': '☽', 'Mars': '♂', 'Mercury': '☿',
-                            'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄', 'Rahu': '☊', 'Ketu': '☋'
-                        };
+                        const causeGlyphs = (typeof window !== 'undefined' && window.AstroCatalog && window.AstroCatalog.planets)
+                            ? Object.fromEntries(Object.entries(window.AstroCatalog.planets).map(([k, v]) => [k, v.glyph]))
+                            : {
+                                'Sun': '☉', 'Moon': '☽', 'Mars': '♂', 'Mercury': '☿',
+                                'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄', 'Rahu': '☊', 'Ketu': '☋'
+                            };
                         const foundCauses = Object.keys(causeGlyphs).filter(p => cond.includes(p));
                         if (foundCauses.length > 0) {
                             nuanceNote = ` (${foundCauses.map(p => causeGlyphs[p]).join(' ')})`;
@@ -2899,25 +2866,25 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         }
 
                         if (st.includes('Mudita')) {
-                            icon = '🟢'; style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                            icon = ''; style = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
                             feelingExp = 'Delighted & Joyful: Feels welcomed and generous. Delivers gifts happily.';
                         } else if (st.includes('Garvita')) {
-                            icon = '👑'; style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                            icon = ''; style = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
                             feelingExp = 'Proud & Noble: Full of royal dignity and command. Operates with regal assurance.';
                         } else if (st.includes('Kshudhita')) {
-                            icon = '🔴'; style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                            icon = ''; style = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
                             feelingExp = 'Starved & Depleted: Feels drained by enemy pressure. Struggles for fuel.';
                         } else if (st.includes('Kshobhita')) {
-                            icon = '🟠'; style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
+                            icon = ''; style = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
                             feelingExp = 'Agitated & Provoked: Shaken or conflicted by harsh aspects or solar heat.';
                         } else if (st.includes('Lajjita')) {
-                            icon = '🟣'; style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
+                            icon = ''; style = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
                             feelingExp = 'Ashamed & Inhibited: Feels bashful or self-conscious about expressing gifts.';
                         } else if (st.includes('Trushita')) {
-                            icon = '💧'; style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
+                            icon = ''; style = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
                             feelingExp = 'Thirsty & Yearning: Yearns for nourishment from water signs or benefic aspects.';
                         } else {
-                            icon = '⚪'; style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
+                            icon = ''; style = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
                             feelingExp = 'Special condition.';
                         }
 
@@ -2950,7 +2917,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     <div style="display:flex; flex-direction:column; gap:5px; font-size: 12px; min-width:180px;">
                         <!-- Compartment 1: Physical Fuel & Alertness -->
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">⚡ Fuel &amp; Alertness</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;"> Fuel &amp; Alertness</div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center; gap:3px;">
                                 <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">Age: ${baladi.state} (${baladi.efficiency_pct}%)</span>
                                 ${jagradaadiHtml}
@@ -2961,14 +2928,14 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <!-- Compartment 2: Innate Dignity Mood (Dīptādi) -->
                         ${deepthaadiHtml ? `
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🧘 Innate Mood</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;"> Innate Mood</div>
                             <div style="display:flex; align-items:center;">${deepthaadiHtml}</div>
                         </div>
                         ` : ''}
 
                         <!-- Compartment 3: Social & Relational Weather (Lajjitādi) -->
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; padding:3px 5px; display:flex; flex-direction:column; gap:2px;">
-                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;">🤝 Social Relations</div>
+                            <div style="font-size: 12px; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px;"> Social Relations</div>
                             <div>${avasthasHtml}</div>
                         </div>
                     </div>
@@ -3008,9 +2975,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <div style="font-size: 12px; color:#64748b; font-weight:500; margin-top:1px;">Intent: ${effDig.toFixed(0)}% | Power: ${effSb.toFixed(0)}%</div>
                         <div style="display:flex; align-items:center; justify-content:center; gap:4px; margin-top:2px;">
                             <span style="font-size: 12px; font-weight:600; color:${vitRes.vitality_col || '#64748b'};">${vitRes.vitality_tier || quad.tier}</span>
-                            ${receiptText ? `<span class="badge tooltip-target" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size: 12px; cursor:help; padding:0 3px;" data-tooltip="${escapeTooltipAttr(receiptTooltip)}">🧾 Receipt</span>` : ''}
+                            ${receiptText ? `<span class="badge tooltip-target" style="background:#f8fafc; color:#475569; border:1px solid #cbd5e1; font-size: 12px; cursor:help; padding:0 3px;" data-tooltip="${escapeTooltipAttr(receiptTooltip)}"> Receipt</span>` : ''}
                         </div>
-                        ${pEval.psychological_narrative ? `<div class="tooltip-target" style="font-size: 12px; color:#475569; font-style:italic; margin-top:3px; max-width:135px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help;" data-tooltip="<strong>🧠 Psychological Diagnosis (Vol 2):</strong><br>${escapeTooltipAttr(pEval.psychological_narrative)}">🧠 ${escapeHtml(pEval.psychological_narrative)}</div>` : ''}
+                        ${pEval.psychological_narrative ? `<div class="tooltip-target" style="font-size: 12px; color:#475569; font-style:italic; margin-top:3px; max-width:135px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; cursor:help;" data-tooltip="<strong> Psychological Diagnosis (Vol 2):</strong><br>${escapeTooltipAttr(pEval.psychological_narrative)}"> ${escapeHtml(pEval.psychological_narrative)}</div>` : ''}
                     </div>
                 `;
                 const pNak = pEval.nakshatra || {};
@@ -3030,13 +2997,13 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const exprModeStr = pEval.expression_mode || '';
                 let expressionBadgeHtml = '';
                 if (exprModeStr.includes('High')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; font-size: 12px; font-weight:700;">High Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="micro-tag tag-benefic">High Expression (${exprScoreStr})</span>`;
                 } else if (exprModeStr.includes('Mixed')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#f0f9ff; color:#0369a1; border:1px solid #bae6fd; font-size: 12px; font-weight:700;">Mixed Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="micro-tag tag-neutral">Mixed Expression (${exprScoreStr})</span>`;
                 } else if (exprModeStr.includes('Low')) {
-                    expressionBadgeHtml = `<span class="badge" style="background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; font-size: 12px; font-weight:700;">Low Expression (${exprScoreStr})</span>`;
+                    expressionBadgeHtml = `<span class="micro-tag tag-malefic">Low Expression (${exprScoreStr})</span>`;
                 } else {
-                    expressionBadgeHtml = `<span class="badge" style="background:#f8fafc; color:#64748b; border:1px solid #cbd5e1; font-size: 12px; font-weight:600;">Neutral Expression</span>`;
+                    expressionBadgeHtml = `<span class="micro-tag tag-neutral">Neutral Expression</span>`;
                 }
 
                 // Peer shift for Col 3
@@ -3052,7 +3019,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     pEval.step3_aspects.details.forEach(d => {
                         if (Math.abs(d.shift) > Math.abs(maxShift)) {
                             maxShift = d.shift;
-                            const srcGlyph = grahaGlyphs[d.source] || d.source;
+                            const srcGlyph = (typeof TableBuilder !== 'undefined' && TableBuilder.renderPlanetGlyph) ? TableBuilder.renderPlanetGlyph(d.source) : (grahaGlyphs[d.source] || d.source);
                             if (d.shift > 0) {
                                 peerShiftLeader = `Delighted by ${srcGlyph}`;
                             } else {
@@ -3067,11 +3034,11 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 let peerShiftHtml = '';
                 if (peerShiftVal > 0.5) {
-                    peerShiftHtml = `<span style="color:#15803d; font-size: 12px; font-weight:600;">↳ +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                    peerShiftHtml = `<span style="color:#15803d; font-size: 12px; font-weight:600;">&rarr; +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
                 } else if (peerShiftVal < -0.5) {
-                    peerShiftHtml = `<span style="color:#b91c1c; font-size: 12px; font-weight:600;">↳ ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
+                    peerShiftHtml = `<span style="color:#b91c1c; font-size: 12px; font-weight:600;">&rarr; ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
                 } else {
-                    peerShiftHtml = `<span style="color:#64748b; font-size: 12px;">↳ Balanced (±0%)</span>`;
+                    peerShiftHtml = `<span style="color:#64748b; font-size: 12px;">&rarr; Balanced (&plusmn;0%)</span>`;
                 }
 
                 // Decisive Aspect for Col 6 Line 2 (>= 45v) and Background Aspects (20-44v)
@@ -3092,10 +3059,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         const aspG = asp.from_planet;
                         const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                         const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                        const natIcon = isNaturalBen ? '🟢' : '🔴';
+                        const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
                         const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
-                        const digIcon = getDignityIcon(asp.from_dignity_name);
-                        return `• ${natIcon} <strong>${aspG}:</strong> ${rawV} Virūpas (${digIcon} ${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
+                        return `• ${dotHtml}<strong>${aspG}:</strong> ${rawV} Virūpas (${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
                     }).join('<br>');
                     tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
                     bgBadgeHtml = `<span class="tooltip-target" style="color:#64748b; font-size: 12px; margin-left:3px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">+${bgAsps.length} bg</span>`;
@@ -3111,7 +3077,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const aspG = topAsp.from_planet;
                     const rawV = Math.abs(Math.round(topAsp.raw_virupas !== undefined ? topAsp.raw_virupas : (topAsp.virupas || 0)));
                     const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                    const natIcon = isNaturalBen ? '🟢' : '🔴';
+                    const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
                     const dName = (topAsp.from_dignity_name || '').toLowerCase();
                     const isExaltedOrMoola = dName.includes('exalt') || dName.includes('uccha') || dName.includes('moola');
                     const isOwnOrFriend = dName.includes('own') || dName.includes('svastha') || dName.includes('friend') || dName.includes('mitra');
@@ -3128,7 +3094,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         else if (isExaltedOrMoola || isOwnOrFriend) synth = 'Constructive Pressure';
                         else synth = 'Harsh Demand';
                     }
-                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size: 12px;">${natIcon} ${aspG} (${rawV}v) ↳ ${synth}</span>`;
+                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size: 12px; display:inline-flex; align-items:center;">${dotHtml}${aspG} (${rawV}v) &rarr; ${synth}</span>`;
                 } else if (bgAsps.length > 0) {
                     decisiveAspectBadge = `<span class="tooltip-target" style="color:#64748b; font-style:italic; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">${bgAsps.length} background aspect${bgAsps.length > 1 ? 's' : ''} (20–44v)</span>`;
                     bgBadgeHtml = '';
@@ -3140,26 +3106,24 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let primaryMoodPill = '';
                 if (pEval.calibrated_lajjitadi && pEval.calibrated_lajjitadi.length > 0) {
                     const topMood = pEval.calibrated_lajjitadi[0];
-                    let mStyle = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
-                    if (topMood.base_state === 'Mudita') mStyle = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
-                    else if (topMood.base_state === 'Garvita') mStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
-                    else if (topMood.base_state === 'Kshudhita') mStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
-                    else if (topMood.base_state === 'Kshobhita') mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;';
-                    else if (topMood.base_state === 'Lajjita') mStyle = 'background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe;';
-                    else if (topMood.base_state === 'Trushita') mStyle = 'background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd;';
-                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size: 12px; font-weight:700; padding:1px 5px;">${topMood.icon} ${topMood.base_state}</span>`;
+                    let mClass = 'tag-neutral';
+                    if (topMood.base_state === 'Mudita') mClass = 'tag-benefic';
+                    else if (topMood.base_state === 'Garvita') mClass = 'tag-benefic';
+                    else if (topMood.base_state === 'Kshudhita') mClass = 'tag-malefic';
+                    else if (topMood.base_state === 'Kshobhita') mClass = 'tag-alert';
+                    else if (topMood.base_state === 'Lajjita') mClass = 'tag-neutral';
+                    else if (topMood.base_state === 'Trushita') mClass = 'tag-neutral';
+                    primaryMoodPill = `<span class="micro-tag ${mClass}">${topMood.base_state}</span>`;
                 } else if (avList && avList.length > 0) {
                     const firstAv = avList[0];
                     const st = firstAv.state || String(firstAv);
-                    let mIcon = '🟡';
-                    let mStyle = 'background:#f1f5f9; color:#475569; border:1px solid #cbd5e1;';
-                    if (st.includes('Mudita')) { mIcon = '🟢'; mStyle = 'background:#dcfce7; color:#166534; border:1px solid #86efac;'; }
-                    else if (st.includes('Garvita')) { mIcon = '👑'; mStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;'; }
-                    else if (st.includes('Kshudhita')) { mIcon = '🔴'; mStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;'; }
-                    else if (st.includes('Kshobhita')) { mIcon = '🟠'; mStyle = 'background:#ffedd5; color:#9a3412; border:1px solid #fed7aa;'; }
-                    primaryMoodPill = `<span class="badge" style="${mStyle} font-size: 12px; font-weight:700; padding:1px 5px;">${mIcon} ${st.split(' ')[0]}</span>`;
+                    let mClass = 'tag-neutral';
+                    if (st.includes('Mudita') || st.includes('Garvita')) { mClass = 'tag-benefic'; }
+                    else if (st.includes('Kshudhita')) { mClass = 'tag-malefic'; }
+                    else if (st.includes('Kshobhita')) { mClass = 'tag-alert'; }
+                    primaryMoodPill = `<span class="micro-tag ${mClass}">${st.split(' ')[0]}</span>`;
                 } else {
-                    primaryMoodPill = `<span style="color:#94a3b8; font-style:italic; font-size: 12px;">🟡 Neutral (Unstirred)</span>`;
+                    primaryMoodPill = `<span style="color:#94a3b8; font-style:italic; font-size: 12px;">Neutral (Unstirred)</span>`;
                 }
 
                 // Subcaption for Col 9 Line 2
@@ -3274,7 +3238,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                             const aspG = asp.from_planet;
                             const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                            const natIcon = isNaturalBen ? '🟢' : '🔴';
+                            const natIcon = isNaturalBen ? '' : '';
                             const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
                             const aspStrengthPct = Math.round((rawV / 60.0) * 100);
 
@@ -3326,7 +3290,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     conjItemsHtml = conjDetails.map(c => {
                         const degStr = (c.degree_diff !== undefined && c.degree_diff !== null) ? Number(c.degree_diff).toFixed(2) + '°' : '';
                         return `<div style="display:flex; justify-content:space-between; font-size: 12px; padding:1px 0;">
-                            <span>${c.commands ? '👑 ' : ''}${c.planet}${degStr ? ` (${degStr})` : ''}:</span>
+                            <span>${c.commands ? ' ' : ''}${c.planet}${degStr ? ` (${degStr})` : ''}:</span>
                             <span>${c.orb_band || ''} ${c.commands ? '• Commands' : ''}</span>
                         </div>`;
                     }).join('');
@@ -3344,7 +3308,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     outgoingAspectGraphHtml = `
                         <div style="margin-top: 8px; border-top: 1px dashed #e2e8f0; padding-top: 6px;">
                             <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px;">
-                                👁 Outgoing Aspects Cast by ${graha} (Dṛṣṭi across Zodiac):
+                                 Outgoing Aspects Cast by ${graha} (Dṛṣṭi across Zodiac):
                             </div>
                             <div style="border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
                                 ${renderContinuousAspectSvg(outGraph, null)}
@@ -3370,8 +3334,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const card4Html = `
                     <div><strong>Biological Maturity (Bālādi):</strong> ${baladi.state} (${baladi.efficiency_pct}%)</div>
                     <div style="font-size: 12px; color:#64748b; font-style:italic;">${baladi.sanskrit_term}</div>
-                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_sandhi ? '<div style="color:#b45309; font-size: 12px; font-weight:700;">⚠️ Rāśi Sandhi (Edge of Sign)</div>' : ''}
-                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_gandanta ? '<div style="color:#b91c1c; font-size: 12px; font-weight:700;">⚡ Gaṇḍānta Knot (Water-Fire Border)</div>' : ''}
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_sandhi ? '<div style="color:#b45309; font-size: 12px; font-weight:700;">️ Rāśi Sandhi (Edge of Sign)</div>' : ''}
+                    ${pEval.baladi_avastha && pEval.baladi_avastha.is_gandanta ? '<div style="color:#b91c1c; font-size: 12px; font-weight:700;"> Gaṇḍānta Knot (Water-Fire Border)</div>' : ''}
                     <div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:3px;">
                         ${deepthaadiHtml}
                         ${jagradaadiHtml}
@@ -3381,7 +3345,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <div style="margin-top:2px;">${avasthasHtml}</div>
                     </div>
                     <div style="margin-top:5px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">
-                        🧠 ${pEval.psychological_narrative || quad.desc || ''}
+                        ${pEval.psychological_narrative || quad.desc || ''}
                     </div>
                 `;
 
@@ -3390,7 +3354,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#1e293b;">
-                                    <span style="font-size:14px;">${glyph}</span>
+                                    <span>${glyph}</span>
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(grahaTip)}" style="cursor:help;">${graha}</span>
                                 </div>
                                 <div style="display:flex; align-items:center; gap:2px; flex-wrap:nowrap; overflow:hidden;">
@@ -3402,11 +3366,14 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
-                            <div class="diagnostic-table-cell-2line">
-                                <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
-                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(signTooltip)}" style="cursor:help;">${sign} ${deg} • ${houseHtml}</span>
+                            <div class="placement-readout">
+                                <div class="placement-line-primary">
+                                    ${typeof TableBuilder !== 'undefined' && TableBuilder.renderZodiacGlyph ? TableBuilder.renderZodiacGlyph(sign) : ''}
+                                    <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(signTooltip)}" style="cursor:help;"><strong>${sign}</strong> ${deg}</span>
+                                    <span style="color:var(--text-muted); font-size:12px;">•</span>
+                                    ${houseHtml}
                                 </div>
-                                <div>
+                                <div class="placement-line-secondary">
                                     ${expressionBadgeHtml}
                                 </div>
                             </div>
@@ -3414,8 +3381,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
                                 <div style="font-size: 12px; font-weight:700; white-space:nowrap;">
-                                    ${isNode ? `<span class="badge" style="${digStyle} font-size: 12px; padding:1px 5px;">Proxy (${signLord})</span>` : `<span class="badge" style="${digStyle} font-size: 12px; padding:1px 5px;">${digIcon}${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
-                                    <span style="color:#64748b; font-size: 12px; margin:0 1px;">➔</span>
+                                    ${isNode ? `<span class="micro-tag tag-neutral">Proxy (${signLord})</span>` : `<span class="micro-tag ${digClass}">${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
+                                    <span style="color:#64748b; font-size: 12px; margin:0 1px;">&rarr;</span>
                                     <strong style="color:#1e293b; font-size: 12px;">${Math.round(effDig)}%</strong>
                                 </div>
                                 <div style="font-size: 12px; font-weight:600; white-space:nowrap;">
@@ -3429,12 +3396,12 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     Host: <strong>${signLord}</strong>
                                 </div>
                                 <div>
-                                    <span class="badge tooltip-target" style="${hostBadgeStyle} font-size: 12px; font-weight:600; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
+                                    <span class="micro-tag ${hostTagClass} tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
                                 </div>
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
-                            <div class="diagnostic-table-cell-2line">
+                            <div class="diagnostic-table-cell-2line" style="font-variant-numeric: tabular-nums;">
                                 ${isNode ? `
                                     <div style="font-size: 12px; font-weight:700; color:#1e293b; white-space:nowrap;">
                                         <strong>Proxy ${effSb.toFixed(0)}%</strong>
@@ -3468,7 +3435,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:#ffffff; color:#1e293b; border:1px solid #cbd5e1; font-size: 12px; font-weight:700; padding:1px 5px; cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
+                                    <span class="micro-tag tag-neutral tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(baladiTip)}">${baladi.state} (${baladi.efficiency_pct}%)</span>
                                 </div>
                                 <div style="font-size: 12px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                                     ${primaryMoodPill}
@@ -3478,7 +3445,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
                                 <div>
-                                    <span class="badge tooltip-target" style="background:${quad.bg}; color:${quad.color}; border:1px solid ${quad.color}44; font-size: 12px; font-weight:bold; padding:1px 6px; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">${quad.badge}</span>
+                                    <span class="micro-tag tooltip-target" style="background:${quad.bg}; color:${quad.color}; border-color:${quad.color}44; cursor:help;" data-tooltip="${escapeTooltipAttr(quadTooltip)}">${quad.badge}</span>
                                 </div>
                                 <div style="font-size: 12px; color:#475569; font-weight:600; white-space:nowrap;">
                                     ★ <strong style="color:#1e293b; font-size: 12px;">${netVitality.toFixed(1)}</strong> / 10 • <span style="font-size: 12px; color:#64748b;">${subcaptionText}</span>

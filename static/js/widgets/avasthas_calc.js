@@ -167,7 +167,7 @@
             let deepTooltip = "";
             if (peP.deepthaadi) {
                 deepState = peP.deepthaadi.badge || peP.deepthaadi.state;
-                deepTooltip = `<strong>${peP.deepthaadi.icon || '👑'} Deeptādi Mood: ${peP.deepthaadi.state}</strong><br>• Condition: ${peP.deepthaadi.condition}<br>• Meaning: ${peP.deepthaadi.meaning}`;
+                deepTooltip = `<strong>${peP.deepthaadi.icon || ''} Deeptādi Mood: ${peP.deepthaadi.state}</strong><br>• Condition: ${peP.deepthaadi.condition}<br>• Meaning: ${peP.deepthaadi.meaning}`;
             } else if (av.deeptadi) {
                 deepState = av.deeptadi.state || "N/A";
                 let deepCond = av.deeptadi.condition || "";
@@ -243,7 +243,7 @@
         window.widgetRegistry.register('avasthas-calc', {
             id: 'avasthas-calc',
             title: 'Qualitative Avasthas',
-            icon: '🧘',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateAvasthasCalcTableForCell(container, chartData);

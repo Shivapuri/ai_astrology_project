@@ -57,7 +57,7 @@
                 trAD.style.backgroundColor = isCurrentAD ? 'var(--status-neutral-bg)' : 'var(--bg-surface)';
                 trAD.setAttribute('data-tooltip', `<strong>${ad.period || ad.antardasha_lord} Antardaśā</strong><br>• <strong>Sub-period:</strong> ${ad.start_date || ad.start} to ${ad.end_date || ad.end}<br>• <strong>Influence:</strong> Secondary timing window delivering specific events through ${md.planet} and sub-lord.`);
 
-                const adBadge = isCurrentAD ? '<span class="badge badge-neutral" style="font-size:9px;">CURRENT</span>' : '';
+                const adBadge = isCurrentAD ? '<span class="badge badge-neutral" style="font-size:12px;">CURRENT</span>' : '';
 
                 trAD.innerHTML = `
                     <td style="padding-left: 24px; color: var(--text-heading);">${ad.period || ad.antardasha_lord}</td>
@@ -82,7 +82,7 @@
         window.widgetRegistry.register('dashas-timeline', {
             id: 'dashas-timeline',
             title: 'Daśā Timeline',
-            icon: '⏳',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateDashaTimelineWidget(container, chartData);

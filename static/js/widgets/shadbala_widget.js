@@ -144,7 +144,7 @@
         window.widgetRegistry.register('shadbala-table', {
             id: 'shadbala-table',
             title: 'Shad Bala Breakdown',
-            icon: '⚖️',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateShadbalaTableWidget(container, chartData);

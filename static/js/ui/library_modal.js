@@ -185,15 +185,15 @@
     function getCategoryBadgeHtml(cat) {
         const c = (cat || 'General').toLowerCase();
         if (c === 'criminals') {
-            return '<span class="chart-category-tag chart-cat-criminals">⚠️ Criminals</span>';
+            return '<span class="micro-tag tag-malefic">Criminals</span>';
         } else if (c === 'spiritual') {
-            return '<span class="chart-category-tag chart-cat-spiritual">🕉️ Spiritual</span>';
+            return '<span class="micro-tag tag-benefic">Spiritual</span>';
         } else if (c === 'historical') {
-            return '<span class="chart-category-tag chart-cat-historical">🏛️ Historical</span>';
+            return '<span class="micro-tag tag-neutral">Historical</span>';
         } else if (c === 'personal') {
-            return '<span class="chart-category-tag chart-cat-personal">👤 Personal</span>';
+            return '<span class="micro-tag">Personal</span>';
         } else {
-            return '<span class="chart-category-tag chart-cat-general">General</span>';
+            return '<span class="micro-tag">General</span>';
         }
     }
 
@@ -204,7 +204,6 @@
         if (filteredOpenCharts.length === 0) {
             container.innerHTML = `
                 <div style="padding: 40px 20px; text-align: center; color: var(--text-muted);">
-                    <div style="font-size: 32px; margin-bottom: 8px;">🔍</div>
                     <div style="font-size: 14px; font-weight: 600; color: var(--text-heading);">No matching charts found</div>
                     <div style="font-size: 12px; margin-top: 4px;">Try a different search term or category filter.</div>
                 </div>
@@ -220,7 +219,7 @@
             const isSelected = (idx === highlightedOpenChartIndex);
             const isPinned = (native.in_dropdown !== false);
             const pinBtnClass = isPinned ? 'pin-toggle-btn is-pinned' : 'pin-toggle-btn';
-            const pinBtnText = isPinned ? '📌 In Dropdown' : '📍 Pin';
+            const pinBtnText = isPinned ? 'In Dropdown' : 'Pin';
             const pinBtnTitle = isPinned ? 'Click to remove from top dropdown' : 'Click to show in top dropdown';
             const badgeHtml = getCategoryBadgeHtml(native.category);
 
@@ -229,7 +228,7 @@
             const locationText = (placeStr || countryStr) ? `${placeStr}${countryStr} • ` : '';
             const coordsText = (native.lat !== undefined && native.lon !== undefined) ? `${parseFloat(native.lat).toFixed(2)}°, ${parseFloat(native.lon).toFixed(2)}° • ` : '';
             const tzText = native.tz ? `TZ: ${native.tz}` : '';
-            const notesSnippet = native.notes ? `<div style="font-size: 11px; color: var(--text-muted); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 500px;">📝 ${escapeHtml(native.notes)}</div>` : '';
+            const notesSnippet = native.notes ? `<div style="font-size: 12px; color: var(--text-muted); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 500px;">${escapeHtml(native.notes)}</div>` : '';
 
             const rowClasses = [
                 'open-chart-row',
@@ -247,10 +246,10 @@
                         <div style="display:flex; align-items:center; gap:6px; margin-bottom: 2px;">
                             ${badgeHtml}
                             <span style="font-weight: 700; font-size: 14px; color: var(--text-heading);">${escapeHtml(native.name)}</span>
-                            ${isLoaded ? '<span style="font-size:10px; background:var(--status-benefic); color:#ffffff; padding:1px 5px; border-radius:3px; font-weight:700;">ACTIVE</span>' : ''}
+                            ${isLoaded ? '<span style="font-size:12px; background:var(--status-benefic); color:#ffffff; padding:1px 6px; border-radius:3px; font-weight:700;">ACTIVE</span>' : ''}
                         </div>
                         <div style="font-size: 12px; color: var(--text-primary);">
-                            📅 <b>${formatToDDMMYYYY(native.date)}</b> at <b>${native.time || '12:00:00'}</b> | ${locationText}${coordsText}${tzText}
+                            <b>${formatToDDMMYYYY(native.date)}</b> at <b>${native.time || '12:00:00'}</b> | ${locationText}${coordsText}${tzText}
                         </div>
                         ${notesSnippet}
                     </div>
@@ -259,12 +258,12 @@
                             ${pinBtnText}
                         </button>
                         <button type="button" onclick="editNativeFromModal('${native.id}', event)" 
-                                style="background:var(--bg-surface-hover); color:var(--text-heading); border:1px solid var(--border-medium); padding:4px 8px; border-radius:4px; font-size:11px; font-weight:600; cursor:pointer;"
+                                style="background:var(--bg-surface-hover); color:var(--text-heading); border:1px solid var(--border-medium); padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600; cursor:pointer;"
                                 title="Edit details">
-                            ✏️
+                            Edit
                         </button>
                         <button type="button" class="btn-primary" onclick="openChartFromModal('${native.id}')" style="padding: 5px 12px; font-size: 12px; font-weight: 600;">
-                            📂 Open
+                            Open
                         </button>
                     </div>
                 </div>
@@ -369,13 +368,13 @@
         if (window.currentLoadedNative && !dropdownNatives.some(n => n.id === window.currentLoadedNative.id)) {
             const opt = document.createElement('option');
             opt.value = window.currentLoadedNative.id;
-            opt.text = `📁 ${window.currentLoadedNative.name} (${formatToDDMMYYYY(window.currentLoadedNative.date)})`;
+            opt.text = ` ${window.currentLoadedNative.name} (${formatToDDMMYYYY(window.currentLoadedNative.date)})`;
             select.appendChild(opt);
         }
 
         const openOpt = document.createElement('option');
         openOpt.value = '__open_chart_dialog__';
-        openOpt.text = '── 📂 Open Chart... (Ctrl+O) ──';
+        openOpt.text = '──  Open Chart... (Ctrl+O) ──';
         select.appendChild(openOpt);
 
         if (currentVal && Array.from(select.options).some(o => o.value === currentVal)) {
@@ -443,7 +442,7 @@
             return;
         }
         
-        document.getElementById('nativeModalTitle').innerText = "✏️ Edit Person Details";
+        document.getElementById('nativeModalTitle').innerText = "Edit Person Details";
         document.getElementById('updateBtn').style.display = 'inline-block';
         document.getElementById('deleteNativeBtn').style.display = 'inline-block';
         document.getElementById('saveAsNewBtn').style.display = 'inline-block';

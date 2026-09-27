@@ -8,28 +8,40 @@
         // --- SIGN ATTRIBUTES, MATRIX (4x3), VARNAS, DOSHAS & KALAPURUSHA ANATOMY ---
 
         const SIGN_ATTR_CONSTANTS = {
-            signs: ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'],
-            signNumbers: {'Aries': 1, 'Taurus': 2, 'Gemini': 3, 'Cancer': 4, 'Leo': 5, 'Virgo': 6, 'Libra': 7, 'Scorpio': 8, 'Sagittarius': 9, 'Capricorn': 10, 'Aquarius': 11, 'Pisces': 12},
-            signAbbr: {'Aries': 'Ar', 'Taurus': 'Ta', 'Gemini': 'Ge', 'Cancer': 'Cn', 'Leo': 'Le', 'Virgo': 'Vi', 'Libra': 'Li', 'Scorpio': 'Sc', 'Sagittarius': 'Sg', 'Capricorn': 'Cp', 'Aquarius': 'Aq', 'Pisces': 'Pi'},
-            elementMap: {
-                'Aries': 'Fire', 'Leo': 'Fire', 'Sagittarius': 'Fire',
-                'Taurus': 'Earth', 'Virgo': 'Earth', 'Capricorn': 'Earth',
-                'Gemini': 'Air', 'Libra': 'Air', 'Aquarius': 'Air',
-                'Cancer': 'Water', 'Scorpio': 'Water', 'Pisces': 'Water'
+            get signs() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? window.AstroCatalog.signs.map(s => s.name)
+                    : ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
             },
-            mobilityMap: {
-                'Aries': 'Movable', 'Cancer': 'Movable', 'Libra': 'Movable', 'Capricorn': 'Movable',
-                'Taurus': 'Fixed', 'Leo': 'Fixed', 'Scorpio': 'Fixed', 'Aquarius': 'Fixed',
-                'Gemini': 'Dual', 'Virgo': 'Dual', 'Sagittarius': 'Dual', 'Pisces': 'Dual'
+            get signNumbers() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.id]))
+                    : {'Aries': 1, 'Taurus': 2, 'Gemini': 3, 'Cancer': 4, 'Leo': 5, 'Virgo': 6, 'Libra': 7, 'Scorpio': 8, 'Sagittarius': 9, 'Capricorn': 10, 'Aquarius': 11, 'Pisces': 12};
             },
-            polarityMap: {
-                'Aries': 'Active', 'Gemini': 'Active', 'Leo': 'Active', 'Libra': 'Active', 'Sagittarius': 'Active', 'Aquarius': 'Active',
-                'Taurus': 'Passive', 'Cancer': 'Passive', 'Virgo': 'Passive', 'Scorpio': 'Passive', 'Capricorn': 'Passive', 'Pisces': 'Passive'
+            get signAbbr() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.abbr]))
+                    : {'Aries': 'Ar', 'Taurus': 'Ta', 'Gemini': 'Ge', 'Cancer': 'Cn', 'Leo': 'Le', 'Virgo': 'Vi', 'Libra': 'Li', 'Scorpio': 'Sc', 'Sagittarius': 'Sg', 'Capricorn': 'Cp', 'Aquarius': 'Aq', 'Pisces': 'Pi'};
             },
-            risingMap: {
-                'Gemini': 'Shirshodaya', 'Leo': 'Shirshodaya', 'Virgo': 'Shirshodaya', 'Libra': 'Shirshodaya', 'Scorpio': 'Shirshodaya', 'Aquarius': 'Shirshodaya',
-                'Aries': 'Prishtodaya', 'Taurus': 'Prishtodaya', 'Cancer': 'Prishtodaya', 'Sagittarius': 'Prishtodaya', 'Capricorn': 'Prishtodaya',
-                'Pisces': 'Ubhayodaya'
+            get elementMap() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.element]))
+                    : { 'Aries': 'Fire', 'Taurus': 'Earth', 'Gemini': 'Air', 'Cancer': 'Water', 'Leo': 'Fire', 'Virgo': 'Earth', 'Libra': 'Air', 'Scorpio': 'Water', 'Sagittarius': 'Fire', 'Capricorn': 'Earth', 'Aquarius': 'Air', 'Pisces': 'Water' };
+            },
+            get mobilityMap() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.modality]))
+                    : { 'Aries': 'Movable', 'Taurus': 'Fixed', 'Gemini': 'Dual', 'Cancer': 'Movable', 'Leo': 'Fixed', 'Virgo': 'Dual', 'Libra': 'Movable', 'Scorpio': 'Fixed', 'Sagittarius': 'Dual', 'Capricorn': 'Movable', 'Aquarius': 'Fixed', 'Pisces': 'Dual' };
+            },
+            get polarityMap() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.polarity]))
+                    : { 'Aries': 'Active', 'Taurus': 'Passive', 'Gemini': 'Active', 'Cancer': 'Passive', 'Leo': 'Active', 'Virgo': 'Passive', 'Libra': 'Active', 'Scorpio': 'Passive', 'Sagittarius': 'Active', 'Capricorn': 'Passive', 'Aquarius': 'Active', 'Pisces': 'Passive' };
+            },
+            get risingMap() {
+                return (typeof window !== 'undefined' && window.AstroCatalog)
+                    ? Object.fromEntries(window.AstroCatalog.signs.map(s => [s.name, s.udaya]))
+                    : { 'Gemini': 'Shirshodaya', 'Leo': 'Shirshodaya', 'Virgo': 'Shirshodaya', 'Libra': 'Shirshodaya', 'Scorpio': 'Shirshodaya', 'Aquarius': 'Shirshodaya', 'Aries': 'Prishtodaya', 'Taurus': 'Prishtodaya', 'Cancer': 'Prishtodaya', 'Sagittarius': 'Prishtodaya', 'Capricorn': 'Prishtodaya', 'Pisces': 'Ubhayodaya' };
             },
             elementsMeta: {
                 'Fire': { sanskrit: 'Agni', varna: 'Kshatriya', varnaDesc: 'Leaders & Protectors (courage, executive action)', dosha: 'Pitta', doshaDesc: 'Metabolic fire & vitality', color: '#c0392b', bg: '#fdf2f0', icon: '' },
@@ -56,18 +68,6 @@
                 { sign: 'Aquarius', num: 11, abbr: 'Aq', region: 'Calves, Shins, Ankles & Skin', organs: 'Achilles tendons, shins, peripheral circulation, skin respiration' },
                 { sign: 'Pisces', num: 12, abbr: 'Pi', region: 'Feet, Toes & Lymphatics', organs: 'Tarsals, metatarsals, lymphatic fluid nodes, immune defense fluids' }
             ]
-        };
-
-        const GRAHA_COLORS = {
-            'Sun': '#d35400', 'Moon': '#4a5568', 'Mars': '#c0392b', 'Mercury': '#1e824c',
-            'Jupiter': '#b7791f', 'Venus': '#8d6e63', 'Saturn': '#2c3e50', 'Rahu': '#5d6d7e',
-            'Ketu': '#34495e', 'Lagna': '#a93226'
-        };
-
-        const GRAHA_SHORT_NAMES = {
-            'Sun': 'Su', 'Moon': 'Mo', 'Mars': 'Ma', 'Mercury': 'Me',
-            'Jupiter': 'Ju', 'Venus': 'Ve', 'Saturn': 'Sa', 'Rahu': 'Ra',
-            'Ketu': 'Ke', 'Lagna': 'Asc'
         };
 
         window.cycleSouthCenter = function(container) {
@@ -187,17 +187,20 @@
 
             // Helper to render clean planet badge without heavy drop-shadows
             const renderPlanetBadge = (p) => {
-                const col = GRAHA_COLORS[p.name] || '#4a3325';
-                const abbr = GRAHA_SHORT_NAMES[p.name] || p.name.substring(0, 2);
-                const retro = p.isRetro ? ' <span style="color:#b45309; font-size:9.5px; font-weight:bold;">R</span>' : '';
+                const pl = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getPlanet(p.name) : null;
+                const col = pl ? pl.colorToken : '#4a3325';
+                const abbr = pl ? pl.abbr : p.name.substring(0, 2);
+                const retro = p.isRetro ? ' <span style="color:#b45309; font-size:12px; font-weight:bold;">R</span>' : '';
                 const tip = `${p.name} at ${p.degStr} in ${p.sign}${p.isRetro ? ' [Retrograde]' : ''}`;
-                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#f4ece1; color:${col}; border:1px solid #d5c8b2; padding:1px 5px; border-radius:3px; font-size:10.5px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">${abbr}${retro}</span>`;
+                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#f4ece1; color:${col}; border:1px solid #d5c8b2; padding:1px 5px; border-radius:3px; font-size:12px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">${abbr}${retro}</span>`;
             };
 
             const renderLagnaBadge = (signName) => {
                 if (signName !== data.lagnaSign) return '';
+                const pl = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getPlanet('Lagna') : null;
+                const col = pl ? pl.colorToken : '#c0392b';
                 const tip = `Ascendant (Lagna) at ${data.lagnaDegStr} in ${signName}`;
-                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#fdf2f0; color:#c0392b; border:1px solid #e5b8b2; padding:1px 5px; border-radius:3px; font-size:10.5px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">Asc</span>`;
+                return `<span class="sign-attr-planet-pill tooltip-target" data-tooltip="${tip}" style="background:#fdf2f0; color:${col}; border:1px solid #e5b8b2; padding:1px 5px; border-radius:3px; font-size:12px; font-weight:700; margin:1px 2px; display:inline-flex; align-items:center; cursor:default;">Asc</span>`;
             };
 
             let html = '';
@@ -206,7 +209,7 @@
                 // TAB 1: SIMPLIFIED 4x3 MATRIX
                 html += `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; color:#6b5a4b; padding:0 2px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#6b5a4b; padding:0 2px;">
                         <span><strong>4×3 Sign Matrix:</strong> Distribution of grahas by Element and Mobility</span>
                         <span>Total Grahas: <strong style="color:#4a3325; font-size:12px;">${data.totalPlanets}</strong></span>
                     </div>
@@ -233,7 +236,7 @@
                     html += `
                         <td style="background:#faf7f2; text-align:left; padding:6px 8px;">
                             <div style="font-weight:700; color:${meta.color}; font-size:12px;">${elem} (${meta.sanskrit})</div>
-                            <div style="font-size:10px; color:#7a6756;">${meta.varna} · ${meta.dosha}</div>
+                            <div style="font-size:12px; color:#7a6756;">${meta.varna} · ${meta.dosha}</div>
                         </td>
                     `;
 
@@ -246,15 +249,15 @@
 
                         let badgesHtml = occupantsList.map(renderPlanetBadge).join('');
                         badgesHtml += renderLagnaBadge(signName);
-                        if (!badgesHtml) badgesHtml = `<span style="color:#a8a29e; font-size:11px;">—</span>`;
+                        if (!badgesHtml) badgesHtml = `<span style="color:#a8a29e; font-size:12px;">—</span>`;
 
                         const cellCount = occupantsList.length + (data.countLagna && hasLagna ? 1 : 0);
-                        const countBadge = cellCount > 0 ? `<span style="font-size:10px; font-weight:700; color:${meta.color}; margin-left:4px;">(${cellCount})</span>` : '';
+                        const countBadge = cellCount > 0 ? `<span style="font-size:12px; font-weight:700; color:${meta.color}; margin-left:4px;">(${cellCount})</span>` : '';
 
                         html += `
                             <td class="interactive" data-type="sign" data-id="${signName}" style="background:${cellBg}; cursor: pointer;">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px; padding-bottom:2px; border-bottom:1px solid #f0e6d5;">
-                                    <span style="font-weight:700; color:#4a3325; font-size:11px;"><span style="color:#b59472; font-weight:800; margin-right:4px;">${signAbbr}</span>${signName}</span>
+                                    <span style="font-weight:700; color:#4a3325; font-size:12px;"><span style="color:#b59472; font-weight:800; margin-right:4px;">${signAbbr}</span>${signName}</span>
                                     ${countBadge}
                                 </div>
                                 <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:20px;">
@@ -287,7 +290,7 @@
                     </div>
 
                     <!-- Clean Single Summary Bar -->
-                    <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:11px; color:#5c4433; background:#fffdfa; border:1px solid #dcb594; border-radius:6px; padding:6px 10px; justify-content:space-between;">
+                    <div style="display:flex; flex-wrap:wrap; gap:12px; font-size:12px; color:#5c4433; background:#fffdfa; border:1px solid #dcb594; border-radius:6px; padding:6px 10px; justify-content:space-between;">
                         <div>
                             <strong style="color:#78350f;">Polarity:</strong>
                             Active (Odd): <strong style="color:#b45309;">${data.polarityTotals['Active']}</strong> ·
@@ -316,7 +319,7 @@
 
                     let occupantsBadges = occupantsList.map(renderPlanetBadge).join('');
                     occupantsBadges += renderLagnaBadge(item.sign);
-                    if (!occupantsBadges) occupantsBadges = `<span style="color:#a8a29e; font-size:11px;">—</span>`;
+                    if (!occupantsBadges) occupantsBadges = `<span style="color:#a8a29e; font-size:12px;">—</span>`;
 
                     const countVal = occupantsList.length + (data.countLagna && hasLagna ? 1 : 0);
                     const countStr = countVal > 0 ? `<strong style="color:#c0392b;">${countVal}</strong>` : `<span style="color:#a8a29e;">0</span>`;
@@ -328,8 +331,8 @@
                                 <span style="color:#b59472; font-weight:800; margin-right:4px;">${item.abbr}</span>${item.sign} <small style="color:#8c7b64; font-weight:normal;">(${item.num})</small>
                             </td>
                             <td style="padding:5px 8px;">
-                                <div style="font-weight:600; color:#4a3325; font-size:11px;">${item.region}</div>
-                                <div style="font-size:10px; color:#8c7b64; margin-top:1px;">${item.organs}</div>
+                                <div style="font-weight:600; color:#4a3325; font-size:12px;">${item.region}</div>
+                                <div style="font-size:12px; color:#8c7b64; margin-top:1px;">${item.organs}</div>
                             </td>
                             <td style="padding:5px 8px;">
                                 <div style="display:flex; flex-wrap:wrap; align-items:center;">
@@ -345,7 +348,7 @@
 
                 html += `
                 <div style="display:flex; flex-direction:column; gap:8px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fffdfa; padding:5px 10px; border-radius:6px; border:1px solid #dcb594; font-size:11.5px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:#fffdfa; padding:5px 10px; border-radius:6px; border:1px solid #dcb594; font-size:12px;">
                         <span><strong style="color:#78350f;">Kalapurusha Anatomy:</strong> 12 signs as cosmic human body limbs</span>
                         <span style="font-weight:700; color:#4a3325;">Active: <span style="color:#c0392b;">${activeLimbsCount}/12</span> body regions (${data.totalPlanets} grahas)</span>
                     </div>
@@ -413,12 +416,12 @@
                                 <strong style="color:#b45309; font-size:12px;">Active / Masculine / Day Signs</strong>
                                 <span style="font-size:13px; font-weight:bold; color:#b45309;">${data.polarityTotals['Active']} grahas</span>
                             </div>
-                            <div style="font-size:10.5px; color:#78350f; margin-bottom:6px;">
+                            <div style="font-size:12px; color:#78350f; margin-bottom:6px;">
                                 <strong>Odd Signs (1, 3, 5, 7, 9, 11):</strong> Aries, Gemini, Leo, Libra, Sagittarius, Aquarius.<br>
                                 Extroverted, expressive, direct. Masculine planets (Sun, Mars, Jupiter) function with natural ease here.
                             </div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:22px;">
-                                ${activePlanetsBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                                ${activePlanetsBadges || '<span style="color:#a8a29e; font-size:12px;">None</span>'}
                             </div>
                         </div>
 
@@ -427,12 +430,12 @@
                                 <strong style="color:#4b5563; font-size:12px;">Passive / Feminine / Night Signs</strong>
                                 <span style="font-size:13px; font-weight:bold; color:#4b5563;">${data.polarityTotals['Passive']} grahas</span>
                             </div>
-                            <div style="font-size:10.5px; color:#374151; margin-bottom:6px;">
+                            <div style="font-size:12px; color:#374151; margin-bottom:6px;">
                                 <strong>Even Signs (2, 4, 6, 8, 10, 12):</strong> Taurus, Cancer, Virgo, Scorpio, Capricorn, Pisces.<br>
                                 Introverted, reflective, receptive. Feminine planets (Moon, Venus) feel more at home here.
                             </div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center; min-height:22px;">
-                                ${passivePlanetsBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                                ${passivePlanetsBadges || '<span style="color:#a8a29e; font-size:12px;">None</span>'}
                             </div>
                         </div>
                     </div>
@@ -442,43 +445,43 @@
                     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:8px;">
                         <div class="sign-attr-summary-card" style="border-left:3px solid #059669;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                                <strong style="color:#059669; font-size:11.5px;">Head-rising (Shirshodaya)</strong>
+                                <strong style="color:#059669; font-size:12px;">Head-rising (Shirshodaya)</strong>
                                 <span style="font-size:13px; font-weight:bold; color:#059669;">${data.risingTotals['Shirshodaya']}</span>
                             </div>
-                            <div style="font-size:10px; color:#065f46; margin-bottom:4px;">
+                            <div style="font-size:12px; color:#065f46; margin-bottom:4px;">
                                 <strong>Signs:</strong> Ge, Le, Vi, Li, Sc, Aq<br>
                                 Yields benefits early in life or beginning of planetary cycles (Dashas).
                             </div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center;">
-                                ${shirshoBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                                ${shirshoBadges || '<span style="color:#a8a29e; font-size:12px;">None</span>'}
                             </div>
                         </div>
 
                         <div class="sign-attr-summary-card" style="border-left:3px solid #d97706;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                                <strong style="color:#d97706; font-size:11.5px;">Back-rising (Prishtodaya)</strong>
+                                <strong style="color:#d97706; font-size:12px;">Back-rising (Prishtodaya)</strong>
                                 <span style="font-size:13px; font-weight:bold; color:#d97706;">${data.risingTotals['Prishtodaya']}</span>
                             </div>
-                            <div style="font-size:10px; color:#92400e; margin-bottom:4px;">
+                            <div style="font-size:12px; color:#92400e; margin-bottom:4px;">
                                 <strong>Signs:</strong> Ar, Ta, Cn, Sg, Cp<br>
                                 Yields results through sustained effort, maturing later in life.
                             </div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center;">
-                                ${prishtoBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                                ${prishtoBadges || '<span style="color:#a8a29e; font-size:12px;">None</span>'}
                             </div>
                         </div>
 
                         <div class="sign-attr-summary-card" style="border-left:3px solid #7c3aed;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:3px;">
-                                <strong style="color:#7c3aed; font-size:11.5px;">Both-ways rising (Ubhayodaya)</strong>
+                                <strong style="color:#7c3aed; font-size:12px;">Both-ways rising (Ubhayodaya)</strong>
                                 <span style="font-size:13px; font-weight:bold; color:#7c3aed;">${data.risingTotals['Ubhayodaya']}</span>
                             </div>
-                            <div style="font-size:10px; color:#5b21b6; margin-bottom:4px;">
+                            <div style="font-size:12px; color:#5b21b6; margin-bottom:4px;">
                                 <strong>Sign:</strong> Pisces (Meena)<br>
                                 Fruitful and adaptable throughout life.
                             </div>
                             <div style="display:flex; flex-wrap:wrap; align-items:center;">
-                                ${ubhayaBadges || '<span style="color:#a8a29e; font-size:11px;">None</span>'}
+                                ${ubhayaBadges || '<span style="color:#a8a29e; font-size:12px;">None</span>'}
                             </div>
                         </div>
                     </div>
@@ -521,8 +524,8 @@
             container.innerHTML = `
                 <div class="widget-sign-attributes" data-active-tab="matrix" style="display:flex; flex-direction:column; width:100%; height:100%;">
                     <div style="margin-bottom:10px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; background:#f7f3eb; padding:6px 10px; border-radius:6px; border:1px solid #dcb594;">
-                        <label style="font-size:11.5px; font-weight:bold; color:#4a3325;">Varga:
-                            <select id="floatingSignAttrVargaSelect" onchange="renderFloatingSignAttributesContent()" style="margin-left:4px; padding:2px 6px; font-size:11px; border-radius:4px; border:1px solid #d5c8b2; background:#fffdfa; font-weight:600;">
+                        <label style="font-size:12px; font-weight:bold; color:#4a3325;">Varga:
+                            <select id="floatingSignAttrVargaSelect" onchange="renderFloatingSignAttributesContent()" style="margin-left:4px; padding:2px 6px; font-size:12px; border-radius:4px; border:1px solid #d5c8b2; background:#fffdfa; font-weight:600;">
                                 <option value="D1" ${varga === 'D1' ? 'selected' : ''}>D1 - Rāśi</option>
                                 <option value="D2" ${varga === 'D2' ? 'selected' : ''}>D2 - Horā</option>
                                 <option value="D3" ${varga === 'D3' ? 'selected' : ''}>D3 - Drekkāṇa</option>
@@ -542,11 +545,11 @@
                             </select>
                         </label>
                         <div class="sign-attr-pills" style="display:inline-flex; background:#eae1d1; border-radius:4px; padding:1px; gap:1px;">
-                            <button type="button" class="sign-attr-pill-btn active" onclick="switchFloatingSignAttrTab(this, 'matrix')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Triad Matrix (4×3)</button>
-                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'anatomy')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Kalapurusha Anatomy</button>
-                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'polarity')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:11px; padding:2px 8px; border-radius:3px; cursor:pointer;">Polarity & Rising</button>
+                            <button type="button" class="sign-attr-pill-btn active" onclick="switchFloatingSignAttrTab(this, 'matrix')" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:12px; padding:2px 8px; border-radius:3px; cursor:pointer;">Triad Matrix (4×3)</button>
+                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'anatomy')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:2px 8px; border-radius:3px; cursor:pointer;">Kalapurusha Anatomy</button>
+                            <button type="button" class="sign-attr-pill-btn" onclick="switchFloatingSignAttrTab(this, 'polarity')" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:2px 8px; border-radius:3px; cursor:pointer;">Polarity & Rising</button>
                         </div>
-                        <label style="font-size:11px; font-weight:600; color:#6b5a4b; display:flex; align-items:center; gap:4px; cursor:pointer;">
+                        <label style="font-size:12px; font-weight:600; color:#6b5a4b; display:flex; align-items:center; gap:4px; cursor:pointer;">
                             <input type="checkbox" id="floatingCountLagna" onchange="renderFloatingSignAttributesContent()" style="cursor:pointer;"/> + Lagna
                         </label>
                     </div>

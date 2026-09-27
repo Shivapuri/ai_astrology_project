@@ -15,6 +15,22 @@
         const sb = currentData.shadbala;
         const planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"];
 
+        // Dynamically build table headers with centralized glyphs
+        const theadRow = cell.querySelector('.yoga-judgment-table thead tr') || cell.querySelector('thead tr');
+        if (theadRow) {
+            let headerHtml = `<th style="border-right: 1px solid #b86829; width: 85px; padding: 4px;"></th>`;
+            planets.forEach(p => {
+                const glyph = (typeof TableBuilder !== 'undefined' && TableBuilder.renderPlanetGlyph)
+                    ? TableBuilder.renderPlanetGlyph(p)
+                    : (window.AstroCatalog ? window.AstroCatalog.getPlanet(p).glyph : p);
+                const pl = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getPlanet(p) : null;
+                const titleStr = pl ? `${p} (${pl.sanskrit})` : p;
+                headerHtml += `<th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 14px; font-weight: bold; padding: 4px;" title="${titleStr}">${glyph}</th>`;
+            });
+            headerHtml += `<th style="color: #1a4a82; font-size: 13px; font-weight: bold; padding: 4px;">Avg.</th>`;
+            theadRow.innerHTML = headerHtml;
+        }
+
         // Extract values for all 7 planets
         const rowData = {
             'I': [], 'K': [], 'S': [], 'A': [], 'SD': [], 'AD': [],
@@ -156,13 +172,13 @@
                     <thead>
                         <tr style="border-bottom: 2px solid #b86829; background: #fffdfa;">
                             <th style="border-right: 1px solid #b86829; width: 85px; padding: 6px;"></th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Sun (Surya)">☉</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Moon (Chandra)">☽</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mars (Mangala)">♂</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mercury (Budha)">☿</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Jupiter (Guru)">♃</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Venus (Shukra)">♀</th>
-                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Saturn (Shani)">♄</th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Sun (Surya)"><span class="graha-glyph">☉</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Moon (Chandra)"><span class="graha-glyph">☽</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mars (Mangala)"><span class="graha-glyph">♂</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Mercury (Budha)"><span class="graha-glyph">☿</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Jupiter (Guru)"><span class="graha-glyph">♃</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Venus (Shukra)"><span class="graha-glyph">♀</span></th>
+                            <th style="border-right: 1px solid #b86829; color: #1a4a82; font-size: 17px; font-weight: bold; padding: 6px;" title="Saturn (Shani)"><span class="graha-glyph">♄</span></th>
                             <th style="color: #1a4a82; font-size: 14px; font-weight: bold; padding: 6px;">Avg.</th>
                         </tr>
                     </thead>
@@ -181,7 +197,7 @@
         window.widgetRegistry.register('yoga-judgment', {
             id: 'yoga-judgment',
             title: 'Yoga Judgment (Ishta/Kashta)',
-            icon: '⚖️',
+            icon: '⚖',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateYogaJudgmentWidget(container, chartData);

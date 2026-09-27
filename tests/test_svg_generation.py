@@ -25,7 +25,7 @@ def test_north_indian_svg():
     svg_str = generate_north_indian(items, varga_name="D9 - Navamsa")
     
     # Assert background is transparent and viewBox provides safe margin
-    assert 'viewBox="-10 -10 420 420"' in svg_str
+    assert 'viewBox="0 0 500 500"' in svg_str
     assert 'background:transparent' in svg_str
 
 def test_south_indian_multiple_cusps_separated():
