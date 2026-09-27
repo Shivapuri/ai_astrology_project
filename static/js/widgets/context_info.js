@@ -120,8 +120,8 @@
                 gridHtml += `<div class="astra-prop-item"><span class="astra-prop-key">System:</span><span class="astra-prop-val">Whole Sign Container + Campanus Cusp</span></div>`;
             }
         } else if (type === 'planet') {
-            if (p.guna) badgesHtml += `<span class="prop-badge badge-guna"> ${escapeHtml(p.guna.split(' (')[0])}</span>`;
-            if (p.element) badgesHtml += `<span class="prop-badge badge-element"> ${escapeHtml(p.element.split(' (')[0])}</span>`;
+            if (p.guna) badgesHtml += `<span class="prop-badge badge-guna">${escapeHtml(p.guna.split(' (')[0])}</span>`;
+            if (p.element) badgesHtml += `<span class="prop-badge badge-element">${escapeHtml(p.element.split(' (')[0])}</span>`;
             if (p.caste) badgesHtml += `<span class="prop-badge badge-neutral">${escapeHtml(p.caste.split(' (')[0])}</span>`;
             if (p.gender) badgesHtml += `<span class="prop-badge badge-neutral">${escapeHtml(p.gender)}</span>`;
 

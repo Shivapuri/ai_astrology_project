@@ -197,7 +197,7 @@
         window.widgetRegistry.register('yoga-judgment', {
             id: 'yoga-judgment',
             title: 'Yoga Judgment (Ishta/Kashta)',
-            icon: '⚖',
+            icon: '',
             category: 'Strengths',
             render: function(container, chartData, options) {
                 updateYogaJudgmentWidget(container, chartData);
