@@ -226,6 +226,72 @@ def test_biwheel_dahmer_zodiac_alignment():
     assert 'class="harmonic-subdivision-tick"' in svg
 
 
+def test_equidistant_t_spacing():
+    from jyotish.draw_chart import get_equidistant_t
+    assert get_equidistant_t(0) == []
+    assert get_equidistant_t(1) == [0.50]
+    assert get_equidistant_t(2) == [0.18, 0.82]
+    assert get_equidistant_t(3) == [0.10, 0.50, 0.90]
+    assert get_equidistant_t(4) == [0.06, 0.35, 0.65, 0.94]
+
+
+def test_south_indian_clockwise_progression_scorpio():
+    import re
+    from jyotish.draw_chart import generate_south_indian
+
+    # Scorpio is at cell (x=100, y=300).
+    # Preceding sign is Libra (x=200, y=300) to its right.
+    # Next sign is Sagittarius (x=0, y=300) to its left.
+    # Clockwise progression: 0° starts at Bottom-Right, 30° ends at Top-Left.
+    items = [
+        {"type": "planet", "name": "Saturn", "sign": "Scorpio", "degree": 8, "minute": 31, "is_retrograde": False},
+        {"type": "planet", "name": "Mercury", "sign": "Scorpio", "degree": 24, "minute": 35, "is_retrograde": False},
+        {"type": "cusp", "text": "4", "sign": "Scorpio"}
+    ]
+    svg_str = generate_south_indian(items, varga_name="D1")
+
+    # Extract Saturn and Mercury coordinates from SVG
+    # Format: <text class="graha-glyph" x="PX" y="PY" ...>
+    sat_match = re.search(r'data-id="Saturn"[^>]*>.*?<text[^>]*x="([0-9.]+)"[^>]*y="([0-9.]+)"', svg_str, re.DOTALL)
+    merc_match = re.search(r'data-id="Mercury"[^>]*>.*?<text[^>]*x="([0-9.]+)"[^>]*y="([0-9.]+)"', svg_str, re.DOTALL)
+    assert sat_match and merc_match, "Saturn or Mercury coordinates not found"
+
+    sat_x = float(sat_match.group(1))
+    sat_y = float(sat_match.group(2))
+    merc_x = float(merc_match.group(1))
+    merc_y = float(merc_match.group(2))
+
+    # Saturn (8°, lower degree) must be to the right of Mercury (24°, higher degree) towards Libra
+    assert sat_x > merc_x, f"Saturn x ({sat_x}) must be > Mercury x ({merc_x}) in Scorpio"
+    # Saturn (8°, lower degree) must be lower than Mercury (24°, higher degree)
+    assert sat_y > merc_y, f"Saturn y ({sat_y}) must be > Mercury y ({merc_y}) in Scorpio"
+
+
+def test_north_indian_outer_triangle_tracks():
+    from jyotish.draw_chart import generate_north_indian
+    items = [
+        {"type": "planet", "name": "Mars", "sign": "Taurus", "degree": 15, "minute": 0, "is_retrograde": False},
+        {"type": "cusp", "text": "2", "sign": "Taurus"}
+    ]
+    # In Taurus (H2 when Lagna in Aries), Mars is in outer triangle
+    svg_str = generate_north_indian(items, varga_name="D1")
+    # Mars in H2 track at y=44 (py=44-2=42 for glyph text)
+    assert 'y="42.0"' in svg_str or 'y="42"' in svg_str
+    # Star (Sign glyph) at (140, 120) with font-size="8.5"
+    assert 'x="140" y="120" font-size="8.5"' in svg_str
+    # Square (Cusp number) at (140, 95) with font-size="8.5"
+    assert 'x="140" y="95" font-family="sans-serif" font-size="8.5"' in svg_str
+
+
+def test_north_equidistant_t_spacing():
+    from jyotish.draw_chart import get_north_equidistant_t
+    assert get_north_equidistant_t(0) == []
+    assert get_north_equidistant_t(1) == [0.50]
+    assert get_north_equidistant_t(2) == [0.26, 0.74]
+    assert get_north_equidistant_t(3) == [0.20, 0.50, 0.80]
+    assert get_north_equidistant_t(4) == [0.12, 0.37, 0.63, 0.88]
+
+
 
 
 

@@ -207,6 +207,51 @@ def parse_varga_data(varga_data):
         
     return items
 
+def get_equidistant_t(num_planets: int) -> List[float]:
+    """
+    Computes deterministic, evenly-spaced normalized positions (t in [0.0, 1.0])
+    along a house track or diagonal.
+    - 1 planet: Dead center (0.50)
+    - 2 planets: [0.18, 0.82]
+    - 3 planets: [0.10, 0.50, 0.90]
+    - 4 planets: [0.06, 0.35, 0.65, 0.94]
+    - 5+ planets: Linear interpolation across [0.06, 0.94]
+    """
+    if num_planets <= 0:
+        return []
+    if num_planets == 1:
+        return [0.50]
+    if num_planets == 2:
+        return [0.18, 0.82]
+    if num_planets == 3:
+        return [0.10, 0.50, 0.90]
+    if num_planets == 4:
+        return [0.06, 0.35, 0.65, 0.94]
+    return [0.06 + 0.88 * (i / (num_planets - 1)) for i in range(num_planets)]
+
+def get_north_equidistant_t(num_planets: int) -> List[float]:
+    """
+    Computes deterministic, evenly-spaced normalized positions (t in [0.0, 1.0])
+    specifically along North Indian tracks.
+    For 3 and 4 planets, spacing is tighter so they don't sit too close to the outside borders.
+    - 1 planet: Dead center (0.50)
+    - 2 planets: [0.26, 0.74]
+    - 3 planets: [0.20, 0.50, 0.80]
+    - 4 planets: [0.12, 0.37, 0.63, 0.88]
+    - 5+ planets: Linear interpolation across [0.10, 0.90]
+    """
+    if num_planets <= 0:
+        return []
+    if num_planets == 1:
+        return [0.50]
+    if num_planets == 2:
+        return [0.26, 0.74]
+    if num_planets == 3:
+        return [0.20, 0.50, 0.80]
+    if num_planets == 4:
+        return [0.12, 0.37, 0.63, 0.88]
+    return [0.10 + 0.80 * (i / (num_planets - 1)) for i in range(num_planets)]
+
 def get_south_indian_positions(num_planets, cell_x, cell_y, has_cusps=False, cusp_side=None):
     positions = []
     # If cusps or badges are on top or bottom, adjust row heights so planet labels and degrees
@@ -836,20 +881,28 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
 
     svg += generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode=mode)
 
-    # Quadrant Map: (cusp_dx, cusp_dy, sign_dx, sign_dy)
-    quadrant_map = {
-        "Pisces": (14, 14, 86, 86),
-        "Aries": (14, 14, 86, 86),
-        "Aquarius": (14, 14, 86, 86),
-        "Taurus": (86, 14, 14, 86),
-        "Gemini": (86, 14, 14, 86),
-        "Cancer": (86, 14, 14, 86),
-        "Leo": (86, 86, 14, 14),
-        "Virgo": (86, 86, 14, 14),
-        "Libra": (86, 86, 14, 14),
-        "Scorpio": (14, 86, 86, 14),
-        "Sagittarius": (14, 86, 86, 14),
-        "Capricorn": (14, 86, 86, 14),
+    # 4-Triplet Diagonal Configuration (Clockwise progression from preceding sign to succeeding sign)
+    # Triplet 1 (Aries, Taurus, Gemini): TL (16, 16) -> BR (84, 84) | Cusp BL (13, 87), Sign TR (87, 13)
+    # Triplet 2 (Cancer, Leo, Virgo):    TR (84, 16) -> BL (16, 84) | Cusp TL (13, 13), Sign BR (87, 87)
+    # Triplet 3 (Libra, Scorpio, Sag):   BR (84, 84) -> TL (16, 16) | Cusp TR (87, 13), Sign BL (13, 87)
+    # Triplet 4 (Cap, Aquarius, Pisces): BL (16, 84) -> TR (84, 16) | Cusp BR (87, 87), Sign TL (13, 13)
+    south_triplets = {
+        # Triplet 1 (Aries, Taurus, Gemini) -> TL -> BR (\) [Left to Right]
+        "Aries":       {"start": (16, 16), "end": (84, 84), "cusp": (13, 87), "sign": (87, 13)},
+        "Taurus":      {"start": (16, 16), "end": (84, 84), "cusp": (13, 87), "sign": (87, 13)},
+        "Gemini":      {"start": (16, 16), "end": (84, 84), "cusp": (13, 87), "sign": (87, 13)},
+        # Triplet 2 (Cancer, Leo, Virgo) -> TR -> BL (/) [Top to Bottom]
+        "Cancer":      {"start": (84, 16), "end": (16, 84), "cusp": (13, 13), "sign": (87, 87)},
+        "Leo":         {"start": (84, 16), "end": (16, 84), "cusp": (13, 13), "sign": (87, 87)},
+        "Virgo":       {"start": (84, 16), "end": (16, 84), "cusp": (13, 13), "sign": (87, 87)},
+        # Triplet 3 (Libra, Scorpio, Sagittarius) -> BR -> TL (\) [Right to Left]
+        "Libra":       {"start": (84, 84), "end": (16, 16), "cusp": (87, 13), "sign": (13, 87)},
+        "Scorpio":     {"start": (84, 84), "end": (16, 16), "cusp": (87, 13), "sign": (13, 87)},
+        "Sagittarius": {"start": (84, 84), "end": (16, 16), "cusp": (87, 13), "sign": (13, 87)},
+        # Triplet 4 (Capricorn, Aquarius, Pisces) -> BL -> TR (/) [Bottom to Top]
+        "Capricorn":   {"start": (16, 84), "end": (84, 16), "cusp": (87, 87), "sign": (13, 13)},
+        "Aquarius":    {"start": (16, 84), "end": (84, 16), "cusp": (87, 87), "sign": (13, 13)},
+        "Pisces":      {"start": (16, 84), "end": (84, 16), "cusp": (87, 87), "sign": (13, 13)},
     }
 
     for sign, (x, y) in cell_coords.items():
@@ -857,15 +910,17 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
         planets = [it for it in cell_items if it["type"] == "planet"]
         cusps = [it for it in cell_items if it["type"] == "cusp"]
         
-        c_dx, c_dy, s_dx, s_dy = quadrant_map[sign]
+        cfg = south_triplets[sign]
+        c_dx, c_dy = cfg["cusp"]
+        s_dx, s_dy = cfg["sign"]
         
         h_num = (signs_list.index(sign) - anchor_index + 12) % 12 + 1
         # Background hit rect for interactive sign selection and highlighting
         svg += f'<rect class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h_num}" x="{x}" y="{y}" width="100" height="100" fill="transparent" style="cursor: pointer;"><title>House {h_num} ({sign})</title></rect>\n'
 
-        # Draw Rasi Sign (Inner Corner)
+        # Draw Rasi Sign (Cross-Diagonal Corner, subtle 10.5px, STIX Math)
         s_sym, s_col, _ = sign_symbols[sign]
-        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="14" font-family={ASTRO_FONT_STACK} font-weight="bold" fill="{s_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
+        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{x + s_dx}" y="{y + s_dy}" font-size="10.5" font-family={ASTRO_FONT_STACK} font-weight="bold" fill="{s_col}" opacity="0.8" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
 
         # If this is anchor sign for non-Lagna root, draw the diagonal badge
         if root_planet != "Lagna" and sign == anchor_sign:
@@ -874,7 +929,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             svg += f'<rect x="{x + 2}" y="{y + 2}" width="22" height="14" rx="3" fill="#C0392B"/>\n'
             svg += f'<text x="{x + 13}" y="{y + 9}" font-family="sans-serif" font-size="9" font-weight="bold" fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">{badge_text}</text>\n'
 
-        # Draw House Cusps (Outer Corner)
+        # Draw House Cusps (Opposite Cross-Diagonal Corner, pure number, no "H", 10px)
         if root_planet == "Lagna":
             if cusps:
                 num_c = len(cusps)
@@ -887,15 +942,12 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                         cy_pos = y + c_dy
                     else:
                         # Spread cusps horizontally so each separate number is independently clickable
-                        if c_dx < 50:  # left corner (14, 14) or (14, 86)
-                            cx_pos = x + 14 + (c_idx * 16)
-                            cy_pos = y + c_dy
-                        else:  # right corner (86, 14) or (86, 86)
-                            cx_pos = x + 86 - ((num_c - 1 - c_idx) * 16)
-                            cy_pos = y + c_dy
+                        spread_offset = (c_idx * 13) if c_dx < 50 else -((num_c - 1 - c_idx) * 13)
+                        cx_pos = x + c_dx + spread_offset
+                        cy_pos = y + c_dy
                             
                     svg += f'<g class="interactive" data-type="house" data-id="{c_num}" style="cursor: pointer;"><title>{c_tooltip}</title>\n'
-                    svg += f'<text x="{cx_pos}" y="{cy_pos}" font-family="sans-serif" font-size="12" font-weight="bold" stroke="#FFFDF9" stroke-width="2.5" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
+                    svg += f'<text x="{cx_pos}" y="{cy_pos}" font-family="sans-serif" font-size="10" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
                     svg += '</g>\n'
         else:
             # Whole Sign House number relative to anchor planet
@@ -905,20 +957,42 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             col = "#C0392B" if is_kendra else "#7D3C98"
             bx = x + c_dx
             by = y + c_dy
-            if sign == anchor_sign and c_dx < 50 and c_dy < 50:
-                bx += 16
             svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
-            svg += f'<text x="{bx}" y="{by}" font-family="sans-serif" font-size="12" font-weight="bold" stroke="#FFFDF9" stroke-width="2.5" paint-order="stroke fill" fill="{col}" text-anchor="middle" dominant-baseline="central">H{h_num}</text>\n'
+            svg += f'<text x="{bx}" y="{by}" font-family="sans-serif" font-size="10" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
             svg += '</g>\n'
 
-        has_cell_cusps = bool(cusps or root_planet != "Lagna")
-        cusp_side = ("top" if c_dy < 50 else "bottom") if has_cell_cusps else None
-        positions = get_south_indian_positions(len(planets), x, y, has_cusps=has_cell_cusps, cusp_side=cusp_side)
-        
-        for idx, p in enumerate(planets):
-            if idx >= len(positions):
-                break
-            px, py = positions[idx]
+        # Sort planets by degree within sign
+        planets_with_deg = []
+        for p in planets:
+            p_deg_val = 0.0
+            for orig_it in items:
+                if orig_it.get("type") != "cusp" and orig_it.get("name") == p["name"] and orig_it.get("sign") == sign:
+                    p_deg_val = orig_it.get("degree", 0) + orig_it.get("minute", 0) / 60.0
+                    break
+            planets_with_deg.append((p_deg_val, p))
+        planets_with_deg.sort(key=lambda item: item[0])
+
+        p_start_x, p_start_y = cfg["start"]
+        p_end_x, p_end_y = cfg["end"]
+
+        # Deterministic equidistant spacing along clear axis
+        t_values = get_equidistant_t(len(planets_with_deg))
+
+        for idx, (p_deg_val, p) in enumerate(planets_with_deg):
+            t = t_values[idx]
+            px = x + p_start_x + (p_end_x - p_start_x) * t
+            py = y + p_start_y + (p_end_y - p_start_y) * t
+
+            # Only for 5+ planets: alternate slight perpendicular shift if crowded
+            if len(planets_with_deg) > 4:
+                shift = -9 if (idx % 2 == 0) else 9
+                if sign in ["Aries", "Taurus", "Gemini", "Libra", "Scorpio", "Sagittarius"]:
+                    px += shift
+                    py -= shift
+                else:
+                    px += shift
+                    py += shift
+
             info = planet_notations.get(p["name"], {
                 "symbol": p["name"][:2],
                 "english": p["name"][:2],
@@ -935,25 +1009,20 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
-            font_sz = "18" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
+            font_sz = "13" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
             glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
             font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family={font_fam} font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 14}" font-family="sans-serif" font-size="10" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
+            svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
-                svg += f'<tspan font-size="9" font-weight="bold" fill="#C0392B"> R</tspan>'
+                svg += f'<tspan font-size="8" font-weight="bold" fill="#C0392B"> R</tspan>'
             svg += '</text>\n'
             svg += '</g>\n'
             
             s_idx = signs_list.index(sign)
-            p_deg_val = 0.0
-            for orig_it in items:
-                if orig_it.get("type") != "cusp" and orig_it.get("name") == p["name"] and orig_it.get("sign") == sign:
-                    p_deg_val = orig_it.get("degree", 0) + orig_it.get("minute", 0) / 60.0
-                    break
             p_lon = s_idx * 30 + p_deg_val
             planet_coords[p["name"]] = {"x": px, "y": py, "lon": p_lon, "sign": sign}
 
@@ -1026,15 +1095,43 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     anchor_sign = anchor_item["sign"] if anchor_item else "Aries"
     anchor_index = signs_list.index(anchor_sign)
 
-    ni_centers = [
-        (250, 125), (125, 58),  (60, 125),  (125, 250),
-        (60, 375),  (125, 442), (250, 375), (375, 442),
-        (440, 375), (375, 250), (440, 125), (375, 58)
-    ]
-    sign_pos = [
-        (250, 218), (180, 35),  (35, 180),  (218, 250),
-        (35, 320),  (180, 465), (250, 282), (320, 465),
-        (465, 320), (282, 250), (465, 180), (320, 35)
+    # North Indian Geometry:
+    # - Kendras: 1, 4, 7, 10 (Strictly H or V across waist; sign/cusp at outer apex)
+    # - Outer Triangles: 2, 3, 5, 6, 8, 9, 11, 12 (Strictly H or V along outer border at 44px offset)
+    #   Sign (Star) placed in inner corner, Cusp (Square) placed radially outward
+    north_house_configs = [
+        # H1 (Top Kendra) - Horizontal line across waist
+        {"type": "kendra", "orientation": "horizontal", "start": (330, 150), "end": (170, 150), "apex": (250, 46), "cusp": (250, 60)},
+        # H2 (Outer Triangle) - Horizontal line near top border (y = 44)
+        # Sign (Star) at (140, 120), Cusp (Square) above star at (140, 95)
+        {"type": "triangle", "orientation": "horizontal", "start": (215, 44),  "end": (65, 44),   "apex": (140, 120), "cusp": (140, 95)},
+        # H3 (Outer Triangle) - Vertical line near left border (x = 44)
+        # Sign (Star) at (126, 140), Cusp (Square) left of star at (100, 140)
+        {"type": "triangle", "orientation": "vertical",   "start": (44, 65),   "end": (44, 215),  "apex": (126, 140), "cusp": (100, 140)},
+        # H4 (Left Kendra) - Vertical line across waist
+        {"type": "kendra", "orientation": "vertical",   "start": (150, 170), "end": (150, 330), "apex": (46, 250), "cusp": (60, 250)},
+        # H5 (Outer Triangle) - Vertical line near left border (x = 44)
+        # Sign (Star) at (126, 360), Cusp (Square) left of star at (100, 360)
+        {"type": "triangle", "orientation": "vertical",   "start": (44, 285),  "end": (44, 435),  "apex": (126, 360), "cusp": (100, 360)},
+        # H6 (Outer Triangle) - Horizontal line near bottom border (y = 456)
+        # Sign (Star) at (140, 380), Cusp (Square) below star at (140, 405)
+        {"type": "triangle", "orientation": "horizontal", "start": (65, 456),  "end": (215, 456), "apex": (140, 380), "cusp": (140, 405)},
+        # H7 (Bottom Kendra) - Horizontal line across waist
+        {"type": "kendra", "orientation": "horizontal", "start": (170, 350), "end": (330, 350), "apex": (250, 454), "cusp": (250, 440)},
+        # H8 (Outer Triangle) - Horizontal line near bottom border (y = 456)
+        # Sign (Star) at (360, 380), Cusp (Square) below star at (360, 405)
+        {"type": "triangle", "orientation": "horizontal", "start": (285, 456), "end": (435, 456), "apex": (360, 380), "cusp": (360, 405)},
+        # H9 (Outer Triangle) - Vertical line near right border (x = 456)
+        # Sign (Star) at (374, 360), Cusp (Square) right of star at (400, 360)
+        {"type": "triangle", "orientation": "vertical",   "start": (456, 435), "end": (456, 285), "apex": (374, 360), "cusp": (400, 360)},
+        # H10 (Right Kendra) - Vertical line across waist
+        {"type": "kendra", "orientation": "vertical",   "start": (350, 330), "end": (350, 170), "apex": (454, 250), "cusp": (440, 250)},
+        # H11 (Outer Triangle) - Vertical line near right border (x = 456)
+        # Sign (Star) at (374, 140), Cusp (Square) right of star at (400, 140)
+        {"type": "triangle", "orientation": "vertical",   "start": (456, 215), "end": (456, 65),  "apex": (374, 140), "cusp": (400, 140)},
+        # H12 (Outer Triangle) - Horizontal line near top border (y = 44)
+        # Sign (Star) at (360, 120), Cusp (Square) above star at (360, 95)
+        {"type": "triangle", "orientation": "horizontal", "start": (435, 44),  "end": (285, 44),  "apex": (360, 120), "cusp": (360, 95)},
     ]
 
     # Header label in House 1 if non-Lagna root
@@ -1078,24 +1175,54 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         s_idx = (anchor_index + h) % 12
         sign = signs_list[s_idx]
         s_sym, s_col, _ = sign_symbols[sign]
+        cfg = north_house_configs[h]
+        is_kendra = cfg.get("type") == "kendra"
+        sign_font_sz = "10.5" if is_kendra else "8.5"
+        cusp_font_sz = "10" if is_kendra else "8.5"
+        cusp_stroke_w = "2.0" if is_kendra else "1.5"
         
         # Background hit path for interactive sign selection and highlighting
         svg += f'<path class="interactive sign-cell-bg" data-type="sign" data-id="{sign}" data-house="{h + 1}" d="{ni_paths[h]}" fill="transparent" style="cursor: pointer;"><title>House {h + 1} ({sign})</title></path>\n'
 
-        sx, sy = sign_pos[h]
-        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="14" font-family={ASTRO_FONT_STACK} fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
+        # Draw Sign Glyph (Star position: subtle, delicate 8.5px in outer, 10.5px in kendra)
+        sx, sy = cfg["apex"]
+        svg += f'<text class="interactive zodiac-line-glyph" data-type="sign" data-id="{sign}" x="{sx}" y="{sy}" font-size="{sign_font_sz}" font-family={ASTRO_FONT_STACK} fill="{s_col}" opacity="0.85" font-weight="bold" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
 
-        cx, cy = ni_centers[h]
         house_items = items_by_house[h]
         planets = [it for it in house_items if it["type"] == "planet"]
         cusps = [it for it in house_items if it["type"] == "cusp"]
-        
-        positions = get_north_indian_positions(len(planets), cx, cy, has_cusps=bool(cusps))
-        
-        for idx, p in enumerate(planets):
-            if idx >= len(positions):
-                break
-            px, py = positions[idx]
+
+        # Sort planets by degree within house
+        planets_with_deg = []
+        for p in planets:
+            p_deg_val = 0.0
+            for orig_it in items:
+                if orig_it.get("type") != "cusp" and orig_it.get("name") == p["name"] and orig_it.get("sign") == p["sign"]:
+                    p_deg_val = orig_it.get("degree", 0) + orig_it.get("minute", 0) / 60.0
+                    break
+            planets_with_deg.append((p_deg_val, p))
+        planets_with_deg.sort(key=lambda item: item[0])
+
+        p_start_x, p_start_y = cfg["start"]
+        p_end_x, p_end_y = cfg["end"]
+        orientation = cfg["orientation"]
+
+        # Deterministic equidistant spacing along clear axis (tighter for 3/4 planets in North Indian)
+        t_values = get_north_equidistant_t(len(planets_with_deg))
+
+        for idx, (p_deg_val, p) in enumerate(planets_with_deg):
+            t = t_values[idx]
+            px = p_start_x + (p_end_x - p_start_x) * t
+            py = p_start_y + (p_end_y - p_start_y) * t
+
+            # Only for 5+ planets: alternate slight perpendicular shift if crowded
+            if len(planets_with_deg) > 4:
+                shift = -9 if (idx % 2 == 0) else 9
+                if orientation == "horizontal":
+                    py += shift
+                else:
+                    px += shift
+
             info = planet_notations.get(p["name"], {
                 "symbol": p["name"][:2],
                 "english": p["name"][:2],
@@ -1106,14 +1233,9 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "color": "#000"
             })
             label = info.get(mode, info["symbol"])
-            if len(planets) > 4:
-                font_sz = "15" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
-                deg_sz = "9"
-                retro_sz = "8"
-            else:
-                font_sz = "18" if (mode == "symbol" and p["name"] != "Lagna") else ("14" if mode == "devanagari" else "13")
-                deg_sz = "10"
-                retro_sz = "9"
+            font_sz = "13" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
+            deg_sz = "9"
+            retro_sz = "8"
             
             glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
             font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
@@ -1126,38 +1248,43 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family={font_fam} font-size="{font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 14}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433">'
+            svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="{retro_sz}" font-weight="bold" fill="#C0392B"> R</tspan>'
             svg += '</text></g>\n'
             
             s_idx = signs_list.index(p["sign"])
-            p_deg_val = 0.0
-            for orig_it in items:
-                if orig_it.get("type") != "cusp" and orig_it.get("name") == p["name"] and orig_it.get("sign") == p["sign"]:
-                    p_deg_val = orig_it.get("degree", 0) + orig_it.get("minute", 0) / 60.0
-                    break
             p_lon = s_idx * 30 + p_deg_val
             planet_coords[p["name"]] = {"x": px, "y": py, "lon": p_lon, "sign": p["sign"]}
 
         if cusps:
-            if not planets:
-                cusp_y = cy
-            elif len(planets) <= 2:
-                cusp_y = cy + 24
-            else:
-                cusp_y = cy + 34
+            base_cx, base_cy = cfg["cusp"]
             num_c = len(cusps)
-            spacing = 16
-            start_x = cx - ((num_c - 1) * spacing) / 2
+            spacing = 13 if is_kendra else 11
             for c_idx, c in enumerate(cusps):
                 c_num = c["text"]
-                c_x = start_x + (c_idx * spacing)
+                if num_c == 1:
+                    c_x, c_y = base_cx, base_cy
+                else:
+                    if orientation == "horizontal":
+                        c_x = base_cx - ((num_c - 1) * spacing) / 2 + (c_idx * spacing)
+                        c_y = base_cy
+                    else:
+                        c_x = base_cx
+                        c_y = base_cy - ((num_c - 1) * spacing) / 2 + (c_idx * spacing)
                 c_tooltip = f"House Cusp {c_num} in {sign}"
                 svg += f'<g class="interactive" data-type="house" data-id="{c_num}" style="cursor: pointer;"><title>{c_tooltip}</title>\n'
-                svg += f'<text x="{c_x}" y="{cusp_y}" font-family="sans-serif" font-size="12" font-weight="bold" stroke="#FFFDF9" stroke-width="2.5" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
+                svg += f'<text x="{c_x}" y="{c_y}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="{cusp_stroke_w}" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
                 svg += '</g>\n'
+        elif root_planet != "Lagna":
+            base_cx, base_cy = cfg["cusp"]
+            h_num = h + 1
+            h_tooltip = f"House {h_num} from {root_planet} in {sign}"
+            col = "#C0392B" if is_kendra else "#7D3C98"
+            svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
+            svg += f'<text x="{base_cx}" y="{base_cy}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="{cusp_stroke_w}" paint-order="stroke fill" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
+            svg += '</g>\n'
 
     # Graha Drishti Aspect Lines & Badges
     dignity_map = {}
