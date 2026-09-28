@@ -18,6 +18,7 @@ class YogaCategory(str, Enum):
     VIPARITA = "Viparita Raja (Reversal)"
     KARTARI = "Kartari (Hemming)"
     CHANDAL = "Chāṇḍāla & Doṣa (Afflictions)"
+    CONTEXTUAL = "Contextual & Macro Yogas"
 
 class YogaStatus(str, Enum):
     PURE = "Pure & Eminent"

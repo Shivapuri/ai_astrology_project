@@ -118,6 +118,10 @@ function openSettingsModal() {
         if (deb === 'whole_sign' || deb === 'traditional') radioWhole.checked = true;
         else radioKala.checked = true;
     }
+
+    if (typeof window.syncHouseColorPickers === 'function') {
+        window.syncHouseColorPickers();
+    }
     
     modalManager.openModal('settingsModal');
 }

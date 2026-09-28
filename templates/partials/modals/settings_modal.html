@@ -77,6 +77,52 @@
             </div>
 
             <div class="setting-section">
+                <h4>Chart House Colors</h4>
+                <div style="margin-bottom: 8px; font-size: 12px; color: #6b5a4b;">
+                    Three-group color scheme for North and South Indian charts (Kendras, Trikonas, Other Houses)
+                </div>
+
+                <div class="setting-option-card" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px;">
+                    <div>
+                        <strong style="font-size: 13px; color: #4a3325;">Kendra Houses (1, 4, 7, 10)</strong>
+                        <div style="font-size: 12px; color: #6b5a4b;">Angular action and foundation pillars</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="color" id="kendraColorPicker" value="#eedec9" oninput="onHouseColorChange('kendra', this.value)" onchange="onHouseColorChange('kendra', this.value)" style="width: 38px; height: 30px; padding: 0; border: 1px solid #d5c8b2; border-radius: 4px; cursor: pointer; background: none;">
+                        <span id="kendraColorCode" style="font-family: monospace; font-size: 12px; color: #4a3325; width: 62px;">#eedec9</span>
+                    </div>
+                </div>
+
+                <div class="setting-option-card" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 6px;">
+                    <div>
+                        <strong style="font-size: 13px; color: #4a3325;">Trikona Houses (5, 9)</strong>
+                        <div style="font-size: 12px; color: #6b5a4b;">Auspicious dharma and fortune trines</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="color" id="trikonaColorPicker" value="#faede0" oninput="onHouseColorChange('trikona', this.value)" onchange="onHouseColorChange('trikona', this.value)" style="width: 38px; height: 30px; padding: 0; border: 1px solid #d5c8b2; border-radius: 4px; cursor: pointer; background: none;">
+                        <span id="trikonaColorCode" style="font-family: monospace; font-size: 12px; color: #4a3325; width: 62px;">#faede0</span>
+                    </div>
+                </div>
+
+                <div class="setting-option-card" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; margin-top: 6px;">
+                    <div>
+                        <strong style="font-size: 13px; color: #4a3325;">Other Houses (2, 3, 6, 8, 11, 12)</strong>
+                        <div style="font-size: 12px; color: #6b5a4b;">Remaining wealth, growth, and release houses</div>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <input type="color" id="otherColorPicker" value="#f9f5eb" oninput="onHouseColorChange('other', this.value)" onchange="onHouseColorChange('other', this.value)" style="width: 38px; height: 30px; padding: 0; border: 1px solid #d5c8b2; border-radius: 4px; cursor: pointer; background: none;">
+                        <span id="otherColorCode" style="font-family: monospace; font-size: 12px; color: #4a3325; width: 62px;">#f9f5eb</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+                    <button type="button" onclick="resetHouseColorsToDefault()" style="background: none; border: 1px solid #d5c8b2; border-radius: 4px; padding: 5px 12px; font-size: 12px; color: #6b5a4b; cursor: pointer; font-weight: 500;">
+                        Reset to Defaults
+                    </button>
+                </div>
+            </div>
+
+            <div class="setting-section">
                 <h4>Divisional Chart Calculations (Vargas)</h4>
                 <div style="margin-bottom: 8px; font-size: 12px; color: #6b5a4b;">
                     Reckoning method for even signs (e.g. Taurus, Cancer, Virgo)

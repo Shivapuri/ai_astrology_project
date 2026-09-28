@@ -154,7 +154,7 @@ def test_biwheel_chart_svg_structure():
 
 def test_distance_protector_halos_and_clearances():
     from jyotish.draw_chart import generate_south_indian, generate_north_indian, generate_circular_chart, generate_biwheel_chart
-    # Test South Indian protective halos
+    # Test South Indian: white outline removed from numbers and planets
     items_south = [
         {"type": "planet", "name": "Lagna", "sign": "Leo", "degree": 28, "minute": 53, "is_retrograde": False},
         {"type": "planet", "name": "Venus", "sign": "Leo", "degree": 28, "minute": 9, "is_retrograde": False},
@@ -162,17 +162,15 @@ def test_distance_protector_halos_and_clearances():
         {"type": "cusp", "text": "10", "sign": "Leo"}
     ]
     svg_si = generate_south_indian(items_south, varga_name="D1")
-    assert 'stroke="#FFFDF9"' in svg_si
-    assert 'paint-order="stroke fill"' in svg_si
+    assert 'stroke="#FFFDF9"' not in svg_si
 
-    # Test North Indian protective halos
+    # Test North Indian: white outline removed from numbers and planets
     items_north = [
         {"type": "planet", "name": "Jupiter", "sign": "Aries", "degree": 14, "minute": 20, "is_retrograde": False},
         {"type": "cusp", "text": "1", "sign": "Aries"}
     ]
     svg_ni = generate_north_indian(items_north, varga_name="D1")
-    assert 'stroke="#FFFDF9"' in svg_ni
-    assert 'paint-order="stroke fill"' in svg_ni
+    assert 'stroke="#FFFDF9"' not in svg_ni
 
     # Test Circular Chart cusp halos & Lagna obstacle protection
     svg_circ = generate_circular_chart(items_south, varga_name="D1", root_planet="Lagna")
@@ -307,7 +305,27 @@ def test_north_indian_kendra_positions():
     assert 'x="250" y="202" font-family="sans-serif" font-size="10"' in svg_str
 
 
+def test_house_background_colors_north_and_south():
+    from jyotish.draw_chart import generate_north_indian, generate_south_indian
+    items = [
+        {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 15, "minute": 0, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    ni_svg = generate_north_indian(items, varga_name="D1")
+    si_svg = generate_south_indian(items, varga_name="D1")
 
+    # North Indian: 4 Kendras (1,4,7,10), 2 Trikonas (5,9), 6 Other houses
+    assert ni_svg.count('class="house-bg house-kendra"') == 4
+    assert ni_svg.count('class="house-bg house-trikona"') == 2
+    assert ni_svg.count('class="house-bg house-other"') == 6
+    assert 'var(--chart-kendra-color, #eedec9)' in ni_svg
+    assert 'var(--chart-trikona-color, #faede0)' in ni_svg
+    assert 'var(--chart-other-color, #f9f5eb)' in ni_svg
 
-
-
+    # South Indian: 4 Kendras (1,4,7,10), 2 Trikonas (5,9), 6 Other houses
+    assert si_svg.count('class="house-bg house-kendra"') == 4
+    assert si_svg.count('class="house-bg house-trikona"') == 2
+    assert si_svg.count('class="house-bg house-other"') == 6
+    assert 'var(--chart-kendra-color, #eedec9)' in si_svg
+    assert 'var(--chart-trikona-color, #faede0)' in si_svg
+    assert 'var(--chart-other-color, #f9f5eb)' in si_svg

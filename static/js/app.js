@@ -1333,6 +1333,64 @@ async function switchNotation(mode) {
     }
 }
 
+// ==========================================
+// Chart House Colors (Kendras, Trikonas, Other Houses)
+// ==========================================
+const DEFAULT_HOUSE_COLORS = {
+    kendra: '#eedec9',
+    trikona: '#faede0',
+    other: '#f9f5eb'
+};
+
+function getChartHouseColors() {
+    return {
+        kendra: localStorage.getItem('astra_chart_kendra_color') || DEFAULT_HOUSE_COLORS.kendra,
+        trikona: localStorage.getItem('astra_chart_trikona_color') || DEFAULT_HOUSE_COLORS.trikona,
+        other: localStorage.getItem('astra_chart_other_color') || DEFAULT_HOUSE_COLORS.other
+    };
+}
+
+function applyChartHouseColors() {
+    const colors = getChartHouseColors();
+    document.documentElement.style.setProperty('--chart-kendra-color', colors.kendra);
+    document.documentElement.style.setProperty('--chart-trikona-color', colors.trikona);
+    document.documentElement.style.setProperty('--chart-other-color', colors.other);
+    syncHouseColorPickers(colors);
+}
+
+function syncHouseColorPickers(colors) {
+    if (!colors) colors = getChartHouseColors();
+    ['kendra', 'trikona', 'other'].forEach(group => {
+        const picker = document.getElementById(`${group}ColorPicker`);
+        const code = document.getElementById(`${group}ColorCode`);
+        if (picker && colors[group]) picker.value = colors[group];
+        if (code && colors[group]) code.textContent = colors[group];
+    });
+}
+
+function onHouseColorChange(group, color) {
+    if (!['kendra', 'trikona', 'other'].includes(group)) return;
+    localStorage.setItem(`astra_chart_${group}_color`, color);
+    document.documentElement.style.setProperty(`--chart-${group}-color`, color);
+    const code = document.getElementById(`${group}ColorCode`);
+    if (code) code.textContent = color;
+}
+
+function resetHouseColorsToDefault() {
+    ['kendra', 'trikona', 'other'].forEach(group => {
+        const defaultColor = DEFAULT_HOUSE_COLORS[group];
+        localStorage.removeItem(`astra_chart_${group}_color`);
+        document.documentElement.style.setProperty(`--chart-${group}-color`, defaultColor);
+        const picker = document.getElementById(`${group}ColorPicker`);
+        const code = document.getElementById(`${group}ColorCode`);
+        if (picker) picker.value = defaultColor;
+        if (code) code.textContent = defaultColor;
+    });
+}
+
+// Initial immediate application
+applyChartHouseColors();
+
 async function onModalNotationChange(mode) {
     await switchNotation(mode);
 }
@@ -1934,4 +1992,9 @@ if (typeof window !== 'undefined') {
     window.updateShadbalaTable = updateShadbalaTable;
     window.updateShadbalaTableWidget = updateShadbalaTableWidget;
     window.updateDashaTimelineWidget = updateDashaTimelineWidget;
+    window.onHouseColorChange = onHouseColorChange;
+    window.resetHouseColorsToDefault = resetHouseColorsToDefault;
+    window.syncHouseColorPickers = syncHouseColorPickers;
+    window.applyChartHouseColors = applyChartHouseColors;
+    window.getChartHouseColors = getChartHouseColors;
 }

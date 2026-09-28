@@ -74,7 +74,7 @@ def test_temperament_breakdown_dossier_integration():
 
     res = compute_nakshatra_dominance({}, mock_nakshatras, None)
     tb = res["temperament_breakdown"]
-    assert len(tb) == 7
+    assert len(tb) == 6
 
     tb_map = {item["group"]: item for item in tb}
     
@@ -94,3 +94,38 @@ def test_temperament_breakdown_dossier_integration():
     assert laghu["status"] == "Deficit"
     assert "dossier" in laghu
     assert "Ashwini" in laghu["dossier"]["nakshatras"]
+
+
+def test_universal_catalyst_rule():
+    """Verify that Krittika distributes points to all 6 groups simultaneously."""
+    mock_nakshatras = {
+        "Sun": {"nakshatra": "Krittika", "pada": 1}  # Sun base weight = 2.0 pts
+    }
+    res = compute_nakshatra_dominance({}, mock_nakshatras, None)
+    tb = res["temperament_breakdown"]
+    assert len(tb) == 6
+    for item in tb:
+        assert item["points"] == 2.0
+        assert item["status"] == "Balanced"  # Each is exactly 1/6 (16.7%), zero deviation
+    assert "Krittika" in res["universal_catalysts"]
+
+
+def test_temperament_relationship_matrix():
+    """Verify classical Resonances and Dissonances between temperament groups."""
+    from jyotish.nakshatras.lore import get_temperament_relationship
+    res = get_temperament_relationship("Tikshna", "Ugra")
+    assert res is not None
+    assert res["type"] == "Resonance"
+
+    res_alias = get_temperament_relationship("Laghu", "Chara")
+    assert res_alias is not None
+    assert res_alias["type"] == "Resonance"
+
+    diss = get_temperament_relationship("Tikshna", "Mridu")
+    assert diss is not None
+    assert diss["type"] == "Dissonance"
+
+    diss2 = get_temperament_relationship("Dhruva", "Laghu")
+    assert diss2 is not None
+    assert diss2["type"] == "Dissonance"
+

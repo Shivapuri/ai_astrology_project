@@ -21,7 +21,8 @@ from jyotish.report.report_engine import (
     compute_operational_axis,
     compute_environmental_tally,
     compute_planetary_prominence_rankings,
-    generate_report_payload
+    generate_report_payload,
+    ZODIAC_SIGNS
 )
 from jyotish.generate_jyotish import generate_kala_chart
 
@@ -173,7 +174,7 @@ def test_generate_kala_chart_report_payload_integration():
     assert rep["polarity_core"]["ascendant_nakshatra"]["name"]
     assert rep["polarity_core"]["moon_nakshatra"]["name"]
     assert rep["nakshatra_dominance"]["dominant_nakshatra"]
-    assert len(rep["nakshatra_dominance"]["temperament_breakdown"]) == 7
+    assert len(rep["nakshatra_dominance"]["temperament_breakdown"]) == 6
     assert rep["planetary_rankings"]["chart_commander"]
 
 
@@ -276,20 +277,37 @@ def test_environmental_tally_prominence_weighted():
     assert elem["dominant"] == "Fire"
 
 
-def test_environmental_tally_shadvarga_weighted():
+def test_environmental_tally_dasavarga_weighted():
     """
     Verify that Macro Environmental Tally aggregates elements and gunas
-    across the Shadvarga matrix (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1).
+    across the 10-Varga (Daśavarga) matrix (D1:2.0, D60:3.33, 8 others: 1.0 each, sum 13.33).
     """
-    # Native with Aries (Fire/Movable) Lagna in D1, but Pisces (Water/Dual) in D9
+    # Native with Aries (Fire/Movable) in D1 (2.0), Pisces (Water/Dual) in D60 (3.33),
+    # and Cancer (Water/Movable) in the remaining 8 vargas (8.0).
     mock_vargas = {
         "D1": {
             "lagna": {"sign": "Aries"},
             "grahas": {p: {"sign": "Aries"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
         },
-        "D9": {
+        "D60": {
             "lagna": {"sign": "Pisces"},
             "grahas": {p: {"sign": "Pisces"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D9": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D7": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D10": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+        },
+        "D16": {
+            "lagna": {"sign": "Cancer"},
+            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
         },
         "D3": {
             "lagna": {"sign": "Cancer"},
@@ -315,23 +333,26 @@ def test_environmental_tally_shadvarga_weighted():
     elem = tally["elements"]
     guna = tally["gunas"]
 
-    # 10 entities total with Prominence 1.0 each. Total Shadvarga points = 10.0
-    # D1 (Weight 6/20 = 0.30): All 10 bodies in Aries (Fire, Movable) -> 3.0 pts Fire
-    # D9 (Weight 5/20 = 0.25): All 10 bodies in Pisces (Water, Dual) -> 2.5 pts Water
-    # D3, D2, D12, D30 (Remaining 9/20 = 0.45): In Cancer (Water, Movable) -> 4.5 pts Water
-    # Total Water = 2.5 + 4.5 = 7.0 pts (70.0%)
-    # Total Fire = 3.0 pts (30.0%)
+    # 10 entities with Prominence 1.0 each. Total Daśavarga points = 10.0
+    # D1 (Weight 2.0 / 13.33): 10 * (2.0 / 13.33) = 1.50 pts Fire
+    # D60 (Weight 3.33 / 13.33): 10 * (3.33 / 13.33) = 2.50 pts Water
+    # 8 Vargas (Weight 8 * 1.0 / 13.33 = 8.0 / 13.33): 10 * (8.0 / 13.33) = 6.00 pts Water
+    # Total Water = 2.50 + 6.00 = 8.50 pts (85.0%)
+    # Total Fire = 1.50 pts (15.0%)
 
     assert elem["counts"]["Fire"] == 10  # D1 count is 10
     assert elem["counts"]["Water"] == 0   # D1 count is 0
-    assert elem["points"]["Fire"] == 3.0
-    assert elem["points"]["Water"] == 7.0
-    assert elem["percentages"]["Water"] == 70.0
-    assert elem["percentages"]["Fire"] == 30.0
-    assert elem["dominant"] == "Water"  # Deep Shadvarga water dominates surface fire!
+    assert elem["points"]["Fire"] == 1.50
+    assert elem["points"]["Water"] == 8.50
+    assert elem["percentages"]["Water"] == 85.0
+    assert elem["percentages"]["Fire"] == 15.0
+    assert elem["dominant"] == "Water"
 
-    # Movable (Aries 3.0 + Cancer 4.5 = 7.5 pts), Dual (Pisces 2.5 pts)
-    assert guna["points"]["Rajas (Movable)"] == 7.5
+    # Movable (Aries 1.50 + Cancer 6.00 = 7.50 pts), Dual (Pisces 2.50 pts)
+    assert guna["points"]["Rajas (Movable)"] == 7.50
+    assert guna["points"]["Sattva (Dual)"] == 2.50
+    assert guna["percentages"]["Rajas (Movable)"] == 75.0
+    assert guna["percentages"]["Sattva (Dual)"] == 25.0
     assert guna["points"]["Sattva (Dual)"] == 2.5
     assert guna["dominant"] == "Rajas (Movable)"
 
@@ -339,15 +360,15 @@ def test_environmental_tally_shadvarga_weighted():
     assert "breakdown" in elem
     assert len(elem["breakdown"]) == 4
     water_meta = next(x for x in elem["breakdown"] if x["key"] == "Water")
-    assert water_meta["percentage"] == 70.0
+    assert water_meta["percentage"] == 85.0
     assert water_meta["baseline_pct"] == 25.0
-    assert water_meta["deviation_pct"] == 45.0
+    assert water_meta["deviation_pct"] == 60.0
     assert water_meta["status"] == "Surplus"
 
     fire_meta = next(x for x in elem["breakdown"] if x["key"] == "Fire")
-    assert fire_meta["percentage"] == 30.0
+    assert fire_meta["percentage"] == 15.0
     assert fire_meta["baseline_pct"] == 25.0
-    assert fire_meta["deviation_pct"] == 5.0
+    assert fire_meta["deviation_pct"] == -10.0
 
     earth_meta = next(x for x in elem["breakdown"] if x["key"] == "Earth")
     assert earth_meta["percentage"] == 0.0
@@ -386,32 +407,33 @@ def test_atmakaraka_prominence_weight_and_fallback():
     rankings = compute_planetary_prominence_rankings(mock_vargas, mock_shadbala, {})
     mars_rank = next(item for item in rankings["leaderboard"] if item["planet"] == "Mars")
 
-    # Verify Mars gains the +0.30 Atmakaraka bonus via dynamic fallback
-    assert any("Atmakaraka Soul Signifier (+0.30)" in r for r in mars_rank["opportunity_reasons"])
+    # Verify Mars gains the Lagna Lord sovereign bonus (+0.30) and Kendra stage sharing
+    assert any("Lagna Lord: Primary Sovereign" in r for r in mars_rank["opportunity_reasons"])
+    assert any("Kendra" in r for r in mars_rank["opportunity_reasons"])
 
 
-def test_jaimini_ak_and_amk_prominence_scoring():
-    """Verify that Atmakaraka gets +0.30, Amatyakaraka gets +0.15, and AK-AmK connection adds +0.15."""
+def test_parashari_dispositor_and_cusp_doors():
+    """Verify Parashari dispositorship, sensitive cusp doors, and stage sharing."""
     mock_vargas = {
         "D1": {
-            "lagna": {"sign": "Aries", "longitude": 10.0},
+            "lagna": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0},
             "grahas": {
-                # Sun at 28.5° -> Atmakaraka (AK) in Leo (H5)
+                # Sun in Leo (H5) in its own sign -> Disposits Mars
                 "Sun": {"sign": "Leo", "longitude": 148.5, "degree_0_to_30": 28.5},
-                # Mars at 24.0° -> Amatyakaraka (AmK) in Leo (H5 - conjunct AK!)
+                # Mars in Leo (H5) -> Disposited by Sun
                 "Mars": {"sign": "Leo", "longitude": 144.0, "degree_0_to_30": 24.0},
-                # Venus at 20.0° -> Bhratrikaraka (BK) in Taurus (H2)
+                # Venus in Taurus (H2) -> In its own sign
                 "Venus": {"sign": "Taurus", "longitude": 50.0, "degree_0_to_30": 20.0},
-                # Mercury at 15.0° -> Matrikaraka (MK) in Gemini (H3)
+                # Mercury in Gemini (H3) -> In its own sign
                 "Mercury": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0},
-                # Jupiter at 10.0° -> Putrakaraka (PK) in Cancer (H4)
+                # Jupiter in Cancer (H4) -> Kendra
                 "Jupiter": {"sign": "Cancer", "longitude": 100.0, "degree_0_to_30": 10.0},
-                # Saturn at 5.0° -> Gnatikaraka (GK) in Libra (H7)
+                # Saturn in Libra (H7) -> Kendra
                 "Saturn": {"sign": "Libra", "longitude": 185.0, "degree_0_to_30": 5.0},
-                # Moon at 1.0° -> Darakaraka (DK) in Aries (H1)
-                "Moon": {"sign": "Aries", "longitude": 1.0, "degree_0_to_30": 1.0}
+                # Moon at 10.0° Aries (H1) -> Exactly conjunct Lagna degree (sensitive cusp door)
+                "Moon": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0}
             },
-            "cusps": [{"longitude": i * 30.0} for i in range(12)]
+            "cusps": [{"longitude": i * 30.0, "sign": ZODIAC_SIGNS[i], "degree_0_to_30": 0.0} for i in range(12)]
         }
     }
 
@@ -425,18 +447,17 @@ def test_jaimini_ak_and_amk_prominence_scoring():
 
     sun_reasons = board["Sun"]["opportunity_reasons"]
     mars_reasons = board["Mars"]["opportunity_reasons"]
-    venus_reasons = board["Venus"]["opportunity_reasons"]
+    moon_reasons = board["Moon"]["opportunity_reasons"]
 
-    # 1. Sun is AK (+0.30) and conjunct AmK (+0.15)
-    assert any("Atmakaraka Soul Signifier (+0.30)" in r for r in sun_reasons)
-    assert any("Jaimini Raja Yoga: AK-AmK Connection (+0.15)" in r for r in sun_reasons)
+    # 1. Sun disposits Mars (who is the Lagna Lord)
+    assert any("Dispositor of Lagna Lord" in r for r in sun_reasons)
 
-    # 2. Mars is AmK (+0.15) and conjunct AK (+0.15)
-    assert any("Amatyakaraka Executive Mind (+0.15)" in r for r in mars_reasons)
-    assert any("Jaimini Raja Yoga: AK-AmK Connection (+0.15)" in r for r in mars_reasons)
+    # 2. Mars shares the 5th house stage with Sun
+    assert any("Koṇa (H5) Stage Sharing (/2 occupants" in r for r in mars_reasons)
 
-    # 3. Venus (BK) and lower Karakas must NOT receive arbitrary Jaimini stage bonuses
-    assert not any("Karaka" in r for r in venus_reasons)
+    # 3. Moon has exact Ascendant degree alignment (Cusp door resonance)
+    assert any("Cusp Door: Ascendant Degree Resonance" in r for r in moon_reasons)
+
 
 
 def test_significations_flowcharts_and_cockpit_payload():

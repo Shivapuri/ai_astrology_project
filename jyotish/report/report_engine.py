@@ -1,11 +1,21 @@
 """
-Astra Astrological Synthesis Report Engine
-Computes the multi-layered chart baseline profile:
-1. Polarity Core (Ascendant Nakshatra / Ahamkara ⟷ Moon Nakshatra / Manas)
-2. Canonical 4-Step Nakshatra Dominance & Temperament Scoring
-3. Operational Axis (Rising Rashi ⟷ Rising Navamsha Pada with Vargottama check)
-4. Macro Environmental Tally (Elements, Gunas, Rising Mode, Ayurvedic Doshas)
-5. Planetary Prominence & Dignity Leaderboard
+Astra Astrological Synthesis Report Engine (jyotish/report/report_engine.py)
+
+Master orchestrator for the complete four-stage chart assessment and synthesis architecture:
+1. Stage 1: Mathematical Foundations & Tallies
+   - Parāśarī Prominence Engine (Graha Yuddha, 8 opportunity vectors, #1 Chart Commander)
+   - 10-Varga (Daśavarga) Macro-Environmental Balance (Prominence-scaled thermodynamics)
+   - 6-Category Nakshatra Dominance & Temperament Balance (with Universal Catalyst rule)
+2. Stage 2: Macrocosmic Context & Background Canvas
+   - Contextual Setup Yogas (~25 yogas: Sāṅkhya, Kemadruma, Sun-Moon geometry, Solar flanking)
+   - 4-String Background Personality Canvas (Introversion, Practicality, Defiance, Intellect)
+3. Stage 3: Sequential Planetary Interpretation
+   - Target prioritization by Prominence (#1 Commander first)
+   - 5-Pillar Archetypal Decomposition (Symbolism, Sign, House, Nakshatra, Lordships)
+   - Dynamic Semantic Interactions (Elements and Modalities Commonalities vs Clashes)
+   - Contextual Redirection through Canvas and Tone Modulation via existing Dignity
+4. Stage 4: Continuous Harmonic Degree Overlays
+   - Projecting D9, D7, and D10 harmonic longitudes onto the 360° D1 wheel (flagging <= 3°20' conjunctions)
 """
 
 import math
@@ -16,9 +26,22 @@ import jyotish.relationships.relationships as rel
 from jyotish.nakshatras.lore import (
     get_nakshatra_lore,
     get_nakshatra_group,
+    get_temperament_relationship,
     NAKSHATRA_GROUP_METADATA,
     NAKSHATRA_TEMPERAMENT_DOSSIER,
     ALL_NAKSHATRA_GROUPS
+)
+from jyotish.report.prominence import compute_planetary_prominence
+from jyotish.report.varga_environment import (
+    compute_varga_environment,
+    DASAVARGA_ENVIRONMENTAL_WEIGHTS,
+    TOTAL_DASAVARGA_WEIGHT
+)
+from jyotish.yogas.contextual_yogas import detect_contextual_yogas
+from jyotish.report.interpretation_engine import (
+    synthesize_background_canvas,
+    generate_planetary_interpretations,
+    compute_harmonic_overlays
 )
 
 ZODIAC_SIGNS = [
@@ -67,14 +90,8 @@ SHADBALA_REQUIRED_RUPAS = {
     "Ketu": 5.0
 }
 
-SHADVARGA_ENVIRONMENTAL_WEIGHTS = {
-    "D1": 6.0,
-    "D9": 5.0,
-    "D3": 4.0,
-    "D2": 2.0,
-    "D12": 2.0,
-    "D30": 1.0
-}
+# 10-Varga (Daśavarga) Environmental Weights summing to 13.33 (Vic DiCara model)
+SHADVARGA_ENVIRONMENTAL_WEIGHTS = DASAVARGA_ENVIRONMENTAL_WEIGHTS
 
 
 def compute_nakshatra_dominance(
@@ -163,29 +180,42 @@ def compute_nakshatra_dominance(
         item["rank"] = idx + 1
         item["dominance_pct"] = round((item["total_points"] / grand_total) * 100.0, 1)
 
-    # Map classical Parashari classes to the 7 canonical display labels
+    # Map classical Parashari classes to the 6 canonical display labels (16.7% baseline)
     TEMPERAMENT_CANONICAL = [
         {"group": "Chara", "label": "Mobile", "sanskrit": "Cara / Cala"},
         {"group": "Laghu", "label": "Quick", "sanskrit": "Kṣipra / Laghu"},
         {"group": "Mridu", "label": "Sweet", "sanskrit": "Mṛdu"},
         {"group": "Dhruva", "label": "Enduring", "sanskrit": "Dhruva / Sthira"},
         {"group": "Ugra", "label": "Strong", "sanskrit": "Ugra / Krūra"},
-        {"group": "Tikshna", "label": "Bitter", "sanskrit": "Tīkṣṇa / Dāruṇa"},
-        {"group": "Mishra", "label": "Mixed", "sanskrit": "Miśra / Sādhāraṇa"}
+        {"group": "Tikshna", "label": "Bitter", "sanskrit": "Tīkṣṇa / Dāruṇa"}
     ]
 
-    expected_baseline = round(100.0 / 7.0, 1)  # 14.3%
+    expected_baseline = round(100.0 / 6.0, 1)  # 16.7%
     group_totals: Dict[str, float] = {g["group"]: 0.0 for g in TEMPERAMENT_CANONICAL}
+    catalyst_occupants: List[str] = []
+
     for item in sorted_nakshatras:
-        g = item["group"]
-        if g in group_totals:
-            group_totals[g] += item["total_points"]
+        nak_name = item["nakshatra"]
+        pts = item["total_points"]
+        # Universal Catalyst Rule: Krittika & Vishakha distribute to all 6 groups simultaneously
+        if nak_name in ["Krittika", "Vishakha"]:
+            catalyst_occupants.append(nak_name)
+            for g in group_totals:
+                group_totals[g] += pts
+        else:
+            g = item["group"]
+            if g in group_totals:
+                group_totals[g] += pts
+
+    tot_temperament_points = sum(group_totals.values())
+    if tot_temperament_points <= 0.0:
+        tot_temperament_points = 1.0
 
     temperament_breakdown: List[Dict[str, Any]] = []
     for meta in TEMPERAMENT_CANONICAL:
         g = meta["group"]
         pts = round(group_totals[g], 2)
-        pct = round((pts / grand_total) * 100.0, 1)
+        pct = round((pts / tot_temperament_points) * 100.0, 1)
         deviation = round(pct - expected_baseline, 1)
         orig_meta = NAKSHATRA_GROUP_METADATA.get(g, {})
         dossier = NAKSHATRA_TEMPERAMENT_DOSSIER.get(g, {})
@@ -223,13 +253,39 @@ def compute_nakshatra_dominance(
     dominant_temperament = max(temperament_breakdown, key=lambda x: x["points"]) if temperament_breakdown else None
     dominant_nakshatra = sorted_nakshatras[0] if sorted_nakshatras else None
 
+    # Relationship detection (Resonances vs Dissonances between top groups)
+    surplus_groups = [item["group"] for item in temperament_breakdown if item["status"] == "Surplus"]
+    active_relationships: List[Dict[str, Any]] = []
+    if len(surplus_groups) >= 2:
+        for i in range(len(surplus_groups)):
+            for j in range(i + 1, len(surplus_groups)):
+                rel_info = get_temperament_relationship(surplus_groups[i], surplus_groups[j])
+                if rel_info:
+                    active_relationships.append({
+                        "group1": surplus_groups[i],
+                        "group2": surplus_groups[j],
+                        **rel_info
+                    })
+    if not active_relationships and len(temperament_breakdown) >= 2:
+        sorted_by_pts = sorted(temperament_breakdown, key=lambda x: x["points"], reverse=True)
+        rel_info = get_temperament_relationship(sorted_by_pts[0]["group"], sorted_by_pts[1]["group"])
+        if rel_info:
+            active_relationships.append({
+                "group1": sorted_by_pts[0]["group"],
+                "group2": sorted_by_pts[1]["group"],
+                **rel_info
+            })
+
     return {
         "grand_total_points": round(grand_total, 2),
+        "total_temperament_points": round(tot_temperament_points, 2),
         "occupied_count": len(sorted_nakshatras),
         "dominant_nakshatra": dominant_nakshatra,
         "dominant_temperament": dominant_temperament,
         "leaderboard": sorted_nakshatras,
-        "temperament_breakdown": temperament_breakdown
+        "temperament_breakdown": temperament_breakdown,
+        "active_relationships": active_relationships,
+        "universal_catalysts": catalyst_occupants
     }
 
 
@@ -462,452 +518,45 @@ def compute_operational_axis(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
 
 def compute_environmental_tally(
     vargas_data: Dict[str, Any],
-    prominence_map: Optional[Dict[str, float]] = None
+    prominence_map: Optional[Dict[str, float]] = None,
+    lagna_boost: float = 1.0
 ) -> Dict[str, Any]:
     """
-    Tallies the balance of Elements, Gunas, Rising Orientations, and Ayurvedic Doshas
-    using Sage Parashara's 20-point Shadvarga harmonic matrix (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1),
+    Tallies the balance of Elements, Gunas, Polarities, and Ayurvedic Doshas
+    using Vic DiCara's 10-Varga (Daśavarga) model (D1:2.0, D60:3.33, 8 others: 1.0 each, total 13.33),
     scaled by Planetary Prominence.
     """
-    d1_data = vargas_data.get("D1", {})
-    d1_grahas = d1_data.get("grahas", {})
-    d1_lagna = d1_data.get("lagna", {})
-
-    entities = ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-
-    # D1 physical placement counts (for quick reference)
-    elements_count = {"Fire": 0, "Earth": 0, "Air": 0, "Water": 0}
-    gunas_count = {"Rajas (Movable)": 0, "Tamas (Fixed)": 0, "Sattva (Dual)": 0}
-    polarity_count = {"Active": 0, "Passive": 0}
-    rising_mode_count = {"Shirshodaya": 0, "Prishtodaya": 0, "Ubhayodaya": 0}
-    dosha_count = {"Vata": 0, "Pitta": 0, "Kapha": 0}
-
-    # Shadvarga-weighted thermodynamic points
-    elements_points = {"Fire": 0.0, "Earth": 0.0, "Air": 0.0, "Water": 0.0}
-    gunas_points = {"Rajas (Movable)": 0.0, "Tamas (Fixed)": 0.0, "Sattva (Dual)": 0.0}
-    polarity_points = {"Active": 0.0, "Passive": 0.0}
-    rising_mode_points = {"Shirshodaya": 0.0, "Prishtodaya": 0.0, "Ubhayodaya": 0.0}
-    dosha_points = {"Vata": 0.0, "Pitta": 0.0, "Kapha": 0.0}
-
-    TOTAL_SHADVARGA_WEIGHT = sum(SHADVARGA_ENVIRONMENTAL_WEIGHTS.values())  # 20.0
-
-    for ent in entities:
-        # 1. Base Prominence
-        if ent == "Lagna":
-            prom = 1.0
-            d1_sign = d1_lagna.get("sign", "Aries")
-        else:
-            prom = float(prominence_map.get(ent, 1.0)) if prominence_map is not None else 1.0
-            d1_sign = d1_grahas.get(ent, {}).get("sign", "Aries")
-
-        # 2. Record D1 counts
-        elem_d1 = ELEMENT_MAP.get(d1_sign, "Fire")
-        elements_count[elem_d1] += 1
-
-        guna_d1 = GUNA_MAP.get(d1_sign, "Rajas (Movable)")
-        gunas_count[guna_d1] += 1
-
-        pol_d1 = POLARITY_MAP.get(d1_sign, "Active")
-        polarity_count[pol_d1] += 1
-
-        rm_d1 = RISING_MODE_MAP.get(d1_sign, "Shirshodaya")
-        if "Shirshodaya" in rm_d1:
-            rising_mode_count["Shirshodaya"] += 1
-        elif "Prishtodaya" in rm_d1:
-            rising_mode_count["Prishtodaya"] += 1
-        else:
-            rising_mode_count["Ubhayodaya"] += 1
-
-        if elem_d1 == "Fire":
-            dosha_count["Pitta"] += 1
-        elif elem_d1 == "Air":
-            dosha_count["Vata"] += 1
-        else:
-            dosha_count["Kapha"] += 1
-
-        # 3. Accumulate weighted contributions across Shadvarga (D1, D9, D3, D2, D12, D30)
-        for v_code, v_weight in SHADVARGA_ENVIRONMENTAL_WEIGHTS.items():
-            v_data = vargas_data.get(v_code, {})
-            if ent == "Lagna":
-                v_sign = v_data.get("lagna", {}).get("sign") or d1_sign
-            else:
-                v_sign = v_data.get("grahas", {}).get(ent, {}).get("sign") or d1_sign
-
-            # Harmonic slice contribution
-            v_contrib = prom * (v_weight / TOTAL_SHADVARGA_WEIGHT)
-
-            # Element
-            elem = ELEMENT_MAP.get(v_sign, "Fire")
-            elements_points[elem] += v_contrib
-
-            # Guna / Modality
-            guna = GUNA_MAP.get(v_sign, "Rajas (Movable)")
-            gunas_points[guna] += v_contrib
-
-            # Polarity
-            pol = POLARITY_MAP.get(v_sign, "Active")
-            polarity_points[pol] += v_contrib
-
-            # Rising Mode
-            rm = RISING_MODE_MAP.get(v_sign, "Shirshodaya")
-            if "Shirshodaya" in rm:
-                rising_mode_points["Shirshodaya"] += v_contrib
-            elif "Prishtodaya" in rm:
-                rising_mode_points["Prishtodaya"] += v_contrib
-            else:
-                rising_mode_points["Ubhayodaya"] += v_contrib
-
-            # Dosha
-            if elem == "Fire":
-                dosha_points["Pitta"] += v_contrib
-            elif elem == "Air":
-                dosha_points["Vata"] += v_contrib
-            else:
-                dosha_points["Kapha"] += v_contrib
-
-    tot_elem_pts = sum(elements_points.values()) or 1.0
-    tot_guna_pts = sum(gunas_points.values()) or 1.0
-    tot_pol_pts = sum(polarity_points.values()) or 1.0
-    tot_rm_pts = sum(rising_mode_points.values()) or 1.0
-    tot_dosha_pts = sum(dosha_points.values()) or 1.0
-
-    dominant_element = max(elements_points, key=elements_points.get)
-    dominant_guna = max(gunas_points, key=gunas_points.get)
-    dominant_polarity = max(polarity_points, key=polarity_points.get)
-    dominant_dosha = max(dosha_points, key=dosha_points.get)
-
-    # Structured breakdowns for visual bi-directional balance graphs
-    ELEMENTS_METADATA = [
-        {"key": "Fire", "display_name": "Fire (Agni)", "sanskrit": "Tejas / Agni", "icon": "🔥", "accent_color": "#ea580c"},
-        {"key": "Earth", "display_name": "Earth (Pṛthvī)", "sanskrit": "Pṛthvī", "icon": "🌍", "accent_color": "#059669"},
-        {"key": "Air", "display_name": "Air (Vāyu)", "sanskrit": "Vāyu", "icon": "💨", "accent_color": "#0284c7"},
-        {"key": "Water", "display_name": "Water (Jala)", "sanskrit": "Āpas / Jala", "icon": "💧", "accent_color": "#2563eb"}
-    ]
-    expected_elem_baseline = 25.0
-
-    elements_breakdown = []
-    for meta in ELEMENTS_METADATA:
-        k = meta["key"]
-        pts = round(elements_points[k], 2)
-        pct = round((elements_points[k] / tot_elem_pts) * 100.0, 1)
-        dev = round(pct - expected_elem_baseline, 1)
-        d1_c = elements_count.get(k, 0)
-        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
-        elements_breakdown.append({
-            "key": k,
-            "display_name": meta["display_name"],
-            "sanskrit": meta["sanskrit"],
-            "icon": meta["icon"],
-            "accent_color": meta["accent_color"],
-            "points": pts,
-            "d1_count": d1_c,
-            "percentage": pct,
-            "baseline_pct": expected_elem_baseline,
-            "deviation_pct": dev,
-            "status": status
-        })
-
-    GUNAS_METADATA = [
-        {"key": "Rajas (Movable)", "display_name": "Rajas (Movable)", "sanskrit": "Cara", "icon": "⚡", "accent_color": "#d97706"},
-        {"key": "Tamas (Fixed)", "display_name": "Tamas (Fixed)", "sanskrit": "Sthira", "icon": "🏔️", "accent_color": "#475569"},
-        {"key": "Sattva (Dual)", "display_name": "Sattva (Dual)", "sanskrit": "Dvisvabhāva", "icon": "⚖️", "accent_color": "#0d9488"}
-    ]
-    expected_guna_baseline = 33.3
-
-    gunas_breakdown = []
-    for meta in GUNAS_METADATA:
-        k = meta["key"]
-        pts = round(gunas_points[k], 2)
-        pct = round((gunas_points[k] / tot_guna_pts) * 100.0, 1)
-        dev = round(pct - expected_guna_baseline, 1)
-        d1_c = gunas_count.get(k, 0)
-        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
-        gunas_breakdown.append({
-            "key": k,
-            "display_name": meta["display_name"],
-            "sanskrit": meta["sanskrit"],
-            "icon": meta["icon"],
-            "accent_color": meta["accent_color"],
-            "points": pts,
-            "d1_count": d1_c,
-            "percentage": pct,
-            "baseline_pct": expected_guna_baseline,
-            "deviation_pct": dev,
-            "status": status
-        })
-
-    POLARITY_METADATA = [
-        {"key": "Active", "display_name": "Active / Masculine (Odd)", "sanskrit": "Odd / Puruṣa / Day", "icon": "☀️", "accent_color": "#ea580c"},
-        {"key": "Passive", "display_name": "Passive / Feminine (Even)", "sanskrit": "Even / Strī / Night", "icon": "🌙", "accent_color": "#6366f1"}
-    ]
-    expected_pol_baseline = 50.0
-
-    polarity_breakdown = []
-    for meta in POLARITY_METADATA:
-        k = meta["key"]
-        pts = round(polarity_points[k], 2)
-        pct = round((polarity_points[k] / tot_pol_pts) * 100.0, 1)
-        dev = round(pct - expected_pol_baseline, 1)
-        d1_c = polarity_count.get(k, 0)
-        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
-        polarity_breakdown.append({
-            "key": k,
-            "display_name": meta["display_name"],
-            "sanskrit": meta["sanskrit"],
-            "icon": meta["icon"],
-            "accent_color": meta["accent_color"],
-            "points": pts,
-            "d1_count": d1_c,
-            "percentage": pct,
-            "baseline_pct": expected_pol_baseline,
-            "deviation_pct": dev,
-            "status": status
-        })
-
-    DOSHAS_METADATA = [
-        {"key": "Vata", "display_name": "Vāta (Air)", "sanskrit": "Vāta", "icon": "🌬️", "accent_color": "#0284c7"},
-        {"key": "Pitta", "display_name": "Pitta (Fire)", "sanskrit": "Pitta", "icon": "🔥", "accent_color": "#ea580c"},
-        {"key": "Kapha", "display_name": "Kapha (Earth/Water)", "sanskrit": "Kapha", "icon": "🌊", "accent_color": "#2563eb"}
-    ]
-    expected_dosha_baseline = 33.3
-
-    doshas_breakdown = []
-    for meta in DOSHAS_METADATA:
-        k = meta["key"]
-        pts = round(dosha_points[k], 2)
-        pct = round((dosha_points[k] / tot_dosha_pts) * 100.0, 1)
-        dev = round(pct - expected_dosha_baseline, 1)
-        d1_c = dosha_count.get(k, 0)
-        status = "Surplus" if dev > 2.0 else ("Deficit" if dev < -2.0 else "Balanced")
-        doshas_breakdown.append({
-            "key": k,
-            "display_name": meta["display_name"],
-            "sanskrit": meta["sanskrit"],
-            "icon": meta["icon"],
-            "accent_color": meta["accent_color"],
-            "points": pts,
-            "d1_count": d1_c,
-            "percentage": pct,
-            "baseline_pct": expected_dosha_baseline,
-            "deviation_pct": dev,
-            "status": status
-        })
-
-    return {
-        "elements": {
-            "counts": elements_count,
-            "points": {k: round(v, 2) for k, v in elements_points.items()},
-            "percentages": {k: round((v / tot_elem_pts) * 100.0, 1) for k, v in elements_points.items()},
-            "dominant": dominant_element,
-            "breakdown": elements_breakdown
-        },
-        "gunas": {
-            "counts": gunas_count,
-            "points": {k: round(v, 2) for k, v in gunas_points.items()},
-            "percentages": {k: round((v / tot_guna_pts) * 100.0, 1) for k, v in gunas_points.items()},
-            "dominant": dominant_guna,
-            "breakdown": gunas_breakdown
-        },
-        "polarity": {
-            "counts": polarity_count,
-            "points": {k: round(v, 2) for k, v in polarity_points.items()},
-            "percentages": {k: round((v / tot_pol_pts) * 100.0, 1) for k, v in polarity_points.items()},
-            "dominant": dominant_polarity,
-            "breakdown": polarity_breakdown
-        },
-        "rising_modes": {
-            "counts": rising_mode_count,
-            "points": {k: round(v, 2) for k, v in rising_mode_points.items()},
-            "percentages": {k: round((v / tot_rm_pts) * 100.0, 1) for k, v in rising_mode_points.items()}
-        },
-        "ayurvedic_doshas": {
-            "counts": dosha_count,
-            "points": {k: round(v, 2) for k, v in dosha_points.items()},
-            "percentages": {k: round((v / tot_dosha_pts) * 100.0, 1) for k, v in dosha_points.items()},
-            "dominant": dominant_dosha,
-            "breakdown": doshas_breakdown
-        },
-        "elements_breakdown": elements_breakdown,
-        "gunas_breakdown": gunas_breakdown,
-        "polarity_breakdown": polarity_breakdown,
-        "doshas_breakdown": doshas_breakdown,
-        "methodology": "Parashari Shadvarga (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1) scaled by Prominence"
-    }
+    return compute_varga_environment(vargas_data, prominence_map=prominence_map, lagna_boost=lagna_boost)
 
 
 def compute_planetary_prominence_rankings(
     vargas_data: Dict[str, Any],
     shadbala_data: Optional[Dict[str, Any]],
     planetary_eval: Optional[Dict[str, Any]],
-    nakshatras_grahas: Optional[Dict[str, Any]] = None
+    nakshatras_grahas: Optional[Dict[str, Any]] = None,
+    advanced_aspects: Optional[Dict[str, Any]] = None,
+    vimshottari_at_birth: Optional[Dict[str, Any]] = None,
+    vimshopaka_data: Optional[Dict[str, Any]] = None,
+    jd: Optional[float] = None
 ) -> Dict[str, Any]:
     """
-    Ranks planets along two vectors:
+    Ranks planets along two decoupled vectors using Sage Parāśara's 8 Opportunity Factors & Graha Yuddha:
     Vector A: Prominence (Volume = SBR * (1 + sum(Opportunity Weights)))
-    Vector B: Dignity (Mood = Vimshopak, Deeptaadi, Balaadi, Net Scale)
-    Highlights the #1 Chart Commander.
+              where SBR = Calculated Rupas / 6.0 (uniform standard baseline)
+    Vector B: Dignity (Mood = Vimśopaka 20pt, Dīptādi, Bālādi, Net Scale Score)
+    Highlights the #1 Chart Commander (Kārakādhipati).
+    Delegates calculation to the dedicated jyotish.report.prominence engine.
     """
-    d1_data = vargas_data.get("D1", {})
-    d1_grahas = d1_data.get("grahas", {})
-    d1_lagna = d1_data.get("lagna", {})
-    lagna_sign = d1_lagna.get("sign", "Aries")
-    lagna_lord = rel.SIGN_LORDS.get(lagna_sign, "Mars")
-    d1_cusps = d1_data.get("cusps", [])
-    mc_deg = d1_cusps[9].get("longitude", 270.0) if len(d1_cusps) >= 10 else 270.0
-
-    eval_planets = (planetary_eval or {}).get("planets", {})
-
-    ranked_list = []
-    planets_to_rank = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-
-    # -------------------------------------------------------------------------
-    # Pre-compute Jaimini Chara Karakas (AK & AmK) with dynamic fallback
-    # -------------------------------------------------------------------------
-    classical_7 = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-
-    def _get_planet_deg(g_name: str) -> float:
-        g_node = d1_grahas.get(g_name, {})
-        return float(g_node.get("degree_0_to_30", g_node.get("longitude", 0.0) % 30.0))
-
-    # Rank classical 7 grahas by degree descending
-    sorted_by_deg = sorted(
-        [g for g in classical_7 if g in d1_grahas],
-        key=_get_planet_deg,
-        reverse=True
+    return compute_planetary_prominence(
+        vargas_data=vargas_data,
+        shadbala_data=shadbala_data,
+        advanced_aspects=advanced_aspects,
+        nakshatras_grahas=nakshatras_grahas,
+        vimshottari_at_birth=vimshottari_at_birth,
+        planetary_eval=planetary_eval,
+        vimshopaka_data=vimshopaka_data,
+        jd=jd
     )
-
-    ak_planet = sorted_by_deg[0] if len(sorted_by_deg) > 0 else None
-    amk_planet = sorted_by_deg[1] if len(sorted_by_deg) > 1 else None
-
-    # Check for AK-AmK Raja Yoga Connection (Conjunction or Mutual 1/7 Axis)
-    has_ak_amk_yoga = False
-    if ak_planet and amk_planet:
-        ak_sign = d1_grahas.get(ak_planet, {}).get("sign")
-        amk_sign = d1_grahas.get(amk_planet, {}).get("sign")
-        if ak_sign in ZODIAC_SIGNS and amk_sign in ZODIAC_SIGNS:
-            ak_s_idx = ZODIAC_SIGNS.index(ak_sign)
-            amk_s_idx = ZODIAC_SIGNS.index(amk_sign)
-            sign_dist = (amk_s_idx - ak_s_idx) % 12
-            # Conjunct (0) or Opposite 7th house (6)
-            if sign_dist in (0, 6):
-                has_ak_amk_yoga = True
-
-    for p in planets_to_rank:
-        p_data = d1_grahas.get(p, {})
-        p_lon = p_data.get("longitude", 0.0)
-        p_sign = p_data.get("sign", "Aries")
-        p_eval = eval_planets.get(p, {})
-        p_nak_node = (nakshatras_grahas or {}).get(p, {})
-        p_nakshatra = p_nak_node.get("nakshatra", "--")
-        p_nak_lord = p_nak_node.get("nakshatra_lord", "--")
-
-        # 1. Shadbala Ratio (SBR)
-        sb_entry = (shadbala_data or {}).get(p, {})
-        calculated_rupas = sb_entry.get("Total_Rupas")
-        if calculated_rupas is None:
-            # Fallback for Rahu/Ketu or missing
-            calculated_rupas = 5.0
-        req_rupas = SHADBALA_REQUIRED_RUPAS.get(p, 5.0)
-        sbr = round(calculated_rupas / max(0.1, req_rupas), 2)
-
-        # 2. Opportunity Weights
-        weights = 0.0
-        weight_reasons = []
-
-        # In Kendra (1, 4, 7, 10 from Lagna)
-        lagna_idx = ZODIAC_SIGNS.index(lagna_sign) if lagna_sign in ZODIAC_SIGNS else 0
-        p_idx = ZODIAC_SIGNS.index(p_sign) if p_sign in ZODIAC_SIGNS else 0
-        house_num = (p_idx - lagna_idx) % 12 + 1
-        if house_num in [1, 4, 7, 10]:
-            weights += 0.30
-            weight_reasons.append("In Kendra (+0.30)")
-
-        # Ascendant connection (within 10° orb)
-        asc_lon = d1_lagna.get("longitude", 0.0)
-        dist_asc = min((p_lon - asc_lon) % 360, (asc_lon - p_lon) % 360)
-        if dist_asc <= 10.0:
-            weights += 0.40
-            weight_reasons.append("Conjunct Ascendant (+0.40)")
-
-        # Midheaven connection (within 10° orb)
-        dist_mc = min((p_lon - mc_deg) % 360, (mc_deg - p_lon) % 360)
-        if dist_mc <= 10.0:
-            weights += 0.25
-            weight_reasons.append("Conjunct Midheaven (+0.25)")
-
-        # Ascendant Lord connection
-        if p == lagna_lord:
-            weights += 0.30
-            weight_reasons.append("Is Lagna Lord (+0.30)")
-
-        # Luminary alignment (Sun / Moon)
-        if p not in ["Sun", "Moon"]:
-            sun_lon = d1_grahas.get("Sun", {}).get("longitude", 0.0)
-            moon_lon = d1_grahas.get("Moon", {}).get("longitude", 0.0)
-            if min((p_lon - sun_lon) % 360, (sun_lon - p_lon) % 360) <= 8.0:
-                weights += 0.25
-                weight_reasons.append("Aligned with Sun (+0.25)")
-            if min((p_lon - moon_lon) % 360, (moon_lon - p_lon) % 360) <= 8.0:
-                weights += 0.25
-                weight_reasons.append("Aligned with Moon (+0.25)")
-
-        # Jaimini Karaka Evaluation (AK, AmK, and Raja Yoga Connection)
-        ck_role = str(p_data.get("chara_karaka", {}).get("role", ""))
-        is_ak = (p == ak_planet) or ("Atmakaraka" in ck_role and "Amatya" not in ck_role)
-        is_amk = (p == amk_planet) or ("Amatyakaraka" in ck_role or "AmK" in ck_role)
-
-        if is_ak:
-            weights += 0.30
-            weight_reasons.append("Atmakaraka Soul Signifier (+0.30)")
-        elif is_amk:
-            weights += 0.15
-            weight_reasons.append("Amatyakaraka Executive Mind (+0.15)")
-
-        if has_ak_amk_yoga and (is_ak or is_amk):
-            weights += 0.15
-            weight_reasons.append("Jaimini Raja Yoga: AK-AmK Connection (+0.15)")
-
-        prominence_score = round(sbr * (1.0 + weights), 2)
-
-        # Vector B: Dignity
-        avasthas = p_data.get("avasthas", {})
-        deeptadi_obj = avasthas.get("deeptadi", "Swastha")
-        deeptadi = deeptadi_obj.get("state", "Swastha") if isinstance(deeptadi_obj, dict) else str(deeptadi_obj)
-        balaadi_obj = avasthas.get("bala", "Yuva")
-        balaadi = balaadi_obj.get("state", "Yuva") if isinstance(balaadi_obj, dict) else str(balaadi_obj)
-        vimshopak = p_eval.get("varga_score", 12.0)
-        net_scale = p_eval.get("net_scale_score", 0.0)
-        expression_mode = p_eval.get("expression_mode", "Constructive")
-
-        ranked_list.append({
-            "planet": p,
-            "sign": p_sign,
-            "house": house_num,
-            "nakshatra": p_nakshatra,
-            "nakshatra_lord": p_nak_lord,
-            "prominence_score": prominence_score,
-            "shadbala_rupas": round(calculated_rupas, 2),
-            "shadbala_ratio": sbr,
-            "opportunity_weights": round(weights, 2),
-            "opportunity_reasons": weight_reasons,
-            "dignity_mood": deeptadi,
-            "maturity": balaadi,
-            "vimshopak_score": round(vimshopak, 1),
-            "net_scale_score": round(net_scale, 1),
-            "expression_mode": expression_mode
-        })
-
-    # Sort descending by Prominence Score
-    ranked_list.sort(key=lambda x: x["prominence_score"], reverse=True)
-    for idx, r in enumerate(ranked_list):
-        r["rank"] = idx + 1
-
-    commander = ranked_list[0] if ranked_list else None
-
-    return {
-        "leaderboard": ranked_list,
-        "chart_commander": commander
-    }
 
 
 _SIGNIFICATIONS_FLOWCHARTS_CACHE: Optional[Dict[str, Any]] = None
@@ -963,15 +612,22 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     advanced_aspects = chart_data.get("advanced_aspects", {})
     shadbala_data = chart_data.get("shadbala", {})
     planetary_eval = chart_data.get("planetary_evaluation", {})
+    vimshottari_at_birth = chart_data.get("vimshottari_dasha", {}).get("at_birth", {})
+    vimshopaka_data = chart_data.get("varga_vimshopaka") or chart_data.get("vimshopaka")
+    jd = chart_data.get("astronomy", {}).get("julian_day")
 
-    # 1. Calculate Prominence first (with Nakshatras for planetary rankings)
+    # 1. Calculate Prominence first using dedicated Parāśarī Prominence Engine
     planetary_rankings = compute_planetary_prominence_rankings(
-        vargas_data, shadbala_data, planetary_eval, nakshatras_grahas=nakshatras_grahas
+        vargas_data=vargas_data,
+        shadbala_data=shadbala_data,
+        planetary_eval=planetary_eval,
+        nakshatras_grahas=nakshatras_grahas,
+        advanced_aspects=advanced_aspects,
+        vimshottari_at_birth=vimshottari_at_birth,
+        vimshopaka_data=vimshopaka_data,
+        jd=jd
     )
-    prominence_map = {
-        p["planet"]: p["prominence_score"]
-        for p in planetary_rankings.get("leaderboard", [])
-    }
+    prominence_map = planetary_rankings.get("prominence_map", {})
 
     # 2. Pass prominence_map into Nakshatra and Environmental engines
     nak_dominance = compute_nakshatra_dominance(
@@ -980,6 +636,29 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     polarity_core = compute_polarity_core(vargas_data, nakshatras_grahas)
     operational_axis = compute_operational_axis(vargas_data)
     env_tally = compute_environmental_tally(vargas_data, prominence_map=prominence_map)
+
+    # 3. Contextual Setup Yogas
+    contextual_yogas_list = detect_contextual_yogas(chart_data)
+
+    # 4. Background Canvas Synthesis
+    background_canvas = synthesize_background_canvas(
+        polarity_core=polarity_core,
+        operational_axis=operational_axis,
+        env_tally=env_tally,
+        nak_dominance=nak_dominance
+    )
+
+    # 5. Sequential Planetary Interpretations (5 Pillars, Commonalities vs Clashes, Tone)
+    planetary_interpretations = generate_planetary_interpretations(
+        prominence_rankings=planetary_rankings,
+        vargas_data=vargas_data,
+        nakshatras_grahas=nakshatras_grahas,
+        planetary_eval=planetary_eval,
+        canvas=background_canvas
+    )
+
+    # 6. Harmonic Degree Overlays (D9, D7, D10 onto D1)
+    harmonic_overlays = compute_harmonic_overlays(vargas_data=vargas_data)
 
     # Ingredients Checklist for Astrologer Desk
     synthesis_ingredients = {
@@ -1008,6 +687,10 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         "environmental_tally": env_tally,
         "planetary_rankings": planetary_rankings,
         "synthesis_ingredients": synthesis_ingredients,
+        "contextual_yogas": [y.to_dict() for y in contextual_yogas_list],
+        "background_canvas": background_canvas,
+        "planetary_interpretations": planetary_interpretations,
+        "harmonic_overlays": harmonic_overlays,
         "significations_data": get_significations_data(),
         "flowcharts": get_significations_flowcharts()
     }

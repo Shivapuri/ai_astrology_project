@@ -14,11 +14,12 @@ from jyotish.yogas.parivartana import detect_parivartana_yogas
 from jyotish.yogas.viparita import detect_viparita_raja_yogas
 from jyotish.yogas.kartari import detect_kartari_yogas
 from jyotish.yogas.chandal_yogas import detect_chandal_yogas
+from jyotish.yogas.contextual_yogas import detect_contextual_yogas
 
 def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     """
     Master entry point for Classical Yoga Detection in Astra.
-    Scans the chart across all 9 classical categories, audits Yoga Breakers,
+    Scans the chart across all 10 classical categories, audits Yoga Breakers,
     and returns a structured, categorized payload.
     """
     all_yogas: List[YogaInstance] = []
@@ -46,6 +47,9 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     
     # 8. Chandal & Nodal Affliction Yogas
     all_yogas.extend(detect_chandal_yogas(chart))
+
+    # 9. Contextual & Macro Setup Yogas
+    all_yogas.extend(detect_contextual_yogas(chart))
     
     # Sort by plausibility score descending
     all_yogas.sort(key=lambda y: y.plausibility_score, reverse=True)
@@ -65,7 +69,8 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
         YogaCategory.PARIVARTANA.value,
         YogaCategory.VIPARITA.value,
         YogaCategory.KARTARI.value,
-        YogaCategory.CHANDAL.value
+        YogaCategory.CHANDAL.value,
+        YogaCategory.CONTEXTUAL.value
     ]
     
     return {

@@ -67,13 +67,83 @@ NAKSHATRA_GROUP_METADATA: Dict[str, Dict[str, str]] = {
         "bg": "#f5f3ff"
     },
     "Mishra": {
-        "sanskrit": "Miśra / Sādhāraṇa",
-        "label": "Mixed (Sharp & Soft)",
-        "nature": "Universal catalysis, one-pointed focus coupled with devotion",
+        "sanskrit": "Miśra / Catalyst",
+        "label": "Universal Catalyst (Kṛttikā & Viśākhā)",
+        "nature": "Universal catalysis, one-pointed focus coupled with devotion, kindling all 6 temperaments",
         "color": "#b45309",
         "bg": "#fffbeb"
     }
 }
+
+CLASSICAL_6_TEMPERAMENTS = ["Tikshna", "Ugra", "Dhruva", "Mridu", "Laghu", "Chara"]
+
+NAKSHATRA_GROUP_RELATIONSHIPS = {
+    # Resonances (Harmonious reinforcements)
+    ("Tikshna", "Ugra"): {
+        "type": "Resonance",
+        "title": "Assertive Breakthrough",
+        "description": "Fuses sharp penetrating strategy with formidable willpower, driving decisive breakthrough."
+    },
+    ("Mridu", "Dhruva"): {
+        "type": "Resonance",
+        "title": "Nourishing Permanence",
+        "description": "Blends gentle empathy with solid endurance, creating lasting harmonious structures."
+    },
+    ("Laghu", "Chara"): {
+        "type": "Resonance",
+        "title": "Agile Mobility",
+        "description": "Combines swift dexterity with dynamic rhythm, excelling in rapid movement and versatile trade."
+    },
+    ("Ugra", "Dhruva"): {
+        "type": "Resonance",
+        "title": "Steadfast Fortress",
+        "description": "Unites fierce protective defense with immovable stamina, providing generational security."
+    },
+    ("Mridu", "Chara"): {
+        "type": "Resonance",
+        "title": "Graceful Fluidity",
+        "description": "Harmonizes cooperative charm with social rhythm, fostering effortless relational movement."
+    },
+    # Dissonances (Internal creative friction / Developmental tensions)
+    ("Tikshna", "Mridu"): {
+        "type": "Dissonance",
+        "title": "Bitter vs. Sweet Friction",
+        "description": "Incisive, unsparing truth clashes with tender vulnerability; requires balancing necessary disruption with compassion."
+    },
+    ("Dhruva", "Laghu"): {
+        "type": "Dissonance",
+        "title": "Permanence vs. Swiftness Friction",
+        "description": "Patient, long-range consolidation clashes with immediate, quick-fix urgency; requires patience with timing."
+    },
+    ("Dhruva", "Chara"): {
+        "type": "Dissonance",
+        "title": "Fixed vs. Mobile Friction",
+        "description": "Immovable conservatism clashes with roving restlessness; requires building enduring roots while allowing freedom to explore."
+    }
+}
+
+GROUP_ALIAS_CANONICAL = {
+    "ksipra": "Laghu", "laghu": "Laghu", "quick": "Laghu",
+    "cara": "Chara", "chara": "Chara", "cala": "Chara", "mobile": "Chara",
+    "tikshna": "Tikshna", "tīkṣṇa": "Tikshna", "bitter": "Tikshna",
+    "ugra": "Ugra", "strong": "Ugra",
+    "dhruva": "Dhruva", "sthira": "Dhruva", "enduring": "Dhruva",
+    "mridu": "Mridu", "mṛdu": "Mridu", "sweet": "Mridu"
+}
+
+def get_temperament_relationship(group1: str, group2: str) -> Optional[Dict[str, Any]]:
+    """
+    Returns the relationship (Resonance or Dissonance) between two Nakshatra temperament groups.
+    """
+    if not group1 or not group2 or group1 == group2:
+        return None
+    c1 = GROUP_ALIAS_CANONICAL.get(group1.lower().strip(), group1)
+    c2 = GROUP_ALIAS_CANONICAL.get(group2.lower().strip(), group2)
+    return (
+        NAKSHATRA_GROUP_RELATIONSHIPS.get((c1, c2)) or
+        NAKSHATRA_GROUP_RELATIONSHIPS.get((c2, c1))
+    )
+
 
 NAKSHATRA_TEMPERAMENT_DOSSIER: Dict[str, Dict[str, Any]] = {
     "Dhruva": {

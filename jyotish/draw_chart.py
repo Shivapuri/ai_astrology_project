@@ -144,8 +144,8 @@ planet_notations = {
 # Compatibility mapping
 planet_symbols = {k: (v["symbol"], v["color"]) for k, v in planet_notations.items()}
 
-# Soft antique parchment tone for Rashi signs so they blend elegantly into the background
-RASHI_SIGN_COLOR = "#b59472"
+# Warm antique umber tone for Rashi signs with crisp legibility against house fills
+RASHI_SIGN_COLOR = "#7a5535"
 
 sign_symbols = {
     "Aries": ("♈\uFE0E", RASHI_SIGN_COLOR, "Ar"), 
@@ -854,6 +854,24 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
 
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
+
+    # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
+    for sign, (cx, cy) in cell_coords.items():
+        h_num = (signs_list.index(sign) - anchor_index + 12) % 12 + 1
+        if h_num in (1, 4, 7, 10):
+            fill_col = "var(--chart-kendra-color, #eedec9)"
+            cls = "house-bg house-kendra"
+        elif h_num in (5, 9):
+            fill_col = "var(--chart-trikona-color, #faede0)"
+            cls = "house-bg house-trikona"
+        else:
+            fill_col = "var(--chart-other-color, #f9f5eb)"
+            cls = "house-bg house-other"
+        svg += f'<rect class="{cls}" x="{cx}" y="{cy}" width="100" height="100" fill="{fill_col}"/>\n'
+
+    # Center Parchment Ground
+    svg += '<rect x="100" y="100" width="200" height="200" fill="#fffdfa"/>\n'
+
     svg += '<rect x="0" y="0" width="400" height="400" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<rect x="100" y="100" width="200" height="200" fill="none" stroke="#5C4433" stroke-width="2"/>\n'
     svg += '<line x1="100" y1="0" x2="100" y2="100" stroke="#5C4433" stroke-width="2"/>\n'
@@ -947,7 +965,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                         cy_pos = y + c_dy
                             
                     svg += f'<g class="interactive" data-type="house" data-id="{c_num}" style="cursor: pointer;"><title>{c_tooltip}</title>\n'
-                    svg += f'<text x="{cx_pos}" y="{cy_pos}" font-family="sans-serif" font-size="10" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
+                    svg += f'<text x="{cx_pos}" y="{cy_pos}" font-family="sans-serif" font-size="10" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
                     svg += '</g>\n'
         else:
             # Whole Sign House number relative to anchor planet
@@ -958,7 +976,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             bx = x + c_dx
             by = y + c_dy
             svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
-            svg += f'<text x="{bx}" y="{by}" font-family="sans-serif" font-size="10" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
+            svg += f'<text x="{bx}" y="{by}" font-family="sans-serif" font-size="10" font-weight="bold" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
             svg += '</g>\n'
 
         # Sort planets by degree within sign
@@ -1015,7 +1033,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family={font_fam} font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
+            svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="8" font-weight="bold" fill="#C0392B"> R</tspan>'
@@ -1076,12 +1094,15 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
     for h in range(12):
         if h in (0, 3, 6, 9):       # Kendras: 1, 4, 7, 10 (Baked Terracotta Sand)
-            fill_col = "#eedec9"
+            fill_col = "var(--chart-kendra-color, #eedec9)"
+            cls = "house-bg house-kendra"
         elif h in (4, 8):           # Trikonas: 5, 9 (Sunlit Apricot Champagne)
-            fill_col = "#faede0"
+            fill_col = "var(--chart-trikona-color, #faede0)"
+            cls = "house-bg house-trikona"
         else:                       # Other houses: 2, 3, 6, 8, 11, 12 (Soft Warm Vellum)
-            fill_col = "#f9f5eb"
-        svg += f'<path d="{ni_paths[h]}" fill="{fill_col}"/>\n'
+            fill_col = "var(--chart-other-color, #f9f5eb)"
+            cls = "house-bg house-other"
+        svg += f'<path class="{cls}" d="{ni_paths[h]}" fill="{fill_col}"/>\n'
 
     # Crisp Double Outer Square (Clean edges, inner border placed at 18 to let petal peak just touch it)
     svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
@@ -1258,8 +1279,8 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family={font_fam} font-size="{font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
-            svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" stroke="#FFFDF9" stroke-width="2.0" paint-order="stroke fill" fill="#5C4433">'
+            svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family={font_fam} font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
+            svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="{retro_sz}" font-weight="bold" fill="#C0392B"> R</tspan>'
@@ -1286,7 +1307,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                         c_y = base_cy - ((num_c - 1) * spacing) / 2 + (c_idx * spacing)
                 c_tooltip = f"House Cusp {c_num} in {sign}"
                 svg += f'<g class="interactive" data-type="house" data-id="{c_num}" style="cursor: pointer;"><title>{c_tooltip}</title>\n'
-                svg += f'<text x="{c_x}" y="{c_y}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="{cusp_stroke_w}" paint-order="stroke fill" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
+                svg += f'<text x="{c_x}" y="{c_y}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
                 svg += '</g>\n'
         elif root_planet != "Lagna":
             base_cx, base_cy = cfg["cusp"]
@@ -1294,7 +1315,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             h_tooltip = f"House {h_num} from {root_planet} in {sign}"
             col = "#C0392B" if is_kendra else "#7D3C98"
             svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
-            svg += f'<text x="{base_cx}" y="{base_cy}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" stroke="#FFFDF9" stroke-width="{cusp_stroke_w}" paint-order="stroke fill" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
+            svg += f'<text x="{base_cx}" y="{base_cy}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
             svg += '</g>\n'
 
     # Graha Drishti Aspect Lines & Badges
