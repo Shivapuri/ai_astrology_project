@@ -73,6 +73,17 @@ def test_special_aspect_saturn():
     assert anchors[240] == 50.0
 
 
+def test_nodes_no_aspects():
+    """Rahu and Ketu do not cast Graha Drishti per Kala / Ernst Wilhelm methodology."""
+    for node in ["Rahu", "Ketu"]:
+        anchors = dict(get_aspect_anchor_points(node))
+        for d in ANCHOR_DEGREES:
+            assert anchors[d] == 0.0, f"{node} at {d}° must be 0%"
+        assert calculate_continuous_drishti(node, 120.0) == 0.0
+        assert calculate_continuous_drishti(node, 180.0) == 0.0
+        assert calculate_continuous_drishti(node, 240.0) == 0.0
+
+
 def test_continuous_interpolation_in_between_placement():
     """
     Acceptance Criteria 3:

@@ -71,8 +71,9 @@ def get_house_of_planet(chart: Dict[str, Any], planet: str) -> int:
 def get_aspect_score(chart: Dict[str, Any], giver: str, receiver: str) -> float:
     """Returns Graha Drishti aspect value (0-60 Virupas) from giver to receiver."""
     aspects = chart.get("advanced_aspects", {}).get("planets", {})
-    if giver in aspects and receiver in aspects[giver]:
-        val = aspects[giver][receiver]
+    # advanced_aspects['planets'] is strictly keyed by receiver (aspected) then giver (aspecting)
+    if receiver in aspects and giver in aspects[receiver]:
+        val = aspects[receiver][giver]
         if isinstance(val, dict):
             return float(val.get("raw", val.get("net", 0.0)))
         return float(val)

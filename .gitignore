@@ -58,4 +58,6 @@ source-material/sanskrit_texts/temp.txt
 source-material/sanskrit_texts/bphs_avasthas.txt
 *.tmp
 temp.txt
-
+ascendant_reports/
+glyph_preview*.html
+glyph_preview*.png

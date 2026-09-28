@@ -419,14 +419,16 @@ def get_aspect_anchor_points(planet: str) -> List[Tuple[float, float]]:
     p = planet.strip().capitalize()
     anchors = []
     for d in ANCHOR_DEGREES:
-        if d in (0, 30, 150, 300, 330, 360):
+        if p in ("Rahu", "Ketu"):
+            pct = 0.0
+        elif d in (0, 30, 150, 300, 330, 360):
             pct = 0.0
         elif d == 180:
             pct = 100.0
         elif d in (90, 210):
             pct = 100.0 if p == "Mars" else 75.0
         elif d in (120, 240):
-            pct = 100.0 if p in ("Jupiter", "Rahu", "Ketu") else 50.0
+            pct = 100.0 if p == "Jupiter" else 50.0
         elif d in (60, 270):
             pct = 100.0 if p == "Saturn" else 25.0
         else:

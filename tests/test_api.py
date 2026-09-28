@@ -237,19 +237,26 @@ def test_hitler_himmler_dahmer_chart_api(client):
 
 
 def test_toggle_dropdown_api(client):
-    # Toggle Hitler in_dropdown from false to true and back
-    res1 = client.post('/api/native/adolf-hitler/toggle_dropdown')
-    assert res1.status_code == 200
-    data1 = json.loads(res1.data)
-    assert data1['id'] == 'adolf-hitler'
-    assert data1['in_dropdown'] is True
+    from app import CHARTS_FILE
+    with open(CHARTS_FILE, "r", encoding="utf-8") as f:
+        original_content = f.read()
+    try:
+        # Toggle Hitler in_dropdown from false to true and back
+        res1 = client.post('/api/native/adolf-hitler/toggle_dropdown')
+        assert res1.status_code == 200
+        data1 = json.loads(res1.data)
+        assert data1['id'] == 'adolf-hitler'
+        assert data1['in_dropdown'] is True
 
-    # Toggle back to false
-    res2 = client.post('/api/native/adolf-hitler/toggle_dropdown')
-    assert res2.status_code == 200
-    data2 = json.loads(res2.data)
-    assert data2['id'] == 'adolf-hitler'
-    assert data2['in_dropdown'] is False
+        # Toggle back to false
+        res2 = client.post('/api/native/adolf-hitler/toggle_dropdown')
+        assert res2.status_code == 200
+        data2 = json.loads(res2.data)
+        assert data2['id'] == 'adolf-hitler'
+        assert data2['in_dropdown'] is False
+    finally:
+        with open(CHARTS_FILE, "w", encoding="utf-8") as f:
+            f.write(original_content)
 
 
 def test_lazy_chart_svg_api(client):

@@ -379,3 +379,22 @@ def test_shrapit_and_angaraka_yoga_detection():
     shrapit = next((y for y in yogas if y.id == "shrapit_yoga"), None)
     assert shrapit is not None
     assert shrapit.status == YogaStatus.RESCUED, "Exalted Saturn in Libra should rescue Shrapit Yoga"
+
+
+def test_get_aspect_score_directionality():
+    """Verify get_aspect_score correctly looks up aspects from giver to receiver."""
+    from jyotish.yogas.breakers import get_aspect_score
+    chart = {
+        "advanced_aspects": {
+            "planets": {
+                # Moon receives aspect from Saturn (receiver=Moon, giver=Saturn)
+                "Moon": {
+                    "Saturn": {"raw": 55.7, "net": -55.7}
+                }
+            }
+        }
+    }
+    # Saturn aspects Moon -> 55.7
+    assert get_aspect_score(chart, giver="Saturn", receiver="Moon") == 55.7
+    # Moon does not aspect Saturn -> 0.0
+    assert get_aspect_score(chart, giver="Moon", receiver="Saturn") == 0.0

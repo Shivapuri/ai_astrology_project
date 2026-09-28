@@ -1157,14 +1157,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const anchors = [];
                 ANCHOR_DEGREES.forEach(d => {
                     let pct = 0.0;
-                    if (d === 0 || d === 30 || d === 150 || d === 300 || d === 330 || d === 360) {
+                    if (pCap === "Rahu" || pCap === "Ketu") {
+                        pct = 0.0;
+                    } else if (d === 0 || d === 30 || d === 150 || d === 300 || d === 330 || d === 360) {
                         pct = 0.0;
                     } else if (d === 180) {
                         pct = 100.0;
                     } else if (d === 90 || d === 210) {
                         pct = (pCap === "Mars") ? 100.0 : 75.0;
                     } else if (d === 120 || d === 240) {
-                        pct = (pCap === "Jupiter" || pCap === "Rahu" || pCap === "Ketu") ? 100.0 : 50.0;
+                        pct = (pCap === "Jupiter") ? 100.0 : 50.0;
                     } else if (d === 60 || d === 270) {
                         pct = (pCap === "Saturn") ? 100.0 : 25.0;
                     }
