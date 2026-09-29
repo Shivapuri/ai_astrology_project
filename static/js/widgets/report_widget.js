@@ -235,7 +235,7 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
         html += `
             <div class="synth-pillar-col" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
                 ${hasDedicatedSubheader ? `<div class="synth-pillar-title" style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 2px;" title="${escapeHtml(rawColName)}">${escapeHtml(rawColName)}</div>` : ''}
-                <div class="synth-node-list" style="display: flex; flex-direction: column; gap: 18px;">
+                <div class="synth-node-list" style="display: flex; flex-direction: column; gap: 22px;">
         `;
         const nodes = col.nodes || col.items || [];
         nodes.forEach(item => {
@@ -394,7 +394,7 @@ function renderPlanetNakshatraCard(targetCol, pl, chartData, idPrefix = 'pnak_')
         </div>
 
         <div class="synth-pillars-container" style="display: flex; flex-direction: column; gap: 10px;">
-            <div class="synth-node-list" style="display: flex; flex-direction: column; gap: 14px;">
+            <div class="synth-node-list" style="display: flex; flex-direction: column; gap: 18px;">
                 ${nodesHtml}
             </div>
         </div>
