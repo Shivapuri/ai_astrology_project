@@ -72,16 +72,19 @@ def test_circular_chart_aspects_and_radii():
     ]
     svg_str = generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=19.33, root_planet="Lagna")
     
-    # Assert enlarged aspect circle
-    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="76"' in svg_str
-    assert '<circle cx="0" cy="0" r="92"' in svg_str
+    # Assert reduced center circle and house ring (r_inner=30, r_outer=46)
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="30"' in svg_str
+    assert '<circle cx="0" cy="0" r="46"' in svg_str
     
-    # Assert aspect markers and aspect group
-    assert '<marker id="arrow-benefic"' in svg_str
-    assert '<g class="aspect-lines">' in svg_str
-    assert 'class="interactive-aspect"' in svg_str
-    assert 'data-from=' in svg_str
-    assert 'data-to=' in svg_str
+    # Assert house background color scheme sectors (Kendra / Trikona)
+    assert 'class="house-bg house-kendra"' in svg_str
+    assert 'class="house-bg house-trikona"' in svg_str
+    
+    # Assert internal aspect chords are removed from circular chart
+    assert '<g class="aspect-lines">' not in svg_str
+    
+    # Assert planet highlight plate
+    assert 'class="planet-highlight-bg"' in svg_str
     
     # Assert planet stack has glyph, degree, minute but NOT redundant sign symbol
     assert 'data-id="Mars"' in svg_str
@@ -114,10 +117,18 @@ def test_biwheel_chart_svg_structure():
     assert 'background:transparent' in svg_str
     
     # 2. Key Concentric Rings & Geometry
-    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="62"' in svg_str
-    assert '<circle cx="0" cy="0" r="138"' in svg_str # Subdivision ring inner boundary
-    assert '<circle cx="0" cy="0" r="164"' in svg_str # Subdivision ring outer boundary
-    assert '<circle cx="0" cy="0" r="206"' in svg_str # Chart outer perimeter
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="28"' in svg_str
+    assert '<circle cx="0" cy="0" r="44"' in svg_str # Inner house ring boundary
+    assert '<circle cx="0" cy="0" r="138"' in svg_str # Subdivision ring inner boundary (UNTOUCHED)
+    assert '<circle cx="0" cy="0" r="164"' in svg_str # Subdivision ring outer boundary (UNTOUCHED)
+    assert '<circle cx="0" cy="0" r="206"' in svg_str # Chart outer perimeter (UNTOUCHED)
+    
+    # Assert house background color scheme sectors (Kendra / Trikona)
+    assert 'class="house-bg house-kendra"' in svg_str
+    assert 'class="house-bg house-trikona"' in svg_str
+    
+    # Assert planet highlight plate
+    assert 'class="planet-highlight-bg"' in svg_str
     
     # Nakshatra perimeter ring removed from Bi-Wheel chart
     assert 'data-type="nakshatra"' not in svg_str
@@ -145,11 +156,6 @@ def test_biwheel_chart_svg_structure():
     # 6. Natal House alignment in outer planet tooltip
     # D9 Saturn in Aquarius with D1 Lagna in Leo -> Aquarius is 7th sign from Leo -> Natal House 7
     assert '(Natal House 7)' in svg_str
-    
-    # 7. Cross-Chart Aspects
-    assert 'class="interactive-aspect cross-aspect"' in svg_str
-    assert 'data-from-varga="D9"' in svg_str
-    assert 'data-to-varga="D1"' in svg_str
 
 
 def test_distance_protector_halos_and_clearances():

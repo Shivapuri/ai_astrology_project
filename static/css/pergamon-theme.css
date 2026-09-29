@@ -51,10 +51,38 @@
         .aspects-hidden:not(.aspects-filtered) .aspect-lines {
             display: none !important;
         }
+        /* Interactive Planet Highlight Background Plate */
+        .planet-highlight-bg {
+            fill: transparent;
+            stroke: none;
+            transition: fill 0.2s ease, filter 0.2s ease;
+            pointer-events: none;
+        }
+        .planet-focused .planet-highlight-bg,
+        .planet-target .planet-highlight-bg,
+        .planet-source-sender .planet-highlight-bg {
+            fill: rgba(255, 255, 255, 0.88) !important;
+            stroke: none !important;
+            filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.08)) !important;
+        }
         .planet-focused text.glyph-symbol,
-        .planet-focused text {
-            stroke: #F39C12 !important;
-            stroke-width: 3px !important;
+        .planet-focused text.graha-glyph,
+        .planet-focused text,
+        .planet-target text.glyph-symbol,
+        .planet-target text.graha-glyph,
+        .planet-target text,
+        .planet-source-sender text.glyph-symbol,
+        .planet-source-sender text.graha-glyph,
+        .planet-source-sender text {
+            stroke: none !important;
+        }
+        svg.highlight-mode .interactive[data-type="planet"].planet-focused,
+        svg.highlight-mode .interactive[data-type="planet"].planet-target,
+        svg.highlight-mode .interactive[data-type="planet"].planet-source-sender {
+            filter: none !important;
+        }
+        .interactive-aspect.aspect-arrow {
+            transition: opacity 0.25s ease, filter 0.2s ease;
         }
         .interactive-center-circle {
             transition: fill 0.2s ease, fill-opacity 0.2s ease;

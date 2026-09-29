@@ -1,10 +1,12 @@
 """
-Tests for Astra Astrological Synthesis Report Engine
+Tests for Astra Nakshatra Foundation Report Engine (tests/test_report_engine.py)
+
 Validates:
 - All 27 Nakshatras complete lore and classification database
-- 4-step Nakshatra scoring system (Moon 8pts, Lagna 4pts, Sun 2pts, others 1pt, aspect refinement)
-- Polarity Core (Ascendant ⟷ Moon) and Panchadha Maitri friction scoring
-- Operational Axis & Vargottama detection
+- 4-step Prominence-scaled Nakshatra scoring system
+- Side-by-side Ascendant & Moon Nakshatra descriptive dossiers (No Automated Synthesis)
+- Nakshatra Dominance Leaderboard and 6-Group Temperament Balance (16.7% Baseline)
+- Complete purge of downstream engines from generate_report_payload
 - End-to-end integration with generate_kala_chart
 """
 
@@ -17,10 +19,8 @@ from jyotish.nakshatras.lore import (
 )
 from jyotish.report.report_engine import (
     compute_nakshatra_dominance,
-    compute_polarity_core,
-    compute_operational_axis,
-    compute_environmental_tally,
-    compute_planetary_prominence_rankings,
+    get_detailed_nakshatra_dossier,
+    compute_ascendant_and_moon_nakshatras,
     generate_report_payload,
     ZODIAC_SIGNS
 )
@@ -61,6 +61,57 @@ def test_nakshatra_alias_resolution():
     assert get_nakshatra_lore("Shatataraka")["name"] == "Shatabhisha"
 
 
+def test_get_detailed_nakshatra_dossier_all_27():
+    """Verify that all 27 nakshatras generate complete, rich descriptive dossiers."""
+    for nak_name in NAKSHATRA_DATABASE:
+        dossier = get_detailed_nakshatra_dossier(nak_name, pada=2)
+        assert dossier["name"] == nak_name
+        assert dossier["pada"] == 2
+        assert len(dossier["sanskrit_meaning"]) > 0, f"Empty meaning for {nak_name}"
+        assert len(dossier["deity"]) > 0, f"Empty deity for {nak_name}"
+        assert len(dossier["symbol"]) > 0, f"Empty symbol for {nak_name}"
+        assert len(dossier["group"]) > 0, f"Empty group for {nak_name}"
+        assert len(dossier["group_label"]) > 0, f"Empty group_label for {nak_name}"
+        assert len(dossier["keywords"]) >= 2, f"Too few keywords for {nak_name}"
+        assert len(dossier["description"]) > 20, f"Short description for {nak_name}"
+
+
+def test_compute_ascendant_and_moon_nakshatras_structure():
+    """Verify side-by-side Ascendant and Moon dossiers contain NO automated synthesis or friction scores."""
+    mock_vargas = {"D1": {"lagna": {"sign": "Aries"}}}
+    mock_nakshatras = {
+        "Lagna": {"nakshatra": "Uttara Ashadha", "pada": 1},
+        "Moon": {"nakshatra": "Rohini", "pada": 3}
+    }
+
+    asc_moon = compute_ascendant_and_moon_nakshatras(mock_vargas, mock_nakshatras)
+
+    # Must contain ONLY ascendant and moon
+    assert set(asc_moon.keys()) == {"ascendant", "moon"}
+
+    # Assert no automated synthesis / friction math exists
+    for key in ["synthesis", "friction_score", "state", "panchadha_maitri", "tattva_status"]:
+        assert key not in asc_moon, f"Forbidden key {key} found in ascendant_and_moon"
+        assert key not in asc_moon["ascendant"], f"Forbidden key {key} found in ascendant dossier"
+        assert key not in asc_moon["moon"], f"Forbidden key {key} found in moon dossier"
+
+    # Verify Ascendant properties
+    asc = asc_moon["ascendant"]
+    assert asc["name"] == "Uttara Ashadha"
+    assert asc["pada"] == 1
+    assert "Action / Ahaṃkāra" in asc["role"]
+    assert asc["group"] == "Dhruva"
+    assert "Fortified Determination" in asc["keywords"]
+
+    # Verify Moon properties
+    moon = asc_moon["moon"]
+    assert moon["name"] == "Rohini"
+    assert moon["pada"] == 3
+    assert "Perception / Manas" in moon["role"]
+    assert moon["group"] == "Dhruva"
+    assert len(moon["description"]) > 20
+
+
 def test_nakshatra_4_step_scoring():
     """Verify canonical point weights: Moon=8, Lagna=4, Sun=2, others=1."""
     mock_nakshatras = {
@@ -95,91 +146,8 @@ def test_nakshatra_4_step_scoring():
     assert 99.0 <= tot_pct <= 101.0
 
 
-def test_polarity_core_friendship_and_tattvas():
-    """Verify Polarity Core evaluates friendship and elemental friction."""
-    # Test chart with Fire Lagna and Water Moon (High friction)
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},
-            "grahas": {
-                "Sun": {"sign": "Aries"},
-                "Moon": {"sign": "Cancer"},
-                "Mars": {"sign": "Aries"},
-                "Mercury": {"sign": "Pisces"},
-                "Jupiter": {"sign": "Cancer"},
-                "Venus": {"sign": "Taurus"},
-                "Saturn": {"sign": "Aquarius"},
-                "Rahu": {"sign": "Gemini"},
-                "Ketu": {"sign": "Sagittarius"}
-            }
-        }
-    }
-    mock_nakshatras = {
-        "Lagna": {"nakshatra": "Ashwini", "nakshatra_lord": "Ketu", "pada": 1},
-        "Moon": {"nakshatra": "Ashlesha", "nakshatra_lord": "Mercury", "pada": 4}
-    }
-
-    polarity = compute_polarity_core(mock_vargas, mock_nakshatras)
-    rel_info = polarity["relationship"]
-
-    assert polarity["ascendant_nakshatra"]["element"] == "Fire"
-    assert polarity["moon_nakshatra"]["element"] == "Water"
-    assert rel_info["tattva_harmonic"] is False
-    assert "Severe Clashing" in rel_info["tattva_status"]
-    assert rel_info["friction_score"] >= 50
-
-
-def test_vargottama_lagna_detection():
-    """Verify Vargottama Lagna check flags matching signs in D1 and D9."""
-    vargas_vargottama = {
-        "D1": {"lagna": {"sign": "Leo"}, "grahas": {}},
-        "D9": {"lagna": {"sign": "Leo"}, "grahas": {}}
-    }
-    axis = compute_operational_axis(vargas_vargottama)
-    assert axis["is_vargottama"] is True
-    assert axis["vargottama_boost"] is not None
-
-    vargas_non_varg = {
-        "D1": {"lagna": {"sign": "Leo"}, "grahas": {}},
-        "D9": {"lagna": {"sign": "Virgo"}, "grahas": {}}
-    }
-    axis_non = compute_operational_axis(vargas_non_varg)
-    assert axis_non["is_vargottama"] is False
-    assert axis_non["vargottama_boost"] is None
-
-
-def test_generate_kala_chart_report_payload_integration():
-    """Verify that full generate_kala_chart integration returns 'report' seamlessly."""
-    chart = generate_kala_chart(
-        name="Test Native",
-        year=1980,
-        month=8,
-        day=15,
-        hour=10,
-        minute=30,
-        latitude=13.0827,
-        longitude=80.2707,
-        timezone_offset=5.5
-    )
-
-    assert "report" in chart
-    rep = chart["report"]
-    assert "polarity_core" in rep
-    assert "nakshatra_dominance" in rep
-    assert "operational_axis" in rep
-    assert "environmental_tally" in rep
-    assert "planetary_rankings" in rep
-    assert "synthesis_ingredients" in rep
-
-    assert rep["polarity_core"]["ascendant_nakshatra"]["name"]
-    assert rep["polarity_core"]["moon_nakshatra"]["name"]
-    assert rep["nakshatra_dominance"]["dominant_nakshatra"]
-    assert len(rep["nakshatra_dominance"]["temperament_breakdown"]) == 6
-    assert rep["planetary_rankings"]["chart_commander"]
-
-
 def test_nakshatra_prominence_scaled_scoring():
-    """Verify that Prominence scaling weights occupancy and aspect rays dynamically."""
+    """Verify that Prominence scaling weights occupancy dynamically."""
     mock_nakshatras = {
         "Lagna": {"nakshatra": "Bharani", "pada": 1},
         "Moon": {"nakshatra": "Rohini", "pada": 2},
@@ -189,7 +157,6 @@ def test_nakshatra_prominence_scaled_scoring():
     }
 
     # Custom prominence map:
-    # Mars is #1 Commander (2.30), Saturn is weak (0.65), Moon is strong (1.25), Sun is 1.50
     mock_prominence = {
         "Moon": 1.25,
         "Sun": 1.50,
@@ -197,15 +164,7 @@ def test_nakshatra_prominence_scaled_scoring():
         "Saturn": 0.65
     }
 
-    # Aspects passed to compute_nakshatra_dominance are ignored (backwards-compatibility)
-    mock_aspects = {
-        "planets": {
-            "Mars": {"Moon": {"raw": 30.0}, "Sun": {"raw": 0.0}}
-        },
-        "cusps": {}
-    }
-
-    res = compute_nakshatra_dominance({}, mock_nakshatras, mock_aspects, prominence_map=mock_prominence)
+    res = compute_nakshatra_dominance({}, mock_nakshatras, None, prominence_map=mock_prominence)
     leaderboard = {item["nakshatra"]: item for item in res["leaderboard"]}
 
     # Rohini (Moon): Base = 8.0 * 1.25 = 10.0
@@ -232,540 +191,100 @@ def test_nakshatra_prominence_scaled_scoring():
     assert leaderboard["Swati"]["rank"] == 4
 
 
-def test_environmental_tally_prominence_weighted():
-    """Verify that Macro Environmental Tally weights elements by Prominence score."""
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},  # Fire (baseline score 1.0)
-            "grahas": {
-                "Mars": {"sign": "Leo"},      # Fire (exalted prominence 2.50)
-                "Sun": {"sign": "Taurus"},    # Earth (prominence 1.0)
-                "Venus": {"sign": "Virgo"},   # Earth (prominence 1.0)
-                "Mercury": {"sign": "Capricorn"}, # Earth (prominence 1.0)
-                "Moon": {"sign": "Gemini"},   # Air (prominence 1.0)
-                "Saturn": {"sign": "Libra"},  # Air (prominence 1.0)
-                "Jupiter": {"sign": "Cancer"},# Water (prominence 1.0)
-                "Rahu": {"sign": "Scorpio"},  # Water (prominence 1.0)
-                "Ketu": {"sign": "Pisces"}    # Water (prominence 1.0)
-            }
-        }
+def test_universal_catalyst_rule():
+    """Verify that Krittika distributes points to all 6 groups simultaneously."""
+    mock_nakshatras = {
+        "Sun": {"nakshatra": "Krittika", "pada": 1}  # Sun base weight = 2.0 pts
     }
-
-    mock_prominence = {
-        "Mars": 2.50,
-        "Sun": 1.0,
-        "Venus": 1.0,
-        "Mercury": 1.0,
-        "Moon": 1.0,
-        "Saturn": 1.0,
-        "Jupiter": 1.0,
-        "Rahu": 1.0,
-        "Ketu": 1.0
-    }
-
-    tally = compute_environmental_tally(mock_vargas, prominence_map=mock_prominence)
-    elem = tally["elements"]
-
-    # Earth has 3 bodies with score 1.0 each = 3.0 pts
-    # Fire has Lagna (1.0) + Mars (2.50) = 3.50 pts (even though only 2 bodies!)
-    assert elem["counts"]["Earth"] == 3
-    assert elem["counts"]["Fire"] == 2
-    assert elem["points"]["Fire"] == 3.50
-    assert elem["points"]["Earth"] == 3.00
-
-    # Fire is dominant thermodynamically despite having fewer planets than Earth!
-    assert elem["dominant"] == "Fire"
+    res = compute_nakshatra_dominance({}, mock_nakshatras, None)
+    tb = res["temperament_breakdown"]
+    assert len(tb) == 6
+    for item in tb:
+        assert item["points"] == 2.0
+        assert item["status"] == "Balanced"  # Each is exactly 1/6 (16.7%), zero deviation
+    assert "Krittika" in res["universal_catalysts"]
 
 
-def test_environmental_tally_dasavarga_weighted():
+def test_generate_kala_chart_report_payload_streamlined():
     """
-    Verify that Macro Environmental Tally aggregates elements and gunas
-    across the 10-Varga (Daśavarga) matrix (D1:2.0, D60:3.33, 8 others: 1.0 each, sum 13.33).
+    Verify that generate_report_payload outputs strictly the 3 sections:
+    1. Ascendant & Moon Nakshatra pure dossiers
+    2. Nakshatra Dominance Leaderboard
+    3. Balance of Nakshatra Types (6-Class Model)
+    And verifies that all downstream engines and automated synthesis are completely purged.
     """
-    # Native with Aries (Fire/Movable) in D1 (2.0), Pisces (Water/Dual) in D60 (3.33),
-    # and Cancer (Water/Movable) in the remaining 8 vargas (8.0).
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},
-            "grahas": {p: {"sign": "Aries"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D60": {
-            "lagna": {"sign": "Pisces"},
-            "grahas": {p: {"sign": "Pisces"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D9": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D7": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D10": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D16": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D3": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D2": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D12": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        },
-        "D30": {
-            "lagna": {"sign": "Cancer"},
-            "grahas": {p: {"sign": "Cancer"} for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
-        }
-    }
+    chart = generate_kala_chart(
+        name="Test Native",
+        year=1980,
+        month=8,
+        day=15,
+        hour=10,
+        minute=30,
+        latitude=13.0827,
+        longitude=80.2707,
+        timezone_offset=5.5
+    )
 
-    mock_prominence = {p: 1.0 for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]}
+    assert "report" in chart
+    rep = chart["report"]
 
-    tally = compute_environmental_tally(mock_vargas, prominence_map=mock_prominence)
-    elem = tally["elements"]
-    guna = tally["gunas"]
+    # 1. Assert payload contains ONLY the 4 required top-level keys
+    expected_top_keys = {"title", "ascendant_and_moon", "nakshatra_dominance", "balance_of_nakshatra_types"}
+    assert set(rep.keys()) == expected_top_keys, f"Report payload keys mismatch: {set(rep.keys())}"
+    assert rep["title"] == "Nakshatra Foundation Report"
 
-    # 10 entities with Prominence 1.0 each. Total Daśavarga points = 10.0
-    # D1 (Weight 2.0 / 13.33): 10 * (2.0 / 13.33) = 1.50 pts Fire
-    # D60 (Weight 3.33 / 13.33): 10 * (3.33 / 13.33) = 2.50 pts Water
-    # 8 Vargas (Weight 8 * 1.0 / 13.33 = 8.0 / 13.33): 10 * (8.0 / 13.33) = 6.00 pts Water
-    # Total Water = 2.50 + 6.00 = 8.50 pts (85.0%)
-    # Total Fire = 1.50 pts (15.0%)
+    # 2. Assert ascendant_and_moon contains keys ["ascendant", "moon"] and NO automated synthesis
+    asc_moon = rep["ascendant_and_moon"]
+    assert set(asc_moon.keys()) == {"ascendant", "moon"}
+    for forbidden in ["synthesis", "friction_score", "state", "panchadha_maitri", "summary"]:
+        assert forbidden not in asc_moon
+        assert forbidden not in asc_moon["ascendant"]
+        assert forbidden not in asc_moon["moon"]
 
-    assert elem["counts"]["Fire"] == 10  # D1 count is 10
-    assert elem["counts"]["Water"] == 0   # D1 count is 0
-    assert elem["points"]["Fire"] == 1.50
-    assert elem["points"]["Water"] == 8.50
-    assert elem["percentages"]["Water"] == 85.0
-    assert elem["percentages"]["Fire"] == 15.0
-    assert elem["dominant"] == "Water"
+    # Verify dossier completeness in real chart
+    assert asc_moon["ascendant"]["name"]
+    assert asc_moon["ascendant"]["sanskrit_meaning"]
+    assert asc_moon["ascendant"]["deity"]
+    assert asc_moon["ascendant"]["symbol"]
+    assert asc_moon["ascendant"]["group"]
+    assert len(asc_moon["ascendant"]["keywords"]) >= 2
+    assert len(asc_moon["ascendant"]["description"]) > 20
 
-    # Movable (Aries 1.50 + Cancer 6.00 = 7.50 pts), Dual (Pisces 2.50 pts)
-    assert guna["points"]["Rajas (Movable)"] == 7.50
-    assert guna["points"]["Sattva (Dual)"] == 2.50
-    assert guna["percentages"]["Rajas (Movable)"] == 75.0
-    assert guna["percentages"]["Sattva (Dual)"] == 25.0
-    assert guna["points"]["Sattva (Dual)"] == 2.5
-    assert guna["dominant"] == "Rajas (Movable)"
-
-    # Visual bi-directional breakdown metrics
-    assert "breakdown" in elem
-    assert len(elem["breakdown"]) == 4
-    water_meta = next(x for x in elem["breakdown"] if x["key"] == "Water")
-    assert water_meta["percentage"] == 85.0
-    assert water_meta["baseline_pct"] == 25.0
-    assert water_meta["deviation_pct"] == 60.0
-    assert water_meta["status"] == "Surplus"
-
-    fire_meta = next(x for x in elem["breakdown"] if x["key"] == "Fire")
-    assert fire_meta["percentage"] == 15.0
-    assert fire_meta["baseline_pct"] == 25.0
-    assert fire_meta["deviation_pct"] == -10.0
-
-    earth_meta = next(x for x in elem["breakdown"] if x["key"] == "Earth")
-    assert earth_meta["percentage"] == 0.0
-    assert earth_meta["deviation_pct"] == -25.0
-    assert earth_meta["status"] == "Deficit"
-
-    assert len(guna["breakdown"]) == 3
-    assert len(tally["ayurvedic_doshas"]["breakdown"]) == 3
-
-
-
-
-def test_atmakaraka_prominence_weight_and_fallback():
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries", "longitude": 10.0},
-            "grahas": {
-                "Sun": {"sign": "Aries", "longitude": 5.0, "degree_0_to_30": 5.0},
-                # Mars has highest degree (28.0°) -> Atma Karaka
-                "Mars": {"sign": "Capricorn", "longitude": 298.0, "degree_0_to_30": 28.0},
-                "Moon": {"sign": "Taurus", "longitude": 34.0, "degree_0_to_30": 4.0},
-                "Mercury": {"sign": "Gemini", "longitude": 70.0, "degree_0_to_30": 10.0},
-                "Jupiter": {"sign": "Cancer", "longitude": 95.0, "degree_0_to_30": 5.0},
-                "Venus": {"sign": "Pisces", "longitude": 350.0, "degree_0_to_30": 20.0},
-                "Saturn": {"sign": "Libra", "longitude": 200.0, "degree_0_to_30": 20.0},
-            },
-            "cusps": [{"longitude": i * 30.0} for i in range(12)]
-        }
-    }
-    
-    mock_shadbala = {
-        p: {"Total_Rupas": 5.0, "Total_Virupas": 300.0, "Pct_Required_Total": 100.0}
-        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-    }
-
-    rankings = compute_planetary_prominence_rankings(mock_vargas, mock_shadbala, {})
-    mars_rank = next(item for item in rankings["leaderboard"] if item["planet"] == "Mars")
-
-    # Verify Mars gains the Lagna Lord sovereign bonus (+0.30) and Kendra stage sharing
-    assert any("Lagna Lord: Primary Sovereign" in r for r in mars_rank["opportunity_reasons"])
-    assert any("Kendra" in r for r in mars_rank["opportunity_reasons"])
-
-
-def test_parashari_dispositor_and_cusp_doors():
-    """Verify Parashari dispositorship, sensitive cusp doors, and stage sharing."""
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0},
-            "grahas": {
-                # Sun in Leo (H5) in its own sign -> Disposits Mars
-                "Sun": {"sign": "Leo", "longitude": 148.5, "degree_0_to_30": 28.5},
-                # Mars in Leo (H5) -> Disposited by Sun
-                "Mars": {"sign": "Leo", "longitude": 144.0, "degree_0_to_30": 24.0},
-                # Venus in Taurus (H2) -> In its own sign
-                "Venus": {"sign": "Taurus", "longitude": 50.0, "degree_0_to_30": 20.0},
-                # Mercury in Gemini (H3) -> In its own sign
-                "Mercury": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0},
-                # Jupiter in Cancer (H4) -> Kendra
-                "Jupiter": {"sign": "Cancer", "longitude": 100.0, "degree_0_to_30": 10.0},
-                # Saturn in Libra (H7) -> Kendra
-                "Saturn": {"sign": "Libra", "longitude": 185.0, "degree_0_to_30": 5.0},
-                # Moon at 10.0° Aries (H1) -> Exactly conjunct Lagna degree (sensitive cusp door)
-                "Moon": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0}
-            },
-            "cusps": [{"longitude": i * 30.0, "sign": ZODIAC_SIGNS[i], "degree_0_to_30": 0.0} for i in range(12)]
-        }
-    }
-
-    mock_shadbala = {
-        p: {"Total_Rupas": 5.0, "Total_Virupas": 300.0, "Pct_Required_Total": 100.0}
-        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-    }
-
-    rankings = compute_planetary_prominence_rankings(mock_vargas, mock_shadbala, {})
-    board = {item["planet"]: item for item in rankings["leaderboard"]}
-
-    sun_reasons = board["Sun"]["opportunity_reasons"]
-    mars_reasons = board["Mars"]["opportunity_reasons"]
-    moon_reasons = board["Moon"]["opportunity_reasons"]
-
-    # 1. Sun disposits Mars (who is the Lagna Lord)
-    assert any("Dispositor of Lagna Lord" in r for r in sun_reasons)
-
-    # 2. Mars shares the 5th house stage with Sun
-    assert any("Koṇa (H5) Stage Sharing (/2 occupants" in r for r in mars_reasons)
-
-    # 3. Moon has exact Ascendant degree alignment (Cusp door resonance)
-    assert any("Cusp Door: Ascendant Degree Resonance" in r for r in moon_reasons)
-
-
-
-def test_significations_flowcharts_and_cockpit_payload():
-    """Verify Master Flowchart definitions and Cockpit payload integrity."""
-    from jyotish.report import get_significations_flowcharts
-
-    flowcharts = get_significations_flowcharts()
-    assert "planets" in flowcharts
-    assert "signs" in flowcharts
-    assert "houses" in flowcharts
-
-    # Check 7 planets
-    expected_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-    for p in expected_planets:
-        assert p in flowcharts["planets"], f"Missing planet {p}"
-        assert "mermaid" in flowcharts["planets"][p]
-        assert len(flowcharts["planets"][p]["mermaid"]) > 20
-
-    # Check 12 signs
-    expected_signs = [
-        "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-        "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+    # 3. Assert purged downstream engines do NOT exist in the payload
+    purged_keys = [
+        "polarity_core",
+        "operational_axis",
+        "environmental_tally",
+        "contextual_yogas",
+        "background_canvas",
+        "planetary_interpretations",
+        "flowcharts",
+        "significations_data",
+        "synthesis_ingredients",
+        "harmonic_overlays"
     ]
-    for s in expected_signs:
-        assert s in flowcharts["signs"], f"Missing sign {s}"
-        assert "mermaid" in flowcharts["signs"][s]
-        assert len(flowcharts["signs"][s]["mermaid"]) > 20
+    for key in purged_keys:
+        assert key not in rep, f"Purged key '{key}' still exists in report payload!"
 
-    # Check 12 houses (vertical layout and Kalapurusha anatomy)
-    for h in range(1, 13):
-        h_key = str(h)
-        assert h_key in flowcharts["houses"], f"Missing house {h_key}"
-        assert "mermaid" in flowcharts["houses"][h_key]
-        assert "pillars" in flowcharts["houses"][h_key]
-        assert "anatomy" in flowcharts["houses"][h_key], f"Missing anatomy field in house {h_key}"
-        assert f"Anat{h}" in flowcharts["houses"][h_key]["mermaid"], f"Missing Anat{h} node in house {h_key} flowchart"
-        assert "direction TB" in flowcharts["houses"][h_key]["mermaid"], f"House {h_key} must use vertical direction TB layout"
-        assert len(flowcharts["houses"][h_key]["mermaid"]) > 20
+    # 4. Assert balance_of_nakshatra_types contains exactly 6 categories with baseline_pct == 16.7
+    balance = rep["balance_of_nakshatra_types"]
+    assert balance["baseline_pct"] == 16.7
+    tb = balance["temperament_breakdown"]
+    assert len(tb) == 6
+    for item in tb:
+        assert item["baseline_pct"] == 16.7
+        assert item["status"] in ["Surplus", "Deficit", "Balanced"]
+        assert "points" in item
+        assert "percentage" in item
+        assert "group" in item
+        assert "display_name" in item
 
-    # Verify end-to-end integration with generate_report_payload
-    from jyotish.generate_jyotish import generate_kala_chart
-    chart_data = generate_kala_chart("Donald Trump", 1946, 6, 14, 10, 54, 40.6892, -73.8648, -4.0)
-    report = chart_data.get("report", {})
-    assert "flowcharts" in report
-    leaderboard = report.get("planetary_rankings", {}).get("leaderboard", [])
-    assert len(leaderboard) >= 7
+    assert balance["dominant_temperament"] is not None
 
-    for entry in leaderboard:
-        assert "planet" in entry
-        assert "sign" in entry
-        assert "house" in entry
-        assert "nakshatra" in entry
-        assert "nakshatra_lord" in entry
-        assert "prominence_score" in entry
-        assert "rank" in entry
-        if entry["planet"] in ["Sun", "Moon", "Mars"]:
-            assert entry["nakshatra"] != "--"
-
-
-def test_significations_flowchart_json_files_sync():
-    """Verify backend and frontend static JSON database files are in perfect sync."""
-    import json
-    from pathlib import Path
-
-    backend_p = Path("jyotish/report/significations_flowcharts.json")
-    static_p = Path("static/data/significations_flowcharts.json")
-
-    assert backend_p.exists(), "Backend significations_flowcharts.json missing"
-    assert static_p.exists(), "Static significations_flowcharts.json missing"
-
-    with open(backend_p, "r", encoding="utf-8") as f1, open(static_p, "r", encoding="utf-8") as f2:
-        d1 = json.load(f1)
-        d2 = json.load(f2)
-
-    assert d1 == d2, "Backend and frontend significations flowcharts JSON are not in sync"
-    assert len(d1["houses"]) == 12
-    assert len(d1["planets"]) == 7
-    assert len(d1["signs"]) == 12
-
-
-def test_significations_data_json_sync_and_structure():
-    """Verify backend and frontend significations_data.json are in sync and match multi-pillar schema."""
-    import json
-    from pathlib import Path
-    from jyotish.report import get_significations_data
-
-    backend_p = Path("jyotish/report/significations_data.json")
-    static_p = Path("static/data/significations_data.json")
-
-    assert backend_p.exists(), "Backend significations_data.json missing"
-    assert static_p.exists(), "Static significations_data.json missing"
-
-    with open(backend_p, "r", encoding="utf-8") as f1, open(static_p, "r", encoding="utf-8") as f2:
-        d1 = json.load(f1)
-        d2 = json.load(f2)
-
-    assert d1 == d2, "Backend and frontend significations_data JSON are not in sync"
-    assert len(d1["houses"]) == 12
-    assert len(d1["planets"]) == 7
-    assert len(d1["signs"]) == 12
-
-    # Check that houses contain pillars with items and anatomy
-    for h_num in range(1, 13):
-        h = str(h_num)
-        h_data = d1["houses"][h]
-        assert "pillars" in h_data
-        assert len(h_data["pillars"]) >= 2
-        assert "anatomy" in h_data
-        for pillar in h_data["pillars"]:
-            assert "name" in pillar
-            assert "items" in pillar
-            assert len(pillar["items"]) > 0
-            for item in pillar["items"]:
-                assert "id" in item
-                assert "title" in item
-
-    # Check integration with report payload
-    from jyotish.generate_jyotish import generate_kala_chart
-    chart_data = generate_kala_chart("Donald Trump", 1946, 6, 14, 10, 54, 40.6892, -73.8648, -4.0)
-    report = chart_data.get("report", {})
-    assert "significations_data" in report
-    assert "planets" in report["significations_data"]
-    assert "houses" in report["significations_data"]
-
-
-def test_triad_synthesis_graph_topology():
-    """Verify complete graph topology: directed edges, banners, pinned notes, and callouts."""
-    import json
-    from pathlib import Path
-
-    p = Path("jyotish/report/significations_data.json")
-    with open(p, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    # 1. All 12 houses have edges, columns/pillars, and anatomy
-    for h_num in range(1, 13):
-        h = str(h_num)
-        h_data = data["houses"][h]
-        assert "edges" in h_data, f"House {h} missing edges"
-        assert len(h_data["edges"]) >= 2, f"House {h} should have at least 2 directed edges"
-        for edge in h_data["edges"]:
-            assert "from" in edge and "to" in edge
-            assert edge["from"].startswith(f"H{h}_")
-            assert edge["to"].startswith(f"H{h}_")
-
-    # House 1 Sunrise banner, House 8 callout
-    assert data["houses"]["1"]["banner"] == "Sunrise"
-    h8_callout = data["houses"]["8"].get("callout", "")
-    h8_text = h8_callout.get("text", "") if isinstance(h8_callout, dict) else h8_callout
-    assert "disappears" in h8_text
-
-    # 2. All 12 signs have edges
-    signs = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
-    for s_name in signs:
-        s_data = data["signs"][s_name]
-        assert "edges" in s_data, f"Sign {s_name} missing edges"
-        assert len(s_data["edges"]) >= 3, f"Sign {s_name} should have directed edges"
-        for edge in s_data["edges"]:
-            assert "from" in edge and "to" in edge
-            assert edge["from"].startswith("S_")
-
-    # Scorpio has dashed_loop feedback edge and Circled badge on Mysterious
-    scorpio_edges = data["signs"]["Scorpio"]["edges"]
-    assert any((e.get("style") == "dashed_loop" or e.get("type") == "dashed_loop") and e["from"] == "S_Strong" and e["to"] == "S_Defiance" for e in scorpio_edges)
-    scorpio_nodes = {n["id"]: n for n in data["signs"]["Scorpio"]["nodes"]}
-    assert scorpio_nodes["S_Mysterious"].get("badge") == "Circled"
-
-    # Cancer has pinned_note
-    assert "Cancer = Moon" in data["signs"]["Cancer"].get("pinned_note", "")
-
-    # 3. All 7 classical planets have edges
-    planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-    for p_name in planets:
-        p_data = data["planets"][p_name]
-        assert "edges" in p_data, f"Planet {p_name} missing edges"
-        assert len(p_data["edges"]) >= 5, f"Planet {p_name} should have directed edges"
-        for edge in p_data["edges"]:
-            assert "from" in edge and "to" in edge
-            assert edge["from"].startswith("P_")
-
-
-def test_polarity_core_bidirectional_friendship():
-    """
-    Verify that Polarity Core bidirectional friendship prevents one-way bias.
-    Moon views Mercury as Friend, while Mercury views Moon as Enemy.
-    Whether Moon rules the Lagna star or the Moon star, the mutual friction should be symmetric.
-    """
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},
-            "grahas": {
-                "Moon": {"sign": "Aries"},
-                "Mercury": {"sign": "Aries"}
-            }
-        }
-    }
-    # Orientation 1: Lagna star ruled by Moon, Moon star ruled by Mercury
-    nakshatras_1 = {
-        "Lagna": {"nakshatra": "Rohini", "nakshatra_lord": "Moon", "pada": 1},
-        "Moon": {"nakshatra": "Ashlesha", "nakshatra_lord": "Mercury", "pada": 1}
-    }
-    pol_1 = compute_polarity_core(mock_vargas, nakshatras_1)
-
-    # Orientation 2: Lagna star ruled by Mercury, Moon star ruled by Moon
-    nakshatras_2 = {
-        "Lagna": {"nakshatra": "Ashlesha", "nakshatra_lord": "Mercury", "pada": 1},
-        "Moon": {"nakshatra": "Rohini", "nakshatra_lord": "Moon", "pada": 1}
-    }
-    pol_2 = compute_polarity_core(mock_vargas, nakshatras_2)
-
-    # In both directions, the mutual base friction must be identical!
-    assert pol_1["relationship"]["friction_score"] == pol_2["relationship"]["friction_score"]
-    # Moon views Mercury: Friend, Mercury views Moon: Enemy
-    assert "Moon views Mercury: Friend" in pol_1["relationship"]["friendship_status"]
-    assert "Mercury views Moon: Enemy" in pol_1["relationship"]["friendship_status"]
-
-
-def test_polarity_core_conjunction_awareness():
-    """
-    Verify that when star lords are conjunct in the same D1 sign (distance = 0),
-    temporary relationship is treated as Friend (allied focus) rather than Enemy.
-    """
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},
-            "grahas": {
-                "Sun": {"sign": "Leo"},
-                "Mars": {"sign": "Leo"}  # Sun and Mars conjunct in Leo (distance = 0)
-            }
-        }
-    }
-    mock_nakshatras = {
-        "Lagna": {"nakshatra": "Krittika", "nakshatra_lord": "Sun", "pada": 1},
-        "Moon": {"nakshatra": "Mrigashira", "nakshatra_lord": "Mars", "pada": 1}
-    }
-    polarity = compute_polarity_core(mock_vargas, mock_nakshatras)
-    rel_info = polarity["relationship"]
-    assert "Temp: Friend" in rel_info["friendship_status"]
-    # Sun and Mars are natural Friends, and temporary Friends -> Great Friend
-    assert "Great Friend" in rel_info["panchadha_maitri"]
-    assert rel_info["friction_score"] <= 35
-
-
-def test_polarity_core_same_ruler_elemental_clash():
-    """
-    Verify that when star lords are identical (p1 == p2),
-    an elemental clash (Fire Lagna vs Water Moon) triggers Severe Clashing
-    and prevents the status from claiming 'Harmonic Flow'.
-    """
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},       # Fire
-            "grahas": {
-                "Moon": {"sign": "Cancer"},   # Water
-                "Mars": {"sign": "Aries"}
-            }
-        }
-    }
-    # Both stars ruled by Mars
-    mock_nakshatras = {
-        "Lagna": {"nakshatra": "Chitra", "nakshatra_lord": "Mars", "pada": 1},
-        "Moon": {"nakshatra": "Mrigashira", "nakshatra_lord": "Mars", "pada": 1}
-    }
-    polarity = compute_polarity_core(mock_vargas, mock_nakshatras)
-    rel_info = polarity["relationship"]
-    assert "Unified Consciousness" in rel_info["friendship_status"]
-    assert rel_info["tattva_harmonic"] is False
-    assert "Severe Clashing" in rel_info["tattva_status"]
-    # With base 15 + clash 25 = 40, state must not be Harmonic Flow
-    assert rel_info["state"] != "Harmonic Flow"
-    assert rel_info["state"] == "Dynamic Creative Tension"
-
-
-def test_environmental_tally_macro_polarity():
-    """
-    Verify that Macro Polarity (Active/Masculine/Odd vs Passive/Feminine/Even)
-    is properly calculated in compute_environmental_tally.
-    """
-    mock_vargas = {
-        "D1": {
-            "lagna": {"sign": "Aries"},       # Odd (Active)
-            "grahas": {
-                "Sun": {"sign": "Gemini"},    # Odd (Active)
-                "Moon": {"sign": "Leo"},      # Odd (Active)
-                "Mars": {"sign": "Libra"},    # Odd (Active)
-                "Mercury": {"sign": "Aquarius"}, # Odd (Active)
-                "Jupiter": {"sign": "Sagittarius"}, # Odd (Active)
-                "Venus": {"sign": "Taurus"},  # Even (Passive)
-                "Saturn": {"sign": "Cancer"}, # Even (Passive)
-                "Rahu": {"sign": "Virgo"},    # Even (Passive)
-                "Ketu": {"sign": "Pisces"}    # Even (Passive)
-            }
-        }
-    }
-    tally = compute_environmental_tally(mock_vargas)
-    assert "polarity" in tally
-    pol = tally["polarity"]
-    assert pol["counts"]["Active"] == 6
-    assert pol["counts"]["Passive"] == 4
-    assert pol["dominant"] == "Active"
-    assert "breakdown" in pol
-    assert len(pol["breakdown"]) == 2
-    active_entry = next(x for x in pol["breakdown"] if x["key"] == "Active")
-    assert active_entry["percentage"] > 50.0
-    assert active_entry["status"] == "Surplus"
-
-
-
-
-
-
+    # 5. Assert nakshatra_dominance structure
+    nak_dom = rep["nakshatra_dominance"]
+    assert "leaderboard" in nak_dom
+    assert "dominant_nakshatra" in nak_dom
+    assert "total_points" in nak_dom
+    assert len(nak_dom["leaderboard"]) > 0
+    assert nak_dom["total_points"] > 0

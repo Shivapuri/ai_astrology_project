@@ -758,7 +758,7 @@
                 b.classList.remove('aspect-focused', 'aspect-outgoing', 'aspect-incoming');
             });
             svg.querySelectorAll('.planet-glyph, .interactive[data-type="planet"]').forEach(g => {
-                g.classList.remove('planet-focused', 'highlight-source', 'highlight-active');
+                g.classList.remove('planet-focused', 'planet-target', 'planet-source-sender', 'highlight-source', 'highlight-active');
             });
             svg.querySelectorAll('.interactive[data-type="sign"]').forEach(s => {
                 s.classList.remove('highlight-source', 'highlight-active');
@@ -777,6 +777,33 @@
     window.selectAstrologicalEntity = function(type, id, clickedVarga = 'D1') {
         if (!type || !id) return;
         
+        if (type === 'planet') {
+            if (window.currentSelectedEntity && window.currentSelectedEntity.type === 'planet' && window.currentSelectedEntity.id === id) {
+                if (window.currentSelectedEntity.aspectMode === 'outgoing') {
+                    // Click 2 on SAME planet: switch to incoming aspects!
+                    window.currentSelectedEntity.aspectMode = 'incoming';
+                    highlightPlanetAspects(id, clickedVarga, 'incoming');
+                    if (typeof window.updateContextInfoPanel === 'function') {
+                        window.updateContextInfoPanel(type, id, clickedVarga);
+                    }
+                    return;
+                } else {
+                    // Click 3 on SAME planet: clear selection!
+                    window.clearAstrologicalEntitySelection();
+                    return;
+                }
+            }
+
+            // First click (or clicking a different planet): show outgoing aspects!
+            window.clearAstrologicalEntitySelection();
+            window.currentSelectedEntity = { type, id, varga: clickedVarga, aspectMode: 'outgoing' };
+            highlightPlanetAspects(id, clickedVarga, 'outgoing');
+            if (typeof window.updateContextInfoPanel === 'function') {
+                window.updateContextInfoPanel(type, id, clickedVarga);
+            }
+            return;
+        }
+
         if (window.currentSelectedEntity && window.currentSelectedEntity.type === type && window.currentSelectedEntity.id === id) {
             window.clearAstrologicalEntitySelection();
             return;
@@ -785,9 +812,7 @@
         window.clearAstrologicalEntitySelection();
         window.currentSelectedEntity = { type, id, varga: clickedVarga };
 
-        if (type === 'planet') {
-            highlightPlanetAspects(id, clickedVarga);
-        } else if (type === 'sign') {
+        if (type === 'sign') {
             highlightSignAspects(id, clickedVarga);
         } else if (type === 'house') {
             highlightHouse(id, clickedVarga);
@@ -798,7 +823,7 @@
         }
     };
 
-    function highlightPlanetAspects(planetId, varga = 'D1') {
+    function highlightPlanetAspects(planetId, varga = 'D1', aspectMode = 'outgoing') {
         const currentData = window.currentChartData;
         if (!currentData) return;
         const vData = (currentData.vargas && currentData.vargas[varga]) ? currentData.vargas[varga] : currentData.vargas.D1;
@@ -823,6 +848,17 @@
 
         // 1. Chart SVG updates
         document.querySelectorAll('svg').forEach(svg => {
+            // Clear previous focused markers in this svg
+            svg.querySelectorAll('.interactive-aspect').forEach(l => {
+                l.classList.remove('aspect-focused', 'aspect-outgoing', 'aspect-incoming');
+            });
+            svg.querySelectorAll('.interactive-aspect-badge').forEach(b => {
+                b.classList.remove('aspect-focused', 'aspect-outgoing', 'aspect-incoming');
+            });
+            svg.querySelectorAll('.planet-glyph, .interactive[data-type="planet"]').forEach(g => {
+                g.classList.remove('planet-focused', 'planet-target', 'planet-source-sender');
+            });
+
             if (svg.querySelector('.aspect-lines')) {
                 svg.classList.add('aspects-filtered');
                 svg.querySelectorAll('.interactive-aspect').forEach(l => {
@@ -830,9 +866,10 @@
                     const toP = l.getAttribute('data-to');
                     const virVal = parseFloat(l.getAttribute('data-virupas') || '0');
                     if (virVal < 30.0) return;
-                    if (fromP === planetId) {
+                    
+                    if (aspectMode === 'outgoing' && fromP === planetId) {
                         l.classList.add('aspect-focused', 'aspect-outgoing');
-                    } else if (toP === planetId) {
+                    } else if (aspectMode === 'incoming' && toP === planetId) {
                         l.classList.add('aspect-focused', 'aspect-incoming');
                     }
                 });
@@ -841,17 +878,43 @@
                     const toP = b.getAttribute('data-to');
                     const virVal = parseFloat(b.getAttribute('data-virupas') || '0');
                     if (virVal < 30.0) return;
-                    if (fromP === planetId) {
+                    
+                    if (aspectMode === 'outgoing' && fromP === planetId) {
                         b.classList.add('aspect-focused', 'aspect-outgoing');
-                    } else if (toP === planetId) {
+                    } else if (aspectMode === 'incoming' && toP === planetId) {
                         b.classList.add('aspect-focused', 'aspect-incoming');
                     }
                 });
             }
 
+            // Clicked planet gets focused (clean white background plate)
             svg.querySelectorAll(`.interactive[data-type="planet"][data-id="${planetId}"]`).forEach(node => {
-                node.classList.add('planet-focused', 'highlight-source');
+                node.classList.add('planet-focused');
             });
+
+            // If outgoing, highlight the target planets/Lagna receiving aspects
+            if (aspectMode === 'outgoing') {
+                const targetIds = new Set();
+                svg.querySelectorAll(`.interactive-aspect.aspect-focused.aspect-outgoing[data-from="${planetId}"]`).forEach(l => {
+                    targetIds.add(l.getAttribute('data-to'));
+                });
+                targetIds.forEach(tId => {
+                    svg.querySelectorAll(`.interactive[data-type="planet"][data-id="${tId}"]`).forEach(node => {
+                        node.classList.add('planet-target');
+                    });
+                });
+            } else if (aspectMode === 'incoming') {
+                // If incoming, highlight sender planets
+                const senderIds = new Set();
+                svg.querySelectorAll(`.interactive-aspect.aspect-focused.aspect-incoming[data-to="${planetId}"]`).forEach(l => {
+                    senderIds.add(l.getAttribute('data-from'));
+                });
+                senderIds.forEach(sId => {
+                    svg.querySelectorAll(`.interactive[data-type="planet"][data-id="${sId}"]`).forEach(node => {
+                        node.classList.add('planet-source-sender');
+                    });
+                });
+            }
 
             let occupiedSign = null;
             if (planetId === 'Lagna') {
@@ -879,13 +942,16 @@
         document.querySelectorAll('.interactive-table-row[data-type="planet"]').forEach(row => {
             const rowId = row.getAttribute('data-id');
             const firstCell = row.querySelector('td');
+            row.classList.remove('table-row-selected', 'table-row-outgoing', 'table-row-incoming');
+            row.querySelectorAll('.aspect-dynamic-badge').forEach(b => b.remove());
+
             if (rowId === planetId) {
                 row.classList.add('table-row-selected');
-                if (firstCell && !firstCell.querySelector('.aspect-selected-tag')) {
+                if (firstCell) {
                     const badge = document.createElement('span');
                     badge.className = 'aspect-dynamic-badge aspect-selected-tag';
                     badge.style.cssText = 'background:var(--status-neutral-bg); color:var(--status-neutral); border:1px solid var(--status-neutral-border);';
-                    badge.textContent = '★ Selected';
+                    badge.textContent = (aspectMode === 'outgoing') ? '★ Casts Aspects' : '★ Receives Aspects';
                     firstCell.appendChild(badge);
                 }
             } else {
@@ -910,7 +976,7 @@
                     rowLon = vGrahas[rowId].longitude || 0;
                 }
 
-                if (outVir >= 30) {
+                if (aspectMode === 'outgoing' && outVir >= 30) {
                     row.classList.add('table-row-outgoing');
                     const isBen = isBeneficPlanet(planetId);
                     const degOut = Math.round((rowLon - planetLon + 360.0) % 360.0);
@@ -923,9 +989,7 @@
                         b.innerHTML = `➔ ${isBen ? 'Solid' : 'Dashed'} ${degOut}° (${outVir}v)`;
                         firstCell.appendChild(b);
                     }
-                }
-
-                if (inVir >= 30) {
+                } else if (aspectMode === 'incoming' && inVir >= 30) {
                     row.classList.add('table-row-incoming');
                     const isInBen = isBeneficPlanet(rowId);
                     const degIn = Math.round((planetLon - rowLon + 360.0) % 360.0);

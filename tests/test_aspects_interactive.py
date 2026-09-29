@@ -59,7 +59,7 @@ def test_chart_svgs_contain_interactive_aspect_elements():
     assert 'data-virupas=' in si_svg
     assert 'data-deg=' in si_svg
     assert 'data-benefic=' in si_svg
-    assert 'marker-end=' in si_svg
+    assert 'aspect-arrow' in si_svg
 
     # North Indian Chart
     ni_svg = generate_north_indian(items)
@@ -69,24 +69,28 @@ def test_chart_svgs_contain_interactive_aspect_elements():
     assert 'data-virupas=' in ni_svg
     assert 'data-deg=' in ni_svg
 
-    # Circular Chart
+    # Circular Chart (aspect lines inside center circle removed by user request)
     circ_svg = generate_circular_chart(items)
     assert 'class="aspects-hidden"' in circ_svg
-    assert 'class="interactive-aspect"' in circ_svg
-    assert 'class="interactive-aspect-badge"' in circ_svg
-    assert 'data-virupas=' in circ_svg
-    assert 'data-deg=' in circ_svg
+    assert '<circle class="interactive-center-circle"' in circ_svg
+    assert '<circle class="planet-highlight-bg"' in circ_svg
+    assert '<g class="aspect-lines">' not in circ_svg
 
 def test_frontend_template_interactive_aspect_attributes():
     with open("templates/index.html", "r", encoding="utf-8") as f:
         html = f.read()
+    with open("static/js/ui/chart_interactions.js", "r", encoding="utf-8") as f:
+        js = f.read()
 
-    # Verify interactive table rows
-    assert 'interactive-table-row' in html
-    assert 'selectAstrologicalEntity' in html
-    assert 'clearAstrologicalEntitySelection' in html
-    assert 'highlightPlanetAspects' in html
-    assert 'highlightSignAspects' in html
-    assert 'aspect-dynamic-badge' in html
-    assert 'aspect-tag-outgoing' in html
-    assert 'aspect-tag-incoming' in html
+    # Verify chart_interactions script inclusion in template
+    assert 'chart_interactions.js' in html
+
+    # Verify interactive table rows and handlers in chart_interactions.js
+    assert 'interactive-table-row' in js
+    assert 'selectAstrologicalEntity' in js
+    assert 'clearAstrologicalEntitySelection' in js
+    assert 'highlightPlanetAspects' in js
+    assert 'highlightSignAspects' in js
+    assert 'aspect-dynamic-badge' in js
+    assert 'aspect-tag-outgoing' in js
+    assert 'aspect-tag-incoming' in js
