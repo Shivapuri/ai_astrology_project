@@ -7,7 +7,8 @@ from .report_engine import (
     get_significations_flowcharts,
     get_significations_data,
     get_detailed_sign_dossier,
-    compute_rising_rashi_and_navamsha
+    compute_rising_rashi_and_navamsha,
+    compute_elemental_and_modal_balance
 )
 
 __all__ = [
@@ -15,5 +16,7 @@ __all__ = [
     "get_significations_flowcharts",
     "get_significations_data",
     "get_detailed_sign_dossier",
-    "compute_rising_rashi_and_navamsha"
+    "compute_rising_rashi_and_navamsha",
+    "compute_elemental_and_modal_balance"
 ]
+

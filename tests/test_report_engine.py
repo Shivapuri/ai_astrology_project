@@ -23,10 +23,12 @@ from jyotish.report.report_engine import (
     compute_ascendant_and_moon_nakshatras,
     get_detailed_sign_dossier,
     compute_rising_rashi_and_navamsha,
+    compute_elemental_and_modal_balance,
     generate_report_payload,
     ZODIAC_SIGNS
 )
 from jyotish.generate_jyotish import generate_kala_chart
+
 
 
 def test_all_27_nakshatras_database_completeness():
@@ -256,14 +258,68 @@ def test_compute_rising_rashi_and_navamsha():
     assert rising_varg["navamsha"]["sign"] == "Aries"
 
 
+def test_compute_elemental_and_modal_balance_structure():
+    """Verify 4 elements (25.0% baseline) and 3 modalities (33.3% baseline) calculation."""
+    mock_vargas = {
+        "D1": {
+            "lagna": {"sign": "Aries"},
+            "grahas": {
+                "Sun": {"sign": "Leo"},
+                "Moon": {"sign": "Cancer"},
+                "Mars": {"sign": "Scorpio"},
+                "Mercury": {"sign": "Virgo"},
+                "Jupiter": {"sign": "Sagittarius"},
+                "Venus": {"sign": "Libra"},
+                "Saturn": {"sign": "Aquarius"},
+                "Rahu": {"sign": "Taurus"},
+                "Ketu": {"sign": "Scorpio"}
+            }
+        }
+    }
+    prom_map = {"Sun": 1.5, "Moon": 1.2, "Mars": 1.0, "Mercury": 1.0, "Jupiter": 1.4, "Venus": 1.0, "Saturn": 1.0, "Rahu": 1.0, "Ketu": 1.0}
+    bal = compute_elemental_and_modal_balance(mock_vargas, prom_map)
+
+    assert "elements" in bal
+    assert "modalities" in bal
+    assert bal["elements"]["baseline_pct"] == 25.0
+    assert bal["modalities"]["baseline_pct"] == 33.3
+
+    elem_breakdown = bal["elements"]["breakdown"]
+    assert len(elem_breakdown) == 4
+    elem_names = [e["element"] for e in elem_breakdown]
+    assert set(elem_names) == {"Fire", "Earth", "Air", "Water"}
+    for e in elem_breakdown:
+        assert e["baseline_pct"] == 25.0
+        assert e["status"] in ["Surplus", "Deficit", "Balanced"]
+        assert "points" in e
+        assert "percentage" in e
+        assert "display_name" in e
+        assert "sanskrit" in e
+        assert "root_traits" in e
+        assert "nature" in e
+        assert "color" in e
+        assert "bg" in e
+
+    modal_breakdown = bal["modalities"]["breakdown"]
+    assert len(modal_breakdown) == 3
+    modal_names = [m["modality"] for m in modal_breakdown]
+    assert set(modal_names) == {"Rajas (Movable)", "Tamas (Fixed)", "Sattva (Dual)"}
+    for m in modal_breakdown:
+        assert m["baseline_pct"] == 33.3
+        assert m["status"] in ["Surplus", "Deficit", "Balanced"]
+        assert "points" in m
+        assert "percentage" in m
+        assert "display_name" in m
+        assert "sanskrit" in m
+        assert "nature" in m
+        assert "color" in m
+        assert "bg" in m
+
+
 def test_generate_kala_chart_report_payload_streamlined():
     """
-    Verify that generate_report_payload outputs strictly the 4 sections:
-    1. Ascendant & Moon Nakshatra pure dossiers
-    2. Rising Rāśi & Rising Navāṁśa pure sign dossiers
-    3. Nakshatra Dominance Leaderboard
-    4. Balance of Nakshatra Types (6-Class Model)
-    And verifies that all downstream engines and automated synthesis are completely purged.
+    Verify that generate_report_payload outputs all foundational sections,
+    elemental and modal balances, planetary rankings, and flowchart assets.
     """
     chart = generate_kala_chart(
         name="Test Native",
@@ -280,8 +336,18 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert "report" in chart
     rep = chart["report"]
 
-    # 1. Assert payload contains ONLY the 5 required top-level keys
-    expected_top_keys = {"title", "ascendant_and_moon", "rising_signs", "nakshatra_dominance", "balance_of_nakshatra_types"}
+    # 1. Assert payload contains all 9 required top-level keys
+    expected_top_keys = {
+        "title",
+        "ascendant_and_moon",
+        "rising_signs",
+        "nakshatra_dominance",
+        "balance_of_nakshatra_types",
+        "elemental_and_modal_balance",
+        "planetary_rankings",
+        "significations_data",
+        "flowcharts"
+    }
     assert set(rep.keys()) == expected_top_keys, f"Report payload keys mismatch: {set(rep.keys())}"
     assert rep["title"] in ["Astra Chart Assessment Report", "Nakshatra Foundation Report"]
 
@@ -313,22 +379,6 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert len(asc_moon["ascendant"]["keywords"]) >= 2
     assert len(asc_moon["ascendant"]["description"]) > 20
 
-    # 3. Assert purged downstream engines do NOT exist in the payload
-    purged_keys = [
-        "polarity_core",
-        "operational_axis",
-        "environmental_tally",
-        "contextual_yogas",
-        "background_canvas",
-        "planetary_interpretations",
-        "flowcharts",
-        "significations_data",
-        "synthesis_ingredients",
-        "harmonic_overlays"
-    ]
-    for key in purged_keys:
-        assert key not in rep, f"Purged key '{key}' still exists in report payload!"
-
     # 4. Assert balance_of_nakshatra_types contains exactly 6 categories with baseline_pct == 16.7
     balance = rep["balance_of_nakshatra_types"]
     assert balance["baseline_pct"] == 16.7
@@ -351,3 +401,48 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert "total_points" in nak_dom
     assert len(nak_dom["leaderboard"]) > 0
     assert nak_dom["total_points"] > 0
+
+    # 6. Assert elemental_and_modal_balance structure
+    elem_modal = rep["elemental_and_modal_balance"]
+    assert "elements" in elem_modal
+    assert "modalities" in elem_modal
+    assert elem_modal["elements"]["baseline_pct"] == 25.0
+    assert elem_modal["modalities"]["baseline_pct"] == 33.3
+    assert len(elem_modal["elements"]["breakdown"]) == 4
+    assert len(elem_modal["modalities"]["breakdown"]) == 3
+
+    # 7. Assert planetary_rankings structure
+    rankings = rep["planetary_rankings"]
+    assert "leaderboard" in rankings
+    assert "chart_commander" in rankings
+    assert "prominence_map" in rankings
+    assert len(rankings["leaderboard"]) >= 7
+    top_commander = rankings["chart_commander"]
+    assert "planet" in top_commander
+    assert "prominence_score" in top_commander
+    assert "shadbala_ratio" in top_commander
+    assert "dignity_mood" in top_commander
+    assert "opportunity_reasons" in top_commander
+
+    # 8. Assert flowcharts and significations_data
+    assert "planets" in rep["flowcharts"]
+    assert "signs" in rep["flowcharts"]
+    assert "houses" in rep["flowcharts"]
+    assert "planets" in rep["significations_data"]
+    assert "signs" in rep["significations_data"]
+    assert "houses" in rep["significations_data"]
+
+    # 9. Assert purged automated narrative essays and synthesis engines do NOT exist in the payload
+    purged_keys = [
+        "polarity_core",
+        "operational_axis",
+        "environmental_tally",
+        "contextual_yogas",
+        "background_canvas",
+        "planetary_interpretations",
+        "synthesis_ingredients",
+        "harmonic_overlays"
+    ]
+    for key in purged_keys:
+        assert key not in rep, f"Purged key '{key}' still exists in report payload!"
+

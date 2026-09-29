@@ -21,6 +21,8 @@ from jyotish.nakshatras.lore import (
     ALL_NAKSHATRA_GROUPS
 )
 from jyotish.report.prominence import compute_planetary_prominence
+from jyotish.report.varga_environment import compute_varga_environment
+
 
 ZODIAC_SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -463,14 +465,170 @@ def compute_nakshatra_dominance(
     }
 
 
+ELEMENT_LORE = {
+    "Fire": {
+        "display_name": "Fire",
+        "sanskrit": "Tejas / Agni",
+        "root_traits": "Bright & Hot",
+        "nature": "Decisive, clear, moral discernment (Dharma), and authoritative leadership.",
+        "icon": "🔥"
+    },
+    "Earth": {
+        "display_name": "Earth",
+        "sanskrit": "Pṛthvī",
+        "root_traits": "Solid & Fertile",
+        "nature": "Reliable, practical, tangible execution, material wealth (Artha), and endurance.",
+        "icon": "🌍"
+    },
+    "Air": {
+        "display_name": "Air",
+        "sanskrit": "Vāyu",
+        "root_traits": "Pleasant & Moving",
+        "nature": "Enlivening, communicative, witty intellect, social networking, and pleasure (Kāma).",
+        "icon": "💨"
+    },
+    "Water": {
+        "display_name": "Water",
+        "sanskrit": "Āpas / Jala",
+        "root_traits": "Reflective & Soft",
+        "nature": "Introspective, deep emotional digest, gentle, adaptable, and spiritual release (Mokṣa).",
+        "icon": "💧"
+    }
+}
+
+MODALITY_LORE = {
+    "Rajas (Movable)": {
+        "display_name": "Movable",
+        "sanskrit": "Cara / Rajas",
+        "nature": "Initiating dynamic action, adventurous speed, pioneering change, and decisive enterprise.",
+        "icon": "⚡"
+    },
+    "Tamas (Fixed)": {
+        "display_name": "Fixed",
+        "sanskrit": "Sthira / Tamas",
+        "nature": "Enduring stability, steadfast loyalty, unyielding resistance, and structured permanence.",
+        "icon": "🏔️"
+    },
+    "Sattva (Dual)": {
+        "display_name": "Dual",
+        "sanskrit": "Dvisvabhāva / Sattva",
+        "nature": "Versatile adaptation, intellectual fluidity, balance, and thoughtful compromise.",
+        "icon": "⚖️"
+    }
+}
+
+
+def compute_elemental_and_modal_balance(
+    vargas_data: Dict[str, Any],
+    prominence_map: Dict[str, float]
+) -> Dict[str, Any]:
+    """
+    Computes Daśavarga-weighted elemental (25% baseline) and modal (33.3% baseline)
+    balances, structured identically to the 6-class Nakshatra model.
+    """
+    env_data = compute_varga_environment(vargas_data, prominence_map=prominence_map)
+
+    # 1. Elements (25.0% baseline)
+    elements_table = []
+    for item in env_data.get("elements_breakdown", []):
+        k = item["key"]
+        pct = item["percentage"]
+        pts = item["points"]
+        dev = round(pct - 25.0, 1)
+        lore = ELEMENT_LORE.get(k, {})
+
+        if pct > 27.0:
+            status = "Surplus"
+            color = "#16a34a"  # Green
+            bg = "#dcfce7"
+        elif pct < 23.0:
+            status = "Deficit"
+            color = "#dc2626"  # Red
+            bg = "#fee2e2"
+        else:
+            status = "Balanced"
+            color = "#64748b"  # Slate
+            bg = "#f1f5f9"
+
+        elements_table.append({
+            "element": k,
+            "display_name": lore.get("display_name", k),
+            "sanskrit": lore.get("sanskrit", ""),
+            "root_traits": lore.get("root_traits", ""),
+            "nature": lore.get("nature", ""),
+            "icon": lore.get("icon", ""),
+            "points": pts,
+            "percentage": pct,
+            "baseline_pct": 25.0,
+            "deviation_pct": dev,
+            "status": status,
+            "color": color,
+            "bg": bg
+        })
+
+    # 2. Modalities (33.3% baseline)
+    modalities_table = []
+    for item in env_data.get("gunas_breakdown", []):
+        k = item["key"]
+        pct = item["percentage"]
+        pts = item["points"]
+        dev = round(pct - 33.3, 1)
+        lore = MODALITY_LORE.get(k, {})
+
+        if pct > 35.3:
+            status = "Surplus"
+            color = "#16a34a"
+            bg = "#dcfce7"
+        elif pct < 31.3:
+            status = "Deficit"
+            color = "#dc2626"
+            bg = "#fee2e2"
+        else:
+            status = "Balanced"
+            color = "#64748b"
+            bg = "#f1f5f9"
+
+        modalities_table.append({
+            "modality": k,
+            "display_name": lore.get("display_name", k),
+            "sanskrit": lore.get("sanskrit", ""),
+            "nature": lore.get("nature", ""),
+            "icon": lore.get("icon", ""),
+            "points": pts,
+            "percentage": pct,
+            "baseline_pct": 33.3,
+            "deviation_pct": dev,
+            "status": status,
+            "color": color,
+            "bg": bg
+        })
+
+    return {
+        "elements": {
+            "baseline_pct": 25.0,
+            "dominant_element": env_data.get("elements", {}).get("dominant", "Fire"),
+            "breakdown": elements_table
+        },
+        "modalities": {
+            "baseline_pct": 33.3,
+            "dominant_modality": env_data.get("gunas", {}).get("dominant", "Fixed (Tamas)"),
+            "breakdown": modalities_table
+        },
+        "methodology": "Vic DiCara 10-Varga Model (D1: 2.0, D60: 3.33, Others: 1.0) scaled by Parāśarī Prominence"
+    }
+
+
 def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
     Master orchestrator for the Astra Chart Assessment Report.
-    Outputs strictly the foundational sections from the notebook:
+    Outputs the foundational sections and synthesis assets:
     1. Ascendant Nakshatra & Moon Nakshatra (pure side-by-side descriptive dossiers)
     2. Rising Rāśi ($D_1$) & Rising Navāṁśa ($D_9$) (pure side-by-side descriptive dossiers)
     3. Nakshatra Dominance Leaderboard (Prominence-scaled empirical occupancy)
     4. Balance of Nakshatra Types (6-Class Model evaluated against 16.7% baseline)
+    5. Section 5: Elemental & Modal Balance (4 Elements & 3 Modes Tables)
+    6. Planetary Rankings (Prominence scores, Shadbala ratio, Opportunity weights & reasons)
+    7. Significations Data & Mermaid Flowcharts
     """
     vargas_data = chart_data.get("vargas", {})
     nakshatras_grahas = chart_data.get("nakshatras", {}).get("grahas", {})
@@ -481,7 +639,7 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     vimshopaka_data = chart_data.get("varga_vimshopaka") or chart_data.get("vimshopaka")
     jd = chart_data.get("astronomy", {}).get("julian_day")
 
-    # Prominence engine is run purely to calculate empirical weights for the leaderboard
+    # 1. Compute Prominence Leaderboard & Commander
     planetary_rankings = compute_planetary_prominence(
         vargas_data=vargas_data,
         shadbala_data=shadbala_data,
@@ -494,16 +652,19 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     )
     prominence_map = planetary_rankings.get("prominence_map", {})
 
-    # Section 1: Ascendant and Moon Nakshatra dossiers
+    # 2. Section 1: Ascendant & Moon Nakshatras (Side by Side)
     asc_moon_dossiers = compute_ascendant_and_moon_nakshatras(vargas_data, nakshatras_grahas)
 
-    # Section 2: Rising Rāśi & Rising Navāṁśa
+    # 3. Section 2: Rising Rāśi & Rising Navāṁśa (Side by Side)
     rising_signs = compute_rising_rashi_and_navamsha(vargas_data)
 
-    # Section 3: Nakshatra Dominance & Section 4: Balance of Types
+    # 4. Section 3: Nakshatra Dominance & Section 4: Balance of Types (6-Class Model)
     nak_dominance = compute_nakshatra_dominance(
         vargas_data, nakshatras_grahas, advanced_aspects, prominence_map=prominence_map
     )
+
+    # 5. Section 5: Elemental & Modal Balance (4 Elements & 3 Modes Tables)
+    elemental_and_modal = compute_elemental_and_modal_balance(vargas_data, prominence_map)
 
     return {
         "title": "Astra Chart Assessment Report",
@@ -519,5 +680,10 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "temperament_breakdown": nak_dominance["temperament_breakdown"],
             "dominant_temperament": nak_dominance["dominant_temperament"],
             "universal_catalysts": nak_dominance.get("universal_catalysts", [])
-        }
+        },
+        "elemental_and_modal_balance": elemental_and_modal,
+        "planetary_rankings": planetary_rankings,
+        "significations_data": get_significations_data(),
+        "flowcharts": get_significations_flowcharts()
     }
+
