@@ -101,25 +101,49 @@
                 </div>
             </section>
 
-            <!-- Section 5: Planet ⟷ Sign ⟷ House Interactive Synthesis Flowchart Desk -->
+            <!-- Section 5: Elemental & Modal Balance (4 Elements & 3 Modalities) -->
+            <section class="report-section report-elemental-modal-section" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+                <div class="report-section-header" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700; color: #2b1d0c; text-transform: uppercase; letter-spacing: 0.5px;">5. Elemental &amp; Modal Balance (Daśavarga Macro Environment)</div>
+                        <div style="font-size: 12px; color: #6b5a4b; margin-top: 2px;">Thermodynamic balance across the 10 divisional charts (D1: 2.0, D60: 3.33, others: 1.0) scaled by Parāśarī Prominence. Evaluated against uniform baselines (25.0% Elements, 33.3% Modalities).</div>
+                    </div>
+                    <div class="elemental-modal-badges" style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <span class="report-dominant-element-badge" style="font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;">Dominant: --</span>
+                        <span class="report-dominant-modal-badge" style="font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe;">Mode: --</span>
+                    </div>
+                </div>
+                <div class="elemental-modal-wrapper" style="display: flex; flex-direction: column; gap: 20px;">
+                    <!-- Rendered dynamically: 4 Elements Table, then 3 Modalities Table -->
+                </div>
+            </section>
+
+            <!-- Section 6: Planet ⟷ Sign ⟷ House Interactive Planetary Synthesis Desk -->
             <section class="report-section report-planet-synthesis-section" style="background: #ffffff; border: 1px solid #e5dccb; border-radius: 8px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
                 <div class="report-section-header" style="margin-bottom: 12px;">
-                    <div style="font-size: 14px; font-weight: 700; color: #2b1d0c; text-transform: uppercase; letter-spacing: 0.5px;">5. Interactive Planetary Synthesis Desk</div>
-                    <div style="font-size: 12px; color: #6b5a4b; margin-top: 2px;">Three-pillar archetypal synthesis connecting the actor (Graha), the field of expression (Rāśi), and the life department (Bhāva).</div>
+                    <div style="font-size: 14px; font-weight: 700; color: #2b1d0c; text-transform: uppercase; letter-spacing: 0.5px;">6. Interactive Planetary Synthesis Desk</div>
+                    <div style="font-size: 12px; color: #6b5a4b; margin-top: 2px;">Four-pillar archetypal synthesis connecting the actor (Graha), the field of expression (Rāśi), the life department (Bhāva), and the inner asterism (Nakṣatra).</div>
                 </div>
 
                 <div class="synthesis-cockpit-container">
-                    <!-- Controls Bar: Focus Planet Dropdown & Flavor Strip -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
-                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                            <label for="select-focus-planet" style="font-size: 12.5px; font-weight: 700; color: #334155;">Focus Graha:</label>
-                            <select id="select-focus-planet" class="select-focus-planet" style="font-size: 12.5px; font-weight: 600; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; color: #0f172a; outline: none; cursor: pointer;">
-                                <!-- Populated dynamically with planets, their sign and house -->
-                            </select>
+                    <!-- Prominence-Ordered Planetary Selector Bar -->
+                    <div style="margin-bottom: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 10px 14px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px;">
+                            <span style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Select Graha (Ranked by Parāśarī Prominence):</span>
+                            <div class="context-focus-text" style="font-size: 12.5px; color: #475569;">
+                                <!-- Shows e.g. Sun in Leo (House 1) • Magha (Lord: Ketu) -->
+                            </div>
                         </div>
-                        <div class="context-focus-text" style="font-size: 12.5px; color: #475569;">
-                            <!-- Shows e.g. Sun in Leo (House 1) • Magha (Lord: Ketu) -->
+                        <div id="planetary-selector-bar" class="planetary-selector-bar" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                            <!-- Populated dynamically: #1 Chart Commander first -->
                         </div>
+                        <!-- Hidden select fallback to preserve select element if needed -->
+                        <select id="select-focus-planet" class="select-focus-planet" style="display: none;"></select>
+                    </div>
+
+                    <!-- Planetary Prominence & Dignity HUD -->
+                    <div id="planet-prominence-hud" class="planet-prominence-hud" style="margin-bottom: 12px;">
+                        <!-- Populated dynamically -->
                     </div>
 
                     <!-- Connections Chips Bar -->
@@ -130,7 +154,7 @@
                         <button type="button" id="btn-clear-connections" class="btn-clear-connections" style="background: #ffffff; color: #64748b; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s ease;">Clear Links</button>
                     </div>
 
-                    <!-- The 3-Column Flowchart Canvas Stage with Underlaid SVG Overlay -->
+                    <!-- The 4-Card Flowchart Canvas Stage with Underlaid SVG Overlay -->
                     <div id="synth-stage-wrapper" class="synth-stage-wrapper" style="position: relative; min-height: 480px; margin-top: 8px; background: #fafaf9; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; overflow: visible;">
                         <svg id="synth-connector-svg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 3;">
                             <defs>
@@ -151,8 +175,8 @@
                             <g id="synth-user-arrows-group"></g>
                         </svg>
 
-                        <!-- 3-Column HTML Flowchart Grid -->
-                        <div id="synth-cards-grid" style="display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 16px; position: relative;">
+                        <!-- 4-Card HTML Flowchart Grid -->
+                        <div id="synth-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; position: relative;">
                             <!-- Column 1: Planet Card -->
                             <div id="card-col-planet" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
 
@@ -161,8 +185,12 @@
 
                             <!-- Column 3: House Card -->
                             <div id="card-col-house" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
+
+                            <!-- Column 4: Nakshatra Card -->
+                            <div id="card-col-nakshatra" class="synth-card" style="border: 1px solid #cbd5e1; border-radius: 8px; background: #ffffff; padding: 14px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.02); position: relative;"></div>
                         </div>
                     </div>
+
 
                     <!-- Interactive Interpretation Scratchpad -->
                     <div id="cockpit-scratchpad" class="cockpit-scratchpad" style="margin-top: 14px; background: #fbfcfe; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px;">

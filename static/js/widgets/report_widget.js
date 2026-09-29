@@ -150,8 +150,37 @@ function renderAscMoonDossierCard(dossier, isMoon = false) {
 }
 
 // ----------------------------------------------------------------------------
-// Flowchart Card Rendering Engine (Banners, Notes, Badges, Columns)
+// Flowchart Card Rendering Engine (Banners, Notes, Badges, Columns, Mermaid)
 // ----------------------------------------------------------------------------
+
+async function renderMermaidDiagram(targetElement, mermaidCode, uniquePrefix = 'm') {
+    if (!targetElement || !mermaidCode) return;
+    if (targetElement._isRendered) return;
+
+    targetElement.innerHTML = '<div style="font-size:12px; color:#94a3b8; font-style:italic; padding:6px;">Rendering flowchart diagram...</div>';
+
+    try {
+        if (window.mermaid) {
+            window.mermaid.initialize({
+                startOnLoad: false,
+                theme: 'neutral',
+                fontFamily: 'inherit',
+                flowchart: { curve: 'basis', htmlLabels: true }
+            });
+            const safePrefix = String(uniquePrefix).replace(/[^a-zA-Z0-9_]/g, '_');
+            const uniqueId = `mermaid_${safePrefix}_${Math.random().toString(36).substring(2, 9)}`;
+            const res = await window.mermaid.render(uniqueId, mermaidCode);
+            targetElement.innerHTML = res.svg || '';
+            targetElement._isRendered = true;
+            return;
+        }
+    } catch (err) {
+        console.warn("Mermaid rendering fallback:", err);
+    }
+
+    targetElement.innerHTML = `<pre style="font-size:12px; line-height:1.4; color:#334155; background:#ffffff; border:1px solid #e2e8f0; border-radius:4px; padding:10px; overflow-x:auto;">${escapeHtml(mermaidCode)}</pre>`;
+    targetElement._isRendered = true;
+}
 
 function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle, symbol, idPrefix = '', extraHeaderHtml = '') {
     if (!targetCol || !cardData) return;
@@ -247,10 +276,151 @@ function renderEntityFlowchartCard(targetCol, cardData, entityType, displayTitle
         `;
     }
 
+    if (cardData.mermaid) {
+        const toggleTitle = entityType === 'sign' ? 'View Sign Architecture (Flowchart)' :
+                            (entityType === 'planet' ? 'View Planetary Architecture (Flowchart)' : 'View House Architecture (Flowchart)');
+        html += `
+            <div class="synth-flowchart-toggle-wrapper" style="margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px;">
+                <button type="button" class="btn-toggle-flowchart" style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; padding: 4px 10px; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;">
+                    <span class="flowchart-arrow-icon" style="font-size: 12px;">▸</span> <span>${escapeHtml(toggleTitle)}</span>
+                </button>
+                <div class="flowchart-mermaid-container" style="display: none; margin-top: 10px; padding: 12px; background: #fafafa; border: 1px solid #e2e8f0; border-radius: 6px; overflow-x: auto;">
+                    <div class="flowchart-mermaid-render"></div>
+                </div>
+            </div>
+        `;
+    }
+
     targetCol.innerHTML = html;
+
+    if (cardData.mermaid) {
+        const toggleBtn = targetCol.querySelector('.btn-toggle-flowchart');
+        const drawer = targetCol.querySelector('.flowchart-mermaid-container');
+        const renderEl = targetCol.querySelector('.flowchart-mermaid-render');
+        if (toggleBtn && drawer && renderEl) {
+            toggleBtn.onclick = async (e) => {
+                e.stopPropagation();
+                const isOpen = drawer.style.display !== 'none';
+                if (isOpen) {
+                    drawer.style.display = 'none';
+                    const icon = toggleBtn.querySelector('.flowchart-arrow-icon');
+                    if (icon) icon.textContent = '▸';
+                } else {
+                    drawer.style.display = 'block';
+                    const icon = toggleBtn.querySelector('.flowchart-arrow-icon');
+                    if (icon) icon.textContent = '▾';
+                    await renderMermaidDiagram(renderEl, cardData.mermaid, idPrefix || entityType);
+                }
+            };
+        }
+    }
+}
+
+function renderPlanetNakshatraCard(targetCol, pl, chartData, idPrefix = 'pnak_') {
+    if (!targetCol) return;
+
+    const rep = (chartData && chartData.report) || {};
+    const leaderboard = (rep.nakshatra_dominance && rep.nakshatra_dominance.leaderboard) || [];
+    const nakEntry = leaderboard.find(n => n.nakshatra === pl.nakshatra) || {};
+    let lore = nakEntry.lore || {};
+
+    // Check ascendant_and_moon fallback
+    if (!lore.name && rep.ascendant_and_moon) {
+        if (rep.ascendant_and_moon.ascendant && rep.ascendant_and_moon.ascendant.name === pl.nakshatra) {
+            lore = rep.ascendant_and_moon.ascendant;
+        } else if (rep.ascendant_and_moon.moon && rep.ascendant_and_moon.moon.name === pl.nakshatra) {
+            lore = rep.ascendant_and_moon.moon;
+        }
+    }
+
+    const name = pl.nakshatra || lore.name || '--';
+    const pada = pl.pada || 1;
+    const lord = pl.nakshatraLord || '--';
+    const deity = lore.presiding_deity || lore.deity || '--';
+    const symbol = lore.symbol_etymology || lore.symbol || '--';
+    const group = lore.group || nakEntry.group || '--';
+    const groupDesc = lore.group_description || lore.group_nature || '';
+    const keywords = lore.keywords || [];
+    const psychology = lore.core_psychology || lore.description || lore.varahamihira_moon || '';
+
+    // Node items for interactive cross-stage linking
+    const nakNodes = [
+        { id: `${idPrefix}deity`, title: deity.split('(')[0].split('/')[0].trim(), sub: 'Presiding Deity' },
+        { id: `${idPrefix}symbol`, title: symbol.split('(')[0].split(';')[0].trim(), sub: 'Core Symbol' },
+        { id: `${idPrefix}group`, title: group, sub: groupDesc || 'Temperament Class' }
+    ];
+    if (keywords.length > 0) {
+        keywords.slice(0, 3).forEach((kw, idx) => {
+            nakNodes.push({ id: `${idPrefix}kw_${idx}`, title: kw, sub: 'Archetype Pillar' });
+        });
+    }
+
+    targetCol._entityData = {
+        name,
+        type: 'nakshatra',
+        nodes: nakNodes
+    };
+    targetCol._idPrefix = idPrefix;
+
+    const keywordsHtml = keywords.map(kw => `
+        <span class="micro-tag" style="display:inline-block; font-size:12px; font-weight:600; padding:2px 8px; border-radius:4px; background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; margin:2px 4px 2px 0;">
+            ${escapeHtml(kw)}
+        </span>
+    `).join('');
+
+    const nodesHtml = nakNodes.map(node => `
+        <div class="synth-node-box color-slate" data-node-id="${escapeHtml(node.id)}" data-node-title="${escapeHtml(node.title)}" data-node-sub="${escapeHtml(node.sub)}" data-node-group="Nakshatra: ${escapeHtml(name)}" style="cursor: pointer; user-select: none;">
+            <div class="synth-node-title" style="font-size: 12px; font-weight: 700;">${escapeHtml(node.title)}</div>
+            <div class="synth-node-sub" style="font-size: 12px; color: #64748b;">${escapeHtml(node.sub)}</div>
+        </div>
+    `).join('');
+
+    targetCol.innerHTML = `
+        <div class="synth-card-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="synth-card-symbol" style="font-family: var(--font-astro-glyphs, serif); font-size: 18px;">✦</span>
+                <div>
+                    <div class="synth-card-title" style="font-size: 14px; font-weight: 700; color: #0f172a;">Nakṣatra: ${escapeHtml(name)}</div>
+                    <div style="font-size: 12px; color: #64748b;">Lord: <strong>${escapeHtml(lord)}</strong></div>
+                </div>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                <span style="font-size: 12px; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe;">Pada ${pada}</span>
+            </div>
+        </div>
+
+        <div class="synth-banner-header" style="background: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">
+            Inner Soul Asterism &amp; Deity
+        </div>
+
+        <div class="synth-pillars-container" style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="synth-node-list" style="display: flex; flex-direction: column; gap: 14px;">
+                ${nodesHtml}
+            </div>
+        </div>
+
+        ${keywordsHtml ? `
+            <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+                <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Keywords</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                    ${keywordsHtml}
+                </div>
+            </div>
+        ` : ''}
+
+        ${psychology ? `
+            <div style="border-top: 1px dashed #e2e8f0; padding-top: 8px;">
+                <div style="font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Core Archetype</div>
+                <div style="font-size: 12px; color: #334155; line-height: 1.5; max-height: 160px; overflow-y: auto;">
+                    ${escapeHtml(psychology)}
+                </div>
+            </div>
+        ` : ''}
+    `;
 }
 
 const renderPillarCard = renderEntityFlowchartCard;
+
 
 // ----------------------------------------------------------------------------
 // Perimeter Docking Coordinates & Internal Base Tree Flow Math
@@ -869,7 +1039,180 @@ function selectTemperamentClass(group) {
 }
 
 // ----------------------------------------------------------------------------
-// Section 5: Planet ⟷ Sign ⟷ House Interactive Planetary Synthesis Desk
+// Section 5: Elemental & Modal Balance (4 Elements & 3 Modalities)
+// ----------------------------------------------------------------------------
+
+function renderElementalAndModalBalance(elemModalData) {
+    if (!elemModalData) {
+        return '<div style="padding:16px; text-align:center; color:#64748b; font-size:12.5px;">No elemental balance data.</div>';
+    }
+
+    const elements = (elemModalData.elements && elemModalData.elements.breakdown) || [];
+    const modalities = (elemModalData.modalities && elemModalData.modalities.breakdown) || [];
+
+    // Table 1: 4 Elements (25.0% Baseline)
+    const elemRowsHtml = elements.map(item => {
+        const pct = item.percentage || 0;
+        const diff = item.deviation_pct !== undefined ? item.deviation_pct : (pct - 25.0);
+        const diffSign = diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+
+        let badgeHtml = '';
+        let barColor = item.color || '#3b82f6';
+        if (pct > 27.0) {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; white-space:nowrap;">Surplus (${diffSign})</span>`;
+            barColor = '#16a34a';
+        } else if (pct < 23.0) {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#fee2e2; color:#dc2626; border:1px solid #fecaca; white-space:nowrap;">Deficit (${diffSign})</span>`;
+            barColor = '#dc2626';
+        } else {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:600; padding:2px 8px; border-radius:4px; background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; white-space:nowrap;">Balanced</span>`;
+            barColor = '#64748b';
+        }
+
+        const barWidth = Math.min(100, Math.max(0, pct));
+        const pts = item.points !== undefined ? Number(item.points).toFixed(2) : '--';
+
+        return `
+            <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.15s ease;">
+                <td style="padding:10px; font-weight:700; color:#0f172a; font-size:12.5px; white-space:nowrap;">
+                    ${escapeHtml(item.display_name || item.element)}
+                </td>
+                <td style="padding:10px; color:#475569; font-size:12px; font-style:italic; white-space:nowrap;">
+                    ${escapeHtml(item.sanskrit || '--')}
+                </td>
+                <td style="padding:10px; font-weight:600; color:#334155; font-size:12px; white-space:nowrap;">
+                    ${escapeHtml(item.root_traits || '--')}
+                </td>
+                <td style="padding:10px; color:#475569; font-size:12px; min-width:200px;">
+                    ${escapeHtml(item.nature || '--')}
+                </td>
+                <td style="padding:10px; font-size:12px; color:#0f172a; font-variant-numeric:tabular-nums; text-align:right;">
+                    ${pts}
+                </td>
+                <td style="padding:10px; min-width:180px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="position:relative; flex:1; height:12px; background:#e2e8f0; border-radius:6px; overflow:hidden;" title="25.0% Baseline Indicator">
+                            <div style="width:${barWidth}%; height:100%; background:${barColor}; border-radius:6px; transition:width 0.3s ease;"></div>
+                            <div style="position:absolute; left:25.0%; top:0; bottom:0; width:2px; background:#0f172a; z-index:2;" title="Uniform Baseline: 25.0%"></div>
+                        </div>
+                        <span style="font-size:12px; font-weight:700; color:#0f172a; font-variant-numeric:tabular-nums; min-width:44px; text-align:right;">
+                            ${pct.toFixed(1)}%
+                        </span>
+                    </div>
+                </td>
+                <td style="padding:10px; text-align:right; width:130px;">
+                    ${badgeHtml}
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    // Table 2: 3 Modalities (33.3% Baseline)
+    const modalRowsHtml = modalities.map(item => {
+        const pct = item.percentage || 0;
+        const diff = item.deviation_pct !== undefined ? item.deviation_pct : (pct - 33.3);
+        const diffSign = diff > 0 ? `+${diff.toFixed(1)}%` : `${diff.toFixed(1)}%`;
+
+        let badgeHtml = '';
+        let barColor = item.color || '#3b82f6';
+        if (pct > 35.3) {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#dcfce7; color:#16a34a; border:1px solid #bbf7d0; white-space:nowrap;">Surplus (${diffSign})</span>`;
+            barColor = '#16a34a';
+        } else if (pct < 31.3) {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px; background:#fee2e2; color:#dc2626; border:1px solid #fecaca; white-space:nowrap;">Deficit (${diffSign})</span>`;
+            barColor = '#dc2626';
+        } else {
+            badgeHtml = `<span class="micro-tag" style="font-size:12px; font-weight:600; padding:2px 8px; border-radius:4px; background:#f1f5f9; color:#64748b; border:1px solid #cbd5e1; white-space:nowrap;">Balanced</span>`;
+            barColor = '#64748b';
+        }
+
+        const barWidth = Math.min(100, Math.max(0, pct));
+        const pts = item.points !== undefined ? Number(item.points).toFixed(2) : '--';
+
+        return `
+            <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.15s ease;">
+                <td style="padding:10px; font-weight:700; color:#0f172a; font-size:12.5px; white-space:nowrap;">
+                    ${escapeHtml(item.display_name || item.modality)}
+                </td>
+                <td style="padding:10px; color:#475569; font-size:12px; font-style:italic; white-space:nowrap;">
+                    ${escapeHtml(item.sanskrit || '--')}
+                </td>
+                <td style="padding:10px; color:#475569; font-size:12px; min-width:240px;" colspan="2">
+                    ${escapeHtml(item.nature || '--')}
+                </td>
+                <td style="padding:10px; font-size:12px; color:#0f172a; font-variant-numeric:tabular-nums; text-align:right;">
+                    ${pts}
+                </td>
+                <td style="padding:10px; min-width:180px;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <div style="position:relative; flex:1; height:12px; background:#e2e8f0; border-radius:6px; overflow:hidden;" title="33.3% Baseline Indicator">
+                            <div style="width:${barWidth}%; height:100%; background:${barColor}; border-radius:6px; transition:width 0.3s ease;"></div>
+                            <div style="position:absolute; left:33.3%; top:0; bottom:0; width:2px; background:#0f172a; z-index:2;" title="Uniform Baseline: 33.3%"></div>
+                        </div>
+                        <span style="font-size:12px; font-weight:700; color:#0f172a; font-variant-numeric:tabular-nums; min-width:44px; text-align:right;">
+                            ${pct.toFixed(1)}%
+                        </span>
+                    </div>
+                </td>
+                <td style="padding:10px; text-align:right; width:130px;">
+                    ${badgeHtml}
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    return `
+        <div>
+            <div style="font-size:12.5px; font-weight:700; color:#1e293b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px;">
+                Elements (Mahābhūtas • 25.0% Baseline)
+            </div>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12.5px;">
+                    <thead>
+                        <tr style="border-bottom:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">
+                            <th style="padding:8px 10px;">Element</th>
+                            <th style="padding:8px 10px;">Sanskrit</th>
+                            <th style="padding:8px 10px;">Root Traits</th>
+                            <th style="padding:8px 10px;">Nature</th>
+                            <th style="padding:8px 10px; text-align:right;">Points</th>
+                            <th style="padding:8px 10px;">Share (vs 25.0% Marker)</th>
+                            <th style="padding:8px 10px; text-align:right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${elemRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div style="margin-top:14px;">
+            <div style="font-size:12.5px; font-weight:700; color:#1e293b; margin-bottom:6px; text-transform:uppercase; letter-spacing:0.4px;">
+                Modalities (Guṇas • 33.3% Baseline)
+            </div>
+            <div style="overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; text-align:left; font-size:12.5px;">
+                    <thead>
+                        <tr style="border-bottom:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:12px; text-transform:uppercase; letter-spacing:0.5px;">
+                            <th style="padding:8px 10px;">Modality</th>
+                            <th style="padding:8px 10px;">Sanskrit</th>
+                            <th style="padding:8px 10px;" colspan="2">Nature</th>
+                            <th style="padding:8px 10px; text-align:right;">Points</th>
+                            <th style="padding:8px 10px;">Share (vs 33.3% Marker)</th>
+                            <th style="padding:8px 10px; text-align:right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${modalRowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+// ----------------------------------------------------------------------------
+// Section 6: Planet ⟷ Sign ⟷ House Interactive Planetary Synthesis Desk
 // ----------------------------------------------------------------------------
 
 async function renderSynthesisCockpit(container, planetName, chartData) {
@@ -884,10 +1227,68 @@ async function renderSynthesisCockpit(container, planetName, chartData) {
     // 1. Placement flavor strip
     const focusText = cockpitContainer.querySelector('.context-focus-text');
     if (focusText) {
-        focusText.innerHTML = `<strong>${escapeHtml(planetName)}</strong> in <strong>${escapeHtml(pl.sign)}</strong> (House ${pl.house}) • <em>${escapeHtml(pl.nakshatra)}</em> (Lord: ${escapeHtml(pl.nakshatraLord)})`;
+        focusText.innerHTML = `<strong>${escapeHtml(planetName)}</strong> in <strong>${escapeHtml(pl.sign)}</strong> (House ${pl.house}) • <em>${escapeHtml(pl.nakshatra)}</em> (Pada ${pl.pada}, Lord: ${escapeHtml(pl.nakshatraLord)})`;
     }
 
-    // 2. Setup Scratchpad Notes Persistence
+    // 2. Planetary Prominence & Dignity HUD
+    const rankings = (currentData.report && currentData.report.planetary_rankings) || {};
+    const leaderboard = rankings.leaderboard || [];
+    const pRank = leaderboard.find(r => r.planet === planetName);
+
+    const hudEl = cockpitContainer.querySelector('#planet-prominence-hud');
+    if (hudEl) {
+        if (pRank) {
+            const isCmd = pRank.rank === 1;
+            const oppChips = (pRank.opportunity_reasons || []).map(r => `
+                <span class="micro-tag" style="display:inline-block; font-size:12px; font-weight:600; padding:2px 8px; border-radius:4px; background:#ffffff; color:#334155; border:1px solid #cbd5e1; margin:2px 4px 2px 0;">
+                    ${escapeHtml(r)}
+                </span>
+            `).join('');
+
+            hudEl.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                    <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                        <span style="font-size: 13.5px; font-weight: 700; color: #0f172a;">${escapeHtml(planetName)} Parāśarī Prominence &amp; Dignity</span>
+                        ${isCmd ? `<span class="micro-tag" style="font-size: 12px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #fef3c7; color: #92400e; border: 1px solid #f59e0b;">★ #1 Chart Commander</span>` : ''}
+                    </div>
+                    <div style="display: flex; gap: 14px; align-items: center; font-size: 12.5px; flex-wrap: wrap;">
+                        <div>
+                            <strong style="color: #475569;">Volume Score:</strong> 
+                            <span style="font-weight: 700; color: #0284c7; font-variant-numeric: tabular-nums;">${pRank.prominence_score.toFixed(2)}</span>
+                            <span style="color: #64748b; font-size: 12px;">(Rank #${pRank.rank})</span>
+                        </div>
+                        <div>
+                            <strong style="color: #475569;">Shadbala:</strong> 
+                            <span style="font-weight: 700; color: #0f172a; font-variant-numeric: tabular-nums;">${pRank.shadbala_ratio.toFixed(2)}× SBR</span>
+                            <span style="color: #64748b; font-size: 12px;">(${pRank.shadbala_rupas} Rupas)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; padding-top: 4px;">
+                    <div>
+                        <strong style="color: #475569; font-size: 12px;">Dignity Mood:</strong> 
+                        <span style="font-weight: 700; color: #0f172a; font-size: 12px;">${escapeHtml(pRank.dignity_mood || '--')}</span>
+                        <span style="color: #64748b; font-size: 12px; margin-left: 4px;">• ${escapeHtml(pRank.expression_mode || '')}</span>
+                        ${pRank.vimshopak_score !== undefined ? `<span style="color: #475569; font-size: 12px; margin-left: 6px;">(Viṃśopaka: ${pRank.vimshopak_score}/20)</span>` : ''}
+                    </div>
+                    ${pRank.maturity ? `<div style="font-size: 12px; color: #64748b;"><strong>Maturity:</strong> ${escapeHtml(pRank.maturity)}</div>` : ''}
+                </div>
+
+                ${oppChips ? `
+                    <div style="border-top: 1px dashed #e2e8f0; padding-top: 6px; margin-top: 4px;">
+                        <span style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.4px; margin-right: 6px;">Opportunity Vectors:</span>
+                        ${oppChips}
+                    </div>
+                ` : ''}
+            `;
+            hudEl.style.display = 'flex';
+        } else {
+            hudEl.style.display = 'none';
+        }
+    }
+
+    // 3. Setup Scratchpad Notes Persistence
     const nativeId = (currentData.subject_info && currentData.subject_info.name)
         ? currentData.subject_info.name.replace(/[^a-zA-Z0-9_-]/g, '_')
         : (currentData.id || 'default_chart');
@@ -950,28 +1351,38 @@ async function renderSynthesisCockpit(container, planetName, chartData) {
         console.warn("Could not read notes from localStorage:", e);
     }
 
-    // 3. Load Significations Data
+    // 4. Load Significations & Flowcharts Data
     const data = await getSignificationsData(currentData);
-    const pData = (data.planets && data.planets[planetName]) || {};
-    const sData = (data.signs && data.signs[pl.sign]) || {};
-    const hData = (data.houses && data.houses[String(pl.house)]) || {};
+    const flowcharts = (currentData.report && currentData.report.flowcharts) || {};
+    const pData = Object.assign({}, (data.planets && data.planets[planetName]) || {});
+    const sData = Object.assign({}, (data.signs && data.signs[pl.sign]) || {});
+    const hData = Object.assign({}, (data.houses && data.houses[String(pl.house)]) || {});
 
-    // 4. Render Fixed HTML/CSS Flowchart Cards
+    // Attach Mermaid diagram definitions
+    pData.mermaid = (flowcharts.planets && flowcharts.planets[planetName] && flowcharts.planets[planetName].mermaid) || '';
+    sData.mermaid = (flowcharts.signs && flowcharts.signs[pl.sign] && flowcharts.signs[pl.sign].mermaid) || '';
+    hData.mermaid = (flowcharts.houses && flowcharts.houses[String(pl.house)] && flowcharts.houses[String(pl.house)].mermaid) || '';
+
+    // 5. Render Fixed HTML/CSS Flowchart Cards (Planet, Sign, House, Nakshatra)
     const cardColPlanet = cockpitContainer.querySelector('#card-col-planet');
     const cardColSign = cockpitContainer.querySelector('#card-col-sign');
     const cardColHouse = cockpitContainer.querySelector('#card-col-house');
+    const cardColNakshatra = cockpitContainer.querySelector('#card-col-nakshatra');
 
     if (cardColPlanet) {
-        renderEntityFlowchartCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '');
+        renderEntityFlowchartCard(cardColPlanet, pData, 'planet', pData.title || `Planet: ${planetName}`, pData.symbol || '', 'p_');
     }
     if (cardColSign) {
-        renderEntityFlowchartCard(cardColSign, sData, 'sign', sData.title || `Sign: ${pl.sign}`, sData.symbol || '♈');
+        renderEntityFlowchartCard(cardColSign, sData, 'sign', sData.title || `Sign: ${pl.sign}`, sData.symbol || '♈', 's_');
     }
     if (cardColHouse) {
-        renderEntityFlowchartCard(cardColHouse, hData, 'house', hData.title || `House ${pl.house}`, hData.symbol || '⌂');
+        renderEntityFlowchartCard(cardColHouse, hData, 'house', hData.title || `House ${pl.house}`, hData.symbol || '⌂', 'h_');
+    }
+    if (cardColNakshatra) {
+        renderPlanetNakshatraCard(cardColNakshatra, pl, currentData, 'nak_');
     }
 
-    // 5. Setup Stage Connections & Interactive Selection
+    // 6. Setup Stage Connections & Interactive Selection Across All 4 Cards
     const stageWrapper = cockpitContainer.querySelector('#synth-stage-wrapper');
     const baseGroup = cockpitContainer.querySelector('#synth-base-arrows-group');
     const userGroup = cockpitContainer.querySelector('#synth-user-arrows-group');
@@ -996,9 +1407,10 @@ async function renderSynthesisCockpit(container, planetName, chartData) {
     };
 
     const cardConfigs = [
-        { cardEl: cardColPlanet, markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' },
-        { cardEl: cardColSign, markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' },
-        { cardEl: cardColHouse, markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' }
+        { cardEl: cardColPlanet, idPrefix: 'p_', markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' },
+        { cardEl: cardColSign, idPrefix: 's_', markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' },
+        { cardEl: cardColHouse, idPrefix: 'h_', markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' },
+        { cardEl: cardColNakshatra, idPrefix: 'nak_', markerBase: 'url(#arrow-base-slate)', markerLoop: 'url(#arrow-base-loop)' }
     ];
 
     const redrawFn = () => {
@@ -1048,33 +1460,87 @@ async function initSynthesisCockpit(container, chartData) {
     const cockpitContainer = container.querySelector('.synthesis-cockpit-container');
     if (!cockpitContainer) return;
 
-    const selectPlanet = cockpitContainer.querySelector('#select-focus-planet') || cockpitContainer.querySelector('.select-focus-planet');
-    if (!selectPlanet) return;
-
     const currentData = chartData || window.currentChartData;
     if (!currentData) return;
 
+    const rankings = (currentData.report && currentData.report.planetary_rankings) || {};
+    const leaderboard = rankings.leaderboard || [];
+
     const classicalPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
-    const currentVal = selectPlanet.value;
-    const initialPlanet = (currentVal && classicalPlanets.includes(currentVal)) ? currentVal : 'Sun';
+    
+    // Order planets by Prominence rank (#1 Chart Commander first)
+    let orderedPlanets = [];
+    if (leaderboard.length > 0) {
+        orderedPlanets = leaderboard.map(r => r.planet).filter(p => classicalPlanets.includes(p));
+        classicalPlanets.forEach(p => {
+            if (!orderedPlanets.includes(p)) orderedPlanets.push(p);
+        });
+    } else {
+        orderedPlanets = classicalPlanets;
+    }
 
-    // Populate dropdown
-    let optionsHtml = '';
-    classicalPlanets.forEach(p => {
-        const pl = getPlanetPlacement(currentData, p);
-        const isSel = p === initialPlanet ? 'selected' : '';
-        optionsHtml += `<option value="${p}" ${isSel}>${p} in ${pl.sign} (House ${pl.house}) — ${pl.nakshatra}</option>`;
-    });
-    selectPlanet.innerHTML = optionsHtml;
-    selectPlanet.value = initialPlanet;
+    const selectPlanet = cockpitContainer.querySelector('#select-focus-planet') || cockpitContainer.querySelector('.select-focus-planet');
+    const selectorBar = cockpitContainer.querySelector('#planetary-selector-bar');
 
-    selectPlanet.onchange = () => {
+    const currentVal = selectPlanet ? selectPlanet.value : '';
+    const initialPlanet = (currentVal && orderedPlanets.includes(currentVal)) ? currentVal : orderedPlanets[0];
+
+    function selectPlanetByName(p) {
+        if (selectorBar) {
+            selectorBar.querySelectorAll('.btn-planet-chip').forEach(btn => {
+                const isActive = btn.dataset.planet === p;
+                btn.style.background = isActive ? '#eff6ff' : '#ffffff';
+                btn.style.borderColor = isActive ? '#3b82f6' : '#cbd5e1';
+                btn.style.color = isActive ? '#1d4ed8' : '#334155';
+            });
+        }
+        if (selectPlanet) selectPlanet.value = p;
         clearGlobalSelection();
-        renderSynthesisCockpit(container, selectPlanet.value, currentData);
-    };
+        renderSynthesisCockpit(container, p, currentData);
+    }
 
-    await renderSynthesisCockpit(container, initialPlanet, currentData);
+    // Populate planetary selector bar
+    if (selectorBar) {
+        selectorBar.innerHTML = orderedPlanets.map(p => {
+            const rankItem = leaderboard.find(r => r.planet === p);
+            const rankNum = rankItem ? rankItem.rank : '';
+            const scoreStr = rankItem ? rankItem.prominence_score.toFixed(2) : '';
+            const isCommander = rankItem && rankItem.rank === 1;
+
+            return `
+                <button type="button" class="btn-planet-chip" data-planet="${p}" style="background: #ffffff; color: #334155; border: 1px solid #cbd5e1; border-radius: 4px; padding: 5px 10px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s ease;">
+                    ${isCommander ? `<span style="color: #d97706; font-size: 12px; font-weight: 700;">★ #1</span>` : `<span style="color: #64748b; font-size: 12px; font-variant-numeric: tabular-nums;">#${rankNum}</span>`}
+                    <span style="font-weight: 700;">${p}</span>
+                    ${scoreStr ? `<span style="font-size: 12px; color: #64748b; font-variant-numeric: tabular-nums; background: #f1f5f9; padding: 1px 5px; border-radius: 3px;">${scoreStr}</span>` : ''}
+                </button>
+            `;
+        }).join('');
+
+        selectorBar.querySelectorAll('.btn-planet-chip').forEach(btn => {
+            btn.onclick = () => {
+                const p = btn.dataset.planet;
+                selectPlanetByName(p);
+            };
+        });
+    }
+
+    // Populate dropdown fallback
+    if (selectPlanet) {
+        let optionsHtml = '';
+        orderedPlanets.forEach(p => {
+            const pl = getPlanetPlacement(currentData, p);
+            const isSel = p === initialPlanet ? 'selected' : '';
+            optionsHtml += `<option value="${p}" ${isSel}>${p} in ${pl.sign} (House ${pl.house}) — ${pl.nakshatra}</option>`;
+        });
+        selectPlanet.innerHTML = optionsHtml;
+        selectPlanet.onchange = () => {
+            selectPlanetByName(selectPlanet.value);
+        };
+    }
+
+    selectPlanetByName(initialPlanet);
 }
+
 
 // ----------------------------------------------------------------------------
 // Master Report Orchestration
@@ -1135,15 +1601,21 @@ async function updateReportWidget(container, chartData) {
 
     if (rashiCol && navamshaCol && risingWrapper && risingSigns.rashi && risingSigns.navamsha) {
         const sigData = await getSignificationsData(currentData);
+        const flowcharts = (currentData.report && currentData.report.flowcharts) || {};
+        const signFlowcharts = flowcharts.signs || {};
+
         const rashiDossier = risingSigns.rashi;
         const navamshaDossier = risingSigns.navamsha;
 
         const rashiSignData = (sigData.signs && sigData.signs[rashiDossier.sign]) || {};
         const navamshaSignData = (sigData.signs && sigData.signs[navamshaDossier.sign]) || {};
 
-        // Merge backend dossier with client JSON
+        // Merge backend dossier with client JSON and attach Mermaid flowchart definitions
         const rashiCardData = Object.assign({}, rashiSignData, rashiDossier);
+        rashiCardData.mermaid = (signFlowcharts[rashiDossier.sign] && signFlowcharts[rashiDossier.sign].mermaid) || '';
+
         const navamshaCardData = Object.assign({}, navamshaSignData, navamshaDossier);
+        navamshaCardData.mermaid = (signFlowcharts[navamshaDossier.sign] && signFlowcharts[navamshaDossier.sign].mermaid) || '';
 
         const isVarg = Boolean(risingSigns.is_vargottama);
         const extraHeaderD1 = `
@@ -1248,7 +1720,22 @@ async function updateReportWidget(container, chartData) {
         }
     }
 
-    // 5. Section 5: Planet ⟷ Sign ⟷ House Interactive Synthesis Flowchart Desk
+    // 5. Section 5: Elemental & Modal Balance (4 Elements & 3 Modalities)
+    const elemModalWrap = container.querySelector('.elemental-modal-wrapper');
+    const elemModalData = report.elemental_and_modal_balance;
+    if (elemModalWrap && elemModalData) {
+        elemModalWrap.innerHTML = renderElementalAndModalBalance(elemModalData);
+    }
+    const domElemBadge = container.querySelector('.report-dominant-element-badge');
+    if (domElemBadge && elemModalData && elemModalData.elements) {
+        domElemBadge.textContent = `Dominant Element: ${elemModalData.elements.dominant_element}`;
+    }
+    const domModalBadge = container.querySelector('.report-dominant-modal-badge');
+    if (domModalBadge && elemModalData && elemModalData.modalities) {
+        domModalBadge.textContent = `Dominant Mode: ${elemModalData.modalities.dominant_modality}`;
+    }
+
+    // 6. Section 6: Planet ⟷ Sign ⟷ House Interactive Synthesis Flowchart Desk
     ensureActionBarWired();
     await initSynthesisCockpit(container, currentData);
 }
@@ -1315,6 +1802,9 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.selectTemperamentDossier = selectTemperamentClass;
     window.initSynthesisCockpit = initSynthesisCockpit;
     window.renderSynthesisCockpit = renderSynthesisCockpit;
+    window.renderPlanetNakshatraCard = renderPlanetNakshatraCard;
+    window.renderElementalAndModalBalance = renderElementalAndModalBalance;
+    window.renderMermaidDiagram = renderMermaidDiagram;
     window.getSignificationsData = getSignificationsData;
     window.redrawStageConnections = redrawStageConnections;
     window.redrawAllConnections = redrawStageConnections;
@@ -1323,3 +1813,4 @@ if (typeof window !== 'undefined' && window.widgetRegistry) {
     window.drawBaseInternalArrows = drawBaseInternalArrows;
     window.getNodeDockPoint = getNodeDockPoint;
 }
+
