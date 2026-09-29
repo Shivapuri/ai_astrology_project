@@ -64,7 +64,7 @@ def detect_kartari_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
         # Papa Kartari: Only malefics flanking
         elif malefics and not benefics:
             detected.append(YogaInstance(
-                id=f"papa_kartari_{target_name.lower().replace(' ', '_')}",
+                id=f"papa_kartari_{target_name.split()[0].lower()}",
                 name=f"Pāpa Kartarī Yoga ({target_name})",
                 category=YogaCategory.KARTARI,
                 status=YogaStatus.STAINED,

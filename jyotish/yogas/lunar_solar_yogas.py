@@ -11,7 +11,8 @@ from jyotish.yogas.models import (
 from jyotish.yogas.breakers import (
     get_house_of_planet, get_sign_of_planet, get_planets_data, get_aspect_score,
     NATURAL_BENEFICS, NATURAL_MALEFICS,
-    audit_trishadaya_interference, audit_combustion, audit_shadbala_muscle
+    audit_trishadaya_interference, audit_combustion, audit_shadbala_muscle,
+    ASPECT_PALPABLE_THRESHOLD, ASPECT_MARGINAL_THRESHOLD
 )
 
 def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
@@ -110,29 +111,73 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
             
         else:
             # Kemadruma Yoga (Isolated Moon)
-            # Check cancellations (Kemadruma Bhanga):
-            # 1. Any planet in Kendra from Lagna
-            # 2. Any planet in Kendra from Moon
-            kendra_planets_lagna = [p for p in planets_data if planet_houses.get(p) in (1, 4, 7, 10) and p != "Moon"]
+            # Authentic 4-Tier Kemadruma Bhaṅga Hierarchy (Phaladeepika 6.7 & Vic DiCara Lecture 1):
+            # Tier 1: Classical physical planets in Kendras (1, 4, 7, 10) from Moon
+            # Tier 2: Moon itself occupying Kendra (1, 4, 7, 10) from Lagna
+            # Tier 3: Modality / Quadruplicity alignment between Lagna and Moon (both Cardinal, both Fixed, or both Dual)
+            # Tier 4: Classical physical planets in Kendras from Moon in Navamsha (D9)
+            
+            d1_v = chart.get("vargas", {}).get("D1", {})
+            lagna_sign_cur = d1_v.get("lagna", {}).get("sign", "")
+            moon_sign_cur = d1_v.get("grahas", {}).get("Moon", {}).get("sign", "")
+            
+            CARDINAL_SIGNS = {"Aries", "Cancer", "Libra", "Capricorn"}
+            FIXED_SIGNS = {"Taurus", "Leo", "Scorpio", "Aquarius"}
+            DUAL_SIGNS = {"Gemini", "Virgo", "Sagittarius", "Pisces"}
+            
+            # Tier 1: Non-Sun physical planets in Kendra from Moon
             kendra_planets_moon = [
-                p for p in planets_data
-                if p != "Moon" and ((planet_houses.get(p, 0) - moon_house) % 12 + 1) in (1, 4, 7, 10)
+                p for p in ("Mars", "Mercury", "Jupiter", "Venus", "Saturn")
+                if p in planets_data and ((planet_houses.get(p, 0) - moon_house) % 12 + 1) in (1, 4, 7, 10)
             ]
-            is_cancelled = bool(kendra_planets_lagna or kendra_planets_moon)
+            
+            # Tier 2: Moon itself in Kendra from Lagna
+            moon_in_lagna_kendra = moon_house in (1, 4, 7, 10)
+            
+            # Tier 3: Modality / Quadruplicity alignment
+            same_modality = (
+                (lagna_sign_cur in CARDINAL_SIGNS and moon_sign_cur in CARDINAL_SIGNS) or
+                (lagna_sign_cur in FIXED_SIGNS and moon_sign_cur in FIXED_SIGNS) or
+                (lagna_sign_cur in DUAL_SIGNS and moon_sign_cur in DUAL_SIGNS)
+            ) and bool(lagna_sign_cur and moon_sign_cur)
+            
+            # Tier 4: Navamsha (D9) Kendra rescue
+            d9_grahas = chart.get("vargas", {}).get("D9", {}).get("grahas", {})
+            moon_d9_sign = d9_grahas.get("Moon", {}).get("sign", "")
+            d9_kendra_planets = []
+            SIGN_ORDER_MAP = {
+                "Aries": 1, "Taurus": 2, "Gemini": 3, "Cancer": 4,
+                "Leo": 5, "Virgo": 6, "Libra": 7, "Scorpio": 8,
+                "Sagittarius": 9, "Capricorn": 10, "Aquarius": 11, "Pisces": 12
+            }
+            if moon_d9_sign in SIGN_ORDER_MAP:
+                m_ord = SIGN_ORDER_MAP[moon_d9_sign]
+                for p in ("Mars", "Mercury", "Jupiter", "Venus", "Saturn"):
+                    p_d9_s = d9_grahas.get(p, {}).get("sign", "")
+                    if p_d9_s in SIGN_ORDER_MAP:
+                        diff = (SIGN_ORDER_MAP[p_d9_s] - m_ord) % 12 + 1
+                        if diff in (1, 4, 7, 10):
+                            d9_kendra_planets.append(p)
+            
+            is_cancelled = bool(kendra_planets_moon or moon_in_lagna_kendra or same_modality or d9_kendra_planets)
             
             cancellation_reasons = []
-            if kendra_planets_lagna:
-                cancellation_reasons.append(f"Cancelled by planets in Kendra from Lagna: {', '.join(kendra_planets_lagna)}.")
             if kendra_planets_moon:
-                cancellation_reasons.append(f"Cancelled by planets in Kendra from Chandra: {', '.join(kendra_planets_moon)}.")
+                cancellation_reasons.append(f"Tier 1 Lunar Kendra: Rescued by physical planets in Kendra from Chandra ({', '.join(kendra_planets_moon)}).")
+            if moon_in_lagna_kendra:
+                cancellation_reasons.append(f"Tier 2 Lagna Kendra: Rescued by Moon itself occupying Kendra House {moon_house} from Lagna.")
+            if same_modality:
+                cancellation_reasons.append(f"Tier 3 Modality Alignment: Rescued by Ascendant ({lagna_sign_cur}) and Moon ({moon_sign_cur}) sharing the same quadruplicity/modality (Chatuṣṭaya).")
+            if d9_kendra_planets:
+                cancellation_reasons.append(f"Tier 4 Navāṃśa Kendra: Rescued by planets in Kendra from Moon in D9 ({', '.join(d9_kendra_planets)}).")
                 
-            score = 45.0 if is_cancelled else 20.0
+            score = 65.0 if is_cancelled else 20.0
             status = YogaStatus.RESCUED if is_cancelled else YogaStatus.BROKEN
             
             breakers = [YogaBreakerDetail(
                 factor="Moon Isolation (No flanking planets)",
                 culprit_planet="Moon",
-                description="No planets reside in 2nd or 12th from the Moon, creating subjective feelings of emotional isolation and vulnerability.",
+                description="No physical planets reside in 2nd or 12th from the Moon, creating subjective feelings of emotional isolation and vulnerability.",
                 penalty=50.0
             )]
             
@@ -142,7 +187,7 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                 category=YogaCategory.LUNAR,
                 status=status,
                 plausibility_score=round(score, 1),
-                participating_planets=["Moon"],
+                participating_planets=["Moon"] + kendra_planets_moon + d9_kendra_planets,
                 participating_houses=[moon_house],
                 scripture_ref="Phaladeepika 6.7, BPHS 37.11-13",
                 archetype="The Solitary Mind: Moon sits isolated without flanking planets, feeling lack of an emotional safety net.",
@@ -206,12 +251,21 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
         if mars_house > 0:
             is_cm_conj = (mars_house == moon_house)
             aspect_mm = get_aspect_score(chart, "Mars", "Moon")
-            is_cm_aspect = aspect_mm >= 30.0
+            is_cm_aspect = aspect_mm >= ASPECT_PALPABLE_THRESHOLD
+            is_cm_marginal = (not is_cm_aspect) and (aspect_mm >= ASPECT_MARGINAL_THRESHOLD)
             
-            if is_cm_conj or is_cm_aspect:
+            if is_cm_conj or is_cm_aspect or is_cm_marginal:
                 score = 80.0
                 pos = [f"Moon and Mars combine (House {moon_house}" + (")" if is_cm_conj else f" via {aspect_mm:.0f} Virupa aspect)")]
                 breakers = []
+                if is_cm_marginal:
+                    breakers.append(YogaBreakerDetail(
+                        factor="Marginal Aspect Connection",
+                        culprit_planet="Mars",
+                        description=f"Aspect strength ({aspect_mm:.0f} Virupas) is below the palpable 45 Virupa threshold.",
+                        penalty=25.0
+                    ))
+                    score -= 25.0
                 breakers.extend(audit_trishadaya_interference(["Moon", "Mars"], chart))
                 for b in breakers:
                     score -= b.penalty
@@ -234,32 +288,80 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                     breakers=breakers
                 ))
                 
-        # D. Chandradhi Yoga (Benefics in 6th, 7th, 8th from Moon)
+        # D. Candrādhi Yoga (Benefics in 6th, 7th, OR 8th from Moon — Phaladeepika 6.19–20, 6.42–43)
+        # Operative Sanskrit term is "vā" (OR). Benefics in 6th alone = Netā; 7th alone = Mantrī; 8th alone = Bhūpati.
         h6_m = ((moon_house + 4) % 12) + 1
         h7_m = ((moon_house + 5) % 12) + 1
         h8_m = ((moon_house + 6) % 12) + 1
         
-        adhi_benefics = [
-            p for p in ("Mercury", "Jupiter", "Venus")
-            if get_house_of_planet(chart, p) in (h6_m, h7_m, h8_m)
-        ]
-        if len(adhi_benefics) >= 2:
-            score = 75.0 + len(adhi_benefics) * 8.0
+        b6_m = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == h6_m]
+        b7_m = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == h7_m]
+        b8_m = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == h8_m]
+        all_adhi_m = b6_m + b7_m + b8_m
+        
+        if all_adhi_m:
+            archetype_roles = []
+            if b6_m:
+                archetype_roles.append(f"Netā (Leader/Financier in H{h6_m}: {', '.join(b6_m)})")
+            if b7_m:
+                archetype_roles.append(f"Mantrī (Counselor/Minister in H{h7_m}: {', '.join(b7_m)})")
+            if b8_m:
+                archetype_roles.append(f"Bhūpati (Territorial Sovereign in H{h8_m}: {', '.join(b8_m)})")
+            
+            score = 70.0 + min(25.0, len(all_adhi_m) * 8.0)
+            status_val = YogaStatus.PURE if score >= 75 else YogaStatus.STAINED
+            
             detected.append(YogaInstance(
                 id="candradhi_yoga",
-                name="Candrādhi Yoga",
+                name="Candrādhi Yoga" + (f" ({', '.join(archetype_roles)})" if archetype_roles else ""),
                 category=YogaCategory.LUNAR,
-                status=YogaStatus.PURE if score >= 75 else YogaStatus.STAINED,
+                status=status_val,
                 plausibility_score=round(score, 1),
-                participating_planets=["Moon"] + adhi_benefics,
-                participating_houses=[moon_house, h6_m, h7_m, h8_m],
-                scripture_ref="Phaladeepika 6.42-43, BPHS 37.9-10",
-                archetype="The Configuration of Command: Surrounds the emotional center with cultural, diplomatic, and intellectual buffers.",
+                participating_planets=["Moon"] + all_adhi_m,
+                participating_houses=list(set([moon_house] + [planet_houses[p] for p in all_adhi_m])),
+                scripture_ref="Phaladeepika 6.19-20, 6.42-43",
+                archetype="The Configuration of Command: Surrounds the emotional center with cultural, diplomatic, or territorial pillars.",
                 manifestation_effects=[
                     "Conquers rivals through superior diplomacy, intellect, and grace rather than brute violence.",
-                    "Creates high military commanders, diplomats, prime ministers, and elite leaders."
+                    f"Command manifest: {'; '.join(archetype_roles)}."
                 ],
-                positive_factors=[f"Natural benefics ({', '.join(adhi_benefics)}) occupy houses 6, 7, 8 from the Moon."],
+                positive_factors=[f"Benefics in 6th/7th/8th from Chandra: {', '.join(archetype_roles)}."],
+                breakers=[]
+            ))
+            
+        # E. Lagnādhi Yoga (Benefics in 6th, 7th, OR 8th from Lagna — Moon strictly excluded)
+        b6_l = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == 6]
+        b7_l = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == 7]
+        b8_l = [p for p in ("Mercury", "Jupiter", "Venus") if planet_houses.get(p) == 8]
+        all_adhi_l = b6_l + b7_l + b8_l
+        
+        if all_adhi_l:
+            archetype_roles_l = []
+            if b6_l:
+                archetype_roles_l.append(f"Netā in H6 ({', '.join(b6_l)})")
+            if b7_l:
+                archetype_roles_l.append(f"Mantrī in H7 ({', '.join(b7_l)})")
+            if b8_l:
+                archetype_roles_l.append(f"Bhūpati in H8 ({', '.join(b8_l)})")
+                
+            score_l = 70.0 + min(25.0, len(all_adhi_l) * 8.0)
+            status_l = YogaStatus.PURE if score_l >= 75 else YogaStatus.STAINED
+            
+            detected.append(YogaInstance(
+                id="lagnadhi_yoga",
+                name="Lagnādhi Yoga" + (f" ({', '.join(archetype_roles_l)})" if archetype_roles_l else ""),
+                category=YogaCategory.RAJA,
+                status=status_l,
+                plausibility_score=round(score_l, 1),
+                participating_planets=all_adhi_l,
+                participating_houses=list(set([planet_houses[p] for p in all_adhi_l])),
+                scripture_ref="Phaladeepika 6.19-20",
+                archetype="The Ascendant Shield: Benefics in 6th, 7th, or 8th from Lagna (excluding Moon) create an executive fortress of respect.",
+                manifestation_effects=[
+                    "High executive stature, unshakeable character, and societal honors.",
+                    f"Command manifest: {'; '.join(archetype_roles_l)}."
+                ],
+                positive_factors=[f"Benefics in 6th/7th/8th from Lagna: {', '.join(archetype_roles_l)}."],
                 breakers=[]
             ))
             
@@ -377,9 +479,10 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
     EVEN_SIGNS = {"Taurus", "Cancer", "Virgo", "Scorpio", "Capricorn", "Pisces"}
     
     is_day_birth = sun_house in (7, 8, 9, 10, 11, 12)
+    gender = str(chart.get("gender") or chart.get("meta", {}).get("gender", "")).strip().lower()
     
-    is_male_mb = is_day_birth and (lagna_sign in ODD_SIGNS) and (sun_sign in ODD_SIGNS) and (moon_sign in ODD_SIGNS)
-    is_female_mb = (not is_day_birth) and (lagna_sign in EVEN_SIGNS) and (sun_sign in EVEN_SIGNS) and (moon_sign in EVEN_SIGNS)
+    is_male_mb = is_day_birth and (lagna_sign in ODD_SIGNS) and (sun_sign in ODD_SIGNS) and (moon_sign in ODD_SIGNS) and (gender != "female")
+    is_female_mb = (not is_day_birth) and (lagna_sign in EVEN_SIGNS) and (sun_sign in EVEN_SIGNS) and (moon_sign in EVEN_SIGNS) and (gender != "male")
     
     if is_male_mb:
         detected.append(YogaInstance(
@@ -423,12 +526,12 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
         ))
 
     # -------------------------------------------------------------
-    # 4. VARISHTHA, MADHYA, ADHAMA YOGAS (Solar-Lunar Angular Relationship)
+    # 4. ADHAMA, MADHYA (SAMA), VARISHTHA YOGAS (Solar-Lunar Angular Relationship)
     # -------------------------------------------------------------
-    # Phaladeepika 6.14-15:
-    # Kendra (1, 4, 7, 10) from Sun -> Varishtha Yoga (Foremost / Superior)
-    # Panaphara (2, 5, 8, 11) from Sun -> Madhya Yoga (Moderate / Middling)
-    # Apoklima (3, 6, 9, 12) from Sun -> Adhama Yoga (Deficient / Interiorized)
+    # Phaladeepika 6.14-15 & Vic DiCara Lecture 14:
+    # Kendra (1, 4, 7, 10) from Sun -> Adhama Yoga (Inferior / 0.75 Toning Multiplier)
+    # Panaphara (2, 5, 8, 11) from Sun -> Madhya Yoga (Moderate baseline / 1.0 Multiplier)
+    # Apoklima (3, 6, 9, 12) from Sun -> Variṣṭha Yoga (Superior / 1.25 Boost Multiplier)
     SIGN_ORDER = {
         "Aries": 1, "Taurus": 2, "Gemini": 3, "Cancer": 4,
         "Leo": 5, "Virgo": 6, "Libra": 7, "Scorpio": 8,
@@ -441,27 +544,29 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
         moon_from_sun = ((m_idx - s_idx) % 12) + 1
         
         if moon_from_sun in (1, 4, 7, 10):
-            score = 85.0
-            pos = [f"Moon is in House/Sign {moon_from_sun} (Kendra) from Sun ({moon_sign} from {sun_sign})."]
-            breakers = []
-            if moon_from_sun == 7:
-                pos.append("Moon is 7th from Sun (Full Moon proximity / high Paksha Bala), conferring peak radiance and vitality.")
-                score += 5.0
+            breakers = [
+                YogaBreakerDetail(
+                    factor="Angular Solar-Lunar Friction",
+                    culprit_planet="Moon",
+                    description=f"Moon is angular ({moon_from_sun}th) from Sun, producing New Moon combustion (1st) or harsh square/opposition stress (4th, 7th, 10th).",
+                    penalty=15.0
+                )
+            ]
             detected.append(YogaInstance(
-                id="varishtha_yoga",
-                name="Variṣṭha Yoga",
+                id="adhama_yoga",
+                name="Adhama Yoga",
                 category=YogaCategory.LUNAR,
-                status=YogaStatus.PURE,
-                plausibility_score=round(score, 1),
+                status=YogaStatus.STAINED,
+                plausibility_score=65.0,
                 participating_planets=["Moon", "Sun"],
                 participating_houses=[moon_house, sun_house],
                 scripture_ref="Phaladeepika 6.14-15",
-                archetype="Foremost Angular Radiance: Moon in an angle (Kendra) from the Sun, magnifying wealth, reputation, and worldly influence.",
+                archetype="Angular Solar-Lunar Friction: Moon in Kendra (1, 4, 7, 10) from the Sun; 0.75 toning multiplier on horoscope gains.",
                 manifestation_effects=[
-                    "Abundant wealth, vehicles, fame, happiness, learning, and broad public stature.",
-                    "Significantly multiplies and accelerates the fruits of other positive yogas in the horoscope."
+                    "Tones down overall chart returns (0.75 toning multiplier); requires conscious perseverance and grit to materialize wealth.",
+                    "Fosters resilience, inner examination, and overcoming initial friction."
                 ],
-                positive_factors=pos,
+                positive_factors=[f"Moon is in House/Sign {moon_from_sun} (Kendra) from Sun ({moon_sign} from {sun_sign})."],
                 breakers=breakers
             ))
         elif moon_from_sun in (2, 5, 8, 11):
@@ -474,37 +579,36 @@ def detect_lunar_and_solar_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                 participating_planets=["Moon", "Sun"],
                 participating_houses=[moon_house, sun_house],
                 scripture_ref="Phaladeepika 6.14-15",
-                archetype="Balanced Succedent Position: Moon in a Panaphara house from the Sun.",
+                archetype="Balanced Succedent Baseline: Moon in a Panaphara house (2, 5, 8, 11) from the Sun; 1.0 baseline multiplier.",
                 manifestation_effects=[
-                    "Moderate wealth, steady fortune, and middling public recognition."
+                    "Moderate wealth, steady fortune, and middling public recognition (1.0 baseline multiplier).",
+                    "Predictable returns corresponding proportionally to personal effort."
                 ],
                 positive_factors=[f"Moon is in House/Sign {moon_from_sun} (Panaphara) from Sun ({moon_sign} from {sun_sign})."],
                 breakers=[]
             ))
         elif moon_from_sun in (3, 6, 9, 12):
+            score = 85.0
+            pos = [
+                f"Moon is in House/Sign {moon_from_sun} (Apoklima) from Sun ({moon_sign} from {sun_sign}).",
+                "Non-combust, harmonious angle free from harsh square or direct opposition tension."
+            ]
             detected.append(YogaInstance(
-                id="adhama_yoga",
-                name="Adhama Yoga",
+                id="varishtha_yoga",
+                name="Variṣṭha Yoga",
                 category=YogaCategory.LUNAR,
-                status=YogaStatus.STAINED,
-                plausibility_score=65.0,
+                status=YogaStatus.PURE,
+                plausibility_score=round(score, 1),
                 participating_planets=["Moon", "Sun"],
                 participating_houses=[moon_house, sun_house],
                 scripture_ref="Phaladeepika 6.14-15",
-                archetype="Interiorized Cadent Position: Moon in an Apoklima house from the Sun, directing awareness away from external display.",
+                archetype="Harmonious Cadent Expanse: Moon in an Apoklima house (3, 6, 9, 12) from the Sun; 1.25 boost multiplier.",
                 manifestation_effects=[
-                    "Meager material accumulation or disinterest in ostentatious wealth.",
-                    "Fosters inner contemplation, ascetic tendency, and quiet scholarship rather than flamboyant commercial display."
+                    "Abundant wealth, vehicles, fame, happiness, learning, and broad public stature (1.25 boost multiplier).",
+                    "Significantly multiplies and accelerates the fruits of other positive yogas in the horoscope."
                 ],
-                positive_factors=[f"Moon is in House/Sign {moon_from_sun} (Apoklima) from Sun ({moon_sign} from {sun_sign})."],
-                breakers=[
-                    YogaBreakerDetail(
-                        factor="Cadent Separation from Sun",
-                        culprit_planet="Moon",
-                        description=f"Moon is cadent ({moon_from_sun}th) from Sun, reducing worldly drive and outward commercial pomp.",
-                        penalty=10.0
-                    )
-                ]
+                positive_factors=pos,
+                breakers=[]
             ))
 
     return detected

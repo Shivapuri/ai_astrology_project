@@ -12,7 +12,8 @@ from jyotish.yogas.breakers import (
     get_house_of_planet, get_sign_of_planet, get_house_rulers, get_planets_data,
     get_aspect_score,
     audit_trishadaya_interference, audit_combustion, audit_shadbala_muscle,
-    EXALTATION_SIGNS, OWN_SIGNS, DEBILITATION_SIGNS
+    EXALTATION_SIGNS, OWN_SIGNS, DEBILITATION_SIGNS,
+    ASPECT_PALPABLE_THRESHOLD, ASPECT_MARGINAL_THRESHOLD
 )
 
 DHANA_HOUSES = [1, 2, 5, 9, 11]
@@ -91,13 +92,23 @@ def detect_dhana_and_daridrya_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
             
         is_conj = (h1 == h2)
         aspect_val = max(get_aspect_score(chart, p1, p2), get_aspect_score(chart, p2, p1))
-        is_aspect = (aspect_val >= 30.0)
+        is_aspect = (aspect_val >= ASPECT_PALPABLE_THRESHOLD)
+        is_marginal_aspect = (not is_aspect) and (aspect_val >= ASPECT_MARGINAL_THRESHOLD)
         
-        if is_conj or is_aspect:
+        if is_conj or is_aspect or is_marginal_aspect:
             score = 85.0
             pos = [f"{desc}: {p1} and {p2} combine in House {h1}." if is_conj else f"{desc}: {p1} and {p2} aspect mutually ({aspect_val:.0f} Virupas)."]
             breakers = []
             
+            if is_marginal_aspect:
+                breakers.append(YogaBreakerDetail(
+                    factor="Marginal Aspect Connection",
+                    culprit_planet=f"{p1}/{p2}",
+                    description=f"Aspect strength ({aspect_val:.0f} Virupas) is below the palpable 45 Virupa threshold.",
+                    penalty=25.0
+                ))
+                score -= 25.0
+                
             # Dusthana check
             if h1 in (6, 8, 12) or h2 in (6, 8, 12):
                 breakers.append(YogaBreakerDetail(

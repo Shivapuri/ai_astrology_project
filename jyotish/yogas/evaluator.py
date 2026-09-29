@@ -4,7 +4,7 @@ Master Yoga Evaluator and Orchestration Engine.
 Integrates all sub-modules, performs global deduplication, and computes chart-wide metrics.
 """
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 from jyotish.yogas.models import YogaInstance, YogaCategory, YogaStatus
 from jyotish.yogas.pancha_mahapurusha import detect_pancha_mahapurusha_yogas
 from jyotish.yogas.raja_yogas import detect_raja_yogas
@@ -14,73 +14,133 @@ from jyotish.yogas.parivartana import detect_parivartana_yogas
 from jyotish.yogas.viparita import detect_viparita_raja_yogas
 from jyotish.yogas.kartari import detect_kartari_yogas
 from jyotish.yogas.chandal_yogas import detect_chandal_yogas
+from jyotish.yogas.character_growth_yogas import detect_character_and_growth_yogas
+from jyotish.yogas.dispositor_root_yogas import detect_dispositor_root_yogas
+from jyotish.yogas.deity_yogas import detect_deity_yogas
+from jyotish.yogas.bhava_yogas import detect_bhava_yogas
+from jyotish.yogas.power_yogas import detect_chapter7_power_yogas
 from jyotish.yogas.contextual_yogas import detect_contextual_yogas
+
+# Cross-module deduplication groups: maps variant IDs to a single canonical concept
+CANONICAL_DUPLICATE_GROUPS = {
+    "kemadruma_yoga": "KEMADRUMA",
+    "kemadruma_bhanga_yoga": "KEMADRUMA",
+    "mahabhagya_yoga": "MAHABHAGYA",
+    "mahabhagya_male_yoga": "MAHABHAGYA",
+    "mahabhagya_female_yoga": "MAHABHAGYA",
+    "adhama_yoga": "SUN_MOON_QUADRANT",
+    "madhya_yoga": "SUN_MOON_QUADRANT",
+    "varishtha_yoga": "SUN_MOON_QUADRANT",
+    "kendra_scope_yoga": "SUN_MOON_QUADRANT",
+    "panaphara_scope_yoga": "SUN_MOON_QUADRANT",
+    "apoklima_scope_yoga": "SUN_MOON_QUADRANT",
+    "shubha_kartari_lagna": "KARTARI_LAGNA_SHUBHA",
+    "subha_kartari_lagna": "KARTARI_LAGNA_SHUBHA",
+    "shubhakartari_lagna_yoga": "KARTARI_LAGNA_SHUBHA",
+    "shubha_kartari_lagna_(ascendant)": "KARTARI_LAGNA_SHUBHA",
+    "papa_kartari_lagna": "KARTARI_LAGNA_PAPA",
+    "papakartari_lagna_yoga": "KARTARI_LAGNA_PAPA",
+    "papa_kartari_lagna_(ascendant)": "KARTARI_LAGNA_PAPA",
+    "vesi_yoga": "SOLAR_VESI",
+    "subha_vesi_yoga": "SOLAR_VESI",
+    "papa_vesi_yoga": "SOLAR_VESI",
+    "vosi_yoga": "SOLAR_VOSI",
+    "subha_vosi_yoga": "SOLAR_VOSI",
+    "papa_vosi_yoga": "SOLAR_VOSI",
+    "ubhayacari_yoga": "SOLAR_UBHAYACARI",
+    "ubhayachari_yoga": "SOLAR_UBHAYACARI",
+    "subha_ubhayacari_yoga": "SOLAR_UBHAYACARI",
+    "papa_ubhayacari_yoga": "SOLAR_UBHAYACARI",
+    "misra_ubhayacari_yoga": "SOLAR_UBHAYACARI",
+}
+
 
 def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     """
     Master entry point for Classical Yoga Detection in Astra.
-    Scans the chart across all 10 classical categories, audits Yoga Breakers,
-    and returns a structured, categorized payload.
+    Scans the chart across all classical categories, audits Yoga Breakers,
+    deduplicates overlapping definitions, and returns a structured, categorized payload.
     """
-    all_yogas: List[YogaInstance] = []
-    
-    # 1. Pancha Mahapurusha Yogas
-    all_yogas.extend(detect_pancha_mahapurusha_yogas(chart))
-    
-    # 2. Raja Yogas (Single-planet & Multi-planet)
-    all_yogas.extend(detect_raja_yogas(chart))
-    
-    # 3. Dhana & Daridrya Yogas
-    all_yogas.extend(detect_dhana_and_daridrya_yogas(chart))
-    
-    # 4. Lunar and Solar Yogas
-    all_yogas.extend(detect_lunar_and_solar_yogas(chart))
-    
-    # 5. Parivartana Yogas
-    all_yogas.extend(detect_parivartana_yogas(chart))
-    
-    # 6. Viparita Raja Yogas
-    all_yogas.extend(detect_viparita_raja_yogas(chart))
-    
-    # 7. Kartari Yogas
-    all_yogas.extend(detect_kartari_yogas(chart))
-    
-    # 8. Chandal & Nodal Affliction Yogas
-    all_yogas.extend(detect_chandal_yogas(chart))
+    raw_yogas: List[YogaInstance] = []
 
-    # 9. Contextual & Macro Setup Yogas
-    all_yogas.extend(detect_contextual_yogas(chart))
-    
+    # 1. Pancha Mahapurusha Yogas
+    raw_yogas.extend(detect_pancha_mahapurusha_yogas(chart))
+
+    # 2. Raja Yogas (Single-planet & Multi-planet)
+    raw_yogas.extend(detect_raja_yogas(chart))
+
+    # 3. Dhana & Daridrya Yogas
+    raw_yogas.extend(detect_dhana_and_daridrya_yogas(chart))
+
+    # 4. Lunar and Solar Yogas (Flanking, Sun-Moon quadrants, Candradhi, Lagnadhi)
+    raw_yogas.extend(detect_lunar_and_solar_yogas(chart))
+
+    # 5. Parivartana Yogas (Maha, Khala, Dainya)
+    raw_yogas.extend(detect_parivartana_yogas(chart))
+
+    # 6. Viparita Raja Yogas (Harsha, Sarala, Vimala)
+    raw_yogas.extend(detect_viparita_raja_yogas(chart))
+
+    # 7. Kartari Yogas (Universal Hemming)
+    raw_yogas.extend(detect_kartari_yogas(chart))
+
+    # 8. Chandal & Nodal Affliction Yogas
+    raw_yogas.extend(detect_chandal_yogas(chart))
+
+    # 9. Character & Growth Yogas (Vasumati, Amala, Puskala, Sakata)
+    raw_yogas.extend(detect_character_and_growth_yogas(chart))
+
+    # 10. Dispositor Root Yogas (Kahala Variants A/B, Parvata Authentic & Self-Dispositor)
+    raw_yogas.extend(detect_dispositor_root_yogas(chart))
+
+    # 11. Cosmic Deity Yogas (Trimurti, Tridevi, Mala)
+    raw_yogas.extend(detect_deity_yogas(chart))
+
+    # 12. 12 Bhava Good & Converse Yogas
+    raw_yogas.extend(detect_bhava_yogas(chart))
+
+    # 13. Chapter 7 Royal Power Yogas (Multi-Kendra, Digbala, Specific Power Yogas)
+    raw_yogas.extend(detect_chapter7_power_yogas(chart))
+
+    # 14. Contextual & Macro Setup Yogas (Sankhya, Solitary Bhavas, Dual-Lagna)
+    raw_yogas.extend(detect_contextual_yogas(chart))
+
+    # Global Deduplication
+    seen_ids: Set[str] = set()
+    seen_canonical_groups: Set[str] = set()
+    deduped_yogas: List[YogaInstance] = []
+
+    for yoga in raw_yogas:
+        if yoga.id in seen_ids:
+            continue
+
+        group_key = CANONICAL_DUPLICATE_GROUPS.get(yoga.id)
+        if group_key:
+            if group_key in seen_canonical_groups:
+                continue
+            seen_canonical_groups.add(group_key)
+
+        seen_ids.add(yoga.id)
+        deduped_yogas.append(yoga)
+
     # Sort by plausibility score descending
-    all_yogas.sort(key=lambda y: y.plausibility_score, reverse=True)
-    
-    pure_count = sum(1 for y in all_yogas if y.status == YogaStatus.PURE)
-    stained_count = sum(1 for y in all_yogas if y.status == YogaStatus.STAINED)
-    rescued_count = sum(1 for y in all_yogas if y.status == YogaStatus.RESCUED)
-    broken_count = sum(1 for y in all_yogas if y.status == YogaStatus.BROKEN)
-    
-    categories = [
-        YogaCategory.MAHAPURUSHA.value,
-        YogaCategory.RAJA.value,
-        YogaCategory.DHANA.value,
-        YogaCategory.DARIDRYA.value,
-        YogaCategory.LUNAR.value,
-        YogaCategory.SOLAR.value,
-        YogaCategory.PARIVARTANA.value,
-        YogaCategory.VIPARITA.value,
-        YogaCategory.KARTARI.value,
-        YogaCategory.CHANDAL.value,
-        YogaCategory.CONTEXTUAL.value
-    ]
-    
+    deduped_yogas.sort(key=lambda y: y.plausibility_score, reverse=True)
+
+    pure_count = sum(1 for y in deduped_yogas if y.status == YogaStatus.PURE)
+    stained_count = sum(1 for y in deduped_yogas if y.status == YogaStatus.STAINED)
+    rescued_count = sum(1 for y in deduped_yogas if y.status == YogaStatus.RESCUED)
+    broken_count = sum(1 for y in deduped_yogas if y.status == YogaStatus.BROKEN)
+
+    categories = [cat.value for cat in YogaCategory]
+
     return {
-        "total_count": len(all_yogas),
+        "total_count": len(deduped_yogas),
         "summary": {
             "pure": pure_count,
             "stained": stained_count,
             "rescued": rescued_count,
             "broken": broken_count
         },
-        "yogas": [y.to_dict() for y in all_yogas],
+        "yogas": [y.to_dict() for y in deduped_yogas],
         "categories": categories
     }

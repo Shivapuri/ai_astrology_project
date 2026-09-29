@@ -19,6 +19,11 @@ class YogaCategory(str, Enum):
     KARTARI = "Kartari (Hemming)"
     CHANDAL = "Chāṇḍāla & Doṣa (Afflictions)"
     CONTEXTUAL = "Contextual & Macro Yogas"
+    CHARACTER = "Character & Growth"
+    DISPOSITOR_ROOT = "Dispositor Root Yogas"
+    DEITY = "Deity (Trimūrti & Tridevī)"
+    BHAVA = "12 Bhava Yogas"
+    POWER = "Chapter 7 Power Yogas"
 
 class YogaStatus(str, Enum):
     PURE = "Pure & Eminent"

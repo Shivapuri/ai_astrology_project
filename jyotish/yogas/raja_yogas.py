@@ -13,7 +13,8 @@ from jyotish.yogas.breakers import (
     get_lagna_sign, get_aspect_score,
     audit_trishadaya_interference, audit_combustion,
     audit_neecha_bhanga, audit_dusthana_placement, audit_shadbala_muscle,
-    DEBILITATION_SIGNS, EXALTATION_SIGNS
+    DEBILITATION_SIGNS, EXALTATION_SIGNS,
+    ASPECT_PALPABLE_THRESHOLD, ASPECT_MARGINAL_THRESHOLD
 )
 
 # Single Planet Raja Yoga Karakas (simultaneous Kendra + Trikona lords)
@@ -142,39 +143,57 @@ def detect_raja_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
             is_conjoined = (kl_house == tl_house)
             aspect_kl_tl = get_aspect_score(chart, kl, tl)
             aspect_tl_kl = get_aspect_score(chart, tl, kl)
-            is_mutual_aspect = (aspect_kl_tl >= 30.0 and aspect_tl_kl >= 30.0)
+            is_mutual_aspect = (aspect_kl_tl >= ASPECT_PALPABLE_THRESHOLD and aspect_tl_kl >= ASPECT_PALPABLE_THRESHOLD)
+            is_marginal_aspect = (not is_mutual_aspect) and (aspect_kl_tl >= ASPECT_MARGINAL_THRESHOLD and aspect_tl_kl >= ASPECT_MARGINAL_THRESHOLD)
             
             # Check Sign Exchange (Parivartana)
             kl_sign = get_sign_of_planet(chart, kl)
             tl_sign = get_sign_of_planet(chart, tl)
             is_exchange = (get_house_rulers(chart).get(kl_house, [None])[0] == tl and
                            get_house_rulers(chart).get(tl_house, [None])[0] == kl)
-                           
-            if not (is_conjoined or is_mutual_aspect or is_exchange):
+                            
+            if not (is_conjoined or is_mutual_aspect or is_marginal_aspect or is_exchange):
                 continue
                 
             is_supreme = (9 in t_houses and 10 in k_houses)
-            yoga_title = "Dharma-Karma Adhipati Rāja Yoga" if is_supreme else f"Kendra-Trikona Rāja Yoga ({kl} + {tl})"
-            yoga_id = f"raja_yoga_{kl.lower()}_{tl.lower()}"
+            if is_supreme:
+                yoga_title = "Dharma-Karma Adhipati Rāja Yoga"
+                yoga_id = f"raja_yoga_{kl.lower()}_{tl.lower()}"
+                scripture_ref = "Phaladeepika 6.37, BPHS 39.1-15"
+                archetype = "The Marriage of Grace and Action (The King): Highest Dharma meets highest Karma, conferring supreme executive authority and sovereign command."
+            else:
+                yoga_title = f"Śaṅkha Yoga ({kl} + {tl})"
+                yoga_id = f"shankha_yoga_{kl.lower()}_{tl.lower()}"
+                scripture_ref = "Phaladeepika 6.37-38"
+                archetype = f"The Royal Herald (Conch Shell): Kendra-Trikoṇa alliance between {kl} (Lord of H{k_houses}) and {tl} (Lord of H{t_houses}) announces status and supports worldly prosperity."
             
             score = 90.0 if is_supreme else 80.0
             positive_factors = []
             
             if is_supreme:
-                positive_factors.append(f"Supreme Alliance: {tl} (Lord of H9 Dharma) and {kl} (Lord of H10 Karma) combine.")
+                positive_factors.append(f"Supreme Alliance (The King): {tl} (Lord of H9 Dharma) and {kl} (Lord of H10 Karma) combine.")
             else:
-                positive_factors.append(f"Kendra-Trikona Union: {kl} (Lord of H{k_houses}) and {tl} (Lord of H{t_houses}) combine.")
+                positive_factors.append(f"Kendra-Trikoṇa Herald (Śaṅkha): {kl} (Lord of H{k_houses}) and {tl} (Lord of H{t_houses}) combine.")
                 
             if is_conjoined:
                 positive_factors.append(f"Conjoined in House {kl_house}.")
             elif is_mutual_aspect:
-                positive_factors.append(f"Mutual Aspect: {kl} and {tl} gaze upon each other ({aspect_kl_tl:.0f} & {aspect_tl_kl:.0f} Virupas).")
+                positive_factors.append(f"Palpable Mutual Aspect: {kl} and {tl} gaze upon each other ({aspect_kl_tl:.0f} & {aspect_tl_kl:.0f} Virūpas, >= 45V).")
+            elif is_marginal_aspect:
+                positive_factors.append(f"Marginal Mutual Aspect: {kl} and {tl} aspect each other ({aspect_kl_tl:.0f} & {aspect_tl_kl:.0f} Virūpas, 30-44V).")
             elif is_exchange:
                 positive_factors.append(f"Mutual Reception (Parivartana): {kl} and {tl} exchange signs.")
                 score += 5.0
                 
             # Breakers
             breakers = []
+            if is_marginal_aspect:
+                breakers.append(YogaBreakerDetail(
+                    factor="Marginal Aspect Connection",
+                    culprit_planet=f"{kl}/{tl}",
+                    description=f"Mutual aspect between {kl} ({aspect_kl_tl:.0f}V) and {tl} ({aspect_tl_kl:.0f}V) is below palpable 45 Virupa threshold (75%).",
+                    penalty=25.0
+                ))
             breakers.extend(audit_trishadaya_interference([kl, tl], chart, is_supreme_pairing=is_supreme))
             breakers.extend(audit_combustion([kl, tl], chart))
             dust_brk = audit_dusthana_placement([kl_house, tl_house], "Raja Yoga")
@@ -205,8 +224,8 @@ def detect_raja_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                 plausibility_score=round(score, 1),
                 participating_planets=[kl, tl],
                 participating_houses=list(set([kl_house, tl_house])),
-                scripture_ref="BPHS 39.1-15, Phaladeepika 7.8-10",
-                archetype="The Marriage of Grace and Action: Harmonizes ethical purpose (Dharma) with worldly executive platform (Karma).",
+                scripture_ref=scripture_ref,
+                archetype=archetype,
                 manifestation_effects=[
                     "Commands respect, social influence, professional eminence, and leadership in large organizations.",
                     "Manifests major career breakthroughs during the conjoined or operational Daśā periods."

@@ -1,7 +1,7 @@
 """
 jyotish/yogas/viparita.py
 Viparita Raja Yogas (Reversal of Misfortune Royal Combinations).
-Scripture: Phaladeepika Ch. 6, Verses 57-69; Ch. 7, Verses 8-10.
+Scripture: Phaladeepika Ch. 6, Verses 57-69.
 """
 
 from typing import List, Dict, Any
@@ -9,7 +9,8 @@ from jyotish.yogas.models import (
     YogaInstance, YogaCategory, YogaStatus, YogaBreakerDetail
 )
 from jyotish.yogas.breakers import (
-    get_house_of_planet, get_sign_of_planet, get_house_rulers, get_aspect_score
+    get_house_of_planet, get_sign_of_planet, get_house_rulers, get_aspect_score,
+    ASPECT_PALPABLE_THRESHOLD, ASPECT_MARGINAL_THRESHOLD
 )
 
 VIPARITA_CONFIGS = {
@@ -78,14 +79,23 @@ def detect_viparita_raja_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                     score -= 25.0
                     break
                 aspect_score = get_aspect_score(chart, ktl, lord)
-                if aspect_score >= 30.0:
+                if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
                     breakers.append(YogaBreakerDetail(
                         factor="Auspicious Lord Aspect Contamination",
                         culprit_planet=ktl,
                         description=f"Auspicious Lord {ktl} casts a strong {aspect_score:.0f}-Virupa aspect on {lord}, linking noble houses with crisis.",
-                        penalty=15.0
+                        penalty=25.0
                     ))
-                    score -= 15.0
+                    score -= 25.0
+                    break
+                elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
+                    breakers.append(YogaBreakerDetail(
+                        factor="Auspicious Lord Aspect Contamination (Marginal)",
+                        culprit_planet=ktl,
+                        description=f"Auspicious Lord {ktl} casts a marginal {aspect_score:.0f}-Virupa aspect on {lord}.",
+                        penalty=12.5
+                    ))
+                    score -= 12.5
                     break
                     
             status = YogaStatus.PURE if score >= 75 else YogaStatus.STAINED

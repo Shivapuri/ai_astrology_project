@@ -40,6 +40,13 @@ SIGN_LORDS = {
     "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter"
 }
 
+# Sphuṭa Dṛṣṭi Aspect Thresholds (0 to 60 Virūpas)
+# Per Phaladeepika and Vic DiCara (Lecture 7):
+# >= 45 Virūpas (75% power): Palpable, fully verified classical connection
+# 30.0 - 44.9 Virūpas (50% - 74% power): Faint / marginal aspect connection
+ASPECT_PALPABLE_THRESHOLD = 45.0
+ASPECT_MARGINAL_THRESHOLD = 30.0
+
 def get_lagna_sign(chart: Dict[str, Any]) -> str:
     """Returns the Ascendant (Lagna) sign name."""
     sign = chart.get("vargas", {}).get("D1", {}).get("lagna", {}).get("sign")
@@ -70,13 +77,46 @@ def get_house_of_planet(chart: Dict[str, Any], planet: str) -> int:
 
 def get_aspect_score(chart: Dict[str, Any], giver: str, receiver: str) -> float:
     """Returns Graha Drishti aspect value (0-60 Virupas) from giver to receiver."""
-    aspects = chart.get("advanced_aspects", {}).get("planets", {})
-    # advanced_aspects['planets'] is strictly keyed by receiver (aspected) then giver (aspecting)
+    adv = chart.get("advanced_aspects", {})
+    aspects = adv.get("planets", {})
+    # 1. Direct planet receiver check
     if receiver in aspects and giver in aspects[receiver]:
         val = aspects[receiver][giver]
         if isinstance(val, dict):
-            return float(val.get("raw", val.get("net", 0.0)))
+            return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
         return float(val)
+
+    # 2. Lagna / Ascendant receiver check across cusps and lagna dictionaries
+    if receiver in ("Lagna", "Ascendant", "1"):
+        for l_key in ("Lagna", "Ascendant"):
+            if l_key in aspects and giver in aspects[l_key]:
+                val = aspects[l_key][giver]
+                if isinstance(val, dict):
+                    return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
+                return float(val)
+
+        if "lagna" in adv and giver in adv["lagna"]:
+            val = adv["lagna"][giver]
+            if isinstance(val, dict):
+                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
+            return float(val)
+
+        cusps = adv.get("cusps", {})
+        c1 = cusps.get(1) or cusps.get("1") or {}
+        if giver in c1:
+            val = c1[giver]
+            if isinstance(val, dict):
+                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
+            return float(val)
+
+        eq_cusps = adv.get("equal_cusps", {})
+        eq1 = eq_cusps.get(1) or eq_cusps.get("1") or {}
+        if giver in eq1:
+            val = eq1[giver]
+            if isinstance(val, dict):
+                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
+            return float(val)
+
     return 0.0
 
 def get_house_rulers(chart: Dict[str, Any]) -> Dict[int, List[str]]:
@@ -147,14 +187,22 @@ def audit_trishadaya_interference(
                 ))
                 break
                 
-            # 2. Strong Graha Drishti aspect (> 30 Virupas)
+            # 2. Graha Drishti aspect (Palpable >= 45 Virupas, Marginal >= 30 Virupas)
             aspect_score = get_aspect_score(chart, saboteur, yp)
-            if aspect_score >= 30.0:
+            if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
                 breakers.append(YogaBreakerDetail(
-                    factor=f"{title} (Aspectual)",
+                    factor=f"{title} (Palpable Aspect)",
                     culprit_planet=saboteur,
                     description=f"{saboteur} (rules H{house_num}) casts strong {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
                     penalty=penalty * (aspect_score / 60.0)
+                ))
+                break
+            elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
+                breakers.append(YogaBreakerDetail(
+                    factor=f"{title} (Marginal Aspect)",
+                    culprit_planet=saboteur,
+                    description=f"{saboteur} (rules H{house_num}) casts marginal {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
+                    penalty=(penalty * 0.5) * (aspect_score / 60.0)
                 ))
                 break
                 
@@ -293,9 +341,12 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
     # Condition 5: Dispositor aspects the fallen planet
     if dispositor:
         aspect_score = get_aspect_score(chart, dispositor, planet)
-        if aspect_score >= 30.0:
-            reasons.append(f"Dispositor aspect: {dispositor} directly aspects fallen {planet} with {aspect_score:.0f} Virupas.")
+        if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
+            reasons.append(f"Dispositor aspect: {dispositor} directly aspects fallen {planet} with palpable {aspect_score:.0f} Virupas (>= 45).")
             bonus += 25.0
+        elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
+            reasons.append(f"Dispositor aspect (marginal): {dispositor} aspects fallen {planet} with faint {aspect_score:.0f} Virupas.")
+            bonus += 12.5
             
     # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon
     if p_house in (1, 4, 7, 10):
