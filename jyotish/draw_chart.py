@@ -1067,7 +1067,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="4"/>\n'
+            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
@@ -1315,7 +1315,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="4"/>\n'
+            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
