@@ -67,6 +67,19 @@
             </div>
             
             <div class="setting-section">
+                <h4>Planet Nakshatra Display</h4>
+                <div style="margin-bottom: 8px; font-size: 12px; color: #6b5a4b;">
+                    Show 4-letter Nakshatra abbreviation on planets (North, South, and Bi-Wheel charts)
+                </div>
+                <div class="setting-option-card">
+                    <input type="checkbox" id="modalToggleNakshatras" onchange="onModalNakshatraToggle(this.checked)">
+                    <label for="modalToggleNakshatras" style="margin-left: 10px;">
+                        <strong>Show Nakshatra on Planets</strong> (e.g. Krit, Rohi, Anur)
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
                 <h4>South Indian Chart Layout</h4>
                 <div class="setting-option-card">
                     <input type="checkbox" id="modalToggleSigns" checked onchange="onModalSignToggle(this.checked)">

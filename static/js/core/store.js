@@ -23,7 +23,8 @@ class Store {
             nakshatraSystem: localStorage.getItem('astra_nakshatra_system') || 'ERNST_DHRUVA',
             debilitationMode: localStorage.getItem('astra_debilitation_mode') || 'kala_degree',
             notation: localStorage.getItem('astra_notation') || 'symbol',
-            showSiSigns: localStorage.getItem('astra_show_si_signs') !== 'false'
+            showSiSigns: localStorage.getItem('astra_show_si_signs') !== 'false',
+            showNakshatras: localStorage.getItem('astra_show_nakshatras') === 'true'
         };
     }
 
@@ -69,6 +70,10 @@ class Store {
         if (updates.notation !== undefined) {
             window.currentNotation = updates.notation;
             localStorage.setItem('astra_notation', updates.notation);
+        }
+        if (updates.showNakshatras !== undefined) {
+            window.currentShowNakshatras = updates.showNakshatras;
+            localStorage.setItem('astra_show_nakshatras', updates.showNakshatras);
         }
 
         // Notify specific keys and general state change

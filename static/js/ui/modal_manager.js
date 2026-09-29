@@ -94,6 +94,12 @@ function openSettingsModal() {
     if (signCheck && typeof window.showSiSigns !== 'undefined') {
         signCheck.checked = window.showSiSigns;
     }
+
+    const nakCheck = document.getElementById('modalToggleNakshatras');
+    if (nakCheck) {
+        const isNak = (window.astraStore && window.astraStore.state.showNakshatras !== undefined) ? window.astraStore.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
+        nakCheck.checked = !!isNak;
+    }
     
     const d10 = (window.astraStore && window.astraStore.state.d10Mode) || window.currentD10Mode || 'reverse';
     const radioRev = document.getElementById('radio-d10-reverse');

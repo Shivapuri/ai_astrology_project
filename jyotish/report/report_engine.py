@@ -1,10 +1,11 @@
 """
-Astra Nakshatra Foundation Report Engine (jyotish/report/report_engine.py)
+Astra Chart Assessment Report Engine (jyotish/report/report_engine.py)
 
-Master orchestrator for the streamlined Nakshatra Foundation Report:
+Master orchestrator for the streamlined Chart Assessment Report:
 1. Ascendant Nakshatra & Moon Nakshatra (pure side-by-side descriptive dossiers)
-2. Nakshatra Dominance Leaderboard (Prominence-scaled empirical occupancy)
-3. Balance of Nakshatra Types (6-Group Model evaluated against 16.7% baseline)
+2. Rising Rāśi & Rising Navāṁśa (pure side-by-side descriptive sign dossiers)
+3. Nakshatra Dominance Leaderboard (Prominence-scaled empirical occupancy)
+4. Balance of Nakshatra Types (6-Group Model evaluated against 16.7% baseline)
 """
 
 import os
@@ -137,6 +138,136 @@ def compute_ascendant_and_moon_nakshatras(
         "ascendant": asc_dossier,
         "moon": moon_dossier
     }
+
+
+# Significators JSON Cache
+_SIGNIFICATIONS_FLOWCHARTS_CACHE: Optional[Dict[str, Any]] = None
+_SIGNIFICATIONS_DATA_CACHE: Optional[Dict[str, Any]] = None
+
+
+def get_significations_flowcharts() -> Dict[str, Any]:
+    """Loads and caches jyotish/report/significations_flowcharts.json."""
+    global _SIGNIFICATIONS_FLOWCHARTS_CACHE
+    if _SIGNIFICATIONS_FLOWCHARTS_CACHE is not None:
+        return _SIGNIFICATIONS_FLOWCHARTS_CACHE
+
+    json_path = os.path.join(os.path.dirname(__file__), "significations_flowcharts.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                _SIGNIFICATIONS_FLOWCHARTS_CACHE = json.load(f)
+                return _SIGNIFICATIONS_FLOWCHARTS_CACHE
+        except Exception:
+            pass
+    return {"planets": {}, "signs": {}, "houses": {}}
+
+
+def get_significations_data() -> Dict[str, Any]:
+    """Loads and caches jyotish/report/significations_data.json."""
+    global _SIGNIFICATIONS_DATA_CACHE
+    if _SIGNIFICATIONS_DATA_CACHE is not None:
+        return _SIGNIFICATIONS_DATA_CACHE
+
+    json_path = os.path.join(os.path.dirname(__file__), "significations_data.json")
+    if os.path.exists(json_path):
+        try:
+            with open(json_path, "r", encoding="utf-8") as f:
+                _SIGNIFICATIONS_DATA_CACHE = json.load(f)
+                return _SIGNIFICATIONS_DATA_CACHE
+        except Exception:
+            pass
+    return {"planets": {}, "signs": {}, "houses": {}}
+
+
+def get_detailed_sign_dossier(sign_name: str, degree_in_sign: float, is_navamsha: bool = False) -> Dict[str, Any]:
+    """
+    Builds a descriptive sign dossier using the structured archetypes
+    in significations_data.json.
+    """
+    sign_data = get_significations_data().get("signs", {}).get(sign_name, {})
+
+    # Fallback mappings if not present in JSON
+    ELEMENT_MAP = {
+        "Aries": "Fire", "Leo": "Fire", "Sagittarius": "Fire",
+        "Taurus": "Earth", "Virgo": "Earth", "Capricorn": "Earth",
+        "Gemini": "Air", "Libra": "Air", "Aquarius": "Air",
+        "Cancer": "Water", "Scorpio": "Water", "Pisces": "Water"
+    }
+    GUNA_MAP = {
+        "Aries": "Movable (Rajas)", "Cancer": "Movable (Rajas)", "Libra": "Movable (Rajas)", "Capricorn": "Movable (Rajas)",
+        "Taurus": "Fixed (Tamas)", "Leo": "Fixed (Tamas)", "Scorpio": "Fixed (Tamas)", "Aquarius": "Fixed (Tamas)",
+        "Gemini": "Dual (Sattva)", "Virgo": "Dual (Sattva)", "Sagittarius": "Dual (Sattva)", "Pisces": "Dual (Sattva)"
+    }
+    RULER_MAP = {
+        "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+        "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+        "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter"
+    }
+
+    element = ELEMENT_MAP.get(sign_name, "Fire")
+    modality = GUNA_MAP.get(sign_name, "Movable (Rajas)")
+    ruler = RULER_MAP.get(sign_name, "Mars")
+
+    # Extract pillars/columns of keywords from significations_data.json
+    pillars_raw = sign_data.get("pillars", sign_data.get("columns", []))
+    extracted_pillars = []
+    for col in pillars_raw:
+        col_name = col.get("name", "").capitalize()
+        items = [item.get("title", "") for item in col.get("items", []) if item.get("title")]
+        if items:
+            extracted_pillars.append({
+                "category": col_name,
+                "keywords": items
+            })
+
+    formula = sign_data.get("formula") or f"{ruler} / {element} / {modality.split(' ')[0]}"
+
+    deg = float(degree_in_sign) % 30.0
+    deg_int = int(deg)
+    minutes = int((deg % 1) * 60)
+
+    return {
+        "sign": sign_name,
+        "symbol": sign_data.get("symbol", ""),
+        "sanskrit": sign_data.get("sanskrit", ""),
+        "ruler": ruler,
+        "element": element,
+        "modality": modality,
+        "formula": formula,
+        "degree_in_sign": round(degree_in_sign, 2),
+        "degree_formatted": f"{deg_int}° {minutes:02d}'",
+        "pillars": extracted_pillars,
+        "nodes": sign_data.get("nodes", []),
+        "edges": sign_data.get("edges", []),
+        "columns": sign_data.get("columns", sign_data.get("pillars", [])),
+        "banner": sign_data.get("banner", ""),
+        "role": "Inner Soul Trajectory & Sub-Flavor (Fruit)" if is_navamsha else "Physical Body & Worldly Stage (Tree)"
+    }
+
+
+def compute_rising_rashi_and_navamsha(vargas_data: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Extracts the D1 Rising Rāśi and D9 Rising Navāṁśa side-by-side.
+    Flags Vargottama if both occupy the same sign.
+    """
+    d1_lagna = vargas_data.get("D1", {}).get("lagna", {})
+    d9_lagna = vargas_data.get("D9", {}).get("lagna", {})
+
+    rashi_sign = d1_lagna.get("sign", "Aries")
+    rashi_deg = float(d1_lagna.get("degree_0_to_30", float(d1_lagna.get("longitude", 0.0)) % 30.0))
+
+    navamsha_sign = d9_lagna.get("sign", "Aries")
+    navamsha_deg = float(d9_lagna.get("degree_0_to_30", float(d9_lagna.get("longitude", 0.0)) % 30.0))
+
+    is_vargottama = (rashi_sign == navamsha_sign)
+
+    return {
+        "rashi": get_detailed_sign_dossier(rashi_sign, rashi_deg, is_navamsha=False),
+        "navamsha": get_detailed_sign_dossier(navamsha_sign, navamsha_deg, is_navamsha=True),
+        "is_vargottama": is_vargottama,
+        "vargottama_note": "Vargottama Lagna: Rising sign is identical in both D1 and D9 (+30% vitality & unshakeable inner-outer alignment)." if is_vargottama else None
+    }
+
 
 
 def compute_nakshatra_dominance(
@@ -334,11 +465,12 @@ def compute_nakshatra_dominance(
 
 def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Master orchestrator for the Nakshatra Foundation Report.
-    Outputs strictly the 3 sections from the notebook:
-    1. Ascendant Nakshatra & Moon Nakshatra (pure side-by-side dossiers)
-    2. Nakshatra Dominance Leaderboard
-    3. Balance of Nakshatra Types (6-Class Model)
+    Master orchestrator for the Astra Chart Assessment Report.
+    Outputs strictly the foundational sections from the notebook:
+    1. Ascendant Nakshatra & Moon Nakshatra (pure side-by-side descriptive dossiers)
+    2. Rising Rāśi ($D_1$) & Rising Navāṁśa ($D_9$) (pure side-by-side descriptive dossiers)
+    3. Nakshatra Dominance Leaderboard (Prominence-scaled empirical occupancy)
+    4. Balance of Nakshatra Types (6-Class Model evaluated against 16.7% baseline)
     """
     vargas_data = chart_data.get("vargas", {})
     nakshatras_grahas = chart_data.get("nakshatras", {}).get("grahas", {})
@@ -365,14 +497,18 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
     # Section 1: Ascendant and Moon Nakshatra dossiers
     asc_moon_dossiers = compute_ascendant_and_moon_nakshatras(vargas_data, nakshatras_grahas)
 
-    # Sections 2 & 3: Dominance Leaderboard & 6-Group Temperament Breakdown
+    # Section 2: Rising Rāśi & Rising Navāṁśa
+    rising_signs = compute_rising_rashi_and_navamsha(vargas_data)
+
+    # Section 3: Nakshatra Dominance & Section 4: Balance of Types
     nak_dominance = compute_nakshatra_dominance(
         vargas_data, nakshatras_grahas, advanced_aspects, prominence_map=prominence_map
     )
 
     return {
-        "title": "Nakshatra Foundation Report",
+        "title": "Astra Chart Assessment Report",
         "ascendant_and_moon": asc_moon_dossiers,
+        "rising_signs": rising_signs,
         "nakshatra_dominance": {
             "leaderboard": nak_dominance["leaderboard"],
             "dominant_nakshatra": nak_dominance["dominant_nakshatra"],
@@ -385,42 +521,3 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
             "universal_catalysts": nak_dominance.get("universal_catalysts", [])
         }
     }
-
-
-# Optional / Backwards-Compatibility helpers for standalone tools
-_SIGNIFICATIONS_FLOWCHARTS_CACHE: Optional[Dict[str, Any]] = None
-_SIGNIFICATIONS_DATA_CACHE: Optional[Dict[str, Any]] = None
-
-
-def get_significations_flowcharts() -> Dict[str, Any]:
-    """Loads and caches jyotish/report/significations_flowcharts.json."""
-    global _SIGNIFICATIONS_FLOWCHARTS_CACHE
-    if _SIGNIFICATIONS_FLOWCHARTS_CACHE is not None:
-        return _SIGNIFICATIONS_FLOWCHARTS_CACHE
-
-    json_path = os.path.join(os.path.dirname(__file__), "significations_flowcharts.json")
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, "r", encoding="utf-8") as f:
-                _SIGNIFICATIONS_FLOWCHARTS_CACHE = json.load(f)
-                return _SIGNIFICATIONS_FLOWCHARTS_CACHE
-        except Exception:
-            pass
-    return {"planets": {}, "signs": {}, "houses": {}}
-
-
-def get_significations_data() -> Dict[str, Any]:
-    """Loads and caches jyotish/report/significations_data.json."""
-    global _SIGNIFICATIONS_DATA_CACHE
-    if _SIGNIFICATIONS_DATA_CACHE is not None:
-        return _SIGNIFICATIONS_DATA_CACHE
-
-    json_path = os.path.join(os.path.dirname(__file__), "significations_data.json")
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, "r", encoding="utf-8") as f:
-                _SIGNIFICATIONS_DATA_CACHE = json.load(f)
-                return _SIGNIFICATIONS_DATA_CACHE
-        except Exception:
-            pass
-    return {"planets": {}, "signs": {}, "houses": {}}

@@ -310,6 +310,27 @@ def test_lazy_chart_svg_api(client):
     assert client.get('/api/chart/adolf-hitler/svg?varga=D99').status_code == 404
 
 
+def test_chart_svg_show_nakshatras_api(client):
+    # 1. Fetch D1 south with show_nakshatras=true
+    res_on = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&style=south&show_nakshatras=true')
+    assert res_on.status_code == 200
+    data_on = json.loads(res_on.data)
+    assert 'font-size="5.8"' in data_on['svg']
+
+    # 2. Fetch D1 south with show_nakshatras=false
+    res_off = client.get('/api/chart/adolf-hitler/svg?varga=D1&mode=symbol&style=south&show_nakshatras=false')
+    assert res_off.status_code == 200
+    data_off = json.loads(res_off.data)
+    assert 'font-size="5.8"' not in data_off['svg']
+
+    # 3. Main chart endpoint with show_nakshatras=true
+    res_main = client.get('/api/chart/adolf-hitler?show_nakshatras=true')
+    assert res_main.status_code == 200
+    main_data = json.loads(res_main.data)
+    assert 'font-size="5.8"' in main_data['svgs']['D1']['south']
+    assert 'font-size="5.8"' in main_data['svgs']['D1']['north']
+
+
 
 
 

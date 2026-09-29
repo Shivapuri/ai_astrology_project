@@ -806,6 +806,7 @@ def generate_kala_chart(
 
         for p_name in all_planets_shayana:
             if p_name in v_data["grahas"] and p_name in nakshatras_sidereal:
+                v_data["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
                 p_nak_no = NAKSHATRAS.index(nakshatras_sidereal[p_name]["nakshatra"]) + 1
                 if v_name == "D1":
                     p_amsa = nakshatras_sidereal[p_name]["pada"]
@@ -819,6 +820,12 @@ def generate_kala_chart(
                     moon_nakshatra_no, ishta_ghati, name_sound_value=varnamashka
                 )
                 v_data["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
+
+        for p_name in ["Uranus", "Neptune", "Pluto"]:
+            if p_name in v_data.get("grahas", {}) and p_name in nakshatras_sidereal:
+                v_data["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
+        if "Lagna" in nakshatras_sidereal and "lagna" in v_data:
+            v_data["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
 
     # 4. Vimshottari Dasha
     if nakshatra_system == "VIC_CHITRA":

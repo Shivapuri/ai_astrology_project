@@ -164,6 +164,45 @@ sign_symbols = {
 
 signs_list = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
 
+NAKSHATRA_ABBREVIATIONS = {
+    "Ashwini": "Ashw",
+    "Bharani": "Bhar",
+    "Krittika": "Krit",
+    "Rohini": "Rohi",
+    "Mrigashira": "Mrig",
+    "Ardra": "Ardr",
+    "Punarvasu": "Puna",
+    "Pushya": "Push",
+    "Ashlesha": "Ashl",
+    "Magha": "Magh",
+    "Purva Phalguni": "PPha",
+    "Uttara Phalguni": "UPha",
+    "Hasta": "Hast",
+    "Chitra": "Chit",
+    "Swati": "Swat",
+    "Vishakha": "Vish",
+    "Anuradha": "Anur",
+    "Jyeshtha": "Jyes",
+    "Mula": "Mula",
+    "Purva Ashadha": "PAsh",
+    "Uttara Ashadha": "UAsh",
+    "Shravana": "Shra",
+    "Dhanishtha": "Dhan",
+    "Shatabhisha": "Shat",
+    "Purva Bhadrapada": "PBha",
+    "Uttara Bhadrapada": "UBha",
+    "Revati": "Reva",
+}
+
+def get_nakshatra_abbreviation(name: str, length: int = 4) -> str:
+    """Returns the standardized abbreviation for a nakshatra name."""
+    if not name:
+        return ""
+    abbr = NAKSHATRA_ABBREVIATIONS.get(name)
+    if abbr:
+        return abbr if length == 4 else abbr[:length]
+    return name[:length]
+
 def parse_varga_data(varga_data):
     items = []
     
@@ -176,7 +215,8 @@ def parse_varga_data(varga_data):
         "name": "Lagna",
         "sign": l_sign,
         "degree": int(l_deg),
-        "minute": minutes
+        "minute": minutes,
+        "nakshatra": varga_data["lagna"].get("nakshatra", "")
     })
     
     # Grahas
@@ -189,7 +229,8 @@ def parse_varga_data(varga_data):
             "sign": p_data["sign"],
             "degree": int(deg),
             "minute": minutes,
-            "is_retrograde": p_data.get("is_retrograde", False)
+            "is_retrograde": p_data.get("is_retrograde", False),
+            "nakshatra": p_data.get("nakshatra", "")
         })
         
     # House Cusps
@@ -859,7 +900,7 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
     lines_svg += '  </g>\n'
     return lines_svg
 
-def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree"):
+def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
@@ -884,7 +925,8 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "name": item["name"],
                 "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'",
-                "is_retrograde": item.get("is_retrograde", False)
+                "is_retrograde": item.get("is_retrograde", False),
+                "nakshatra": item.get("nakshatra", "")
             })
 
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
@@ -1066,14 +1108,30 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
             font_fam = ASTRO_FONT_STACK if (mode == "symbol" and p["name"] != "Lagna") else "sans-serif"
             
-            svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
+            nak_abbr = get_nakshatra_abbreviation(p.get("nakshatra", ""), length=4) if show_nakshatras else ""
+            rel_x = px - x
+            if show_nakshatras and nak_abbr:
+                if rel_x <= 55:
+                    nak_x = px + (21 if is_retro else 16)
+                    anchor = "start"
+                    hl_x = px - 18
+                else:
+                    nak_x = px - 16
+                    anchor = "end"
+                    hl_x = px - 32
+                svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+                svg += f'<rect class="planet-highlight-bg" x="{hl_x:.1f}" y="{py - 11:.1f}" width="50" height="30" rx="6"/>\n'
+            else:
+                svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+                svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="8" font-weight="bold" fill="#C0392B"> R</tspan>'
             svg += '</text>\n'
+            if show_nakshatras and nak_abbr:
+                svg += f'<text x="{nak_x}" y="{py + 11}" font-family="sans-serif" font-size="5.8" font-weight="500" fill="#8c7b64" text-anchor="{anchor}" dominant-baseline="central">{nak_abbr}</text>\n'
             svg += '</g>\n'
             
             s_idx = signs_list.index(sign)
@@ -1106,7 +1164,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     svg += '</svg>\n'
     return svg
 
-def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree"):
+def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
     svg = '<svg width="100%" height="100%" viewBox="0 0 500 500" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
     # Parchment Ground
@@ -1235,7 +1293,8 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "name": item["name"],
                 "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'",
-                "is_retrograde": item.get("is_retrograde", False)
+                "is_retrograde": item.get("is_retrograde", False),
+                "nakshatra": item.get("nakshatra", "")
             })
 
 
@@ -1314,14 +1373,19 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             retro_label = " [Retrograde (R)]" if is_retro else ""
             tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
             
+            nak_abbr = get_nakshatra_abbreviation(p.get("nakshatra", ""), length=4) if show_nakshatras else ""
+            rect_h = 38 if (show_nakshatras and nak_abbr) else 30
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
+            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="{rect_h}" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
             if is_retro:
                 svg += f'<tspan font-size="{retro_sz}" font-weight="bold" fill="#C0392B"> R</tspan>'
-            svg += '</text></g>\n'
+            svg += '</text>'
+            if show_nakshatras and nak_abbr:
+                svg += f'\n<text x="{px}" y="{py + 19.5}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="5.8" font-weight="500" fill="#8c7b64">{nak_abbr}</text>'
+            svg += '</g>\n'
             
             s_idx = signs_list.index(p["sign"])
             p_lon = s_idx * 30 + p_deg_val
@@ -1841,7 +1905,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
     return svg
 
 
-def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D9", mode="symbol", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree"):
+def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D9", mode="symbol", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
     """
     Generates a concentric dual-wheel Harmonic Bi-Wheel SVG chart (Vic DiCara / Ernst Wilhelm style).
     - Inner Ring (Radius ~62 to ~138): Natal Chart (D1 / Rashi).
@@ -2203,9 +2267,15 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
     svg += '</g>\n'
 
     # Radial Positions for stacking
-    r_in_min = 74
-    r_in_deg = 90
-    r_in_pl = 112
+    if show_nakshatras:
+        r_in_nak = 76
+        r_in_min = 89
+        r_in_deg = 100
+        r_in_pl = 112
+    else:
+        r_in_min = 74
+        r_in_deg = 90
+        r_in_pl = 112
 
     r_out_pl = 172
     r_out_deg = 181
@@ -2236,8 +2306,17 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         tooltip = f"Natal ({inner_name}) {info.get('full_sa', p_name)}{dignity_tag} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}"
         
         svg += f'<g class="interactive planet-glyph inner-planet" data-type="planet" data-varga="{inner_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-        mid_x, mid_y = polar_coords(93.0, angle)
-        svg += f'<circle class="planet-highlight-bg" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="22"/>\n'
+        mid_r = 94.0 if show_nakshatras else 93.0
+        hl_r = 24 if show_nakshatras else 22
+        mid_x, mid_y = polar_coords(mid_r, angle)
+        svg += f'<circle class="planet-highlight-bg" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="{hl_r}"/>\n'
+
+        # Nakshatra text (towards inner circle)
+        if show_nakshatras:
+            nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
+            if nak_abbr:
+                nx, ny = polar_coords(r_in_nak, angle)
+                svg += f'<text x="{nx}" y="{ny}" font-size="5.2" font-weight="500" stroke="#F7F3EB" stroke-width="0.8" paint-order="stroke" stroke-linejoin="round" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
 
         # Minute text
         mx, my = polar_coords(r_in_min, angle)

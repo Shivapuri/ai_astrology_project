@@ -23,9 +23,10 @@ const AstraAPI = {
         const nakshatra = (store && store.state.nakshatraSystem) ? store.state.nakshatraSystem : (window.currentNakshatraSystem || 'ERNST_DHRUVA');
         const debMode = (store && store.state.debilitationMode) ? store.state.debilitationMode : (window.currentDebilitationMode || 'kala_degree');
         const notation = (store && store.state.notation) ? store.state.notation : (window.currentNotation || 'symbol');
+        const showNakshatras = (store && store.state.showNakshatras !== undefined) ? store.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
 
         try {
-            const url = `/api/chart/${id}?mode=${notation}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}`;
+            const url = `/api/chart/${id}?mode=${notation}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}`;
             const response = await fetch(url);
             const result = await response.json();
 
@@ -65,7 +66,8 @@ const AstraAPI = {
                     d10Mode: d10Mode,
                     d24Mode: d24Mode,
                     nakshatraSystem: nakshatra,
-                    notation: notation
+                    notation: notation,
+                    showNakshatras: showNakshatras
                 });
             }
 
@@ -339,10 +341,11 @@ const AstraAPI = {
         const d24Mode = (store && store.state.d24Mode) ? store.state.d24Mode : (window.currentD24Mode || 'reverse');
         const nakshatra = (store && store.state.nakshatraSystem) ? store.state.nakshatraSystem : (window.currentNakshatraSystem || 'ERNST_DHRUVA');
         const debMode = (store && store.state.debilitationMode) ? store.state.debilitationMode : (window.currentDebilitationMode || 'kala_degree');
+        const showNakshatras = (store && store.state.showNakshatras !== undefined) ? store.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
         const offsetSec = window.activePreviewOffsetSeconds || 0;
 
         try {
-            const url = `/api/chart/${nativeId}/svg?varga=${varga}&mode=${mode}&root=${root}&style=${style}&outer=${outer}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&offset_seconds=${offsetSec}`;
+            const url = `/api/chart/${nativeId}/svg?varga=${varga}&mode=${mode}&root=${root}&style=${style}&outer=${outer}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}&offset_seconds=${offsetSec}`;
             const res = await fetch(url);
             return await res.json();
         } catch (e) {

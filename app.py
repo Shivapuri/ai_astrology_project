@@ -115,7 +115,7 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
     }
     return chart
 
-def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None, primary_mode=None):
+def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None, primary_mode=None, show_nakshatras=False):
     if modes is None:
         modes = ["symbol"]
     if roots is None:
@@ -141,9 +141,9 @@ def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None, prima
         for r in roots:
             roots_dict[r] = {
                 "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode),
-                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode),
-                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode),
-                "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode)
+                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras),
+                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras),
+                "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras)
             }
 
         v_svg[m] = {
@@ -175,6 +175,7 @@ def get_chart(native_id):
     d24_mode = request.args.get('d24_mode', 'reverse')
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
     offset_seconds = request.args.get('offset_seconds', default=0, type=int)
     time_override = request.args.get('time')
     date_override = request.args.get('date')
@@ -203,7 +204,7 @@ def get_chart(native_id):
 
     for v_name in chart_data.get("vargas", {}).keys():
         v_roots = all_roots if (eager_all or v_name in ("D1", "D9")) else ["Lagna"]
-        svgs[v_name] = get_or_generate_varga_svgs(chart_data, v_name, modes=modes, roots=v_roots, primary_mode=requested_mode)
+        svgs[v_name] = get_or_generate_varga_svgs(chart_data, v_name, modes=modes, roots=v_roots, primary_mode=requested_mode, show_nakshatras=show_nakshatras)
         
     preview_info = chart_data.get("preview_info", {})
     return jsonify({
@@ -231,6 +232,7 @@ def get_chart_svg(native_id):
     d24_mode = request.args.get('d24_mode', 'reverse')
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
     offset_seconds = request.args.get('offset_seconds', default=0, type=int)
     time_override = request.args.get('time')
     date_override = request.args.get('date')
@@ -259,13 +261,13 @@ def get_chart_svg(native_id):
     is_svg_accept = (request.headers.get('Accept') == 'image/svg+xml') or (request.args.get('format') == 'svg')
 
     if style == 'south':
-        svg = draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode)
+        svg = draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras)
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
         return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
 
     elif style == 'north':
-        svg = draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode)
+        svg = draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras)
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
         return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
@@ -278,7 +280,7 @@ def get_chart_svg(native_id):
 
     elif style == 'biwheel':
         svg = draw_chart.generate_biwheel_chart(
-            d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode
+            d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras
         )
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
@@ -287,10 +289,10 @@ def get_chart_svg(native_id):
     else:
         # style == 'all'
         svgs_dict = {
-            "south": draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode),
-            "north": draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode),
+            "south": draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras),
+            "north": draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras),
             "circular": draw_chart.generate_circular_chart(parsed_items, mode=mode, varga_name=varga, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode),
-            "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode)
+            "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras)
         }
         return jsonify({
             "varga": varga,
@@ -313,6 +315,7 @@ def get_chart_biwheel(native_id):
     d24_mode = request.args.get('d24_mode', 'reverse')
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
     offset_seconds = request.args.get('offset_seconds', default=0, type=int)
     time_override = request.args.get('time')
     date_override = request.args.get('date')
@@ -343,7 +346,8 @@ def get_chart_biwheel(native_id):
         mode=mode,
         ayanamsha=ayan,
         root_planet=root,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        show_nakshatras=show_nakshatras
     )
     return jsonify({
         "svg": biwheel_svg,

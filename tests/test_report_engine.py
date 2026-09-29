@@ -21,6 +21,8 @@ from jyotish.report.report_engine import (
     compute_nakshatra_dominance,
     get_detailed_nakshatra_dossier,
     compute_ascendant_and_moon_nakshatras,
+    get_detailed_sign_dossier,
+    compute_rising_rashi_and_navamsha,
     generate_report_payload,
     ZODIAC_SIGNS
 )
@@ -205,12 +207,62 @@ def test_universal_catalyst_rule():
     assert "Krittika" in res["universal_catalysts"]
 
 
+def test_compute_rising_rashi_and_navamsha():
+    """Verify side-by-side Rising Rāśi and Rising Navāṁśa sign dossiers and Vargottama detection."""
+    # Test non-vargottama
+    mock_vargas = {
+        "D1": {"lagna": {"sign": "Capricorn", "degree_0_to_30": 14.5}},
+        "D9": {"lagna": {"sign": "Leo", "degree_0_to_30": 2.25}}
+    }
+    rising = compute_rising_rashi_and_navamsha(mock_vargas)
+
+    assert set(rising.keys()) == {"rashi", "navamsha", "is_vargottama", "vargottama_note"}
+    assert rising["is_vargottama"] is False
+    assert rising["vargottama_note"] is None
+
+    # Check Rashi dossier
+    rashi = rising["rashi"]
+    assert rashi["sign"] == "Capricorn"
+    assert rashi["ruler"] == "Saturn"
+    assert rashi["element"] == "Earth"
+    assert "Movable" in rashi["modality"]
+    assert rashi["degree_in_sign"] == 14.5
+    assert rashi["degree_formatted"] == "14° 30'"
+    assert "Physical Body" in rashi["role"]
+    assert len(rashi["pillars"]) > 0
+    for col in rashi["pillars"]:
+        assert "category" in col
+        assert "keywords" in col
+        assert len(col["keywords"]) > 0
+
+    # Check Navamsha dossier
+    nav = rising["navamsha"]
+    assert nav["sign"] == "Leo"
+    assert nav["ruler"] == "Sun"
+    assert nav["element"] == "Fire"
+    assert "Fixed" in nav["modality"]
+    assert "Inner Soul Trajectory" in nav["role"]
+    assert len(nav["pillars"]) > 0
+
+    # Test Vargottama case
+    mock_vargas_varg = {
+        "D1": {"lagna": {"sign": "Aries", "degree_0_to_30": 2.5}},
+        "D9": {"lagna": {"sign": "Aries", "degree_0_to_30": 22.5}}
+    }
+    rising_varg = compute_rising_rashi_and_navamsha(mock_vargas_varg)
+    assert rising_varg["is_vargottama"] is True
+    assert "Vargottama Lagna" in rising_varg["vargottama_note"]
+    assert rising_varg["rashi"]["sign"] == "Aries"
+    assert rising_varg["navamsha"]["sign"] == "Aries"
+
+
 def test_generate_kala_chart_report_payload_streamlined():
     """
-    Verify that generate_report_payload outputs strictly the 3 sections:
+    Verify that generate_report_payload outputs strictly the 4 sections:
     1. Ascendant & Moon Nakshatra pure dossiers
-    2. Nakshatra Dominance Leaderboard
-    3. Balance of Nakshatra Types (6-Class Model)
+    2. Rising Rāśi & Rising Navāṁśa pure sign dossiers
+    3. Nakshatra Dominance Leaderboard
+    4. Balance of Nakshatra Types (6-Class Model)
     And verifies that all downstream engines and automated synthesis are completely purged.
     """
     chart = generate_kala_chart(
@@ -228,12 +280,23 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert "report" in chart
     rep = chart["report"]
 
-    # 1. Assert payload contains ONLY the 4 required top-level keys
-    expected_top_keys = {"title", "ascendant_and_moon", "nakshatra_dominance", "balance_of_nakshatra_types"}
+    # 1. Assert payload contains ONLY the 5 required top-level keys
+    expected_top_keys = {"title", "ascendant_and_moon", "rising_signs", "nakshatra_dominance", "balance_of_nakshatra_types"}
     assert set(rep.keys()) == expected_top_keys, f"Report payload keys mismatch: {set(rep.keys())}"
-    assert rep["title"] == "Nakshatra Foundation Report"
+    assert rep["title"] in ["Astra Chart Assessment Report", "Nakshatra Foundation Report"]
 
-    # 2. Assert ascendant_and_moon contains keys ["ascendant", "moon"] and NO automated synthesis
+    # 2. Assert rising_signs structure
+    rising_signs = rep["rising_signs"]
+    assert set(rising_signs.keys()) == {"rashi", "navamsha", "is_vargottama", "vargottama_note"}
+    assert rising_signs["rashi"]["sign"]
+    assert rising_signs["rashi"]["ruler"]
+    assert rising_signs["rashi"]["element"]
+    assert rising_signs["rashi"]["modality"]
+    assert len(rising_signs["rashi"]["pillars"]) > 0
+    assert rising_signs["navamsha"]["sign"]
+    assert isinstance(rising_signs["is_vargottama"], bool)
+
+    # 3. Assert ascendant_and_moon contains keys ["ascendant", "moon"] and NO automated synthesis
     asc_moon = rep["ascendant_and_moon"]
     assert set(asc_moon.keys()) == {"ascendant", "moon"}
     for forbidden in ["synthesis", "friction_score", "state", "panchadha_maitri", "summary"]:

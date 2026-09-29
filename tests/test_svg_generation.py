@@ -335,3 +335,48 @@ def test_house_background_colors_north_and_south():
     assert 'var(--chart-kendra-color, #eedec9)' in si_svg
     assert 'var(--chart-trikona-color, #faede0)' in si_svg
     assert 'var(--chart-other-color, #f9f5eb)' in si_svg
+
+
+def test_nakshatra_display_north_south_and_biwheel():
+    from jyotish.draw_chart import generate_north_indian, generate_south_indian, generate_biwheel_chart
+    items = [
+        {"type": "planet", "name": "Sun", "sign": "Aries", "degree": 10, "minute": 20, "is_retrograde": False, "nakshatra": "Ashwini"},
+        {"type": "planet", "name": "Moon", "sign": "Taurus", "degree": 15, "minute": 30, "is_retrograde": True, "nakshatra": "Rohini"},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    
+    # 1. North Indian with show_nakshatras=True
+    ni_svg = generate_north_indian(items, varga_name="D1", show_nakshatras=True)
+    assert "Ashw" in ni_svg
+    assert "Rohi" in ni_svg
+    assert '#8c7b64' in ni_svg
+    assert '<tspan>10°20\'</tspan>' in ni_svg
+    assert '<tspan>15°30\'</tspan>' in ni_svg
+    
+    # North Indian with show_nakshatras=False
+    ni_svg_off = generate_north_indian(items, varga_name="D1", show_nakshatras=False)
+    assert "Ashw" not in ni_svg_off
+    assert "Rohi" not in ni_svg_off
+    
+    # 2. South Indian with show_nakshatras=True
+    si_svg = generate_south_indian(items, varga_name="D1", show_nakshatras=True)
+    assert "Ashw" in si_svg
+    assert "Rohi" in si_svg
+    assert '#8c7b64' in si_svg
+    assert '<tspan>10°20\'</tspan>' in si_svg
+    
+    # South Indian with show_nakshatras=False
+    si_svg_off = generate_south_indian(items, varga_name="D1", show_nakshatras=False)
+    assert "Ashw" not in si_svg_off
+    assert "Rohi" not in si_svg_off
+    
+    # 3. Bi-Wheel with show_nakshatras=True
+    bi_svg = generate_biwheel_chart(items, items, inner_name="D1", outer_name="D9", show_nakshatras=True)
+    assert "Ashw" in bi_svg
+    assert "Rohi" in bi_svg
+    assert '#8c7b64' in bi_svg
+    
+    # Bi-Wheel with show_nakshatras=False
+    bi_svg_off = generate_biwheel_chart(items, items, inner_name="D1", outer_name="D9", show_nakshatras=False)
+    assert "Ashw" not in bi_svg_off
+    assert "Rohi" not in bi_svg_off

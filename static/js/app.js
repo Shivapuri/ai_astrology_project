@@ -19,6 +19,8 @@ let stepperAbortController = null;
 
 let currentNotation = localStorage.getItem('astra_notation') || "symbol";
 let showSiSigns = true;
+let showNakshatras = localStorage.getItem('astra_show_nakshatras') === 'true';
+window.currentShowNakshatras = showNakshatras;
 let currentD10Mode = localStorage.getItem('astra_d10_mode') || "reverse";
 let currentD24Mode = localStorage.getItem('astra_d24_mode') || "reverse";
 let currentNakshatraSystem = localStorage.getItem('astra_nakshatra_system') || "ERNST_DHRUVA";
@@ -30,6 +32,7 @@ if (typeof window !== 'undefined' && window.astraStore) {
     window.astraStore.on('change:nakshatraSystem', val => { currentNakshatraSystem = val; window.currentNakshatraSystem = val; });
     window.astraStore.on('change:debilitationMode', val => { currentDebilitationMode = val; window.currentDebilitationMode = val; });
     window.astraStore.on('change:notation', val => { currentNotation = val; window.currentNotation = val; });
+    window.astraStore.on('change:showNakshatras', val => { showNakshatras = val; window.currentShowNakshatras = val; syncNakshatraDisplayUI(); });
 }
 
 let currentActiveCell = null;
@@ -1433,6 +1436,33 @@ function toggleSiSignsFromMenu() {
     toggleSiSigns(!showSiSigns);
 }
 
+async function setNakshatraDisplay(enabled) {
+    if (showNakshatras === enabled && window.astraStore?.state?.showNakshatras === enabled) return;
+    showNakshatras = enabled;
+    window.currentShowNakshatras = enabled;
+    localStorage.setItem('astra_show_nakshatras', enabled);
+    if (window.astraStore) {
+        window.astraStore.setState({ showNakshatras: enabled });
+    }
+    syncNakshatraDisplayUI();
+    window.currentSvgs = null;
+    if (typeof window.loadChart === 'function') await window.loadChart();
+}
+
+async function toggleNakshatraDisplay() {
+    await setNakshatraDisplay(!showNakshatras);
+}
+
+function onModalNakshatraToggle(checked) {
+    setNakshatraDisplay(checked);
+}
+
+function syncNakshatraDisplayUI() {
+    const cb = document.getElementById('modalToggleNakshatras');
+    if (cb) cb.checked = !!showNakshatras;
+    updateMenuCheckmarks();
+}
+
 function updateMenuCheckmarks() {
     const curWs = localStorage.getItem('astra_current_workspace') || 'core-predictive';
     document.querySelectorAll('#workspacesMenuDropdown .menu-row[data-ws]').forEach(row => {
@@ -1487,6 +1517,14 @@ function updateMenuCheckmarks() {
         const isAct = !!showSiSigns;
         rowSi.classList.toggle('active', isAct);
         const check = rowSi.querySelector('.menu-check');
+        if (check) check.textContent = isAct ? '✓' : '';
+    }
+
+    const rowNak = document.getElementById('menuRowNakshatras');
+    if (rowNak) {
+        const isAct = !!showNakshatras;
+        rowNak.classList.toggle('active', isAct);
+        const check = rowNak.querySelector('.menu-check');
         if (check) check.textContent = isAct ? '✓' : '';
     }
 }
@@ -1997,4 +2035,8 @@ if (typeof window !== 'undefined') {
     window.syncHouseColorPickers = syncHouseColorPickers;
     window.applyChartHouseColors = applyChartHouseColors;
     window.getChartHouseColors = getChartHouseColors;
+    window.setNakshatraDisplay = setNakshatraDisplay;
+    window.toggleNakshatraDisplay = toggleNakshatraDisplay;
+    window.onModalNakshatraToggle = onModalNakshatraToggle;
+    window.syncNakshatraDisplayUI = syncNakshatraDisplayUI;
 }
