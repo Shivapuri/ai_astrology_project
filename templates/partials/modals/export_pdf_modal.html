@@ -8,19 +8,19 @@
             <div class="setting-section">
                 <h4>1. Export Preset & Format</h4>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-export-dossier-a4').click()">
-                    <input type="radio" id="radio-export-dossier-a4" name="exportPreset" value="master_dossier_a4" checked onchange="onExportPresetChange('master_dossier_a4')">
-                    <label for="radio-export-dossier-a4" style="margin-left: 8px;">
-                        <strong> Complete Master Astrological Dossier (A4 Horizontal / Landscape) — Recommended</strong>
-                        <span class="setting-chip">Root D1 + Concentric Bi-Wheel (D1+D9) + Master Diagnostics (D1, D9, D10 with Nakshatra Drives) + Side-by-Side Vargas (North &amp; South) + 16-Varga Matrix + 120-Yr Timeline + Classical Yogas</span>
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
+                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" checked onchange="onExportPresetChange('master_a3')">
+                    <label for="radio-export-a3" style="margin-left: 8px;">
+                        <strong> Complete Master Astrological Dossier (A3 Horizontal Landscape) — Recommended</strong>
+                        <span class="setting-chip">Root D1 Rāśi + Bhāva Wheel (Rāśis &amp; Nakṣatras) + D7 &amp; D10 North Indian + Master Diagnostics + 16-Varga Dignities + Ṣaḍbala + Complete Synthesis Report</span>
                     </label>
                 </div>
                 
-                <div class="setting-option-card" onclick="document.getElementById('radio-export-a3').click()">
-                    <input type="radio" id="radio-export-a3" name="exportPreset" value="master_a3" onchange="onExportPresetChange('master_a3')">
-                    <label for="radio-export-a3" style="margin-left: 8px;">
-                        <strong> Master Astrological Plan (A3 Horizontal / Landscape Spread)</strong>
-                        <span class="setting-chip">Expansive Wide-Format Archival Spread: High-res vector charts, extended vargas &amp; 16-varga matrices</span>
+                <div class="setting-option-card" onclick="document.getElementById('radio-export-dossier-a4').click()">
+                    <input type="radio" id="radio-export-dossier-a4" name="exportPreset" value="master_dossier_a4" onchange="onExportPresetChange('master_dossier_a4')">
+                    <label for="radio-export-dossier-a4" style="margin-left: 8px;">
+                        <strong> Complete Master Astrological Dossier (A4 Horizontal Landscape)</strong>
+                        <span class="setting-chip">Multi-Page A4 Landscape Portfolio with all Core Tables, Diagnostics &amp; Synthesis</span>
                     </label>
                 </div>
                 
@@ -62,36 +62,40 @@
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
                     <label style="display: flex; align-items: center; justify-content: space-between; grid-column: span 2; background: #faf5ee; padding: 6px 10px; border-radius: 6px; border: 1px solid #e2d3be; cursor: pointer;">
                         <span style="display: flex; align-items: center; gap: 8px;">
-                            <input type="checkbox" id="expIncBiwheel" checked> 
-                            <span><strong>Harmonic Bi-Wheel</strong> (D1 Natal + Outer Harmonic Overlay)</span>
+                            <input type="checkbox" id="expIncBhavaWheel" checked> 
+                            <span><strong>Bhāva Wheel with Rāśi &amp; Nakṣatras</strong> (Campanus Spatial Cakra &amp; Concentric Bi-Wheel)</span>
                         </span>
                         <span style="display: flex; align-items: center; gap: 4px;" onclick="event.stopPropagation();">
-                            <span style="font-size: 12px; color: #795548; font-weight: 600;">Outer:</span>
+                            <span style="font-size: 12px; color: #795548; font-weight: 600;">Overlay:</span>
                             <select id="exportBiwheelOuter" style="padding: 2px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #cbd5e1; background: #fff; font-weight: 600; color: #4a3325;">
-                                <option value="D9" selected>D9 Navāṃśa (Dharma & Destiny)</option>
-                                <option value="D10">D10 Daśāṃśa (Career & Status)</option>
-                                <option value="D7">D7 Saptāṃśa (Progeny & Partners)</option>
+                                <option value="D9" selected>D9 Navāṃśa (Dharma &amp; Destiny)</option>
+                                <option value="D10">D10 Daśāṃśa (Career &amp; Status)</option>
+                                <option value="D7">D7 Saptāṃśa (Progeny &amp; Partners)</option>
                                 <option value="D12">D12 Dvādaśāṃśa (Lineage)</option>
                                 <option value="D24">D24 Siddhāṃśa (Higher Learning)</option>
                                 <option value="D60">D60 Ṣaṣṭyāṃśa (Root Karma)</option>
                             </select>
                         </span>
                     </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #fdf2f8; padding: 6px 10px; border-radius: 6px; border: 1px solid #fbcfe8;">
+                        <input type="checkbox" id="expIncD7D10North" checked> 
+                        <span><strong>D7 Saptāṃśa &amp; D10 Daśāṃśa (North Indian Diamond Charts)</strong> (with D9 Navāṃśa Blueprint)</span>
+                    </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #f0fdf4; padding: 5px 8px; border-radius: 5px; border: 1px solid #bbf7d0;">
-                        <input type="checkbox" id="expIncDualVargas" checked> 
-                        <span><strong>Divisional Charts: North &amp; South Indian Side-by-Side</strong> (D10, D7, D2, D3, D4, D12, D30, D60)</span>
+                        <input type="checkbox" id="expIncDualVargas"> 
+                        <span><strong>Extended Vargas: North &amp; South Side-by-Side</strong> (D2, D3, D4, D12, D30, D60)</span>
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncD1" checked> <strong>D1 Rāśi</strong> (Root Life & Tanu)
+                        <input type="checkbox" id="expIncD1" checked> <strong>D1 Rāśi</strong> (Root Life &amp; Tanu)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncD9" checked> <strong>D9 Navāṃśa</strong> (Dharma & Swāṃśa)
+                        <input type="checkbox" id="expIncD9" checked> <strong>D9 Navāṃśa</strong> (Dharma &amp; Swāṃśa)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncD10" checked> <strong>D10 Daśāṃśa</strong> (Career & Status)
+                        <input type="checkbox" id="expIncD10" checked> <strong>D10 Daśāṃśa</strong> (Career &amp; Status)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
-                        <input type="checkbox" id="expIncD7" checked> <strong>D7 Saptāṃśa</strong> (Progeny & Partners)
+                        <input type="checkbox" id="expIncD7" checked> <strong>D7 Saptāṃśa</strong> (Progeny &amp; Partners)
                     </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
                         <input type="checkbox" id="expIncD2"> D2 Horā (Wealth)
@@ -111,6 +115,9 @@
             <div class="setting-section" id="exportTablesToggle">
                 <h4>4. Included Diagnostic Tables & Analysis</h4>
                 <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #eff6ff; padding: 6px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                        <input type="checkbox" id="expIncSynthesisReport" checked> <strong>Complete Astrological Synthesis &amp; Assessment Report</strong> (Asterisms, Dominance, Temperament &amp; Macro Environment)
+                    </label>
                     <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #fdf6e2; padding: 5px 8px; border-radius: 5px; border: 1px solid #ebd9c8;">
                         <input type="checkbox" id="expIncMasterDiagnostics" checked> <strong>Master Graha Diagnostics: D1 Root, D9 Navāṃśa &amp; D10 Daśāṃśa</strong> (9 Columns with Nakshatra Subconscious Drives)
                     </label>

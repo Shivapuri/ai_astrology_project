@@ -24,6 +24,7 @@ class YogaCategory(str, Enum):
     DEITY = "Deity (Trimūrti & Tridevī)"
     BHAVA = "12 Bhava Yogas"
     POWER = "Chapter 7 Power Yogas"
+    NEECHABHANGA = "Nīcabhaṅga (Debility Cancellation)"
 
 class YogaStatus(str, Enum):
     PURE = "Pure & Eminent"

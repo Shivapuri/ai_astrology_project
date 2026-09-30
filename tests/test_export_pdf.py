@@ -209,3 +209,62 @@ def test_vimshottari_timeline_and_16_varga_matrix(sample_chart):
     assert "Ketu" in html
 
 
+def test_master_a3_complete_dossier(sample_chart):
+    options = {
+        "preset": "master_a3",
+        "page_size": "A3",
+        "landscape": True,
+        "chart_style": "north",
+        "notation": "symbol"
+    }
+    html = generate_report_html(sample_chart, options)
+    
+    # 1. Page 1: D1 Rasi root architecture
+    assert "A3 landscape" in html
+    assert "Root Rāśi Chart & Core Astronomy" in html
+    assert "Campanus Bhava Cusps" in html
+    assert "Planetary Placements" in html
+    assert "Pañcadhā Sambandha" in html
+    
+    # 2. Page 2: Bhava Wheel with Rasi and Nakshatra
+    assert "Bhāva Wheel &amp; Spatial Horizon Architecture" in html or "Bhāva Wheel & Spatial Horizon Architecture" in html
+    assert "Bhāva Wheel • Tropical Rāśis &amp; Sidereal Nakṣatras" in html or "Bhāva Wheel • Tropical Rāśis & Sidereal Nakṣatras" in html
+    assert "Campanus Bhāva Chalita Cusps &amp; Nakṣatra Distribution" in html or "Campanus Bhāva Chalita Cusps & Nakṣatra Distribution" in html
+    
+    # 3. Page 3: Seventh and Tenth as North Indian diamond blueprints
+    assert "Seventh &amp; Tenth Harmonic Blueprints (D7 &amp; D10)" in html or "Seventh & Tenth Harmonic Blueprints (D7 & D10)" in html
+    assert "D7 Saptāṃśa" in html
+    assert "D10 Daśāṃśa" in html
+    assert "Progeny &amp; Creative Vitality" in html or "Progeny & Creative Vitality" in html
+    assert "Career, Status &amp; Executive Karma" in html or "Career, Status & Executive Karma" in html
+    
+    # 4. Master Graha Diagnostics
+    assert "Master Graha Diagnostics: D1 Rāśi" in html
+    assert "Master Graha Diagnostics: D9 Navāṃśa" in html
+    assert "Master Graha Diagnostics: D10 Daśāṃśa" in html
+    
+    # 5. Dignities in Vargas & Shadbala
+    assert "16-Varga Viṃśopaka Strength" in html
+    assert "Deep Planetary Strengths & Potencies" in html
+    assert "Ṣaḍbala Strength Matrix" in html
+    
+    # 6. Complete Astrology Synthesis Report
+    assert "Complete Astrological Synthesis: Asterisms &amp; Rising Signs" in html or "Complete Astrological Synthesis: Asterisms & Rising Signs" in html
+    assert "Ascendant • Action Vehicle (Ahaṃkāra)" in html
+    assert "Moon • Perceptual Filter (Manas)" in html
+    assert "Complete Astrological Synthesis: Dominance, Balance &amp; Planetary Desk" in html or "Complete Astrological Synthesis: Dominance, Balance & Planetary Desk" in html
+    assert "Nakṣatra Dominance Leaderboard" in html
+    assert "Balance of Nakṣatra Types (6-Class Model)" in html
+    assert "Four-Pillar Planetary Synthesis Desk" in html
+    
+    # 7. Check no black spot styles
+    assert ".planet-highlight-bg" in html
+    assert "fill: transparent !important;" in html
+    
+    # 8. Render to actual PDF bytes
+    pdf_bytes = export_chart_pdf(sample_chart, options)
+    assert isinstance(pdf_bytes, bytes)
+    assert pdf_bytes.startswith(b"%PDF-")
+    assert len(pdf_bytes) > 80000
+
+

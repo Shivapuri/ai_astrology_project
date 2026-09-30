@@ -1120,10 +1120,10 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                     anchor = "end"
                     hl_x = px - 32
                 svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-                svg += f'<rect class="planet-highlight-bg" x="{hl_x:.1f}" y="{py - 11:.1f}" width="50" height="30" rx="6"/>\n'
+                svg += f'<rect class="planet-highlight-bg" fill="none" stroke="none" x="{hl_x:.1f}" y="{py - 11:.1f}" width="50" height="30" rx="6"/>\n'
             else:
                 svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-                svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
+                svg += f'<rect class="planet-highlight-bg" fill="none" stroke="none" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="30" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" text-anchor="middle" dominant-baseline="central" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" font-family="sans-serif" font-size="9" font-weight="normal" fill="#5C4433" text-anchor="middle" dominant-baseline="central">'
             svg += f'<tspan>{p["deg"]}</tspan>'
@@ -1376,7 +1376,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             nak_abbr = get_nakshatra_abbreviation(p.get("nakshatra", ""), length=4) if show_nakshatras else ""
             rect_h = 38 if (show_nakshatras and nak_abbr) else 30
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p["name"]}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="{rect_h}" rx="6"/>\n'
+            svg += f'<rect class="planet-highlight-bg" fill="none" stroke="none" x="{px - 18:.1f}" y="{py - 11:.1f}" width="36" height="{rect_h}" rx="6"/>\n'
             svg += f'<text class="{glyph_cls}" x="{px}" y="{py - 2}" text-anchor="middle" dominant-baseline="central" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text>\n'
             svg += f'<text x="{px}" y="{py + 11}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{deg_sz}" font-weight="normal" fill="#5C4433">'
             svg += f'<tspan>{p["deg"]}</tspan>'
@@ -1542,7 +1542,7 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
             tooltip = f"{info['full_sa']} ({info['full_en']})"
             
             svg += f'<g class="interactive {glyph_cls}" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
-            svg += f'<rect class="planet-highlight-bg" x="{cx - 15:.1f}" y="{curr_y - 12:.1f}" width="30" height="24" rx="4"/>\n'
+            svg += f'<rect class="planet-highlight-bg" fill="none" stroke="none" x="{cx - 15:.1f}" y="{curr_y - 12:.1f}" width="30" height="24" rx="4"/>\n'
             svg += f'<text class="{glyph_cls}" x="{cx}" y="{curr_y}" text-anchor="middle" dominant-baseline="central" font-family="{font_fam}" font-size="{font_sz}" font-weight="bold" fill="{info["color"]}" style="font-variant-emoji: text;">{label}</text></g>\n'
             curr_y += item_height
 
@@ -1878,7 +1878,7 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         tooltip = f"{info.get('full_sa', p_name)}{dignity_tag} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}"
         svg += f'<g class="interactive planet-glyph" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
         mid_x, mid_y = polar_coords(r_rasi_inner - 20.5, angle)
-        svg += f'<circle class="planet-highlight-bg" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="17"/>\n'
+        svg += f'<circle class="planet-highlight-bg" fill="none" stroke="none" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="17"/>\n'
 
         r_deg_base = r_rasi_inner - 21
         r_min_base = r_rasi_inner - 32
@@ -2309,7 +2309,7 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         mid_r = 94.0 if show_nakshatras else 93.0
         hl_r = 24 if show_nakshatras else 22
         mid_x, mid_y = polar_coords(mid_r, angle)
-        svg += f'<circle class="planet-highlight-bg" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="{hl_r}"/>\n'
+        svg += f'<circle class="planet-highlight-bg" fill="none" stroke="none" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="{hl_r}"/>\n'
 
         # Nakshatra text (towards inner circle)
         if show_nakshatras:
@@ -2362,7 +2362,7 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         
         svg += f'<g class="interactive planet-glyph outer-planet" data-type="planet" data-varga="{outer_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
         mid_x, mid_y = polar_coords(180.0, angle)
-        svg += f'<circle class="planet-highlight-bg" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="14"/>\n'
+        svg += f'<circle class="planet-highlight-bg" fill="none" stroke="none" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="14"/>\n'
 
         # Minute text
         mx, my = polar_coords(r_out_min, angle)

@@ -18,9 +18,13 @@
             if (secToggle) secToggle.style.opacity = '1';
             if (tblToggle) tblToggle.style.opacity = '1';
             if (visToggle) visToggle.style.opacity = '1';
-            if (preset === 'master_dossier_a4') {
-                const bw = document.getElementById('expIncBiwheel');
+            if (preset === 'master_a3' || preset === 'master_dossier_a4') {
+                const bw = document.getElementById('expIncBhavaWheel');
                 if (bw) bw.checked = true;
+                const d7d10 = document.getElementById('expIncD7D10North');
+                if (d7d10) d7d10.checked = true;
+                const synth = document.getElementById('expIncSynthesisReport');
+                if (synth) synth.checked = true;
             }
         }
     }
@@ -32,7 +36,7 @@
             return;
         }
 
-        const preset = document.querySelector('input[name="exportPreset"]:checked')?.value || 'master_dossier_a4';
+        const preset = document.querySelector('input[name="exportPreset"]:checked')?.value || 'master_a3';
         
         // If current view selected and preview requested, open native print
         if (preset === 'current_view' && previewOnly) {
@@ -61,12 +65,15 @@
             chart_style: chartStyle,
             notation: notation,
             include_d1: document.getElementById('expIncD1')?.checked ?? true,
-            include_biwheel: document.getElementById('expIncBiwheel')?.checked ?? true,
+            include_bhava_wheel: document.getElementById('expIncBhavaWheel')?.checked ?? true,
+            include_d7_d10_north: document.getElementById('expIncD7D10North')?.checked ?? true,
+            include_synthesis_report: document.getElementById('expIncSynthesisReport')?.checked ?? true,
+            include_biwheel: (preset === 'master_a3') ? false : (chartStyle === 'biwheel'),
             biwheel_outer: document.getElementById('exportBiwheelOuter')?.value || 'D9',
             include_d9: document.getElementById('expIncD9')?.checked ?? true,
             include_d10: document.getElementById('expIncD10')?.checked ?? true,
             include_d7: document.getElementById('expIncD7')?.checked ?? true,
-            include_dual_vargas: document.getElementById('expIncDualVargas')?.checked ?? true,
+            include_dual_vargas: document.getElementById('expIncDualVargas')?.checked ?? false,
             include_master_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
             include_d9_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,
             include_d10_diagnostics: document.getElementById('expIncMasterDiagnostics')?.checked ?? true,

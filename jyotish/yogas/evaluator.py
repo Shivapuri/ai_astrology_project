@@ -20,6 +20,7 @@ from jyotish.yogas.deity_yogas import detect_deity_yogas
 from jyotish.yogas.bhava_yogas import detect_bhava_yogas
 from jyotish.yogas.power_yogas import detect_chapter7_power_yogas
 from jyotish.yogas.contextual_yogas import detect_contextual_yogas
+from jyotish.yogas.neechabhanga import detect_neechabhanga_yogas
 
 # Cross-module deduplication groups: maps variant IDs to a single canonical concept
 CANONICAL_DUPLICATE_GROUPS = {
@@ -52,6 +53,7 @@ CANONICAL_DUPLICATE_GROUPS = {
     "subha_ubhayacari_yoga": "SOLAR_UBHAYACARI",
     "papa_ubhayacari_yoga": "SOLAR_UBHAYACARI",
     "misra_ubhayacari_yoga": "SOLAR_UBHAYACARI",
+    "power_yoga_dharma_karma_exchange": "DHARMA_KARMA_EXCHANGE",
 }
 
 
@@ -105,6 +107,26 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
     # 14. Contextual & Macro Setup Yogas (Sankhya, Solitary Bhavas, Dual-Lagna)
     raw_yogas.extend(detect_contextual_yogas(chart))
 
+    # 15. Neechabhanga Yogas (Universal Debilitation Reversal & Cancellation)
+    raw_yogas.extend(detect_neechabhanga_yogas(chart))
+
+    # Dynamic Duplicate Grouping: 9th–10th Lord Parivartana Cross-Module Deduplication
+    canonical_groups = dict(CANONICAL_DUPLICATE_GROUPS)
+    from jyotish.yogas.breakers import get_house_rulers, get_house_of_planet
+    house_rulers = get_house_rulers(chart)
+    lord_9 = house_rulers.get(9, [None])[0]
+    lord_10 = house_rulers.get(10, [None])[0]
+    if lord_9 and lord_10 and lord_9 != lord_10:
+        h9_pos = get_house_of_planet(chart, lord_9)
+        h10_pos = get_house_of_planet(chart, lord_10)
+        if h9_pos == 10 and h10_pos == 9:
+            p1 = lord_9.lower()
+            p2 = lord_10.lower()
+            canonical_groups[f"maha_parivartana_{p1}_{p2}"] = "DHARMA_KARMA_EXCHANGE"
+            canonical_groups[f"maha_parivartana_{p2}_{p1}"] = "DHARMA_KARMA_EXCHANGE"
+            canonical_groups[f"dharma_karma_raja_yoga_{p1}_{p2}"] = "DHARMA_KARMA_EXCHANGE"
+            canonical_groups[f"dharma_karma_raja_yoga_{p2}_{p1}"] = "DHARMA_KARMA_EXCHANGE"
+
     # Global Deduplication
     seen_ids: Set[str] = set()
     seen_canonical_groups: Set[str] = set()
@@ -114,7 +136,7 @@ def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
         if yoga.id in seen_ids:
             continue
 
-        group_key = CANONICAL_DUPLICATE_GROUPS.get(yoga.id)
+        group_key = canonical_groups.get(yoga.id)
         if group_key:
             if group_key in seen_canonical_groups:
                 continue

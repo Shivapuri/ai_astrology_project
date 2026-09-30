@@ -780,7 +780,7 @@ def test_master_evaluator_orchestration_and_deduplication():
     assert payload["total_count"] > 0
     assert "summary" in payload
     assert "yogas" in payload
-    assert len(payload["categories"]) == 16, "Master evaluator must catalog all 16 yoga categories"
+    assert len(payload["categories"]) == 17, "Master evaluator must catalog all 17 yoga categories"
 
     # Verify no duplicate IDs exist in output
     yoga_ids = [y["id"] for y in payload["yogas"]]
@@ -820,6 +820,266 @@ def test_master_evaluator_specific_deduplication_cases():
     # Ensure Śubha Kartarī of Lagna appears at most once
     kartari_lagna_matches = [name for name in yoga_names if "Kartarī" in name and ("Lagna" in name or "1st House" in name)]
     assert len(kartari_lagna_matches) == 1, f"Lagna Kartarī must be deduplicated to exactly 1 instance, found: {kartari_lagna_matches}"
+
+
+# =============================================================================
+# 18. REFACTORED RAJA, NEECHABHANGA & CHAPTER 7 POWER YOGAS DEDICATED TESTS
+# =============================================================================
+
+def test_true_raja_vs_shankha_yoga_distinction():
+    """Verify that 9th+10th alliance is strictly True Raja Yoga and other Kendra-Koṇas are Śaṅkha Yoga."""
+    # 1. 9th lord + 10th lord (Mars + Venus for Leo Lagna in Taurus H10) -> True Raja Yoga
+    chart_raja = make_mock_chart("Leo", {
+        "Mars": {"sign": "Taurus", "longitude": 45.0, "degree_0_to_30": 15.0},
+        "Venus": {"sign": "Taurus", "longitude": 47.0, "degree_0_to_30": 17.0}
+    })
+    yogas_raja = detect_raja_yogas(chart_raja)
+    true_raja = next((y for y in yogas_raja if "dharma_karma_raja_yoga" in y.id), None)
+    assert true_raja is not None, "9th + 10th alliance must produce dharma_karma_raja_yoga ID"
+    assert "Dharma-Karma" in true_raja.name and "Rāja Yoga" in true_raja.name
+    assert true_raja.status == YogaStatus.PURE
+
+    # 2. 1st lord + 4th lord (Mars + Moon for Aries Lagna in H1) -> Śaṅkha Yoga
+    chart_shankha = make_mock_chart("Aries", {
+        "Mars": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0},
+        "Moon": {"sign": "Aries", "longitude": 12.0, "degree_0_to_30": 12.0}
+    })
+    yogas_shankha = detect_raja_yogas(chart_shankha)
+    shankha = next((y for y in yogas_shankha if "shankha_yoga" in y.id), None)
+    assert shankha is not None, "1st + 4th alliance must produce shankha_yoga ID"
+    assert "Śaṅkha Yoga" in shankha.name
+    assert shankha.status == YogaStatus.PURE
+
+
+def test_intervening_planet_breaker_penalizes_conjunction():
+    """Verify that a malefic/enemy sitting in longitude between conjoined lords triggers the Intervening Planet breaker (-35%)."""
+    # Aries Lagna: 9th lord Jupiter at 10° Aries, 10th lord Saturn at 20° Aries.
+    # Mars (natural malefic) at 15° Aries intervenes between them.
+    chart_obstructed = make_mock_chart("Aries", {
+        "Jupiter": {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0},
+        "Mars": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},
+        "Saturn": {"sign": "Aries", "longitude": 20.0, "degree_0_to_30": 20.0}
+    })
+    yogas = detect_raja_yogas(chart_obstructed)
+    dk = next((y for y in yogas if "dharma_karma_raja_yoga" in y.id), None)
+    assert dk is not None, "Must detect Dharma-Karma Raja Yoga"
+    intervening_breaker = next((b for b in dk.breakers if b.factor == "Intervening Planet Obstruction"), None)
+    assert intervening_breaker is not None, "Must trigger Intervening Planet Obstruction breaker"
+    assert intervening_breaker.culprit_planet == "Mars"
+    assert intervening_breaker.penalty == 35.0
+
+
+def test_dusthana_conjunction_breaks_raja_yoga():
+    """Verify that conjunction in 6th, 8th, or 12th house (Mahita Bhava failure) breaks the Raja Yoga (score <= 25, status BROKEN)."""
+    # Aries Lagna: 9th lord Jupiter + 10th lord Saturn conjoined in Virgo (House 6)
+    chart_dusthana = make_mock_chart("Aries", {
+        "Jupiter": {"sign": "Virgo", "longitude": 165.0, "degree_0_to_30": 15.0},
+        "Saturn": {"sign": "Virgo", "longitude": 168.0, "degree_0_to_30": 18.0}
+    })
+    yogas = detect_raja_yogas(chart_dusthana)
+    dk = next((y for y in yogas if "dharma_karma_raja_yoga" in y.id), None)
+    assert dk is not None, "Must detect the conjunction attempt"
+    assert dk.status == YogaStatus.BROKEN, "Dusthana conjunction must mark status as BROKEN"
+    assert dk.plausibility_score <= 25.0, "Broken Raja Yoga must have plausibility score <= 25%"
+    assert any("Dusthana Conjunction" in b.factor for b in dk.breakers), "Must record Dusthana Conjunction breaker"
+
+
+def test_saturn_strictly_excluded_from_four_planet_digbala():
+    """Verify that Saturn is strictly excluded from the 4-to-5 planet Digbala count in Chapter 7 power yogas."""
+    # Chart with 4 planets in Digbala including Saturn: Sun (H10), Mars (H10), Jupiter (H1), Saturn (H7)
+    chart_with_saturn = make_mock_chart("Aries", {
+        "Sun": {"sign": "Capricorn", "longitude": 285.0, "degree_0_to_30": 15.0},      # H10 Digbala
+        "Mars": {"sign": "Capricorn", "longitude": 280.0, "degree_0_to_30": 10.0},     # H10 Digbala
+        "Jupiter": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},       # H1 Digbala
+        "Saturn": {"sign": "Libra", "longitude": 195.0, "degree_0_to_30": 15.0}        # H7 Digbala
+    })
+    yogas_sat = detect_chapter7_power_yogas(chart_with_saturn)
+    supreme_sat = next((y for y in yogas_sat if "Supreme Kingly Digbala" in y.name), None)
+    assert supreme_sat is None, "Supreme Kingly Digbala must NOT trigger when 4th planet is Saturn"
+    std_sat = next((y for y in yogas_sat if "Digbala Sovereignty" in y.name), None)
+    assert std_sat is not None, "Standard Digbala Sovereignty must be recorded"
+    assert any("Saturn Excluded from Supreme Digbala" in b.factor for b in std_sat.breakers)
+
+    # Chart with 4 non-Saturn planets in Digbala: Sun (H10), Mars (H10), Jupiter (H1), Mercury (H1)
+    chart_pure_dig = make_mock_chart("Aries", {
+        "Sun": {"sign": "Capricorn", "longitude": 285.0, "degree_0_to_30": 15.0},      # H10 Digbala
+        "Mars": {"sign": "Capricorn", "longitude": 280.0, "degree_0_to_30": 10.0},     # H10 Digbala
+        "Jupiter": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},       # H1 Digbala
+        "Mercury": {"sign": "Aries", "longitude": 20.0, "degree_0_to_30": 20.0}        # H1 Digbala
+    })
+    yogas_pure = detect_chapter7_power_yogas(chart_pure_dig)
+    supreme_pure = next((y for y in yogas_pure if "Supreme Kingly Digbala" in y.name), None)
+    assert supreme_pure is not None, "Supreme Kingly Digbala must trigger for 4 non-Saturn planets"
+    assert supreme_pure.status == YogaStatus.PURE
+
+
+def test_neechabhanga_kendra_vs_dusthana_classification():
+    """Verify Neechabhanga generates distinct YogaInstance records for Kendra (Raja) vs. Dusthana (Simple) placements."""
+    from jyotish.yogas.neechabhanga import detect_neechabhanga_yogas
+
+    # 1. Kendra Placement: Mercury in Pisces (H4 for Sagittarius Lagna), Jupiter (dispositor) in Gemini (H7 Kendra)
+    chart_kendra = make_mock_chart("Sagittarius", {
+        "Mercury": {"sign": "Pisces", "longitude": 345.0, "degree_0_to_30": 15.0},    # H4 Kendra
+        "Jupiter": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0},     # H7 Kendra
+        "Moon": {"sign": "Sagittarius", "longitude": 255.0, "degree_0_to_30": 15.0}
+    })
+    yogas_k = detect_neechabhanga_yogas(chart_kendra)
+    nb_raja = next((y for y in yogas_k if y.id == "neechabhanga_raja_yoga_mercury"), None)
+    assert nb_raja is not None, "Must detect Nīcabhaṅga Rāja Yoga for fallen planet in Kendra"
+    assert "Nīcabhaṅga Rāja Yoga" in nb_raja.name
+    assert nb_raja.status in (YogaStatus.PURE, YogaStatus.RESCUED)
+    assert "Adversity Transmuted to Sovereignty" in nb_raja.archetype
+
+    # 2. Dusthana Placement: Saturn in Aries (H6 for Scorpio Lagna), Mars (dispositor) in Capricorn (H10 from Moon in Aries)
+    chart_dusthana = make_mock_chart("Scorpio", {
+        "Saturn": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},       # H6 Dusthana
+        "Mars": {"sign": "Capricorn", "longitude": 285.0, "degree_0_to_30": 15.0},    # Exalted, Kendra H10 from Moon
+        "Moon": {"sign": "Aries", "longitude": 20.0, "degree_0_to_30": 20.0}
+    })
+    yogas_d = detect_neechabhanga_yogas(chart_dusthana)
+    nb_simple = next((y for y in yogas_d if y.id == "neecha_bhanga_simple_saturn"), None)
+    assert nb_simple is not None, "Must detect Nīca Bhaṅga Cancellation for fallen planet in Dusthana"
+    assert "Nīca Bhaṅga Cancellation" in nb_simple.name
+    assert nb_simple.status == YogaStatus.RESCUED
+    assert "Deficit Overcome without Worldly Command" in nb_simple.archetype
+
+
+def test_power_yogas_vargottama_and_bright_moon_and_vakra():
+    """Verify Vargottama 1st/9th lords, Full Moon Kendra, Vakra Bala retrogression, and Upachaya malefics."""
+    # 1. Vargottama 1st Lord + Exalted 9th Lord
+    # Aries Lagna: Mars at 2.0° Aries (D1 Aries, D9 Aries -> Vargottama in H1), Jupiter in Cancer H4 (exalted)
+    chart_varg = make_mock_chart("Aries", {
+        "Mars": {"sign": "Aries", "longitude": 2.0, "degree_0_to_30": 2.0},
+        "Jupiter": {"sign": "Cancer", "longitude": 95.0, "degree_0_to_30": 5.0}
+    })
+    y_varg = detect_chapter7_power_yogas(chart_varg)
+    varg_l1_l9 = next((y for y in y_varg if y.id == "vargottama_royal_yoga_l1_l9"), None)
+    assert varg_l1_l9 is not None, "Must detect Vargottama 1st Lord with Fortified 9th Lord"
+
+    # 2. Vakra Bala Retrogression Sovereignty (2 retrograde planets in auspicious houses)
+    chart_vakra = make_mock_chart("Aries", {
+        "Mars": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0, "is_retrograde": True},
+        "Jupiter": {"sign": "Leo", "longitude": 135.0, "degree_0_to_30": 15.0, "is_retrograde": True}
+    })
+    y_vakra = detect_chapter7_power_yogas(chart_vakra)
+    vakra = next((y for y in y_vakra if "vakra_bala_sovereignty" in y.id), None)
+    assert vakra is not None, "Must detect Vakra Bala Sovereignty for 2 retrograde planets"
+    assert vakra.status == YogaStatus.PURE
+
+    # 3. Malefics in Upachayas (Sun, Mars, Saturn in 3, 6, 11 from Lagna)
+    chart_upachaya = make_mock_chart("Aries", {
+        "Sun": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0},       # H3
+        "Mars": {"sign": "Virgo", "longitude": 165.0, "degree_0_to_30": 15.0},      # H6
+        "Saturn": {"sign": "Aquarius", "longitude": 315.0, "degree_0_to_30": 15.0}  # H11
+    })
+    y_upachaya = detect_chapter7_power_yogas(chart_upachaya)
+    upachaya = next((y for y in y_upachaya if y.id == "malefics_upachaya_sovereignty"), None)
+    assert upachaya is not None, "Must detect Malefics in Upachayas Sovereignty"
+
+
+# =============================================================================
+# 19. SCRIPTURAL EDGE CASES & REFINEMENTS TESTS
+# =============================================================================
+
+def test_dusthana_mutual_aspect_breaks_raja_yoga():
+    """Verify that mutual aspect involving a Dusthana house (6, 8, 12) marks the yoga as BROKEN (score <= 25)."""
+    # Leo Lagna: 9th lord Mars in Capricorn (H6), 10th lord Venus in Cancer (H12). Opposing across 6/12 axis.
+    chart_dusthana_aspect = make_mock_chart(
+        "Leo",
+        {
+            "Mars": {"sign": "Capricorn", "longitude": 285.0, "degree_0_to_30": 15.0},  # H6
+            "Venus": {"sign": "Cancer", "longitude": 105.0, "degree_0_to_30": 15.0}     # H12
+        },
+        aspects={
+            "Mars": {"Venus": {"raw": 55.0, "net": 55.0}},
+            "Venus": {"Mars": {"raw": 55.0, "net": 55.0}}
+        }
+    )
+    yogas = detect_raja_yogas(chart_dusthana_aspect)
+    dk = next((y for y in yogas if "dharma_karma_raja_yoga" in y.id), None)
+    assert dk is not None, "Must detect the mutual aspect attempt between 9th and 10th lords"
+    assert dk.status == YogaStatus.BROKEN, "Mutual aspect across Dusthanas must break Raja Yoga"
+    assert dk.plausibility_score <= 25.0, "Broken Raja Yoga must have plausibility score <= 25%"
+    assert any("Dusthana Aspect Connection" in b.factor for b in dk.breakers), "Must record Dusthana Aspect Connection breaker"
+
+
+def test_neechabhanga_in_dusthana_cannot_support_raja_yoga():
+    """Verify that a debilitated lord with cancellation in a Dusthana flags an incomplete foundation and breaks Raja Yoga."""
+    # Aries Lagna: 10th lord Saturn in Aries H1, 9th lord Jupiter in Capricorn (debilitated in H10 Kendra).
+    # Now let's test a debilitated lord trapped in a Dusthana:
+    # Leo Lagna: 9th lord Mars in Cancer (debilitated in H12), conjoined with Venus in Cancer H12.
+    # Dispositor Moon is in Taurus H10 (Kendra, rescuing debility).
+    chart_rescued_in_dusthana = make_mock_chart("Leo", {
+        "Mars": {"sign": "Cancer", "longitude": 105.0, "degree_0_to_30": 15.0},   # H12, debilitated
+        "Venus": {"sign": "Cancer", "longitude": 108.0, "degree_0_to_30": 18.0},  # H12
+        "Moon": {"sign": "Taurus", "longitude": 45.0, "degree_0_to_30": 15.0}     # H10 Kendra rescues Mars
+    })
+    yogas = detect_raja_yogas(chart_rescued_in_dusthana)
+    dk = next((y for y in yogas if "dharma_karma_raja_yoga" in y.id), None)
+    assert dk is not None
+    assert any("Simple Cancellation in Dusthana" in b.factor for b in dk.breakers), "Must flag incomplete foundation breaker"
+    assert dk.status == YogaStatus.BROKEN
+
+
+def test_natural_yogakaraka_amplification_bonus():
+    """Verify that an alliance involving an inherent single-planet Yogakāraka receives a +10% bonus and positive factor."""
+    # Cancer Lagna: Mars is natural Yogakāraka (rules H5 Koṇa & H10 Kendra).
+    # 9th lord is Jupiter (rules H9 Koṇa).
+    # Combine Mars + Jupiter in Scorpio (H5 Koṇa), with tight conjunction:
+    chart_yk = make_mock_chart("Cancer", {
+        "Mars": {"sign": "Scorpio", "longitude": 225.0, "degree_0_to_30": 15.0},
+        "Jupiter": {"sign": "Scorpio", "longitude": 227.0, "degree_0_to_30": 17.0}
+    })
+    yogas = detect_raja_yogas(chart_yk)
+    dk = next((y for y in yogas if "dharma_karma_raja_yoga" in y.id), None)
+    assert dk is not None, "Must detect 9th + 10th alliance (Jupiter + Mars)"
+    assert any("Natural Yogakāraka Amplification" in f for f in dk.positive_factors), "Must award Natural Yogakāraka Amplification factor"
+    assert dk.plausibility_score == 100.0, "Natural Yogakāraka amplification with tight conjunction must achieve maximum plausibility"
+
+
+def test_nested_lagna_degree_fallback_in_power_yogas():
+    """Verify that _get_navamsha_sign correctly extracts degree from chart['vargas']['D1']['lagna']."""
+    from jyotish.yogas.power_yogas import _get_navamsha_sign
+
+    # 1. 2.0° Aries -> First Navamsha of Aries is Aries
+    chart_d9_a = {
+        "vargas": {
+            "D1": {
+                "lagna": {"sign": "Aries", "degree_0_to_30": 2.0}
+            }
+        }
+    }
+    assert _get_navamsha_sign(chart_d9_a, "Lagna") == "Aries"
+
+    # 2. 28.0° Aries -> 9th Navamsha of Aries (Fire sign) is Sagittarius
+    chart_d9_b = {
+        "vargas": {
+            "D1": {
+                "lagna": {"sign": "Aries", "degree_0_to_30": 28.0}
+            }
+        }
+    }
+    assert _get_navamsha_sign(chart_d9_b, "Lagna") == "Sagittarius"
+
+
+def test_dharma_karma_parivartana_cross_module_deduplication():
+    """Verify that the 9th–10th lord mutual exchange is cleanly deduplicated to a single instance across modules."""
+    # Leo Lagna: 9th lord Mars in Taurus (H10), 10th lord Venus in Aries (H9).
+    chart_exchange = make_mock_chart("Leo", {
+        "Mars": {"sign": "Taurus", "longitude": 45.0, "degree_0_to_30": 15.0},   # H10
+        "Venus": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0}    # H9
+    })
+    payload = detect_all_yogas(chart_exchange)
+
+    # Check for any yogas representing the 9th-10th exchange
+    exchange_matches = [
+        y for y in payload["yogas"]
+        if "dharma_karma_exchange" in y["id"] or
+           "power_yoga_dharma_karma_exchange" in y["id"] or
+           ("maha_parivartana" in y["id"] and set(y["participating_planets"]) == {"Mars", "Venus"}) or
+           ("dharma_karma_raja_yoga" in y["id"] and set(y["participating_planets"]) == {"Mars", "Venus"})
+    ]
+    assert len(exchange_matches) == 1, f"9th–10th Parivartana must be deduplicated to exactly 1 card, found: {[m['id'] for m in exchange_matches]}"
 
 
 
