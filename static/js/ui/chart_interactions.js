@@ -662,7 +662,7 @@
         resetFloatingWindowPosition();
 
         if (card) {
-            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita'].includes(widgetType);
+            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita', 'report'].includes(widgetType);
             const w = isWide ? Math.min(1480, window.innerWidth - 40) : Math.min(1000, window.innerWidth - 40);
             const h = Math.min(840, window.innerHeight - 60);
             card.style.width = w + 'px';
@@ -671,7 +671,7 @@
             card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
         }
 
-        const titleText = cell.querySelector('.chart-toolbar strong, .chart-toolbar .context-info-title, .chart-toolbar .aspect-table-title')?.textContent || 'Table';
+        const titleText = cell.querySelector('.chart-toolbar strong, .chart-toolbar .context-info-title, .chart-toolbar .aspect-table-title, .chart-toolbar span')?.textContent || 'Table';
         const currentData = window.currentChartData;
         const subjectPrefix = currentData && currentData.subject_info ? `${currentData.subject_info.name} — ` : '';
         titleEl.textContent = subjectPrefix + titleText;
@@ -685,7 +685,8 @@
             'yoga-judgment': 'nav-btn-yoga',
             'ashtakavarga': 'nav-btn-ashtaka',
             'planetary-evaluation': 'nav-btn-evaluation',
-            'classical-yogas': 'nav-btn-classical-yogas'
+            'classical-yogas': 'nav-btn-classical-yogas',
+            'report': 'nav-btn-report'
         };
         setActiveFloatingNav(navPills[widgetType] || null);
 

@@ -831,6 +831,7 @@ function updateAllWidgets() {
             else if (type === 'notes' && typeof updateNotesWidget === 'function') updateNotesWidget(cell);
             else if (type === 'rashi-drishti' && typeof updateRashiDrishtiWidget === 'function') updateRashiDrishtiWidget(cell);
             else if (type === 'sign-attributes' && typeof updateSignAttributesWidget === 'function') updateSignAttributesWidget(cell);
+            else if (type === 'report' && typeof updateReportWidget === 'function') updateReportWidget(cell, chartData);
         }
     });
 
@@ -868,17 +869,26 @@ function updateDashaTimelineWidget(cell) {
     }
 }
 
+function assignActiveWidget(widgetType) {
+    const cell = currentActiveCell || document.querySelector('.grid-cell.active-cell') || document.getElementById('cell1') || document.querySelector('.grid-cell');
+    if (cell) {
+        assignWidget(widgetType, cell);
+    }
+}
+
 function assignKalaChart(varga, perspective = null) {
     if (typeof closeKalaMenu === 'function') closeKalaMenu();
-    if (!currentActiveCell) return;
+    const cell = currentActiveCell || document.querySelector('.grid-cell.active-cell') || document.getElementById('cell1') || document.querySelector('.grid-cell');
+    if (!cell) return;
     const rootPlanet = perspective || 'Lagna';
-    assignWidget('chart', currentActiveCell, { varga: varga, root_planet: rootPlanet });
+    assignWidget('chart', cell, { varga: varga, root_planet: rootPlanet });
 }
 
 function assignKalaWidget(widgetType) {
     if (typeof closeKalaMenu === 'function') closeKalaMenu();
-    if (!currentActiveCell) return;
-    assignWidget(widgetType, currentActiveCell);
+    const cell = currentActiveCell || document.querySelector('.grid-cell.active-cell') || document.getElementById('cell1') || document.querySelector('.grid-cell');
+    if (!cell) return;
+    assignWidget(widgetType, cell);
 }
 
 function assignKalaPerspective(type) {
@@ -1991,6 +2001,7 @@ if (typeof window !== 'undefined') {
     window.updateAllWidgets = updateAllWidgets;
     window.assignKalaChart = assignKalaChart;
     window.assignKalaWidget = assignKalaWidget;
+    window.assignActiveWidget = assignActiveWidget;
     window.assignKalaPerspective = assignKalaPerspective;
     window.setGlobalChartStyle = setGlobalChartStyle;
     window.toggleHouseHighlight = toggleHouseHighlight;

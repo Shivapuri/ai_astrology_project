@@ -25,7 +25,7 @@ def test_north_indian_svg():
     svg_str = generate_north_indian(items, varga_name="D9 - Navamsa")
     
     # Assert background is transparent and viewBox provides safe margin
-    assert 'viewBox="0 0 500 500"' in svg_str
+    assert 'viewBox="0 0 560 500"' in svg_str
     assert 'background:transparent' in svg_str
 
 def test_south_indian_multiple_cusps_separated():
@@ -281,10 +281,10 @@ def test_north_indian_outer_triangle_tracks():
     svg_str = generate_north_indian(items, varga_name="D1")
     # Mars in H2 track at y=44 (py=44-2=42 for glyph text)
     assert 'y="42.0"' in svg_str or 'y="42"' in svg_str
-    # Star (Sign glyph) at (140, 120) with font-size="8.5"
-    assert 'x="140" y="120" font-size="8.5"' in svg_str
-    # Square (Cusp number) at (140, 95) with font-size="8.5"
-    assert 'x="140" y="95" font-family="sans-serif" font-size="8.5"' in svg_str
+    # Star (Sign glyph) at (156.8, 120) with font-size="8.5"
+    assert 'x="156.8" y="120" font-size="8.5"' in svg_str
+    # Square (Cusp number) at (156.8, 95) with font-size="8.5"
+    assert 'x="156.8" y="95" font-family="sans-serif" font-size="8.5"' in svg_str
 
 
 def test_north_equidistant_t_spacing():
@@ -305,10 +305,10 @@ def test_north_indian_kendra_positions():
     svg_str = generate_north_indian(items, varga_name="D1")
     # Lagna in H1 track at y=144 (py=144-2=142 for glyph text)
     assert 'y="142.0"' in svg_str or 'y="142"' in svg_str
-    # Star (Sign glyph) at (250, 226) near center
-    assert 'x="250" y="226" font-size="10.5"' in svg_str
-    # Square (Cusp number) at (250, 202) behind star
-    assert 'x="250" y="202" font-family="sans-serif" font-size="10"' in svg_str
+    # Star (Sign glyph) at (280.0, 226) near center
+    assert 'x="280.0" y="226" font-size="10.5"' in svg_str
+    # Square (Cusp number) at (280.0, 202) behind star
+    assert 'x="280.0" y="202" font-family="sans-serif" font-size="10"' in svg_str
 
 
 def test_house_background_colors_north_and_south():

@@ -1,4 +1,5 @@
 import math
+import re
 from typing import Dict, Any, List, Optional
 from jyotish.aspects.aspects import get_graha_drishti, get_aspect_explanation
 from jyotish.relationships.relationships import (
@@ -1164,13 +1165,38 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     svg += '</svg>\n'
     return svg
 
+NORTH_CHART_SCALE_X = 1.12
+NORTH_CHART_VIEW_W = int(round(500 * NORTH_CHART_SCALE_X))  # 560
+NORTH_CHART_VIEW_H = 500
+
+def _scale_svg_path_x(d_str: str, sx: float) -> str:
+    """Scales all X coordinates in an SVG path string by sx while preserving Y coordinates."""
+    tokens = re.split(r'([MCLZz])', d_str)
+    out = []
+    for token in tokens:
+        if not token:
+            continue
+        if token in "MCLZz":
+            out.append(token)
+        else:
+            parts = token.strip().replace(',', ' ').split()
+            scaled_parts = []
+            for i, num_str in enumerate(parts):
+                val = float(num_str)
+                if i % 2 == 0:  # X coordinate
+                    scaled_parts.append(f"{val * sx:.1f}".rstrip('0').rstrip('.'))
+                else:  # Y coordinate
+                    scaled_parts.append(f"{val:.1f}".rstrip('0').rstrip('.'))
+            out.append(" " + " ".join(scaled_parts) + " ")
+    return "".join(out).strip()
+
 def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
-    svg = '<svg width="100%" height="100%" viewBox="0 0 500 500" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg = f'<svg width="100%" height="100%" viewBox="0 0 {NORTH_CHART_VIEW_W} {NORTH_CHART_VIEW_H}" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
     # Parchment Ground
-    svg += '<rect width="500" height="500" fill="#fffdfa"/>\n'
+    svg += f'<rect width="{NORTH_CHART_VIEW_W}" height="{NORTH_CHART_VIEW_H}" fill="#fffdfa"/>\n'
 
-    ni_paths = [
+    ni_paths_base = [
         "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
         "M 18 18 L 250 19 C 224 55, 150 78, 148 148 L 18 18 Z",
         "M 18 18 L 148 148 C 78 150, 55 224, 19 250 L 18 18 Z",
@@ -1184,6 +1210,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         "M 482 18 L 481 250 C 445 224, 422 150, 352 148 L 482 18 Z",
         "M 482 18 L 352 148 C 350 78, 276 55, 250 19 L 482 18 Z"
     ]
+    ni_paths = [_scale_svg_path_x(p, NORTH_CHART_SCALE_X) for p in ni_paths_base]
 
     # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
     for h in range(12):
@@ -1198,36 +1225,45 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             cls = "house-bg house-other"
         svg += f'<path class="{cls}" d="{ni_paths[h]}" fill="{fill_col}"/>\n'
 
-    # Crisp Double Outer Square (Clean edges, inner border placed at 18 to let petal peak just touch it)
-    svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
-    svg += '<rect x="18" y="18" width="464" height="464" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
+    # Crisp Double Outer Rect (Clean edges, horizontally stretched)
+    r1_x = 14 * NORTH_CHART_SCALE_X
+    r1_w = 472 * NORTH_CHART_SCALE_X
+    r2_x = 18 * NORTH_CHART_SCALE_X
+    r2_w = 464 * NORTH_CHART_SCALE_X
+    svg += f'<rect x="{r1_x:.1f}" y="14" width="{r1_w:.1f}" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
+    svg += f'<rect x="{r2_x:.1f}" y="18" width="{r2_w:.1f}" height="464" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
 
     # 4 Diagonal Spines from Corners to Inner Cusp Vertices
-    svg += '<line x1="18" y1="18" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="482" y1="18" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="18" y1="482" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="482" y1="482" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{18 * NORTH_CHART_SCALE_X:.1f}" y1="18" x2="{148 * NORTH_CHART_SCALE_X:.1f}" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{482 * NORTH_CHART_SCALE_X:.1f}" y1="18" x2="{352 * NORTH_CHART_SCALE_X:.1f}" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{18 * NORTH_CHART_SCALE_X:.1f}" y1="482" x2="{148 * NORTH_CHART_SCALE_X:.1f}" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{482 * NORTH_CHART_SCALE_X:.1f}" y1="482" x2="{352 * NORTH_CHART_SCALE_X:.1f}" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
 
     # Diagonal Spines from Cusp Vertices to Center
-    svg += '<line x1="148" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="352" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="148" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="352" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    center_x = 250 * NORTH_CHART_SCALE_X
+    svg += f'<line x1="{148 * NORTH_CHART_SCALE_X:.1f}" y1="148" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{352 * NORTH_CHART_SCALE_X:.1f}" y1="148" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{148 * NORTH_CHART_SCALE_X:.1f}" y1="352" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{352 * NORTH_CHART_SCALE_X:.1f}" y1="352" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
 
     # Central Lotus Kendra Petals (Convex Belly Splines)
+    petals_base = [
+        "M 250 19 C 224 55, 150 78, 148 148",
+        "M 250 19 C 276 55, 350 78, 352 148",
+        "M 19 250 C 55 224, 78 150, 148 148",
+        "M 19 250 C 55 276, 78 350, 148 352",
+        "M 250 481 C 224 445, 150 422, 148 352",
+        "M 250 481 C 276 445, 350 422, 352 352",
+        "M 481 250 C 445 224, 422 150, 352 148",
+        "M 481 250 C 445 276, 422 350, 352 352"
+    ]
     svg += '<g stroke="#3e2819" stroke-width="1.5" fill="none" stroke-linecap="round">\n'
-    svg += '  <path d="M 250 19 C 224 55, 150 78, 148 148"/>\n'
-    svg += '  <path d="M 250 19 C 276 55, 350 78, 352 148"/>\n'
-    svg += '  <path d="M 19 250 C 55 224, 78 150, 148 148"/>\n'
-    svg += '  <path d="M 19 250 C 55 276, 78 350, 148 352"/>\n'
-    svg += '  <path d="M 250 481 C 224 445, 150 422, 148 352"/>\n'
-    svg += '  <path d="M 250 481 C 276 445, 350 422, 352 352"/>\n'
-    svg += '  <path d="M 481 250 C 445 224, 422 150, 352 148"/>\n'
-    svg += '  <path d="M 481 250 C 445 276, 422 350, 352 352"/>\n'
+    for pb in petals_base:
+        svg += f'  <path d="{_scale_svg_path_x(pb, NORTH_CHART_SCALE_X)}"/>\n'
     svg += '</g>\n'
 
-    # Center Bindu Medallion Ring
-    svg += '<circle cx="250" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
+    # Center Bindu Medallion Ring (Remains a perfect circle, un-distorted!)
+    svg += f'<circle cx="{center_x:.1f}" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
 
     anchor_item = next((it for it in items if it.get("name") == root_planet), None)
     if not anchor_item:
@@ -1239,7 +1275,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     # - Kendras: 1, 4, 7, 10 (Strictly H or V across waist, pushed slightly outward; sign/cusp near center medallion)
     # - Outer Triangles: 2, 3, 5, 6, 8, 9, 11, 12 (Strictly H or V along outer border at 44px offset)
     #   Sign (Star) placed in inner corner, Cusp (Square) placed radially outward
-    north_house_configs = [
+    north_house_configs_base = [
         # H1 (Top Kendra) - Horizontal line pushed slightly up (y=144)
         {"type": "kendra", "orientation": "horizontal", "start": (330, 144), "end": (170, 144), "apex": (250, 226), "cusp": (250, 202)},
         # H2 (Outer Triangle) - Horizontal line near top border (y = 44)
@@ -1273,11 +1309,21 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
         # Sign (Star) at (360, 120), Cusp (Square) above star at (360, 95)
         {"type": "triangle", "orientation": "horizontal", "start": (435, 44),  "end": (285, 44),  "apex": (360, 120), "cusp": (360, 95)},
     ]
+    north_house_configs = []
+    for cfg in north_house_configs_base:
+        north_house_configs.append({
+            "type": cfg["type"],
+            "orientation": cfg["orientation"],
+            "start": (round(cfg["start"][0] * NORTH_CHART_SCALE_X, 1), cfg["start"][1]),
+            "end": (round(cfg["end"][0] * NORTH_CHART_SCALE_X, 1), cfg["end"][1]),
+            "apex": (round(cfg["apex"][0] * NORTH_CHART_SCALE_X, 1), cfg["apex"][1]),
+            "cusp": (round(cfg["cusp"][0] * NORTH_CHART_SCALE_X, 1), cfg["cusp"][1]),
+        })
 
     # Header label in House 1 if non-Lagna root
     if root_planet != "Lagna":
         badge_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else root_planet)
-        svg += f'<text x="250" y="34" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C0392B" text-anchor="middle">{badge_title}</text>\n'
+        svg += f'<text x="{center_x:.1f}" y="34" font-family="sans-serif" font-size="11" font-weight="bold" fill="#C0392B" text-anchor="middle">{badge_title}</text>\n'
 
     items_by_house = [[] for _ in range(12)]
     
@@ -1446,51 +1492,62 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
     return svg
 
 def generate_bhava_chalita_north(bhavas, mode="symbol"):
-    svg = '<svg width="100%" height="100%" viewBox="0 0 500 500" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
-    svg += '<rect width="500" height="500" fill="#fffdfa"/>\n'
-    svg += '<rect x="14" y="14" width="472" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
-    svg += '<rect x="19" y="19" width="462" height="462" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
+    svg = f'<svg width="100%" height="100%" viewBox="0 0 {NORTH_CHART_VIEW_W} {NORTH_CHART_VIEW_H}" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
+    svg += f'<rect width="{NORTH_CHART_VIEW_W}" height="{NORTH_CHART_VIEW_H}" fill="#fffdfa"/>\n'
+    r1_x = 14 * NORTH_CHART_SCALE_X
+    r1_w = 472 * NORTH_CHART_SCALE_X
+    r2_x = 19 * NORTH_CHART_SCALE_X
+    r2_w = 462 * NORTH_CHART_SCALE_X
+    svg += f'<rect x="{r1_x:.1f}" y="14" width="{r1_w:.1f}" height="472" fill="none" stroke="#3e2819" stroke-width="2.2"/>\n'
+    svg += f'<rect x="{r2_x:.1f}" y="19" width="{r2_w:.1f}" height="462" fill="none" stroke="#b45309" stroke-width="0.75" stroke-opacity="0.6"/>\n'
 
     # 4 Diagonal Spines from Corners to Inner Cusp Vertices
-    svg += '<line x1="19" y1="19" x2="148" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="481" y1="19" x2="352" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="19" y1="481" x2="148" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="481" y1="481" x2="352" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{19 * NORTH_CHART_SCALE_X:.1f}" y1="19" x2="{148 * NORTH_CHART_SCALE_X:.1f}" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{481 * NORTH_CHART_SCALE_X:.1f}" y1="19" x2="{352 * NORTH_CHART_SCALE_X:.1f}" y2="148" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{19 * NORTH_CHART_SCALE_X:.1f}" y1="481" x2="{148 * NORTH_CHART_SCALE_X:.1f}" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{481 * NORTH_CHART_SCALE_X:.1f}" y1="481" x2="{352 * NORTH_CHART_SCALE_X:.1f}" y2="352" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
 
     # Diagonal Spines from Cusp Vertices to Center
-    svg += '<line x1="148" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="352" y1="148" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="148" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
-    svg += '<line x1="352" y1="352" x2="250" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    center_x = 250 * NORTH_CHART_SCALE_X
+    svg += f'<line x1="{148 * NORTH_CHART_SCALE_X:.1f}" y1="148" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{352 * NORTH_CHART_SCALE_X:.1f}" y1="148" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{148 * NORTH_CHART_SCALE_X:.1f}" y1="352" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
+    svg += f'<line x1="{352 * NORTH_CHART_SCALE_X:.1f}" y1="352" x2="{center_x:.1f}" y2="250" stroke="#3e2819" stroke-width="1.3" stroke-linecap="round"/>\n'
 
     # Central Lotus Kendra Petals (Convex Belly Splines)
+    petals_base = [
+        "M 250 19 C 224 55, 150 78, 148 148",
+        "M 250 19 C 276 55, 350 78, 352 148",
+        "M 19 250 C 55 224, 78 150, 148 148",
+        "M 19 250 C 55 276, 78 350, 148 352",
+        "M 250 481 C 224 445, 150 422, 148 352",
+        "M 250 481 C 276 445, 350 422, 352 352",
+        "M 481 250 C 445 224, 422 150, 352 148",
+        "M 481 250 C 445 276, 422 350, 352 352"
+    ]
     svg += '<g stroke="#3e2819" stroke-width="1.5" fill="none" stroke-linecap="round">\n'
-    svg += '  <path d="M 250 19 C 224 55, 150 78, 148 148"/>\n'
-    svg += '  <path d="M 250 19 C 276 55, 350 78, 352 148"/>\n'
-    svg += '  <path d="M 19 250 C 55 224, 78 150, 148 148"/>\n'
-    svg += '  <path d="M 19 250 C 55 276, 78 350, 148 352"/>\n'
-    svg += '  <path d="M 250 481 C 224 445, 150 422, 148 352"/>\n'
-    svg += '  <path d="M 250 481 C 276 445, 350 422, 352 352"/>\n'
-    svg += '  <path d="M 481 250 C 445 224, 422 150, 352 148"/>\n'
-    svg += '  <path d="M 481 250 C 445 276, 422 350, 352 352"/>\n'
+    for pb in petals_base:
+        svg += f'  <path d="{_scale_svg_path_x(pb, NORTH_CHART_SCALE_X)}"/>\n'
     svg += '</g>\n'
 
     # Center Bindu Medallion Ring
-    svg += '<circle cx="250" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
+    svg += f'<circle cx="{center_x:.1f}" cy="250" r="5" fill="#fffdfa" stroke="#b45309" stroke-width="1.2"/>\n'
     
-    ni_centers = [
+    ni_centers_base = [
         (250, 125), (125, 58),  (60, 125),  (125, 250),
         (60, 375),  (125, 442), (250, 375), (375, 442),
         (440, 375), (375, 250), (440, 125), (375, 58)
     ]
+    ni_centers = [(cx * NORTH_CHART_SCALE_X, cy) for cx, cy in ni_centers_base]
     
-    sign_pos = [
+    sign_pos_base = [
         (250, 218), (180, 35),  (35, 180),  (218, 250),
         (35, 320),  (180, 465), (250, 282), (320, 465),
         (465, 320), (282, 250), (465, 180), (320, 35)
     ]
+    sign_pos = [(sx * NORTH_CHART_SCALE_X, sy) for sx, sy in sign_pos_base]
     
-    ni_paths = [
+    ni_paths_base = [
         "M 250 19 C 224 55, 150 78, 148 148 L 250 250 L 352 148 C 350 78, 276 55, 250 19 Z",
         "M 19 19 L 250 19 C 224 55, 150 78, 148 148 L 19 19 Z",
         "M 19 19 L 148 148 C 78 150, 55 224, 19 250 L 19 19 Z",
@@ -1504,6 +1561,7 @@ def generate_bhava_chalita_north(bhavas, mode="symbol"):
         "M 481 19 L 481 250 C 445 224, 422 150, 352 148 L 481 19 Z",
         "M 481 19 L 352 148 C 350 78, 276 55, 250 19 L 481 19 Z"
     ]
+    ni_paths = [_scale_svg_path_x(p, NORTH_CHART_SCALE_X) for p in ni_paths_base]
     
     for h_idx in range(12):
         cx, cy = ni_centers[h_idx]

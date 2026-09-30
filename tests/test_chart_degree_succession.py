@@ -152,11 +152,11 @@ def test_north_indian_all_four_kendras_degree_succession():
     assert sun_x > moon_x, f"H1: lower deg Sun x ({sun_x}) must be > higher deg Moon x ({moon_x})"
     assert abs(sun_y - 142.0) < 0.1 and abs(moon_y - 142.0) < 0.1, "H1 track must be horizontal at y=144 (text y=142)"
 
-    # H4: Top to Bottom (lower degree Mars y < higher degree Mercury y), x=144
+    # H4: Top to Bottom (lower degree Mars y < higher degree Mercury y), x=144 * 1.12 = 161.28
     mars_x, mars_y = extract_planet_pos(svg, "Mars")
     merc_x, merc_y = extract_planet_pos(svg, "Mercury")
     assert mars_y < merc_y, f"H4: lower deg Mars y ({mars_y}) must be < higher deg Mercury y ({merc_y})"
-    assert abs(mars_x - 144.0) < 0.1 and abs(merc_x - 144.0) < 0.1, "H4 track must be vertical at x=144"
+    assert abs(mars_x - 161.28) < 0.1 and abs(merc_x - 161.28) < 0.1, "H4 track must be vertical at x=144 * 1.12"
 
     # H7: Left to Right (lower degree Jupiter x < higher degree Venus x), y=356
     jup_x, jup_y = extract_planet_pos(svg, "Jupiter")
@@ -164,11 +164,11 @@ def test_north_indian_all_four_kendras_degree_succession():
     assert jup_x < venus_x, f"H7: lower deg Jupiter x ({jup_x}) must be < higher deg Venus x ({venus_x})"
     assert abs(jup_y - 354.0) < 0.1 and abs(venus_y - 354.0) < 0.1, "H7 track must be horizontal at y=356 (text y=354)"
 
-    # H10: Bottom to Top (lower degree Saturn y > higher degree Rahu y), x=356
+    # H10: Bottom to Top (lower degree Saturn y > higher degree Rahu y), x=356 * 1.12 = 398.72
     sat_x, sat_y = extract_planet_pos(svg, "Saturn")
     rahu_x, rahu_y = extract_planet_pos(svg, "Rahu")
     assert sat_y > rahu_y, f"H10: lower deg Saturn y ({sat_y}) must be > higher deg Rahu y ({rahu_y})"
-    assert abs(sat_x - 356.0) < 0.1 and abs(rahu_x - 356.0) < 0.1, "H10 track must be vertical at x=356"
+    assert abs(sat_x - 398.72) < 0.1 and abs(rahu_x - 398.72) < 0.1, "H10 track must be vertical at x=356 * 1.12"
 
 
 def test_north_indian_kendra_center_sign_and_cusp_anchors():
@@ -185,21 +185,21 @@ def test_north_indian_kendra_center_sign_and_cusp_anchors():
     ]
     svg = generate_north_indian(items, varga_name="D1")
 
-    # H1 (Top): Sign at (250, 226), Cusp at (250, 202)
-    assert 'x="250" y="226" font-size="10.5"' in svg
-    assert 'x="250" y="202" font-family="sans-serif" font-size="10"' in svg
+    # H1 (Top): Sign at (280.0, 226), Cusp at (280.0, 202)
+    assert 'x="280.0" y="226" font-size="10.5"' in svg
+    assert 'x="280.0" y="202" font-family="sans-serif" font-size="10"' in svg
 
-    # H4 (Left): Sign at (226, 250), Cusp at (202, 250)
-    assert 'x="226" y="250" font-size="10.5"' in svg
-    assert 'x="202" y="250" font-family="sans-serif" font-size="10"' in svg
+    # H4 (Left): Sign at (253.1, 250), Cusp at (226.2, 250)
+    assert 'x="253.1" y="250" font-size="10.5"' in svg
+    assert 'x="226.2" y="250" font-family="sans-serif" font-size="10"' in svg
 
-    # H7 (Bottom): Sign at (250, 274), Cusp at (250, 298)
-    assert 'x="250" y="274" font-size="10.5"' in svg
-    assert 'x="250" y="298" font-family="sans-serif" font-size="10"' in svg
+    # H7 (Bottom): Sign at (280.0, 274), Cusp at (280.0, 298)
+    assert 'x="280.0" y="274" font-size="10.5"' in svg
+    assert 'x="280.0" y="298" font-family="sans-serif" font-size="10"' in svg
 
-    # H10 (Right): Sign at (274, 250), Cusp at (298, 250)
-    assert 'x="274" y="250" font-size="10.5"' in svg
-    assert 'x="298" y="250" font-family="sans-serif" font-size="10"' in svg
+    # H10 (Right): Sign at (306.9, 250), Cusp at (333.8, 250)
+    assert 'x="306.9" y="250" font-size="10.5"' in svg
+    assert 'x="333.8" y="250" font-family="sans-serif" font-size="10"' in svg
 
 
 def test_north_indian_outer_houses_geometry():
@@ -223,9 +223,9 @@ def test_north_indian_outer_houses_geometry():
     assert mars_x > venus_x, f"H2: lower deg Mars x ({mars_x}) must be > higher deg Venus x ({venus_x})"
     assert abs(mars_y - 42.0) < 0.1 and abs(venus_y - 42.0) < 0.1, "H2 track must be at y=44 (text y=42)"
 
-    # Sign at (140, 120), Cusp at (140, 95)
-    assert 'x="140" y="120" font-size="8.5"' in svg
-    assert 'x="140" y="95" font-family="sans-serif" font-size="8.5"' in svg
+    # Sign at (156.8, 120), Cusp at (156.8, 95)
+    assert 'x="156.8" y="120" font-size="8.5"' in svg
+    assert 'x="156.8" y="95" font-family="sans-serif" font-size="8.5"' in svg
 
 
 def test_equidistant_spacing_algorithms():
@@ -258,17 +258,17 @@ def test_north_indian_house_colorization_and_border_geometry():
     ]
     svg = generate_north_indian(items, varga_name="D1")
 
-    # 1. Inner beige border at 18
-    assert '<rect x="18" y="18" width="464" height="464"' in svg, "Inner beige border must be at 18 to let petal peaks touch"
+    # 1. Inner beige border scaled horizontally by 1.12
+    assert '<rect x="20.2" y="18" width="519.7" height="464"' in svg, "Inner beige border must be scaled by 1.12"
 
-    # 2. Corner diagonal spines at 18 and 482
-    assert '<line x1="18" y1="18" x2="148" y2="148"' in svg
-    assert '<line x1="482" y1="18" x2="352" y2="148"' in svg
-    assert '<line x1="18" y1="482" x2="148" y2="352"' in svg
-    assert '<line x1="482" y1="482" x2="352" y2="352"' in svg
+    # 2. Corner diagonal spines at 20.2 and 539.8
+    assert '<line x1="20.2" y1="18" x2="165.8" y2="148"' in svg
+    assert '<line x1="539.8" y1="18" x2="394.2" y2="148"' in svg
+    assert '<line x1="20.2" y1="482" x2="165.8" y2="352"' in svg
+    assert '<line x1="539.8" y1="482" x2="394.2" y2="352"' in svg
 
-    # 3. House color fills (Option 4)
-    assert svg.count('fill="#eedec9"') == 4, "Must have exactly 4 Kendra house fills (#eedec9)"
-    assert svg.count('fill="#faede0"') == 2, "Must have exactly 2 Trikona house fills (#faede0)"
-    assert svg.count('fill="#f9f5eb"') == 6, "Must have exactly 6 Other house fills (#f9f5eb)"
+    # 3. House color fills with CSS variables
+    assert svg.count('fill="var(--chart-kendra-color, #eedec9)"') == 4, "Must have exactly 4 Kendra house fills"
+    assert svg.count('fill="var(--chart-trikona-color, #faede0)"') == 2, "Must have exactly 2 Trikona house fills"
+    assert svg.count('fill="var(--chart-other-color, #f9f5eb)"') == 6, "Must have exactly 6 Other house fills"
 
