@@ -1,0 +1,796 @@
+"""
+jyotish/bhavas/bhava_bala.py
+============================
+Enterprise-Grade House Capacity & Bhāva Synthesis Engine for Astra Jyotish.
+
+Calibrated against:
+- Parāśara's BPHS (Ch. 27–31, 74)
+- Mantreśvara's Phaladeepika (Ch. 4, 14, 15)
+
+Key Pillars & Diagnostics:
+1. Quantitative 3-Pillar Parāśarī Bhāva Bala (Virūpas & Rūpas).
+2. Phaladeepika Lord Digbala amplification & Sign/Sect matching.
+3. Aspect ray ingestion with Phaladeepika House Lord Protection rule.
+4. Triad Triangulation (Janma Lagna, Chandra Lagna, Kāraka Lagna).
+5. 3-Focal-Point Cumulative Analysis (Bhāva, Bhāveśa, Kāraka).
+6. Bhāva Sandhi, Wall Leakage, Kartarī Yogas, and Kārakobhāvanāśāya.
+"""
+
+from typing import Dict, List, Any, Optional, Tuple
+
+SIGNS: List[str] = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
+
+SIGN_LORDS: Dict[str, str] = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter"
+}
+
+ZERO_HOUSES: Dict[str, int] = {
+    "Nara": 7,          # Human signs peak in 1st, zero in 7th
+    "Jalachara": 10,    # Watery signs peak in 4th, zero in 10th
+    "Keeta": 1,         # Insect signs peak in 7th, zero in 1st
+    "Chathushpada": 4   # Quadruped signs peak in 10th, zero in 4th
+}
+
+BHAVA_KARAKAS: Dict[int, List[str]] = {
+    1: ["Sun"],
+    2: ["Jupiter"],
+    3: ["Mars"],
+    4: ["Moon", "Mercury"],
+    5: ["Jupiter"],
+    6: ["Mars", "Saturn"],
+    7: ["Venus"],
+    8: ["Saturn"],
+    9: ["Jupiter", "Sun"],
+    10: ["Mercury", "Sun", "Jupiter", "Saturn"],
+    11: ["Jupiter"],
+    12: ["Saturn", "Ketu"]
+}
+
+PLANET_REQUIRED_VIRUPAS: Dict[str, float] = {
+    "Mercury": 420.0, "Sun": 390.0, "Jupiter": 390.0,
+    "Moon": 360.0, "Venus": 330.0, "Mars": 300.0, "Saturn": 300.0
+}
+
+NATURAL_MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
+NATURAL_BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
+UPACAYA_HOUSES = {3, 6, 10, 11}
+KENDRA_HOUSES = {1, 4, 7, 10}
+TRIKONA_HOUSES = {1, 5, 9}
+DUHSTHANA_HOUSES = {6, 8, 12}
+
+
+def get_sign_genus(sign_name: str, deg_in_sign: float) -> str:
+    """Classifies sign degree into Nara, Jalachara, Chathushpada, or Keeta per BPHS Ch. 27."""
+    if sign_name in ["Gemini", "Virgo", "Libra", "Aquarius"]:
+        return "Nara"
+    if sign_name == "Sagittarius":
+        return "Nara" if deg_in_sign < 15.0 else "Chathushpada"
+    if sign_name in ["Cancer", "Pisces"]:
+        return "Jalachara"
+    if sign_name == "Capricorn":
+        return "Chathushpada" if deg_in_sign < 15.0 else "Jalachara"
+    if sign_name in ["Aries", "Taurus", "Leo"]:
+        return "Chathushpada"
+    if sign_name == "Scorpio":
+        return "Keeta"
+    return "Nara"
+
+
+def calculate_bhava_dig_bala(bhava_num: int, bhava_madhya_lon: float) -> float:
+    """Computes Bhava Digbala (0 to 60 Virūpas)."""
+    sign_idx = int((bhava_madhya_lon % 360.0) / 30.0)
+    deg_in_sign = bhava_madhya_lon % 30.0
+    genus = get_sign_genus(SIGNS[sign_idx], deg_in_sign)
+    
+    zero_h = ZERO_HOUSES[genus]
+    dist = abs(bhava_num - zero_h) % 12
+    if dist > 6:
+        dist = 12 - dist
+        
+    return round(dist * 10.0, 2)
+
+
+def _extract_cusp_drishti(
+    cusp_drishti_matrix: Optional[Dict[str, Any]], 
+    planet: str, 
+    house_num: int
+) -> Optional[float]:
+    """Safely extracts raw aspect ray from dual-indexed cusp drishti matrix."""
+    if not cusp_drishti_matrix or not isinstance(cusp_drishti_matrix, dict):
+        return None
+
+    # Check nested "by_planet" (from calculate_aspect_matrices)
+    by_planet = cusp_drishti_matrix.get("by_planet")
+    if isinstance(by_planet, dict) and planet in by_planet and isinstance(by_planet[planet], dict):
+        p_sub = by_planet[planet]
+        if house_num in p_sub:
+            return float(p_sub[house_num])
+        if str(house_num) in p_sub:
+            return float(p_sub[str(house_num)])
+
+    # Check nested "by_house" (from calculate_aspect_matrices)
+    by_house = cusp_drishti_matrix.get("by_house")
+    if isinstance(by_house, dict):
+        for h_key in (house_num, str(house_num)):
+            if h_key in by_house and isinstance(by_house[h_key], dict):
+                h_sub = by_house[h_key]
+                if planet in h_sub:
+                    return float(h_sub[planet])
+        
+    # Format 1: matrix[planet][house_num]
+    if planet in cusp_drishti_matrix and isinstance(cusp_drishti_matrix[planet], dict):
+        p_sub = cusp_drishti_matrix[planet]
+        if house_num in p_sub:
+            return float(p_sub[house_num])
+        if str(house_num) in p_sub:
+            return float(p_sub[str(house_num)])
+            
+    # Format 2: matrix[house_num][planet]
+    for h_key in (house_num, str(house_num)):
+        if h_key in cusp_drishti_matrix and isinstance(cusp_drishti_matrix[h_key], dict):
+            h_sub = cusp_drishti_matrix[h_key]
+            if planet in h_sub:
+                return float(h_sub[planet])
+                
+    return None
+
+
+def _calculate_fallback_drishti_ray(planet: str, p_lon: float, target_lon: float) -> float:
+    """Parāśarī graduated aspect curve fallback (0-60 Virūpas)."""
+    try:
+        from jyotish.aspects.aspects import get_graha_drishti
+        return float(get_graha_drishti(planet, p_lon, target_lon))
+    except Exception:
+        pass
+
+    diff = (target_lon - p_lon) % 360.0
+    val = 0.0
+    
+    if 30.0 <= diff < 60.0:
+        val = (diff - 30.0) / 2.0
+    elif 60.0 <= diff < 90.0:
+        val = 15.0 + (diff - 60.0)
+    elif 90.0 <= diff < 120.0:
+        val = 45.0 + (diff - 90.0) / 2.0
+    elif 120.0 <= diff < 150.0:
+        val = 60.0 - (diff - 120.0) * 2.0
+    elif 150.0 <= diff < 180.0:
+        val = (diff - 150.0) * 2.0
+    elif 180.0 <= diff < 300.0:
+        val = 60.0 - (diff - 180.0) / 2.0
+    else:
+        val = 0.0
+
+    if planet == "Mars":
+        if 90.0 <= diff < 120.0:
+            val = max(val, 60.0 - abs(diff - 90.0) * 2.0)
+        elif 210.0 <= diff < 240.0:
+            val = max(val, 60.0 - abs(diff - 210.0) * 2.0)
+    elif planet == "Jupiter":
+        if 120.0 <= diff < 150.0:
+            val = max(val, 60.0 - abs(diff - 120.0) * 2.0)
+        elif 240.0 <= diff < 270.0:
+            val = max(val, 60.0 - abs(diff - 240.0) * 2.0)
+    elif planet == "Saturn":
+        if 60.0 <= diff < 90.0:
+            val = max(val, 60.0 - abs(diff - 60.0) * 2.0)
+        elif 270.0 <= diff < 300.0:
+            val = max(val, 60.0 - abs(diff - 270.0) * 2.0)
+            
+    return max(0.0, min(60.0, val))
+
+
+def calculate_bhava_drishti_bala(
+    bhava_madhya_lon: float,
+    planet_positions: Dict[str, Any],
+    aspect_matrices: Optional[Dict[str, Any]] = None,
+    house_num: Optional[int] = None,
+    target_house_lord: Optional[str] = None,
+    is_moon_benefic: bool = True,
+    is_mercury_malefic: bool = False,
+    **kwargs
+) -> float:
+    """
+    Computes aspectual Virūpas on the Bhava Madhya.
+    - Decoupled: Ingests directly from aspect_matrices['cusp_drishti'] if present.
+    - Phaladeepika Ch. 15.1-3 Rule: House Lord aspecting its own cusp is ALWAYS protective (+1.0).
+    - Jupiter & Benefic Mercury cast full rays (+1.0).
+    - Venus & Benefic Moon cast 1/4th rays (+0.25).
+    - Malefics subtract 1/4th rays (-0.25).
+    """
+    if isinstance(aspect_matrices, bool):
+        is_moon_benefic = aspect_matrices
+        aspect_matrices = None
+    if isinstance(house_num, bool):
+        is_mercury_malefic = house_num
+        house_num = None
+
+    cusp_drishti_matrix = None
+    if aspect_matrices and isinstance(aspect_matrices, dict):
+        cusp_drishti_matrix = aspect_matrices.get("cusp_drishti", aspect_matrices)
+
+    malefics = ["Sun", "Mars", "Saturn"]
+    if not is_moon_benefic:
+        malefics.append("Moon")
+    if is_mercury_malefic:
+        malefics.append("Mercury")
+
+    net_drishti = 0.0
+    for planet in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        if planet not in planet_positions:
+            continue
+
+        raw_aspect = None
+        if cusp_drishti_matrix and house_num is not None:
+            raw_aspect = _extract_cusp_drishti(cusp_drishti_matrix, planet, house_num)
+
+        if raw_aspect is None:
+            p_val = planet_positions[planet]
+            p_lon = p_val if isinstance(p_val, (int, float)) else getattr(p_val, 'lon', p_val.get('lon', p_val.get('longitude', 0.0)))
+            raw_aspect = _calculate_fallback_drishti_ray(planet, float(p_lon), bhava_madhya_lon)
+
+        if raw_aspect <= 0.0:
+            continue
+
+        # Phaladeepika Ch. 15.1-3: Lord aspecting own house is unconditionally protective
+        if target_house_lord and planet == target_house_lord:
+            net_drishti += raw_aspect
+        elif planet in malefics:
+            net_drishti -= raw_aspect / 4.0
+        else:
+            if planet in ["Jupiter", "Mercury"]:
+                net_drishti += raw_aspect
+            else:
+                net_drishti += raw_aspect / 4.0
+
+    return round(net_drishti, 2)
+
+
+def _evaluate_occupants(
+    house_num: int, 
+    occupants: List[Dict[str, Any]], 
+    is_moon_benefic: bool, 
+    is_mercury_malefic: bool
+) -> Dict[str, Any]:
+    """Evaluates occupant dynamics, Upacaya empowerment, and Satruhanta."""
+    benefics_here = []
+    malefics_here = []
+
+    for occ in occupants:
+        p = occ["name"]
+        if p in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
+            malefics_here.append(p)
+        elif p == "Moon":
+            (benefics_here if is_moon_benefic else malefics_here).append(p)
+        elif p == "Mercury":
+            (malefics_here if is_mercury_malefic else benefics_here).append(p)
+        else:
+            benefics_here.append(p)
+
+    is_upacaya = house_num in UPACAYA_HOUSES
+    upacaya_empowered = is_upacaya and len(malefics_here) > 0 and house_num in {3, 6, 11}
+
+    return {
+        "benefics": benefics_here,
+        "malefics": malefics_here,
+        "is_upacaya": is_upacaya,
+        "upacaya_empowered": upacaya_empowered,
+        "satruhanta_active": upacaya_empowered and house_num == 6
+    }
+
+
+def _evaluate_sandhi_leakage(
+    house_num: int,
+    cusp_lon: float,
+    occupants: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """Detects Bhāva Sandhi border weakness and cross-border wall leakage."""
+    deg_in_sign = cusp_lon % 30.0
+    cusp_in_sandhi = (deg_in_sign < 1.0) or (deg_in_sign > 29.0)
+    cusp_dist_to_border = min(deg_in_sign, 30.0 - deg_in_sign)
+
+    leakages = []
+    for occ in occupants:
+        p_name = occ["name"]
+        p_deg = occ["deg_in_sign"]
+        
+        if p_deg < 1.0:
+            target_house = 12 if house_num == 1 else house_num - 1
+            leakages.append({
+                "planet": p_name,
+                "lon": occ["lon"],
+                "deg_in_sign": round(p_deg, 3),
+                "leakage_direction": "backward",
+                "target_house": target_house,
+                "leakage_ratio": round((1.0 - p_deg) / 1.0, 3)
+            })
+        elif p_deg > 29.0:
+            target_house = 1 if house_num == 12 else house_num + 1
+            leakages.append({
+                "planet": p_name,
+                "lon": occ["lon"],
+                "deg_in_sign": round(p_deg, 3),
+                "leakage_direction": "forward",
+                "target_house": target_house,
+                "leakage_ratio": round((p_deg - 29.0) / 1.0, 3)
+            })
+
+    return {
+        "cusp_in_sandhi": cusp_in_sandhi,
+        "cusp_dist_to_border": round(cusp_dist_to_border, 2),
+        "wall_leakages": leakages
+    }
+
+
+def _evaluate_kartari_yoga(
+    house_num: int, 
+    house_occupant_map: Dict[int, List[Dict[str, Any]]],
+    is_moon_benefic: bool,
+    is_mercury_malefic: bool
+) -> Dict[str, Any]:
+    """Identifies Śubhakartarī or Pāpakartarī yogas hemmed around the house."""
+    h_12 = 12 if house_num == 1 else house_num - 1
+    h_2 = 1 if house_num == 12 else house_num + 1
+
+    def classify_planets(planets: List[Dict[str, Any]]) -> Tuple[List[str], List[str]]:
+        ben, mal = [], []
+        for pl in planets:
+            name = pl["name"]
+            if name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
+                mal.append(name)
+            elif name == "Moon":
+                (ben if is_moon_benefic else mal).append(name)
+            elif name == "Mercury":
+                (mal if is_mercury_malefic else ben).append(name)
+            else:
+                ben.append(name)
+        return ben, mal
+
+    b12, m12 = classify_planets(house_occupant_map.get(h_12, []))
+    b2, m2 = classify_planets(house_occupant_map.get(h_2, []))
+
+    yoga_type = "neutral"
+    if len(m12) > 0 and len(m2) > 0 and len(b12) == 0 and len(b2) == 0:
+        yoga_type = "papakartari"
+    elif len(b12) > 0 and len(b2) > 0 and len(m12) == 0 and len(m2) == 0:
+        yoga_type = "shubhakartari"
+    elif (len(m12) > 0 and len(m2) > 0) or (len(b12) > 0 and len(b2) > 0):
+        yoga_type = "mixed"
+
+    return {
+        "type": yoga_type,
+        "flanking_12th": {"benefics": b12, "malefics": m12},
+        "flanking_2nd": {"benefics": b2, "malefics": m2}
+    }
+
+
+def _evaluate_karako_bhava_nasaya(
+    house_num: int, 
+    occupants: List[Dict[str, Any]]
+) -> Dict[str, Any]:
+    """
+    Checks Kārakobhāvanāśāya (solitary Kāraka spoiling living significations).
+    Enforces classical exception: Saturn in 8th house enhances longevity (Āyuṣkāraka).
+    """
+    primary_karakas = BHAVA_KARAKAS.get(house_num, [])
+    occ_names = [o["name"] for o in occupants]
+    
+    afflicted = False
+    details = "Harmonious"
+
+    if len(occ_names) == 1:
+        single_occ = occ_names[0]
+        if single_occ in primary_karakas:
+            if house_num == 8 and single_occ == "Saturn":
+                afflicted = False
+                details = "Saturn in 8th house exception: Promotes longevity (Āyuṣkāraka)."
+            else:
+                afflicted = True
+                details = f"Kārakobhāvanāśāya triggered: {single_occ} solitary in House {house_num}."
+
+    return {
+        "primary_karakas": primary_karakas,
+        "is_afflicted": afflicted,
+        "details": details
+    }
+
+
+def _evaluate_dpk_triad(
+    house_num: int,
+    asc_sign_idx: int,
+    chandra_sign_idx: int,
+    planet_positions: Dict[str, float],
+    shadbala_results: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Triangulates house through Phaladeepika Ch. 15 Text 6 Triad:
+    1. Janma Lagna (Weight: 1.0 / 100%)
+    2. Chandra Lagna (Weight: 0.5 / 50%)
+    3. Natural Kāraka Lagna (Weight: 0.25 / 25%)
+    """
+    primary_karakas = BHAVA_KARAKAS.get(house_num, ["Jupiter"])
+    main_karaka = primary_karakas[0]
+    karaka_lon = planet_positions.get(main_karaka, 0.0)
+    karaka_sign_idx = int(karaka_lon / 30.0)
+
+    h_asc_sign = (asc_sign_idx + house_num - 1) % 12
+    lord_asc = SIGN_LORDS[SIGNS[h_asc_sign]]
+    
+    h_chandra_sign = (chandra_sign_idx + house_num - 1) % 12
+    lord_chandra = SIGN_LORDS[SIGNS[h_chandra_sign]]
+    
+    h_karaka_sign = (karaka_sign_idx + house_num - 1) % 12
+    lord_karaka = SIGN_LORDS[SIGNS[h_karaka_sign]]
+
+    def get_lord_potency(lrd: str) -> float:
+        virupas = float(shadbala_results.get(lrd, {}).get("Total_Virupas", 0.0))
+        req = PLANET_REQUIRED_VIRUPAS.get(lrd, 360.0)
+        return virupas / req
+
+    p_asc = get_lord_potency(lord_asc)
+    p_chandra = get_lord_potency(lord_chandra)
+    p_karaka = get_lord_potency(lord_karaka)
+
+    # Weighted composite score (Max theoretical ~ 1.75 for baseline strength)
+    composite_potency = (1.0 * p_asc) + (0.5 * p_chandra) + (0.25 * p_karaka)
+    strong_count = sum(1 for p in (p_asc, p_chandra, p_karaka) if p >= 1.0)
+
+    concordance = "partial"
+    if strong_count == 3:
+        concordance = "exceptional"
+    elif strong_count == 2:
+        concordance = "strong"
+    elif strong_count == 0:
+        concordance = "latent"
+
+    return {
+        "from_janma_lagna": {"house": house_num, "sign": SIGNS[h_asc_sign], "lord": lord_asc, "potency_ratio": round(p_asc, 2)},
+        "from_chandra_lagna": {"house": house_num, "sign": SIGNS[h_chandra_sign], "lord": lord_chandra, "potency_ratio": round(p_chandra, 2)},
+        "from_karaka_lagna": {"house": house_num, "sign": SIGNS[h_karaka_sign], "lord": lord_karaka, "karaka": main_karaka, "potency_ratio": round(p_karaka, 2)},
+        "concordance": concordance,
+        "concordance_score": round(strong_count / 3.0, 2),
+        "weighted_triad_potency": round(composite_potency, 2)
+    }
+
+
+def _evaluate_three_focal_points(
+    house_num: int,
+    lord: str,
+    lord_house: int,
+    main_karaka: str,
+    planet_positions: Dict[str, float],
+    asc_sign_idx: int,
+    house_occupant_map: Dict[int, List[Dict[str, Any]]],
+    shadbala_results: Dict[str, Any]
+) -> Dict[str, Any]:
+    """
+    Evaluates the 3 Essential Focal Points per Phaladeepika Ch. 15 (Texts 1-3, 18):
+    1. The Bhāva itself
+    2. The Bhāveśa (Lord)
+    3. The Bhāva Kāraka (Natural Significator)
+    """
+    karaka_lon = planet_positions.get(main_karaka, 0.0)
+    karaka_house = (int(karaka_lon / 30.0) - asc_sign_idx) % 12 + 1
+
+    # Check 1: In Dusthana (6, 8, 12)?
+    bhava_dusthana = house_num in DUHSTHANA_HOUSES
+    lord_dusthana = lord_house in DUHSTHANA_HOUSES
+    karaka_dusthana = karaka_house in DUHSTHANA_HOUSES
+
+    # Check 2: Flanked by malefics (Pāpakartarī)?
+    def is_flanked_by_malefics(h: int) -> bool:
+        h12 = 12 if h == 1 else h - 1
+        h2 = 1 if h == 12 else h + 1
+        m12 = [p["name"] for p in house_occupant_map.get(h12, []) if p["name"] in NATURAL_MALEFICS]
+        m2 = [p["name"] for p in house_occupant_map.get(h2, []) if p["name"] in NATURAL_MALEFICS]
+        return len(m12) > 0 and len(m2) > 0
+
+    bhava_flanked = is_flanked_by_malefics(house_num)
+    lord_flanked = is_flanked_by_malefics(lord_house)
+    karaka_flanked = is_flanked_by_malefics(karaka_house)
+
+    # Check 3: Lord/Karaka Shadbala depletion
+    lord_virupas = float(shadbala_results.get(lord, {}).get("Total_Virupas", 0.0))
+    lord_weak = (lord_virupas / PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)) < 1.0
+
+    karaka_virupas = float(shadbala_results.get(main_karaka, {}).get("Total_Virupas", 0.0))
+    karaka_weak = (karaka_virupas / PLANET_REQUIRED_VIRUPAS.get(main_karaka, 360.0)) < 1.0
+
+    # Count afflicted focal points
+    afflictions = 0
+    if bhava_dusthana or bhava_flanked:
+        afflictions += 1
+    if lord_dusthana or lord_flanked or lord_weak:
+        afflictions += 1
+    if karaka_dusthana or karaka_flanked or karaka_weak:
+        afflictions += 1
+
+    is_ruined = afflictions >= 2
+
+    return {
+        "afflicted_points_count": afflictions,
+        "is_ruined": is_ruined,
+        "details": f"{afflictions} of 3 focal points afflicted (Bhāva, Lord, Kāraka)."
+    }
+
+
+def calculate_bhava_bala(
+    baseline: Any,
+    shadbala_results: Dict[str, Any],
+    aspect_matrices: Optional[Dict[str, Any]] = None,
+    house_system: str = "whole_sign",
+    **kwargs
+) -> Dict[int, Any]:
+    """
+    Synthesizes complete 12-House Bhāva Bala and Phaladeepika diagnostics.
+    Supports both Modern ChartBaseline pipeline and Legacy Calling parity.
+    """
+    # ---------------------------------------------------------
+    # 1. Pipeline Normalization
+    # ---------------------------------------------------------
+    planet_positions: Dict[str, float] = {}
+    planet_metadata: Dict[str, Dict[str, Any]] = {}
+    ascendant_lon = 0.0
+    sensitive_cusp_degree = 0.0
+    bhava_madhyas: List[float] = []
+    is_day_birth = True
+
+    if isinstance(baseline, (list, tuple)):
+        bhava_madhyas = [float(x) % 360.0 for x in baseline]
+        ascendant_lon = bhava_madhyas[0] if bhava_madhyas else 0.0
+        sensitive_cusp_degree = ascendant_lon % 30.0
+        p_dict = None
+        if isinstance(aspect_matrices, dict) and ("Sun" in aspect_matrices or "planets" in aspect_matrices):
+            p_dict = aspect_matrices
+            aspect_matrices = None
+        elif "planet_positions" in kwargs:
+            p_dict = kwargs["planet_positions"]
+        if p_dict:
+            for p, pos in p_dict.items():
+                lon_val = pos if isinstance(pos, (int, float)) else getattr(pos, 'lon', pos.get('lon', pos.get('longitude', 0.0)))
+                p_lon = float(lon_val) % 360.0
+                planet_positions[p] = p_lon
+                planet_metadata[p] = {"lon": p_lon, "is_combust": False, "in_war": False}
+    else:
+        anchors = getattr(baseline, "astronomical_anchors", {})
+        ascendant_lon = float(anchors.get("asc_longitude", anchors.get("ascendant", anchors.get("ascendant_lon", 0.0)))) % 360.0
+        sensitive_cusp_degree = float(anchors.get("sensitive_cusp_degree", ascendant_lon % 30.0))
+        is_day_birth = bool(anchors.get("is_day_birth", True))
+
+        if house_system == "whole_sign":
+            asc_sign_idx = int(ascendant_lon / 30.0)
+            bhava_madhyas = [
+                ((asc_sign_idx + h) % 12 * 30.0 + sensitive_cusp_degree) % 360.0
+                for h in range(12)
+            ]
+        else:
+            cusps = anchors.get("raw_campanus_cusps") or anchors.get("cusps") or getattr(baseline, "houses", [])
+            bhava_madhyas = [float(c) % 360.0 for c in cusps] if len(cusps) == 12 else [
+                (ascendant_lon + h * 30.0) % 360.0 for h in range(12)
+            ]
+
+        planets_data = getattr(baseline, "planets", getattr(baseline, "coordinates", {}))
+        combustion_map = getattr(baseline, "combustion_status", {})
+        for p, p_data in planets_data.items():
+            if isinstance(p_data, (int, float)):
+                p_lon = float(p_data) % 360.0
+                planet_positions[p] = p_lon
+                planet_metadata[p] = {"lon": p_lon, "is_combust": False, "in_war": False}
+            else:
+                p_lon = float(getattr(p_data, 'lon', p_data.get('lon', p_data.get('longitude', 0.0)))) % 360.0
+                planet_positions[p] = p_lon
+                is_combust = bool(getattr(p_data, 'is_combust', p_data.get('is_combust', False)))
+                if not is_combust and isinstance(combustion_map, dict):
+                    is_combust = bool(combustion_map.get(p, {}).get("is_combust", False))
+                planet_metadata[p] = {
+                    "lon": p_lon,
+                    "is_combust": is_combust,
+                    "in_war": bool(getattr(p_data, 'in_war', p_data.get('in_war', False))),
+                    "speed": float(getattr(p_data, 'speed', p_data.get('speed', 1.0)))
+                }
+
+    # ---------------------------------------------------------
+    # 2. Beneficence Calibration
+    # ---------------------------------------------------------
+    moon_paksha = shadbala_results.get("Moon", {}).get("Paksha_Bala", 30.0)
+    is_moon_benefic = moon_paksha >= 30.0
+
+    sun_lon = planet_positions.get("Sun", 0.0)
+    merc_lon = planet_positions.get("Mercury", 0.0)
+    merc_dist = abs(merc_lon - sun_lon) % 360.0
+    if merc_dist > 180.0:
+        merc_dist = 360.0 - merc_dist
+    is_mercury_malefic = merc_dist < 14.0 or planet_metadata.get("Mercury", {}).get("is_combust", False)
+
+    asc_sign_idx = int(ascendant_lon / 30.0)
+    chandra_sign_idx = int(planet_positions.get("Moon", ascendant_lon) / 30.0)
+
+    # ---------------------------------------------------------
+    # 3. Map Occupants to Whole Sign Houses
+    # ---------------------------------------------------------
+    house_occupant_map: Dict[int, List[Dict[str, Any]]] = {h: [] for h in range(1, 13)}
+    for p_name, p_lon in planet_positions.items():
+        p_sign_idx = int(p_lon / 30.0)
+        h_idx = (p_sign_idx - asc_sign_idx) % 12 + 1
+        house_occupant_map[h_idx].append({
+            "name": p_name,
+            "lon": round(p_lon, 3),
+            "deg_in_sign": round(p_lon % 30.0, 3)
+        })
+
+    # ---------------------------------------------------------
+    # 4. Synthesize 12 Houses
+    # ---------------------------------------------------------
+    bhava_results: Dict[int, Any] = {}
+
+    for i in range(12):
+        house_num = i + 1
+        cusp_lon = bhava_madhyas[i] % 360.0
+        sign_idx = int(cusp_lon / 30.0)
+        sign_name = SIGNS[sign_idx]
+        deg_in_sign = cusp_lon % 30.0
+        genus = get_sign_genus(sign_name, deg_in_sign)
+        lord = SIGN_LORDS[sign_name]
+        primary_karakas = BHAVA_KARAKAS.get(house_num, ["Jupiter"])
+        main_karaka = primary_karakas[0]
+
+        # Quantitative Pillar 1: Bhavādhipati Bala
+        adhipathi_bala = float(shadbala_results.get(lord, {}).get("Total_Virupas", 0.0))
+
+        # Quantitative Pillar 2: Bhava Digbala
+        dig_bala = calculate_bhava_dig_bala(house_num, cusp_lon)
+
+        # Quantitative Pillar 3: Bhava Dṛṣṭi Bala (Lord protection enabled)
+        drishti_bala = calculate_bhava_drishti_bala(
+            cusp_lon,
+            planet_positions,
+            aspect_matrices=aspect_matrices,
+            house_num=house_num,
+            target_house_lord=lord,
+            is_moon_benefic=is_moon_benefic,
+            is_mercury_malefic=is_mercury_malefic
+        )
+
+        # Phaladeepika Ch. 4 Modifiers
+        # 1. Lord's Directional Strength counted again
+        lord_dig_bala = float(shadbala_results.get(lord, {}).get("Dig_Bala", 0.0))
+        
+        # 2. Gender vs Diurnal Sect (+15 Virūpas)
+        is_odd_sign = (sign_idx % 2 == 0)
+        sect_bonus = 15.0 if (is_day_birth and is_odd_sign) or (not is_day_birth and not is_odd_sign) else 0.0
+
+        # Total Virūpas (3 Classical Pillars)
+        total_virupas = round(adhipathi_bala + dig_bala + drishti_bala, 2)
+        total_rupas = round(total_virupas / 60.0, 2)
+
+        # Augmented Virūpas (Phaladeepika Ch. 4 additions)
+        augmented_virupas = round(total_virupas + lord_dig_bala + sect_bonus, 2)
+
+        # Qualitative Diagnostic 1: Occupants & Upacaya Dynamics
+        occupants = house_occupant_map.get(house_num, [])
+        occ_diag = _evaluate_occupants(house_num, occupants, is_moon_benefic, is_mercury_malefic)
+
+        # Qualitative Diagnostic 2: Sandhi & Cross-Border Leakage
+        sandhi_diag = _evaluate_sandhi_leakage(house_num, cusp_lon, occupants)
+
+        # Qualitative Diagnostic 3: Kartarī Yogas
+        kartari_diag = _evaluate_kartari_yoga(
+            house_num, house_occupant_map, is_moon_benefic, is_mercury_malefic
+        )
+
+        # Qualitative Diagnostic 4: Lord Displacement & Bhavāt Bhavam
+        lord_lon = planet_positions.get(lord, 0.0)
+        lord_sign_idx = int(lord_lon / 30.0)
+        lord_house = (lord_sign_idx - asc_sign_idx) % 12 + 1
+        bhavat_dist = (lord_house - house_num) % 12 + 1
+        lord_meta = planet_metadata.get(lord, {})
+        req_virupas = PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)
+        is_lord_strong = (adhipathi_bala / req_virupas) >= 1.0
+        lord_in_upacaya_from_bhava = bhavat_dist in UPACAYA_HOUSES
+
+        lord_status = {
+            "lord": lord,
+            "placed_house": lord_house,
+            "placed_sign": SIGNS[lord_sign_idx],
+            "bhavat_bhavam_distance": bhavat_dist,
+            "is_in_kendra": lord_house in KENDRA_HOUSES,
+            "is_in_trikona": lord_house in TRIKONA_HOUSES,
+            "is_in_dusthana": lord_house in DUHSTHANA_HOUSES,
+            "is_in_upacaya_from_bhava": lord_in_upacaya_from_bhava,
+            "is_combust": lord_meta.get("is_combust", False),
+            "in_war": lord_meta.get("in_war", False),
+            "is_strong": is_lord_strong,
+            "potency_ratio": round(adhipathi_bala / req_virupas, 2)
+        }
+
+        # Qualitative Diagnostic 5: Kārakobhāvanāśāya
+        karaka_diag = _evaluate_karako_bhava_nasaya(house_num, occupants)
+
+        # Qualitative Diagnostic 6: Phaladeepika Triad Triangulation
+        triad_diag = _evaluate_dpk_triad(
+            house_num, asc_sign_idx, chandra_sign_idx, planet_positions, shadbala_results
+        )
+
+        # Qualitative Diagnostic 7: 3 Focal Points Rule (DPK Ch. 15)
+        focal_diag = _evaluate_three_focal_points(
+            house_num, lord, lord_house, main_karaka, planet_positions,
+            asc_sign_idx, house_occupant_map, shadbala_results
+        )
+
+        # Composite Classification: Puṣṭa | Miśra | Hīna
+        score = 0
+        if total_virupas >= 450.0:
+            score += 2
+        elif total_virupas >= 350.0:
+            score += 1
+        else:
+            score -= 1
+
+        if is_lord_strong:
+            score += 1
+        if lord_status["is_in_dusthana"] or lord_status["is_combust"]:
+            score -= 1
+        if lord_in_upacaya_from_bhava:
+            score += 1
+        if kartari_diag["type"] == "shubhakartari":
+            score += 1
+        elif kartari_diag["type"] == "papakartari":
+            score -= 1
+        if occ_diag["upacaya_empowered"]:
+            score += 1
+        if sandhi_diag["cusp_in_sandhi"] or len(sandhi_diag["wall_leakages"]) > 0:
+            score -= 1
+        if karaka_diag["is_afflicted"]:
+            score -= 1
+        if focal_diag["is_ruined"]:
+            score -= 2
+
+        if score >= 2:
+            classification = "Pusta"
+        elif score <= -1:
+            classification = "Hina"
+        else:
+            classification = "Misra"
+
+        summary_verdict = (
+            f"House {house_num} ({sign_name}) is {classification}: {total_rupas} Rūpas. "
+            f"Lord {lord} in H{lord_house}. "
+            f"Kartarī: {kartari_diag['type']}. "
+            f"Triad Concordance: {triad_diag['concordance']}."
+        )
+
+        bhava_results[house_num] = {
+            # Legacy Parāśarī contract
+            "house": house_num,
+            "lord": lord,
+            "bhava_madhya": round(cusp_lon, 2),
+            "bhavadhipathi_bala": adhipathi_bala,
+            "bhava_digbala": dig_bala,
+            "bhava_drishti_bala": drishti_bala,
+            "total_virupas": total_virupas,
+            "total_rupas": total_rupas,
+            
+            # Phaladeepika Extensions
+            "augmented_virupas": augmented_virupas,
+            "lord_dig_bala_bonus": lord_dig_bala,
+            "sect_bonus": sect_bonus,
+            "sign": sign_name,
+            "sign_genus": genus,
+            "occupants": occupants,
+            "occupant_diagnostics": occ_diag,
+            "sandhi_analysis": sandhi_diag,
+            "kartari_yoga": kartari_diag,
+            "lord_status": lord_status,
+            "karaka_analysis": karaka_diag,
+            "dpk_triad": triad_diag,
+            "three_focal_points": focal_diag,
+            "classification": classification,
+            "summary_verdict": summary_verdict
+        }
+
+    return bhava_results

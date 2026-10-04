@@ -317,3 +317,33 @@ def test_stage2b_decoupled_baseline_consumption():
 
     assert sb_res["Sun"]["Dig_Bala"] == 45.16
 
+
+def test_calculate_yuddha_bala_mechanics():
+    from jyotish.shadbala.shadbala import calculate_yuddha_bala
+    # Mock Planetary War: Mars (280.5°) and Saturn (281.2°) in Capricorn (both in same sign, diff = 0.7° <= 1.0°)
+    pre_war = {"Mars": 400.0, "Saturn": 350.0}
+    longitudes = {"Mars": 280.5, "Saturn": 281.2}
+    latitudes = {"Mars": 1.5, "Saturn": -0.5}
+
+    adj = calculate_yuddha_bala(pre_war, longitudes, latitudes, use_latitude=True)
+    
+    # Mars has higher northern latitude (1.5 > -0.5) -> Mars is Winner, Saturn is Loser
+    # Bala diff = |400 - 350| = 50.0
+    # Bimba diff = |9.4 - 158.0| = 148.6
+    expected_pts = round(50.0 / 148.6, 2)  # 0.34
+    assert adj["Mars"] == expected_pts
+    assert adj["Saturn"] == -expected_pts
+
+
+def test_calculate_yuddha_bala_venus_invariance():
+    from jyotish.shadbala.shadbala import calculate_yuddha_bala
+    # Venus vs Mars within 0.5°: Venus must ALWAYS win regardless of latitude or longitude
+    pre_war = {"Venus": 300.0, "Mars": 400.0}
+    longitudes = {"Venus": 50.5, "Mars": 50.2}
+    latitudes = {"Venus": -1.5, "Mars": 2.0}
+
+    adj = calculate_yuddha_bala(pre_war, longitudes, latitudes, use_latitude=True)
+    assert adj["Venus"] > 0.0
+    assert adj["Mars"] < 0.0
+
+

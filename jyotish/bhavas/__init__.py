@@ -1,10 +1,10 @@
 """
-jyotish/shadbala/bhava_bala.py
-==============================
-Legacy backwards-compatibility shim re-exporting from jyotish.bhavas.bhava_bala.
+jyotish/bhavas
+==============
+House Capacity & Bhāva Synthesis Engine for Astra Jyotish.
 """
 
-from jyotish.bhavas.bhava_bala import (
+from .bhava_bala import (
     calculate_bhava_bala,
     calculate_bhava_dig_bala,
     calculate_bhava_drishti_bala,

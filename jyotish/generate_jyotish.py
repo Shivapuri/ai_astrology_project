@@ -103,21 +103,34 @@ def generate_kala_chart(
     kendra_bala_mode: str = "flat_parashara"
 ) -> Dict[str, Any]:
     
-    # 1. Date and Time to Julian Day
-    local_hour_fraction = hour + (minute / 60.0) + (second / 3600.0)
-    
-    # Determine calendar flag
-    # Use Julian calendar for dates before Oct 15, 1582
-    if year < 1582 or (year == 1582 and month < 10) or (year == 1582 and month == 10 and day < 15):
-        cal_flag = swe.JUL_CAL
-    else:
-        cal_flag = swe.GREG_CAL
-        
-    jd_local = swe.julday(year, month, day, local_hour_fraction, cal_flag)
-    
-    # Calculate UTC JD by subtracting timezone offset (offset is in hours)
-    jd = jd_local - (timezone_offset / 24.0)
-    
+    # 1. Instantiate certified Stage 1 Baseline (Single-Pass Ephemeris Extraction)
+    baseline = ChartBaseline(
+        name=name,
+        year=year,
+        month=month,
+        day=day,
+        hour=hour,
+        minute=minute,
+        second=second,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+        place=place,
+        d10_mode=d10_mode,
+        d24_mode=d24_mode,
+        nakshatra_system=nakshatra_system
+    )
+    anchors = baseline.astronomical_anchors
+    coords = baseline.coordinates
+
+    jd = anchors["jd_utc"]
+    jd_local = anchors["jd_local"]
+    cal_flag = anchors["cal_flag"]
+    asc_lon = anchors["asc_longitude"]
+    mc_lon = anchors["mc_longitude"]
+    cusps = anchors["raw_campanus_cusps"]
+    asc_sign, asc_deg = get_sign(asc_lon)
+
     # Format a standard DD/MM/YYYY date-time string for the output
     sec_int = int(round(second))
     if year < 0:
@@ -127,24 +140,18 @@ def generate_kala_chart(
 
     # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
     flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED
-    
-    # Houses (Campanus - standard Ernst Wilhelm Kala default)
-    cusps, ascmc = swe.houses(jd, latitude, longitude, b'C')
-    asc_lon = ascmc[0]
-    mc_lon = ascmc[1]
-    
-    asc_sign, asc_deg = get_sign(asc_lon)
-    
+
     vargas_harmonics = {
         "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D7": 7, "D9": 9, 
         "D10": 10, "D12": 12, "D16": 16, "D20": 20, "D24": 24, 
         "D27": 27, "D30": 30, "D40": 40, "D45": 45, "D60": 60
     }
     
-    # Pre-calculate base D1 longitudes and retrograde status for lagna and planets
-    d1_longitudes = {"Lagna": asc_lon}
-    d1_retrogrades = {"Lagna": False}
-    
+    # Pre-calculate base D1 longitudes, latitudes, and retrograde status from baseline
+    d1_longitudes = {p: coords[p]["longitude"] for p in coords}
+    d1_latitudes = {p: coords[p]["latitude"] for p in coords}
+    d1_retrogrades = {p: coords[p]["is_retrograde"] for p in coords}
+
     planet_ids = {
         "Sun": swe.SUN,
         "Moon": swe.MOON,
@@ -155,25 +162,6 @@ def generate_kala_chart(
         "Saturn": swe.SATURN,
         "Rahu": swe.TRUE_NODE
     }
-    
-    d1_latitudes = {}
-    for p_name, p_id in planet_ids.items():
-        if p_name == "Rahu":
-            res_node, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_ecliptic)
-            r_lon = res_node[0]
-            d1_longitudes["Rahu"] = r_lon
-            d1_longitudes["Ketu"] = (r_lon + 180.0) % 360.0
-            d1_latitudes["Rahu"] = round(res_node[1], 4)
-            d1_latitudes["Ketu"] = round(-res_node[1], 4)
-            d1_retrogrades["Rahu"] = True
-            d1_retrogrades["Ketu"] = True
-        else:
-            res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
-            d1_longitudes[p_name] = res[0]
-            d1_latitudes[p_name] = round(res[1], 4)
-            # Speed is res[3]. Negative speed indicates Retrograde (Vakri) motion
-            speed = res[3]
-            d1_retrogrades[p_name] = bool(speed < 0 and p_name not in ["Sun", "Moon"])
             
     # Calculate Vargas
     vargas_data = {}
@@ -732,22 +720,6 @@ def generate_kala_chart(
         )
         
     # 5. Shadbala (6-fold strength)
-    baseline = ChartBaseline(
-        name=name,
-        year=year,
-        month=month,
-        day=day,
-        hour=hour,
-        minute=minute,
-        second=second,
-        latitude=latitude,
-        longitude=longitude,
-        timezone_offset=timezone_offset,
-        place=place,
-        d10_mode=d10_mode,
-        d24_mode=d24_mode,
-        nakshatra_system=nakshatra_system
-    )
     dignities = rel.calculate_chart_dignities(baseline, debilitation_mode=debilitation_mode)
     aspect_matrices = aspects.calculate_aspect_matrices(baseline)
 
@@ -790,12 +762,12 @@ def generate_kala_chart(
     
     for v_key in vargas_data.keys():
         avastha_matrices[v_key] = {}
-        for baseline in baseline_types:
+        for b_type in baseline_types:
             avastha_results = calculate_avastha_matrix(
                 vargas_data[v_key]["grahas"],
                 shadbala_data,
                 vargas_data["D1"]["grahas"],
-                baseline_type=baseline,
+                baseline_type=b_type,
                 varga_name=v_key,
                 vimshopaka_data=vimshopaka_data
             )
@@ -804,7 +776,7 @@ def generate_kala_chart(
                 v_matrix[p_give] = {}
                 for p_receive in planets_list:
                     v_matrix[p_give][p_receive] = avastha_results['matrix'][p_give][p_receive]
-            avastha_matrices[v_key][baseline] = v_matrix
+            avastha_matrices[v_key][b_type] = v_matrix
     # 8. Advanced Graha Aspects across all Vargas
     varga_aspects = {}
     for v_key in vargas_data.keys():
