@@ -7,13 +7,17 @@ Implements Ernst Wilhelm / Kala Software methodology, including:
 2. Graha Drishti (Planetary Longitude Aspects) - Continuous fractional strength.
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Union
 from jyotish.baseline import (
     ChartBaseline,
     ALL_BODIES,
     ZODIAC_SIGNS,
     PLANETS_ORDER,
 )
+
+PHYSICAL_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+NON_CASTING_BODIES = ["Rahu", "Ketu", "Lagna", "MC"]
+
 
 def get_rasi_drishti(sign: str) -> List[str]:
     """
@@ -286,47 +290,204 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
 
     return results
 
+def calculate_varga_aspects(baseline: Any, varga: str = "D1") -> Dict[str, Any]:
+    """
+    High-Level Multi-Varga Aspect Helper.
+    Directly accepts either a ChartBaseline instance and varga name,
+    a vargas container dictionary, or directly a single varga dictionary (e.g., baseline.vargas[varga]).
+
+    Refactors the legacy interface so callers in generate_jyotish.py and downstream
+    engines do not need to manually unpack longitude lists, cusps, and ascendants.
+    """
+    if hasattr(baseline, "vargas"):
+        varga_data = baseline.vargas.get(varga, {})
+    elif isinstance(baseline, dict) and "vargas" in baseline:
+        varga_data = baseline["vargas"].get(varga, {})
+    elif isinstance(baseline, dict) and "grahas" in baseline:
+        varga_data = baseline
+    elif isinstance(baseline, dict) and varga in baseline:
+        varga_data = baseline[varga]
+    else:
+        varga_data = {}
+
+    planets_data = varga_data.get("grahas", {})
+    house_cusps = varga_data.get("cusps", [])
+    lagna_info = varga_data.get("lagna", {})
+    ascendant_lon = lagna_info.get("longitude", 0.0) if isinstance(lagna_info, dict) else float(lagna_info or 0.0)
+
+    return calculate_advanced_graha_aspects(
+        planets_data=planets_data,
+        shadbala_data={},
+        house_cusps=house_cusps,
+        ascendant_lon=ascendant_lon
+    )
+
+
 def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
     """
-    Master Aspect Orchestrator for Stage 2A.
-
-    1. Planet-to-Planet Aspect Matrix (11x11):
-       Computes Graha Drishti (0-60 Virupas) between all bodies in ALL_BODIES
-       using separation_matrix directly.
-    2. Planet-to-Cusp Aspect Matrix (7x12):
-       Computes Graha Drishti (0-60 Virupas) cast by the 7 physical planets onto
-       the 12 Whole-Sign sensitive cusps:
-       Cusp Longitude_h = (baseline.astronomical_anchors["sensitive_cusp_degree"] + (h - 1) * 30.0) % 360.0
+    Master Stage 2A Aspect Orchestrator.
+    Consumes ChartBaseline directly to generate:
+    1. Graha Drishti (0–60 Virupas): Planet-to-Planet (both outgoing & incoming)
+    2. Graha Drishti to Cusps: 7 Physical Planets to 12 Whole-Sign House Cusps
+    3. Rasi Drishti: Binary sign-to-sign and planet-to-planet mutual aspects
+    4. Benefic / Malefic Breakdown: Subha (+) vs Asubha (-) Virūpa totals
     """
     coords = baseline.coordinates
     sep_matrix = baseline.separation_matrix
     sens_deg = baseline.astronomical_anchors["sensitive_cusp_degree"]
-    physical_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    asc_sign_idx = coords["Lagna"]["sign_index"]
 
-    # 1. 11x11 planet_to_planet aspect matrix
-    planet_to_planet = {}
+    # 1. Graha Drishti: Planet-to-Planet (11x11)
+    # Source separations directly from baseline.separation_matrix[b1][b2].
+    # Rahu, Ketu, Lagna, and MC cast 0 Virupas, but receive aspects from the classical 7 planets.
+    outgoing = {b1: {} for b1 in ALL_BODIES}
+    incoming = {b2: {} for b2 in ALL_BODIES}
+
     for b1 in ALL_BODIES:
-        planet_to_planet[b1] = {}
         for b2 in ALL_BODIES:
-            if b1 == b2 or b1 in ["Rahu", "Ketu", "Lagna", "MC"]:
-                planet_to_planet[b1][b2] = 0.0
+            if b1 == b2 or b1 in NON_CASTING_BODIES:
+                val = 0.0
             else:
                 sep = sep_matrix[b1][b2]
-                virupas = get_graha_drishti(b1, 0.0, sep)
-                planet_to_planet[b1][b2] = round(virupas, 4)
+                val = round(get_graha_drishti(b1, 0.0, sep), 4)
+            outgoing[b1][b2] = val
+            incoming[b2][b1] = val
 
-    # 2. 7x12 planet_to_cusp aspect matrix
-    planet_to_cusp = {}
-    for p in physical_planets:
+    # 2. Graha Drishti: Planet-to-Cusp (7x12)
+    # Evaluates aspects from the 7 physical planets onto the 12 whole-sign sensitive cusps
+    # (D_asc projected from the Ascendant's sign).
+    cusp_longitudes = {}
+    for h in range(1, 13):
+        target_sign_idx = (asc_sign_idx + h - 1) % 12
+        cusp_lon = (target_sign_idx * 30.0 + sens_deg) % 360.0
+        cusp_longitudes[h] = round(cusp_lon, 4)
+
+    cusp_by_planet = {p: {} for p in PHYSICAL_PLANETS}
+    cusp_by_house = {h: {} for h in range(1, 13)}
+
+    for p in PHYSICAL_PLANETS:
         p_lon = coords[p]["longitude"]
-        cusp_aspects = {}
         for h in range(1, 13):
-            cusp_lon = (sens_deg + (h - 1) * 30.0) % 360.0
-            virupas = get_graha_drishti(p, p_lon, cusp_lon)
-            cusp_aspects[h] = round(virupas, 4)
-        planet_to_cusp[p] = cusp_aspects
+            c_lon = cusp_longitudes[h]
+            val = round(get_graha_drishti(p, p_lon, c_lon), 4)
+            cusp_by_planet[p][h] = val
+            cusp_by_house[h][p] = val
+
+    # 3. Rasi Drishti (Sign & Planetary Mutual Glances)
+    sign_to_signs = {sign: get_rasi_drishti(sign) for sign in ZODIAC_SIGNS}
+
+    # Planet aspects: For any two bodies, determine whether their D1 signs aspect each other via get_rasi_drishti
+    rasi_planet_to_planet = {}
+    for b1 in ALL_BODIES:
+        s1 = coords[b1]["sign"]
+        aspected_signs = sign_to_signs[s1]
+        rasi_planet_to_planet[b1] = [
+            b2 for b2 in ALL_BODIES
+            if b2 != b1 and coords[b2]["sign"] in aspected_signs
+        ]
+
+    # House aspects: List of planets aspecting whole-sign house h
+    rasi_house_to_planets = {}
+    for h in range(1, 13):
+        target_sign_idx = (asc_sign_idx + h - 1) % 12
+        h_sign = ZODIAC_SIGNS[target_sign_idx]
+        aspecting_signs = sign_to_signs[h_sign]
+        rasi_house_to_planets[h] = [
+            p for p in PLANETS_ORDER
+            if coords[p]["sign"] in aspecting_signs
+        ]
+
+    # 4. Benefic / Malefic Qualitative Totals (+ / - Net Virupas)
+    # Natural Benefics: Jupiter, Venus
+    # Dynamic Benefics:
+    #   Mercury: Benefic if not combust (combustion_status["Mercury"]["is_combust"] is False)
+    #   Moon: Benefic if bright/waxing (lunar_phase["is_benefic"] is True)
+    # Natural Malefics: Sun, Mars, Saturn, Rahu, Ketu
+    is_merc_combust = baseline.combustion_status.get("Mercury", {}).get("is_combust", False)
+    is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)
+
+    benefic_classification = {
+        "Jupiter": True,
+        "Venus": True,
+        "Mercury": not is_merc_combust,
+        "Moon": is_moon_benefic,
+        "Sun": False,
+        "Mars": False,
+        "Saturn": False,
+        "Rahu": False,
+        "Ketu": False,
+    }
+
+    totals_planets = {}
+    for b in ALL_BODIES:
+        ben_v = 0.0
+        mal_v = 0.0
+        for p in PHYSICAL_PLANETS:
+            if p == b:
+                continue
+            aspect_val = incoming[b][p]
+            if benefic_classification[p]:
+                ben_v += aspect_val
+            else:
+                mal_v += aspect_val
+        totals_planets[b] = {
+            "benefic_virupas": round(ben_v, 4),
+            "malefic_virupas": round(mal_v, 4),
+            "net_virupas": round(ben_v - mal_v, 4),
+            "plus": round(ben_v, 4),
+            "minus": round(mal_v, 4),
+            "net": round(ben_v - mal_v, 4),
+        }
+
+    totals_cusps = {}
+    for h in range(1, 13):
+        ben_v = 0.0
+        mal_v = 0.0
+        for p in PHYSICAL_PLANETS:
+            aspect_val = cusp_by_house[h][p]
+            if benefic_classification[p]:
+                ben_v += aspect_val
+            else:
+                mal_v += aspect_val
+        totals_cusps[h] = {
+            "benefic_virupas": round(ben_v, 4),
+            "malefic_virupas": round(mal_v, 4),
+            "net_virupas": round(ben_v - mal_v, 4),
+            "plus": round(ben_v, 4),
+            "minus": round(mal_v, 4),
+            "net": round(ben_v - mal_v, 4),
+        }
 
     return {
-        "planet_to_planet": planet_to_planet,
-        "planet_to_cusp": planet_to_cusp
+        "graha_drishti": {
+            "outgoing": outgoing,
+            "incoming": incoming,
+        },
+        "cusp_drishti": {
+            "by_planet": cusp_by_planet,
+            "by_house": cusp_by_house,
+            "cusp_longitudes": cusp_longitudes,
+        },
+        "rasi_drishti": {
+            "sign_to_signs": sign_to_signs,
+            "planet_to_planet": rasi_planet_to_planet,
+            "house_to_planets": rasi_house_to_planets,
+        },
+        "benefic_malefic_totals": {
+            "planets": totals_planets,
+            "cusps": totals_cusps,
+            "classification": benefic_classification,
+        },
+        # Backwards compatibility aliases
+        "planet_to_planet": outgoing,
+        "planet_to_cusp": cusp_by_planet,
+        "totals": {
+            "planets": totals_planets,
+            "cusps": totals_cusps,
+        },
+        "benefic_malefic_breakdown": {
+            "planets": totals_planets,
+            "cusps": totals_cusps,
+        },
     }
+

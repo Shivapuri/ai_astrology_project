@@ -779,13 +779,8 @@ def generate_kala_chart(
     # 8. Advanced Graha Aspects across all Vargas
     varga_aspects = {}
     for v_key in vargas_data.keys():
-        v_asc = vargas_data[v_key]["lagna"]["longitude"]
-        varga_aspects[v_key] = aspects.calculate_advanced_graha_aspects(
-            vargas_data[v_key]["grahas"],
-            shadbala_data,
-            vargas_data[v_key]["cusps"],
-            v_asc
-        )
+        varga_aspects[v_key] = aspects.calculate_varga_aspects(vargas_data[v_key])
+
 
     ashtakavarga_data = ashtakavarga.calculate_ashtakavarga_engine({"vargas": vargas_data})
     pindas = ashtakavarga_data.get('sodhya_pindas', {})

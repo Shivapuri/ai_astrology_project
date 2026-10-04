@@ -52,7 +52,39 @@ Graha Drishti reveals the psychological and qualitative influence planets have o
 ---
 
 ## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)
-The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[str, Any]` connects `ChartBaseline` to the aspect engine:
-1. **Planet-to-Planet Aspect Matrix ($11 \times 11$):** Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
-2. **Planet-to-Cusp Aspect Matrix ($7 \times 12$):** Evaluates Graha Dṛṣṭi (0–60 Virūpas) cast by the 7 physical planets onto the 12 Whole-Sign sensitive cusps:
-   $$\text{Cusp Longitude}_h = (\text{baseline.astronomical\_anchors["sensitive\_cusp\_degree"]} + (h - 1) \times 30^\circ) \pmod{360^\circ}$$
+The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[str, Any]` connects `ChartBaseline` directly to the aspect engine in a single pass:
+
+1. **Graha Dṛṣṭi — Planet-to-Planet ($11 \times 11$ Matrix):**
+   - Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
+   - Rahu, Ketu, Lagna, and MC cast 0 Virūpas, but receive incoming aspects from the 7 physical planets.
+   - Dual-indexed for $O(1)$ lookups without matrix transpositions:
+     - `graha_drishti["outgoing"][aspecting][aspected]`: Virūpas cast (used for planetary expression & yoga detection).
+     - `graha_drishti["incoming"][aspected][aspecting]`: Virūpas received (used for Dṛk Bala in Shadbala).
+
+2. **Graha Dṛṣṭi — Planet-to-Cusp ($7 \times 12$ Matrix):**
+   - Evaluates Graha Dṛṣṭi cast by the 7 physical planets onto the 12 Whole-Sign sensitive cusps ($D_{\text{asc}}$ projected from the natal Ascendant's sign):
+     $$\text{Target Sign Index}_h = (\text{asc\_sign\_idx} + h - 1) \pmod{12}$$
+     $$\text{Cusp Longitude}_h = (\text{Target Sign Index}_h \times 30^\circ + \text{sensitive\_cusp\_degree}) \pmod{360^\circ}$$
+   - Dual-indexed:
+     - `cusp_drishti["by_planet"][planet][house_num]`: Virūpas cast on house $h$.
+     - `cusp_drishti["by_house"][house_num][planet]`: Virūpas received by house $h$.
+
+3. **Rāśi Dṛṣṭi (Sign & Planetary Mutual Glances):**
+   - Sign aspects: Moveable aspects Fixed (except adjacent); Fixed aspects Moveable (except adjacent); Dual aspects Dual.
+   - Binary mutual glance between bodies and whole-sign houses:
+     - `rasi_drishti["planet_to_planet"][p1]`: List of planets aspected by $p1$.
+     - `rasi_drishti["house_to_planets"][h]`: List of planets aspecting whole-sign house $h$ (used for House Atmosphere scoring).
+
+4. **Benefic / Malefic Qualitative Totals (+ / - Net Virūpas):**
+   - **Natural Benefics:** Jupiter, Venus.
+   - **Dynamic Benefics:**
+     - Mercury: Benefic if not combust (`baseline.combustion_status["Mercury"]["is_combust"]` is False).
+     - Moon: Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True).
+   - **Natural Malefics:** Sun, Mars, Saturn, Rahu, Ketu.
+   - Net balance: $\text{Net Virūpas} = \text{Benefic Virūpas} - \text{Malefic Virūpas}$ precomputed for all planets and all 12 house cusps.
+
+---
+
+## 4. Multi-Varga Aspect Adapter (`calculate_varga_aspects`)
+`calculate_varga_aspects(baseline, varga="D1") -> Dict[str, Any]` provides a clean, unified adapter that consumes `baseline.vargas[varga]` directly without requiring callers to unpack longitude lists, cusps, and ascendant coordinates.
+
