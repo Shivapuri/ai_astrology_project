@@ -34,11 +34,36 @@ This is a fixed constant for each planet regardless of the chart:
 - Saturn: 8.6 Virupas
 
 ### Phase 2: Dig Bala (Directional Strength)
-Each planet gets 60 Virupas at its optimal House Cusp and 0 Virupas at the exact opposite cusp (linearly interpolating in between based on degrees):
-- Sun & Mars: Strongest at 10th House Cusp (Nabhoga/MC). Weakest at 4th.
-- Moon & Venus: Strongest at 4th House Cusp (Patala/IC). Weakest at 10th.
-- Jupiter & Mercury: Strongest at 1st House Cusp (Vilagna/Lagna). Weakest at 7th.
-- Saturn: Strongest at 7th House Cusp (Badhu/Descendant). Weakest at 1st.
+Dig Bala measures a planet's directional potency based on its orientation along the cardinal doors of the chart.
+
+Under Astra's **Whole Sign Tropical architecture**, the Ascendant degree ($\text{Asc}_{\text{lon}}$) serves as the primary sensitive anchor (*sphuṭa*), projecting sensitive cusps at exact 90° intervals:
+- **1st Cusp (Vilagna / Lagna / East):** $\text{Cusp}_1 = \text{Asc}_{\text{lon}}$
+- **4th Cusp (Pātāla / Hibuka / North):** $\text{Cusp}_4 = (\text{Asc}_{\text{lon}} + 90^\circ) \pmod{360^\circ}$
+- **7th Cusp (Badhu / Asta / West):** $\text{Cusp}_7 = (\text{Asc}_{\text{lon}} + 180^\circ) \pmod{360^\circ}$
+- **10th Cusp (Nabhoga / Vyoma / South):** $\text{Cusp}_{10} = (\text{Asc}_{\text{lon}} + 270^\circ) \pmod{360^\circ}$
+
+#### Peak Points & Zero Points
+Each planet reaches maximum directional potency (60 Virūpas / 1.0 Rūpa) at its classical peak cusp, and drops to 0 Virūpas at the opposite point (180° away):
+- **Jupiter & Mercury:** Strongest at 1st Cusp (Lagna / East, 60 Virūpas). Zero at 7th Cusp (Asta / West, 0 Virūpas).
+- **Moon & Venus:** Strongest at 4th Cusp (Hibuka / North, 60 Virūpas). Zero at 10th Cusp (Vyoma / South, 0 Virūpas).
+- **Saturn:** Strongest at 7th Cusp (Asta / West, 60 Virūpas). Zero at 1st Cusp (Lagna / East, 0 Virūpas).
+- **Sun & Mars:** Strongest at 10th Cusp (Vyoma / South, 60 Virūpas). Zero at 4th Cusp (Hibuka / North, 0 Virūpas).
+
+#### Universal Classical Linear Arc Formula
+$$\Delta = |\lambda_{\text{planet}} - \text{Zero Point}| \pmod{360^\circ}$$
+$$\text{If } \Delta > 180^\circ: \quad \Delta = 360^\circ - \Delta$$
+$$\text{Dig Bala (Virūpas)} = \frac{\Delta}{3.0}$$
+
+- At Peak Point ($\Delta = 180^\circ$ from zero): $\frac{180}{3} = \mathbf{60.0 \text{ Virūpas}}$ (Full strength).
+- At Zero Point ($\Delta = 0^\circ$): $\frac{0}{3} = \mathbf{0.0 \text{ Virūpas}}$ (Zero strength).
+- At intermediate cusps ($\Delta = 90^\circ$ from zero): $\frac{90}{3} = \mathbf{30.0 \text{ Virūpas}}$ (Half strength).
+
+#### Multi-Model Execution Modes
+The engine supports three selectable execution modes via `dig_bala_mode`:
+1. `'whole_sign'` (**DEFAULT & RECOMMENDED**): Pure Whole Sign Tropical. Decoupled from Swiss Ephemeris 3D routines, eliminating high-latitude quadrant distortion.
+2. `'campanus'`: Legacy 3D Campanus house interpolation (`swe.house_pos(..., b'C')`), preserving exact parity with Ernst Wilhelm's Kala software outputs.
+3. `'quadrant_mc'`: Longitudinal quadrant interpolation using spatial MC.
+
 
 ### Phase 3: Sthana Bala - Component 1: Uccha Bala (Exaltation Strength)
 Uccha Bala measures the strength a planet derives from being close to its deep exaltation point. 
@@ -59,10 +84,20 @@ The exact Deep Exaltation points are:
 Venus and Moon naturally thrive in Even (female) signs and Even Navamsas. They gain 15 Virupas in an Even Rasi and an additional 15 Virupas in an Even Navamsa. The other planets (Sun, Mars, Jupiter, Mercury, Saturn) gain 15 Virupas in an Odd (male) Rasi and an additional 15 Virupas in an Odd Navamsa. Maximum possible points: 30 Virupas.
 
 ### Phase 3: Sthana Bala - Component 3: Kendra Bala (Angular Strength)
-Planets are strongest when angular (in the 1st, 4th, 7th, or 10th houses from the Ascendant).
-- Kendra (Angle: 1, 4, 7, 10): 60 Virupas
-- Panapara (Succedent: 2, 5, 8, 11): 30 Virupas
-- Apoklima (Cadent: 3, 6, 9, 12): 15 Virupas
+Planets derive strength from their house quadrant placement relative to the Ascendant. The engine supports two configurable modes via `kendra_bala_mode`:
+
+#### 1. Flat Parāśarī Mode (`kendra_bala_mode="flat_parashara"`, DEFAULT)
+The classical standard from *Brihat Parashara Hora Shastra* and Ernst Wilhelm's *Kala*:
+- **Kendras (Angles: 1, 4, 7, 10):** 60.0 Virūpas (1.0 Rūpa)
+- **Panaparas (Succedent: 2, 5, 8, 11):** 30.0 Virūpas (0.5 Rūpa)
+- **Apoklimas (Cadent: 3, 6, 9, 12):** 15.0 Virūpas (0.25 Rūpa)
+
+#### 2. Tapered Phaladeepika Mode (`kendra_bala_mode="tapered_phaladeepika"`)
+Mantreśvara's nuanced model (*Phaladeepika* Ch. 4, Text 8) where angular strength scales down by one-quarter ($1/4$) starting from the Ascendant across each square:
+- **Kendras:** 1st = 60.0 Virūpas, 10th = 45.0 Virūpas, 7th = 30.0 Virūpas, 4th = 15.0 Virūpas.
+- **Panaparas:** 2nd = 30.0 Virūpas, 11th = 22.5 Virūpas, 8th = 15.0 Virūpas, 5th = 7.5 Virūpas.
+- **Apoklimas:** 3rd = 15.0 Virūpas, 12th = 11.25 Virūpas, 9th = 7.5 Virūpas, 6th = 3.75 Virūpas.
+
 
 ### Phase 3: Sthana Bala - Component 4: Drekkana Bala (Decanate Strength)
 Depending on the gender of the planet, it thrives in different 10-degree segments of a sign per BPHS 27.6 and `shadbala.py`:

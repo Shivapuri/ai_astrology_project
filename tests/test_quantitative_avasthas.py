@@ -76,7 +76,8 @@ def aj_chart():
         minute=DOB_MINUTE,
         latitude=LAT,
         longitude=LON,
-        timezone_offset=TZ, 
+        timezone_offset=TZ,
+        dig_bala_mode="campanus"
     )
 
 MATRIX_TARGETS = [

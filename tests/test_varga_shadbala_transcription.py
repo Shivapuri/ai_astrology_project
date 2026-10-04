@@ -27,7 +27,8 @@ def aj_chart():
         year=1975, month=6, day=4,
         hour=9, minute=9,
         latitude=34.0522, longitude=-118.2437,
-        timezone_offset=-7.0
+        timezone_offset=-7.0,
+        dig_bala_mode="campanus"
     )
 
 def test_transcribed_master_shadbala_csv_exists():

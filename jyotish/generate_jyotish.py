@@ -98,7 +98,9 @@ def generate_kala_chart(
     place: str = "",
     second: int = 0,
     nakshatra_system: str = "ERNST_DHRUVA",
-    debilitation_mode: str = "kala_degree"
+    debilitation_mode: str = "kala_degree",
+    dig_bala_mode: str = "whole_sign",
+    kendra_bala_mode: str = "flat_parashara"
 ) -> Dict[str, Any]:
     
     # 1. Date and Time to Julian Day
@@ -730,7 +732,12 @@ def generate_kala_chart(
         )
         
     # 5. Shadbala (6-fold strength)
-    shadbala_data = calculate_shadbala(d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude, debilitation_mode=debilitation_mode)
+    shadbala_data = calculate_shadbala(
+        d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude,
+        debilitation_mode=debilitation_mode,
+        dig_bala_mode=dig_bala_mode,
+        kendra_bala_mode=kendra_bala_mode
+    )
     
     # 6. Assemble JSON Context
 

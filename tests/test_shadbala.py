@@ -23,7 +23,8 @@ from jyotish.generate_jyotish import generate_kala_chart
 def test_shadbala_6_pillars():
     chart = generate_kala_chart(
         name="Angelina Jolie", year=1975, month=6, day=4,
-        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0,
+        dig_bala_mode="campanus"
     )
     shadbala_data = chart.get('shadbala', {})
     
@@ -83,7 +84,8 @@ def test_shadbala_6_pillars():
 def test_shadbala_benchmarks_and_ranks():
     chart = generate_kala_chart(
         name="Angelina Jolie", year=1975, month=6, day=4,
-        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0,
+        dig_bala_mode="campanus"
     )
     sb = chart.get('shadbala', {})
     
@@ -125,7 +127,8 @@ def test_shadbala_all_35_metrics_csv():
     planets = rows[0][1:]
     chart = generate_kala_chart(
         name="Angelina Jolie", year=1975, month=6, day=4,
-        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0,
+        dig_bala_mode="campanus"
     )
     sb = chart["shadbala"]
 
@@ -212,3 +215,105 @@ def test_saptavargaja_bala():
     for planet, exp_val in expected_saptavarga.items():
         calc_val = sb[planet].get("Saptavarga_Bala")
         assert calc_val == exp_val, f"{planet} Saptavarga mismatch: Expected {exp_val}, Got {calc_val}"
+
+
+def test_whole_sign_cardinal_cusps_geometry():
+    """
+    Verifies the mathematical correctness of Whole Sign Tropical Dig Bala:
+    - 60.0 Virupas at peak cusp
+    - 0.0 Virupas at opposite cusp (180° away)
+    - 30.0 Virupas at intermediate cusps (90° away)
+    """
+    from jyotish.shadbala.shadbala import calculate_dig_bala
+    asc = 100.0  # arbitrary Ascendant
+    cusp_1 = 100.0
+    cusp_4 = 190.0
+    cusp_7 = 280.0
+    cusp_10 = 10.0
+
+    # Jupiter & Mercury: Peak at 1st (100°), Zero at 7th (280°)
+    assert calculate_dig_bala("Jupiter", cusp_1, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Jupiter", cusp_7, asc, mode="whole_sign") == 0.0
+    assert calculate_dig_bala("Jupiter", cusp_4, asc, mode="whole_sign") == 30.0
+    assert calculate_dig_bala("Mercury", cusp_1, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Mercury", cusp_7, asc, mode="whole_sign") == 0.0
+
+    # Moon & Venus: Peak at 4th (190°), Zero at 10th (10°)
+    assert calculate_dig_bala("Moon", cusp_4, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Moon", cusp_10, asc, mode="whole_sign") == 0.0
+    assert calculate_dig_bala("Venus", cusp_4, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Venus", cusp_10, asc, mode="whole_sign") == 0.0
+
+    # Saturn: Peak at 7th (280°), Zero at 1st (100°)
+    assert calculate_dig_bala("Saturn", cusp_7, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Saturn", cusp_1, asc, mode="whole_sign") == 0.0
+
+    # Sun & Mars: Peak at 10th (10°), Zero at 4th (190°)
+    assert calculate_dig_bala("Sun", cusp_10, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Sun", cusp_4, asc, mode="whole_sign") == 0.0
+    assert calculate_dig_bala("Mars", cusp_10, asc, mode="whole_sign") == 60.0
+    assert calculate_dig_bala("Mars", cusp_4, asc, mode="whole_sign") == 0.0
+
+
+def test_whole_sign_tropical_dig_bala_angelina_jolie():
+    """
+    Verifies deterministic Whole Sign Tropical Dig Bala values for Angelina Jolie:
+    Lagna = 118.89° (Cancer 28°53')
+    """
+    chart = generate_kala_chart(
+        name="Angelina Jolie", year=1975, month=6, day=4,
+        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0,
+        dig_bala_mode="whole_sign"
+    )
+    sb = chart["shadbala"]
+
+    expected_whole_sign_dig = {
+        "Sun": 45.16,
+        "Moon": 5.27,
+        "Mars": 53.94,
+        "Mercury": 47.81,
+        "Jupiter": 26.18,
+        "Venus": 29.75,
+        "Saturn": 3.84
+    }
+
+    for p, exp_val in expected_whole_sign_dig.items():
+        calc_val = sb[p]["Dig_Bala"]
+        assert abs(calc_val - exp_val) <= 0.05, f"{p} Whole Sign Dig Bala mismatch: Expected {exp_val}, got {calc_val}"
+
+
+def test_stage2b_decoupled_baseline_consumption():
+    """
+    Verifies that calculate_shadbala directly ingests Stage 1 ChartBaseline
+    and Stage 2A dignities and aspect matrices with zero Swiss Ephemeris calls.
+    """
+    from jyotish.baseline import ChartBaseline
+    from jyotish.relationships.relationships import calculate_chart_dignities
+    from jyotish.aspects.aspects import calculate_aspect_matrices
+    from jyotish.shadbala.shadbala import calculate_shadbala
+
+    baseline = ChartBaseline(
+        name="Angelina Jolie", year=1975, month=6, day=4,
+        hour=9, minute=9, second=0, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+    )
+    dignities = calculate_chart_dignities(baseline)
+    aspects = calculate_aspect_matrices(baseline)
+
+    sb_res = calculate_shadbala(baseline, dignities=dignities, aspect_matrices=aspects, dig_bala_mode="whole_sign")
+
+    assert len(sb_res) == 7
+    for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        assert "Total_Virupas" in sb_res[p]
+        assert "Dig_Bala" in sb_res[p]
+        assert "Sthana_Bala" in sb_res[p]
+        assert "Kala_Bala" in sb_res[p]
+        assert "Ayana_Bala" in sb_res[p]
+        assert "Cheshta_Bala" in sb_res[p]
+        assert "Drik_Bala" in sb_res[p]
+        assert "Ishta_Phala" in sb_res[p]
+        assert "Kashta_Phala" in sb_res[p]
+        assert "Subha_Phala" in sb_res[p]
+        assert "Relative_Rank" in sb_res[p]
+
+    assert sb_res["Sun"]["Dig_Bala"] == 45.16
+
