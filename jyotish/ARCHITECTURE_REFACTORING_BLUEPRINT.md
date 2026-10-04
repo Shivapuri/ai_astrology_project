@@ -9,6 +9,7 @@ This blueprint defines the master architectural refactoring for the Astra calcul
 * **Stage 1 (`baseline.py`, `baseline_math.py`, `baseline_tables.py`):** 100% Certified.
 * **Stage 2A (`relationships.py`):** 100% Certified.
 * **Stage 2A (`aspects.py`):** 100% Certified.
+* **Stage 2B (`shadbala.py`):** 100% Certified.
 
 ---
 
@@ -24,8 +25,8 @@ Previously, Astra suffered from severe calculation redundancy and parameter dril
 Re-architect the computation pipeline into a **Single Source of Truth** using a phased, 4-stage Directed Acyclic Graph (DAG):
 1. **Stage 1 (Completed & 100% Certified):** Master Astronomical & Coordinate Baseline Engine (`ChartBaseline` in `baseline.py`, `baseline_math.py`, `baseline_tables.py`). Computes 100% deterministic physical/geometric facts (ephemeris, coordinates, sensitive points, 16 vargas, upagrahas, and raw distance matrices). Contains **zero house evaluations, zero house atmosphere scoring, zero dignity scoring, and zero Shadbala**.
 2. **Stage 2A (Completed & 100% Certified):** Interaction & Relationship Matrices (`relationships.py` and `aspects.py`: Graha Dṛṣṭi 0–60 Virūpas, Pañcadhā Maitrī 5-fold friendship, Varga Dignities, Rāśi Dṛṣṭi, Dynamic Benefic/Malefic breakdown).
-3. **Stage 2B (Next Focus):** Planetary Strength & Shadbala (6-fold Shadbala, Sthāna Bala, Kāla Bala, Dṛk Bala, Quantitative & Qualitative Avasthās).
-4. **Stage 3:** House Evaluation, Atmosphere & Diagnostic Cockpit (Bhāva Bala, Harsha Bala, House Base Scores, Master Diagnostic table).
+3. **Stage 2B (Completed & 100% Certified):** Planetary Strength & Shadbala (`shadbala.py`: 6-fold Shadbala, Sthāna Bala, Kāla Bala, Cheṣṭā Bala, Ayana Bala, Dṛk Bala, Naisargika Bala, Quantitative & Qualitative Avasthās, with Dual-Mode Campanus Kala Parity and Pure Whole Sign Tropical 90° Cardinal Compass architecture).
+4. **Stage 3 (Next Focus):** House Evaluation, Atmosphere & Diagnostic Cockpit (Bhāva Bala, Harsha Bala, House Base Scores, Master Diagnostic table).
 5. **Stage 4:** Downstream Consumers (Classical Yogas & Breakers, Vimshottari Dashas, Gochara Transits, Full Narrative Reports).
 
 ```mermaid
@@ -230,24 +231,41 @@ Stage 1 is fully decoupled into a clean 3-file modular architecture:
 
 ---
 
-### Stage 2B: Planetary Strength & Shadbala (NEXT FOCUS)
-*Goal: Migrate Shadbala and Avastha engines to consume Stage 1 + Stage 2A states directly.*
-* **1. Sthāna Bala (Positional Strength):**
-  * Uccha Bala (Exaltation strength), Saptavargaja Bala (Varga dignity sum), Ojayugmarasyamsa Bala, Kendradi Bala, Drekkana Bala.
-* **2. Kāla Bala (Temporal Strength):**
-  * Nathonatha Bala (Diurnal/Nocturnal), Paksha Bala (Lunar phase illumination), Tribhaga Bala, Temporal Lords (Varsha, Masa, Vara, Hora), Yudhdha Bala.
-* **3. Dig Bala (Directional Strength):**
-  * Angular distances from Dig Bala points (Sun/Mars in 10th, Jupiter/Mercury in 1st, Moon/Venus in 4th, Saturn in 7th).
-* **4. Cheshta Bala (Motional Strength):**
-  * Derived from planetary speed ratios and retrograde status.
-* **5. Dṛk Bala (Aspect Strength):**
-  * Net benefic minus malefic aspect virūpas from Stage 2A Dṛṣṭi Matrix.
-* **6. Quantitative & Qualitative Avasthās:**
-  * Lajjitādi Avasthās (6 states of alertness/shame), Jagradādi Avasthās (Awake, Dreaming, Sleeping), Deeptādi Avasthās (9 qualitative states).
+### Stage 2B: Planetary Strength & Shadbala (COMPLETED & CERTIFIED)
+*Goal: Migrate Shadbala and Avastha engines to consume Stage 1 + Stage 2A states directly, decoupling calculation engines from Swiss Ephemeris coordinate transformations and establishing pure Whole Sign Tropical 90° cardinal geometry while protecting legacy Kala / Campanus parity.*
+- [x] **Polymorphic Ingestion Adapter:**
+  * `calculate_shadbala()` accepts modern `ChartBaseline` class instances, serialized dictionaries, or legacy 6-positional argument calls (`planet_positions`, `asc_lon`, `mc_lon`, `jd`, `lon`, `lat`), ensuring 100% backward compatibility.
+- [x] **Pure Whole Sign Tropical Dig Bala Geometry:**
+  * Cardinal sensitive cusps are strictly projected in 90° intervals from the Ascendant degree:
+    $$\text{Cusp}_1 = \text{Asc}, \quad \text{Cusp}_4 = \text{Asc} + 90^\circ, \quad \text{Cusp}_7 = \text{Asc} + 180^\circ, \quad \text{Cusp}_{10} = \text{Asc} + 270^\circ$$
+  * Universal linear arc formula from planet's zero point ($\Delta / 3.0$) matching classical texts (*Phaladeepika* Ch. 4 & *BPHS* Ch. 27).
+  * Multi-model execution modes via `dig_bala_mode`:
+    * `"whole_sign"` (**DEFAULT & RECOMMENDED**): Decoupled from Swiss Ephemeris 3D routines, eliminating high-latitude quadrant distortion.
+    * `"campanus"`: Legacy 3D Campanus house interpolation (`swe.house_pos(..., b'C')`), preserving exact parity with Ernst Wilhelm's Kala software outputs.
+    * `"quadrant_mc"`: Longitudinal quadrant interpolation using spatial MC.
+- [x] **Dual-Mode Kendra Bala (Angular Strength):**
+  * Toggled via `kendra_bala_mode`:
+    * `"flat_parashara"` (**DEFAULT**): Classical BPHS and Ernst Wilhelm *Kala* standard (Kendras 1, 4, 7, 10 = 60.0 Virūpas; Panaparas 2, 5, 8, 11 = 30.0 Virūpas; Apoklimas 3, 6, 9, 12 = 15.0 Virūpas).
+    * `"tapered_phaladeepika"`: Mantreśvara’s tapered model (*Phaladeepika* Ch. 4, Text 8 / Vic DiCara) where strength decreases by $1/4$ from Lagna in each square (Kendras: 60.0, 45.0, 30.0, 15.0; Panaparas: 30.0, 22.5, 15.0, 7.5; Apoklimas: 15.0, 11.25, 7.5, 3.75).
+  * Exported with 2-decimal precision (`round(kendra, 2)`) to preserve quarter-point values ($11.25$, $3.75$).
+- [x] **Saptavarga Bala Direct Consumption:**
+  * Consumes Stage 1 `baseline.vargas` for D1–D12 and Stage 2A compound relationships (`compound_relationships`) without redundant loops or re-evaluations.
+  * Correctly computes harmonic D30 for Saptavarga dignity to guarantee exact numerical parity with Kala software baseline CSVs.
+- [x] **Cheṣṭā Bala & Declination Corrections:**
+  * Analytical motional anomaly (*Cheshta Kendra*) calculation with Keplerian *Manda Phala* correction for inferior planets ($e \cdot \sin(E) \cdot \cos(i)$).
+  * Sun and Moon Cheshta Bala derived from Ayana Bala and Paksha Bala respectively per BPHS 28.18.
+- [x] **Dṛk Bala via Stage 2A Graha Dṛṣṭi Matrix:**
+  * Directly consumes `aspect_matrices["graha_drishti"]["incoming"][p]`.
+  * Dynamic Moon beneficence derived from illumination percentage and waxing state in `lunar_phase` (Paksha Bala $\ge 30$ Virūpas).
+- [x] **Parāśarī Minimum Normalization:**
+  * Planetary strength is normalized against individual Parāśarī minimum thresholds (`REQUIRED_TOTAL`: Mercury 420, Sun/Jupiter 390, Moon 360, Venus 330, Mars/Saturn 300) rather than a flat divisor.
+- [x] **Dual-Mode Benchmark Suite & Zero-Breakage Certification:**
+  * `tests/test_stage2b_shadbala.py` certifies both legacy Kala / Campanus parity and Astra's pure Whole Sign Tropical architecture on the Angelina Jolie benchmark.
+  * Verified 100% green across all 94 targeted mathematical, varga, avastha, and interaction tests (`pytest`).
 
 ---
 
-### Stage 3: House Engines & Diagnostic Cockpit
+### Stage 3: House Engines & Diagnostic Cockpit (NEXT FOCUS)
 *Goal: Synthesize planet and house states into the Master Diagnostic Table.*
 * **1. Bhāva Bala (House Strength):**
   * Bhāvadhipati Bala (Lord's strength), Bhāva Dig Bala, Bhāva Dṛṣṭi Bala.
