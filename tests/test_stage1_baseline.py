@@ -176,6 +176,7 @@ def test_candra_kriyadi_and_navatara():
         assert "lord_sublord" in entry
         assert "sidereal_ra" in entry
         assert "sidereal_longitude" in entry
+        assert "tropical_ra" in entry
 
 
 def test_divisional_vargas_mc_and_lagna_d60_d30():
@@ -359,11 +360,22 @@ def test_refinements_and_shivapuri_case():
         nakshatra_system="ERNST_DHRUVA"
     )
 
-    # 1. Sidereal Nitya Yoga
+    # 1. Sidereal Nitya Yoga (computed on sidereal ecliptic sum)
     ny = chart.pancanga["nitya_yoga"]
     assert ny["number"] == 10, f"Expected Yoga #10 (Ganda), got {ny['number']}"
     assert ny["name"] == "Ganda"
-    assert abs(ny["arc_degrees"] - 127.9623) < 0.01
+    assert abs(ny["arc_degrees"] - 126.5862) < 0.01
+
+    # 1b. Nakshatra coordinate verification (Sidereal RA vs Sidereal Longitude vs Tropical RA)
+    gnak = chart.nakshatras["grahas"]
+    assert abs(gnak["Sun"]["sidereal_longitude"] - 207.9582) < 0.01
+    assert abs(gnak["Sun"]["sidereal_ra"] - 205.9626) < 0.01
+    assert abs(gnak["Sun"]["tropical_ra"] - 225.4454) < 0.01
+    assert abs(gnak["Moon"]["sidereal_longitude"] - 278.6280) < 0.01
+    assert abs(gnak["Moon"]["sidereal_ra"] - 281.9997) < 0.01
+    assert abs(gnak["Moon"]["tropical_ra"] - 301.4825) < 0.01
+    assert abs(gnak["Lagna"]["sidereal_longitude"] - 109.6488) < 0.01
+    assert abs(gnak["Lagna"]["position"] - 109.6488) < 0.01
 
     # 2. Complete Upagrahas (5 classical points)
     up = chart.upagrahas
@@ -464,5 +476,40 @@ def test_baseline_modular_split():
     assert hasattr(b_main, "NITYA_YOGAS")
     assert hasattr(b_main, "CHANDRA_KRIYAS_DATA")
     assert hasattr(b_main, "get_eq_from_ecl")
+
+
+def test_jd_utc_midnight_east_timezone():
+    """Verifies that early morning births in east-of-Greenwich timezones do not trigger negative-hour julday bugs."""
+    chart = ChartBaseline(
+        name="MidnightEastTest",
+        year=2024, month=1, day=1,
+        hour=1, minute=30, second=0,
+        latitude=28.6139, longitude=77.2090, timezone_offset=5.5
+    )
+    anchors = chart.astronomical_anchors
+    expected_diff = 5.5 / 24.0
+    actual_diff = anchors["jd_local"] - anchors["jd_utc"]
+    assert abs(actual_diff - expected_diff) < 1e-8
+
+
+def test_nakshatra_coordinate_keys_differentiation():
+    """Verifies that sidereal_ra, sidereal_longitude, and tropical_ra are distinctly defined and non-inverted."""
+    chart = ChartBaseline(
+        name="CoordDiffTest",
+        year=1983, month=11, day=10,
+        hour=22, minute=20, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0,
+        nakshatra_system="ERNST_DHRUVA"
+    )
+    for b in ALL_BODIES:
+        entry = chart.nakshatras["grahas"][b]
+        assert "sidereal_ra" in entry
+        assert "sidereal_longitude" in entry
+        assert "tropical_ra" in entry
+        # Tropical RA and Sidereal RA should differ by approximately equatorial ayanamsa
+        eq_ay = chart.nakshatras["equatorial_ayanamsa"]
+        expected_sid_ra = (entry["tropical_ra"] - eq_ay) % 360.0
+        assert abs(entry["sidereal_ra"] - round(expected_sid_ra, 4)) < 0.05
+
 
 

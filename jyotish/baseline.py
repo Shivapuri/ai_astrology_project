@@ -109,8 +109,7 @@ class ChartBaseline:
             cal_flag = swe.GREG_CAL
 
         jd_local = swe.julday(self.year, self.month, self.day, local_time_frac, cal_flag)
-        utc_time_frac = local_time_frac - self.timezone_offset
-        jd_utc = swe.julday(self.year, self.month, self.day, utc_time_frac, cal_flag)
+        jd_utc = jd_local - (self.timezone_offset / 24.0)
 
         # 1. Angles & Cusps (Campanus: system 'C')
         cusps, ascmc = swe.houses(jd_utc, self.latitude, self.longitude, b'C')
@@ -363,9 +362,10 @@ class ChartBaseline:
         vishti_indices = {8, 15, 22, 29, 36, 43, 50, 57}
         is_vishti = karana_num in vishti_indices
 
-        # Nityā Yoga (1 to 27) calculated via Sidereal Sum: (Sun_sid + Moon_sid) % 360
-        sid_sun = self.nakshatras["grahas"]["Sun"]["position"]
-        sid_moon = self.nakshatras["grahas"]["Moon"]["position"]
+        # Nityā Yoga (1 to 27) calculated via Sidereal Ecliptic Sum: (Sun_sid + Moon_sid) % 360
+        ecl_ayanamsa = self.nakshatras["ecliptic_ayanamsa"]
+        sid_sun = (sun_lon - ecl_ayanamsa) % 360.0
+        sid_moon = (moon_lon - ecl_ayanamsa) % 360.0
         yoga_arc = (sid_sun + sid_moon) % 360.0
         yoga_num = int(yoga_arc // (360.0 / 27.0)) + 1
         yoga_num = max(1, min(27, yoga_num))
@@ -680,6 +680,8 @@ class ChartBaseline:
 
             for p in ALL_BODIES:
                 sid_pos = (self.coordinates[p]["longitude"] - ayanamsa_lahiri) % 360.0
+                ra_val = self.coordinates[p]["right_ascension"]
+                sid_ra = (ra_val - ayanamsa_lahiri) % 360.0
                 n_idx = int(sid_pos / (360.0 / 27.0)) % 27
                 pada = int((sid_pos % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
                 nak_lord = VIMSHOTTARI_SEQUENCE[n_idx % 9]
@@ -690,8 +692,9 @@ class ChartBaseline:
                     "nakshatra": NAKSHATRAS[n_idx],
                     "pada": pada,
                     "position": round(sid_pos, 4),
-                    "sidereal_ra": round(sid_pos, 4),
+                    "sidereal_ra": round(sid_ra, 4),
                     "sidereal_longitude": round(sid_pos, 4),
+                    "tropical_ra": round(ra_val, 4),
                     "nakshatra_lord": nak_lord,
                     "sub_lord": sub_lord,
                     "lord_sublord": f"{PLANET_ABBREVIATIONS.get(nak_lord, nak_lord[:2])}/{PLANET_ABBREVIATIONS.get(sub_lord, sub_lord[:2])}"
@@ -715,13 +718,16 @@ class ChartBaseline:
 
             grahas_nak = {}
             for p in ALL_BODIES:
+                trop_lon = self.coordinates[p]["longitude"]
+                ecl_sid_lon = (trop_lon - ayanamsa_ecl) % 360.0
+                ra_val = self.coordinates[p]["right_ascension"]
+                sid_ra = (ra_val - ayanamsa_eq) % 360.0
+
                 if p in ("Lagna", "MC"):
                     ecl_target = asc_lon if p == "Lagna" else self.astronomical_anchors["mc_longitude"]
                     sid_pos = (ecl_target - ayanamsa_ecl) % 360.0
-                    ra_val = sid_pos
                 else:
-                    ra_val = self.coordinates[p]["right_ascension"]
-                    sid_pos = (ra_val - ayanamsa_eq) % 360.0
+                    sid_pos = sid_ra
 
                 n_idx = int(sid_pos / (360.0 / 27.0)) % 27
                 pada = int((sid_pos % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
@@ -733,8 +739,9 @@ class ChartBaseline:
                     "nakshatra": NAKSHATRAS[n_idx],
                     "pada": pada,
                     "position": round(sid_pos, 4),
-                    "sidereal_ra": round(ra_val, 4),
-                    "sidereal_longitude": round(sid_pos, 4),
+                    "sidereal_ra": round(sid_ra, 4),
+                    "sidereal_longitude": round(ecl_sid_lon, 4),
+                    "tropical_ra": round(ra_val, 4),
                     "nakshatra_lord": nak_lord,
                     "sub_lord": sub_lord,
                     "lord_sublord": f"{PLANET_ABBREVIATIONS.get(nak_lord, nak_lord[:2])}/{PLANET_ABBREVIATIONS.get(sub_lord, sub_lord[:2])}"

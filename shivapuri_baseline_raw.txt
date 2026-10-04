@@ -83,7 +83,7 @@ NATAL DATA & SUBJECT PARAMETERS:
   Tithi Number     : 6 (Shukla Paksha, Tithi 6)
   Tithi Nature     : Chidra Tithi (Vulnerable) (Elapsed: 88.91%)
   Karaṇa Number    : 12 (Standard)
-  Nityā Yoga       : #10 Ganda (Arc: 127.9623°, Elapsed: 59.72%)
+  Nityā Yoga       : #10 Ganda (Arc: 126.5862°, Elapsed: 49.40%)
   Vāra (Weekday)   : Jupiter (Thursday)
 
   Special Core Sphutas (Phaladeepika Ch. 12 & Ch. 17):
@@ -876,8 +876,8 @@ NATAL DATA & SUBJECT PARAMETERS:
     "nitya_yoga": {
       "number": 10,
       "name": "Ganda",
-      "arc_degrees": 127.9623,
-      "traversal_pct": 59.72
+      "arc_degrees": 126.5862,
+      "traversal_pct": 49.4
     },
     "vara": "Jupiter"
   },
@@ -943,7 +943,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 2,
         "position": 205.9626,
         "sidereal_ra": 205.9626,
-        "sidereal_longitude": 205.9626,
+        "sidereal_longitude": 207.9582,
+        "tropical_ra": 225.4454,
         "nakshatra_lord": "Jupiter",
         "sub_lord": "Ketu",
         "lord_sublord": "Ju/Ke",
@@ -955,7 +956,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 1,
         "position": 281.9997,
         "sidereal_ra": 281.9997,
-        "sidereal_longitude": 281.9997,
+        "sidereal_longitude": 278.628,
+        "tropical_ra": 301.4825,
         "nakshatra_lord": "Moon",
         "sub_lord": "Rahu",
         "lord_sublord": "Mo/Ra",
@@ -985,7 +987,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 4,
         "position": 156.9987,
         "sidereal_ra": 156.9987,
-        "sidereal_longitude": 156.9987,
+        "sidereal_longitude": 155.5791,
+        "tropical_ra": 176.4814,
         "nakshatra_lord": "Sun",
         "sub_lord": "Mercury",
         "lord_sublord": "Su/Me",
@@ -997,7 +1000,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 4,
         "position": 212.533,
         "sidereal_ra": 212.533,
-        "sidereal_longitude": 212.533,
+        "sidereal_longitude": 214.637,
+        "tropical_ra": 232.0157,
         "nakshatra_lord": "Jupiter",
         "sub_lord": "Rahu",
         "lord_sublord": "Ju/Ra",
@@ -1009,7 +1013,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 3,
         "position": 233.7194,
         "sidereal_ra": 233.7194,
-        "sidereal_longitude": 233.7194,
+        "sidereal_longitude": 234.5226,
+        "tropical_ra": 253.2021,
         "nakshatra_lord": "Mercury",
         "sub_lord": "Mars",
         "lord_sublord": "Me/Ma",
@@ -1021,7 +1026,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 1,
         "position": 162.321,
         "sidereal_ra": 162.321,
-        "sidereal_longitude": 162.321,
+        "sidereal_longitude": 161.5426,
+        "tropical_ra": 181.8038,
         "nakshatra_lord": "Moon",
         "sub_lord": "Rahu",
         "lord_sublord": "Mo/Ra",
@@ -1033,7 +1039,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 4,
         "position": 197.3756,
         "sidereal_ra": 197.3756,
-        "sidereal_longitude": 197.3756,
+        "sidereal_longitude": 198.5664,
+        "tropical_ra": 216.8584,
         "nakshatra_lord": "Rahu",
         "sub_lord": "Venus",
         "lord_sublord": "Ra/Ve",
@@ -1045,7 +1052,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 1,
         "position": 55.5553,
         "sidereal_ra": 55.5553,
-        "sidereal_longitude": 55.5553,
+        "sidereal_longitude": 56.2739,
+        "tropical_ra": 75.038,
         "nakshatra_lord": "Mars",
         "sub_lord": "Rahu",
         "lord_sublord": "Ma/Ra",
@@ -1057,7 +1065,8 @@ NATAL DATA & SUBJECT PARAMETERS:
         "pada": 3,
         "position": 235.5553,
         "sidereal_ra": 235.5553,
-        "sidereal_longitude": 235.5553,
+        "sidereal_longitude": 236.2739,
+        "tropical_ra": 255.038,
         "nakshatra_lord": "Mercury",
         "sub_lord": "Rahu",
         "lord_sublord": "Me/Ra",
@@ -1068,8 +1077,9 @@ NATAL DATA & SUBJECT PARAMETERS:
         "nakshatra": "Ashlesha",
         "pada": 1,
         "position": 109.6488,
-        "sidereal_ra": 109.6488,
+        "sidereal_ra": 112.5569,
         "sidereal_longitude": 109.6488,
+        "tropical_ra": 132.0396,
         "nakshatra_lord": "Mercury",
         "sub_lord": "Venus",
         "lord_sublord": "Me/Ve",
@@ -1080,8 +1090,9 @@ NATAL DATA & SUBJECT PARAMETERS:
         "nakshatra": "Revati",
         "pada": 4,
         "position": 359.0238,
-        "sidereal_ra": 359.0238,
+        "sidereal_ra": 358.0246,
         "sidereal_longitude": 359.0238,
+        "tropical_ra": 17.5073,
         "nakshatra_lord": "Mercury",
         "sub_lord": "Saturn",
         "lord_sublord": "Me/Sa",
@@ -4269,6 +4280,26 @@ NATAL DATA & SUBJECT PARAMETERS:
       "combustion_severity": "None",
       "combustion_range": "None"
     },
+    "Rahu": {
+      "is_combust": false,
+      "separation": 0.0,
+      "sun_distance": 0.0,
+      "orb_limit": 0.0,
+      "combustion_orb": 0.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "None"
+    },
+    "Ketu": {
+      "is_combust": false,
+      "separation": 0.0,
+      "sun_distance": 0.0,
+      "orb_limit": 0.0,
+      "combustion_orb": 0.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "None"
+    },
     "Moon": {
       "is_combust": false,
       "separation": 70.6698,
@@ -4328,26 +4359,6 @@ NATAL DATA & SUBJECT PARAMETERS:
       "severity": "Moderate",
       "combustion_severity": "Moderate",
       "combustion_range": "8\u00b0 - 15\u00b0"
-    },
-    "Rahu": {
-      "is_combust": false,
-      "separation": 0.0,
-      "sun_distance": 0.0,
-      "orb_limit": 0.0,
-      "combustion_orb": 0.0,
-      "severity": "None",
-      "combustion_severity": "None",
-      "combustion_range": "None"
-    },
-    "Ketu": {
-      "is_combust": false,
-      "separation": 0.0,
-      "sun_distance": 0.0,
-      "orb_limit": 0.0,
-      "combustion_orb": 0.0,
-      "severity": "None",
-      "combustion_severity": "None",
-      "combustion_range": "None"
     }
   },
   "lunar_phase": {
