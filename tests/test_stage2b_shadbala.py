@@ -170,3 +170,69 @@ def test_shadbala_kendra_bala_mode_integration(angelina_baseline):
     assert results_flat["Moon"]["Kendradi_Bala"] == 60.0
     assert results_tapered["Moon"]["Kendradi_Bala"] == 45.0
     assert abs((results_flat["Moon"]["Total_Virupas"] - results_tapered["Moon"]["Total_Virupas"]) - 15.0) < 0.1
+
+
+def test_zero_ephemeris_audit(angelina_baseline):
+    """
+    TEST 5: ZERO-EPHEMERIS AUDIT GUARANTEE.
+    Monitors all swisseph functions to guarantee ZERO Swiss Ephemeris calls
+    are made during calculate_shadbala evaluation in both Whole Sign and Campanus modes.
+    """
+    import swisseph as swe
+    dignities = calculate_chart_dignities(angelina_baseline)
+    aspects = calculate_aspect_matrices(angelina_baseline)
+
+    swe_call_log = []
+    original_funcs = {}
+    for attr_name in dir(swe):
+        attr = getattr(swe, attr_name)
+        if callable(attr):
+            original_funcs[attr_name] = attr
+            def make_wrapper(name, orig):
+                def wrapper(*args, **kwargs):
+                    swe_call_log.append(name)
+                    return orig(*args, **kwargs)
+                return wrapper
+            setattr(swe, attr_name, make_wrapper(attr_name, attr))
+
+    try:
+        # Whole Sign Tropical mode
+        calculate_shadbala(
+            angelina_baseline,
+            dignities=dignities,
+            aspect_matrices=aspects,
+            dig_bala_mode="whole_sign"
+        )
+
+        # Campanus mode
+        calculate_shadbala(
+            angelina_baseline,
+            dignities=dignities,
+            aspect_matrices=aspects,
+            dig_bala_mode="campanus"
+        )
+    finally:
+        for attr_name, orig in original_funcs.items():
+            setattr(swe, attr_name, orig)
+
+    assert len(swe_call_log) == 0, f"Swiss Ephemeris was called during calculate_shadbala: {swe_call_log}"
+
+
+def test_calculate_shadbala_keyword_adapter(angelina_baseline):
+    """
+    TEST 6: UNIVERSAL ADAPTER INGESTION TEST.
+    Verifies that calling calculate_shadbala(baseline=...) as a keyword argument
+    properly parses the Stage 1 container and returns all physical planets without KeyError.
+    """
+    dignities = calculate_chart_dignities(angelina_baseline)
+    aspects = calculate_aspect_matrices(angelina_baseline)
+
+    res_kw = calculate_shadbala(
+        baseline=angelina_baseline,
+        dignities=dignities,
+        aspect_matrices=aspects
+    )
+
+    for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        assert p in res_kw, f"Planet {p} missing when calling calculate_shadbala(baseline=...)"
+        assert res_kw[p]["Total_Virupas"] > 200.0

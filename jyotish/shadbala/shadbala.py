@@ -16,6 +16,11 @@ Decoupled from Swiss Ephemeris (swisseph):
 import math
 from typing import Dict, Any, Optional, List
 
+try:
+    from jyotish.baseline_math import calculate_varga_longitude
+except ImportError:
+    from jyotish.generate_jyotish import calculate_varga_longitude
+
 SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
@@ -117,7 +122,7 @@ def calculate_saptavarga_bala(
     Consumes precalculated varga longitudes and Stage 2A compound friendships
     when available to eliminate redundant calculations.
     """
-    from jyotish.generate_jyotish import calculate_varga_longitude
+    from jyotish.baseline_math import calculate_varga_longitude
     from jyotish.relationships.relationships import (
         SIGN_LORDS, get_natural_relationship, get_temporary_relationship, get_compound_relationship
     )
@@ -327,17 +332,6 @@ def calculate_dig_bala(
             rem = (h_idx % 3.0) / 3.0
             val = virupas[q] + rem * (virupas[(q + 1) % 4] - virupas[q])
             return max(0.0, min(60.0, round(val, 2)))
-        elif armc is not None and geolat is not None and eps is not None:
-            try:
-                import swisseph as swe
-                hpos = swe.house_pos(armc, geolat, eps, [planet_lon, planet_lat], b'C')
-                h_idx = (hpos - 1.0) % 12.0
-                q = int(h_idx // 3.0)
-                rem = (h_idx % 3.0) / 3.0
-                val = virupas[q] + rem * (virupas[(q + 1) % 4] - virupas[q])
-                return max(0.0, min(60.0, round(val, 2)))
-            except Exception:
-                pass
 
     # --------------------------------------------------------------------------
     # MODE 3: QUADRANT LONGITUDINAL MC FALLBACK
@@ -436,62 +430,33 @@ def calculate_tribhaga_bala(planet: str, sun_lon: float, asc_lon: float) -> floa
 def calculate_ahargana_lords(birth_time_jd: float, lon: float = 0.0, lat: float = 0.0) -> Dict[str, str]:
     """
     Calculates the Lords of the Year (Abda/Varsha), Month (Masa), Day (Vara), and Hour (Hora)
-    according to Ernst Wilhelm's Kala methodology using the ancient Yamakoti meridian.
+    analytically. 100% ephemeris-free fallback for legacy non-baseline inputs.
     """
     try:
-        import swisseph as swe
-        yamakoti_lon = 165.0 + 46.0 / 60.0
-        yamakoti_lat = 0.0
-        geopos = (yamakoti_lon, yamakoti_lat, 0.0)
-        rsmi = swe.CALC_RISE | swe.BIT_DISC_CENTER
-
         planets_by_weekday = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
         hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 
-        # 1. Sunrise at Yamakoti
-        try:
-            _, tret_curr = swe.rise_trans(birth_time_jd, swe.SUN, rsmi, geopos)
-            sr_curr = tret_curr[0]
-            if sr_curr <= birth_time_jd:
-                recent_sunrise = sr_curr
-            else:
-                _, tret_prev = swe.rise_trans(birth_time_jd - 1.0, swe.SUN, rsmi, geopos)
-                recent_sunrise = tret_prev[0]
-        except Exception:
-            recent_sunrise = int(birth_time_jd) + 0.25
-
-        lmt_sunrise = recent_sunrise + yamakoti_lon / 360.0
-        vara_idx = int(lmt_sunrise + 1.5) % 7
+        lmt_jd = birth_time_jd + (lon / 360.0)
+        vara_idx = int(lmt_jd + 1.5) % 7
         vara_lord = planets_by_weekday[vara_idx]
 
-        hours_elapsed = max(0.0, (birth_time_jd - recent_sunrise) * 24.0)
+        local_time_frac = (lmt_jd + 0.5) % 1.0
+        hours_since_sunrise = ((local_time_frac - 0.25) % 1.0) * 24.0
         start_hora_idx = hora_sequence.index(vara_lord)
-        hora_lord = hora_sequence[(start_hora_idx + int(hours_elapsed)) % 7]
+        hora_lord = hora_sequence[(start_hora_idx + int(hours_since_sunrise)) % 7]
 
-        # Year Lord (Sun at 0° Tropical Aries)
-        sun_lon = swe.calc_ut(birth_time_jd, swe.SUN)[0][0]
-        yr, mo, da, hr = swe.revjul(birth_time_jd)
-        try:
-            ingress_guess = swe.julday(yr, 3, 20, 0.0)
-            jd_mesha = swe.solcross_ut(0.0, ingress_guess, swe.FLG_SWIEPH)
-            if jd_mesha > birth_time_jd:
-                jd_mesha = swe.solcross_ut(0.0, swe.julday(yr - 1, 3, 20, 0.0), swe.FLG_SWIEPH)
-            lmt_mesha = jd_mesha + yamakoti_lon / 360.0
-            abda_lord = planets_by_weekday[int(lmt_mesha + 1.5) % 7]
-        except Exception:
-            abda_lord = vara_lord
+        T = (birth_time_jd - 2451545.0) / 36525.0
+        mean_sun = (280.466457 + 36000.7698278 * T) % 360.0
+        days_since_aries = (mean_sun / 360.0) * 365.25
+        jd_aries = birth_time_jd - days_since_aries
+        varsha_idx = int(jd_aries + 1.5) % 7
+        abda_lord = planets_by_weekday[varsha_idx]
 
-        # Month Lord (Sun at current 30° boundary)
-        try:
-            sign_idx = int((sun_lon % 360.0) / 30.0)
-            target_lon = sign_idx * 30.0
-            jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 32.0, swe.FLG_SWIEPH)
-            if jd_sign > birth_time_jd or jd_sign < birth_time_jd - 35.0:
-                jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 40.0, swe.FLG_SWIEPH)
-            lmt_sign = jd_sign + yamakoti_lon / 360.0
-            masa_lord = planets_by_weekday[int(lmt_sign + 1.5) % 7]
-        except Exception:
-            masa_lord = vara_lord
+        sign_deg = mean_sun % 30.0
+        days_since_sankranti = (sign_deg / 30.0) * 30.4375
+        jd_sankranti = birth_time_jd - days_since_sankranti
+        masa_idx = int(jd_sankranti + 1.5) % 7
+        masa_lord = planets_by_weekday[masa_idx]
 
         return {
             "Abda": abda_lord,
@@ -581,22 +546,8 @@ def calculate_yuddha_bala(
 def calculate_ayana_bala(planet: str, birth_time_jd: Optional[float] = None, planet_lon: Optional[float] = None) -> float:
     """
     Ayana Bala using BPHS Chapter 27 Khandakas [45, 33, 12].
-    Evaluated from Tropical Sayana distance from the nearest equinox.
+    Evaluated from Tropical Sayana distance from the nearest equinox. 100% ephemeris-free.
     """
-    if planet_lon is None and birth_time_jd is not None:
-        try:
-            import swisseph as swe
-            planet_map = {
-                "Sun": swe.SUN, "Moon": swe.MOON, "Mars": swe.MARS,
-                "Mercury": swe.MERCURY, "Jupiter": swe.JUPITER, 
-                "Venus": swe.VENUS, "Saturn": swe.SATURN
-            }
-            if planet in planet_map:
-                res, _ = swe.calc_ut(birth_time_jd, planet_map[planet], swe.FLG_SWIEPH)
-                planet_lon = res[0]
-        except Exception:
-            pass
-
     if planet_lon is None:
         return 0.0
 
@@ -665,27 +616,10 @@ def calculate_cheshta_bala_analytical(
         midpoint = (mean_p + diff / 2.0) % 360.0
         kendra = abs(mean_sun - midpoint) % 360.0
     else:
-        # Mercury, Venus
+        # Inferior Planets (Mercury, Venus): Use precalculated seeghrocca
         if seeghrocca is None:
-            try:
-                import swisseph as swe
-                p_id = swe.MERCURY if planet == "Mercury" else swe.VENUS
-                res, _ = swe.calc_ut(birth_time_jd, p_id, swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_HELCTR)
-                s_occ = res[0]
-                elem = swe.get_orbital_elements(birth_time_jd, p_id, swe.FLG_SWIEPH)
-                e = elem[1]
-                i = elem[2]
-                E_deg = elem[8]
-                c_proj = math.degrees(e * math.sin(math.radians(E_deg))) * math.cos(math.radians(i))
-                if planet == "Mercury":
-                    seeghrocca = (s_occ + c_proj) % 360.0
-                elif planet == "Venus":
-                    seeghrocca = (s_occ + c_proj * 0.7071) % 360.0
-            except Exception:
-                if planet == "Mercury":
-                    seeghrocca = (252.250323 + 149474.0722491 * T) % 360.0
-                else:
-                    seeghrocca = (181.979099 + 58519.2130302 * T) % 360.0
+            # Analytical Simon Newcomb / Keplerian fallback (zero swisseph)
+            seeghrocca = (252.250323 + 149474.0722491 * T) % 360.0 if planet == "Mercury" else (181.979099 + 58519.2130302 * T) % 360.0
 
         diff = (planet_geo_lon - mean_sun) % 360.0
         if diff > 180.0:
@@ -778,18 +712,62 @@ def calculate_drik_bala(
 def calculate_subha_phala(
     planet: str,
     planet_positions: Dict[str, float],
+    dignities_map: Optional[Dict[str, Any]] = None,
     debilitation_mode: str = "kala_degree"
 ) -> float:
-    """Calculates Śubha Phala (Auspicious Quality) across Saptavargas."""
-    from jyotish.generate_jyotish import calculate_varga_longitude
+    """Calculates Śubha Phala across Saptavargas (D1, D2, D3, D7, D9, D12, D30)."""
+    from jyotish.baseline_math import calculate_varga_longitude
     from jyotish.relationships.relationships import (
         SIGN_LORDS, get_natural_relationship, get_temporary_relationship,
         get_compound_relationship, get_dignity
     )
 
     vargas = ["D1", "D2", "D3", "D7", "D9", "D12", "D30"]
-    total_subha = 0.0
 
+    # Fast Path: Ingest precomputed Stage 2A dignities
+    if dignities_map and "varga_dignities" in dignities_map:
+        v_dignities = dignities_map["varga_dignities"]
+        total_subha = 0.0
+        for v in vargas:
+            if v == "D30":
+                # Saptavarga Bala & Subha Phala require equal 1° harmonic Trimsamsa
+                p1_d1_lon = planet_positions[planet]
+                p1_d1_idx = int(p1_d1_lon / 30.0)
+                v_lon = (p1_d1_lon * 30.0) % 360.0
+                s_idx = int((v_lon % 360.0) / 30.0)
+                s_name = SIGNS[s_idx]
+                sign_lord = SIGN_LORDS[s_name]
+                lord_d1_lon = planet_positions.get(sign_lord)
+                if lord_d1_lon is None:
+                    compound = "Neutral"
+                else:
+                    lord_d1_idx = int(lord_d1_lon / 30.0)
+                    natural = get_natural_relationship(planet, sign_lord)
+                    temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
+                    compound = get_compound_relationship(natural, temporary)
+                deg_in_sign = v_lon % 30.0
+                d_str = get_dignity(planet, s_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
+            else:
+                d_entry = v_dignities.get(v, {}).get(planet, {})
+                d_str = d_entry.get("dignity", "Neutral") if isinstance(d_entry, dict) else str(d_entry)
+
+            if "Exalted" in d_str: pts = 60.0
+            elif "Moolatrikona" in d_str: pts = 45.0
+            elif "Own Sign" in d_str: pts = 30.0
+            elif "Great Friend" in d_str: pts = 22.5
+            elif "Friend" in d_str: pts = 15.0
+            elif "Neutral" in d_str: pts = 7.5
+            elif "Great Enemy" in d_str: pts = 1.875
+            elif "Enemy" in d_str: pts = 3.75
+            else: pts = 0.0  # Debilitated
+
+            if v != "D1":
+                pts /= 2.0
+            total_subha += pts
+        return total_subha / 4.0
+
+    # Fallback to manual loop only if dignities_map is None
+    total_subha = 0.0
     p1_d1_lon = planet_positions[planet]
     p1_d1_idx = int(p1_d1_lon / 30.0)
 
@@ -848,7 +826,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
       3. Keyword-only calls with planet_positions=..., ascendant_lon=..., etc.
     """
     # --------------------------------------------------------------------------
-    # A. Adapter: Parse Arguments (Stage 1 ChartBaseline vs Legacy Inputs)
+    # A. Adapter: Universal Ingestion (Positional OR Keyword Arguments)
     # --------------------------------------------------------------------------
     coords = {}
     time_lords = {}
@@ -859,11 +837,16 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
     debilitation_mode = kwargs.get("debilitation_mode", "kala_degree")
     dig_bala_mode = kwargs.get("dig_bala_mode", "whole_sign")
     kendra_bala_mode = kwargs.get("kendra_bala_mode", "flat_parashara")
-    lon = kwargs.get("lon", 0.0)
-    lat = kwargs.get("lat", 0.0)
+    lon = kwargs.get("lon", kwargs.get("longitude", 0.0))
+    lat = kwargs.get("lat", kwargs.get("latitude", 0.0))
 
-    # Detect Legacy Positional invocation:
-    # calculate_shadbala(planet_positions, ascendant_lon, mc_lon, birth_time_jd, [lon, lat])
+    baseline_obj = None
+    if len(args) >= 1:
+        baseline_obj = args[0]
+    elif "baseline" in kwargs:
+        baseline_obj = kwargs["baseline"]
+
+    # Case 1: Legacy Positional Invocation (planet_positions, asc_lon, mc_lon, jd, [lon, lat])
     if len(args) >= 4 and isinstance(args[0], dict) and isinstance(args[1], (int, float)):
         planet_positions = args[0]
         ascendant_lon = float(args[1])
@@ -871,36 +854,37 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         birth_time_jd = float(args[3])
         lon = float(args[4]) if len(args) > 4 and isinstance(args[4], (int, float)) else lon
         lat = float(args[5]) if len(args) > 5 and isinstance(args[5], (int, float)) else lat
-    elif len(args) >= 1:
-        baseline = args[0]
-        if hasattr(baseline, "coordinates") and hasattr(baseline, "astronomical_anchors"):
+
+    # Case 2: Certified Stage 1 Container (passed positionally or as baseline=...)
+    elif baseline_obj is not None:
+        if hasattr(baseline_obj, "coordinates") and hasattr(baseline_obj, "astronomical_anchors"):
             # Modern Stage 1 Container
-            planet_positions = {p: baseline.coordinates[p]["longitude"] for p in PHYSICAL_PLANETS if p in baseline.coordinates}
-            anchors = baseline.astronomical_anchors
-            ascendant_lon = anchors.get("asc_longitude", anchors.get("ascendant_lon", baseline.coordinates.get("Lagna", {}).get("longitude", 0.0)))
-            mc_lon = anchors.get("mc_longitude", anchors.get("spatial_mc_lon", anchors.get("mc_lon", 0.0)))
+            planet_positions = {p: baseline_obj.coordinates[p]["longitude"] for p in PHYSICAL_PLANETS if p in baseline_obj.coordinates}
+            anchors = baseline_obj.astronomical_anchors
+            ascendant_lon = anchors.get("asc_longitude", anchors.get("ascendant_lon", baseline_obj.coordinates.get("Lagna", {}).get("longitude", 0.0)))
+            mc_lon = anchors.get("mc_longitude", anchors.get("spatial_mc_lon", anchors.get("mc_lon", (ascendant_lon + 270.0) % 360.0)))
             birth_time_jd = anchors.get("jd_utc", anchors.get("birth_time_jd", 0.0))
             time_lords = anchors.get("temporal_lords", {})
-            lunar_phase = getattr(baseline, "lunar_phase", {})
-            coords = baseline.coordinates
-            vargas_positions = getattr(baseline, "vargas", None)
-            lon = getattr(baseline, "longitude", lon)
-            lat = getattr(baseline, "latitude", lat)
-        elif isinstance(baseline, dict) and "coordinates" in baseline:
+            lunar_phase = getattr(baseline_obj, "lunar_phase", {})
+            coords = baseline_obj.coordinates
+            vargas_positions = getattr(baseline_obj, "vargas", None)
+            lon = getattr(baseline_obj, "longitude", lon)
+            lat = getattr(baseline_obj, "latitude", lat)
+        elif isinstance(baseline_obj, dict) and "coordinates" in baseline_obj:
             # Serialized Stage 1 dict
-            coords = baseline["coordinates"]
+            coords = baseline_obj["coordinates"]
             planet_positions = {p: coords[p]["longitude"] for p in PHYSICAL_PLANETS if p in coords}
-            anchors = baseline.get("astronomical_anchors", {})
+            anchors = baseline_obj.get("astronomical_anchors", {})
             ascendant_lon = anchors.get("asc_longitude", anchors.get("ascendant_lon", coords.get("Lagna", {}).get("longitude", 0.0)))
-            mc_lon = anchors.get("mc_longitude", anchors.get("spatial_mc_lon", anchors.get("mc_lon", 0.0)))
+            mc_lon = anchors.get("mc_longitude", anchors.get("spatial_mc_lon", anchors.get("mc_lon", (ascendant_lon + 270.0) % 360.0)))
             birth_time_jd = anchors.get("jd_utc", anchors.get("birth_time_jd", 0.0))
             time_lords = anchors.get("temporal_lords", {})
-            lunar_phase = baseline.get("lunar_phase", {})
-            vargas_positions = baseline.get("vargas", None)
-            lon = baseline.get("longitude", lon)
-            lat = baseline.get("latitude", lat)
+            lunar_phase = baseline_obj.get("lunar_phase", {})
+            vargas_positions = baseline_obj.get("vargas", None)
+            lon = baseline_obj.get("longitude", lon)
+            lat = baseline_obj.get("latitude", lat)
         else:
-            planet_positions = baseline if isinstance(baseline, dict) else kwargs.get("planet_positions", {})
+            planet_positions = baseline_obj if isinstance(baseline_obj, dict) else kwargs.get("planet_positions", {})
             ascendant_lon = kwargs.get("ascendant_lon", 0.0)
             mc_lon = kwargs.get("mc_lon", (ascendant_lon + 270.0) % 360.0)
             birth_time_jd = kwargs.get("birth_time_jd", 0.0)
@@ -909,6 +893,8 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             dignities = args[1]
         if len(args) > 2 and aspect_matrices is None and isinstance(args[2], dict):
             aspect_matrices = args[2]
+
+    # Case 3: Keyword-only fallback (planet_positions={...}, ascendant_lon=...)
     else:
         planet_positions = kwargs.get("planet_positions", {})
         ascendant_lon = kwargs.get("ascendant_lon", 0.0)
@@ -939,18 +925,6 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         moon_paksha = calculate_paksha_bala("Moon", moon_lon, sun_lon)
     is_moon_benefic = (moon_paksha >= 30.0)
 
-    # 3D Campanus house setup for legacy 'campanus' mode fallback
-    armc = None
-    eps = None
-    if dig_bala_mode == "campanus" and birth_time_jd > 0:
-        try:
-            import swisseph as swe
-            cusps_res, ascmc_res = swe.houses(birth_time_jd, lat, lon, b'C')
-            armc = ascmc_res[2]
-            eps = swe.calc_ut(birth_time_jd, swe.ECL_NUT)[0][0]
-        except Exception:
-            pass
-
     naisargika = calculate_naisargika_bala()
     results: Dict[str, Any] = {}
 
@@ -968,21 +942,6 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         pl_lon = planet_positions[p]
         p_coord = coords.get(p, {})
         pl_lat = p_coord.get("latitude", 0.0)
-        
-        # If latitude missing and swisseph available in legacy mode
-        if pl_lat == 0.0 and birth_time_jd > 0:
-            try:
-                import swisseph as swe
-                pl_id_map = {
-                    "Sun": swe.SUN, "Moon": swe.MOON, "Mars": swe.MARS,
-                    "Mercury": swe.MERCURY, "Jupiter": swe.JUPITER,
-                    "Venus": swe.VENUS, "Saturn": swe.SATURN
-                }
-                if p in pl_id_map:
-                    res_pl, _ = swe.calc_ut(birth_time_jd, pl_id_map[p], swe.FLG_SWIEPH)
-                    pl_lat = res_pl[1]
-            except Exception:
-                pass
         planet_lats[p] = pl_lat
 
         # 1. Sthāna Bala
@@ -1006,11 +965,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             ascendant_lon=ascendant_lon,
             spatial_mc_lon=mc_lon,
             mode=dig_bala_mode,
-            campanus_hpos=campanus_hpos,
-            armc=armc,
-            geolat=lat,
-            eps=eps,
-            planet_lat=pl_lat
+            campanus_hpos=campanus_hpos
         )
 
         # 3. Kāla Bala (Preliminary)
@@ -1120,7 +1075,9 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik, 1)
         total_rupas = round(total_virupas / 60.0, 2)
 
-        subha_phala = calculate_subha_phala(p, planet_positions, debilitation_mode=debilitation_mode)
+        subha_phala = calculate_subha_phala(
+            p, planet_positions, dignities_map=dignities, debilitation_mode=debilitation_mode
+        )
         asubha_phala = max(0.0, 60.0 - subha_phala)
 
         req_sthana = REQUIRED_STHANA.get(p, 100.0)

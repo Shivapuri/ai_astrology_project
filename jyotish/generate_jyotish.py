@@ -732,8 +732,30 @@ def generate_kala_chart(
         )
         
     # 5. Shadbala (6-fold strength)
+    baseline = ChartBaseline(
+        name=name,
+        year=year,
+        month=month,
+        day=day,
+        hour=hour,
+        minute=minute,
+        second=second,
+        latitude=latitude,
+        longitude=longitude,
+        timezone_offset=timezone_offset,
+        place=place,
+        d10_mode=d10_mode,
+        d24_mode=d24_mode,
+        nakshatra_system=nakshatra_system
+    )
+    dignities = rel.calculate_chart_dignities(baseline, debilitation_mode=debilitation_mode)
+    aspect_matrices = aspects.calculate_aspect_matrices(baseline)
+
+    # Certified Pipeline Ingestion:
     shadbala_data = calculate_shadbala(
-        d1_longitudes, asc_lon, mc_lon, jd, longitude, latitude,
+        baseline,
+        dignities=dignities,
+        aspect_matrices=aspect_matrices,
         debilitation_mode=debilitation_mode,
         dig_bala_mode=dig_bala_mode,
         kendra_bala_mode=kendra_bala_mode

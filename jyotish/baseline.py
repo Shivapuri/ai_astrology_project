@@ -115,6 +115,7 @@ class ChartBaseline:
         cusps, ascmc = swe.houses(jd_utc, self.latitude, self.longitude, b'C')
         asc_lon = ascmc[0] % 360.0
         mc_lon = ascmc[1] % 360.0
+        armc = ascmc[2]
 
         # 2. Precision Sunrise / Sunset via Center of Solar Disc (BIT_DISC_CENTER)
         geopos = (self.longitude, self.latitude, 0.0)
@@ -137,31 +138,39 @@ class ChartBaseline:
             is_day_birth = True
 
         # 3. Temporal Lords for Kala Bala (Vāra, Horā, Māsa, Varṣa)
+        # Kala & Surya Siddhanta ancient prime meridian: Yamakoti (165° 46' E, 0° N)
+        yamakoti_lon = 165.0 + 46.0 / 60.0
+        geopos_yamakoti = (yamakoti_lon, 0.0, 0.0)
+
         planets_by_weekday = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
         hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 
-        # Civil weekday from sunrise: Sunday=0, Monday=1, ..., Saturday=6
-        lmt_sunrise = sunrise_jd + (self.longitude / 360.0)
-        vara_idx = int(lmt_sunrise + 1.5) % 7
+        try:
+            _, tret_curr = swe.rise_trans(jd_utc, swe.SUN, rsmi, geopos_yamakoti)
+            sr_curr = tret_curr[0]
+            if sr_curr <= jd_utc:
+                recent_sunrise_yamakoti = sr_curr
+            else:
+                _, tret_prev = swe.rise_trans(jd_utc - 1.0, swe.SUN, rsmi, geopos_yamakoti)
+                recent_sunrise_yamakoti = tret_prev[0]
+        except Exception:
+            recent_sunrise_yamakoti = int(jd_utc) + 0.25
+
+        lmt_sunrise_yamakoti = recent_sunrise_yamakoti + (yamakoti_lon / 360.0)
+        vara_idx = int(lmt_sunrise_yamakoti + 1.5) % 7
         vara_lord = planets_by_weekday[vara_idx]
 
-        # Hora Lord (Unequal planetary hour from sunrise)
-        if is_day_birth:
-            day_hour_length = (sunset_jd - sunrise_jd) / 12.0
-            hours_elapsed = max(0, min(11, int((jd_utc - sunrise_jd) / day_hour_length)))
-        else:
-            night_hour_length = (next_sunrise_jd - sunset_jd) / 12.0
-            hours_elapsed = 12 + max(0, min(11, int((jd_utc - sunset_jd) / night_hour_length)))
+        hours_elapsed = max(0.0, (jd_utc - recent_sunrise_yamakoti) * 24.0)
         start_hora_idx = hora_sequence.index(vara_lord)
-        hora_lord = hora_sequence[(start_hora_idx + hours_elapsed) % 7]
+        hora_lord = hora_sequence[(start_hora_idx + int(hours_elapsed)) % 7]
 
-        # Year Lord (Varṣeśa) & Month Lord (Māseśa) via backward root-finding
+        # Year Lord (Varṣeśa) & Month Lord (Māseśa) via backward root-finding at Yamakoti
         sun_res, _ = swe.calc_ut(jd_utc, swe.SUN, swe.FLG_SWIEPH)
         sun_lon = sun_res[0] % 360.0
 
         try:
             jd_mesha = find_preceding_solar_crossing(0.0, jd_utc, sun_lon)
-            lmt_mesha = jd_mesha + (self.longitude / 360.0)
+            lmt_mesha = jd_mesha + (yamakoti_lon / 360.0)
             varsha_lord = planets_by_weekday[int(lmt_mesha + 1.5) % 7]
         except Exception:
             varsha_lord = vara_lord
@@ -169,7 +178,7 @@ class ChartBaseline:
         try:
             sign_boundary = int(sun_lon // 30) * 30.0
             jd_sankranti = find_preceding_solar_crossing(sign_boundary, jd_utc, sun_lon)
-            lmt_sankranti = jd_sankranti + (self.longitude / 360.0)
+            lmt_sankranti = jd_sankranti + (yamakoti_lon / 360.0)
             mase_lord = planets_by_weekday[int(lmt_sankranti + 1.5) % 7]
         except Exception:
             mase_lord = vara_lord
@@ -197,6 +206,13 @@ class ChartBaseline:
                 "is_display_only": True
             }
 
+        # Spherical transformation / Obliquity of the ecliptic
+        try:
+            eps_res, _ = swe.calc_ut(jd_utc, swe.ECL_NUT)
+            true_eps = eps_res[0]
+        except Exception:
+            true_eps = 23.4392911
+
         # 5. Planetary Coordinates (Ecliptic + True 3D Equatorial)
         flags_ecl = swe.FLG_SWIEPH | swe.FLG_SPEED
         flags_eq = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL | swe.FLG_SPEED
@@ -211,13 +227,46 @@ class ChartBaseline:
         for p, pid in planet_ids.items():
             res_ecl, _ = swe.calc_ut(jd_utc, pid, flags_ecl)
             res_eq, _ = swe.calc_ut(jd_utc, pid, flags_eq)
+            p_lon = res_ecl[0] % 360.0
+            p_lat = round(res_ecl[1], 4)
+
+            # Compute 3D Campanus house position once:
+            try:
+                hpos = swe.house_pos(armc, self.latitude, true_eps, [p_lon, p_lat], b'C')
+                camp_hpos = round(hpos, 6)
+            except Exception:
+                camp_hpos = None
+
+            # Mercury & Venus Seeghrocca (Heliocentric Anomaly with Manda Phala):
+            if p in ["Mercury", "Venus"]:
+                p_id = swe.MERCURY if p == "Mercury" else swe.VENUS
+                res_hel, _ = swe.calc_ut(jd_utc, p_id, swe.FLG_SWIEPH | swe.FLG_SPEED | swe.FLG_HELCTR)
+                s_occ = res_hel[0]
+                try:
+                    elem = swe.get_orbital_elements(jd_utc, p_id, swe.FLG_SWIEPH)
+                    e = elem[1]
+                    i = elem[2]
+                    E_deg = elem[8]
+                    c_proj = math.degrees(e * math.sin(math.radians(E_deg))) * math.cos(math.radians(i))
+                    if p == "Mercury":
+                        s_occ = (s_occ + c_proj) % 360.0
+                    else:
+                        s_occ = (s_occ + c_proj * 0.7071) % 360.0
+                except Exception:
+                    pass
+                seeghrocca = round(s_occ, 6)
+            else:
+                seeghrocca = None
+
             bodies[p] = {
-                "longitude": res_ecl[0] % 360.0,
-                "latitude": round(res_ecl[1], 4),
+                "longitude": p_lon,
+                "latitude": p_lat,
                 "speed": res_ecl[3],
                 "right_ascension": res_eq[0] % 360.0,
                 "declination": round(res_eq[1], 4),
-                "is_retrograde": bool(res_ecl[3] < 0 and p not in ("Sun", "Moon"))
+                "is_retrograde": bool(res_ecl[3] < 0 and p not in ("Sun", "Moon")),
+                "campanus_house_pos": camp_hpos,
+                "seeghrocca": seeghrocca
             }
 
         # Nodes
@@ -227,32 +276,57 @@ class ChartBaseline:
         k_lon = (r_lon + 180.0) % 360.0
         r_ra = res_node_eq[0] % 360.0
         k_ra = (r_ra + 180.0) % 360.0
+        r_lat = round(res_node_ecl[1], 4)
+        k_lat = round(-res_node_ecl[1], 4)
 
         node_retro = bool(res_node_ecl[3] < 0)
 
+        try:
+            r_hpos = round(swe.house_pos(armc, self.latitude, true_eps, [r_lon, r_lat], b'C'), 6)
+        except Exception:
+            r_hpos = None
+
+        try:
+            k_hpos = round(swe.house_pos(armc, self.latitude, true_eps, [k_lon, k_lat], b'C'), 6)
+        except Exception:
+            k_hpos = None
+
         bodies["Rahu"] = {
-            "longitude": r_lon, "latitude": round(res_node_ecl[1], 4),
+            "longitude": r_lon, "latitude": r_lat,
             "speed": res_node_ecl[3], "right_ascension": r_ra,
-            "declination": round(res_node_eq[1], 4), "is_retrograde": node_retro
+            "declination": round(res_node_eq[1], 4), "is_retrograde": node_retro,
+            "campanus_house_pos": r_hpos, "seeghrocca": None
         }
         bodies["Ketu"] = {
-            "longitude": k_lon, "latitude": round(-res_node_ecl[1], 4),
+            "longitude": k_lon, "latitude": k_lat,
             "speed": res_node_ecl[3], "right_ascension": k_ra,
-            "declination": round(-res_node_eq[1], 4), "is_retrograde": node_retro
+            "declination": round(-res_node_eq[1], 4), "is_retrograde": node_retro,
+            "campanus_house_pos": k_hpos, "seeghrocca": None
         }
-
-        # Spherical transformation for Lagna & MC equatorial coordinates
-        try:
-            eps_res, _ = swe.calc_ut(jd_utc, swe.ECL_NUT)
-            true_eps = eps_res[0]
-        except Exception:
-            true_eps = 23.4392911
 
         asc_ra, asc_dec = get_eq_from_ecl(asc_lon, true_eps)
         mc_ra, mc_dec = get_eq_from_ecl(mc_lon, true_eps)
 
-        bodies["Lagna"] = {"longitude": asc_lon, "latitude": 0.0, "speed": 0.0, "right_ascension": asc_ra, "declination": round(asc_dec, 4), "is_retrograde": False}
-        bodies["MC"] = {"longitude": mc_lon, "latitude": 0.0, "speed": 0.0, "right_ascension": mc_ra, "declination": round(mc_dec, 4), "is_retrograde": False}
+        try:
+            asc_hpos = round(swe.house_pos(armc, self.latitude, true_eps, [asc_lon, 0.0], b'C'), 6)
+        except Exception:
+            asc_hpos = 1.0
+
+        try:
+            mc_hpos = round(swe.house_pos(armc, self.latitude, true_eps, [mc_lon, 0.0], b'C'), 6)
+        except Exception:
+            mc_hpos = 10.0
+
+        bodies["Lagna"] = {
+            "longitude": asc_lon, "latitude": 0.0, "speed": 0.0,
+            "right_ascension": asc_ra, "declination": round(asc_dec, 4), "is_retrograde": False,
+            "campanus_house_pos": asc_hpos, "seeghrocca": None
+        }
+        bodies["MC"] = {
+            "longitude": mc_lon, "latitude": 0.0, "speed": 0.0,
+            "right_ascension": mc_ra, "declination": round(mc_dec, 4), "is_retrograde": False,
+            "campanus_house_pos": mc_hpos, "seeghrocca": None
+        }
 
         sensitive_cusp_degree = round(asc_lon % 30.0, 4)
 
@@ -270,7 +344,9 @@ class ChartBaseline:
             "temporal_lords": temporal_lords,
             "bodies": bodies,
             "raw_campanus_cusps": cusps,
-            "campanus_display_cusps": campanus_display
+            "campanus_display_cusps": campanus_display,
+            "armc": armc,
+            "true_eps": true_eps
         }
 
     # =========================================================================
@@ -653,6 +729,8 @@ class ChartBaseline:
                 "declination": bodies[b]["declination"],
                 "speed": bodies[b]["speed"],
                 "is_retrograde": bodies[b]["is_retrograde"],
+                "campanus_house_pos": bodies[b].get("campanus_house_pos"),
+                "seeghrocca": bodies[b].get("seeghrocca"),
                 "baladi_avastha": baladi,
                 "is_in_planetary_war": p_war["is_in_planetary_war"],
                 "is_war_winner": p_war["is_war_winner"],
