@@ -26,20 +26,16 @@ except ImportError:
     print("Error: 'pyswisseph' package is not installed. Please run 'pip install pyswisseph'.")
     sys.exit(1)
 
-# Signs
-ZODIAC_SIGNS = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
-
-# Nakshatras
-NAKSHATRAS = [
-    "Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra",
-    "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni",
-    "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha",
-    "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishtha", "Shatabhisha",
-    "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"
-]
+from jyotish.baseline import (
+    calculate_varga_longitude,
+    ZODIAC_SIGNS,
+    NAKSHATRAS,
+    NITYA_YOGAS,
+    calculate_sub_lord,
+    VIMSHOTTARI_SEQUENCE,
+    VIMSHOTTARI_YEARS,
+    ChartBaseline
+)
 
 DASHA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
 DASHA_YEARS = [7, 20, 6, 10, 7, 18, 16, 19, 17]
@@ -69,8 +65,6 @@ KALA_MEAN_DAILY_SPEEDS = {
     "Ketu": 0.05295
 }
 
-VIMSHOTTARI_SEQUENCE = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
-VIMSHOTTARI_YEARS = {'Ketu': 7, 'Venus': 20, 'Sun': 6, 'Moon': 10, 'Mars': 7, 'Rahu': 18, 'Jupiter': 16, 'Saturn': 19, 'Mercury': 17}
 
 PLANET_ABBREVIATIONS = {
     "Sun": "Su", "Moon": "Mo", "Mars": "Ma", "Mercury": "Me",
@@ -78,17 +72,6 @@ PLANET_ABBREVIATIONS = {
     "Lagna": "Lg"
 }
 
-def calculate_sub_lord(nakshatra_fraction: float, nakshatra_lord: str) -> str:
-    """Calculates the Vimshottari Sub-Lord for a given fractional position within a Nakshatra."""
-    start_idx = VIMSHOTTARI_SEQUENCE.index(nakshatra_lord)
-    current_fraction = 0.0
-    for i in range(9):
-        lord = VIMSHOTTARI_SEQUENCE[(start_idx + i) % 9]
-        span_fraction = VIMSHOTTARI_YEARS[lord] / 120.0
-        if current_fraction + span_fraction >= nakshatra_fraction:
-            return lord
-        current_fraction += span_fraction
-    return nakshatra_lord
 
 
 
@@ -97,118 +80,6 @@ def get_sign(longitude: float) -> tuple[str, float]:
     deg_in_sign = longitude % 30
     return ZODIAC_SIGNS[sign_idx], round(deg_in_sign, 2)
 
-def calculate_varga_longitude(longitude: float, varga: str, d10_mode: str = "reverse", d24_mode: str = "reverse") -> float:
-    sign_idx = int(longitude // 30)
-    deg = longitude % 30
-    is_odd = (sign_idx % 2 == 0) # 0=Aries (odd), 1=Taurus (even)
-    
-    def uniform_varga(harmonic: int, start_sign: int) -> float:
-        div_size = 30.0 / harmonic
-        div_index = int(deg // div_size)
-        varga_sign = (start_sign + div_index) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-
-    if varga == "D1":
-        return longitude
-        
-    elif varga == "D2":
-        div_size = 15.0
-        div_index = int(deg // div_size)
-        # Kala Distributed Hora: 1st half = same sign, 2nd half = opposite sign (7th)
-        varga_sign = (sign_idx + div_index * 6) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-        
-    elif varga == "D3":
-        div_size = 10.0
-        div_index = int(deg // div_size)
-        varga_sign = (sign_idx + div_index * 4) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-        
-    elif varga == "D4":
-        div_size = 7.5
-        div_index = int(deg // div_size)
-        varga_sign = (sign_idx + div_index * 3) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-        
-    elif varga == "D7":
-        start = sign_idx if is_odd else (sign_idx + 6) % 12
-        return uniform_varga(7, start)
-        
-    elif varga == "D9":
-        element = sign_idx % 4
-        start = (element * 9) % 12
-        return uniform_varga(9, start)
-        
-    elif varga == "D10":
-        div_size = 3.0
-        div_index = int(deg // div_size)
-        if is_odd:
-            varga_sign = (sign_idx + div_index) % 12
-        else:
-            if d10_mode in ("direct", "contemporary", "forward"):
-                varga_sign = (sign_idx + 8 + div_index) % 12
-            else:
-                varga_sign = (sign_idx + 8 - div_index) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-        
-    elif varga == "D12":
-        return uniform_varga(12, sign_idx)
-        
-    elif varga == "D16":
-        modality = sign_idx % 3
-        start = (modality * 4) % 12
-        return uniform_varga(16, start)
-        
-    elif varga == "D20":
-        modality = sign_idx % 3
-        if modality == 0: start = 0
-        elif modality == 1: start = 8
-        else: start = 4
-        return uniform_varga(20, start)
-        
-    elif varga == "D24":
-        div_size = 30.0 / 24.0
-        div_index = int(deg // div_size)
-        if is_odd:
-            varga_sign = (4 + div_index) % 12
-        else:
-            if d24_mode in ("direct", "contemporary", "forward"):
-                varga_sign = (3 + div_index) % 12
-            else:
-                varga_sign = (3 - div_index) % 12
-        fraction = (deg % div_size) / div_size
-        return (varga_sign * 30.0) + (fraction * 30.0)
-        
-    elif varga == "D27":
-        element = sign_idx % 4
-        start = (element * 3) % 12
-        return uniform_varga(27, start)
-        
-    elif varga == "D30":
-        # Ernst Wilhelm / Kala uses the continuous 1-degree cyclical division for D30 (longitude * 30)
-        return (longitude * 30.0) % 360.0
-        
-        
-    elif varga == "D40":
-        start = 0 if is_odd else 6
-        return uniform_varga(40, start)
-        
-    elif varga == "D45":
-        modality = sign_idx % 3
-        start = (modality * 4) % 12
-        return uniform_varga(45, start)
-        
-    elif varga == "D60":
-        return uniform_varga(60, sign_idx)
-        
-    else:
-        harmonic = int(varga.replace("D", ""))
-        return (longitude * harmonic) % 360.0
 
 def generate_kala_chart(
     name: str = "Subject",

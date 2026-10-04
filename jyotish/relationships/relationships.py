@@ -153,4 +153,4 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0, 
     return f"{compound_rel}'s Sign"
 
 
-
+VIMSHOTTARI_SEQUENCE = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]

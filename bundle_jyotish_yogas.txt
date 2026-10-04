@@ -1,7 +1,7 @@
 # ==============================================================================
 # ASTRA CODEBASE FOLDER BUNDLE
 # FOLDER: /Users/hajnaljanos/PycharmProjects/astra/jyotish/yogas
-# GENERATED: 2026-09-29 18:50:57
+# GENERATED: 2026-10-02 09:24:33
 # TOTAL FILES: 22
 # TOTAL LINES: 6,489
 # TOTAL SIZE: 347.9 KB

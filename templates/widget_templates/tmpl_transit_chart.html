@@ -1,0 +1,79 @@
+<template id="tmpl-transit-chart">
+    <div class="widget-transit-chart" style="display:flex; flex-direction:column; height:100%; position:relative; overflow:hidden; background: var(--bg-surface, #fcfbf9);">
+        <!-- Transit Top Control Toolbar -->
+        <div class="transit-toolbar" style="padding: 6px 10px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px;">
+            <!-- Left: Stepper & Playback controls -->
+            <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                <div class="transit-playback-group" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 2px; gap: 2px;">
+                    <button type="button" class="btn-transit-step-fast-back" title="Fast Rewind (5 steps)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:3px 7px; border-radius:3px; cursor:pointer;">&laquo;</button>
+                    <button type="button" class="btn-transit-step-back" title="Step Backward" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:3px 7px; border-radius:3px; cursor:pointer;">&lsaquo;</button>
+                    <button type="button" class="btn-transit-play-pause" title="Play / Pause continuous animation" style="border:none; background:#d35400; color:#ffffff; font-size:12px; font-weight:bold; padding:3px 9px; border-radius:3px; cursor:pointer;">&#9654; Play</button>
+                    <button type="button" class="btn-transit-step-fwd" title="Step Forward" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:3px 7px; border-radius:3px; cursor:pointer;">&rsaquo;</button>
+                    <button type="button" class="btn-transit-step-fast-fwd" title="Fast Forward (5 steps)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:3px 7px; border-radius:3px; cursor:pointer;">&raquo;</button>
+                    <button type="button" class="btn-transit-now" title="Snap to Real-Time (Now)" style="border:none; background:#27ae60; color:#ffffff; font-size:12px; font-weight:bold; padding:3px 8px; border-radius:3px; cursor:pointer;">⚡ Now</button>
+                </div>
+
+                <!-- Speed / Interval Selector -->
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <span style="font-size: 12px; font-weight: 600; color: #6b5a4b;">Step:</span>
+                    <select class="transit-interval-select" style="padding: 3px 6px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;">
+                        <option value="realtime">Real Time (Clock)</option>
+                        <option value="1m">Minutely (1 min)</option>
+                        <option value="10m">Ten Minutes (10 min)</option>
+                        <option value="1h">Hourly (1 hr)</option>
+                        <option value="1d" selected>Daily (1 day)</option>
+                        <option value="1w">Weekly (7 days)</option>
+                        <option value="30d">Monthly (30 days)</option>
+                        <option value="365d">Yearly (365 days)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Right: Date/Time Inputs, Live Badge, and Root Selector -->
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+                <span class="transit-date-display-badge" style="font-size: 12px; font-weight: bold; color: #4a3325; background: #eae1d1; padding: 3px 8px; border-radius: 4px; font-variant-numeric: tabular-nums; display: inline-flex; align-items: center; gap: 4px;" title="Current Transit Date & Time">
+                    <span>📅</span> <span class="transit-date-display-text">--/--/---- --:--:--</span>
+                </span>
+                <input type="date" class="transit-date-input" style="padding: 2px 6px; font-size: 12px; width: 125px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325;" title="Edit Transit Date">
+                <input type="time" step="1" class="transit-time-input" style="padding: 2px 6px; font-size: 12px; width: 90px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325;" title="Edit Transit Time">
+
+                <div class="transit-root-group" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 2px; gap: 2px;">
+                    <button type="button" class="btn-transit-root-lagna active" data-root="Lagna" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:12px; padding:3px 7px; border-radius:3px; cursor:pointer;" title="From Natal Ascendant (Lagna)">Lagna</button>
+                    <button type="button" class="btn-transit-root-moon" data-root="Moon" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:3px 7px; border-radius:3px; cursor:pointer;" title="From Natal Moon (Chandra Lagna / Gochara)">Moon</button>
+                    <button type="button" class="btn-transit-root-sun" data-root="Sun" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:3px 7px; border-radius:3px; cursor:pointer;" title="From Natal Sun (Surya Lagna)">Sun</button>
+                </div>
+
+                <button type="button" class="btn-transit-toggle-table" title="Toggle Aspect Trigger Hit List" style="border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 4px; cursor: pointer;">Triggers (<span class="transit-aspect-count">0</span>)</button>
+            </div>
+        </div>
+
+        <!-- Main Chart Display Area -->
+        <div class="transit-chart-body" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; position:relative; min-height:220px;">
+            <div class="transit-svg-container" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                <div style="font-size:13px; color:#8c7b64; padding:20px;">Loading Transit Wheel...</div>
+            </div>
+        </div>
+
+        <!-- Collapsible Aspect Hit List Drawer -->
+        <div class="transit-aspects-drawer" style="display:none; max-height:160px; overflow-y:auto; border-top:1px solid #e5dccb; background:#faf7f0; padding:6px 12px;">
+            <div style="font-size:12px; font-weight:bold; color:#5c4433; margin-bottom:4px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Active Transit Triggers (Phaladeepika 3°20' Navamsha Orb)</span>
+                <span class="transit-timestamp-badge" style="font-size:12px; font-weight:normal; color:#8c7b64;"></span>
+            </div>
+            <table class="transit-aspects-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="border-bottom:1px solid #d5c8b2; text-align:left; color:#6b5a4b;">
+                        <th style="padding:3px 6px;">Transit Graha</th>
+                        <th style="padding:3px 6px;">Aspect / Glance</th>
+                        <th style="padding:3px 6px;">Natal Target</th>
+                        <th style="padding:3px 6px;">Exact Orb</th>
+                        <th style="padding:3px 6px;">Potency</th>
+                    </tr>
+                </thead>
+                <tbody class="transit-aspects-tbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>

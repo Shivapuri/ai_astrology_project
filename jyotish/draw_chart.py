@@ -2088,7 +2088,7 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
 
         # Central Zodiac Sign Symbol inside Border Ring (midpoint between 138 and 164 -> r=151)
         lx_sign, ly_sign = polar_coords(151, angle_mid)
-        svg += f'<text class="interactive natal-sign-glyph" data-type="sign" data-id="{sign_name}" x="{lx_sign:.1f}" y="{ly_sign:.1f}" font-size="14" stroke="#ffffff" stroke-width="2.5" paint-order="stroke fill" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;"><title>{sign_name} (Zodiac Sign)</title>{s_sym}</text>\n'
+        svg += f'<text class="interactive natal-sign-glyph" data-type="sign" data-id="{sign_name}" x="{lx_sign:.1f}" y="{ly_sign:.1f}" font-size="11.5" stroke="#ffffff" stroke-width="2.2" paint-order="stroke fill" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;"><title>{sign_name} (Zodiac Sign)</title>{s_sym}</text>\n'
         
         # Bhava number label (Whole Sign) in the inner bhava ring (radius ~36)
         bx, by = polar_coords((r_aspect_inner + r_bhava_circle) / 2, angle_mid)
@@ -2355,9 +2355,9 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         
         px, py = polar_coords(r_in_pl, angle)
 
-        font_sz = 9.5 if p_name == "Lagna" else (12.5 if mode == "devanagari" else 12)
+        font_sz = 7.5 if p_name == "Lagna" else (10.0 if mode == "devanagari" else 9.5)
         if mode == "symbol" and p_name in ["Mars", "Venus"]:
-            font_sz = "10.0"
+            font_sz = 8.0
         
         dignity_str = dignity_map.get(p_name, "")
         dignity_tag = f" [{dignity_str}]" if dignity_str else ""
@@ -2407,9 +2407,9 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         pl_r = (r_out_pl - 1.5) if p_name == "Lagna" else r_out_pl
         px, py = polar_coords(pl_r, angle)
 
-        font_sz = 7.8 if p_name == "Lagna" else (11.5 if mode == "devanagari" else 11.0)
+        font_sz = 6.8 if p_name == "Lagna" else (9.5 if mode == "devanagari" else 9.0)
         if mode == "symbol" and p_name in ["Mars", "Venus"]:
-            font_sz = "9.5"
+            font_sz = 7.8
             
         # Natal House alignment
         d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
@@ -2435,12 +2435,380 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         
         # Divisional Sign Glyph in outer ring (so user immediately sees which sign outer planet occupies)
         sx, sy = polar_coords(r_out_sign, angle)
-        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="6.5" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="5.5" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
         
         svg += '</g>\n'
     svg += '</g>\n'
 
     svg += '</svg>\n'
     return svg
+
+
+def generate_transit_biwheel(
+    inner_items: List[Dict[str, Any]],
+    outer_items: List[Dict[str, Any]],
+    active_aspects: Optional[List[Dict[str, Any]]] = None,
+    mode: str = "symbol",
+    root_planet: str = "Lagna",
+    show_nakshatras: bool = False,
+    debilitation_mode: str = "kala_degree"
+) -> str:
+    """
+    Generates a streamlined 2-ring Transit Bi-Wheel SVG chart (Kala style):
+    - Inner Ring (Radius ~30 to ~136): Natal Chart (Houses 1-12, Kendras/Trikonas, Natal Planets).
+    - Inner Dots (Radius 136): Exact astronomical positions of natal planets on the Rashi circle.
+    - Middle Zodiac Ring (Radius ~136 to ~150): Clean Tropical Rasi border WITHOUT harmonic subdivisions.
+    - Outer Ring (Radius ~150 to ~206): Real-time / Date-specific Transiting Planets with sign & degree.
+    - Outer Dots (Radius 206): Exact astronomical positions of transiting planets on the outer rim.
+    - Background Aspect Lines: Thin, clear lines connecting outer transit dots to inner natal dots (Graha Drishti & Trines).
+    - Center Hub (Radius 0 to ~30): Unobstructed center hub with subtle branding.
+    """
+    svg = '<svg width="100%" height="100%" viewBox="-215 -215 430 430" class="transit-biwheel-svg" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: var(--font-astro-glyphs, STIX Two Math, sans-serif);">\n'
+
+    # Markers for transit aspect lines (pointing cleanly towards the inner natal dots)
+    svg += '<defs>\n'
+    svg += '  <marker id="tr-arrow-benefic" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#27AE60"/></marker>\n'
+    svg += '  <marker id="tr-arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#D4AC0D"/></marker>\n'
+    svg += '  <marker id="tr-arrow-malefic" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#C0392B"/></marker>\n'
+    svg += '  <marker id="tr-arrow-conj" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#8E44AD"/></marker>\n'
+    svg += '  <marker id="tr-arrow-neutral" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#2980B9"/></marker>\n'
+    svg += '</defs>\n'
+
+    r_chart_outer = 206
+    r_divider_outer = 150
+    r_divider_inner = 136
+    r_bhava_circle = 44
+    r_aspect_inner = 30
+
+    root_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else "Ascendant")
+    svg += f'<title>Transit / Natal Bi-Wheel ({root_title})</title>\n'
+
+    # Outer bounding circle & tinted background for outer transit ring
+    svg += f'<circle cx="0" cy="0" r="{r_chart_outer}" fill="#faf7f2" fill-opacity="0.20" stroke="#5C4433" stroke-width="1.1"/>\n'
+
+    # Middle Zodiac Sign border ring (clean, no harmonic subdivisions)
+    svg += f'<circle cx="0" cy="0" r="{r_divider_outer}" fill="#edece6" fill-opacity="0.75" stroke="#8c7b64" stroke-width="1.1"/>\n'
+    svg += f'<circle cx="0" cy="0" r="{r_divider_inner}" fill="#ffffff" fill-opacity="0.95" stroke="#8c7b64" stroke-width="1.1"/>\n'
+
+    # Determine anchor longitude
+    anchor_item = next((it for it in inner_items if it.get("name") == root_planet), None)
+    if not anchor_item:
+        anchor_item = next((it for it in inner_items if it.get("name") == "Lagna"), None)
+    if anchor_item:
+        anchor_s_idx = signs_list.index(anchor_item["sign"])
+        anchor_lon = anchor_s_idx * 30 + anchor_item["degree"] + anchor_item["minute"] / 60.0
+    else:
+        anchor_s_idx = 0
+        anchor_lon = 0
+
+    def lon_to_angle(lon):
+        return 180.0 + anchor_lon - lon
+
+    def polar_coords(r, angle_deg):
+        rad = math.radians(angle_deg)
+        return r * math.cos(rad), r * math.sin(rad)
+
+    # 1. Extract and Process Planets First (so angles and aspect endpoints are known)
+    inner_planets = []
+    inner_planets_dict = {}
+    for item in inner_items:
+        if item.get("type") == "planet":
+            p_name = item["name"]
+            s_idx = signs_list.index(item["sign"])
+            pl_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
+            p_data = {
+                "item": item,
+                "lon": pl_lon,
+                "draw_angle": lon_to_angle(pl_lon),
+                "true_angle": lon_to_angle(pl_lon),
+                "is_lagna": (p_name == root_planet),
+                "sign_idx": s_idx,
+                "sign": item["sign"],
+                "varga": "Natal"
+            }
+            inner_planets.append(p_data)
+            inner_planets_dict[p_name] = p_data
+
+    outer_planets = []
+    outer_planets_dict = {}
+    for item in outer_items:
+        if item.get("type") == "planet":
+            p_name = item["name"]
+            s_idx = signs_list.index(item["sign"])
+            pl_lon = s_idx * 30 + item["degree"] + item["minute"] / 60.0
+            outer_angle = lon_to_angle(pl_lon)
+            p_data = {
+                "item": item,
+                "lon": pl_lon,
+                "draw_angle": outer_angle,
+                "true_angle": outer_angle,
+                "is_lagna": (p_name == root_planet),
+                "sign_idx": s_idx,
+                "sign": item["sign"],
+                "varga": "Transit"
+            }
+            outer_planets.append(p_data)
+            outer_planets_dict[p_name] = p_data
+
+    # Relax angles for overlapping clusters (to prevent text collision)
+    relax_planet_angles(inner_planets, has_ascendant_barrier=True, is_outer=False)
+    relax_planet_angles(outer_planets, has_ascendant_barrier=False, is_outer=True)
+
+    # 2. Inner Natal House Color Background Wedges (Kendras, Trikonas, Other Houses)
+    for i in range(12):
+        sign_start_lon = i * 30.0
+        angle_start = lon_to_angle(sign_start_lon)
+        angle_end = lon_to_angle(sign_start_lon + 30.0)
+        bhava_num = (i - anchor_s_idx + 12) % 12 + 1
+
+        if bhava_num in (1, 4, 7, 10):
+            fill_col = "var(--chart-kendra-color, #eedec9)"
+            cls = "house-bg house-kendra"
+        elif bhava_num in (5, 9):
+            fill_col = "var(--chart-trikona-color, #faede0)"
+            cls = "house-bg house-trikona"
+        else:
+            fill_col = "var(--chart-other-color, #f9f5eb)"
+            cls = "house-bg house-other"
+
+        sec_d = annular_sector(r_aspect_inner, r_divider_inner, angle_start, angle_end)
+        svg += f'<path class="{cls}" d="{sec_d}" fill="{fill_col}"/>\n'
+
+    # 3. BACKGROUND LAYER: Aspect Lines connecting Outer Transit Dots to Inner Natal Dots
+    # Rendered immediately on top of house colors, strictly behind all dividers, numbers, text & dots
+    svg += '<g class="transit-aspect-lines-layer" style="pointer-events: none;">\n'
+    if active_aspects:
+        for asp in active_aspects:
+            t_name = asp.get("aspecting")
+            n_name = asp.get("target")
+            asp_type = asp.get("type", "Aspect")
+            orb = asp.get("orb", 0.0)
+            is_ben = asp.get("is_benefic", False)
+            code = asp.get("code", "")
+
+            if t_name in outer_planets_dict and n_name in inner_planets_dict:
+                ang_t = outer_planets_dict[t_name]["true_angle"]
+                ang_n = inner_planets_dict[n_name]["true_angle"]
+
+                # Start: Exact Outer transit dot on r_chart_outer (206)
+                # End: Exact Inner natal dot on r_divider_inner (136)
+                x1, y1 = polar_coords(r_chart_outer, ang_t)
+                x2, y2 = polar_coords(r_divider_inner, ang_n)
+
+                dash_style = "4,3"
+                marker_url = ""
+                if code == "CONJ":
+                    stroke_col = "#8E44AD"
+                    dash_style = "none"
+                elif "Trine" in asp_type or (is_ben and t_name == "Jupiter"):
+                    # Trines: clean dashed warm gold line connecting dots
+                    stroke_col = "#D4AC0D"
+                    dash_style = "4,3"
+                elif t_name == "Mars":
+                    # Mars special aspects / glances: crisp red with directional arrow
+                    stroke_col = "#C0392B"
+                    marker_url = 'marker-end="url(#tr-arrow-malefic)"'
+                    dash_style = "3.5,2.5"
+                elif t_name == "Saturn":
+                    # Saturn special aspects: deep slate with arrow
+                    stroke_col = "#2C3E50"
+                    marker_url = 'marker-end="url(#tr-arrow-neutral)"'
+                    dash_style = "3.5,2.5"
+                elif is_ben:
+                    stroke_col = "#27AE60"
+                    marker_url = 'marker-end="url(#tr-arrow-benefic)"'
+                    dash_style = "4,3"
+                else:
+                    stroke_col = "#C0392B"
+                    marker_url = 'marker-end="url(#tr-arrow-malefic)"'
+                    dash_style = "4,3"
+
+                tip = f"Transit {t_name} -> Natal {n_name} ({asp_type}, Orb: {orb}°)"
+                svg += f'  <line class="transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="0.9" stroke-dasharray="{dash_style}" opacity="0.75" {marker_url}><title>{tip}</title></line>\n'
+    svg += '</g>\n'
+
+    # 4. House Dividers, Sign Glyphs, Bhava Numbers, and Ascendant Arrow
+    for i in range(12):
+        sign_start_lon = i * 30.0
+        angle_start = lon_to_angle(sign_start_lon)
+        angle_mid = lon_to_angle(sign_start_lon + 15.0)
+        sign_name = signs_list[i]
+        s_sym, s_col, _ = sign_symbols[sign_name]
+        bhava_num = (i - anchor_s_idx + 12) % 12 + 1
+
+        # Radial sign dividers
+        x_in1, y_in1 = polar_coords(r_aspect_inner, angle_start)
+        x_in2, y_in2 = polar_coords(r_divider_inner, angle_start)
+        svg += f'<line x1="{x_in1:.1f}" y1="{y_in1:.1f}" x2="{x_in2:.1f}" y2="{y_in2:.1f}" stroke="#d5c8b2" stroke-width="0.8" stroke-dasharray="2,3"/>\n'
+
+        x_out1, y_out1 = polar_coords(r_divider_outer, angle_start)
+        x_out2, y_out2 = polar_coords(r_chart_outer, angle_start)
+        svg += f'<line x1="{x_out1:.1f}" y1="{y_out1:.1f}" x2="{x_out2:.1f}" y2="{y_out2:.1f}" stroke="#d5c8b2" stroke-width="0.8" stroke-dasharray="2,3"/>\n'
+
+        # Sign boundary tick in the border ring (r_divider_inner to r_divider_outer)
+        sx1, sy1 = polar_coords(r_divider_inner, angle_start)
+        sx2, sy2 = polar_coords(r_divider_outer, angle_start)
+        svg += f'<line x1="{sx1:.1f}" y1="{sy1:.1f}" x2="{sx2:.1f}" y2="{sy2:.1f}" stroke="#5C4433" stroke-width="1.2"/>\n'
+
+        # Sign Symbol in Border Ring (midpoint between 136 and 150 -> r=143)
+        lx_sign, ly_sign = polar_coords(143, angle_mid)
+        svg += f'<text class="interactive transit-sign-glyph" data-type="sign" data-id="{sign_name}" x="{lx_sign:.1f}" y="{ly_sign:.1f}" font-size="12" stroke="#ffffff" stroke-width="2.0" paint-order="stroke fill" fill="{s_col}" text-anchor="middle" dominant-baseline="central"><title>{sign_name} (Zodiac Sign)</title>{s_sym}</text>\n'
+
+        # Bhava number label in inner ring (haloed for legibility over lines)
+        bx, by = polar_coords((r_aspect_inner + r_bhava_circle) / 2, angle_mid)
+        svg += f'<text class="interactive" data-type="house" data-id="{bhava_num}" x="{bx:.1f}" y="{by:.1f}" font-size="8.5" font-weight="600" stroke="#FAF7F0" stroke-width="2.5" paint-order="stroke fill" fill="#2980B9" text-anchor="middle" dominant-baseline="central">{bhava_num}</text>\n'
+
+    # Inner D1 Bhava dashed circle
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_circle}" fill="none" stroke="#27AE60" stroke-width="0.6" stroke-dasharray="3,2"/>\n'
+
+    # Ascendant arrow at 180 degrees
+    ax1, ay1 = polar_coords(r_aspect_inner, 180)
+    ax2, ay2 = polar_coords(r_divider_inner, 180)
+    svg += f'<line x1="{ax1:.1f}" y1="{ay1:.1f}" x2="{ax2:.1f}" y2="{ay2:.1f}" stroke="#C0392B" stroke-width="1.6"/>\n'
+    tx1, ty1 = polar_coords(r_divider_inner - 5, 177.5)
+    tx2, ty2 = polar_coords(r_divider_inner - 5, 182.5)
+    svg += f'<polygon points="{ax2:.1f},{ay2:.1f} {tx1:.1f},{ty1:.1f} {tx2:.1f},{ty2:.1f}" fill="#C0392B"/>\n'
+
+    # 5. Center Circle Hub (Radius 30)
+    svg += f'<circle class="interactive-center-circle" cx="0" cy="0" r="{r_aspect_inner}" fill="#faf7f0" fill-opacity="0.95" stroke="#5C4433" stroke-width="0.8"/>\n'
+    svg += '<text x="0" y="-4.5" font-size="6.8" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">Natal · Transit</text>\n'
+    svg += '<text x="0" y="5.5" font-size="5.5" font-weight="600" fill="#8c7b64" text-anchor="middle" pointer-events="none">Bi-Wheel</text>\n'
+
+    # 6. INNER DOTS & LEADER LINES: Exact Position of Natal Planets on the Rashi Circle (r = 136)
+    svg += '<g class="natal-dots-layer">\n'
+    for p in inner_planets:
+        p_name = p["item"]["name"]
+        ang_true = p["true_angle"]
+        ang_draw = p["draw_angle"]
+        p_info = planet_notations.get(p_name, {})
+        dot_col = p_info.get("color", "#4a3325")
+
+        # Inner Dot on the Rashi boundary circle (r = 136)
+        dx, dy = polar_coords(r_divider_inner, ang_true)
+        tip = f"Natal {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
+        svg += f'  <circle class="natal-planet-dot dot-natal-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
+
+        # Subtle leader line / tick connecting glyph cluster out to the exact dot
+        ang_diff = abs((ang_draw - ang_true + 180.0) % 360.0 - 180.0)
+        if ang_diff > 0.5:
+            gx, gy = polar_coords(118, ang_draw)
+            svg += f'  <line class="natal-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"/>\n'
+        else:
+            gx, gy = polar_coords(121, ang_true)
+            svg += f'  <line class="natal-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.45"/>\n'
+    svg += '</g>\n'
+
+    # 7. OUTER DOTS & LEADER LINES: Exact Position of Transit Planets on the Outer Rim (r = 206)
+    svg += '<g class="transit-dots-layer">\n'
+    for p in outer_planets:
+        p_name = p["item"]["name"]
+        ang_true = p["true_angle"]
+        ang_draw = p["draw_angle"]
+        p_info = planet_notations.get(p_name, {})
+        dot_col = p_info.get("color", "#4a3325")
+
+        # Outer Dot on the chart rim (r = 206)
+        dx, dy = polar_coords(r_chart_outer, ang_true)
+        tip = f"Transit {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
+        svg += f'  <circle class="transit-planet-dot dot-tr-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
+
+        # Subtle leader line / tick connecting transit glyph cluster out to the exact rim dot
+        ang_diff = abs((ang_draw - ang_true + 180.0) % 360.0 - 180.0)
+        if ang_diff > 0.5:
+            gx, gy = polar_coords(172, ang_draw)
+            svg += f'  <line class="transit-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"/>\n'
+        else:
+            gx, gy = polar_coords(195, ang_true)
+            svg += f'  <line class="transit-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.45"/>\n'
+    svg += '</g>\n'
+
+    # 7. INNER RING: Natal Planets Text & Glyphs (Haloed for crisp readability over lines)
+    r_in_nak = 70
+    r_in_min = 82
+    r_in_deg = 96
+    r_in_pl = 112
+
+    svg += '<g class="inner-planets-group">\n'
+    for p in inner_planets:
+        item = p["item"]
+        angle = p["draw_angle"]
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        is_retro = item.get("is_retrograde", False)
+
+        px, py = polar_coords(r_in_pl, angle)
+        font_sz = 9.0 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
+
+        tooltip = f"Natal {info.get('full_sa', p_name)}: {item['degree']}° {item['minute']:02d}' in {item['sign']}"
+        svg += f'<g class="interactive planet-glyph inner-planet" data-type="planet" data-varga="Natal" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+
+        if show_nakshatras:
+            nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
+            if nak_abbr:
+                nx, ny = polar_coords(r_in_nak, angle)
+                svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
+
+        mx, my = polar_coords(r_in_min, angle)
+        svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="5.6" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
+
+        dx, dy = polar_coords(r_in_deg, angle)
+        svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="6.5" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+
+        svg += f'<text class="glyph-symbol" x="{px:.1f}" y="{py:.1f}" font-size="{font_sz}" stroke="#FAF7F0" stroke-width="2.5" paint-order="stroke fill" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        svg += '</g>\n'
+    svg += '</g>\n'
+
+    # 8. OUTER RING: Transiting Planets Text & Glyphs (Haloed for crisp readability over lines)
+    r_out_nak = 163
+    r_out_pl = 172
+    r_out_deg = 181
+    r_out_min = 190
+    r_out_sign = 199
+
+    svg += '<g class="outer-planets-group transit-planets-group">\n'
+    for p in outer_planets:
+        item = p["item"]
+        angle = p["draw_angle"]
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        is_retro = item.get("is_retrograde", False)
+
+        px, py = polar_coords(r_out_pl, angle)
+        font_sz = 8.0 if p_name == "Lagna" else (11.5 if mode == "devanagari" else 11.0)
+        s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
+
+        d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
+        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{' [R]' if is_retro else ''} (Natal House {d1_house})"
+
+        svg += f'<g class="interactive planet-glyph outer-planet transit-planet" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+
+        if show_nakshatras:
+            nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
+            if nak_abbr:
+                nx, ny = polar_coords(r_out_nak, angle)
+                svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.0" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
+
+        mx, my = polar_coords(r_out_min, angle)
+        svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
+
+        dx, dy = polar_coords(r_out_deg, angle)
+        svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="6.2" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+
+        svg += f'<text class="glyph-symbol outer-glyph" x="{px:.1f}" y="{py:.1f}" font-size="{font_sz}" stroke="#FAF7F0" stroke-width="2.5" paint-order="stroke fill" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+
+        sx, sy = polar_coords(r_out_sign, angle)
+        svg += f'<text class="outer-sign-glyph" x="{sx:.1f}" y="{sy:.1f}" font-size="6.5" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        svg += '</g>\n'
+    svg += '</g>\n'
+
+    svg += '</svg>\n'
+    return svg
+
+
 
 

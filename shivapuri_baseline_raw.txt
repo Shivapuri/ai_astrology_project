@@ -1,0 +1,4412 @@
+================================================================================
+                      ASTRA PRECISION ASTROLOGICAL ENGINE                       
+                 STAGE 1 MASTER BASELINE RAW COMPUTATION OUTPUT                 
+================================================================================
+
+NATAL DATA & SUBJECT PARAMETERS:
+  Name             : Shivapuri
+  Date of Birth    : 1983-11-10 (November 10, 1983)
+  Time of Birth    : 22:20:00 (Local Time)
+  Place            : Georgsmarienhütte, Germany
+  Geographic Coord : Lat: 52.20296° N, Lon: 8.04480° E
+  Timezone Offset  : UTC +1.0h
+  Nakshatra System : ERNST_DHRUVA
+  D10/D24 Modes    : reverse / reverse
+
+--------------------------------------------------------------------------------
+1. ASTRONOMICAL ANCHORS & SECT METRICS
+--------------------------------------------------------------------------------
+  Local Julian Day           : 2445649.430556
+  UTC Julian Day             : 2445649.388889
+  Calendar Type              : Gregorian
+  Civil Sunrise JD           : 2445648.777800
+  Civil Sunset JD            : 2445649.154684
+  Next Sunrise JD            : 2445649.779057
+  Diurnal Sect (Birth)       : Night Birth (Nocturnal)
+  Ascendant (Lagna) Longitude: 129.5988° (Leo 9°35')
+  Midheaven (MC) Longitude   : 18.9738° (Aries 18°58')
+  Sensitive Cusp Core Degree : 9.5988°
+
+  Temporal Lords (Kala Bala):
+    Vara    : Jupiter
+    Hora    : Sun
+    Masa    : Moon
+    Varsha  : Moon
+
+  Campanus Display Cusps (Strictly Isolated for Visual SVG Rendering):
+    House | Absolute Longitude | Sign        | Degree in Sign | Display Flag
+    ------+--------------------+-------------+----------------+-------------
+       1  |     129.5988°     | Leo         |      9.5988°    | is_display_only=True
+       2  |     157.4369°     | Virgo       |      7.4369°    | is_display_only=True
+       3  |     178.1826°     | Virgo       |     28.1826°    | is_display_only=True
+       4  |     198.9738°     | Libra       |     18.9738°    | is_display_only=True
+       5  |     226.9705°     | Scorpio     |     16.9705°    | is_display_only=True
+       6  |     268.3636°     | Sagittarius |     28.3636°    | is_display_only=True
+       7  |     309.5988°     | Aquarius    |      9.5988°    | is_display_only=True
+       8  |     337.4369°     | Pisces      |      7.4369°    | is_display_only=True
+       9  |     358.1826°     | Pisces      |     28.1826°    | is_display_only=True
+      10  |      18.9738°     | Aries       |     18.9738°    | is_display_only=True
+      11  |      46.9705°     | Taurus      |     16.9705°    | is_display_only=True
+      12  |      88.3636°     | Gemini      |     28.3636°    | is_display_only=True
+
+--------------------------------------------------------------------------------
+2. PLANETARY COORDINATES & 3D EQUATORIAL POSITIONS
+--------------------------------------------------------------------------------
+  Body     | Ecliptic Lon | Sign        | Deg in Sign | Latitude | Right Ascen  | Declination | Speed    | Motion | Baladi State        | War Status
+  ---------+--------------+-------------+-------------+----------+--------------+-------------+----------+--------+---------------------+-----------
+  Sun      | 227.9082°    | Scorpio     |  17.9082°   |  -0.0000° | 225.4454°   |  -17.1702°   |   1.0054 | Direct | Yuva (Adult/Prime) (100%) | None
+  Moon     | 298.5780°    | Capricorn   |  28.5780°   |  -3.5310° | 301.4825°   |  -23.9032°   |  12.0297 | Direct | Bala (Infant) (25%) | None
+  Mars     | 175.5291°    | Virgo       |  25.5291°   |   1.4713° | 176.4814°   |    3.1275°   |   0.5956 | Direct | Bala (Infant) (25%) | None
+  Mercury  | 234.5870°    | Scorpio     |  24.5870°   |  -0.8105° | 232.0157°   |  -19.7044°   |   1.5630 | Direct | Bala (Infant) (25%) | None
+  Jupiter  | 254.4727°    | Sagittarius |  14.4727°   |   0.4031° | 253.2021°   |  -22.1378°   |   0.2135 | Direct | Yuva (Adult/Prime) (100%) | None
+  Venus    | 181.4926°    | Libra       |   1.4926°   |   1.0921° | 181.8038°   |    0.4083°   |   1.0438 | Direct | Bala (Infant) (25%) | None
+  Saturn   | 218.5164°    | Scorpio     |   8.5164°   |   2.1934° | 216.8584°   |  -12.2655°   |   0.1196 | Direct | Vriddha (Elderly) (10%) | None
+  Rahu     |  76.2239°    | Gemini      |  16.2239°   |   0.0000° |  75.0380°   |   22.7292°   |   0.0245 | Direct | Yuva (Adult/Prime) (100%) | None
+  Ketu     | 256.2239°    | Sagittarius |  16.2239°   |  -0.0000° | 255.0380°   |  -22.7292°   |   0.0245 | Direct | Yuva (Adult/Prime) (100%) | None
+  Lagna    | 129.5988°    | Leo         |   9.5988°   |   0.0000° | 132.0396°   |   17.8503°   |   0.0000 | Direct | Kumara (Youth) (50%) | None
+  MC       |  18.9738°    | Aries       |  18.9738°   |   0.0000° |  17.5073°   |    7.4318°   |   0.0000 | Direct | Vriddha (Elderly) (10%) | None
+
+--------------------------------------------------------------------------------
+3. UPAGRAHAS (PHALADEEPIKA CH. 25 & BPHS CH. 3)
+--------------------------------------------------------------------------------
+  Upagraha     | Longitude | Sign        | Deg in Sign | Whole Sign House | Rising Epoch (JD) | Calculation Segment
+  -------------+-----------+-------------+-------------+------------------+-------------------+-------------------------------
+  Gulika       | 168.7039° | Virgo       |  18.7039°   |     House  2     | 2445649.544917 | Start of Saturn part
+  Mandi        | 178.5445° | Virgo       |  28.5445°   |     House  2     | 2445649.583940 | Midpoint of Saturn part
+  Yamakantaka  | 129.5824° | Leo         |   9.5824°   |     House  1     | 2445649.388824 | Start of Jupiter part
+  Kala         | 188.3896° | Libra       |   8.3896°   |     House  3     | 2445649.622964 | Start of Sun part
+  Ardhaprahara | 109.2283° | Cancer      |  19.2283°   |     House 12     | 2445649.310777 | Start of Mercury part
+
+--------------------------------------------------------------------------------
+4. PAÑCĀṄGA CORE METRICS & CHILDBIRTH SPHUTAS (PHALADEEPIKA CH. 4 & 12)
+--------------------------------------------------------------------------------
+  Tithi Number     : 6 (Shukla Paksha, Tithi 6)
+  Tithi Nature     : Chidra Tithi (Vulnerable) (Elapsed: 88.91%)
+  Karaṇa Number    : 12 (Standard)
+  Nityā Yoga       : #10 Ganda (Arc: 127.9623°, Elapsed: 59.72%)
+  Vāra (Weekday)   : Jupiter (Thursday)
+
+  Special Core Sphutas (Phaladeepika Ch. 12 & Ch. 17):
+    Santāna Tithi (Fertility - Corrected Formula: 5 * [Moon - Sun] % 360):
+      Santāna Arc     : 353.3489°
+      Santāna Tithi   : 30 (Krishna Paksha, Tithi 15)
+      Afflicted Status: AFFLICTED (Amavasya 30th / Krishna Chidra)
+    Bīja Sphuta (Male Virility: Jupiter + Sun + Venus):
+      Longitude       : 303.8735° (Aquarius)
+      Navāṃśa Sign    : Scorpio
+      3-Tier Status   : Mixed (Delayed Progeny) [Tier: Moderate]
+    Kṣetra Sphuta (Female Fertility: Jupiter + Moon + Mars):
+      Longitude       : 8.5797° (Aries)
+      Navāṃśa Sign    : Gemini
+      3-Tier Status   : Deficient (Both Odd) [Tier: Deficient]
+    Trisphuṭa (Phaladeepika Ch. 17: Lagna + Moon + Māndi):
+      Longitude       : 246.7213° (Sagittarius 6.7213°)
+      Navāṃśa (D9)    : Gemini 0.4918° (Lon: 60.4918°)
+    Catuṣphuṭa (Phaladeepika Ch. 17: Trisphuṭa + Sun):
+      Longitude       : 114.6295° (Cancer 24.6295°)
+    Pañcasphuṭa (Phaladeepika Ch. 17: Catuṣphuṭa + Rāhu):
+      Longitude       : 190.8534° (Libra 10.8534°)
+
+--------------------------------------------------------------------------------
+5. SIDEREAL EQUATORIAL NAKSHATRAS & CANDRA KRIYĀDI (PHALADEEPIKA CH. 4)
+--------------------------------------------------------------------------------
+  Anchor System         : ERNST_DHRUVA
+  Equatorial Ayanamsa   : 19.4828° (Mid-Mula anchor 246°40')
+  Ecliptic Ayanamsa     : 19.9500°
+
+  Body     | Nakshatra          | Pada | Sidereal Pos | Nak Lord | Sub Lord | Lord/Sub | Tara | Tara #
+  ---------+--------------------+------+--------------+----------+----------+----------+------+-------
+  Sun      | Vishakha           |   2  |   205.9626°   | Jupiter  | Ketu     | Ju/Ke    |   4  |   4
+  Moon     | Shravana           |   1  |   281.9997°   | Moon     | Rahu     | Mo/Ra    |   1  |   1
+  Mars     | Uttara Phalguni    |   4  |   156.9987°   | Sun      | Mercury  | Su/Me    |   9  |   9
+  Mercury  | Vishakha           |   4  |   212.5330°   | Jupiter  | Rahu     | Ju/Ra    |   4  |   4
+  Jupiter  | Jyeshtha           |   3  |   233.7194°   | Mercury  | Mars     | Me/Ma    |   6  |   6
+  Venus    | Hasta              |   1  |   162.3210°   | Moon     | Rahu     | Mo/Ra    |   1  |   1
+  Saturn   | Swati              |   4  |   197.3756°   | Rahu     | Venus    | Ra/Ve    |   3  |   3
+  Rahu     | Mrigashira         |   1  |    55.5553°   | Mars     | Rahu     | Ma/Ra    |   2  |   2
+  Ketu     | Jyeshtha           |   3  |   235.5553°   | Mercury  | Rahu     | Me/Ra    |   6  |   6
+  Lagna    | Ashlesha           |   1  |   109.6488°   | Mercury  | Venus    | Me/Ve    |   6  |   6
+  MC       | Revati             |   4  |   359.0238°   | Mercury  | Saturn   | Me/Sa    |   6  |   6
+
+  Moon Candra Kriyādi State (Phaladeepika Ch. 4.12-20):
+    Kriyā   : #9 Dandaneta (Army commander / administrator) -> Shubha / Auspicious
+    Avasthā : #2 Mahitanripahita (Favored by honored sovereign) -> Shubha / Auspicious
+    Velā    : #6 Sukhidata (Giver / receiver of happiness) -> Shubha / Auspicious
+    Fraction: 0.149978
+
+--------------------------------------------------------------------------------
+6. SŪRYA SIDDHĀNTA COMBUSTION & LUNAR PHASE GEOMETRY
+--------------------------------------------------------------------------------
+  Body     | Combust? | Sun Distance | Orb Limit | Severity | Combustion Range
+  ---------+----------+--------------+-----------+----------+-----------------
+  Sun      | No       |     0.0000°   |    0.00°  | None     | None
+  Moon     | No       |    70.6698°   |   12.00°  | None     | 12° - 15°
+  Mars     | No       |    52.3791°   |   17.00°  | None     | 8° - 17°
+  Mercury  | YES      |     6.6788°   |   14.00°  | Moderate | 2° - 14°
+  Jupiter  | No       |    26.5645°   |   11.00°  | None     | 8° - 11°
+  Venus    | No       |    46.4156°   |   10.00°  | None     | 4° - 10°
+  Saturn   | YES      |     9.3918°   |   15.00°  | Moderate | 8° - 15°
+  Rahu     | No       |     0.0000°   |    0.00°  | None     | None
+  Ketu     | No       |     0.0000°   |    0.00°  | None     | None
+
+  Lunar Phase Metrics:
+    Elongation from Sun : 70.67°
+    Waxing / Waning     : Waxing (Shukla Paksha)
+    Illumination %      : 39.3 %
+    Bright Moon Status  : False (Benefic = False)
+
+--------------------------------------------------------------------------------
+7. CONJUNCTIONS & CROSS-BORDER WALL LEAKAGE (ORB <= 10.0°)
+--------------------------------------------------------------------------------
+  Body 1   | Body 2   | Separation | Same Sign | Cross-Border | Boundary Attenuation | Effective Potency | Orb Band
+  ---------+----------+------------+-----------+--------------+----------------------+-------------------+-----------------
+  Sun      | Mercury  |  6.6788°   |   True    |    False     |        1.00          |      0.3321       | Moderate
+  Sun      | Saturn   |  9.3918°   |   True    |    False     |        1.00          |      0.0608       | Wide
+  Mars     | Venus    |  5.9635°   |   False   |    True      |        0.75          |      0.3027       | Moderate
+  Jupiter  | Ketu     |  1.7513°   |   True    |    False     |        1.00          |      0.8249       | Exact (Intimate)
+
+--------------------------------------------------------------------------------
+8. GRAHA YUDDHA (PLANETARY WARS <= 1.0° AMONG TĀRA GRAHAS)
+--------------------------------------------------------------------------------
+  No active planetary war collisions (all Tara Grahas separated by > 1.0°).
+
+--------------------------------------------------------------------------------
+9. DIVISIONAL VARGAS (16 HARMONIC CHARTS - D1 THROUGH D60)
+--------------------------------------------------------------------------------
+  === D1 HARMONIC CHART ===
+    Lagna : 129.5988° in Leo         ( 9.5988°)
+    MC    :  18.9738° in Aries       (18.9738°)
+    Grahas:
+      Sun     : 227.9082° Scorpio     (17.9082°)
+      Moon    : 298.5780° Capricorn   (28.5780°)
+      Mars    : 175.5291° Virgo       (25.5291°)
+      Mercury : 234.5870° Scorpio     (24.5870°)
+      Jupiter : 254.4727° Sagittarius (14.4727°)
+      Venus   : 181.4926° Libra       ( 1.4926°)
+      Saturn  : 218.5164° Scorpio     ( 8.5164°)
+      Rahu    :  76.2239° Gemini      (16.2239°)
+      Ketu    : 256.2239° Sagittarius (16.2239°)
+
+  === D2 HARMONIC CHART ===
+    Lagna : 139.1977° in Leo         (19.1977°)
+    MC    : 187.9476° in Libra       ( 7.9476°)
+    Grahas:
+      Sun     :  35.8164° Taurus      ( 5.8164°)
+      Moon    : 117.1560° Cancer      (27.1560°)
+      Mars    : 351.0582° Pisces      (21.0582°)
+      Mercury :  49.1741° Taurus      (19.1741°)
+      Jupiter : 268.9453° Sagittarius (28.9453°)
+      Venus   : 182.9852° Libra       ( 2.9852°)
+      Saturn  : 227.0328° Scorpio     (17.0328°)
+      Rahu    : 242.4479° Sagittarius ( 2.4479°)
+      Ketu    :  62.4479° Gemini      ( 2.4479°)
+
+  === D3 HARMONIC CHART ===
+    Lagna : 148.7965° in Leo         (28.7965°)
+    MC    : 146.9214° in Leo         (26.9214°)
+    Grahas:
+      Sun     : 353.7246° Pisces      (23.7246°)
+      Moon    : 175.7339° Virgo       (25.7339°)
+      Mars    :  46.5873° Taurus      (16.5873°)
+      Mercury : 103.7611° Cancer      (13.7611°)
+      Jupiter :  13.4180° Aries       (13.4180°)
+      Venus   : 184.4778° Libra       ( 4.4778°)
+      Saturn  : 235.5492° Scorpio     (25.5492°)
+      Rahu    : 198.6718° Libra       (18.6718°)
+      Ketu    :  18.6718° Aries       (18.6718°)
+
+  === D4 HARMONIC CHART ===
+    Lagna : 218.3953° in Scorpio     ( 8.3953°)
+    MC    : 195.8952° in Libra       (15.8952°)
+    Grahas:
+      Sun     :  41.6328° Taurus      (11.6328°)
+      Moon    : 204.3119° Libra       (24.3119°)
+      Mars    :  72.1164° Gemini      (12.1164°)
+      Mercury : 128.3482° Leo         ( 8.3482°)
+      Jupiter : 357.8906° Pisces      (27.8906°)
+      Venus   : 185.9704° Libra       ( 5.9704°)
+      Saturn  : 304.0656° Aquarius    ( 4.0656°)
+      Rahu    : 244.8957° Sagittarius ( 4.8957°)
+      Ketu    :  64.8957° Gemini      ( 4.8957°)
+
+  === D7 HARMONIC CHART ===
+    Lagna : 187.1918° in Libra       ( 7.1918°)
+    MC    : 132.8167° in Leo         (12.8167°)
+    Grahas:
+      Sun     : 155.3575° Virgo       ( 5.3575°)
+      Moon    : 290.0459° Capricorn   (20.0459°)
+      Mars    : 148.7037° Leo         (28.7037°)
+      Mercury : 202.1093° Libra       (22.1093°)
+      Jupiter : 341.3086° Pisces      (11.3086°)
+      Venus   : 190.4482° Libra       (10.4482°)
+      Saturn  :  89.6148° Gemini      (29.6148°)
+      Rahu    : 173.5675° Virgo       (23.5675°)
+      Ketu    : 353.5675° Pisces      (23.5675°)
+
+  === D9 HARMONIC CHART ===
+    Lagna :  86.3895° in Gemini      (26.3895°)
+    MC    : 170.7643° in Virgo       (20.7643°)
+    Grahas:
+      Sun     : 251.1739° Sagittarius (11.1739°)
+      Moon    : 167.2018° Virgo       (17.2018°)
+      Mars    : 139.7620° Leo         (19.7620°)
+      Mercury : 311.2834° Aquarius    (11.2834°)
+      Jupiter : 130.2539° Leo         (10.2539°)
+      Venus   : 193.4334° Libra       (13.4334°)
+      Saturn  : 166.6476° Virgo       (16.6476°)
+      Rahu    : 326.0153° Aquarius    (26.0153°)
+      Ketu    : 146.0153° Leo         (26.0153°)
+
+  === D10 HARMONIC CHART ===
+    Lagna : 215.9883° in Scorpio     ( 5.9883°)
+    MC    : 189.7381° in Libra       ( 9.7381°)
+    Grahas:
+      Sun     : 329.0821° Aquarius    (29.0821°)
+      Moon    : 255.7798° Sagittarius (15.7798°)
+      Mars    : 165.2911° Virgo       (15.2911°)
+      Mercury : 215.8704° Scorpio     ( 5.8704°)
+      Jupiter :  24.7266° Aries       (24.7266°)
+      Venus   : 194.9260° Libra       (14.9260°)
+      Saturn  :  55.1640° Taurus      (25.1640°)
+      Rahu    : 222.2393° Scorpio     (12.2393°)
+      Ketu    :  42.2393° Taurus      (12.2393°)
+
+  === D12 HARMONIC CHART ===
+    Lagna : 235.1860° in Scorpio     (25.1860°)
+    MC    : 227.6857° in Scorpio     (17.6857°)
+    Grahas:
+      Sun     :  64.8985° Gemini      ( 4.8985°)
+      Moon    : 252.9357° Sagittarius (12.9357°)
+      Mars    :  96.3493° Cancer      ( 6.3493°)
+      Mercury : 145.0445° Leo         (25.0445°)
+      Jupiter :  53.6719° Taurus      (23.6719°)
+      Venus   : 197.9112° Libra       (17.9112°)
+      Saturn  : 312.1968° Aquarius    (12.1968°)
+      Rahu    : 254.6871° Sagittarius (14.6871°)
+      Ketu    :  74.6871° Gemini      (14.6871°)
+
+  === D16 HARMONIC CHART ===
+    Lagna : 273.5813° in Capricorn   ( 3.5813°)
+    MC    : 303.5810° in Aquarius    ( 3.5810°)
+    Grahas:
+      Sun     :  46.5313° Taurus      (16.5313°)
+      Moon    :  97.2477° Cancer      ( 7.2477°)
+      Mars    : 288.4657° Capricorn   (18.4657°)
+      Mercury : 153.3926° Virgo       ( 3.3926°)
+      Jupiter : 111.5626° Cancer      (21.5626°)
+      Venus   :  23.8816° Aries       (23.8816°)
+      Saturn  : 256.2624° Sagittarius (16.2624°)
+      Rahu    : 139.5828° Leo         (19.5828°)
+      Ketu    : 139.5828° Leo         (19.5828°)
+
+  === D20 HARMONIC CHART ===
+    Lagna :  71.9766° in Gemini      (11.9766°)
+    MC    :  19.4762° in Aries       (19.4762°)
+    Grahas:
+      Sun     : 238.1642° Scorpio     (28.1642°)
+      Moon    : 211.5596° Scorpio     ( 1.5596°)
+      Mars    : 270.5821° Capricorn   ( 0.5821°)
+      Mercury :  11.7408° Aries       (11.7408°)
+      Jupiter :  49.4532° Taurus      (19.4532°)
+      Venus   :  29.8520° Aries       (29.8520°)
+      Saturn  :  50.3280° Taurus      (20.3280°)
+      Rahu    :  84.4785° Gemini      (24.4785°)
+      Ketu    :  84.4785° Gemini      (24.4785°)
+
+  === D24 HARMONIC CHART ===
+    Lagna : 350.3719° in Pisces      (20.3719°)
+    MC    : 215.3715° in Scorpio     ( 5.3715°)
+    Grahas:
+      Sun     :  39.7970° Taurus      ( 9.7970°)
+      Moon    : 175.8715° Virgo       (25.8715°)
+      Mars    : 222.6985° Scorpio     (12.6985°)
+      Mercury : 260.0889° Sagittarius (20.0889°)
+      Jupiter : 107.3439° Cancer      (17.3439°)
+      Venus   : 155.8223° Virgo       ( 5.8223°)
+      Saturn  : 294.3935° Capricorn   (24.3935°)
+      Rahu    : 149.3742° Leo         (29.3742°)
+      Ketu    : 149.3742° Leo         (29.3742°)
+
+  === D27 HARMONIC CHART ===
+    Lagna : 259.1684° in Sagittarius (19.1684°)
+    MC    : 152.2929° in Virgo       ( 2.2929°)
+    Grahas:
+      Sun     :  33.5216° Taurus      ( 3.5216°)
+      Moon    : 141.6054° Leo         (21.6054°)
+      Mars    :  59.2859° Taurus      (29.2859°)
+      Mercury : 213.8501° Scorpio     ( 3.8501°)
+      Jupiter :  30.7618° Taurus      ( 0.7618°)
+      Venus   : 220.3001° Scorpio     (10.3001°)
+      Saturn  : 139.9427° Leo         (19.9427°)
+      Rahu    : 258.0460° Sagittarius (18.0460°)
+      Ketu    :  78.0460° Gemini      (18.0460°)
+
+  === D30 HARMONIC CHART ===
+    Lagna : 327.5930° in Aquarius    (27.5930°) | Classical Parāśarī Bounds: Aquarius 27.5930° (Harmonic: Capricorn 17.9649°)
+    MC    :  64.1735° in Gemini      ( 4.1735°) | Classical Parāśarī Bounds: Gemini 4.1735° (Harmonic: Libra 29.2143°)
+    Grahas:
+      Sun     : 352.1558° Pisces      (22.1558°) | Parāśarī: Jupiter in Pisces (Deg: 22.1558°, Harmonic: Pisces 27.2463°)
+      Moon    : 231.4679° Scorpio     (21.4679°) | Parāśarī: Mars in Scorpio (Deg: 21.4679°, Harmonic: Aquarius 17.3394°)
+      Mars    : 213.1746° Scorpio     ( 3.1746°) | Parāśarī: Mars in Scorpio (Deg: 3.1746°, Harmonic: Scorpio 15.8732°)
+      Mercury : 297.5222° Capricorn   (27.5222°) | Parāśarī: Saturn in Capricorn (Deg: 27.5222°, Harmonic: Libra 17.6112°)
+      Jupiter : 256.7725° Sagittarius (16.7725°) | Parāśarī: Jupiter in Sagittarius (Deg: 16.7725°, Harmonic: Gemini 14.1798°)
+      Venus   :   8.9556° Aries       ( 8.9556°) | Parāśarī: Mars in Aries (Deg: 8.9556°, Harmonic: Taurus 14.7779°)
+      Saturn  : 165.0703° Virgo       (15.0703°) | Parāśarī: Mercury in Virgo (Deg: 15.0703°, Harmonic: Gemini 15.4919°)
+      Rahu    : 263.3397° Sagittarius (23.3397°) | Parāśarī: Jupiter in Sagittarius (Deg: 23.3397°, Harmonic: Leo 6.7178°)
+      Ketu    : 263.3397° Sagittarius (23.3397°) | Parāśarī: Jupiter in Sagittarius (Deg: 23.3397°, Harmonic: Leo 6.7178°)
+
+  === D40 HARMONIC CHART ===
+    Lagna :  23.9532° in Aries       (23.9532°)
+    MC    :  38.9524° in Taurus      ( 8.9524°)
+    Grahas:
+      Sun     : 176.3283° Virgo       (26.3283°)
+      Moon    : 243.1191° Sagittarius ( 3.1191°)
+      Mars    : 121.1642° Leo         ( 1.1642°)
+      Mercury :  83.4816° Gemini      (23.4816°)
+      Jupiter : 218.9064° Scorpio     ( 8.9064°)
+      Venus   :  59.7039° Taurus      (29.7039°)
+      Saturn  : 160.6559° Virgo       (10.6559°)
+      Rahu    : 288.9570° Capricorn   (18.9570°)
+      Ketu    : 288.9570° Capricorn   (18.9570°)
+
+  === D45 HARMONIC CHART ===
+    Lagna : 191.9474° in Libra       (11.9474°)
+    MC    : 133.8215° in Leo         (13.8215°)
+    Grahas:
+      Sun     : 205.8694° Libra       (25.8694°)
+      Moon    : 206.0090° Libra       (26.0090°)
+      Mars    : 308.8098° Aquarius    ( 8.8098°)
+      Mercury : 146.4168° Leo         (26.4168°)
+      Jupiter : 171.2697° Virgo       (21.2697°)
+      Venus   :  67.1669° Gemini      ( 7.1669°)
+      Saturn  : 143.2379° Leo         (23.2379°)
+      Rahu    : 250.0767° Sagittarius (10.0767°)
+      Ketu    : 250.0767° Sagittarius (10.0767°)
+
+  === D60 HARMONIC CHART ===
+    Lagna : 335.9299° in Pisces      ( 5.9299°) | Shastiamsa #20 Komala (Shubha / Benefic)
+    MC    :  58.4286° in Taurus      (28.4286°) | Shastiamsa #38 Amrita (Shubha / Benefic)
+    Grahas:
+      Sun     : 204.4925° Libra       (24.4925°) | Shastiamsa #36 Deva (Shubha / Benefic)
+      Moon    : 184.6787° Libra       ( 4.6787°) | Shastiamsa #58 Deva (Shubha / Benefic)
+      Mars    : 241.7464° Sagittarius ( 1.7464°) | Shastiamsa #52 Garala (Ashubha / Malefic)
+      Mercury : 245.2224° Sagittarius ( 5.2224°) | Shastiamsa #50 Maya (Ashubha / Malefic)
+      Jupiter :  28.3597° Aries       (28.3597°) | Shastiamsa #29 Kamalakara (Shubha / Benefic)
+      Venus   : 269.5559° Sagittarius (29.5559°) | Shastiamsa #3 Deva (Shubha / Benefic)
+      Saturn  :   0.9839° Aries       ( 0.9839°) | Shastiamsa #18 Utpata (Ashubha / Malefic)
+      Rahu    : 313.4356° Aquarius    (13.4356°) | Shastiamsa #33 Davagni (Ashubha / Malefic)
+      Ketu    : 133.4356° Leo         (13.4356°) | Shastiamsa #33 Davagni (Ashubha / Malefic)
+
+================================================================================
+10. COMPLETE RAW JSON SERIALIZATION (STANDALONE RE-IMPORTABLE PRIMITIVES)
+================================================================================
+{
+  "name": "Shivapuri",
+  "place": "Georgsmarienh\u00fctte",
+  "astronomical_anchors": {
+    "jd_local": 2445649.4305555555,
+    "jd_utc": 2445649.388888889,
+    "cal_flag": 1,
+    "sunrise_jd": 2445648.7778000273,
+    "sunset_jd": 2445649.1546840984,
+    "next_sunrise_jd": 2445649.779056655,
+    "is_day_birth": false,
+    "asc_longitude": 129.59883107173707,
+    "mc_longitude": 18.973810808849677,
+    "sensitive_cusp_degree": 9.5988,
+    "temporal_lords": {
+      "Vara": "Jupiter",
+      "Hora": "Sun",
+      "Masa": "Moon",
+      "Varsha": "Moon"
+    },
+    "campanus_display_cusps": {
+      "1": {
+        "house": 1,
+        "absolute_longitude": 129.5988,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 9.5988,
+        "degree_in_sign": 9.5988,
+        "is_display_only": true
+      },
+      "2": {
+        "house": 2,
+        "absolute_longitude": 157.4369,
+        "sign_index": 5,
+        "sign": "Virgo",
+        "degree_0_to_30": 7.4369,
+        "degree_in_sign": 7.4369,
+        "is_display_only": true
+      },
+      "3": {
+        "house": 3,
+        "absolute_longitude": 178.1826,
+        "sign_index": 5,
+        "sign": "Virgo",
+        "degree_0_to_30": 28.1826,
+        "degree_in_sign": 28.1826,
+        "is_display_only": true
+      },
+      "4": {
+        "house": 4,
+        "absolute_longitude": 198.9738,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 18.9738,
+        "degree_in_sign": 18.9738,
+        "is_display_only": true
+      },
+      "5": {
+        "house": 5,
+        "absolute_longitude": 226.9705,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 16.9705,
+        "degree_in_sign": 16.9705,
+        "is_display_only": true
+      },
+      "6": {
+        "house": 6,
+        "absolute_longitude": 268.3636,
+        "sign_index": 8,
+        "sign": "Sagittarius",
+        "degree_0_to_30": 28.3636,
+        "degree_in_sign": 28.3636,
+        "is_display_only": true
+      },
+      "7": {
+        "house": 7,
+        "absolute_longitude": 309.5988,
+        "sign_index": 10,
+        "sign": "Aquarius",
+        "degree_0_to_30": 9.5988,
+        "degree_in_sign": 9.5988,
+        "is_display_only": true
+      },
+      "8": {
+        "house": 8,
+        "absolute_longitude": 337.4369,
+        "sign_index": 11,
+        "sign": "Pisces",
+        "degree_0_to_30": 7.4369,
+        "degree_in_sign": 7.4369,
+        "is_display_only": true
+      },
+      "9": {
+        "house": 9,
+        "absolute_longitude": 358.1826,
+        "sign_index": 11,
+        "sign": "Pisces",
+        "degree_0_to_30": 28.1826,
+        "degree_in_sign": 28.1826,
+        "is_display_only": true
+      },
+      "10": {
+        "house": 10,
+        "absolute_longitude": 18.9738,
+        "sign_index": 0,
+        "sign": "Aries",
+        "degree_0_to_30": 18.9738,
+        "degree_in_sign": 18.9738,
+        "is_display_only": true
+      },
+      "11": {
+        "house": 11,
+        "absolute_longitude": 46.9705,
+        "sign_index": 1,
+        "sign": "Taurus",
+        "degree_0_to_30": 16.9705,
+        "degree_in_sign": 16.9705,
+        "is_display_only": true
+      },
+      "12": {
+        "house": 12,
+        "absolute_longitude": 88.3636,
+        "sign_index": 2,
+        "sign": "Gemini",
+        "degree_0_to_30": 28.3636,
+        "degree_in_sign": 28.3636,
+        "is_display_only": true
+      }
+    }
+  },
+  "coordinates": {
+    "Sun": {
+      "name": "Sun",
+      "longitude": 227.9082085794944,
+      "sign_index": 7,
+      "sign": "Scorpio",
+      "degree_0_to_30": 17.9082,
+      "degree_in_sign": 17.9082,
+      "latitude": -0.0,
+      "right_ascension": 225.445393348577,
+      "declination": -17.1702,
+      "speed": 1.0053935788556247,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Yuva (Adult/Prime)",
+        "segment": 3,
+        "efficiency_factor": 1.0,
+        "efficiency_pct": 100,
+        "is_odd_sign": false
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Moon": {
+      "name": "Moon",
+      "longitude": 298.57797859994906,
+      "sign_index": 9,
+      "sign": "Capricorn",
+      "degree_0_to_30": 28.578,
+      "degree_in_sign": 28.578,
+      "latitude": -3.531,
+      "right_ascension": 301.4824985605137,
+      "declination": -23.9032,
+      "speed": 12.029688325136506,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Bala (Infant)",
+        "segment": 5,
+        "efficiency_factor": 0.25,
+        "efficiency_pct": 25,
+        "is_odd_sign": false
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Mars": {
+      "name": "Mars",
+      "longitude": 175.5291058417236,
+      "sign_index": 5,
+      "sign": "Virgo",
+      "degree_0_to_30": 25.5291,
+      "degree_in_sign": 25.5291,
+      "latitude": 1.4713,
+      "right_ascension": 176.4814139508436,
+      "declination": 3.1275,
+      "speed": 0.5956030211902001,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Bala (Infant)",
+        "segment": 5,
+        "efficiency_factor": 0.25,
+        "efficiency_pct": 25,
+        "is_odd_sign": false
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Mercury": {
+      "name": "Mercury",
+      "longitude": 234.58703941390328,
+      "sign_index": 7,
+      "sign": "Scorpio",
+      "degree_0_to_30": 24.587,
+      "degree_in_sign": 24.587,
+      "latitude": -0.8105,
+      "right_ascension": 232.01573133355512,
+      "declination": -19.7044,
+      "speed": 1.5630280350129724,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Bala (Infant)",
+        "segment": 5,
+        "efficiency_factor": 0.25,
+        "efficiency_pct": 25,
+        "is_odd_sign": false
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Jupiter": {
+      "name": "Jupiter",
+      "longitude": 254.47266087552063,
+      "sign_index": 8,
+      "sign": "Sagittarius",
+      "degree_0_to_30": 14.4727,
+      "degree_in_sign": 14.4727,
+      "latitude": 0.4031,
+      "right_ascension": 253.20212789744144,
+      "declination": -22.1378,
+      "speed": 0.21349064917021954,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Yuva (Adult/Prime)",
+        "segment": 3,
+        "efficiency_factor": 1.0,
+        "efficiency_pct": 100,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Venus": {
+      "name": "Venus",
+      "longitude": 181.49259787680927,
+      "sign_index": 6,
+      "sign": "Libra",
+      "degree_0_to_30": 1.4926,
+      "degree_in_sign": 1.4926,
+      "latitude": 1.0921,
+      "right_ascension": 181.80377404579838,
+      "declination": 0.4083,
+      "speed": 1.0438021649505906,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Bala (Infant)",
+        "segment": 1,
+        "efficiency_factor": 0.25,
+        "efficiency_pct": 25,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Saturn": {
+      "name": "Saturn",
+      "longitude": 218.51639782036557,
+      "sign_index": 7,
+      "sign": "Scorpio",
+      "degree_0_to_30": 8.5164,
+      "degree_in_sign": 8.5164,
+      "latitude": 2.1934,
+      "right_ascension": 216.85839339024142,
+      "declination": -12.2655,
+      "speed": 0.11963622643967445,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Vriddha (Elderly)",
+        "segment": 2,
+        "efficiency_factor": 0.1,
+        "efficiency_pct": 10,
+        "is_odd_sign": false
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Rahu": {
+      "name": "Rahu",
+      "longitude": 76.22392606658863,
+      "sign_index": 2,
+      "sign": "Gemini",
+      "degree_0_to_30": 16.2239,
+      "degree_in_sign": 16.2239,
+      "latitude": 0.0,
+      "right_ascension": 75.0380459302327,
+      "declination": 22.7292,
+      "speed": 0.024544191909259206,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Yuva (Adult/Prime)",
+        "segment": 3,
+        "efficiency_factor": 1.0,
+        "efficiency_pct": 100,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Ketu": {
+      "name": "Ketu",
+      "longitude": 256.22392606658866,
+      "sign_index": 8,
+      "sign": "Sagittarius",
+      "degree_0_to_30": 16.2239,
+      "degree_in_sign": 16.2239,
+      "latitude": -0.0,
+      "right_ascension": 255.0380459302327,
+      "declination": -22.7292,
+      "speed": 0.024544191909259206,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Yuva (Adult/Prime)",
+        "segment": 3,
+        "efficiency_factor": 1.0,
+        "efficiency_pct": 100,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "Lagna": {
+      "name": "Lagna",
+      "longitude": 129.59883107173707,
+      "sign_index": 4,
+      "sign": "Leo",
+      "degree_0_to_30": 9.5988,
+      "degree_in_sign": 9.5988,
+      "latitude": 0.0,
+      "right_ascension": 132.039621361459,
+      "declination": 17.8503,
+      "speed": 0.0,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Kumara (Youth)",
+        "segment": 2,
+        "efficiency_factor": 0.5,
+        "efficiency_pct": 50,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    },
+    "MC": {
+      "name": "MC",
+      "longitude": 18.973810808849677,
+      "sign_index": 0,
+      "sign": "Aries",
+      "degree_0_to_30": 18.9738,
+      "degree_in_sign": 18.9738,
+      "latitude": 0.0,
+      "right_ascension": 17.507311458968537,
+      "declination": 7.4318,
+      "speed": 0.0,
+      "is_retrograde": false,
+      "baladi_avastha": {
+        "state": "Vriddha (Elderly)",
+        "segment": 4,
+        "efficiency_factor": 0.1,
+        "efficiency_pct": 10,
+        "is_odd_sign": true
+      },
+      "is_in_planetary_war": false,
+      "is_war_winner": false,
+      "is_war_loser": false,
+      "war_opponent": null,
+      "war_details": null
+    }
+  },
+  "upagrahas": {
+    "Gulika": {
+      "name": "Gulika",
+      "longitude": 168.7039,
+      "sign_index": 5,
+      "sign": "Virgo",
+      "degree_0_to_30": 18.7039,
+      "degree_in_sign": 18.7039,
+      "whole_sign_house": 2,
+      "epoch_jd": 2445649.544917
+    },
+    "Mandi": {
+      "name": "Mandi",
+      "longitude": 178.5445,
+      "sign_index": 5,
+      "sign": "Virgo",
+      "degree_0_to_30": 28.5445,
+      "degree_in_sign": 28.5445,
+      "whole_sign_house": 2,
+      "epoch_jd": 2445649.58394
+    },
+    "Yamakantaka": {
+      "name": "Yamakantaka",
+      "longitude": 129.5824,
+      "sign_index": 4,
+      "sign": "Leo",
+      "degree_0_to_30": 9.5824,
+      "degree_in_sign": 9.5824,
+      "whole_sign_house": 1,
+      "epoch_jd": 2445649.388824
+    },
+    "Kala": {
+      "name": "Kala",
+      "longitude": 188.3896,
+      "sign_index": 6,
+      "sign": "Libra",
+      "degree_0_to_30": 8.3896,
+      "degree_in_sign": 8.3896,
+      "whole_sign_house": 3,
+      "epoch_jd": 2445649.622964
+    },
+    "Ardhaprahara": {
+      "name": "Ardhaprahara",
+      "longitude": 109.2283,
+      "sign_index": 3,
+      "sign": "Cancer",
+      "degree_0_to_30": 19.2283,
+      "degree_in_sign": 19.2283,
+      "whole_sign_house": 12,
+      "epoch_jd": 2445649.310777
+    }
+  },
+  "pancanga": {
+    "tithi": {
+      "number": 6,
+      "paksha": "Shukla",
+      "tithi_in_paksha": 6,
+      "is_chidra": true,
+      "traversal_pct": 88.91
+    },
+    "karana": {
+      "number": 12,
+      "is_vishti": false,
+      "is_bhadra": false
+    },
+    "nitya_yoga": {
+      "number": 10,
+      "name": "Ganda",
+      "arc_degrees": 127.9623,
+      "traversal_pct": 59.72
+    },
+    "vara": "Jupiter"
+  },
+  "special_sphutas": {
+    "santana_tithi": {
+      "tithi_number": 30,
+      "arc_degrees": 353.3489,
+      "paksha": "Krishna",
+      "tithi_in_paksha": 15,
+      "is_afflicted": true,
+      "is_propitious": false
+    },
+    "bija_sphuta_male": {
+      "longitude": 303.8735,
+      "sign": "Aquarius",
+      "d9_sign": "Scorpio",
+      "status": "Mixed (Delayed Progeny)",
+      "tier": "Moderate",
+      "is_virile": false
+    },
+    "ksetra_sphuta_female": {
+      "longitude": 8.5797,
+      "sign": "Aries",
+      "d9_sign": "Gemini",
+      "status": "Deficient (Both Odd)",
+      "tier": "Deficient",
+      "is_fertile": false
+    },
+    "trisphuta": {
+      "longitude": 246.7213,
+      "sign": "Sagittarius",
+      "sign_index": 8,
+      "degree_0_to_30": 6.7213,
+      "degree_in_sign": 6.7213,
+      "d9_longitude": 60.4918,
+      "d9_sign": "Gemini",
+      "d9_sign_index": 2,
+      "d9_degree_in_sign": 0.4918
+    },
+    "catusphuta": {
+      "longitude": 114.6295,
+      "sign": "Cancer",
+      "sign_index": 3,
+      "degree_0_to_30": 24.6295,
+      "degree_in_sign": 24.6295
+    },
+    "pancasphuta": {
+      "longitude": 190.8534,
+      "sign": "Libra",
+      "sign_index": 6,
+      "degree_0_to_30": 10.8534,
+      "degree_in_sign": 10.8534
+    }
+  },
+  "nakshatras": {
+    "system": "ERNST_DHRUVA",
+    "ayanamsa": 19.95,
+    "equatorial_ayanamsa": 19.4828,
+    "ecliptic_ayanamsa": 19.95,
+    "grahas": {
+      "Sun": {
+        "nakshatra": "Vishakha",
+        "pada": 2,
+        "position": 205.9626,
+        "sidereal_ra": 205.9626,
+        "sidereal_longitude": 205.9626,
+        "nakshatra_lord": "Jupiter",
+        "sub_lord": "Ketu",
+        "lord_sublord": "Ju/Ke",
+        "tara": 4,
+        "tara_number": 4
+      },
+      "Moon": {
+        "nakshatra": "Shravana",
+        "pada": 1,
+        "position": 281.9997,
+        "sidereal_ra": 281.9997,
+        "sidereal_longitude": 281.9997,
+        "nakshatra_lord": "Moon",
+        "sub_lord": "Rahu",
+        "lord_sublord": "Mo/Ra",
+        "tara": 1,
+        "tara_number": 1,
+        "candra_kriyadi": {
+          "kriya": 9,
+          "kriya_name": "Dandaneta",
+          "kriya_translation": "Army commander / administrator",
+          "kriya_nature": "Shubha / Auspicious",
+          "kriya_is_benefic": true,
+          "avastha": 2,
+          "avastha_name": "Mahitanripahita",
+          "avastha_translation": "Favored by honored sovereign",
+          "avastha_nature": "Shubha / Auspicious",
+          "avastha_is_benefic": true,
+          "vela": 6,
+          "vela_name": "Sukhidata",
+          "vela_translation": "Giver / receiver of happiness",
+          "vela_nature": "Shubha / Auspicious",
+          "vela_is_benefic": true,
+          "traversal_fraction": 0.149978
+        }
+      },
+      "Mars": {
+        "nakshatra": "Uttara Phalguni",
+        "pada": 4,
+        "position": 156.9987,
+        "sidereal_ra": 156.9987,
+        "sidereal_longitude": 156.9987,
+        "nakshatra_lord": "Sun",
+        "sub_lord": "Mercury",
+        "lord_sublord": "Su/Me",
+        "tara": 9,
+        "tara_number": 9
+      },
+      "Mercury": {
+        "nakshatra": "Vishakha",
+        "pada": 4,
+        "position": 212.533,
+        "sidereal_ra": 212.533,
+        "sidereal_longitude": 212.533,
+        "nakshatra_lord": "Jupiter",
+        "sub_lord": "Rahu",
+        "lord_sublord": "Ju/Ra",
+        "tara": 4,
+        "tara_number": 4
+      },
+      "Jupiter": {
+        "nakshatra": "Jyeshtha",
+        "pada": 3,
+        "position": 233.7194,
+        "sidereal_ra": 233.7194,
+        "sidereal_longitude": 233.7194,
+        "nakshatra_lord": "Mercury",
+        "sub_lord": "Mars",
+        "lord_sublord": "Me/Ma",
+        "tara": 6,
+        "tara_number": 6
+      },
+      "Venus": {
+        "nakshatra": "Hasta",
+        "pada": 1,
+        "position": 162.321,
+        "sidereal_ra": 162.321,
+        "sidereal_longitude": 162.321,
+        "nakshatra_lord": "Moon",
+        "sub_lord": "Rahu",
+        "lord_sublord": "Mo/Ra",
+        "tara": 1,
+        "tara_number": 1
+      },
+      "Saturn": {
+        "nakshatra": "Swati",
+        "pada": 4,
+        "position": 197.3756,
+        "sidereal_ra": 197.3756,
+        "sidereal_longitude": 197.3756,
+        "nakshatra_lord": "Rahu",
+        "sub_lord": "Venus",
+        "lord_sublord": "Ra/Ve",
+        "tara": 3,
+        "tara_number": 3
+      },
+      "Rahu": {
+        "nakshatra": "Mrigashira",
+        "pada": 1,
+        "position": 55.5553,
+        "sidereal_ra": 55.5553,
+        "sidereal_longitude": 55.5553,
+        "nakshatra_lord": "Mars",
+        "sub_lord": "Rahu",
+        "lord_sublord": "Ma/Ra",
+        "tara": 2,
+        "tara_number": 2
+      },
+      "Ketu": {
+        "nakshatra": "Jyeshtha",
+        "pada": 3,
+        "position": 235.5553,
+        "sidereal_ra": 235.5553,
+        "sidereal_longitude": 235.5553,
+        "nakshatra_lord": "Mercury",
+        "sub_lord": "Rahu",
+        "lord_sublord": "Me/Ra",
+        "tara": 6,
+        "tara_number": 6
+      },
+      "Lagna": {
+        "nakshatra": "Ashlesha",
+        "pada": 1,
+        "position": 109.6488,
+        "sidereal_ra": 109.6488,
+        "sidereal_longitude": 109.6488,
+        "nakshatra_lord": "Mercury",
+        "sub_lord": "Venus",
+        "lord_sublord": "Me/Ve",
+        "tara": 6,
+        "tara_number": 6
+      },
+      "MC": {
+        "nakshatra": "Revati",
+        "pada": 4,
+        "position": 359.0238,
+        "sidereal_ra": 359.0238,
+        "sidereal_longitude": 359.0238,
+        "nakshatra_lord": "Mercury",
+        "sub_lord": "Saturn",
+        "lord_sublord": "Me/Sa",
+        "tara": 6,
+        "tara_number": 6
+      }
+    }
+  },
+  "vargas": {
+    "D1": {
+      "varga": "D1",
+      "lagna": {
+        "longitude": 129.5988,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 9.5988,
+        "degree_in_sign": 9.5988
+      },
+      "mc": {
+        "longitude": 18.9738,
+        "sign_index": 0,
+        "sign": "Aries",
+        "degree_0_to_30": 18.9738,
+        "degree_in_sign": 18.9738
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 227.9082,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 17.9082,
+          "degree_in_sign": 17.9082,
+          "is_retrograde": false,
+          "latitude": -0.0
+        },
+        "Moon": {
+          "longitude": 298.578,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 28.578,
+          "degree_in_sign": 28.578,
+          "is_retrograde": false,
+          "latitude": -3.531
+        },
+        "Mars": {
+          "longitude": 175.5291,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 25.5291,
+          "degree_in_sign": 25.5291,
+          "is_retrograde": false,
+          "latitude": 1.4713
+        },
+        "Mercury": {
+          "longitude": 234.587,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 24.587,
+          "degree_in_sign": 24.587,
+          "is_retrograde": false,
+          "latitude": -0.8105
+        },
+        "Jupiter": {
+          "longitude": 254.4727,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 14.4727,
+          "degree_in_sign": 14.4727,
+          "is_retrograde": false,
+          "latitude": 0.4031
+        },
+        "Venus": {
+          "longitude": 181.4926,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 1.4926,
+          "degree_in_sign": 1.4926,
+          "is_retrograde": false,
+          "latitude": 1.0921
+        },
+        "Saturn": {
+          "longitude": 218.5164,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 8.5164,
+          "degree_in_sign": 8.5164,
+          "is_retrograde": false,
+          "latitude": 2.1934
+        },
+        "Rahu": {
+          "longitude": 76.2239,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 16.2239,
+          "degree_in_sign": 16.2239,
+          "is_retrograde": false,
+          "latitude": 0.0
+        },
+        "Ketu": {
+          "longitude": 256.2239,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 16.2239,
+          "degree_in_sign": 16.2239,
+          "is_retrograde": false,
+          "latitude": -0.0
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 129.5988,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 9.5988,
+          "degree_in_sign": 9.5988
+        },
+        {
+          "longitude": 157.4369,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 7.4369,
+          "degree_in_sign": 7.4369
+        },
+        {
+          "longitude": 178.1826,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 28.1826,
+          "degree_in_sign": 28.1826
+        },
+        {
+          "longitude": 198.9738,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 18.9738,
+          "degree_in_sign": 18.9738
+        },
+        {
+          "longitude": 226.9705,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 16.9705,
+          "degree_in_sign": 16.9705
+        },
+        {
+          "longitude": 268.3636,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 28.3636,
+          "degree_in_sign": 28.3636
+        },
+        {
+          "longitude": 309.5988,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 9.5988,
+          "degree_in_sign": 9.5988
+        },
+        {
+          "longitude": 337.4369,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 7.4369,
+          "degree_in_sign": 7.4369
+        },
+        {
+          "longitude": 358.1826,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 28.1826,
+          "degree_in_sign": 28.1826
+        },
+        {
+          "longitude": 18.9738,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 18.9738,
+          "degree_in_sign": 18.9738
+        },
+        {
+          "longitude": 46.9705,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 16.9705,
+          "degree_in_sign": 16.9705
+        },
+        {
+          "longitude": 88.3636,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 28.3636,
+          "degree_in_sign": 28.3636
+        }
+      ],
+      "bhavas": []
+    },
+    "D2": {
+      "varga": "D2",
+      "lagna": {
+        "longitude": 139.1977,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 19.1977,
+        "degree_in_sign": 19.1977
+      },
+      "mc": {
+        "longitude": 187.9476,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 7.9476,
+        "degree_in_sign": 7.9476
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 35.8164,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 5.8164,
+          "degree_in_sign": 5.8164,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 117.156,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 27.156,
+          "degree_in_sign": 27.156,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 351.0582,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 21.0582,
+          "degree_in_sign": 21.0582,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 49.1741,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 19.1741,
+          "degree_in_sign": 19.1741,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 268.9453,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 28.9453,
+          "degree_in_sign": 28.9453,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 182.9852,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 2.9852,
+          "degree_in_sign": 2.9852,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 227.0328,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 17.0328,
+          "degree_in_sign": 17.0328,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 242.4479,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 2.4479,
+          "degree_in_sign": 2.4479,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 62.4479,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 2.4479,
+          "degree_in_sign": 2.4479,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 139.1977,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.1977,
+          "degree_in_sign": 19.1977
+        },
+        {
+          "longitude": 164.8737,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 14.8737,
+          "degree_in_sign": 14.8737
+        },
+        {
+          "longitude": 356.3652,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 26.3652,
+          "degree_in_sign": 26.3652
+        },
+        {
+          "longitude": 7.9476,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 7.9476,
+          "degree_in_sign": 7.9476
+        },
+        {
+          "longitude": 33.9411,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 3.9411,
+          "degree_in_sign": 3.9411
+        },
+        {
+          "longitude": 86.7271,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 26.7271,
+          "degree_in_sign": 26.7271
+        },
+        {
+          "longitude": 319.1977,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 19.1977,
+          "degree_in_sign": 19.1977
+        },
+        {
+          "longitude": 344.8737,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 14.8737,
+          "degree_in_sign": 14.8737
+        },
+        {
+          "longitude": 176.3652,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 26.3652,
+          "degree_in_sign": 26.3652
+        },
+        {
+          "longitude": 187.9476,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 7.9476,
+          "degree_in_sign": 7.9476
+        },
+        {
+          "longitude": 213.9411,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 3.9411,
+          "degree_in_sign": 3.9411
+        },
+        {
+          "longitude": 266.7271,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 26.7271,
+          "degree_in_sign": 26.7271
+        }
+      ],
+      "bhavas": []
+    },
+    "D3": {
+      "varga": "D3",
+      "lagna": {
+        "longitude": 148.7965,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 28.7965,
+        "degree_in_sign": 28.7965
+      },
+      "mc": {
+        "longitude": 146.9214,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 26.9214,
+        "degree_in_sign": 26.9214
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 353.7246,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 23.7246,
+          "degree_in_sign": 23.7246,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 175.7339,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 25.7339,
+          "degree_in_sign": 25.7339,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 46.5873,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 16.5873,
+          "degree_in_sign": 16.5873,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 103.7611,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 13.7611,
+          "degree_in_sign": 13.7611,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 13.418,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 13.418,
+          "degree_in_sign": 13.418,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 184.4778,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 4.4778,
+          "degree_in_sign": 4.4778,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 235.5492,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 25.5492,
+          "degree_in_sign": 25.5492,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 198.6718,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 18.6718,
+          "degree_in_sign": 18.6718,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 18.6718,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 18.6718,
+          "degree_in_sign": 18.6718,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 148.7965,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 28.7965,
+          "degree_in_sign": 28.7965
+        },
+        {
+          "longitude": 172.3106,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 22.3106,
+          "degree_in_sign": 22.3106
+        },
+        {
+          "longitude": 54.5478,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 24.5478,
+          "degree_in_sign": 24.5478
+        },
+        {
+          "longitude": 326.9214,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 26.9214,
+          "degree_in_sign": 26.9214
+        },
+        {
+          "longitude": 350.9116,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 20.9116,
+          "degree_in_sign": 20.9116
+        },
+        {
+          "longitude": 145.0907,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 25.0907,
+          "degree_in_sign": 25.0907
+        },
+        {
+          "longitude": 328.7965,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 28.7965,
+          "degree_in_sign": 28.7965
+        },
+        {
+          "longitude": 352.3106,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 22.3106,
+          "degree_in_sign": 22.3106
+        },
+        {
+          "longitude": 234.5478,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 24.5478,
+          "degree_in_sign": 24.5478
+        },
+        {
+          "longitude": 146.9214,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 26.9214,
+          "degree_in_sign": 26.9214
+        },
+        {
+          "longitude": 170.9116,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 20.9116,
+          "degree_in_sign": 20.9116
+        },
+        {
+          "longitude": 325.0907,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 25.0907,
+          "degree_in_sign": 25.0907
+        }
+      ],
+      "bhavas": []
+    },
+    "D4": {
+      "varga": "D4",
+      "lagna": {
+        "longitude": 218.3953,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 8.3953,
+        "degree_in_sign": 8.3953
+      },
+      "mc": {
+        "longitude": 195.8952,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 15.8952,
+        "degree_in_sign": 15.8952
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 41.6328,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 11.6328,
+          "degree_in_sign": 11.6328,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 204.3119,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 24.3119,
+          "degree_in_sign": 24.3119,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 72.1164,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 12.1164,
+          "degree_in_sign": 12.1164,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 128.3482,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 8.3482,
+          "degree_in_sign": 8.3482,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 357.8906,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 27.8906,
+          "degree_in_sign": 27.8906,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 185.9704,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 5.9704,
+          "degree_in_sign": 5.9704,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 304.0656,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 4.0656,
+          "degree_in_sign": 4.0656,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 244.8957,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 4.8957,
+          "degree_in_sign": 4.8957,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 64.8957,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 4.8957,
+          "degree_in_sign": 4.8957,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 218.3953,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 8.3953,
+          "degree_in_sign": 8.3953
+        },
+        {
+          "longitude": 179.7475,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 29.7475,
+          "degree_in_sign": 29.7475
+        },
+        {
+          "longitude": 82.7303,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 22.7303,
+          "degree_in_sign": 22.7303
+        },
+        {
+          "longitude": 15.8952,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 15.8952,
+          "degree_in_sign": 15.8952
+        },
+        {
+          "longitude": 37.8821,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 7.8821,
+          "degree_in_sign": 7.8821
+        },
+        {
+          "longitude": 173.4542,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 23.4542,
+          "degree_in_sign": 23.4542
+        },
+        {
+          "longitude": 38.3953,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 8.3953,
+          "degree_in_sign": 8.3953
+        },
+        {
+          "longitude": 359.7475,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 29.7475,
+          "degree_in_sign": 29.7475
+        },
+        {
+          "longitude": 262.7303,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 22.7303,
+          "degree_in_sign": 22.7303
+        },
+        {
+          "longitude": 195.8952,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 15.8952,
+          "degree_in_sign": 15.8952
+        },
+        {
+          "longitude": 217.8821,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 7.8821,
+          "degree_in_sign": 7.8821
+        },
+        {
+          "longitude": 353.4542,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 23.4542,
+          "degree_in_sign": 23.4542
+        }
+      ],
+      "bhavas": []
+    },
+    "D7": {
+      "varga": "D7",
+      "lagna": {
+        "longitude": 187.1918,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 7.1918,
+        "degree_in_sign": 7.1918
+      },
+      "mc": {
+        "longitude": 132.8167,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 12.8167,
+        "degree_in_sign": 12.8167
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 155.3575,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 5.3575,
+          "degree_in_sign": 5.3575,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 290.0459,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 20.0459,
+          "degree_in_sign": 20.0459,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 148.7037,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 28.7037,
+          "degree_in_sign": 28.7037,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 202.1093,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 22.1093,
+          "degree_in_sign": 22.1093,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 341.3086,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 11.3086,
+          "degree_in_sign": 11.3086,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 190.4482,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 10.4482,
+          "degree_in_sign": 10.4482,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 89.6148,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 29.6148,
+          "degree_in_sign": 29.6148,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 173.5675,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 23.5675,
+          "degree_in_sign": 23.5675,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 353.5675,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 23.5675,
+          "degree_in_sign": 23.5675,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 187.1918,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 7.1918,
+          "degree_in_sign": 7.1918
+        },
+        {
+          "longitude": 22.0581,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 22.0581,
+          "degree_in_sign": 22.0581
+        },
+        {
+          "longitude": 167.2781,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 17.2781,
+          "degree_in_sign": 17.2781
+        },
+        {
+          "longitude": 312.8167,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 12.8167,
+          "degree_in_sign": 12.8167
+        },
+        {
+          "longitude": 148.7937,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 28.7937,
+          "degree_in_sign": 28.7937
+        },
+        {
+          "longitude": 78.5449,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 18.5449,
+          "degree_in_sign": 18.5449
+        },
+        {
+          "longitude": 7.1918,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 7.1918,
+          "degree_in_sign": 7.1918
+        },
+        {
+          "longitude": 202.0581,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 22.0581,
+          "degree_in_sign": 22.0581
+        },
+        {
+          "longitude": 347.2781,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 17.2781,
+          "degree_in_sign": 17.2781
+        },
+        {
+          "longitude": 132.8167,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 12.8167,
+          "degree_in_sign": 12.8167
+        },
+        {
+          "longitude": 328.7937,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 28.7937,
+          "degree_in_sign": 28.7937
+        },
+        {
+          "longitude": 258.5449,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 18.5449,
+          "degree_in_sign": 18.5449
+        }
+      ],
+      "bhavas": []
+    },
+    "D9": {
+      "varga": "D9",
+      "lagna": {
+        "longitude": 86.3895,
+        "sign_index": 2,
+        "sign": "Gemini",
+        "degree_0_to_30": 26.3895,
+        "degree_in_sign": 26.3895
+      },
+      "mc": {
+        "longitude": 170.7643,
+        "sign_index": 5,
+        "sign": "Virgo",
+        "degree_0_to_30": 20.7643,
+        "degree_in_sign": 20.7643
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 251.1739,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 11.1739,
+          "degree_in_sign": 11.1739,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 167.2018,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 17.2018,
+          "degree_in_sign": 17.2018,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 139.762,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.762,
+          "degree_in_sign": 19.762,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 311.2834,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 11.2834,
+          "degree_in_sign": 11.2834,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 130.2539,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 10.2539,
+          "degree_in_sign": 10.2539,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 193.4334,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 13.4334,
+          "degree_in_sign": 13.4334,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 166.6476,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 16.6476,
+          "degree_in_sign": 16.6476,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 326.0153,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 26.0153,
+          "degree_in_sign": 26.0153,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 146.0153,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 26.0153,
+          "degree_in_sign": 26.0153,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 86.3895,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 26.3895,
+          "degree_in_sign": 26.3895
+        },
+        {
+          "longitude": 336.9318,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 6.9318,
+          "degree_in_sign": 6.9318
+        },
+        {
+          "longitude": 163.6433,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 13.6433,
+          "degree_in_sign": 13.6433
+        },
+        {
+          "longitude": 350.7643,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 20.7643,
+          "degree_in_sign": 20.7643
+        },
+        {
+          "longitude": 242.7348,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 2.7348,
+          "degree_in_sign": 2.7348
+        },
+        {
+          "longitude": 255.272,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 15.272,
+          "degree_in_sign": 15.272
+        },
+        {
+          "longitude": 266.3895,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 26.3895,
+          "degree_in_sign": 26.3895
+        },
+        {
+          "longitude": 156.9318,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 6.9318,
+          "degree_in_sign": 6.9318
+        },
+        {
+          "longitude": 343.6433,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 13.6433,
+          "degree_in_sign": 13.6433
+        },
+        {
+          "longitude": 170.7643,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 20.7643,
+          "degree_in_sign": 20.7643
+        },
+        {
+          "longitude": 62.7348,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 2.7348,
+          "degree_in_sign": 2.7348
+        },
+        {
+          "longitude": 75.272,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 15.272,
+          "degree_in_sign": 15.272
+        }
+      ],
+      "bhavas": []
+    },
+    "D10": {
+      "varga": "D10",
+      "lagna": {
+        "longitude": 215.9883,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 5.9883,
+        "degree_in_sign": 5.9883
+      },
+      "mc": {
+        "longitude": 189.7381,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 9.7381,
+        "degree_in_sign": 9.7381
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 329.0821,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 29.0821,
+          "degree_in_sign": 29.0821,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 255.7798,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 15.7798,
+          "degree_in_sign": 15.7798,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 165.2911,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 15.2911,
+          "degree_in_sign": 15.2911,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 215.8704,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 5.8704,
+          "degree_in_sign": 5.8704,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 24.7266,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 24.7266,
+          "degree_in_sign": 24.7266,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 194.926,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 14.926,
+          "degree_in_sign": 14.926,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 55.164,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 25.164,
+          "degree_in_sign": 25.164,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 222.2393,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 12.2393,
+          "degree_in_sign": 12.2393,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 42.2393,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 12.2393,
+          "degree_in_sign": 12.2393,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 215.9883,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 5.9883,
+          "degree_in_sign": 5.9883
+        },
+        {
+          "longitude": 344.3687,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 14.3687,
+          "degree_in_sign": 14.3687
+        },
+        {
+          "longitude": 131.8258,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 11.8258,
+          "degree_in_sign": 11.8258
+        },
+        {
+          "longitude": 9.7381,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 9.7381,
+          "degree_in_sign": 9.7381
+        },
+        {
+          "longitude": 319.7053,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 19.7053,
+          "degree_in_sign": 19.7053
+        },
+        {
+          "longitude": 163.6356,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 13.6356,
+          "degree_in_sign": 13.6356
+        },
+        {
+          "longitude": 35.9883,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 5.9883,
+          "degree_in_sign": 5.9883
+        },
+        {
+          "longitude": 164.3687,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 14.3687,
+          "degree_in_sign": 14.3687
+        },
+        {
+          "longitude": 311.8258,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 11.8258,
+          "degree_in_sign": 11.8258
+        },
+        {
+          "longitude": 189.7381,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 9.7381,
+          "degree_in_sign": 9.7381
+        },
+        {
+          "longitude": 139.7053,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.7053,
+          "degree_in_sign": 19.7053
+        },
+        {
+          "longitude": 343.6356,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 13.6356,
+          "degree_in_sign": 13.6356
+        }
+      ],
+      "bhavas": []
+    },
+    "D12": {
+      "varga": "D12",
+      "lagna": {
+        "longitude": 235.186,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 25.186,
+        "degree_in_sign": 25.186
+      },
+      "mc": {
+        "longitude": 227.6857,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 17.6857,
+        "degree_in_sign": 17.6857
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 64.8985,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 4.8985,
+          "degree_in_sign": 4.8985,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 252.9357,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 12.9357,
+          "degree_in_sign": 12.9357,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 96.3493,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 6.3493,
+          "degree_in_sign": 6.3493,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 145.0445,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 25.0445,
+          "degree_in_sign": 25.0445,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 53.6719,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 23.6719,
+          "degree_in_sign": 23.6719,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 197.9112,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 17.9112,
+          "degree_in_sign": 17.9112,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 312.1968,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 12.1968,
+          "degree_in_sign": 12.1968,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 254.6871,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 14.6871,
+          "degree_in_sign": 14.6871,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 74.6871,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 14.6871,
+          "degree_in_sign": 14.6871,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 235.186,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 25.186,
+          "degree_in_sign": 25.186
+        },
+        {
+          "longitude": 239.2424,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 29.2424,
+          "degree_in_sign": 29.2424
+        },
+        {
+          "longitude": 128.191,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 8.191,
+          "degree_in_sign": 8.191
+        },
+        {
+          "longitude": 47.6857,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 17.6857,
+          "degree_in_sign": 17.6857
+        },
+        {
+          "longitude": 53.6464,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 23.6464,
+          "degree_in_sign": 23.6464
+        },
+        {
+          "longitude": 220.3627,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 10.3627,
+          "degree_in_sign": 10.3627
+        },
+        {
+          "longitude": 55.186,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 25.186,
+          "degree_in_sign": 25.186
+        },
+        {
+          "longitude": 59.2424,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 29.2424,
+          "degree_in_sign": 29.2424
+        },
+        {
+          "longitude": 308.191,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 8.191,
+          "degree_in_sign": 8.191
+        },
+        {
+          "longitude": 227.6857,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 17.6857,
+          "degree_in_sign": 17.6857
+        },
+        {
+          "longitude": 233.6464,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 23.6464,
+          "degree_in_sign": 23.6464
+        },
+        {
+          "longitude": 40.3627,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 10.3627,
+          "degree_in_sign": 10.3627
+        }
+      ],
+      "bhavas": []
+    },
+    "D16": {
+      "varga": "D16",
+      "lagna": {
+        "longitude": 273.5813,
+        "sign_index": 9,
+        "sign": "Capricorn",
+        "degree_0_to_30": 3.5813,
+        "degree_in_sign": 3.5813
+      },
+      "mc": {
+        "longitude": 303.581,
+        "sign_index": 10,
+        "sign": "Aquarius",
+        "degree_0_to_30": 3.581,
+        "degree_in_sign": 3.581
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 46.5313,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 16.5313,
+          "degree_in_sign": 16.5313,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 97.2477,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 7.2477,
+          "degree_in_sign": 7.2477,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 288.4657,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 18.4657,
+          "degree_in_sign": 18.4657,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 153.3926,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 3.3926,
+          "degree_in_sign": 3.3926,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 111.5626,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 21.5626,
+          "degree_in_sign": 21.5626,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 23.8816,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 23.8816,
+          "degree_in_sign": 23.8816,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 256.2624,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 16.2624,
+          "degree_in_sign": 16.2624,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 139.5828,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.5828,
+          "degree_in_sign": 19.5828,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 139.5828,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.5828,
+          "degree_in_sign": 19.5828,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 273.5813,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 3.5813,
+          "degree_in_sign": 3.5813
+        },
+        {
+          "longitude": 358.9899,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 28.9899,
+          "degree_in_sign": 28.9899
+        },
+        {
+          "longitude": 330.9214,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 0.9214,
+          "degree_in_sign": 0.9214
+        },
+        {
+          "longitude": 303.581,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 3.581,
+          "degree_in_sign": 3.581
+        },
+        {
+          "longitude": 31.5285,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 1.5285,
+          "degree_in_sign": 1.5285
+        },
+        {
+          "longitude": 333.817,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 3.817,
+          "degree_in_sign": 3.817
+        },
+        {
+          "longitude": 273.5813,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 3.5813,
+          "degree_in_sign": 3.5813
+        },
+        {
+          "longitude": 358.9899,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 28.9899,
+          "degree_in_sign": 28.9899
+        },
+        {
+          "longitude": 330.9214,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 0.9214,
+          "degree_in_sign": 0.9214
+        },
+        {
+          "longitude": 303.581,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 3.581,
+          "degree_in_sign": 3.581
+        },
+        {
+          "longitude": 31.5285,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 1.5285,
+          "degree_in_sign": 1.5285
+        },
+        {
+          "longitude": 333.817,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 3.817,
+          "degree_in_sign": 3.817
+        }
+      ],
+      "bhavas": []
+    },
+    "D20": {
+      "varga": "D20",
+      "lagna": {
+        "longitude": 71.9766,
+        "sign_index": 2,
+        "sign": "Gemini",
+        "degree_0_to_30": 11.9766,
+        "degree_in_sign": 11.9766
+      },
+      "mc": {
+        "longitude": 19.4762,
+        "sign_index": 0,
+        "sign": "Aries",
+        "degree_0_to_30": 19.4762,
+        "degree_in_sign": 19.4762
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 238.1642,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 28.1642,
+          "degree_in_sign": 28.1642,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 211.5596,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 1.5596,
+          "degree_in_sign": 1.5596,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 270.5821,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 0.5821,
+          "degree_in_sign": 0.5821,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 11.7408,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 11.7408,
+          "degree_in_sign": 11.7408,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 49.4532,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 19.4532,
+          "degree_in_sign": 19.4532,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 29.852,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 29.852,
+          "degree_in_sign": 29.852,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 50.328,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 20.328,
+          "degree_in_sign": 20.328,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 84.4785,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 24.4785,
+          "degree_in_sign": 24.4785,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 84.4785,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 24.4785,
+          "degree_in_sign": 24.4785,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 71.9766,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 11.9766,
+          "degree_in_sign": 11.9766
+        },
+        {
+          "longitude": 268.7374,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 28.7374,
+          "degree_in_sign": 28.7374
+        },
+        {
+          "longitude": 323.6517,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 23.6517,
+          "degree_in_sign": 23.6517
+        },
+        {
+          "longitude": 19.4762,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 19.4762,
+          "degree_in_sign": 19.4762
+        },
+        {
+          "longitude": 219.4107,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 9.4107,
+          "degree_in_sign": 9.4107
+        },
+        {
+          "longitude": 327.2712,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 27.2712,
+          "degree_in_sign": 27.2712
+        },
+        {
+          "longitude": 71.9766,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 11.9766,
+          "degree_in_sign": 11.9766
+        },
+        {
+          "longitude": 268.7374,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 28.7374,
+          "degree_in_sign": 28.7374
+        },
+        {
+          "longitude": 323.6517,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 23.6517,
+          "degree_in_sign": 23.6517
+        },
+        {
+          "longitude": 19.4762,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 19.4762,
+          "degree_in_sign": 19.4762
+        },
+        {
+          "longitude": 219.4107,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 9.4107,
+          "degree_in_sign": 9.4107
+        },
+        {
+          "longitude": 327.2712,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 27.2712,
+          "degree_in_sign": 27.2712
+        }
+      ],
+      "bhavas": []
+    },
+    "D24": {
+      "varga": "D24",
+      "lagna": {
+        "longitude": 350.3719,
+        "sign_index": 11,
+        "sign": "Pisces",
+        "degree_0_to_30": 20.3719,
+        "degree_in_sign": 20.3719
+      },
+      "mc": {
+        "longitude": 215.3715,
+        "sign_index": 7,
+        "sign": "Scorpio",
+        "degree_0_to_30": 5.3715,
+        "degree_in_sign": 5.3715
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 39.797,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 9.797,
+          "degree_in_sign": 9.797,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 175.8715,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 25.8715,
+          "degree_in_sign": 25.8715,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 222.6985,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 12.6985,
+          "degree_in_sign": 12.6985,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 260.0889,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 20.0889,
+          "degree_in_sign": 20.0889,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 107.3439,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 17.3439,
+          "degree_in_sign": 17.3439,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 155.8223,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 5.8223,
+          "degree_in_sign": 5.8223,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 294.3935,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 24.3935,
+          "degree_in_sign": 24.3935,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 149.3742,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 29.3742,
+          "degree_in_sign": 29.3742,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 149.3742,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 29.3742,
+          "degree_in_sign": 29.3742,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 350.3719,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 20.3719,
+          "degree_in_sign": 20.3719
+        },
+        {
+          "longitude": 328.4849,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 28.4849,
+          "degree_in_sign": 28.4849
+        },
+        {
+          "longitude": 166.382,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 16.382,
+          "degree_in_sign": 16.382
+        },
+        {
+          "longitude": 215.3715,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 5.3715,
+          "degree_in_sign": 5.3715
+        },
+        {
+          "longitude": 77.2928,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 17.2928,
+          "degree_in_sign": 17.2928
+        },
+        {
+          "longitude": 80.7254,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 20.7254,
+          "degree_in_sign": 20.7254
+        },
+        {
+          "longitude": 350.3719,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 20.3719,
+          "degree_in_sign": 20.3719
+        },
+        {
+          "longitude": 328.4849,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 28.4849,
+          "degree_in_sign": 28.4849
+        },
+        {
+          "longitude": 166.382,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 16.382,
+          "degree_in_sign": 16.382
+        },
+        {
+          "longitude": 215.3715,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 5.3715,
+          "degree_in_sign": 5.3715
+        },
+        {
+          "longitude": 77.2928,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 17.2928,
+          "degree_in_sign": 17.2928
+        },
+        {
+          "longitude": 80.7254,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 20.7254,
+          "degree_in_sign": 20.7254
+        }
+      ],
+      "bhavas": []
+    },
+    "D27": {
+      "varga": "D27",
+      "lagna": {
+        "longitude": 259.1684,
+        "sign_index": 8,
+        "sign": "Sagittarius",
+        "degree_0_to_30": 19.1684,
+        "degree_in_sign": 19.1684
+      },
+      "mc": {
+        "longitude": 152.2929,
+        "sign_index": 5,
+        "sign": "Virgo",
+        "degree_0_to_30": 2.2929,
+        "degree_in_sign": 2.2929
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 33.5216,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 3.5216,
+          "degree_in_sign": 3.5216,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 141.6054,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 21.6054,
+          "degree_in_sign": 21.6054,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 59.2859,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 29.2859,
+          "degree_in_sign": 29.2859,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 213.8501,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 3.8501,
+          "degree_in_sign": 3.8501,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 30.7618,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 0.7618,
+          "degree_in_sign": 0.7618,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 220.3001,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 10.3001,
+          "degree_in_sign": 10.3001,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 139.9427,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 19.9427,
+          "degree_in_sign": 19.9427,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 258.046,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 18.046,
+          "degree_in_sign": 18.046,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 78.046,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 18.046,
+          "degree_in_sign": 18.046,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 259.1684,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 19.1684,
+          "degree_in_sign": 19.1684
+        },
+        {
+          "longitude": 290.7955,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 20.7955,
+          "degree_in_sign": 20.7955
+        },
+        {
+          "longitude": 130.9298,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 10.9298,
+          "degree_in_sign": 10.9298
+        },
+        {
+          "longitude": 332.2929,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 2.2929,
+          "degree_in_sign": 2.2929
+        },
+        {
+          "longitude": 8.2044,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 8.2044,
+          "degree_in_sign": 8.2044
+        },
+        {
+          "longitude": 45.8161,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 15.8161,
+          "degree_in_sign": 15.8161
+        },
+        {
+          "longitude": 79.1684,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 19.1684,
+          "degree_in_sign": 19.1684
+        },
+        {
+          "longitude": 110.7955,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 20.7955,
+          "degree_in_sign": 20.7955
+        },
+        {
+          "longitude": 310.9298,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 10.9298,
+          "degree_in_sign": 10.9298
+        },
+        {
+          "longitude": 152.2929,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 2.2929,
+          "degree_in_sign": 2.2929
+        },
+        {
+          "longitude": 188.2044,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 8.2044,
+          "degree_in_sign": 8.2044
+        },
+        {
+          "longitude": 225.8161,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 15.8161,
+          "degree_in_sign": 15.8161
+        }
+      ],
+      "bhavas": []
+    },
+    "D30": {
+      "varga": "D30",
+      "lagna": {
+        "longitude": 327.593,
+        "sign_index": 10,
+        "sign": "Aquarius",
+        "degree_0_to_30": 27.593,
+        "degree_in_sign": 27.593,
+        "continuous_harmonic_longitude": 287.9649,
+        "continuous_sign": "Capricorn",
+        "continuous_degree_in_sign": 17.9649,
+        "parashari_trimsamsa": {
+          "ruler": "Saturn",
+          "sign": "Aquarius",
+          "sign_index": 10,
+          "start_degree": 5.0,
+          "end_degree": 10.0,
+          "span_degrees": 5.0,
+          "bound_degree": 4.5988,
+          "fraction_in_bound": 0.919766,
+          "degree_in_sign": 27.593,
+          "degree_0_to_30": 27.593,
+          "longitude": 327.593
+        }
+      },
+      "mc": {
+        "longitude": 64.1735,
+        "sign_index": 2,
+        "sign": "Gemini",
+        "degree_0_to_30": 4.1735,
+        "degree_in_sign": 4.1735,
+        "continuous_harmonic_longitude": 209.2143,
+        "continuous_sign": "Libra",
+        "continuous_degree_in_sign": 29.2143,
+        "parashari_trimsamsa": {
+          "ruler": "Mercury",
+          "sign": "Gemini",
+          "sign_index": 2,
+          "start_degree": 18.0,
+          "end_degree": 25.0,
+          "span_degrees": 7.0,
+          "bound_degree": 0.9738,
+          "fraction_in_bound": 0.139116,
+          "degree_in_sign": 4.1735,
+          "degree_0_to_30": 4.1735,
+          "longitude": 64.1735
+        }
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 352.1558,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 22.1558,
+          "degree_in_sign": 22.1558,
+          "continuous_harmonic_longitude": 357.2463,
+          "continuous_sign": "Pisces",
+          "continuous_degree_in_sign": 27.2463,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Jupiter",
+            "sign": "Pisces",
+            "sign_index": 11,
+            "start_degree": 12.0,
+            "end_degree": 20.0,
+            "span_degrees": 8.0,
+            "bound_degree": 5.9082,
+            "fraction_in_bound": 0.738526,
+            "degree_in_sign": 22.1558,
+            "degree_0_to_30": 22.1558,
+            "longitude": 352.1558
+          }
+        },
+        "Moon": {
+          "longitude": 231.4679,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 21.4679,
+          "degree_in_sign": 21.4679,
+          "continuous_harmonic_longitude": 317.3394,
+          "continuous_sign": "Aquarius",
+          "continuous_degree_in_sign": 17.3394,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Mars",
+            "sign": "Scorpio",
+            "sign_index": 7,
+            "start_degree": 25.0,
+            "end_degree": 30.0,
+            "span_degrees": 5.0,
+            "bound_degree": 3.578,
+            "fraction_in_bound": 0.715596,
+            "degree_in_sign": 21.4679,
+            "degree_0_to_30": 21.4679,
+            "longitude": 231.4679
+          }
+        },
+        "Mars": {
+          "longitude": 213.1746,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 3.1746,
+          "degree_in_sign": 3.1746,
+          "continuous_harmonic_longitude": 225.8732,
+          "continuous_sign": "Scorpio",
+          "continuous_degree_in_sign": 15.8732,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Mars",
+            "sign": "Scorpio",
+            "sign_index": 7,
+            "start_degree": 25.0,
+            "end_degree": 30.0,
+            "span_degrees": 5.0,
+            "bound_degree": 0.5291,
+            "fraction_in_bound": 0.105821,
+            "degree_in_sign": 3.1746,
+            "degree_0_to_30": 3.1746,
+            "longitude": 213.1746
+          }
+        },
+        "Mercury": {
+          "longitude": 297.5222,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 27.5222,
+          "degree_in_sign": 27.5222,
+          "continuous_harmonic_longitude": 197.6112,
+          "continuous_sign": "Libra",
+          "continuous_degree_in_sign": 17.6112,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Saturn",
+            "sign": "Capricorn",
+            "sign_index": 9,
+            "start_degree": 20.0,
+            "end_degree": 25.0,
+            "span_degrees": 5.0,
+            "bound_degree": 4.587,
+            "fraction_in_bound": 0.917408,
+            "degree_in_sign": 27.5222,
+            "degree_0_to_30": 27.5222,
+            "longitude": 297.5222
+          }
+        },
+        "Jupiter": {
+          "longitude": 256.7725,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 16.7725,
+          "degree_in_sign": 16.7725,
+          "continuous_harmonic_longitude": 74.1798,
+          "continuous_sign": "Gemini",
+          "continuous_degree_in_sign": 14.1798,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Jupiter",
+            "sign": "Sagittarius",
+            "sign_index": 8,
+            "start_degree": 10.0,
+            "end_degree": 18.0,
+            "span_degrees": 8.0,
+            "bound_degree": 4.4727,
+            "fraction_in_bound": 0.559083,
+            "degree_in_sign": 16.7725,
+            "degree_0_to_30": 16.7725,
+            "longitude": 256.7725
+          }
+        },
+        "Venus": {
+          "longitude": 8.9556,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 8.9556,
+          "degree_in_sign": 8.9556,
+          "continuous_harmonic_longitude": 44.7779,
+          "continuous_sign": "Taurus",
+          "continuous_degree_in_sign": 14.7779,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Mars",
+            "sign": "Aries",
+            "sign_index": 0,
+            "start_degree": 0.0,
+            "end_degree": 5.0,
+            "span_degrees": 5.0,
+            "bound_degree": 1.4926,
+            "fraction_in_bound": 0.29852,
+            "degree_in_sign": 8.9556,
+            "degree_0_to_30": 8.9556,
+            "longitude": 8.9556
+          }
+        },
+        "Saturn": {
+          "longitude": 165.0703,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 15.0703,
+          "degree_in_sign": 15.0703,
+          "continuous_harmonic_longitude": 75.4919,
+          "continuous_sign": "Gemini",
+          "continuous_degree_in_sign": 15.4919,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Mercury",
+            "sign": "Virgo",
+            "sign_index": 5,
+            "start_degree": 5.0,
+            "end_degree": 12.0,
+            "span_degrees": 7.0,
+            "bound_degree": 3.5164,
+            "fraction_in_bound": 0.502343,
+            "degree_in_sign": 15.0703,
+            "degree_0_to_30": 15.0703,
+            "longitude": 165.0703
+          }
+        },
+        "Rahu": {
+          "longitude": 263.3397,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 23.3397,
+          "degree_in_sign": 23.3397,
+          "continuous_harmonic_longitude": 126.7178,
+          "continuous_sign": "Leo",
+          "continuous_degree_in_sign": 6.7178,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Jupiter",
+            "sign": "Sagittarius",
+            "sign_index": 8,
+            "start_degree": 10.0,
+            "end_degree": 18.0,
+            "span_degrees": 8.0,
+            "bound_degree": 6.2239,
+            "fraction_in_bound": 0.777991,
+            "degree_in_sign": 23.3397,
+            "degree_0_to_30": 23.3397,
+            "longitude": 263.3397
+          }
+        },
+        "Ketu": {
+          "longitude": 263.3397,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 23.3397,
+          "degree_in_sign": 23.3397,
+          "continuous_harmonic_longitude": 126.7178,
+          "continuous_sign": "Leo",
+          "continuous_degree_in_sign": 6.7178,
+          "is_retrograde": false,
+          "parashari_trimsamsa": {
+            "ruler": "Jupiter",
+            "sign": "Sagittarius",
+            "sign_index": 8,
+            "start_degree": 10.0,
+            "end_degree": 18.0,
+            "span_degrees": 8.0,
+            "bound_degree": 6.2239,
+            "fraction_in_bound": 0.777991,
+            "degree_in_sign": 23.3397,
+            "degree_0_to_30": 23.3397,
+            "longitude": 263.3397
+          }
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 327.593,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 27.593,
+          "degree_in_sign": 27.593,
+          "continuous_harmonic_longitude": 287.9649
+        },
+        {
+          "longitude": 160.4437,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 10.4437,
+          "degree_in_sign": 10.4437,
+          "continuous_harmonic_longitude": 43.1061
+        },
+        {
+          "longitude": 229.0955,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 19.0955,
+          "degree_in_sign": 19.0955,
+          "continuous_harmonic_longitude": 305.4775
+        },
+        {
+          "longitude": 64.1735,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 4.1735,
+          "degree_in_sign": 4.1735,
+          "continuous_harmonic_longitude": 209.2143
+        },
+        {
+          "longitude": 348.6395,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 18.6395,
+          "degree_in_sign": 18.6395,
+          "continuous_harmonic_longitude": 329.116
+        },
+        {
+          "longitude": 200.1814,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 20.1814,
+          "degree_in_sign": 20.1814,
+          "continuous_harmonic_longitude": 130.9068
+        },
+        {
+          "longitude": 327.593,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 27.593,
+          "degree_in_sign": 27.593,
+          "continuous_harmonic_longitude": 287.9649
+        },
+        {
+          "longitude": 160.4437,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 10.4437,
+          "degree_in_sign": 10.4437,
+          "continuous_harmonic_longitude": 43.1061
+        },
+        {
+          "longitude": 229.0955,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 19.0955,
+          "degree_in_sign": 19.0955,
+          "continuous_harmonic_longitude": 305.4775
+        },
+        {
+          "longitude": 64.1735,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 4.1735,
+          "degree_in_sign": 4.1735,
+          "continuous_harmonic_longitude": 209.2143
+        },
+        {
+          "longitude": 348.6395,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 18.6395,
+          "degree_in_sign": 18.6395,
+          "continuous_harmonic_longitude": 329.116
+        },
+        {
+          "longitude": 200.1814,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 20.1814,
+          "degree_in_sign": 20.1814,
+          "continuous_harmonic_longitude": 130.9068
+        }
+      ],
+      "bhavas": []
+    },
+    "D40": {
+      "varga": "D40",
+      "lagna": {
+        "longitude": 23.9532,
+        "sign_index": 0,
+        "sign": "Aries",
+        "degree_0_to_30": 23.9532,
+        "degree_in_sign": 23.9532
+      },
+      "mc": {
+        "longitude": 38.9524,
+        "sign_index": 1,
+        "sign": "Taurus",
+        "degree_0_to_30": 8.9524,
+        "degree_in_sign": 8.9524
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 176.3283,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 26.3283,
+          "degree_in_sign": 26.3283,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 243.1191,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 3.1191,
+          "degree_in_sign": 3.1191,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 121.1642,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 1.1642,
+          "degree_in_sign": 1.1642,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 83.4816,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 23.4816,
+          "degree_in_sign": 23.4816,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 218.9064,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 8.9064,
+          "degree_in_sign": 8.9064,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 59.7039,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 29.7039,
+          "degree_in_sign": 29.7039,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 160.6559,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 10.6559,
+          "degree_in_sign": 10.6559,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 288.957,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 18.957,
+          "degree_in_sign": 18.957,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 288.957,
+          "sign_index": 9,
+          "sign": "Capricorn",
+          "degree_0_to_30": 18.957,
+          "degree_in_sign": 18.957,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 23.9532,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 23.9532,
+          "degree_in_sign": 23.9532
+        },
+        {
+          "longitude": 117.4748,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 27.4748,
+          "degree_in_sign": 27.4748
+        },
+        {
+          "longitude": 227.3034,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 17.3034,
+          "degree_in_sign": 17.3034
+        },
+        {
+          "longitude": 38.9524,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 8.9524,
+          "degree_in_sign": 8.9524
+        },
+        {
+          "longitude": 138.8214,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 18.8214,
+          "degree_in_sign": 18.8214
+        },
+        {
+          "longitude": 54.5424,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 24.5424,
+          "degree_in_sign": 24.5424
+        },
+        {
+          "longitude": 23.9532,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 23.9532,
+          "degree_in_sign": 23.9532
+        },
+        {
+          "longitude": 117.4748,
+          "sign_index": 3,
+          "sign": "Cancer",
+          "degree_0_to_30": 27.4748,
+          "degree_in_sign": 27.4748
+        },
+        {
+          "longitude": 227.3034,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 17.3034,
+          "degree_in_sign": 17.3034
+        },
+        {
+          "longitude": 38.9524,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 8.9524,
+          "degree_in_sign": 8.9524
+        },
+        {
+          "longitude": 138.8214,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 18.8214,
+          "degree_in_sign": 18.8214
+        },
+        {
+          "longitude": 54.5424,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 24.5424,
+          "degree_in_sign": 24.5424
+        }
+      ],
+      "bhavas": []
+    },
+    "D45": {
+      "varga": "D45",
+      "lagna": {
+        "longitude": 191.9474,
+        "sign_index": 6,
+        "sign": "Libra",
+        "degree_0_to_30": 11.9474,
+        "degree_in_sign": 11.9474
+      },
+      "mc": {
+        "longitude": 133.8215,
+        "sign_index": 4,
+        "sign": "Leo",
+        "degree_0_to_30": 13.8215,
+        "degree_in_sign": 13.8215
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 205.8694,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 25.8694,
+          "degree_in_sign": 25.8694,
+          "is_retrograde": false
+        },
+        "Moon": {
+          "longitude": 206.009,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 26.009,
+          "degree_in_sign": 26.009,
+          "is_retrograde": false
+        },
+        "Mars": {
+          "longitude": 308.8098,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 8.8098,
+          "degree_in_sign": 8.8098,
+          "is_retrograde": false
+        },
+        "Mercury": {
+          "longitude": 146.4168,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 26.4168,
+          "degree_in_sign": 26.4168,
+          "is_retrograde": false
+        },
+        "Jupiter": {
+          "longitude": 171.2697,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 21.2697,
+          "degree_in_sign": 21.2697,
+          "is_retrograde": false
+        },
+        "Venus": {
+          "longitude": 67.1669,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 7.1669,
+          "degree_in_sign": 7.1669,
+          "is_retrograde": false
+        },
+        "Saturn": {
+          "longitude": 143.2379,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 23.2379,
+          "degree_in_sign": 23.2379,
+          "is_retrograde": false
+        },
+        "Rahu": {
+          "longitude": 250.0767,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 10.0767,
+          "degree_in_sign": 10.0767,
+          "is_retrograde": false
+        },
+        "Ketu": {
+          "longitude": 250.0767,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 10.0767,
+          "degree_in_sign": 10.0767,
+          "is_retrograde": false
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 191.9474,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 11.9474,
+          "degree_in_sign": 11.9474
+        },
+        {
+          "longitude": 214.6591,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 4.6591,
+          "degree_in_sign": 4.6591
+        },
+        {
+          "longitude": 68.2163,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 8.2163,
+          "degree_in_sign": 8.2163
+        },
+        {
+          "longitude": 133.8215,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 13.8215,
+          "degree_in_sign": 13.8215
+        },
+        {
+          "longitude": 163.674,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 13.674,
+          "degree_in_sign": 13.674
+        },
+        {
+          "longitude": 76.3602,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 16.3602,
+          "degree_in_sign": 16.3602
+        },
+        {
+          "longitude": 191.9474,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 11.9474,
+          "degree_in_sign": 11.9474
+        },
+        {
+          "longitude": 214.6591,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 4.6591,
+          "degree_in_sign": 4.6591
+        },
+        {
+          "longitude": 68.2163,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 8.2163,
+          "degree_in_sign": 8.2163
+        },
+        {
+          "longitude": 133.8215,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 13.8215,
+          "degree_in_sign": 13.8215
+        },
+        {
+          "longitude": 163.674,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 13.674,
+          "degree_in_sign": 13.674
+        },
+        {
+          "longitude": 76.3602,
+          "sign_index": 2,
+          "sign": "Gemini",
+          "degree_0_to_30": 16.3602,
+          "degree_in_sign": 16.3602
+        }
+      ],
+      "bhavas": []
+    },
+    "D60": {
+      "varga": "D60",
+      "lagna": {
+        "longitude": 335.9299,
+        "sign_index": 11,
+        "sign": "Pisces",
+        "degree_0_to_30": 5.9299,
+        "degree_in_sign": 5.9299,
+        "shastiamsa": {
+          "slice_number": 20,
+          "shastiamsa_number": 20,
+          "deity_number": 20,
+          "deity": "Komala",
+          "nature": "Shubha / Benefic",
+          "is_benefic": true,
+          "harmonic_longitude": 335.9299,
+          "harmonic_sign": "Pisces",
+          "degree_0_to_30": 5.9299
+        }
+      },
+      "mc": {
+        "longitude": 58.4286,
+        "sign_index": 1,
+        "sign": "Taurus",
+        "degree_0_to_30": 28.4286,
+        "degree_in_sign": 28.4286,
+        "shastiamsa": {
+          "slice_number": 38,
+          "shastiamsa_number": 38,
+          "deity_number": 38,
+          "deity": "Amrita",
+          "nature": "Shubha / Benefic",
+          "is_benefic": true,
+          "harmonic_longitude": 58.4286,
+          "harmonic_sign": "Taurus",
+          "degree_0_to_30": 28.4286
+        }
+      },
+      "grahas": {
+        "Sun": {
+          "longitude": 204.4925,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 24.4925,
+          "degree_in_sign": 24.4925,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 36,
+            "shastiamsa_number": 36,
+            "deity_number": 25,
+            "deity": "Deva",
+            "nature": "Shubha / Benefic",
+            "is_benefic": true,
+            "harmonic_longitude": 204.4925,
+            "harmonic_sign": "Libra",
+            "degree_0_to_30": 24.4925
+          }
+        },
+        "Moon": {
+          "longitude": 184.6787,
+          "sign_index": 6,
+          "sign": "Libra",
+          "degree_0_to_30": 4.6787,
+          "degree_in_sign": 4.6787,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 58,
+            "shastiamsa_number": 58,
+            "deity_number": 3,
+            "deity": "Deva",
+            "nature": "Shubha / Benefic",
+            "is_benefic": true,
+            "harmonic_longitude": 184.6787,
+            "harmonic_sign": "Libra",
+            "degree_0_to_30": 4.6787
+          }
+        },
+        "Mars": {
+          "longitude": 241.7464,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 1.7464,
+          "degree_in_sign": 1.7464,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 52,
+            "shastiamsa_number": 52,
+            "deity_number": 9,
+            "deity": "Garala",
+            "nature": "Ashubha / Malefic",
+            "is_benefic": false,
+            "harmonic_longitude": 241.7464,
+            "harmonic_sign": "Sagittarius",
+            "degree_0_to_30": 1.7464
+          }
+        },
+        "Mercury": {
+          "longitude": 245.2224,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 5.2224,
+          "degree_in_sign": 5.2224,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 50,
+            "shastiamsa_number": 50,
+            "deity_number": 11,
+            "deity": "Maya",
+            "nature": "Ashubha / Malefic",
+            "is_benefic": false,
+            "harmonic_longitude": 245.2224,
+            "harmonic_sign": "Sagittarius",
+            "degree_0_to_30": 5.2224
+          }
+        },
+        "Jupiter": {
+          "longitude": 28.3597,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 28.3597,
+          "degree_in_sign": 28.3597,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 29,
+            "shastiamsa_number": 29,
+            "deity_number": 29,
+            "deity": "Kamalakara",
+            "nature": "Shubha / Benefic",
+            "is_benefic": true,
+            "harmonic_longitude": 28.3597,
+            "harmonic_sign": "Aries",
+            "degree_0_to_30": 28.3597
+          }
+        },
+        "Venus": {
+          "longitude": 269.5559,
+          "sign_index": 8,
+          "sign": "Sagittarius",
+          "degree_0_to_30": 29.5559,
+          "degree_in_sign": 29.5559,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 3,
+            "shastiamsa_number": 3,
+            "deity_number": 3,
+            "deity": "Deva",
+            "nature": "Shubha / Benefic",
+            "is_benefic": true,
+            "harmonic_longitude": 269.5559,
+            "harmonic_sign": "Sagittarius",
+            "degree_0_to_30": 29.5559
+          }
+        },
+        "Saturn": {
+          "longitude": 0.9839,
+          "sign_index": 0,
+          "sign": "Aries",
+          "degree_0_to_30": 0.9839,
+          "degree_in_sign": 0.9839,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 18,
+            "shastiamsa_number": 18,
+            "deity_number": 43,
+            "deity": "Utpata",
+            "nature": "Ashubha / Malefic",
+            "is_benefic": false,
+            "harmonic_longitude": 0.9839,
+            "harmonic_sign": "Aries",
+            "degree_0_to_30": 0.9839
+          }
+        },
+        "Rahu": {
+          "longitude": 313.4356,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 13.4356,
+          "degree_in_sign": 13.4356,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 33,
+            "shastiamsa_number": 33,
+            "deity_number": 33,
+            "deity": "Davagni",
+            "nature": "Ashubha / Malefic",
+            "is_benefic": false,
+            "harmonic_longitude": 313.4356,
+            "harmonic_sign": "Aquarius",
+            "degree_0_to_30": 13.4356
+          }
+        },
+        "Ketu": {
+          "longitude": 133.4356,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 13.4356,
+          "degree_in_sign": 13.4356,
+          "is_retrograde": false,
+          "shastiamsa": {
+            "slice_number": 33,
+            "shastiamsa_number": 33,
+            "deity_number": 33,
+            "deity": "Davagni",
+            "nature": "Ashubha / Malefic",
+            "is_benefic": false,
+            "harmonic_longitude": 133.4356,
+            "harmonic_sign": "Leo",
+            "degree_0_to_30": 13.4356
+          }
+        }
+      },
+      "cusps": [
+        {
+          "longitude": 335.9299,
+          "sign_index": 11,
+          "sign": "Pisces",
+          "degree_0_to_30": 5.9299,
+          "degree_in_sign": 5.9299
+        },
+        {
+          "longitude": 236.2122,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 26.2122,
+          "degree_in_sign": 26.2122
+        },
+        {
+          "longitude": 40.9551,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 10.9551,
+          "degree_in_sign": 10.9551
+        },
+        {
+          "longitude": 238.4286,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 28.4286,
+          "degree_in_sign": 28.4286
+        },
+        {
+          "longitude": 148.2321,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 28.2321,
+          "degree_in_sign": 28.2321
+        },
+        {
+          "longitude": 141.8136,
+          "sign_index": 4,
+          "sign": "Leo",
+          "degree_0_to_30": 21.8136,
+          "degree_in_sign": 21.8136
+        },
+        {
+          "longitude": 155.9299,
+          "sign_index": 5,
+          "sign": "Virgo",
+          "degree_0_to_30": 5.9299,
+          "degree_in_sign": 5.9299
+        },
+        {
+          "longitude": 56.2122,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 26.2122,
+          "degree_in_sign": 26.2122
+        },
+        {
+          "longitude": 220.9551,
+          "sign_index": 7,
+          "sign": "Scorpio",
+          "degree_0_to_30": 10.9551,
+          "degree_in_sign": 10.9551
+        },
+        {
+          "longitude": 58.4286,
+          "sign_index": 1,
+          "sign": "Taurus",
+          "degree_0_to_30": 28.4286,
+          "degree_in_sign": 28.4286
+        },
+        {
+          "longitude": 328.2321,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 28.2321,
+          "degree_in_sign": 28.2321
+        },
+        {
+          "longitude": 321.8136,
+          "sign_index": 10,
+          "sign": "Aquarius",
+          "degree_0_to_30": 21.8136,
+          "degree_in_sign": 21.8136
+        }
+      ],
+      "bhavas": []
+    }
+  },
+  "combustion_status": {
+    "Sun": {
+      "is_combust": false,
+      "separation": 0.0,
+      "sun_distance": 0.0,
+      "orb_limit": 0.0,
+      "combustion_orb": 0.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "None"
+    },
+    "Moon": {
+      "is_combust": false,
+      "separation": 70.6698,
+      "sun_distance": 70.6698,
+      "orb_limit": 12.0,
+      "combustion_orb": 12.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "12\u00b0 - 15\u00b0"
+    },
+    "Mars": {
+      "is_combust": false,
+      "separation": 52.3791,
+      "sun_distance": 52.3791,
+      "orb_limit": 17.0,
+      "combustion_orb": 17.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "8\u00b0 - 17\u00b0"
+    },
+    "Mercury": {
+      "is_combust": true,
+      "separation": 6.6788,
+      "sun_distance": 6.6788,
+      "orb_limit": 14.0,
+      "combustion_orb": 14.0,
+      "severity": "Moderate",
+      "combustion_severity": "Moderate",
+      "combustion_range": "2\u00b0 - 14\u00b0"
+    },
+    "Jupiter": {
+      "is_combust": false,
+      "separation": 26.5645,
+      "sun_distance": 26.5645,
+      "orb_limit": 11.0,
+      "combustion_orb": 11.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "8\u00b0 - 11\u00b0"
+    },
+    "Venus": {
+      "is_combust": false,
+      "separation": 46.4156,
+      "sun_distance": 46.4156,
+      "orb_limit": 10.0,
+      "combustion_orb": 10.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "4\u00b0 - 10\u00b0"
+    },
+    "Saturn": {
+      "is_combust": true,
+      "separation": 9.3918,
+      "sun_distance": 9.3918,
+      "orb_limit": 15.0,
+      "combustion_orb": 15.0,
+      "severity": "Moderate",
+      "combustion_severity": "Moderate",
+      "combustion_range": "8\u00b0 - 15\u00b0"
+    },
+    "Rahu": {
+      "is_combust": false,
+      "separation": 0.0,
+      "sun_distance": 0.0,
+      "orb_limit": 0.0,
+      "combustion_orb": 0.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "None"
+    },
+    "Ketu": {
+      "is_combust": false,
+      "separation": 0.0,
+      "sun_distance": 0.0,
+      "orb_limit": 0.0,
+      "combustion_orb": 0.0,
+      "severity": "None",
+      "combustion_severity": "None",
+      "combustion_range": "None"
+    }
+  },
+  "lunar_phase": {
+    "elongation_degrees": 70.67,
+    "is_waxing": true,
+    "paksha": "Shukla",
+    "illumination_pct": 39.3,
+    "is_bright": false,
+    "is_benefic": false
+  },
+  "planetary_wars": [],
+  "conjunctions": [
+    {
+      "body1": "Sun",
+      "body2": "Mercury",
+      "separation_degrees": 6.6788,
+      "orb_band": "Moderate",
+      "same_sign": true,
+      "cross_border": false,
+      "boundary_factor": 1.0,
+      "effective_potency": 0.3321,
+      "sign1": "Scorpio",
+      "sign2": "Scorpio"
+    },
+    {
+      "body1": "Sun",
+      "body2": "Saturn",
+      "separation_degrees": 9.3918,
+      "orb_band": "Wide",
+      "same_sign": true,
+      "cross_border": false,
+      "boundary_factor": 1.0,
+      "effective_potency": 0.0608,
+      "sign1": "Scorpio",
+      "sign2": "Scorpio"
+    },
+    {
+      "body1": "Mars",
+      "body2": "Venus",
+      "separation_degrees": 5.9635,
+      "orb_band": "Moderate",
+      "same_sign": false,
+      "cross_border": true,
+      "boundary_factor": 0.75,
+      "effective_potency": 0.3027,
+      "sign1": "Virgo",
+      "sign2": "Libra"
+    },
+    {
+      "body1": "Jupiter",
+      "body2": "Ketu",
+      "separation_degrees": 1.7513,
+      "orb_band": "Exact (Intimate)",
+      "same_sign": true,
+      "cross_border": false,
+      "boundary_factor": 1.0,
+      "effective_potency": 0.8249,
+      "sign1": "Sagittarius",
+      "sign2": "Sagittarius"
+    }
+  ]
+}

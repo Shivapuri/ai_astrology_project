@@ -357,6 +357,106 @@ def get_chart_biwheel(native_id):
         "root": root
     })
 
+@app.route('/api/chart/<native_id>/transit')
+def get_chart_transit(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+
+    now = datetime.now()
+    transit_date_str = request.args.get('transit_date')
+    transit_time_str = request.args.get('transit_time')
+    
+    if transit_date_str:
+        try:
+            nums = [int(n) for n in re.findall(r'\d+', str(transit_date_str))]
+            if len(nums) >= 3:
+                if nums[0] > 1000:
+                    t_year, t_month, t_day = nums[0], nums[1], nums[2]
+                else:
+                    t_day, t_month, t_year = nums[0], nums[1], nums[2]
+            else:
+                t_year, t_month, t_day = now.year, now.month, now.day
+        except Exception:
+            t_year, t_month, t_day = now.year, now.month, now.day
+    else:
+        t_year, t_month, t_day = now.year, now.month, now.day
+
+    if transit_time_str:
+        try:
+            t_nums = [int(n) for n in re.findall(r'\d+', str(transit_time_str))]
+            t_hour = t_nums[0] if len(t_nums) > 0 else now.hour
+            t_min = t_nums[1] if len(t_nums) > 1 else 0
+            t_sec = t_nums[2] if len(t_nums) > 2 else 0
+        except Exception:
+            t_hour, t_min, t_sec = now.hour, now.minute, now.second
+    else:
+        t_hour, t_min, t_sec = now.hour, now.minute, now.second
+
+    t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
+    t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
+    
+    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
+    try:
+        t_tz = float(tz_str)
+    except ValueError:
+        try:
+            sign = -1 if tz_str.startswith('-') else 1
+            tz_parts = tz_str.lstrip('+-').split(':')
+            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
+        except Exception:
+            t_tz = 0.0
+
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
+    debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    mode = request.args.get('mode', 'symbol')
+    root = request.args.get('root', 'Lagna')
+    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
+
+    natal_chart = compute_chart_data(
+        native,
+        nakshatra_system=nakshatra_system,
+        debilitation_mode=debilitation_mode
+    )
+
+    from jyotish.transits.transits import calculate_transits
+    transit_res = calculate_transits(
+        natal_chart=natal_chart,
+        transit_year=t_year,
+        transit_month=t_month,
+        transit_day=t_day,
+        transit_hour=t_hour,
+        transit_minute=t_min,
+        transit_second=t_sec,
+        transit_latitude=t_lat,
+        transit_longitude=t_lon,
+        transit_timezone=t_tz,
+        nakshatra_system=nakshatra_system,
+        debilitation_mode=debilitation_mode
+    )
+
+    natal_d1_items = draw_chart.parse_varga_data(natal_chart["vargas"]["D1"])
+    transit_d1_items = draw_chart.parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+
+    svg = draw_chart.generate_transit_biwheel(
+        inner_items=natal_d1_items,
+        outer_items=transit_d1_items,
+        active_aspects=transit_res["active_aspects"],
+        mode=mode,
+        root_planet=root,
+        show_nakshatras=show_nakshatras,
+        debilitation_mode=debilitation_mode
+    )
+
+    return jsonify({
+        "svg": svg,
+        "transit_planets": transit_res["transit_planets"],
+        "active_aspects": transit_res["active_aspects"],
+        "transit_time_info": transit_res["transit_time_info"],
+        "root": root,
+        "mode": mode
+    })
+
 @app.route('/api/export_pdf', methods=['POST'])
 def export_pdf():
     req_data = request.json or {}

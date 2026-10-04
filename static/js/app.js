@@ -510,6 +510,15 @@ function changeWorkspace(wsName) {
         assignWidget('vimshopaka', document.getElementById('cell5'));
         assignWidget('dignities', document.getElementById('cell6'));
         assignWidget('empty', document.getElementById('cell7'));
+    } else if (wsName === 'transits') {
+        if (layoutSelect) layoutSelect.value = 'core-predictive';
+        changeLayout('core-predictive');
+        assignWidget('transit-chart', document.getElementById('cell1'));
+        assignWidget('dashas-timeline', document.getElementById('cell5'));
+        assignWidget('master-diagnostic', document.getElementById('cell2'));
+        assignWidget('chart', document.getElementById('cell3'), { varga: 'D1' });
+        assignWidget('ashtakavarga', document.getElementById('cell4'));
+        saveLayoutState();
     } else if (wsName === 'custom') {
         const savedLayout = localStorage.getItem('astra_current_layout') || 'kala';
         if (layoutSelect) layoutSelect.value = savedLayout;
@@ -837,12 +846,16 @@ function updateAllWidgets() {
 
     // Update floating modal if active
     const modal = document.getElementById('widgetMaximizeModal');
-    if (modal && modal.style.display === 'flex') {
+    if (modal && modal.style.display !== 'none') {
         const cont = document.getElementById('widgetMaximizeContainer');
         const widgetType = cont?.dataset?.widget;
         if (widgetType && window.widgetRegistry) {
             window.widgetRegistry.renderWidget(widgetType, cont, chartData);
         } else {
+            const navBtnTransit = document.getElementById('nav-btn-transit');
+            if (navBtnTransit?.classList.contains('active')) {
+                if (cont && typeof initTransitWidget === 'function') initTransitWidget(cont);
+            }
             const navBtnDiag = document.getElementById('nav-btn-master-diag');
             if (navBtnDiag?.classList.contains('active')) {
                 if (cont && typeof populateMasterDiagnosticTable === 'function') populateMasterDiagnosticTable(cont);

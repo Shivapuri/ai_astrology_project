@@ -74,6 +74,10 @@
                             <span>5. Timing & Cycles</span>
                             <span class="menu-check"></span>
                         </div>
+                        <div class="menu-row" data-ws="transits" onclick="changeWorkspace('transits')">
+                            <span style="font-weight:600; color:#c2410c;">6. Transits (Animated Bi-Wheel)</span>
+                            <span class="menu-check"></span>
+                        </div>
                         <div class="menu-separator"></div>
                         <div class="menu-row" data-ws="custom" onclick="changeWorkspace('custom')">
                             <span>Custom (Saved Grid)</span>
@@ -127,6 +131,13 @@
                     <button type="button" class="menu-bar-btn">Tables ▾</button>
                     <div class="menu-dropdown-menu">
                         <div class="menu-header-label">Calculated Diagnostics</div>
+                        <div class="menu-row" onclick="assignActiveWidget('transit-chart')">
+                            <span style="font-weight:bold; color:#c2410c;">🪐 Transit Bi-Wheel (In Cell)</span>
+                        </div>
+                        <div class="menu-row" onclick="openFloatingTransit()">
+                            <span style="font-weight:bold; color:#c2410c;">🪐 Transit Bi-Wheel (Pop-up Window)</span>
+                        </div>
+                        <div class="menu-separator"></div>
                         <div class="menu-row" onclick="assignActiveWidget('report')">
                             <span style="font-weight:bold; color:#7c2d12;">★ Astrological Synthesis Report (In Cell)</span>
                         </div>
@@ -252,6 +263,9 @@
         </div>
 
         <div class="toolbar-right" style="display:flex; align-items:center; gap:8px;">
+            <button type="button" id="btnOpenTransit" onclick="openFloatingTransit()" style="background-color: #d35400; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(211,84,0,0.2);" title="Open Animated Transits (Gochara Bi-Wheel)">
+                🪐 Transits
+            </button>
             <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
                 Export PDF
             </button>
