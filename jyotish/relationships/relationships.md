@@ -27,9 +27,9 @@ If you are modifying `relationships.py`, strictly observe these mathematical rul
    - Must check fixed dignities FIRST (Exalted, Debilitated, Moolatrikona, Own Sign).
    - If none match, it returns the sign lord's compound relationship (e.g., "Great Friend's Sign", "Enemy's Sign").
 
-3. **Rasi Aspects (`get_rasi_aspects`):**
-   - Returns whole-sign aspects (Drishti).
-   - Cardinal aspects Fixed (except adjacent). Fixed aspects Cardinal (except adjacent). Dual aspects Dual.
+3. **Rāśi Aspects (`get_rasi_drishti`):**
+   - Rāśi Dṛṣṭi resides in `jyotish/aspects/aspects.py` as `get_rasi_drishti` (rather than inside `relationships.py`) and is imported where needed.
+   - Returns whole-sign mutual aspects: Moveable (Cardinal) signs aspect Fixed signs (except adjacent); Fixed signs aspect Moveable signs (except adjacent); Dual (Mutable) signs aspect all other Dual signs.
 
 ---
 
@@ -59,3 +59,11 @@ As implemented in `generate_jyotish.py` and `relationships.py`:
     - Moon: Debilitated across all 0°–30° of Scorpio.
     - Mercury: Debilitated across all 0°–30° of Pisces.
 - **Even Rasi Varga Reversals:** Dasamsa (D10) and Chaturvimsamsa (D24) strictly follow the Parashara rule: "Reverse for Even Rasis". This means for Even signs, we start from the 9th sign (or Cancer for D24) and count **backwards** instead of forwards.
+
+---
+
+## 5. Stage 2A Master Dignity Orchestrator (`calculate_chart_dignities`)
+The master function `calculate_chart_dignities(baseline: ChartBaseline, debilitation_mode: str = "kala_degree") -> Dict[str, Any]` connects the Stage 1 `ChartBaseline` directly to the relationship engine:
+1. **Precalculates D1 Temporary Friendship:** For all 7 physical planets using whole-sign sign differences $(s_2 - s_1) \pmod{12}$.
+2. **Precalculates Pañcadhā Maitrī:** For all 7 physical planets plus Rāhu (Saturn proxy) and Ketu (Mars proxy).
+3. **Decomposes Varga Dignities Across All 16 Divisional Charts:** Evaluates each planet's dignity in D1 through D60 using its exact divisional sign and degree within sign, preserving the chosen `debilitation_mode`.

@@ -48,3 +48,11 @@ Three planets have "special" glances that are added on top of the base calculati
 
 ### How it is Used
 Graha Drishti reveals the psychological and qualitative influence planets have on one another. It is used heavily in *Shadbala* (the 6-fold strength calculation) and for timing events using planetary periods (like Vimshottari Dasha).
+
+---
+
+## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)
+The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[str, Any]` connects `ChartBaseline` to the aspect engine:
+1. **Planet-to-Planet Aspect Matrix ($11 \times 11$):** Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
+2. **Planet-to-Cusp Aspect Matrix ($7 \times 12$):** Evaluates Graha Dṛṣṭi (0–60 Virūpas) cast by the 7 physical planets onto the 12 Whole-Sign sensitive cusps:
+   $$\text{Cusp Longitude}_h = (\text{baseline.astronomical\_anchors["sensitive\_cusp\_degree"]} + (h - 1) \times 30^\circ) \pmod{360^\circ}$$

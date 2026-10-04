@@ -85,7 +85,7 @@ All computations across all stages strictly adhere to these scriptural and astro
 2. **Campanus House System (Bhāva):**
    * House cusps and boundaries are calculated strictly using the Campanus system (`system 'C'` in `swisseph`).
    * The Prime Vertical is divided into twelve equal $30^\circ$ arcs, projecting houses naturally onto the observer's local space.
-   * Campanus cusps are isolated for house placement and display, while Lagna's exact degree anchors the sensitive point of all charts.
+   * Campanus cusps are strictly display-only for SVG chart wheel rendering; all astrological calculations, house lordships, and atmosphere scoring operate on Whole Sign Houses. Lagna's exact degree anchors the sensitive point of all charts.
 
 3. **Sidereal Equatorial Nakshatras (Dhruva Galactic Center):**
    * The 27 Nakshatras are fixed to the stars (Sidereal) measured along the celestial equator (Equatorial Right Ascension), anchored by the Dhruva Galactic Center at the midpoint of Mūla ($246^\circ 40'$).
@@ -168,12 +168,12 @@ Stage 1 is fully decoupled into a clean 3-file modular architecture:
 | **Ascendant (Lagna)** | Leo $9^\circ 35' 56''$ | Sensitive point of chart |
 | **Midheaven (MC)** | Aries $18^\circ 58' 57''$ | Projected across all 16 Vargas |
 | **Nityā Yoga** | #10 Gaṇḍa (Arc: $126.5862^\circ$) | Sidereal Ecliptic Sum ($207.9582^\circ + 278.6280^\circ$) |
-| **Santāna Tithi** | #9 Krishna Navamī (Arc: $353.3488^\circ$) | Afflicted (Krishna Chidra Tithi) |
-| **Bīja Sphuta** | Cancer $24^\circ 27'$ (D9: Pisces) | Deficient (Both Even Signs) |
-| **Kṣetra Sphuta** | Leo $10^\circ 52'$ (D9: Aries) | Deficient (Both Odd Signs) |
-| **Trisphuṭa** | Sagittarius $20^\circ 52'$ | D9 Navāṃśa: Gemini $7^\circ 48'$ |
-| **Catuṣphuṭa** | Cancer $8^\circ 46'$ | $4^\circ$ from Cancer Cusp |
-| **Pañcasphuṭa** | Libra $4^\circ 42'$ | Libra Placement |
+| **Santāna Tithi** | #30 Amāvasyā (Arc: $353.3489^\circ$) | Afflicted (New Moon / 30th Tithi) |
+| **Bīja Sphuta** | Aquarius $3^\circ 52'$ (D9: Scorpio) | Mixed (Delayed Progeny) |
+| **Kṣetra Sphuta** | Aries $8^\circ 35'$ (D9: Gemini) | Deficient (Both Odd Signs) |
+| **Trisphuṭa** | Sagittarius $6^\circ 43'$ | D9 Navāṃśa: Gemini $0^\circ 29'$ |
+| **Catuṣphuṭa** | Cancer $24^\circ 38'$ | Cancer Placement |
+| **Pañcasphuṭa** | Libra $10^\circ 51'$ | Libra Placement |
 | **Moon Equatorial RA** | $281.9997^\circ$ | Śravaṇa, Pada 1 |
 | **Moon Sidereal Longitude**| $278.6280^\circ$ | Uttara Aṣāḍhā, Pada 4 |
 | **Candra Kriyādi** | Kriyā #54 Yogi, Avasthā #11 Yuvatiparinaya, Velā #33 Punyakarma | Traversal fraction: $0.897100$ (All Auspicious / Shubha) |
@@ -205,7 +205,7 @@ Stage 1 is fully decoupled into a clean 3-file modular architecture:
 ---
 
 ### Stage 2A: Interaction & Relationship Matrices (NEXT FOCUS)
-*Goal: Compute pure relational values between planets, signs, and houses without calculating full Shadbala.*
+*Goal: Compute pure relational values between planets, signs, and houses without calculating full Shadbala. Refactors and wraps existing engines (`jyotish/relationships/relationships.py` and `jyotish/aspects/aspects.py`) to consume `ChartBaseline` directly without redundant loops or Swiss Ephemeris calls, maintaining 100% compatibility with downstream engines like `jyotish/shadbala/shadbala.py`.*
 * **1. Graha Dṛṣṭi (Aspect) Matrix:**
   * Implement full 0–60 Virūpas continuous aspect values between all pairs in `ALL_BODIES` and house cusps.
   * Special Parāśarī aspects: Mars (4th/8th), Jupiter (5th/9th), Saturn (3rd/10th) with accurate trapezoidal graduation.

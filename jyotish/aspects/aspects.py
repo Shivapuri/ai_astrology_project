@@ -7,12 +7,13 @@ Implements Ernst Wilhelm / Kala Software methodology, including:
 2. Graha Drishti (Planetary Longitude Aspects) - Continuous fractional strength.
 """
 
-from typing import List, Dict, Any
-
-ZODIAC_SIGNS = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
+from typing import List, Dict, Any, Optional
+from jyotish.baseline import (
+    ChartBaseline,
+    ALL_BODIES,
+    ZODIAC_SIGNS,
+    PLANETS_ORDER,
+)
 
 def get_rasi_drishti(sign: str) -> List[str]:
     """
@@ -284,3 +285,48 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
             calc_aspects(h_num, equal_lon, results["equal_cusps"], results["totals"]["equal_cusps"])
 
     return results
+
+def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
+    """
+    Master Aspect Orchestrator for Stage 2A.
+
+    1. Planet-to-Planet Aspect Matrix (11x11):
+       Computes Graha Drishti (0-60 Virupas) between all bodies in ALL_BODIES
+       using separation_matrix directly.
+    2. Planet-to-Cusp Aspect Matrix (7x12):
+       Computes Graha Drishti (0-60 Virupas) cast by the 7 physical planets onto
+       the 12 Whole-Sign sensitive cusps:
+       Cusp Longitude_h = (baseline.astronomical_anchors["sensitive_cusp_degree"] + (h - 1) * 30.0) % 360.0
+    """
+    coords = baseline.coordinates
+    sep_matrix = baseline.separation_matrix
+    sens_deg = baseline.astronomical_anchors["sensitive_cusp_degree"]
+    physical_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+
+    # 1. 11x11 planet_to_planet aspect matrix
+    planet_to_planet = {}
+    for b1 in ALL_BODIES:
+        planet_to_planet[b1] = {}
+        for b2 in ALL_BODIES:
+            if b1 == b2 or b1 in ["Rahu", "Ketu", "Lagna", "MC"]:
+                planet_to_planet[b1][b2] = 0.0
+            else:
+                sep = sep_matrix[b1][b2]
+                virupas = get_graha_drishti(b1, 0.0, sep)
+                planet_to_planet[b1][b2] = round(virupas, 4)
+
+    # 2. 7x12 planet_to_cusp aspect matrix
+    planet_to_cusp = {}
+    for p in physical_planets:
+        p_lon = coords[p]["longitude"]
+        cusp_aspects = {}
+        for h in range(1, 13):
+            cusp_lon = (sens_deg + (h - 1) * 30.0) % 360.0
+            virupas = get_graha_drishti(p, p_lon, cusp_lon)
+            cusp_aspects[h] = round(virupas, 4)
+        planet_to_cusp[p] = cusp_aspects
+
+    return {
+        "planet_to_planet": planet_to_planet,
+        "planet_to_cusp": planet_to_cusp
+    }

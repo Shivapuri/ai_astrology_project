@@ -1,20 +1,13 @@
-# jyotish/relationships.py
-
-# Ernst Wilhelm / Parashara Sign Rulerships
-SIGN_LORDS = {
-    "Aries": "Mars",
-    "Taurus": "Venus",
-    "Gemini": "Mercury",
-    "Cancer": "Moon",
-    "Leo": "Sun",
-    "Virgo": "Mercury",
-    "Libra": "Venus",
-    "Scorpio": "Mars",
-    "Sagittarius": "Jupiter",
-    "Capricorn": "Saturn",
-    "Aquarius": "Saturn",
-    "Pisces": "Jupiter"
-}
+from typing import Dict, Any, List, Optional
+from jyotish.baseline import (
+    ChartBaseline,
+    SIGN_LORDS,
+    VIMSHOTTARI_SEQUENCE,
+    ZODIAC_SIGNS,
+    PLANETS_ORDER,
+    VARGAS_LIST,
+    ALL_BODIES,
+)
 
 # Fixed Natural Friendships (Naisargika Sambandha) based on Moolatrikona rules
 NAISARGIKA_SAMBANDHA = {
@@ -152,5 +145,98 @@ def get_dignity(planet: str, sign: str, compound_rel: str, degree: float = 0.0, 
 
     return f"{compound_rel}'s Sign"
 
+def calculate_chart_dignities(baseline: "ChartBaseline", debilitation_mode: str = "kala_degree") -> Dict[str, Any]:
+    """
+    High-Level Dignity Orchestrator for Stage 2A.
+    Precalculates D1 Tatkalika Maitri (Temporary Friendship), Panchadha Maitri (5-Fold Compound Relationship),
+    and decomposes planetary dignities across all 16 Divisional Charts (D1 through D60).
+    """
+    physical_planets = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    coords = baseline.coordinates
 
-VIMSHOTTARI_SEQUENCE = ["Ketu", "Venus", "Sun", "Moon", "Mars", "Rahu", "Jupiter", "Saturn", "Mercury"]
+    # 1. Natural Relationships (Naisargika Sambandha)
+    natural_relationships = {}
+    for p1 in physical_planets:
+        natural_relationships[p1] = {}
+        for p2 in physical_planets:
+            natural_relationships[p1][p2] = get_natural_relationship(p1, p2)
+
+    # 2. D1 Temporary Friendship (Tatkalika Maitri)
+    # Distance in signs (s2 - s1) % 12:
+    # Houses 2, 3, 4, 10, 11, 12 (dist 1, 2, 3, 9, 10, 11) are Friend;
+    # Houses 1, 5, 6, 7, 8, 9 (dist 0, 4, 5, 6, 7, 8) are Enemy.
+    temporary_relationships = {}
+    for p1 in physical_planets:
+        temporary_relationships[p1] = {}
+        p1_idx = coords[p1]["sign_index"]
+        for p2 in physical_planets:
+            p2_idx = coords[p2]["sign_index"]
+            temporary_relationships[p1][p2] = get_temporary_relationship(p1_idx, p2_idx)
+
+    # 3. Panchadha Maitri (5-Fold Compound Relationship)
+    compound_relationships = {}
+    for p1 in physical_planets:
+        compound_relationships[p1] = {}
+        for p2 in physical_planets:
+            nat = natural_relationships[p1][p2]
+            tmp = temporary_relationships[p1][p2]
+            compound_relationships[p1][p2] = get_compound_relationship(nat, tmp)
+
+    # Apply proxy rules for Rahu (Saturn) and Ketu (Mars)
+    for node, proxy in [("Rahu", "Saturn"), ("Ketu", "Mars")]:
+        natural_relationships[node] = {}
+        compound_relationships[node] = {}
+        temporary_relationships[node] = {}
+        node_idx = coords[node]["sign_index"]
+        for p2 in physical_planets:
+            p2_idx = coords[p2]["sign_index"]
+            nat = get_natural_relationship(node, p2)
+            tmp = get_temporary_relationship(node_idx, p2_idx)
+            natural_relationships[node][p2] = nat
+            temporary_relationships[node][p2] = tmp
+            compound_relationships[node][p2] = get_compound_relationship(nat, tmp)
+
+    # 4. Decompose Varga Dignities Across all 16 Divisional Charts (D1 through D60)
+    varga_dignities = {}
+    vargas_data = baseline.vargas
+
+    for v_name in VARGAS_LIST:
+        v_grahas = vargas_data.get(v_name, {}).get("grahas", {})
+        varga_dignities[v_name] = {}
+
+        for p_name in PLANETS_ORDER:
+            if p_name not in v_grahas:
+                continue
+            p_data = v_grahas[p_name]
+            sign = p_data["sign"]
+            lord = SIGN_LORDS[sign]
+            deg_in_sign = p_data.get("degree_0_to_30", p_data.get("degree_in_sign", 0.0))
+
+            if lord == p_name:
+                nat = "Self"
+                tmp = "Self"
+                cmp_rel = "Self"
+                final_dignity = get_dignity(p_name, sign, "Self", deg_in_sign, debilitation_mode=debilitation_mode)
+            else:
+                nat = get_natural_relationship(p_name, lord)
+                p_d1_idx = coords[p_name]["sign_index"]
+                lord_d1_idx = coords[lord]["sign_index"]
+                tmp = get_temporary_relationship(p_d1_idx, lord_d1_idx)
+                cmp_rel = get_compound_relationship(nat, tmp)
+                final_dignity = get_dignity(p_name, sign, cmp_rel, deg_in_sign, debilitation_mode=debilitation_mode)
+
+            varga_dignities[v_name][p_name] = {
+                "sign": sign,
+                "sign_lord": lord,
+                "natural_relationship": nat,
+                "temporary_relationship": tmp,
+                "compound_relationship": cmp_rel,
+                "dignity": final_dignity
+            }
+
+    return {
+        "natural_relationships": natural_relationships,
+        "temporary_relationships": temporary_relationships,
+        "compound_relationships": compound_relationships,
+        "varga_dignities": varga_dignities
+    }
