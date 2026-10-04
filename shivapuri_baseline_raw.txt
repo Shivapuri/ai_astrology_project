@@ -129,10 +129,10 @@ NATAL DATA & SUBJECT PARAMETERS:
   MC       | Revati             |   4  |   359.0238°   | Mercury  | Saturn   | Me/Sa    |   6  |   6
 
   Moon Candra Kriyādi State (Phaladeepika Ch. 4.12-20):
-    Kriyā   : #9 Dandaneta (Army commander / administrator) -> Shubha / Auspicious
-    Avasthā : #2 Mahitanripahita (Favored by honored sovereign) -> Shubha / Auspicious
-    Velā    : #6 Sukhidata (Giver / receiver of happiness) -> Shubha / Auspicious
-    Fraction: 0.149978
+    Kriyā   : #54 Yogi (Accomplished yogic practitioner) -> Shubha / Auspicious
+    Avasthā : #11 Yuvatiparinaya (Union with young maiden / joy) -> Shubha / Auspicious
+    Velā    : #33 Punyakarma (Undertaking holy enterprises) -> Shubha / Auspicious
+    Fraction: 0.897100
 
 --------------------------------------------------------------------------------
 6. SŪRYA SIDDHĀNTA COMBUSTION & LUNAR PHASE GEOMETRY
@@ -964,22 +964,22 @@ NATAL DATA & SUBJECT PARAMETERS:
         "tara": 1,
         "tara_number": 1,
         "candra_kriyadi": {
-          "kriya": 9,
-          "kriya_name": "Dandaneta",
-          "kriya_translation": "Army commander / administrator",
+          "kriya": 54,
+          "kriya_name": "Yogi",
+          "kriya_translation": "Accomplished yogic practitioner",
           "kriya_nature": "Shubha / Auspicious",
           "kriya_is_benefic": true,
-          "avastha": 2,
-          "avastha_name": "Mahitanripahita",
-          "avastha_translation": "Favored by honored sovereign",
+          "avastha": 11,
+          "avastha_name": "Yuvatiparinaya",
+          "avastha_translation": "Union with young maiden / joy",
           "avastha_nature": "Shubha / Auspicious",
           "avastha_is_benefic": true,
-          "vela": 6,
-          "vela_name": "Sukhidata",
-          "vela_translation": "Giver / receiver of happiness",
+          "vela": 33,
+          "vela_name": "Punyakarma",
+          "vela_translation": "Undertaking holy enterprises",
           "vela_nature": "Shubha / Auspicious",
           "vela_is_benefic": true,
-          "traversal_fraction": 0.149978
+          "traversal_fraction": 0.8971
         }
       },
       "Mars": {

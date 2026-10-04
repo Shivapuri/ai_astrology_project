@@ -377,6 +377,16 @@ def test_refinements_and_shivapuri_case():
     assert abs(gnak["Lagna"]["sidereal_longitude"] - 109.6488) < 0.01
     assert abs(gnak["Lagna"]["position"] - 109.6488) < 0.01
 
+    # 1c. Candra Kriyādi evaluated on classical sidereal ecliptic Moon (Phaladeepika Ch. 4.12-20)
+    ck = gnak["Moon"]["candra_kriyadi"]
+    assert ck["kriya"] == 54
+    assert ck["kriya_name"] == "Yogi"
+    assert ck["avastha"] == 11
+    assert ck["avastha_name"] == "Yuvatiparinaya"
+    assert ck["vela"] == 33
+    assert ck["vela_name"] == "Punyakarma"
+    assert abs(ck["traversal_fraction"] - 0.897100) < 0.001
+
     # 2. Complete Upagrahas (5 classical points)
     up = chart.upagrahas
     assert len(up) == 5

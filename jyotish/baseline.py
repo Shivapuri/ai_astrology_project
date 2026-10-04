@@ -756,8 +756,8 @@ class ChartBaseline:
             n_info["tara_number"] = tara_idx
 
         # Calculate complete Candra Kriyādi states (Phaladeepika Ch. 4.12–20)
-        moon_nak_pos = grahas_nak["Moon"]["position"]
-        moon_fraction = (moon_nak_pos % (360.0 / 27.0)) / (360.0 / 27.0)
+        moon_ecl_pos = grahas_nak["Moon"]["sidereal_longitude"]
+        moon_fraction = (moon_ecl_pos % (360.0 / 27.0)) / (360.0 / 27.0)
 
         kriya_idx = min(59, int(moon_fraction * 60.0))
         k_num, k_name, k_trans, k_benefic = CHANDRA_KRIYAS_DATA[kriya_idx]
