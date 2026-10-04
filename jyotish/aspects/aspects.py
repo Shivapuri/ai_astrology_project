@@ -13,6 +13,7 @@ from jyotish.baseline import (
     ALL_BODIES,
     ZODIAC_SIGNS,
     PLANETS_ORDER,
+    SIGN_LORDS,
 )
 
 PHYSICAL_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
@@ -400,16 +401,22 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
     # 4. Benefic / Malefic Qualitative Totals (+ / - Net Virupas)
     # Natural Benefics: Jupiter, Venus
     # Dynamic Benefics:
-    #   Mercury: Benefic if not combust (combustion_status["Mercury"]["is_combust"] is False)
+    #   Mercury: Benefic if not combust and not conjoined with natural malefics (BPHS Ch. 3 / Phaladeepika Ch. 2.27)
     #   Moon: Benefic if bright/waxing (lunar_phase["is_benefic"] is True)
     # Natural Malefics: Sun, Mars, Saturn, Rahu, Ketu
     is_merc_combust = baseline.combustion_status.get("Mercury", {}).get("is_combust", False)
+    merc_sign_idx = coords["Mercury"]["sign_index"]
+    merc_with_malefic = any(
+        coords[m]["sign_index"] == merc_sign_idx
+        for m in ["Mars", "Saturn", "Rahu", "Ketu"]
+    )
+    is_merc_benefic = (not is_merc_combust) and (not merc_with_malefic)
     is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)
 
     benefic_classification = {
         "Jupiter": True,
         "Venus": True,
-        "Mercury": not is_merc_combust,
+        "Mercury": is_merc_benefic,
         "Moon": is_moon_benefic,
         "Sun": False,
         "Mars": False,
@@ -441,11 +448,16 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
 
     totals_cusps = {}
     for h in range(1, 13):
+        target_sign_idx = (asc_sign_idx + h - 1) % 12
+        h_sign = ZODIAC_SIGNS[target_sign_idx]
+        h_lord = SIGN_LORDS[h_sign]
+
         ben_v = 0.0
         mal_v = 0.0
         for p in PHYSICAL_PLANETS:
             aspect_val = cusp_by_house[h][p]
-            if benefic_classification[p]:
+            # Lord of the house protects its own cusp regardless of natural malefic status (Phaladeepika 15.1-3)
+            if benefic_classification[p] or p == h_lord:
                 ben_v += aspect_val
             else:
                 mal_v += aspect_val

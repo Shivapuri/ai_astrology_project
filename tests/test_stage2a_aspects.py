@@ -291,3 +291,60 @@ def test_calculate_varga_aspects_adapter():
     # Verify identity between both calling conventions
     assert res1["totals"]["planets"]["Sun"] == res2["totals"]["planets"]["Sun"]
     assert res1["planets"]["Sun"]["Moon"] == res2["planets"]["Sun"]["Moon"]
+
+
+def test_mercury_malefic_conjunction_rule():
+    """
+    Verifies that Mercury becomes a functional malefic when conjoined with natural malefics
+    (Mars, Saturn, Rahu, Ketu) per BPHS Ch. 3 and Phaladeepika Ch. 2.27.
+    - Kailash: Mercury in Scorpio (free from combustion and no malefics in Scorpio) -> Benefic (True)
+    - Native Shivapuri: Mercury in Libra with Saturn (natural malefic) -> Malefic (False)
+    """
+    kailash = ChartBaseline(
+        name="Kailash",
+        year=1987, month=11, day=19, hour=16, minute=0, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0
+    )
+    kailash_aspects = calculate_aspect_matrices(kailash)
+    assert kailash_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
+
+    shivapuri = ChartBaseline(
+        name="Shivapuri",
+        year=1983, month=11, day=10, hour=22, minute=20, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0,
+        nakshatra_system="ERNST_DHRUVA"
+    )
+    shiv_aspects = calculate_aspect_matrices(shivapuri)
+    # Saturn in Libra conjoins Mercury in Libra -> Mercury is Malefic
+    assert shiv_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is False
+
+
+def test_house_lord_protection_rule():
+    """
+    Verifies the House Lord Protection Rule per Phaladeepika Ch. 15.1-3:
+    A planet casting Graha Drishti on its own whole-sign house is ALWAYS protective (benefic),
+    even if that planet is a natural malefic (such as Mars or Saturn).
+    
+    In Native Shivapuri:
+    - Lagna is Leo. House 9 is Aries, ruled by Mars (a natural malefic).
+    - Mars in Virgo casts its 8th special aspect (60.0 Virupas) onto House 9 (Aries).
+    - Under the protection rule, Mars's 60.0 Virupas are added to benefic_virupas, NOT malefic_virupas.
+    """
+    shivapuri = ChartBaseline(
+        name="Shivapuri",
+        year=1983, month=11, day=10, hour=22, minute=20, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0,
+        nakshatra_system="ERNST_DHRUVA"
+    )
+    aspects = calculate_aspect_matrices(shivapuri)
+    h9_cusp = aspects["cusp_drishti"]["by_house"][9]
+    h9_totals = aspects["benefic_malefic_totals"]["cusps"][9]
+
+    # Mars casts full 60.0 Virupas on House 9
+    assert h9_cusp["Mars"] == 60.0
+
+    # Benefics: Jupiter (57.5631) + Venus (55.9469) + Mars (60.0, protective lord) = 173.51
+    assert pytest.approx(h9_totals["benefic_virupas"], abs=0.01) == 173.51
+    # Verify Mars is NOT counted in malefic virupas
+    assert h9_totals["malefic_virupas"] < 60.0
+

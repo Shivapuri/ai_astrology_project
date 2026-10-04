@@ -4,6 +4,14 @@ This blueprint defines the master architectural refactoring for the Astra calcul
 
 ---
 
+## Current State of the Architecture
+
+* **Stage 1 (`baseline.py`, `baseline_math.py`, `baseline_tables.py`):** 100% Certified.
+* **Stage 2A (`relationships.py`):** 100% Certified.
+* **Stage 2A (`aspects.py`):** 100% Certified.
+
+---
+
 ## 1. Executive Mission & Problem Statement
 
 ### The Legacy Problem
@@ -14,9 +22,9 @@ Previously, Astra suffered from severe calculation redundancy and parameter dril
 
 ### The Architectural Solution
 Re-architect the computation pipeline into a **Single Source of Truth** using a phased, 4-stage Directed Acyclic Graph (DAG):
-1. **Stage 1 (Completed & 100% Certified):** Master Astronomical & Coordinate Baseline Engine (`ChartBaseline`). Computes 100% deterministic physical/geometric facts (ephemeris, coordinates, sensitive points, 16 vargas, upagrahas, and raw distance matrices). Contains **zero house evaluations, zero house atmosphere scoring, zero dignity scoring, and zero Shadbala**.
-2. **Stage 2A (Next Focus):** Interaction & Relationship Matrices (Graha Dṛṣṭi 0–60 Virūpas, Pañcadhā Maitrī 5-fold friendship, Varga Dignities).
-3. **Stage 2B:** Planetary Strength & Shadbala (6-fold Shadbala, Sthāna Bala, Kāla Bala, Dṛk Bala, Quantitative & Qualitative Avasthās).
+1. **Stage 1 (Completed & 100% Certified):** Master Astronomical & Coordinate Baseline Engine (`ChartBaseline` in `baseline.py`, `baseline_math.py`, `baseline_tables.py`). Computes 100% deterministic physical/geometric facts (ephemeris, coordinates, sensitive points, 16 vargas, upagrahas, and raw distance matrices). Contains **zero house evaluations, zero house atmosphere scoring, zero dignity scoring, and zero Shadbala**.
+2. **Stage 2A (Completed & 100% Certified):** Interaction & Relationship Matrices (`relationships.py` and `aspects.py`: Graha Dṛṣṭi 0–60 Virūpas, Pañcadhā Maitrī 5-fold friendship, Varga Dignities, Rāśi Dṛṣṭi, Dynamic Benefic/Malefic breakdown).
+3. **Stage 2B (Next Focus):** Planetary Strength & Shadbala (6-fold Shadbala, Sthāna Bala, Kāla Bala, Dṛk Bala, Quantitative & Qualitative Avasthās).
 4. **Stage 3:** House Evaluation, Atmosphere & Diagnostic Cockpit (Bhāva Bala, Harsha Bala, House Base Scores, Master Diagnostic table).
 5. **Stage 4:** Downstream Consumers (Classical Yogas & Breakers, Vimshottari Dashas, Gochara Transits, Full Narrative Reports).
 
@@ -204,21 +212,25 @@ Stage 1 is fully decoupled into a clean 3-file modular architecture:
 
 ---
 
-### Stage 2A: Interaction & Relationship Matrices (NEXT FOCUS)
+### Stage 2A: Interaction & Relationship Matrices (COMPLETED & CERTIFIED)
 *Goal: Compute pure relational values between planets, signs, and houses without calculating full Shadbala. Refactors and wraps existing engines (`jyotish/relationships/relationships.py` and `jyotish/aspects/aspects.py`) to consume `ChartBaseline` directly without redundant loops or Swiss Ephemeris calls, maintaining 100% compatibility with downstream engines like `jyotish/shadbala/shadbala.py`.*
-* **1. Graha Dṛṣṭi (Aspect) Matrix:**
-  * Implement full 0–60 Virūpas continuous aspect values between all pairs in `ALL_BODIES` and house cusps.
-  * Special Parāśarī aspects: Mars (4th/8th), Jupiter (5th/9th), Saturn (3rd/10th) with accurate trapezoidal graduation.
-* **2. Pañcadhā Maitrī (5-fold Compound Friendship):**
-  * Natural (*Naisargika*) Friendship matrix based on *BPHS* Ch. 15.
-  * Temporary (*Tatkalika*) Friendship based on 3-house proximity ($2, 3, 4, 10, 11, 12$ from planet).
-  * Compound 5-fold relationship: Great Friend (*Adhi Mitra*), Friend (*Mitra*), Neutral (*Sama*), Enemy (*Shatru*), Bitter Enemy (*Adhi Shatru*).
-* **3. Varga Dignity Matrix:**
-  * Determine planetary dignity (Exalted, Moolatrikona, Own Sign, Great Friend, Friend, Neutral, Enemy, Great Enemy, Debilitated) across all 16 divisional charts ($D_1$ through $D_{60}$).
+- [x] Natural (*Naisargika*), Temporary (*Tatkalika*), and Compound (*Pañcadhā*) Friendship matrices based on *BPHS* Ch. 15.
+- [x] Planetary Dignity Matrix across all 16 divisional charts ($D_1$ through $D_{60}$) with configurable debilitation modes (`kala_degree` vs `whole_sign`).
+- [x] Master Stage 2A Aspect Orchestrator `calculate_aspect_matrices(baseline: ChartBaseline)`.
+- [x] 11x11 dual-indexed Graha Dṛṣṭi matrices (`outgoing` and `incoming` $O(1)$ lookups) with nodes casting 0 Virūpas and receiving aspects.
+- [x] 7x12 dual-indexed Cusp Dṛṣṭi matrices (`by_planet` and `by_house` $O(1)$ lookups) anchored to the natal Ascendant's sign:
+  $$\text{Target Sign Index}_h = (\text{asc\_sign\_idx} + h - 1) \pmod{12}$$
+  $$\text{Cusp Longitude}_h = (\text{Target Sign Index}_h \times 30^\circ + \text{sensitive\_cusp\_degree}) \pmod{360^\circ}$$
+- [x] Binary Rāśi Dṛṣṭi sign-to-sign and mutual planetary glance mappings (`planet_to_planet` and `house_to_planets`).
+- [x] Dynamic Benefic / Malefic Breakdown (+ / - Net Virūpas) for planets and cusps with:
+  * Mercury conjunction rule: malefic if combust or conjoined in the same sign with natural malefics (*BPHS* Ch. 3 / *Phaladeepika* Ch. 2.27).
+  * House Lord protection rule: a house lord's aspect on its own whole-sign cusp is always classified as positive/protective (*Phaladeepika* Ch. 15.1–3).
+- [x] High-level multi-varga aspect helper `calculate_varga_aspects(baseline, varga="D1")` consuming `baseline.vargas[varga]` directly.
+- [x] 100% test pass rate on Stage 2A test fleet (`tests/test_stage2a_interactions.py` and `tests/test_stage2a_aspects.py`).
 
 ---
 
-### Stage 2B: Planetary Strength & Shadbala
+### Stage 2B: Planetary Strength & Shadbala (NEXT FOCUS)
 *Goal: Migrate Shadbala and Avastha engines to consume Stage 1 + Stage 2A states directly.*
 * **1. Sthāna Bala (Positional Strength):**
   * Uccha Bala (Exaltation strength), Saptavargaja Bala (Varga dignity sum), Ojayugmarasyamsa Bala, Kendradi Bala, Drekkana Bala.

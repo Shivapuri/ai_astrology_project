@@ -78,10 +78,12 @@ The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[
 4. **Benefic / Malefic Qualitative Totals (+ / - Net Virūpas):**
    - **Natural Benefics:** Jupiter, Venus.
    - **Dynamic Benefics:**
-     - Mercury: Benefic if not combust (`baseline.combustion_status["Mercury"]["is_combust"]` is False).
+     - Mercury: Benefic if not combust (`baseline.combustion_status["Mercury"]["is_combust"]` is False) and not conjoined in the same sign with natural malefics (*BPHS* Ch. 3 / *Phaladeepika* Ch. 2.27).
      - Moon: Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True).
    - **Natural Malefics:** Sun, Mars, Saturn, Rahu, Ketu.
+   - **House Lord Protection Rule (*Phaladeepika* Ch. 15.1–3):** When scoring aspects striking whole-sign house cusps, a house lord's aspect on its own sign is always classified as positive/protective, preserving and defending the house regardless of whether that ruler is a natural malefic (such as Mars or Saturn).
    - Net balance: $\text{Net Virūpas} = \text{Benefic Virūpas} - \text{Malefic Virūpas}$ precomputed for all planets and all 12 house cusps.
+
 
 ---
 
