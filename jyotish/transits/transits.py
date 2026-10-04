@@ -7,8 +7,6 @@ and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
 """
 
 from typing import Dict, Any, List, Optional, Tuple
-from datetime import datetime
-import swisseph as swe
 from jyotish import generate_jyotish
 from jyotish.aspects.aspects import get_graha_drishti
 

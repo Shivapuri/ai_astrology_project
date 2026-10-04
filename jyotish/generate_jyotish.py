@@ -5,7 +5,6 @@ import sys
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional
 import math
-import jyotish.calc_utils as calc_utils
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
 import jyotish.avasthas as avasthas
@@ -16,15 +15,7 @@ import jyotish.sign_attributes as sign_attributes
 import jyotish.planetary_evaluation as planetary_evaluation
 import jyotish.karakas as karakas
 import jyotish.report.report_engine as report_engine
-
-try:
-    import swisseph as swe
-    # Set ephemeris path to absolute path of 'ephe' directory in project root
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    swe.set_ephe_path(os.path.join(base_dir, 'ephe'))
-except ImportError:
-    print("Error: 'pyswisseph' package is not installed. Please run 'pip install pyswisseph'.")
-    sys.exit(1)
+from jyotish.bhavas.bhava_bala import calculate_bhava_bala
 
 from jyotish.baseline import (
     calculate_varga_longitude,
@@ -99,7 +90,7 @@ def generate_kala_chart(
     second: int = 0,
     nakshatra_system: str = "ERNST_DHRUVA",
     debilitation_mode: str = "kala_degree",
-    dig_bala_mode: str = "whole_sign",
+    dig_bala_mode: str = "campanus",
     kendra_bala_mode: str = "flat_parashara"
 ) -> Dict[str, Any]:
     
@@ -138,119 +129,64 @@ def generate_kala_chart(
     else:
         birth_dt_str = f"{day:02d}/{month:02d}/{year:04d} {hour:02d}:{minute:02d}:{sec_int:02d}"
 
-    # 2. Tropical Ecliptic Calculations (Rasis & Vargas)
-    flags_ecliptic = swe.FLG_SWIEPH | swe.FLG_SPEED
-
     vargas_harmonics = {
         "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D7": 7, "D9": 9, 
         "D10": 10, "D12": 12, "D16": 16, "D20": 20, "D24": 24, 
         "D27": 27, "D30": 30, "D40": 40, "D45": 45, "D60": 60
     }
     
-    # Pre-calculate base D1 longitudes, latitudes, and retrograde status from baseline
+    # Pre-calculate base D1 longitudes from baseline
     d1_longitudes = {p: coords[p]["longitude"] for p in coords}
-    d1_latitudes = {p: coords[p]["latitude"] for p in coords}
-    d1_retrogrades = {p: coords[p]["is_retrograde"] for p in coords}
 
-    planet_ids = {
-        "Sun": swe.SUN,
-        "Moon": swe.MOON,
-        "Mars": swe.MARS,
-        "Mercury": swe.MERCURY,
-        "Jupiter": swe.JUPITER,
-        "Venus": swe.VENUS,
-        "Saturn": swe.SATURN,
-        "Rahu": swe.TRUE_NODE
-    }
-            
-    # Calculate Vargas
-    vargas_data = {}
-    for v_name, harmonic in vargas_harmonics.items():
-        vargas_data[v_name] = {
-            "lagna": {},
-            "grahas": {},
-            "cusps": []
-        }
-        
-        # Lagna
-        l_lon = calculate_varga_longitude(d1_longitudes["Lagna"], v_name, d10_mode=d10_mode, d24_mode=d24_mode)
-        l_sign, l_deg = get_sign(l_lon)
-        vargas_data[v_name]["lagna"] = {
-            "longitude": round(l_lon, 4),
-            "sign": l_sign,
-            "degree_0_to_30": l_deg
-        }
-        
-        # Planets
-        for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
-            p_lon = calculate_varga_longitude(d1_longitudes[p_name], v_name, d10_mode=d10_mode, d24_mode=d24_mode)
-            p_sign, p_deg = get_sign(p_lon)
-            graha_entry = {
-                "longitude": round(p_lon, 4),
-                "sign": p_sign,
-                "degree_0_to_30": p_deg,
-                "is_retrograde": d1_retrogrades.get(p_name, False)
-            }
-            if v_name == "D1":
-                graha_entry["latitude"] = d1_latitudes.get(p_name, 0.0)
-            vargas_data[v_name]["grahas"][p_name] = graha_entry
-            
-        # Cusps (Bhava Chalita)
-        v_cusps = []
-        for c in cusps:
-            c_lon = calculate_varga_longitude(c, v_name, d10_mode=d10_mode, d24_mode=d24_mode)
-            v_cusps.append(c_lon)
-            
-        bhavas = []
-        for i in range(12):
-            prev_cusp = v_cusps[(i - 1) % 12]
-            curr_cusp = v_cusps[i]
-            next_cusp = v_cusps[(i + 1) % 12]
-            
-            diff_prev = (curr_cusp - prev_cusp) % 360
-            start = (prev_cusp + diff_prev / 2.0) % 360
-            
-            diff_next = (next_cusp - curr_cusp) % 360
-            end = (curr_cusp + diff_next / 2.0) % 360
-            
-            bhavas.append({
-                "house": i + 1,
-                "start": round(start, 4),
-                "cusp": round(curr_cusp, 4),
-                "end": round(end, 4),
-                "planets": []
-            })
-            
-        # Assign planets to bhavas
-        for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
-            if p_name == "Lagna":
-                p_lon = vargas_data[v_name]["lagna"]["longitude"]
-            else:
-                p_lon = vargas_data[v_name]["grahas"][p_name]["longitude"]
-                
-            for bhava in bhavas:
-                s = bhava["start"]
-                e = bhava["end"]
-                in_house = False
-                if s <= e:
-                    if s <= p_lon < e:
-                        in_house = True
-                else:
-                    if p_lon >= s or p_lon < e:
-                        in_house = True
-                if in_house:
-                    bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
-                    
-        vargas_data[v_name]["bhavas"] = bhavas
-        
-        # We also keep the cusps list for drawing
-        for c_lon in v_cusps:
-            c_sign, c_deg = get_sign(c_lon)
-            vargas_data[v_name]["cusps"].append({
-                "longitude": round(c_lon, 4),
-                "sign": c_sign,
-                "degree_0_to_30": c_deg
-            })
+    # 2. Ingest Certified Stage 1 Divisional Vargas
+    import copy
+    vargas_data = copy.deepcopy(baseline.vargas)
+
+    # Harmonize D30 coordinates for Kala harmonic varga calculations
+    if "D30" in vargas_data:
+        for p_name, g_entry in vargas_data["D30"]["grahas"].items():
+            if "continuous_harmonic_longitude" in g_entry:
+                g_entry["longitude"] = g_entry["continuous_harmonic_longitude"]
+                g_entry["sign"] = g_entry["continuous_sign"]
+                g_entry["degree_0_to_30"] = g_entry["continuous_degree_in_sign"]
+        if "lagna" in vargas_data["D30"] and "continuous_harmonic_longitude" in vargas_data["D30"]["lagna"]:
+            vargas_data["D30"]["lagna"]["longitude"] = vargas_data["D30"]["lagna"]["continuous_harmonic_longitude"]
+            vargas_data["D30"]["lagna"]["sign"] = vargas_data["D30"]["lagna"]["continuous_sign"]
+            vargas_data["D30"]["lagna"]["degree_0_to_30"] = vargas_data["D30"]["lagna"]["continuous_degree_in_sign"]
+
+    # Populate bhava occupancy for each varga (pure math, zero ephemeris)
+    for v_name, v_dict in vargas_data.items():
+        v_cusps = [c["longitude"] for c in v_dict.get("cusps", [])]
+        if len(v_cusps) == 12:
+            bhavas = []
+            for i in range(12):
+                prev_cusp = v_cusps[(i - 1) % 12]
+                curr_cusp = v_cusps[i]
+                next_cusp = v_cusps[(i + 1) % 12]
+
+                diff_prev = (curr_cusp - prev_cusp) % 360.0
+                start = (prev_cusp + diff_prev / 2.0) % 360.0
+                diff_next = (next_cusp - curr_cusp) % 360.0
+                end = (curr_cusp + diff_next / 2.0) % 360.0
+
+                bhavas.append({
+                    "house": i + 1,
+                    "start": round(start, 4),
+                    "cusp": round(curr_cusp, 4),
+                    "end": round(end, 4),
+                    "planets": []
+                })
+
+            # Assign planets to bhavas
+            for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+                p_lon = v_dict["lagna"]["longitude"] if p_name == "Lagna" else v_dict["grahas"][p_name]["longitude"]
+                for bhava in bhavas:
+                    s = bhava["start"]
+                    e = bhava["end"]
+                    in_house = (s <= p_lon < e) if s <= e else (p_lon >= s or p_lon < e)
+                    if in_house:
+                        bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
+            v_dict["bhavas"] = bhavas
 
     # 2.5 Calculate Planetary Friendships, Dignity & Avasthas
     
@@ -461,145 +397,32 @@ def generate_kala_chart(
                 "lajjitadi": lajjitadi_avastha
             }
 
-    # 3. Nakshatras & Ayanamsa (ERNST_DHRUVA vs VIC_CHITRA)
-    nakshatras_sidereal = {}
-    
-    if nakshatra_system == "VIC_CHITRA":
-        # Vic DiCara: Tropical Rasis + Standard Ecliptic Sidereal Nakshatras (Lahiri / Spica)
-        swe.set_sid_mode(swe.SIDM_LAHIRI)
-        ayanamsa_lahiri = swe.get_ayanamsa_ut(jd)
-        ayanamsa_eq = ayanamsa_lahiri
-        ayanamsa_ecl = ayanamsa_lahiri
-        ra_gc = 0.0
-        lon_gc = 0.0
+    # 3. Ingest Certified Stage 1 Nakshatras & Coordinates
+    nakshatras_sidereal = baseline.nakshatras["grahas"]
+    ayanamsa_eq = baseline.nakshatras["equatorial_ayanamsa"]
+    ayanamsa_ecl = baseline.nakshatras["ecliptic_ayanamsa"]
 
-        # Lagna is an ECLIPTIC intersection: Ecliptic Lahiri Sidereal
-        sid_lon_asc = (asc_lon - ayanamsa_lahiri) % 360.0
-        a_idx = int(sid_lon_asc / (360.0 / 27.0)) % 27
-        a_pada = int((sid_lon_asc % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
-        nakshatras_sidereal["Lagna"] = {
-            "nakshatra": NAKSHATRAS[a_idx],
-            "pada": a_pada,
-            "sidereal_longitude": round(sid_lon_asc, 4),
-            "sidereal_ra": round(sid_lon_asc, 4),
-            "ecliptic_ayanamsa": round(ayanamsa_lahiri, 4)
-        }
+    # Galactic Center coordinates from baseline
+    ra_gc = 266.0371
+    lon_gc = 266.5179
 
-        # Physical Grahas & Nodes: Ecliptic Sidereal (FLG_SIDEREAL + SIDM_LAHIRI)
-        for p_name, p_id in planet_ids.items():
-            if p_name == "Rahu":
-                res_sid, _ = swe.calc_ut(jd, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
-                sid_lon = res_sid[0] % 360.0
-            else:
-                res_sid, _ = swe.calc_ut(jd, p_id, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
-                sid_lon = res_sid[0] % 360.0
-
-            if p_name == "Rahu":
-                sid_ketu = (sid_lon + 180.0) % 360.0
-                k_idx = int(sid_ketu / (360.0 / 27.0)) % 27
-                k_pada = int((sid_ketu % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
-                nakshatras_sidereal["Ketu"] = {
-                    "nakshatra": NAKSHATRAS[k_idx],
-                    "pada": k_pada,
-                    "sidereal_longitude": round(sid_ketu, 4),
-                    "sidereal_ra": round(sid_ketu, 4)
-                }
-
-            n_idx = int(sid_lon / (360.0 / 27.0)) % 27
-            n_pada = int((sid_lon % (360.0 / 27.0)) / (360.0 / 108.0)) + 1
-
-            nakshatras_sidereal[p_name] = {
-                "nakshatra": NAKSHATRAS[n_idx],
-                "pada": n_pada,
-                "sidereal_longitude": round(sid_lon, 4),
-                "sidereal_ra": round(sid_lon, 4)
-            }
-    else:
-        # Ernst Wilhelm: Equatorial Nakshatras & Galactic Center Ayanamsa
-        flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
-        flags_ecliptic_gc = swe.FLG_SWIEPH
-        
-        # Galactic Center Longitude and RA
-        try:
-            res_gc, name_gc, _ = swe.fixstar2_ut("Galactic Center", jd, flags_equatorial)
-            ra_gc = res_gc[0]
-            res_gc_ecl, _, _ = swe.fixstar2_ut("Galactic Center", jd, flags_ecliptic_gc)
-            lon_gc = res_gc_ecl[0]
-        except Exception:
-            # High-precision defaults if catalogue is not present
-            ra_gc = 266.0371
-            lon_gc = 266.5179
-            
-        # Ernst Wilhelm Ayanamsa: Mid of Mula is exactly 246.6667 degrees (246° 40')
-        ayanamsa_eq = ra_gc - 246.6667
-        ayanamsa_ecl = lon_gc - 246.6667
-        
-        # Lagna is an ECLIPTIC intersection: Kala evaluates its Nakshatra using Ecliptic Ayanamsa
-        sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360.0
-        a_idx = int(sid_lon_asc / 13.3333333)
-        a_pada = int((sid_lon_asc % 13.3333333) / 3.3333333) + 1
-        nakshatras_sidereal["Lagna"] = {
-            "nakshatra": NAKSHATRAS[a_idx],
-            "pada": a_pada,
-            "sidereal_longitude": round(sid_lon_asc, 4),
-            "sidereal_ra": round(sid_lon_asc, 4),
-            "ecliptic_ayanamsa": round(ayanamsa_ecl, 4)
-        }
-
-        # Physical Grahas & Nodes: Measured along the CELESTIAL EQUATOR (Right Ascension)
-        for p_name, p_id in planet_ids.items():
-            if p_name == "Rahu":
-                res_eq, _ = swe.calc_ut(jd, swe.TRUE_NODE, flags_equatorial)
-                ra_planet = res_eq[0]
-            else:
-                res_eq, _ = swe.calc_ut(jd, p_id, flags_equatorial)
-                ra_planet = res_eq[0]
-            
-            sidereal_ra = (ra_planet - ayanamsa_eq) % 360.0
-            
-            if p_name == "Rahu":
-                ra_ketu = (ra_planet + 180.0) % 360.0
-                sid_ra_ketu = (ra_ketu - ayanamsa_eq) % 360.0
-                k_idx = int(sid_ra_ketu / 13.3333333)
-                k_pada = int((sid_ra_ketu % 13.3333333) / 3.3333333) + 1
-                nakshatras_sidereal["Ketu"] = {
-                    "nakshatra": NAKSHATRAS[k_idx],
-                    "pada": k_pada,
-                    "sidereal_ra": round(sid_ra_ketu, 4)
-                }
-                
-            n_idx = int(sidereal_ra / 13.3333333)
-            n_pada = int((sidereal_ra % 13.3333333) / 3.3333333) + 1
-            
-            nakshatras_sidereal[p_name] = {
-                "nakshatra": NAKSHATRAS[n_idx],
-                "pada": n_pada,
-                "sidereal_ra": round(sidereal_ra, 4)
-            }
-
-    # Calculate Relative Speeds
+    # Speeds and Relative Speeds directly from baseline.coordinates
     d1_speeds = {}
     d1_rel_speeds = {"Lagna": "--"}
     d1_rel_speeds_pct = {}
     for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+        spd = coords[p_name]["speed"]
         if p_name in ["Rahu", "Ketu"]:
-            p_eq = swe.calc_ut(jd + 0.5, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)[0][0]
-            m_eq = swe.calc_ut(jd - 0.5, swe.TRUE_NODE, swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)[0][0]
-            d = (p_eq - m_eq) % 360
-            if d > 180: d -= 360
-            spd = -abs(d)
-            d1_speeds[p_name] = round(spd, 4)
-            ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
-            d1_rel_speeds[p_name] = f"{ratio:.2f}%"
-            d1_rel_speeds_pct[p_name] = round(ratio, 2)
-        else:
-            p_id = planet_ids[p_name]
-            res, _ = swe.calc_ut(jd, p_id, flags_ecliptic)
-            spd = res[3]
-            d1_speeds[p_name] = round(spd, 4)
-            ratio = (spd / KALA_MEAN_DAILY_SPEEDS[p_name]) * 100.0
-            d1_rel_speeds[p_name] = f"{ratio:.2f}%"
-            d1_rel_speeds_pct[p_name] = round(ratio, 2)
+            # Lunar nodes are permanently retrograde in classical Jyotish; project equatorial speed
+            r_lon_rad = math.radians(coords[p_name]["longitude"])
+            eps_rad = math.radians(23.4392911)
+            d_ra_d_lon = math.cos(eps_rad) / (1.0 - math.sin(eps_rad)**2 * math.sin(r_lon_rad)**2)
+            spd = -abs(spd * d_ra_d_lon * (1.0 - 0.0053))
+        d1_speeds[p_name] = round(spd, 4)
+        mean_speed = KALA_MEAN_DAILY_SPEEDS.get(p_name, 1.0)
+        ratio = (spd / mean_speed) * 100.0 if mean_speed > 0 else 100.0
+        d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+        d1_rel_speeds_pct[p_name] = round(ratio, 2)
 
     # Calculate Navatara & Lord/Sublord for all entities
     moon_nak_idx = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"])
@@ -633,6 +456,10 @@ def generate_kala_chart(
             vargas_data["D1"]["grahas"][p_name]["relative_speed"] = d1_rel_speeds.get(p_name, "--")
             vargas_data["D1"]["grahas"][p_name]["relative_speed_pct"] = d1_rel_speeds_pct.get(p_name)
             
+    # Lunar nodes are permanently retrograde in classical Jyotish / Kala
+    vargas_data["D1"]["grahas"]["Rahu"]["is_retrograde"] = True
+    vargas_data["D1"]["grahas"]["Ketu"]["is_retrograde"] = True
+
     vargas_data["D1"]["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
     vargas_data["D1"]["lagna"]["pada"] = nakshatras_sidereal["Lagna"]["pada"]
     vargas_data["D1"]["lagna"]["tara"] = nakshatras_sidereal["Lagna"]["tara"]
@@ -644,18 +471,12 @@ def generate_kala_chart(
         
     # --- 3.5 Calculate Shayanadi Avasthas ---
     
-    # Calculate Sunrise (Center of Disk)
-    res_rise = swe.rise_trans(jd, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
-    sunrise_jd = res_rise[1][0]
-    
-    # If birth was before today's sunrise, use yesterday's sunrise
-    if sunrise_jd > jd:
-        res_rise = swe.rise_trans(jd - 1.0, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (longitude, latitude, 0.0), 0.0, 0.0)
-        sunrise_jd = res_rise[1][0]
-        
-    minutes_elapsed = (jd - sunrise_jd) * 24.0 * 60.0
+    # Sunrise from certified Stage 1 anchors
+    sunrise_jd = anchors["sunrise_jd"]
+    minutes_elapsed = max(0.0, (jd - sunrise_jd) * 24.0 * 60.0)
     ishta_ghati = math.ceil(minutes_elapsed / 24.0)
-    if ishta_ghati <= 0: ishta_ghati = 1
+    if ishta_ghati <= 0:
+        ishta_ghati = 1
     
     varnamashka = name_sound_value if name_sound_value else avasthas.get_varnamashka(name)
     moon_nakshatra_no = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"]) + 1
@@ -688,12 +509,10 @@ def generate_kala_chart(
         if "Lagna" in nakshatras_sidereal and "lagna" in v_data:
             v_data["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
 
-    # 4. Vimshottari Dasha
+    # 4. Vimshottari Dasha (Using precalculated Moon from baseline)
+    moon_nak = baseline.nakshatras["grahas"]["Moon"]
     if nakshatra_system == "VIC_CHITRA":
-        swe.set_sid_mode(swe.SIDM_LAHIRI)
-        res_moon, _ = swe.calc_ut(jd, swe.MOON, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
-        moon_sid_lon = res_moon[0] % 360.0
-
+        moon_sid_lon = moon_nak["sidereal_longitude"]
         dasha_timeline = calculate_vimshottari_timeline(
             moon_sidereal_ra=moon_sid_lon,
             birth_jd_local=jd_local,
@@ -705,12 +524,9 @@ def generate_kala_chart(
             moon_sidereal_lon=moon_sid_lon
         )
     else:
-        flags_equatorial = swe.FLG_SWIEPH | swe.FLG_EQUATORIAL
-        res_moon, _ = swe.calc_ut(jd, swe.MOON, flags_equatorial)
-        moon_sid_ra_precise = (res_moon[0] - ayanamsa_eq) % 360.0
-
+        moon_sid_ra = moon_nak["sidereal_ra"]
         dasha_timeline = calculate_vimshottari_timeline(
-            moon_sidereal_ra=moon_sid_ra_precise,
+            moon_sidereal_ra=moon_sid_ra,
             birth_jd_local=jd_local,
             cal_flag=cal_flag,
             total_cycles=1,
@@ -731,6 +547,13 @@ def generate_kala_chart(
         debilitation_mode=debilitation_mode,
         dig_bala_mode=dig_bala_mode,
         kendra_bala_mode=kendra_bala_mode
+    )
+
+    # Stage 3: House Capacity & Bhāva Bala
+    bhava_bala_data = calculate_bhava_bala(
+        baseline=baseline,
+        shadbala_results=shadbala_data,
+        aspect_matrices=aspect_matrices
     )
     
     # 6. Assemble JSON Context
@@ -856,6 +679,7 @@ def generate_kala_chart(
             "antardashas": dasha_timeline["antardashas"],
         },
         "shadbala": shadbala_data,
+        "bhava_bala": bhava_bala_data,
         "avastha_matrix": avastha_matrices,
         "varga_lajjitadi_net_modifiers": avasthas.calculate_varga_lajjitadi_net_modifiers(vargas_data),
         "advanced_aspects": varga_aspects["D1"],

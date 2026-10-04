@@ -9,8 +9,8 @@ from jyotish import pdf_exporter
 import geonamescache
 from timezonefinder import TimezoneFinder
 from datetime import datetime
+from typing import Tuple
 import pytz
-import swisseph as swe
 
 gc = geonamescache.GeonamesCache()
 tf = TimezoneFinder()
@@ -19,6 +19,32 @@ app = Flask(__name__)
 CHARTS_FILE = os.path.join(os.path.dirname(__file__), "database", "Charts.jsonl")
 
 import json
+
+
+def _gregorian_to_jd(year: int, month: int, day: int, hour_fraction: float) -> float:
+    if month <= 2:
+        year -= 1
+        month += 12
+    a = int(year / 100)
+    b = 2 - a + int(a / 4)
+    jd = int(365.25 * (year + 4716)) + int(30.6001 * (month + 1)) + day + b - 1524.5
+    return jd + (hour_fraction / 24.0)
+
+
+def _jd_to_gregorian(jd: float) -> Tuple[int, int, int, float]:
+    z = int(jd + 0.5)
+    f = (jd + 0.5) - z
+    alpha = int((z - 1867216.25) / 36524.25)
+    a = z + 1 + alpha - int(alpha / 4)
+    b = a + 1524
+    c = int((b - 122.1) / 365.25)
+    d = int(365.25 * c)
+    e = int((b - d) / 30.6001)
+    day = b - d - int(30.6001 * e)
+    month = e - 1 if e < 14 else e - 13
+    year = c - 4716 if month > 2 else c - 4715
+    return year, month, day, f * 24.0
+
 
 @app.route('/')
 def index():
@@ -47,14 +73,13 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
         year, month, day = 2000, 1, 1
         hour, minute, second = 12, 0, 0
     
-    # Handle continuous astronomical time offset via Swiss Ephemeris
+    # Handle continuous astronomical time offset via pure calendar conversions
     is_preview = bool(offset_seconds != 0 or time_override or date_override)
     if offset_seconds != 0:
         local_hf = hour + (minute / 60.0) + (second / 3600.0)
-        cal_flag = swe.JUL_CAL if (year < 1582 or (year == 1582 and month < 10) or (year == 1582 and month == 10 and day < 15)) else swe.GREG_CAL
-        jd_base = swe.julday(year, month, day, local_hf, cal_flag)
+        jd_base = _gregorian_to_jd(year, month, day, local_hf)
         jd_shifted = jd_base + (float(offset_seconds) / 86400.0)
-        s_year, s_month, s_day, s_hf = swe.revjul(jd_shifted, cal_flag)
+        s_year, s_month, s_day, s_hf = _jd_to_gregorian(jd_shifted)
         s_hour = int(s_hf)
         rem_m = (s_hf - s_hour) * 60.0
         s_minute = int(rem_m)

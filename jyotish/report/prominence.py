@@ -47,7 +47,6 @@ Architecture & Features:
 
 import math
 from typing import Dict, Any, List, Optional, Tuple
-import swisseph as swe
 import jyotish.relationships.relationships as rel
 from jyotish.aspects.aspects import get_graha_drishti
 
@@ -90,23 +89,8 @@ def calculate_declination(
 ) -> float:
     """
     Computes celestial declination (Krānti) in degrees (-90.0 to +90.0).
-    Uses high-precision Swiss Ephemeris when Julian Day is available,
-    falling back to exact spherical coordinate transformation.
+    Uses exact spherical coordinate transformation from ecliptic coordinates.
     """
-    p_map = {
-        "Sun": swe.SUN, "Moon": swe.MOON, "Mars": swe.MARS,
-        "Mercury": swe.MERCURY, "Jupiter": swe.JUPITER,
-        "Venus": swe.VENUS, "Saturn": swe.SATURN
-    }
-    if jd is not None and planet in p_map:
-        try:
-            res, _ = swe.calc_ut(jd, p_map[planet], swe.FLG_SWIEPH | swe.FLG_EQUATORIAL)
-            return float(res[1])
-        except Exception:
-            pass
-
-    # Exact spherical transformation from ecliptic coordinates (lambda, beta) to equatorial declination (delta)
-    # True mean obliquity of the ecliptic (J2000 ~ 23.4392911°)
     eps = math.radians(23.4392911)
     lam = math.radians(longitude % 360.0)
     beta = math.radians(latitude)

@@ -13,7 +13,6 @@ Ground Truth & Astronomical Authority:
 """
 
 from typing import List, Dict, Any, Tuple, Optional
-import swisseph as swe
 
 # Nakshatra Calculation Systems
 NAKSHATRA_SYSTEM_DHRUVA: str = "ERNST_DHRUVA"
@@ -60,23 +59,37 @@ LORD_TO_ABBR: Dict[str, str] = {
 ABBR_TO_LORD: Dict[str, str] = {v: k for k, v in LORD_TO_ABBR.items()}
 
 
-def format_jd_datetime(jd: float, cal_flag: int = swe.GREG_CAL) -> Tuple[str, str, str]:
+def format_jd_datetime(jd: float, cal_flag: int = 1) -> Tuple[str, str, str]:
     """
-    Converts a Julian Day to formatted ISO date (YYYY-MM-DD), US date (MM/DD/YYYY),
-    and 24-hour time (HH:MM).
+    Converts Julian Day to formatted ISO date (YYYY-MM-DD), US date (MM/DD/YYYY),
+    and 24-hour time (HH:MM) using deterministic Gregorian calendar arithmetic.
     """
-    year, month, day, ut_hour_frac = swe.revjul(jd, cal_flag)
+    z = int(jd + 0.5)
+    f = (jd + 0.5) - z
+    if z < 2299161:
+        a = z
+    else:
+        alpha = int((z - 1867216.25) / 36524.25)
+        a = z + 1 + alpha - int(alpha / 4)
+
+    b = a + 1524
+    c = int((b - 122.1) / 365.25)
+    d = int(365.25 * c)
+    e = int((b - d) / 30.6001)
+
+    day = b - d - int(30.6001 * e)
+    month = e - 1 if e < 14 else e - 13
+    year = c - 4716 if month > 2 else c - 4715
+
+    ut_hour_frac = f * 24.0
     hh = int(ut_hour_frac)
     mm = int(round((ut_hour_frac - hh) * 60.0))
     if mm >= 60:
         hh += 1
         mm = 0
     if hh >= 24:
-        # Wrap day if clock rounds past midnight
-        next_jd = swe.julday(year, month, day, 0.0, cal_flag) + (hh / 24.0)
-        year, month, day, ut_hour_frac = swe.revjul(next_jd, cal_flag)
-        hh = int(ut_hour_frac)
-        mm = int(round((ut_hour_frac - hh) * 60.0))
+        hh = 0
+        day += 1
 
     iso_date = f"{year:04d}-{month:02d}-{day:02d}"
     us_date = f"{month:02d}/{day:02d}/{year:04d}"
@@ -87,7 +100,7 @@ def format_jd_datetime(jd: float, cal_flag: int = swe.GREG_CAL) -> Tuple[str, st
 def calculate_vimshottari_timeline(
     moon_sidereal_ra: float,
     birth_jd_local: float,
-    cal_flag: int = swe.GREG_CAL,
+    cal_flag: int = 1,
     total_cycles: int = 1,
     dasha_year_days: float = SAURA_YEAR_DAYS,
     nakshatra_system: str = NAKSHATRA_SYSTEM_DHRUVA,
@@ -104,7 +117,7 @@ def calculate_vimshottari_timeline(
     Args:
         moon_sidereal_ra: Moon's Right Ascension in the Sidereal Equatorial frame (0-360°).
         birth_jd_local: Local Julian Day of birth.
-        cal_flag: Calendar flag (swe.GREG_CAL or swe.JUL_CAL).
+        cal_flag: Calendar flag (1 for Gregorian, 0 for Julian).
         total_cycles: Number of 120-year cycles to compute (default 1).
         dasha_year_days: Number of days in one dasha year (default Saura 365.2422).
         nakshatra_system: "ERNST_DHRUVA" or "VIC_CHITRA".
@@ -120,15 +133,7 @@ def calculate_vimshottari_timeline(
     """
     # 1. Determine Moon position based on nakshatra_system
     if nakshatra_system == NAKSHATRA_SYSTEM_VIC:
-        # Branch B: VIC_CHITRA (Vic DiCara: Ecliptic Sidereal Lahiri / Chitra)
-        if moon_sidereal_lon is not None:
-            moon_pos = float(moon_sidereal_lon) % 360.0
-        elif birth_jd_utc is not None:
-            swe.set_sid_mode(swe.SIDM_LAHIRI)
-            res_m, _ = swe.calc_ut(birth_jd_utc, swe.MOON, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)
-            moon_pos = float(res_m[0]) % 360.0
-        else:
-            moon_pos = float(moon_sidereal_ra) % 360.0
+        moon_pos = float(moon_sidereal_lon if moon_sidereal_lon is not None else moon_sidereal_ra) % 360.0
     else:
         # Branch A: ERNST_DHRUVA (Ernst Wilhelm: Dhruva Equatorial Right Ascension)
         moon_pos = float(moon_sidereal_ra) % 360.0
