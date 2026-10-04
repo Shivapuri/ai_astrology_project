@@ -1,7 +1,7 @@
 # Astra Ephemeris Migration Inventory
 
-Total Direct Ephemeris Calls: **86**  
-Total Files Affected: **13**  
+Total Direct Ephemeris Calls: **64**  
+Total Files Affected: **14**  
 Total Parent Directories: **8**  
 
 ## 📊 Summary by Parent Directory
@@ -9,12 +9,12 @@ Total Parent Directories: **8**
 | Parent Folder | Affected Files | Direct Calls | Primary Migration Targets |
 | :--- | :---: | :---: | :--- |
 | `📁 jyotish/` | 3 | 29 | `calc_utils.py`, `draw_chart.py`, `generate_jyotish.py` |
-| `📁 jyotish/shadbala/` | 1 | 25 | `shadbala.py` |
 | `📁 scripts/` | 2 | 12 | `generate_nakshatra_preview.py`, `search_krishna_chart.py` |
-| `📁 tests/` | 3 | 8 | `test_math_engines.py`, `test_search_krishna_chart.py`, `test_vimshottari_timeline.py` |
+| `📁 tests/` | 4 | 9 | `test_math_engines.py`, `test_search_krishna_chart.py`, `test_stage2b_shadbala.py`, `test_vimshottari_timeline.py` |
 | `📁 jyotish/dashas/` | 1 | 6 | `vimshottari.py` |
 | `📁 [Project Root]` | 1 | 3 | `app.py` |
 | `📁 jyotish/report/` | 1 | 2 | `prominence.py` |
+| `📁 jyotish/shadbala/` | 1 | 2 | `shadbala.py` |
 | `📁 jyotish/transits/` | 1 | 1 | `transits.py` |
 
 ---
@@ -107,37 +107,14 @@ Total Parent Directories: **8**
 
 ## 📁 Directory: `jyotish/shadbala/`
 
-**Total Calls in Folder:** 25 across 1 file(s)
+**Total Calls in Folder:** 2 across 1 file(s)
 
 ### 📄 `shadbala.py` (`jyotish/shadbala/shadbala.py`)
 
 | Line | Symbol | Current Code | Baseline Replacement |
 | :---: | :--- | :--- | :--- |
-| 140 | `calculate_varga_longitude` | `varga_lon = calculate_varga_longitude(p1_d1_lon, varga)` | `baseline.vargas[varga_name]['grahas'][planet]['longitude']` |
-| 332 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 333 | `swe.house_pos` | `hpos = swe.house_pos(armc, geolat, eps, [planet_lon, planet_lat], b'C')` | `baseline.astronomical_anchors['campanus_display_cusps']` |
-| 442 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 453 | `swe.rise_trans` | `_, tret_curr = swe.rise_trans(birth_time_jd, swe.SUN, rsmi, geopos)` | `baseline.astronomical_anchors['sunrise_jd'\|'sunset_jd']` |
-| 458 | `swe.rise_trans` | `_, tret_prev = swe.rise_trans(birth_time_jd - 1.0, swe.SUN, rsmi, geopos)` | `baseline.astronomical_anchors['sunrise_jd'\|'sunset_jd']` |
-| 472 | `swe.calc_ut` | `sun_lon = swe.calc_ut(birth_time_jd, swe.SUN)[0][0]` | `baseline.coordinates[planet]['longitude'\|'latitude'\|'speed'] or ['declination'\|'right_ascension']` |
-| 473 | `swe.revjul` | `yr, mo, da, hr = swe.revjul(birth_time_jd)` | `baseline.astronomical_anchors['jd_utc'\|'cal_flag']` |
-| 475 | `swe.julday` | `ingress_guess = swe.julday(yr, 3, 20, 0.0)` | `baseline.astronomical_anchors['jd_utc'\|'jd_local']` |
-| 476 | `swe.solcross_ut` | `jd_mesha = swe.solcross_ut(0.0, ingress_guess, swe.FLG_SWIEPH)` | `baseline.astronomical_anchors['temporal_lords']['Masa'\|'Varsha']` |
-| 478 | `swe.solcross_ut` | `jd_mesha = swe.solcross_ut(0.0, swe.julday(yr - 1, 3, 20, 0.0), swe.FLG_SWIEPH)` | `baseline.astronomical_anchors['temporal_lords']['Masa'\|'Varsha']` |
-| 478 | `swe.julday` | `jd_mesha = swe.solcross_ut(0.0, swe.julday(yr - 1, 3, 20, 0.0), swe.FLG_SWIEPH)` | `baseline.astronomical_anchors['jd_utc'\|'jd_local']` |
-| 488 | `swe.solcross_ut` | `jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 32.0, swe.FLG_SWIEPH)` | `baseline.astronomical_anchors['temporal_lords']['Masa'\|'Varsha']` |
-| 490 | `swe.solcross_ut` | `jd_sign = swe.solcross_ut(target_lon, birth_time_jd - 40.0, swe.FLG_SWIEPH)` | `baseline.astronomical_anchors['temporal_lords']['Masa'\|'Varsha']` |
-| 588 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 595 | `swe.calc_ut` | `res, _ = swe.calc_ut(birth_time_jd, planet_map[planet], swe.FLG_SWIEPH)` | `baseline.coordinates[planet]['longitude'\|'latitude'\|'speed'] or ['declination'\|'right_ascension']` |
-| 671 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 673 | `swe.calc_ut` | `res, _ = swe.calc_ut(birth_time_jd, p_id, swe.FLG_SWIEPH \| swe.FLG_SPEED \| swe.FLG_HELCTR)` | `baseline.coordinates[planet]['longitude'\|'latitude'\|'speed'] or ['declination'\|'right_ascension']` |
-| 675 | `swe.get_orbital_elements` | `elem = swe.get_orbital_elements(birth_time_jd, p_id, swe.FLG_SWIEPH)` | `baseline.coordinates[planet]['speed'] / baseline.astronomical_anchors` |
-| 797 | `calculate_varga_longitude` | `varga_lon = calculate_varga_longitude(p1_d1_lon, varga)` | `baseline.vargas[varga_name]['grahas'][planet]['longitude']` |
-| 947 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 948 | `swe.houses` | `cusps_res, ascmc_res = swe.houses(birth_time_jd, lat, lon, b'C')` | `baseline.astronomical_anchors['asc_longitude'\|'mc_longitude'\|'campanus_display_cusps']` |
-| 950 | `swe.calc_ut` | `eps = swe.calc_ut(birth_time_jd, swe.ECL_NUT)[0][0]` | `baseline.coordinates[planet]['longitude'\|'latitude'\|'speed'] or ['declination'\|'right_ascension']` |
-| 975 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
-| 982 | `swe.calc_ut` | `res_pl, _ = swe.calc_ut(birth_time_jd, pl_id_map[p], swe.FLG_SWIEPH)` | `baseline.coordinates[planet]['longitude'\|'latitude'\|'speed'] or ['declination'\|'right_ascension']` |
+| 145 | `calculate_varga_longitude` | `varga_lon = calculate_varga_longitude(p1_d1_lon, varga)` | `baseline.vargas[varga_name]['grahas'][planet]['longitude']` |
+| 775 | `calculate_varga_longitude` | `varga_lon = calculate_varga_longitude(p1_d1_lon, varga)` | `baseline.vargas[varga_name]['grahas'][planet]['longitude']` |
 
 ## 📁 Directory: `jyotish/transits/`
 
@@ -177,7 +154,7 @@ Total Parent Directories: **8**
 
 ## 📁 Directory: `tests/`
 
-**Total Calls in Folder:** 8 across 3 file(s)
+**Total Calls in Folder:** 9 across 4 file(s)
 
 ### 📄 `test_math_engines.py` (`tests/test_math_engines.py`)
 
@@ -191,6 +168,12 @@ Total Parent Directories: **8**
 | :---: | :--- | :--- | :--- |
 | 3 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
 | 12 | `swe.julday` | `jd = swe.julday(-3255, 8, 28, 18.333, swe.JUL_CAL)` | `baseline.astronomical_anchors['jd_utc'\|'jd_local']` |
+
+### 📄 `test_stage2b_shadbala.py` (`tests/test_stage2b_shadbala.py`)
+
+| Line | Symbol | Current Code | Baseline Replacement |
+| :---: | :--- | :--- | :--- |
+| 181 | `swisseph` | `import swisseph as swe` | `from jyotish.baseline import ChartBaseline` |
 
 ### 📄 `test_vimshottari_timeline.py` (`tests/test_vimshottari_timeline.py`)
 
