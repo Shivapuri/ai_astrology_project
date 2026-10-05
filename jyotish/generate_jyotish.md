@@ -1,22 +1,31 @@
-# Jyotish Engine: Master Orchestrator, Nakshatras & Dashas (generate_jyotish.py)
+# Jyotish Engine: Master Orchestrator, Nakshatras & Dashas (generate_jyotish.py & pipeline.py)
 
-This file documents the core orchestration script `generate_jyotish.py`, which integrates all subsidiary mathematical models into a unified chart computation. In particular, it houses the explicit algorithms for the **Campanus House System**, **Sidereal Equatorial Nakshatras**, and **Vimshottari Dashas**.
+This file documents the core orchestration script `generate_jyotish.py` and its underlying engine `jyotish/pipeline.py` (`ChartPipeline`), which integrates all subsidiary mathematical stages into a unified, lazy-evaluated Directed Acyclic Graph (DAG) computation pipeline. In particular, it houses the explicit algorithms for the **Campanus House System**, **Sidereal Equatorial Nakshatras**, and **Vimshottari Dashas**.
 
 ---
 
 ## 1. Simple Description (For the Layperson)
 
-The `generate_jyotish.py` script is the "Grand Conductor" of the astrology engine. When you provide a birth date, time, and location, this script does the following:
-1. **Finds the Planets (Ecliptic):** It looks up exactly where the planets were in the sky using standard Western (Tropical) signs for the main charts.
-2. **Calculates the Houses (Campanus):** It divides the sky into 12 "Houses" to see which areas of life the planets affect. It uses a highly accurate 3D method called "Campanus."
-3. **Calculates the Stars (Nakshatras):** Instead of looking at the Zodiac along the path of the Sun (Ecliptic), it measures the planets along the Earth's Equator. It anchors this stellar wheel by locking the center of our Galaxy to the middle of the star *Mula*.
-4. **Calculates the Timelines (Vimshottari Dasha):** Using the exact position of the Moon in the Nakshatras, it calculates the lifetime timeline (Dashas). It uses a special year length (the Saura year of ~359 days) to calculate when life chapters begin and end.
+The `generate_jyotish.py` module and `ChartPipeline` are the "Grand Conductor" of the astrology engine. When you provide a birth date, time, and location, the pipeline does the following:
+1. **Finds the Planets (Ecliptic):** Looks up exactly where the planets were in the sky using standard Western (Tropical) signs for the main charts (Stage 1 `ChartBaseline`).
+2. **Calculates the Houses (Campanus):** Divides the sky into 12 "Houses" to see which areas of life the planets affect using the 3D "Campanus" method.
+3. **Calculates the Stars (Nakshatras):** Measures the planets along the Earth's Equator (Right Ascension) rather than the Ecliptic, locking the center of our Galaxy to the middle of the star *Mula*.
+4. **Calculates the Timelines (Vimshottari Dasha):** Using the exact position of the Moon in the Nakshatras, it calculates the lifetime timeline (Dashas) using the exact Saura solar year of 365.2422 days.
+5. **Orchestrates Strengths & Evaluations (Stages 2–4):** Computes Shadbala, Bhava Bala, Harsha Bala, House Atmospheres, Classical Yogas, and Planetary Evaluations in a clean, cached pipeline without recomputing raw ephemeris data.
 
 ---
 
 ## 2. Technical AI Description (Logic Constraints)
 
-If you are modifying `generate_jyotish.py`, you must strictly observe the following mathematical rules:
+`generate_jyotish.py` is a thin facade that delegates chart computation to `ChartPipeline` (`jyotish/pipeline.py`).
+`ChartPipeline` evaluates the 4-stage DAG lazily via Python's `@cached_property`:
+- **Stage 1 (`ChartBaseline`):** Pure physical coordinates and ephemeris.
+- **Stage 2A (`relationships.py`, `aspects.py`):** Dignities and aspect matrices.
+- **Stage 2B (`shadbala.py`, `avasthas/`):** 6-fold Shadbala and Avasthas.
+- **Stage 3 (`bhava_bala.py`):** Bhava Bala, Harsha Bala, House Atmosphere, and Master Diagnostic payload.
+- **Stage 4 (`yogas/`, `dashas/`, `planetary_evaluation/`, `report/`):** Downstream synthesis.
+
+If you are modifying `generate_jyotish.py` or `jyotish/pipeline.py`, you must strictly observe the following mathematical rules:
 
 ### A. House System (Campanus)
 *   **Methodology:** Ernst Wilhelm's Kala software explicitly uses the **Campanus House System** for all Bhava Chalita calculations. Campanus divides the Prime Vertical into equal $30^\circ$ segments and projects them onto the ecliptic.

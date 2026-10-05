@@ -212,24 +212,32 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
     """
     Audits whether participating planets are combust (< 8° from Sun).
     Deep combustion (< 3°) burns independent manifestation capacity.
+    Consumes pre-calculated combustion status from Stage 1/pipeline when available.
     """
     breakers = []
+    comb_status = chart.get("combustion_status") or getattr(getattr(chart, "baseline", None), "combustion_status", {})
     planets_data = get_planets_data(chart)
-    sun_lon = planets_data.get("Sun", {}).get("longitude")
-    if sun_lon is None:
-        return breakers
-        
+
     for p in yoga_planets:
         if p in ("Sun", "Rahu", "Ketu"):
             continue
-        p_lon = planets_data.get(p, {}).get("longitude")
-        if p_lon is None:
-            continue
-            
-        diff = abs(p_lon - sun_lon) % 360.0
-        if diff > 180.0:
-            diff = 360.0 - diff
-            
+        p_entry = planets_data.get(p, {})
+        diff = None
+
+        if isinstance(comb_status, dict) and p in comb_status:
+            diff = comb_status[p].get("sun_separation")
+        elif "sun_distance" in p_entry and p_entry["sun_distance"] is not None:
+            diff = p_entry["sun_distance"]
+
+        if diff is None:
+            sun_lon = planets_data.get("Sun", {}).get("longitude")
+            p_lon = p_entry.get("longitude")
+            if sun_lon is None or p_lon is None:
+                continue
+            diff = abs(p_lon - sun_lon) % 360.0
+            if diff > 180.0:
+                diff = 360.0 - diff
+
         if diff < 3.0:
             breakers.append(YogaBreakerDetail(
                 factor="Deep Planetary Combustion (Astangata)",
@@ -244,7 +252,7 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
                 description=f"{p} is combust within {diff:.1f}° of the Sun. May produce internal egoic conflict or diminished visibility.",
                 penalty=20.0
             ))
-            
+
     return breakers
 
 def audit_neecha_bhanga_condition_3(

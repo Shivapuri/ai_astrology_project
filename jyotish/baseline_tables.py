@@ -6,7 +6,7 @@ Contains immutable constants, planetary listings, zodiac/nakshatra sequences,
 combustion boundaries, D60 Shastiamsa deities, and Chandra Kriyādi classifications.
 """
 
-from typing import List, Tuple, Dict, Set
+from typing import List, Tuple, Dict, Set, Any
 
 PLANETS_ORDER: List[str] = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
 ALL_BODIES: List[str] = PLANETS_ORDER + ["Lagna", "MC"]
@@ -61,6 +61,49 @@ VARGAS_LIST: List[str] = [
     "D1", "D2", "D3", "D4", "D7", "D9", "D10", "D12",
     "D16", "D20", "D24", "D27", "D30", "D40", "D45", "D60"
 ]
+
+# Fixed Natural Friendships (Naisargika Sambandha) based on Moolatrikona rules per BPHS Ch. 15
+NAISARGIKA_SAMBANDHA: Dict[str, Dict[str, List[str]]] = {
+    "Sun": {"Friends": ["Moon", "Mars", "Jupiter"], "Neutrals": ["Mercury"], "Enemies": ["Venus", "Saturn"]},
+    "Moon": {"Friends": ["Sun", "Mercury"], "Neutrals": ["Mars", "Jupiter", "Venus", "Saturn"], "Enemies": []},
+    "Mars": {"Friends": ["Sun", "Moon", "Jupiter"], "Neutrals": ["Venus", "Saturn"], "Enemies": ["Mercury"]},
+    "Mercury": {"Friends": ["Sun", "Venus"], "Neutrals": ["Mars", "Jupiter", "Saturn"], "Enemies": ["Moon"]},
+    "Jupiter": {"Friends": ["Sun", "Moon", "Mars"], "Neutrals": ["Saturn"], "Enemies": ["Mercury", "Venus"]},
+    "Venus": {"Friends": ["Mercury", "Saturn"], "Neutrals": ["Mars", "Jupiter"], "Enemies": ["Sun", "Moon"]},
+    "Saturn": {"Friends": ["Mercury", "Venus"], "Neutrals": ["Jupiter"], "Enemies": ["Sun", "Moon", "Mars"]}
+}
+
+# Specific fixed dignities (Exaltation, Moolatrikona, Own Sign)
+FIXED_DIGNITIES: Dict[str, Dict[str, Any]] = {
+    "Sun": {"Exalted": "Aries", "Debilitated": "Libra", "Moolatrikona": "Leo", "Own": ["Leo"]},
+    "Moon": {"Exalted": "Taurus", "Debilitated": "Scorpio", "Moolatrikona": "Taurus", "Own": ["Cancer"]},
+    "Mars": {"Exalted": "Capricorn", "Debilitated": "Cancer", "Moolatrikona": "Aries", "Own": ["Aries", "Scorpio"]},
+    "Mercury": {"Exalted": "Virgo", "Debilitated": "Pisces", "Moolatrikona": "Virgo", "Own": ["Gemini", "Virgo"]},
+    "Jupiter": {"Exalted": "Cancer", "Debilitated": "Capricorn", "Moolatrikona": "Sagittarius", "Own": ["Sagittarius", "Pisces"]},
+    "Venus": {"Exalted": "Pisces", "Debilitated": "Virgo", "Moolatrikona": "Libra", "Own": ["Taurus", "Libra"]},
+    "Saturn": {"Exalted": "Libra", "Debilitated": "Aries", "Moolatrikona": "Aquarius", "Own": ["Capricorn", "Aquarius"]},
+    # Kala standard rules for Nodes
+    "Rahu": {"Exalted": "Taurus", "Debilitated": "Scorpio", "Moolatrikona": "Gemini", "Own": ["Aquarius"]},
+    "Ketu": {"Exalted": "Scorpio", "Debilitated": "Taurus", "Moolatrikona": "Sagittarius", "Own": ["Scorpio"]}
+}
+
+EXALTATION_SIGNS: Dict[str, str] = {
+    "Sun": "Aries", "Moon": "Taurus", "Mars": "Capricorn",
+    "Mercury": "Virgo", "Jupiter": "Cancer", "Venus": "Pisces", "Saturn": "Libra"
+}
+
+DEBILITATION_SIGNS: Dict[str, str] = {
+    "Sun": "Libra", "Moon": "Scorpio", "Mars": "Cancer",
+    "Mercury": "Pisces", "Jupiter": "Capricorn", "Venus": "Virgo", "Saturn": "Aries"
+}
+
+NATURAL_BENEFICS: Set[str] = {"Jupiter", "Venus", "Moon", "Mercury"}
+NATURAL_MALEFICS: Set[str] = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+
+UPACAYA_HOUSES: Set[int] = {3, 6, 10, 11}
+KENDRA_HOUSES: Set[int] = {1, 4, 7, 10}
+TRIKONA_HOUSES: Set[int] = {1, 5, 9}
+DUHSTHANA_HOUSES: Set[int] = {6, 8, 12}
 
 # 60 Shastiamsa (D60) Deities per BPHS Ch. 6 / Phaladeepika Ch. 3
 SHASTIAMSA_DEITIES: List[str] = [

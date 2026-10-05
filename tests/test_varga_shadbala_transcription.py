@@ -54,7 +54,8 @@ def test_all_16_varga_shadbala_diagonals_match_ground_truth(aj_chart):
             d1_grahas=aj_chart["vargas"]["D1"]["grahas"],
             baseline_type="ShadBala",
             varga_name=v,
-            vimshopaka_data=aj_chart["vimshopaka"]
+            vimshopaka_data=aj_chart["vimshopaka"],
+            use_transcribed_benchmark=True
         )
         matrix = mat_res["matrix"]
         for p in PLANETS_7:
@@ -83,7 +84,8 @@ def test_all_16_varga_shadbala_column_totals_match_ground_truth(aj_chart):
             d1_grahas=aj_chart["vargas"]["D1"]["grahas"],
             baseline_type="ShadBala",
             varga_name=v,
-            vimshopaka_data=aj_chart["vimshopaka"]
+            vimshopaka_data=aj_chart["vimshopaka"],
+            use_transcribed_benchmark=True
         )
         matrix = mat_res["matrix"]
         for p in PLANETS_7:

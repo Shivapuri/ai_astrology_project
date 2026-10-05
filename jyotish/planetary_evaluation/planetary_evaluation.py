@@ -1420,7 +1420,8 @@ TARA_GRAHAS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
 
 def detect_planetary_wars(
     grahas_data: Dict[str, Any],
-    shadbala_data: Optional[Dict[str, Any]] = None
+    shadbala_data: Optional[Dict[str, Any]] = None,
+    baseline: Optional[Any] = None
 ) -> Dict[str, Dict[str, Any]]:
     """
     Detects Graha Yuddha (Planetary War) per Phaladeepika 4.2 & BPHS.
@@ -1438,6 +1439,41 @@ def detect_planetary_wars(
        - Victor (Jayi): war_mod = +0.30, inherits Combat Stain badge: '🏆 War Victor (Combat Stain: {loser})'
        - Defeated (Nipidita): war_mod = -0.60, badge: '⚔️ Nipidita (War Defeat via {winner})'
     """
+    if baseline is not None and hasattr(baseline, "planetary_wars"):
+        war_results: Dict[str, Dict[str, Any]] = {}
+        for w in baseline.planetary_wars:
+            p1, p2 = w["planet1"], w["planet2"]
+            winner, loser = w["winner"], w["loser"]
+            reason = w["reason"]
+            sep = float(w["separation_degrees"])
+            s1 = grahas_data.get(p1, {}).get("sign", "") if grahas_data else ""
+            
+            war_results[winner] = {
+                "in_war": True,
+                "is_winner": True,
+                "is_loser": False,
+                "opponent": loser,
+                "war_mod": 0.30,
+                "badge": f"🏆 War Victor (Combat Stain: {loser})",
+                "reason": reason,
+                "orb_deg": round(sep, 3),
+                "sign": s1,
+                "details": f"{winner} defeated {loser} in Graha Yuddha (orb: {sep:.2f}° in {s1}) via {reason}."
+            }
+            war_results[loser] = {
+                "in_war": True,
+                "is_winner": False,
+                "is_loser": True,
+                "opponent": winner,
+                "war_mod": -0.60,
+                "badge": f"⚔️ Nipidita (War Defeat via {winner})",
+                "reason": reason,
+                "orb_deg": round(sep, 3),
+                "sign": s1,
+                "details": f"{loser} defeated by {winner} in Graha Yuddha (orb: {sep:.2f}° in {s1}) entering Nipidita Avastha."
+            }
+        return war_results
+
     if not grahas_data:
         return {}
 
@@ -2302,7 +2338,8 @@ def calculate_graha_vitality(
 def calculate_planetary_evaluation(
     vargas_data: Dict[str, Any],
     shadbala_data: Optional[Dict[str, Any]] = None,
-    advanced_aspects: Optional[Dict[str, Any]] = None
+    advanced_aspects: Optional[Dict[str, Any]] = None,
+    baseline: Optional[Any] = None
 ) -> Dict[str, Any]:
     """
     Main evaluation engine. Calculates Vic DiCara's continuous Positive-to-Negative Scale,
@@ -2376,7 +2413,7 @@ def calculate_planetary_evaluation(
             "varga_breakdown": v_breakdown
         }
 
-    planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data)
+    planetary_wars = detect_planetary_wars(d1_grahas, shadbala_data, baseline=baseline)
 
     # Global Multi-Viparita Detection (Ruleset 4: >= 2 dusthana lords occupy dusthanas)
     dusthana_occupants = []

@@ -6,8 +6,9 @@ the native's birth chart. Supports both Ernst Wilhelm's Dhruva Equatorial Naksha
 and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
 """
 
+import copy
 from typing import Dict, Any, List, Optional, Tuple
-from jyotish import generate_jyotish
+from jyotish.baseline import ChartBaseline
 from jyotish.aspects.aspects import get_graha_drishti
 
 SIGNS_LIST = [
@@ -37,8 +38,8 @@ def calculate_transits(
     Computes transiting planetary positions and evaluates their aspects
     and house positions relative to the native's natal chart.
     """
-    # 1. Compute Transit Chart using Astra's Swiss Ephemeris engine
-    transit_chart = generate_jyotish.generate_kala_chart(
+    # 1. Compute Transit Baseline snapshot using certified Stage 1 (zero redundant chart generation)
+    transit_baseline = ChartBaseline(
         name="Transit",
         year=transit_year,
         month=transit_month,
@@ -49,13 +50,24 @@ def calculate_transits(
         latitude=transit_latitude,
         longitude=transit_longitude,
         timezone_offset=transit_timezone,
-        nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
+        nakshatra_system=nakshatra_system
     )
 
-    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
-    transit_d1 = transit_chart.get("vargas", {}).get("D1", {})
+    transit_d1 = copy.deepcopy(transit_baseline.vargas["D1"])
+    t_naks = transit_baseline.nakshatras["grahas"]
+    for p_name, g in transit_d1["grahas"].items():
+        if p_name in t_naks:
+            g["nakshatra"] = t_naks[p_name]["nakshatra"]
+            g["pada"] = t_naks[p_name]["pada"]
+    if "Lagna" in t_naks and "lagna" in transit_d1:
+        transit_d1["lagna"]["nakshatra"] = t_naks["Lagna"]["nakshatra"]
+        transit_d1["lagna"]["pada"] = t_naks["Lagna"]["pada"]
 
+    transit_chart = {
+        "vargas": {"D1": transit_d1},
+        "baseline": transit_baseline.to_dict()
+    }
+    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
     natal_grahas = natal_d1.get("grahas", {})
     natal_lagna = natal_d1.get("lagna", {})
     transit_grahas = transit_d1.get("grahas", {})

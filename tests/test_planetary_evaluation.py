@@ -1774,6 +1774,37 @@ def test_paramoccha_and_parama_neecha_apex_badges():
     assert "Apex Proximity" in vit_parama_neecha["calculation_receipt"]["receipt_text"]
 
 
+def test_detect_planetary_wars_with_baseline():
+    from jyotish.planetary_evaluation.planetary_evaluation import detect_planetary_wars
+    class MockBaseline:
+        planetary_wars = [{
+            "planet1": "Mars",
+            "planet2": "Saturn",
+            "separation_degrees": 0.35,
+            "cross_border": False,
+            "winner": "Mars",
+            "loser": "Saturn",
+            "reason": "Northern Declination (+12.34° vs -5.67°)"
+        }]
+
+    grahas = {
+        "Mars": {"sign": "Aries", "longitude": 15.0},
+        "Saturn": {"sign": "Aries", "longitude": 15.35}
+    }
+    wars = detect_planetary_wars(grahas, baseline=MockBaseline())
+    assert "Mars" in wars
+    assert "Saturn" in wars
+    assert wars["Mars"]["is_winner"] is True
+    assert wars["Mars"]["is_loser"] is False
+    assert wars["Mars"]["opponent"] == "Saturn"
+    assert wars["Saturn"]["is_winner"] is False
+    assert wars["Saturn"]["is_loser"] is True
+    assert wars["Saturn"]["opponent"] == "Mars"
+    assert wars["Mars"]["orb_deg"] == 0.35
+    assert "Northern Declination" in wars["Mars"]["reason"]
+
+
+
 
 
 

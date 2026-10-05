@@ -13,10 +13,14 @@ from jyotish.bhavas.bhava_bala import (
     calculate_bhava_bala,
     calculate_bhava_dig_bala,
     calculate_bhava_drishti_bala,
+    calculate_harsha_bala,
+    calculate_house_atmosphere,
+    generate_master_diagnostic_payload,
     get_sign_genus,
     SIGNS,
     SIGN_LORDS,
-    ZERO_HOUSES
+    ZERO_HOUSES,
+    MASTER_DIAGNOSTIC_COLUMNS,
 )
 
 
@@ -152,3 +156,123 @@ def test_zero_swisseph_in_bhava_bala():
     src = inspect.getsource(bb_module)
     assert "import swisseph" not in src
     assert "swe." not in src
+
+
+def test_harsha_bala_computation(jolie_baseline):
+    """
+    Certifies Harsha Bala (Strength of Cheerfulness) computation across 4 sources
+    per P.V.R. Narasimha Rao Ch. 28.3, and evaluates Dusthana Harsha/Viparita joy.
+    """
+    harsha_data = calculate_harsha_bala(jolie_baseline)
+
+    assert "planets" in harsha_data
+    assert "dusthana_joy" in harsha_data
+
+    planets = harsha_data["planets"]
+    for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        assert p in planets
+        entry = planets[p]
+        assert "sthana_bala_units" in entry
+        assert "uccha_swakshetra_units" in entry
+        assert "stree_purusha_units" in entry
+        assert "dina_ratri_units" in entry
+        assert "total_units" in entry
+        assert "strength_category" in entry
+
+        # Units per source are 0.0 or 5.0
+        assert entry["sthana_bala_units"] in (0.0, 5.0)
+        assert entry["uccha_swakshetra_units"] in (0.0, 5.0)
+        assert entry["stree_purusha_units"] in (0.0, 5.0)
+        assert entry["dina_ratri_units"] in (0.0, 5.0)
+
+        # Sum check
+        assert entry["total_units"] == (
+            entry["sthana_bala_units"] +
+            entry["uccha_swakshetra_units"] +
+            entry["stree_purusha_units"] +
+            entry["dina_ratri_units"]
+        )
+        assert 0.0 <= entry["total_units"] <= 20.0
+
+    # Dusthana joy checks for houses 6, 8, 12
+    dj = harsha_data["dusthana_joy"]
+    for h in [6, 8, 12]:
+        assert h in dj
+        assert "yoga_name" in dj[h]
+        assert "is_active" in dj[h]
+        assert "effect" in dj[h]
+    assert dj[6]["yoga_name"] == "Harsha"
+    assert dj[8]["yoga_name"] == "Sarala"
+    assert dj[12]["yoga_name"] == "Vimala"
+
+
+def test_house_atmosphere_model(jolie_baseline):
+    """
+    Certifies the synthesized 12-House Atmosphere & Environmental Weather model.
+    Verifies that each house produces a calibrated score, weather, and influence factors.
+    """
+    from jyotish.relationships.relationships import calculate_chart_dignities
+    from jyotish.aspects.aspects import calculate_aspect_matrices
+    from jyotish.shadbala.shadbala import calculate_shadbala
+
+    dignities = calculate_chart_dignities(jolie_baseline)
+    aspects = calculate_aspect_matrices(jolie_baseline)
+    shadbala = calculate_shadbala(jolie_baseline, dignities=dignities, aspect_matrices=aspects)
+    bhavas = calculate_bhava_bala(jolie_baseline, shadbala, aspects)
+
+    atmosphere = calculate_house_atmosphere(jolie_baseline, bhavas, aspect_matrices=aspects)
+
+    assert len(atmosphere) == 12
+    for h in range(1, 13):
+        assert h in atmosphere
+        atm = atmosphere[h]
+        assert "net_atmosphere_score" in atm
+        assert -100.0 <= atm["net_atmosphere_score"] <= 100.0
+        assert "classification" in atm
+        assert "environmental_weather" in atm
+        assert "auspicious_influences" in atm
+        assert "inauspicious_influences" in atm
+        assert "verdict" in atm
+        assert isinstance(atm["auspicious_influences"], list)
+        assert isinstance(atm["inauspicious_influences"], list)
+
+        # Check attached atmosphere and harsha inside bhava_results
+        assert "atmosphere" in bhavas[h]
+        assert "harsha_bala" in bhavas[h]
+
+
+def test_master_diagnostic_payload_generation(jolie_baseline):
+    """
+    Certifies that Stage 3 produces the authoritative 9-column Master Diagnostic
+    payload matching ADR-006 design standards directly from the backend pipeline.
+    """
+    payload = generate_master_diagnostic_payload(jolie_baseline, varga="D1")
+
+    assert "columns" in payload
+    assert "rows" in payload
+    assert "summary" in payload
+
+    # Exact 9-column geometry verification
+    assert payload["columns"] == MASTER_DIAGNOSTIC_COLUMNS
+    assert len(payload["columns"]) == 9
+
+    # 9 planetary rows (Sun through Ketu)
+    assert len(payload["rows"]) == 9
+    for row in payload["rows"]:
+        assert "planet" in row
+        assert "glyph" in row
+        assert "graha_karaka" in row
+        assert "longitude_bhava" in row
+        assert "dignity_sambandha" in row
+        assert "dispositor" in row
+        assert "shadbala" in row
+        assert "drishti_yuti" in row
+        assert "nakshatra_pada" in row
+        assert "avasthas" in row
+        assert "archetype_vitality" in row
+
+        # Check subfields
+        assert 1.0 <= row["archetype_vitality"]["vitality_score"] <= 10.0
+        assert row["graha_karaka"]["chara_karaka"] != ""
+        assert row["longitude_bhava"]["whole_sign_house"] in range(1, 13)
+

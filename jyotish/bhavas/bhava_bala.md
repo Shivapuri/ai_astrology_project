@@ -81,3 +81,45 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
    - **Puṣṭa** (Fortified/Flourishing)
    - **Miśra** (Balanced/Mixed)
    - **Hīna** (Depleted/Afflicted)
+
+---
+
+### C. Harsha Bala (P.V.R. Narasimha Rao Ch. 28.3 & Dusthana Joy Reversals)
+
+Harsha Bala ("Strength of Cheerfulness") measures the inner joy, comfort, and natural resilience of the seven classical planets:
+1. **Sthāna Bala (Joy House):** Sun in 9th, Moon in 3rd, Mars in 6th, Mercury in 1st, Jupiter in 11th, Venus in 5th, Saturn in 12th ($+5$ units).
+2. **Uccha / Sva Kṣetra (Exaltation or Own Sign):** $+5$ units.
+3. **Strī / Puruṣa Bhāva (Gender & House Match):** Feminine planets (Moon, Mercury, Venus, Saturn) in houses 1, 2, 3, 7, 8, 9; Masculine planets (Sun, Mars, Jupiter) in houses 4, 5, 6, 10, 11, 12 ($+5$ units).
+4. **Dina / Rātri Bala (Diurnal / Nocturnal Sect Match):** Day birth rewards masculine planets ($+5$ units); Night birth rewards feminine planets ($+5$ units).
+
+**Dusthana Harsha & Viparita Reversals:**
+- **6th House (Harsha Yoga):** 6th lord in 6th house OR Mars in 6th house converts debt and enemies into victory and immunity.
+- **8th House (Sarala Yoga):** 8th lord in 8th house converts crisis into fearless endurance and longevity.
+- **12th House (Vimala Yoga):** 12th lord in 12th house OR Saturn in 12th house converts loss and solitude into spiritual release and detachment.
+
+---
+
+### D. Unified House Atmosphere & Environmental Weather Model
+
+Synthesizes the net constructive vs friction forces acting on each house into a continuous score ($-100.0$ to $+100.0$):
+- **Positive Forces:** Lord strength ($>1.0\times$), benefic occupants, protective drishti rays, Śubhakartarī, Upacaya malefic channeling, and Harsha/Viparita dusthana joy.
+- **Negative Forces:** Combust/defeated lord, malefic occupants in non-upacaya houses, confrontational drishti, Pāpakartarī, Bhāva Sandhi, and Kārakobhāvanāśāya.
+- **Classifications:**
+  - `Puṣṭa` ($\ge +25.0$): Radiant, unopposed, or supportive.
+  - `Miśra` ($-20.0 \text{ to } +25.0$): Tempered, dynamic, or resilient.
+  - `Hīna` ($\le -20.0$): Frictional, demanding, or obstructed.
+
+---
+
+### E. Master Diagnostic Cockpit Payload (9-Column Architecture)
+
+Stage 3 produces the authoritative backend payload matching ADR-006 design standards:
+1. `Graha & Kāraka`: Motion state ([R], [C]), Chara Karaka soul role, and Master Lords.
+2. `Longitude & Bhāva`: Formatted tropical coordinates, Whole Sign house, and expression.
+3. `Dignity & Sambandha`: Synthesized Natural + Temporary (Pañcadhā Maitrī) dignity.
+4. `Dispositor (Rāśi Lord)`: Host lord placement and cancellation rescue status.
+5. `Ṣaḍbala Strength`: Virūpas, Rūpas, % of required minimum threshold, chart rank, and Ishta/Kashta.
+6. `Dṛṣṭi & Yuti`: Conjunctions, palpable incoming aspects ($>20$v), and planetary war status.
+7. `Nakṣatra & Pada`: Dhruva sidereal nakshatra, quarter pada, lords, deity, and Navatara.
+8. `Avasthās`: Bālādi (age), Jāgradādi (alertness %), Dīptādi (mood), and Lajjitādi social states.
+9. `Archetype & Vitality`: 9-Tier behavioral archetype, real-world manifesting vitality score ($1.0\text{--}10.0$), and hover receipt.

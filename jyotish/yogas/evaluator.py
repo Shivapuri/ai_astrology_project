@@ -57,12 +57,15 @@ CANONICAL_DUPLICATE_GROUPS = {
 }
 
 
-def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
+def detect_all_yogas(chart: Any) -> Dict[str, Any]:
     """
     Master entry point for Classical Yoga Detection in Astra.
     Scans the chart across all classical categories, audits Yoga Breakers,
     deduplicates overlapping definitions, and returns a structured, categorized payload.
+    Supports either ChartPipeline or standard chart dict.
     """
+    if hasattr(chart, "to_dict") and not isinstance(chart, dict):
+        chart = chart.to_dict()
     raw_yogas: List[YogaInstance] = []
 
     # 1. Pancha Mahapurusha Yogas

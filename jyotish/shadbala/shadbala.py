@@ -138,9 +138,16 @@ def calculate_saptavarga_bala(
 
         # 1. Harmonic Longitude: check precomputed Stage 1 vargas first (D1 through D12)
         # Note: D30 in Saptavarga Bala is the equal 1° harmonic trimsamsa per classical texts
-        if vargas_positions and varga in vargas_positions and planet in vargas_positions[varga] and varga != "D30":
-            v_entry = vargas_positions[varga][planet]
-            varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+        if vargas_positions and varga in vargas_positions and varga != "D30":
+            v_chart = vargas_positions[varga]
+            if isinstance(v_chart, dict) and "grahas" in v_chart and planet in v_chart["grahas"]:
+                v_entry = v_chart["grahas"][planet]
+                varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+            elif isinstance(v_chart, dict) and planet in v_chart:
+                v_entry = v_chart[planet]
+                varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+            else:
+                varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
         else:
             varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
 

@@ -42,6 +42,16 @@ from jyotish.baseline_tables import (
     CHANDRA_KRIYAS_DATA,
     CHANDRA_AVASTHAS_DATA,
     CHANDRA_VELAS_DATA,
+    NAISARGIKA_SAMBANDHA,
+    FIXED_DIGNITIES,
+    EXALTATION_SIGNS,
+    DEBILITATION_SIGNS,
+    NATURAL_BENEFICS,
+    NATURAL_MALEFICS,
+    UPACAYA_HOUSES,
+    KENDRA_HOUSES,
+    TRIKONA_HOUSES,
+    DUHSTHANA_HOUSES,
 )
 
 from jyotish.baseline_math import (
@@ -1130,8 +1140,11 @@ class ChartBaseline:
     # 9. SERIALIZATION & RE-EXPORT
     # =========================================================================
     def to_dict(self) -> Dict[str, Any]:
-        """Exports the complete baseline coordinate state as JSON-serializable primitives."""
-        return {
+        """Exports the complete baseline coordinate state as JSON-serializable primitives (cached)."""
+        if hasattr(self, "_cached_to_dict_data") and self._cached_to_dict_data is not None:
+            return self._cached_to_dict_data
+
+        self._cached_to_dict_data = {
             "name": self.name,
             "place": self.place,
             "astronomical_anchors": {
@@ -1159,6 +1172,7 @@ class ChartBaseline:
             "planetary_wars": self.planetary_wars,
             "conjunctions": self.conjunctions
         }
+        return self._cached_to_dict_data
 
 
 __all__ = [
@@ -1181,6 +1195,16 @@ __all__ = [
     "CHANDRA_KRIYAS_DATA",
     "CHANDRA_AVASTHAS_DATA",
     "CHANDRA_VELAS_DATA",
+    "NAISARGIKA_SAMBANDHA",
+    "FIXED_DIGNITIES",
+    "EXALTATION_SIGNS",
+    "DEBILITATION_SIGNS",
+    "NATURAL_BENEFICS",
+    "NATURAL_MALEFICS",
+    "UPACAYA_HOUSES",
+    "KENDRA_HOUSES",
+    "TRIKONA_HOUSES",
+    "DUHSTHANA_HOUSES",
     # Math & Algorithms
     "calculate_sub_lord",
     "calculate_varga_longitude",

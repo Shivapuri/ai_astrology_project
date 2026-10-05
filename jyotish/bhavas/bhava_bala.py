@@ -18,16 +18,36 @@ Key Pillars & Diagnostics:
 
 from typing import Dict, List, Any, Optional, Tuple
 
-SIGNS: List[str] = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", 
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
+from jyotish.baseline_tables import (
+    ZODIAC_SIGNS,
+    SIGN_LORDS,
+    NATURAL_MALEFICS,
+    NATURAL_BENEFICS,
+    UPACAYA_HOUSES,
+    KENDRA_HOUSES,
+    TRIKONA_HOUSES,
+    DUHSTHANA_HOUSES,
+    EXALTATION_SIGNS,
+    FIXED_DIGNITIES,
+)
 
-SIGN_LORDS: Dict[str, str] = {
-    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
-    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
-    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter"
+SIGNS: List[str] = ZODIAC_SIGNS
+
+# Harsha Bala joy houses per P.V.R. Narasimha Rao (Vedic Astrology: An Integrated Approach Ch. 28.3)
+HARSHA_JOY_HOUSES: Dict[str, int] = {
+    "Sun": 9,
+    "Moon": 3,
+    "Mars": 6,
+    "Mercury": 1,
+    "Jupiter": 11,
+    "Venus": 5,
+    "Saturn": 12,
 }
+
+FEMININE_PLANETS = {"Moon", "Mercury", "Venus", "Saturn"}
+MASCULINE_PLANETS = {"Sun", "Mars", "Jupiter"}
+FEMININE_HOUSES = {1, 2, 3, 7, 8, 9}
+MASCULINE_HOUSES = {4, 5, 6, 10, 11, 12}
 
 ZERO_HOUSES: Dict[str, int] = {
     "Nara": 7,          # Human signs peak in 1st, zero in 7th
@@ -55,13 +75,6 @@ PLANET_REQUIRED_VIRUPAS: Dict[str, float] = {
     "Mercury": 420.0, "Sun": 390.0, "Jupiter": 390.0,
     "Moon": 360.0, "Venus": 330.0, "Mars": 300.0, "Saturn": 300.0
 }
-
-NATURAL_MALEFICS = {"Sun", "Mars", "Saturn", "Rahu", "Ketu"}
-NATURAL_BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
-UPACAYA_HOUSES = {3, 6, 10, 11}
-KENDRA_HOUSES = {1, 4, 7, 10}
-TRIKONA_HOUSES = {1, 5, 9}
-DUHSTHANA_HOUSES = {6, 8, 12}
 
 
 def get_sign_genus(sign_name: str, deg_in_sign: float) -> str:
@@ -793,4 +806,633 @@ def calculate_bhava_bala(
             "summary_verdict": summary_verdict
         }
 
+    # ---------------------------------------------------------
+    # 5. Synthesize Harsha Bala & House Atmosphere Model
+    # ---------------------------------------------------------
+    harsha_data = calculate_harsha_bala(
+        baseline=baseline,
+        planet_positions=planet_positions,
+        ascendant_lon=ascendant_lon,
+        is_day_birth=is_day_birth
+    )
+    atmosphere_data = calculate_house_atmosphere(
+        baseline=baseline,
+        bhava_results=bhava_results,
+        harsha_data=harsha_data,
+        aspect_matrices=aspect_matrices
+    )
+
+    for h in range(1, 13):
+        bhava_results[h]["harsha_bala"] = harsha_data["dusthana_joy"].get(h, {})
+        bhava_results[h]["atmosphere"] = atmosphere_data.get(h, {})
+
     return bhava_results
+
+
+# =============================================================================
+# HARSHA BALA (P.V.R. Narasimha Rao Ch. 28.3 & Dusthana Joy Reversals)
+# =============================================================================
+
+def calculate_harsha_bala(
+    baseline: Any,
+    planet_positions: Optional[Dict[str, float]] = None,
+    ascendant_lon: Optional[float] = None,
+    is_day_birth: Optional[bool] = None
+) -> Dict[str, Any]:
+    """
+    Calculates Harsha Bala (Strength of Cheerfulness) per P.V.R. Narasimha Rao
+    (Vedic Astrology: An Integrated Approach Ch. 28.3) and classical Parāśarī texts.
+
+    Evaluated across 4 sources of strength for 7 planets (each gives 5 units, max 20 units):
+    1. Sthāna / Joy House (Bhavana Bala):
+       Sun in 9th, Moon in 3rd, Mars in 6th, Mercury in 1st, Jupiter in 11th, Venus in 5th, Saturn in 12th.
+    2. Uccha / Sva Kṣetra (Exaltation or Own Sign):
+       Planet in exaltation or own sign.
+    3. Strī / Puruṣa Bhāva (Gender & House Match):
+       Feminine planets (Moon, Mercury, Venus, Saturn) in houses 1, 2, 3, 7, 8, 9.
+       Masculine planets (Sun, Mars, Jupiter) in houses 4, 5, 6, 10, 11, 12.
+    4. Dina / Rātri Bala (Diurnal / Nocturnal Sect Match):
+       Day birth: masculine planets (Sun, Mars, Jupiter) get 5 units.
+       Night birth: feminine planets (Moon, Mercury, Venus, Saturn) get 5 units.
+
+    Also evaluates dusthana joy (Houses 6, 8, 12):
+    - House 6: Harsha Yoga (6th lord in 6th) or Mars joy in 6th.
+    - House 8: Sarala Yoga (8th lord in 8th).
+    - House 12: Vimala Yoga (12th lord in 12th) or Saturn joy in 12th.
+    """
+    if planet_positions is None or ascendant_lon is None or is_day_birth is None:
+        anchors = getattr(baseline, "astronomical_anchors", {})
+        asc_val = anchors.get("asc_longitude", anchors.get("ascendant", 0.0))
+        ascendant_lon = float(asc_val) % 360.0
+        is_day_birth = bool(anchors.get("is_day_birth", True))
+
+        coords = getattr(baseline, "coordinates", getattr(baseline, "planets", {}))
+        planet_positions = {}
+        for p, p_data in coords.items():
+            if isinstance(p_data, (int, float)):
+                planet_positions[p] = float(p_data) % 360.0
+            elif isinstance(p_data, dict):
+                planet_positions[p] = float(p_data.get("longitude", p_data.get("lon", 0.0))) % 360.0
+
+    asc_sign_idx = int((ascendant_lon % 360.0) // 30)
+
+    # 1. Planetary Harsha Bala (7 Planets)
+    planets_harsha = {}
+    for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        p_lon = planet_positions.get(p, 0.0) % 360.0
+        p_sign_idx = int(p_lon // 30)
+        p_sign = SIGNS[p_sign_idx]
+        h_num = (p_sign_idx - asc_sign_idx) % 12 + 1
+
+        # Source 1: Sthana / Joy house (5 units)
+        s1 = 5.0 if h_num == HARSHA_JOY_HOUSES.get(p) else 0.0
+
+        # Source 2: Exaltation or Own sign (5 units)
+        is_exalted = EXALTATION_SIGNS.get(p) == p_sign
+        is_own = SIGN_LORDS.get(p_sign) == p
+        s2 = 5.0 if (is_exalted or is_own) else 0.0
+
+        # Source 3: Gender / House match (5 units)
+        is_fem_p = p in FEMININE_PLANETS
+        is_fem_h = h_num in FEMININE_HOUSES
+        is_masc_p = p in MASCULINE_PLANETS
+        is_masc_h = h_num in MASCULINE_HOUSES
+        s3 = 5.0 if ((is_fem_p and is_fem_h) or (is_masc_p and is_masc_h)) else 0.0
+
+        # Source 4: Diurnal / Nocturnal Sect (5 units)
+        s4 = 5.0 if ((is_day_birth and is_masc_p) or (not is_day_birth and is_fem_p)) else 0.0
+
+        total_units = s1 + s2 + s3 + s4
+        if total_units >= 20.0:
+            category = "Exceedingly Strong (Ati Bala)"
+        elif total_units >= 15.0:
+            category = "Fully Strong (Poorna Bala)"
+        elif total_units >= 10.0:
+            category = "Average Strength (Madhya Bala)"
+        elif total_units >= 5.0:
+            category = "Little Strength (Alpa Bala)"
+        else:
+            category = "No Strength (Nirbala)"
+
+        planets_harsha[p] = {
+            "planet": p,
+            "placed_house": h_num,
+            "placed_sign": p_sign,
+            "sthana_bala_units": s1,
+            "uccha_swakshetra_units": s2,
+            "stree_purusha_units": s3,
+            "dina_ratri_units": s4,
+            "total_units": total_units,
+            "max_units": 20.0,
+            "strength_category": category,
+            "is_in_joy_house": bool(s1 > 0)
+        }
+
+    # 2. Dusthana Harsha & Viparita Reversals (Houses 6, 8, 12)
+    h6_sign = SIGNS[(asc_sign_idx + 5) % 12]
+    h8_sign = SIGNS[(asc_sign_idx + 7) % 12]
+    h12_sign = SIGNS[(asc_sign_idx + 11) % 12]
+
+    l6 = SIGN_LORDS[h6_sign]
+    l8 = SIGN_LORDS[h8_sign]
+    l12 = SIGN_LORDS[h12_sign]
+
+    l6_h = (int(planet_positions.get(l6, 0.0) // 30) - asc_sign_idx) % 12 + 1
+    l8_h = (int(planet_positions.get(l8, 0.0) // 30) - asc_sign_idx) % 12 + 1
+    l12_h = (int(planet_positions.get(l12, 0.0) // 30) - asc_sign_idx) % 12 + 1
+
+    mars_h = (int(planet_positions.get("Mars", 0.0) // 30) - asc_sign_idx) % 12 + 1
+    saturn_h = (int(planet_positions.get("Saturn", 0.0) // 30) - asc_sign_idx) % 12 + 1
+
+    h6_harsha_yoga = (l6_h == 6)
+    h6_mars_joy = (mars_h == 6)
+    h6_active = h6_harsha_yoga or h6_mars_joy
+
+    h8_sarala_yoga = (l8_h == 8)
+    h8_active = h8_sarala_yoga
+
+    h12_vimala_yoga = (l12_h == 12)
+    h12_saturn_joy = (saturn_h == 12)
+    h12_active = h12_vimala_yoga or h12_saturn_joy
+
+    dusthana_joy = {
+        6: {
+            "house": 6,
+            "yoga_name": "Harsha",
+            "is_active": h6_active,
+            "lord_in_house": h6_harsha_yoga,
+            "karaka_joy_in_house": h6_mars_joy,
+            "bonus_units": 20.0 if h6_active else 0.0,
+            "effect": "Immunity, overcoming competitors, turning debt and adversity into victory" if h6_active else "Standard Dusthana friction"
+        },
+        8: {
+            "house": 8,
+            "yoga_name": "Sarala",
+            "is_active": h8_active,
+            "lord_in_house": h8_sarala_yoga,
+            "karaka_joy_in_house": False,
+            "bonus_units": 20.0 if h8_active else 0.0,
+            "effect": "Fearlessness, longevity, endurance, sudden resilience under crisis" if h8_active else "Standard Dusthana vulnerability"
+        },
+        12: {
+            "house": 12,
+            "yoga_name": "Vimala",
+            "is_active": h12_active,
+            "lord_in_house": h12_vimala_yoga,
+            "karaka_joy_in_house": h12_saturn_joy,
+            "bonus_units": 20.0 if h12_active else 0.0,
+            "effect": "Spiritual independence, honorable expenditure, contentment, meditative release" if h12_active else "Standard Dusthana expenditure/loss"
+        }
+    }
+
+    return {
+        "planets": planets_harsha,
+        "dusthana_joy": dusthana_joy
+    }
+
+
+# =============================================================================
+# HOUSE ATMOSPHERE & BASE SCORES (Unified Stage 3 Life-Department Weather)
+# =============================================================================
+
+def calculate_house_atmosphere(
+    baseline: Any,
+    bhava_results: Dict[int, Any],
+    harsha_data: Optional[Dict[str, Any]] = None,
+    aspect_matrices: Optional[Dict[str, Any]] = None
+) -> Dict[int, Any]:
+    """
+    Computes a synthesized 12-House Atmosphere & Environmental Weather model.
+    Balances constructive vs friction factors to determine the functional life-department climate (-100 to +100).
+    """
+    if harsha_data is None:
+        harsha_data = calculate_harsha_bala(baseline)
+
+    atmosphere_results: Dict[int, Any] = {}
+
+    for h in range(1, 13):
+        b = bhava_results.get(h, {})
+        virupas = float(b.get("total_virupas", 360.0))
+        lord = b.get("lord", "")
+        sign = b.get("sign", "")
+        lord_status = b.get("lord_status", {})
+        occupants = b.get("occupants", [])
+        sandhi = b.get("sandhi_analysis", {})
+        kartari = b.get("kartari_yoga", {})
+        drishti_bala = float(b.get("bhava_drishti_bala", 0.0))
+        h_harsha = harsha_data.get("dusthana_joy", {}).get(h, {})
+
+        auspicious = []
+        inauspicious = []
+        score = 0.0
+
+        # 1. Base Parashari Virupas offset (baseline = 360.0 virupas)
+        v_diff = virupas - 360.0
+        score += (v_diff * 0.15)
+        if virupas >= 450.0:
+            auspicious.append(f"Abundant Parāśarī Virūpas ({virupas:.1f}v / {b.get('total_rupas', 0.0):.2f} Rūpas)")
+        elif virupas < 320.0:
+            inauspicious.append(f"Sub-baseline Parāśarī Virūpas ({virupas:.1f}v / {b.get('total_rupas', 0.0):.2f} Rūpas)")
+
+        # 2. Lord Capacity & Placements
+        if lord_status.get("is_strong"):
+            score += 15.0
+            auspicious.append(f"Fortified Lord {lord} ({lord_status.get('potency_ratio', 1.0)}x required minimum)")
+        else:
+            score -= 10.0
+            inauspicious.append(f"Lord {lord} below required minimum virūpas")
+
+        if lord_status.get("is_combust"):
+            score -= 20.0
+            inauspicious.append(f"Lord {lord} combust the Sun (Astangata)")
+
+        if lord_status.get("in_war"):
+            score -= 15.0
+            inauspicious.append(f"Lord {lord} defeated in planetary war (Yuddha)")
+
+        if lord_status.get("is_in_dusthana"):
+            if h in (6, 8, 12) and h_harsha.get("is_active"):
+                score += 20.0
+                auspicious.append(f"Lord {lord} forms {h_harsha.get('yoga_name')} Yoga in Dusthana")
+            else:
+                score -= 15.0
+                inauspicious.append(f"Lord {lord} displaced into Dusthana H{lord_status.get('placed_house')}")
+
+        if lord_status.get("is_in_upacaya_from_bhava"):
+            score += 10.0
+            auspicious.append(f"Lord {lord} in Bhavāt Bhavam Upacaya (+{lord_status.get('bhavat_bhavam_distance')}h)")
+
+        # 3. Occupants
+        for occ in occupants:
+            p_name = occ.get("name")
+            if p_name in NATURAL_BENEFICS:
+                score += 15.0
+                auspicious.append(f"Benefic occupant {p_name} in sign {sign}")
+            elif p_name in NATURAL_MALEFICS:
+                if h in UPACAYA_HOUSES:
+                    score += 10.0
+                    auspicious.append(f"Constructive malefic {p_name} in Upacaya H{h}")
+                else:
+                    score -= 15.0
+                    inauspicious.append(f"Malefic occupant {p_name} in non-upacaya H{h}")
+
+        # 4. Aspect Rays (Bhāva Dṛṣṭi)
+        if drishti_bala > 10.0:
+            score += min(25.0, drishti_bala * 0.4)
+            auspicious.append(f"Net supportive drishti ({drishti_bala:+.1f} Virūpas)")
+        elif drishti_bala < -10.0:
+            score -= min(25.0, abs(drishti_bala) * 0.4)
+            inauspicious.append(f"Net confronting drishti ({drishti_bala:+.1f} Virūpas)")
+
+        # 5. Kartarī Yoga
+        if kartari.get("type") == "shubhakartari":
+            score += 20.0
+            auspicious.append("Śubhakartarī (house flanked by benefic planets)")
+        elif kartari.get("type") == "papakartari":
+            score -= 20.0
+            inauspicious.append("Pāpakartarī (house besieged between malefic planets)")
+
+        # 6. Sandhi & Junction Leakage
+        if sandhi.get("cusp_in_sandhi"):
+            score -= 15.0
+            inauspicious.append("Bhāva Sandhi (cusp degree within 1° of sign border)")
+
+        # 7. Dusthana Harsha / Viparita Reversal
+        if h in (6, 8, 12) and h_harsha.get("is_active"):
+            score += 25.0
+            auspicious.append(f"{h_harsha.get('yoga_name')} Yoga active: {h_harsha.get('effect')}")
+
+        net_score = round(max(-100.0, min(100.0, score)), 1)
+
+        # Classification & Weather synthesis
+        if net_score >= 25.0:
+            classification = "Puṣṭa (Fortified / Flourishing)"
+        elif net_score <= -20.0:
+            classification = "Hīna (Deficient / Strained)"
+        else:
+            classification = "Miśra (Mixed / Dynamic)"
+
+        if net_score >= 40.0:
+            weather = "Radiant & Unopposed"
+        elif net_score >= 20.0:
+            weather = "Supportive & Productive"
+        elif net_score >= 0.0:
+            weather = "Tempered & Resilient"
+        elif net_score >= -20.0:
+            weather = "Frictional & Demanding"
+        else:
+            weather = "Turbulent & Obstructed"
+
+        verdict = f"House {h} ({sign}) Atmosphere: {net_score:+.1f} ({weather}). {classification}."
+
+        atmosphere_results[h] = {
+            "house": h,
+            "sign": sign,
+            "lord": lord,
+            "net_atmosphere_score": net_score,
+            "base_virupas": virupas,
+            "classification": classification,
+            "environmental_weather": weather,
+            "auspicious_influences": auspicious,
+            "inauspicious_influences": inauspicious,
+            "harsha_bala_active": bool(h_harsha.get("is_active", False)),
+            "verdict": verdict
+        }
+
+    return atmosphere_results
+
+
+# =============================================================================
+# MASTER DIAGNOSTIC COCKPIT PAYLOAD (Stage 3 Authoritative 9-Column Dataset)
+# =============================================================================
+
+PLANET_GLYPHS: Dict[str, str] = {
+    "Sun": "☉\uFE0E",
+    "Moon": "☽\uFE0E",
+    "Mars": "♂\uFE0E",
+    "Mercury": "☿\uFE0E",
+    "Jupiter": "♃\uFE0E",
+    "Venus": "♀\uFE0E",
+    "Saturn": "♄\uFE0E",
+    "Rahu": "☊\uFE0E",
+    "Ketu": "☋\uFE0E",
+    "Lagna": "Lg\uFE0E"
+}
+
+MASTER_DIAGNOSTIC_COLUMNS: List[str] = [
+    "Graha & Kāraka",
+    "Longitude & Bhāva",
+    "Dignity & Sambandha",
+    "Dispositor (Rāśi Lord)",
+    "Ṣaḍbala Strength",
+    "Dṛṣṭi & Yuti (Aspects)",
+    "Nakṣatra & Pada",
+    "Avasthās",
+    "Archetype & Vitality"
+]
+
+
+def generate_master_diagnostic_payload(
+    baseline: Any,
+    shadbala_results: Optional[Dict[str, Any]] = None,
+    dignities: Optional[Dict[str, Any]] = None,
+    aspect_matrices: Optional[Dict[str, Any]] = None,
+    bhava_results: Optional[Dict[int, Any]] = None,
+    planetary_evaluation: Optional[Dict[str, Any]] = None,
+    varga: str = "D1"
+) -> Dict[str, Any]:
+    """
+    Produces the complete 9-column Master Diagnostic Cockpit payload
+    directly from certified backend pipeline stages matching ADR-006 design standards.
+    """
+    # 1. Fetch dependencies lazily if not provided
+    from jyotish.relationships.relationships import calculate_chart_dignities, get_dignity, get_compound_relationship, get_natural_relationship, get_temporary_relationship
+    from jyotish.aspects.aspects import calculate_aspect_matrices
+    from jyotish.shadbala.shadbala import calculate_shadbala
+
+    if dignities is None:
+        dignities = calculate_chart_dignities(baseline)
+    if aspect_matrices is None:
+        aspect_matrices = calculate_aspect_matrices(baseline)
+    if shadbala_results is None:
+        shadbala_results = calculate_shadbala(baseline, dignities=dignities, aspect_matrices=aspect_matrices)
+    if bhava_results is None:
+        bhava_results = calculate_bhava_bala(baseline, shadbala_results, aspect_matrices)
+
+    v_chart = baseline.vargas.get(varga, baseline.vargas.get("D1", {}))
+    v_grahas = v_chart.get("grahas", {})
+    d1_grahas = baseline.vargas.get("D1", {}).get("grahas", {})
+    lagna_info = v_chart.get("lagna", {})
+    lagna_sign = lagna_info.get("sign", "Aries")
+    lagna_s_idx = ZODIAC_SIGNS.index(lagna_sign) if lagna_sign in ZODIAC_SIGNS else 0
+
+    nak_data = baseline.nakshatras.get("grahas", {})
+    combustion_map = baseline.combustion_status
+    wars = {w["planet1"]: w for w in baseline.planetary_wars}
+    wars.update({w["planet2"]: w for w in baseline.planetary_wars})
+
+    # Rank planets by Shadbala virupas
+    ranked = sorted(
+        ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"],
+        key=lambda p: float(shadbala_results.get(p, {}).get("Total_Virupas", 0.0)),
+        reverse=True
+    )
+    rank_map = {p: i + 1 for i, p in enumerate(ranked)}
+
+    # Chara Karakas (sorted by degree in sign)
+    chara_planets = sorted(
+        ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"],
+        key=lambda p: float(d1_grahas.get(p, {}).get("degree_0_to_30", 0.0)),
+        reverse=True
+    )
+    chara_roles = ["Atmakaraka (Soul)", "Amatyakaraka (Career)", "Bhatrikaraka (Siblings)",
+                   "Matrikaraka (Mother)", "Putrakaraka (Children)", "Gnatikaraka (Obstacles)", "Darakaraka (Spouse)"]
+    chara_map = {p: chara_roles[i] for i, p in enumerate(chara_planets)}
+
+    rows = []
+    planets_order = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+    for p in planets_order:
+        g = v_grahas.get(p, {})
+        d1_g = d1_grahas.get(p, {})
+        p_lon = float(g.get("longitude", 0.0))
+        p_sign = g.get("sign", "Aries")
+        p_deg = float(g.get("degree_0_to_30", p_lon % 30.0))
+        deg_int = int(p_deg)
+        min_int = int(round((p_deg % 1.0) * 60.0))
+        if min_int >= 60:
+            deg_int += 1
+            min_int = 0
+
+        p_s_idx = ZODIAC_SIGNS.index(p_sign) if p_sign in ZODIAC_SIGNS else 0
+        w_house = (p_s_idx - lagna_s_idx) % 12 + 1
+
+        # Motion & Combustion
+        is_retro = bool(g.get("is_retrograde", False))
+        is_combust = bool(combustion_map.get(p, {}).get("is_combust", False))
+
+        # Col 1: Graha & Karaka
+        c_karaka = chara_map.get(p, "Shadow Node" if p in ("Rahu", "Ketu") else "--")
+        is_lagna_lord = (SIGN_LORDS.get(lagna_sign) == p)
+        col1 = {
+            "planet": p,
+            "glyph": PLANET_GLYPHS.get(p, p[:2]),
+            "is_retrograde": is_retro,
+            "is_combust": is_combust,
+            "chara_karaka": c_karaka,
+            "is_lagna_lord": is_lagna_lord,
+            "badge": f"{p} {'[R]' if is_retro else ''}{'[C]' if is_combust else ''}".strip()
+        }
+
+        # Col 2: Longitude & Bhāva
+        col2 = {
+            "longitude": round(p_lon, 4),
+            "sign": p_sign,
+            "degree_in_sign": round(p_deg, 4),
+            "formatted": f"{deg_int}° {p_sign} {min_int:02d}'",
+            "whole_sign_house": w_house,
+            "expression": f"House {w_house} ({p_sign})"
+        }
+
+        # Col 3: Dignity & Sambandha
+        dispositor = SIGN_LORDS.get(p_sign, "")
+        if dispositor == p:
+            nat = "Self"
+            tmp = "Self"
+            cmp = "Self"
+            dignity_str = "Own Sign"
+        else:
+            nat = get_natural_relationship(p, dispositor)
+            disp_d1_sign = d1_grahas.get(dispositor, {}).get("sign", "Aries")
+            p_d1_sign = d1_g.get("sign", "Aries")
+            tmp = get_temporary_relationship(
+                ZODIAC_SIGNS.index(p_d1_sign) if p_d1_sign in ZODIAC_SIGNS else 0,
+                ZODIAC_SIGNS.index(disp_d1_sign) if disp_d1_sign in ZODIAC_SIGNS else 0
+            )
+            cmp = get_compound_relationship(nat, tmp)
+            dignity_str = get_dignity(p, p_sign, cmp, p_deg)
+
+        col3 = {
+            "dignity": dignity_str,
+            "natural_relationship": nat,
+            "temporary_relationship": tmp,
+            "compound_relationship": cmp,
+            "summary": f"{dignity_str} ({cmp})"
+        }
+
+        # Col 4: Dispositor (Rasi Lord)
+        disp_d1 = d1_grahas.get(dispositor, {})
+        disp_sign = disp_d1.get("sign", "")
+        disp_s_idx = ZODIAC_SIGNS.index(disp_sign) if disp_sign in ZODIAC_SIGNS else 0
+        disp_house = (disp_s_idx - lagna_s_idx) % 12 + 1 if dispositor else None
+        col4 = {
+            "dispositor": dispositor,
+            "placed_sign": disp_sign,
+            "placed_house": disp_house,
+            "is_rescued": False,
+            "summary": f"{dispositor} in H{disp_house} ({disp_sign})" if dispositor else "--"
+        }
+
+        # Col 5: Shadbala Strength
+        sb = shadbala_results.get(p, {})
+        t_vir = float(sb.get("Total_Virupas", 0.0))
+        t_rup = float(sb.get("Total_Rupas", round(t_vir / 60.0, 2)))
+        pct_req = float(sb.get("Pct_Required_Total", round((t_vir / PLANET_REQUIRED_VIRUPAS.get(p, 360.0)) * 100.0, 1)))
+        col5 = {
+            "total_virupas": t_vir,
+            "total_rupas": t_rup,
+            "pct_required": pct_req,
+            "chart_rank": rank_map.get(p, "--"),
+            "ishta_phala": float(sb.get("Ishta_Phala", 0.0)),
+            "kashta_phala": float(sb.get("Kashta_Phala", 0.0)),
+            "summary": f"{t_vir:.1f}v ({pct_req:.0f}%) #{rank_map.get(p, '-')}"
+        }
+
+        # Col 6: Drishti & Yuti (Aspects)
+        # Find companions in same sign
+        yuti = [op for op in planets_order if op != p and v_grahas.get(op, {}).get("sign") == p_sign]
+        # Incoming drishti from Stage 2A
+        inc_drishti = aspect_matrices.get("graha_drishti", {}).get("incoming", {}).get(p, {}) if aspect_matrices else {}
+        strong_aspects = [f"{op} ({val:.1f}v)" for op, val in inc_drishti.items() if float(val) >= 20.0]
+
+        in_war = p in wars
+        war_detail = wars.get(p)
+        col6 = {
+            "conjunctions": yuti,
+            "incoming_aspects": strong_aspects,
+            "in_war": in_war,
+            "war_winner": (war_detail.get("winner") == p) if war_detail else False,
+            "war_loser": (war_detail.get("loser") == p) if war_detail else False,
+            "summary": f"Yuti: {', '.join(yuti) if yuti else 'None'} | Aspects: {', '.join(strong_aspects[:2]) if strong_aspects else 'None'}"
+        }
+
+        # Col 7: Nakshatra & Pada
+        n_info = nak_data.get(p, {})
+        col7 = {
+            "nakshatra": n_info.get("nakshatra", ""),
+            "pada": n_info.get("pada", 1),
+            "lord": n_info.get("nakshatra_lord", ""),
+            "sub_lord": n_info.get("sub_lord", ""),
+            "tara_number": n_info.get("tara_number", n_info.get("tara", 1)),
+            "summary": f"{n_info.get('nakshatra', '')} P{n_info.get('pada', 1)} ({n_info.get('nakshatra_lord', '')})"
+        }
+
+        # Col 8: Avasthas
+        from jyotish.baseline_math import calculate_baladi_state
+        from jyotish.avasthas.jagrat import get_jagrat_avastha
+        from jyotish.avasthas.deepti import get_deeptadi_avastha
+
+        bal = calculate_baladi_state(p_sign, p_deg)
+        jag = get_jagrat_avastha(nat)
+        deep = get_deeptadi_avastha(dignity_str, is_retro, is_combust, yuti)
+        raw_lajj = g.get("avasthas", {}).get("lajjitadi", [])
+
+        col8 = {
+            "baladi": bal.get("state", ""),
+            "jagradadi": jag,
+            "deeptadi": deep,
+            "lajjitadi": raw_lajj,
+            "summary": f"{bal.get('state', '').split()[0]} • {jag} • {deep}"
+        }
+
+        # Col 9: Archetype & Vitality (1-10)
+        # Derive vitality from dignity, Shadbala, and modifiers
+        eff = bal.get("efficiency_factor", 1.0)
+        base_vit = 5.0 + (pct_req - 100.0) * 0.03
+        if dignity_str in ("Exalted", "Moolatrikona", "Own Sign"):
+            base_vit += 1.5
+        elif dignity_str in ("Bitter Enemy", "Debilitated"):
+            base_vit -= 1.5
+
+        if is_combust:
+            base_vit -= 1.5
+        if in_war:
+            base_vit += 1.0 if war_detail.get("winner") == p else -2.0
+
+        vit_score = round(max(1.0, min(10.0, 5.0 + (base_vit - 5.0) * (0.8 + 0.2 * eff))), 1)
+
+        # Archetype name per 9-tier classification
+        if vit_score >= 8.5:
+            archetype = "Generous King" if dignity_str in ("Exalted", "Moolatrikona") else "Armed Dictator"
+        elif vit_score >= 6.5:
+            archetype = "Noble Guardian" if dignity_str in ("Own Sign", "Great Friend") else "Pragmatic Executive"
+        elif vit_score >= 4.5:
+            archetype = "Sincere Friend" if "Friend" in dignity_str else "Dutiful Realist"
+        elif vit_score >= 3.0:
+            archetype = "Embattled Striver"
+        else:
+            archetype = "Toothless Bully" if "Enemy" in dignity_str else "Exhausted Recluse"
+
+        col9 = {
+            "archetype": archetype,
+            "vitality_score": vit_score,
+            "receipt": f"Base {base_vit:.1f} scaled by biological efficiency {eff:.2f} -> {vit_score:.1f}/10"
+        }
+
+        rows.append({
+            "planet": p,
+            "glyph": PLANET_GLYPHS.get(p, p[:2]),
+            "graha_karaka": col1,
+            "longitude_bhava": col2,
+            "dignity_sambandha": col3,
+            "dispositor": col4,
+            "shadbala": col5,
+            "drishti_yuti": col6,
+            "nakshatra_pada": col7,
+            "avasthas": col8,
+            "archetype_vitality": col9
+        })
+
+    return {
+        "varga": varga,
+        "subject_name": getattr(baseline, "name", "Subject"),
+        "columns": MASTER_DIAGNOSTIC_COLUMNS,
+        "rows": rows,
+        "summary": {
+            "total_grahas": len(rows),
+            "varga": varga,
+            "ascendant_sign": lagna_sign,
+            "highest_vitality": max(rows, key=lambda r: r["archetype_vitality"]["vitality_score"])["planet"],
+            "lowest_vitality": min(rows, key=lambda r: r["archetype_vitality"]["vitality_score"])["planet"]
+        }
+    }
