@@ -89,7 +89,7 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
    - An aspect from the Ascendant lord must carry at least a palpable half-glance ($\ge 30.0$ Virūpas) to trigger the $+15.0$ flourishing bonus, preventing sub-perceptual non-zero aspects from artificially inflating the chart.
 7. **Bhavāt Bhavam Upacayas vs. Trika Dusthāna Displacement:**
    - Uncorrupted growth from the evaluated house is fostered strictly by Upacayas **3, 10, and 11** from that house.
-   - Displacement into the **6th, 8th, or 12th from its home sign** is a Trika dusthāna displacement causing house decay (*bhāva-nāśa* per DPK 15.2–3) and receives a $-15.0$ penalty without simultaneous Upacaya reward.
+   - Displacement into the **6th, 8th, or 12th from its home sign** is a Trika dusthāna displacement causing house decay (*bhāva-nāśa* per DPK 15.2–3) and receives a $-15.0$ penalty without simultaneous Upacaya reward. This penalty applies strictly to non-dusthāna houses ($h \notin \{6, 8, 12\}$); dusthāna houses are governed by Harsha/Sarala/Vimala yogas and Upacaya expansion dynamics.
 8. **Own-Dusthāna Lord Exemption & Viparīta Yogas (Houses 6, 8, 12):**
    - When a lord of house 6, 8, or 12 resides in ANY dusthāna (6, 8, 12), it forms an auspicious *Harṣa*, *Sarala*, or *Vimala* Yoga per DPK 6.57–70.
    - It is exempt from `is_in_dusthana` displacement penalties (`(lord_house in DUHSTHANA_HOUSES) and not (house_num in DUHSTHANA_HOUSES)`).
@@ -105,13 +105,15 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
    - Non-living houses (2, 4, 10, 11, 12) never trigger Kārakobhāvanāśāya.
 10. **Normalized DPK Triad Triangulation (DPK Ch. 15 Text 6):**
     Evaluated from Janma Lagna (Weight 1.0), Chandra Lagna (Weight 0.5), and Kāraka Lagna (Weight 0.25), normalized by total weight ($1.75$):
+    Per DPK 15.6, the Kāraka Lagna evaluation averages both the potency of the house dispositor counted from the Kāraka and the natural Kāraka planet itself:
+    $$p_{\text{karaka}} = \frac{p_{\text{karaka\_house\_lord}} + p_{\text{karaka\_graha}}}{2.0}$$
     $$\text{composite\_potency} = \frac{(1.0 \times p_{\text{asc}}) + (0.5 \times p_{\text{chandra}}) + (0.25 \times p_{\text{karaka}})}{1.75}$$
 11. **3-Focal-Point Rule (DPK Ch. 15 Texts 1–3, 18) & Bhavāt Bhavam:**
     - **Point 1 (The Bhāva):** Afflicted if strictly besieged between malefics (*Pāpakartarī* without benefic relief) or occupied by $\ge 2$ malefics (excluding its lord). Dusthāna houses (6, 8, 12) are not self-ruining.
-    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign (except dusthāna lords in dusthāna), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), or combust (*Mūḍha* per DPK 15.1).
+    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign (except own-dusthāna lords residing in dusthānas), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), or combust (*Mūḍha* per DPK 15.1).
     - **Point 3 (The Kāraka):** Afflicted if placed in a dusthāna from Lagna (except Saturn in the 8th), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated, or combust. Missing kārakas are safely handled without defaulting to $0.0^\circ$ Aries.
     - **Ruination Verdict:** If $\ge 2$ focal points are afflicted, the house is classified as ruined (*vad-bhāva / bhad-bhāva*).
-12. **Final Qualitative Synthesis:** Synthesizes qualitative classification into:
+12. **Single Source of Truth Synthesis:** Root `classification` and `summary_verdict` are synchronized directly from the continuous 12-House Atmosphere model, eliminating split classification discrepancies across consumers:
     - **Puṣṭa** (Fortified/Flourishing)
     - **Miśra** (Balanced/Mixed)
     - **Hīna** (Depleted/Afflicted)
@@ -141,8 +143,8 @@ Harsha Bala ("Strength of Cheerfulness") measures the inner joy, comfort, and na
 
 Synthesizes the net constructive vs friction forces acting on each house into a continuous score ($-100.0$ to $+100.0$):
 - **Baseline Capacity:** Ingests `augmented_virupas` (incorporating Parāśarī capacity, lord Digbala re-count, and sign/sect bonuses per DPK Ch. 4).
-- **Positive Forces:** Lord strength ($>1.0\times$), benefic occupants, own-sign malefic protection ($+15.0$), Lagneśa presence or aspect ($+15.0$), protective drishti rays, Śubhakartarī, Upacaya malefic channeling, and Harsha/Viparita dusthana joy.
-- **Negative Forces:** Combust/defeated lord, malefic occupants in non-upacaya houses, confrontational drishti, Pāpakartarī, Bhāva Sandhi border leakage, and Bhavāt Bhavam dusthāna displacement ($+6, +8, +12$).
+- **Positive Forces:** Fortified lord ($>1.0\times$ without debilitation or combustion: $+15.0$), benefic occupants, own-sign malefic protection ($+15.0$), Lagneśa presence or aspect ($+15.0$), protective drishti rays, Śubhakartarī, Upacaya from Lagna growth ($+10.0$), Upacaya malefic channeling, exceptional Triad concordance ($+10.0$), and Harsha/Viparita dusthana joy ($+25.0$).
+- **Negative Forces:** Debilitated lord ($-20.0$ per DPK 15.1 *Hīna*), combust lord ($-20.0$ *Mūḍha*), defeated lord in war ($-15.0$ *Nīpīḍita*), deficient lord virūpas ($-10.0$), malefic occupants in non-upacaya houses, confrontational drishti, Pāpakartarī, Bhāva Sandhi border leakage, Bhavāt Bhavam dusthāna displacement ($+6, +8, +12$ for non-dusthāna houses: $-15.0$), afflicted Kārakobhāvanāśāya ($-15.0$), latent Triad concordance ($-10.0$), and Vad-Bhāva ruination under 3 Focal Points ($-25.0$ per DPK 15.18).
 - **Classifications:**
   - `Puṣṭa` ($\ge +25.0$): Radiant, unopposed, or supportive.
   - `Miśra` ($-20.0 \text{ to } +25.0$): Tempered, dynamic, or resilient.

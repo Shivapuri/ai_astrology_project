@@ -90,7 +90,7 @@ def test_stage3_full_dag_pipeline(jolie_baseline):
 
         # 3. Check Phaladeepika Qualitative Diagnostics
         assert "classification" in b
-        assert b["classification"] in ("Pusta", "Misra", "Hina")
+        assert b["classification"] in ("Pusta", "Misra", "Hina", "Puṣṭa", "Miśra", "Hīna")
         assert "lord_status" in b
         assert "sandhi_analysis" in b
         assert "kartari_yoga" in b

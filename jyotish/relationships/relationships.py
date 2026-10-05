@@ -7,13 +7,10 @@ from typing import Dict, Any, List, Optional
 from jyotish.baseline import (
     ChartBaseline,
     SIGN_LORDS,
-    VIMSHOTTARI_SEQUENCE,
-    ZODIAC_SIGNS,
     PLANETS_ORDER,
     VARGAS_LIST,
-    ALL_BODIES,
     NAISARGIKA_SAMBANDHA,
-    FIXED_DIGNITIES,
+    VIMSHOTTARI_SEQUENCE,
 )
 
 # Canonical 9 Diptadi Avastha Categorization (Phaladipika Ch. 3 v. 18-19)
@@ -61,13 +58,12 @@ def get_natural_relationship(
     Returns 'Friend', 'Neutral', or 'Enemy' for planet1's view of planet2.
     - Physical planets follow BPHS Ch. 15 Moolatrikona derivations.
     - Nodal evaluation supports two modes:
-        1. 'ernst_wilhelm' (Default): Rahu = Saturn proxy, Ketu = Mars proxy (Sanivad Rahu, Kujavad Ketu).
+        1. 'ernst_wilhelm' (Default): Rahu = Saturn proxy, Ketu = Mars proxy.
         2. 'phaladipika': Both nodes follow Mantresvara's Asura coalition.
     """
     if planet1 == planet2:
         return "Self"
 
-    # Nodal Evaluation
     if nodal_methodology == "ernst_wilhelm":
         if planet1 in ("Rahu", "Ketu"):
             proxy = "Saturn" if planet1 == "Rahu" else "Mars"
@@ -78,7 +74,6 @@ def get_natural_relationship(
             return "Neutral"
 
         if planet2 in ("Rahu", "Ketu"):
-            # Physical planet's view of node under proxy reflection
             proxy = "Saturn" if planet2 == "Rahu" else "Mars"
             if proxy in NAISARGIKA_SAMBANDHA.get(planet1, {}).get("Friends", []):
                 return "Friend"
@@ -161,11 +156,11 @@ def get_dignity(
 ) -> str:
     """
     Evaluates final planetary dignity.
-    - Preserves Ernst Wilhelm's kala_degree default bounds while supporting classical whole_sign.
-    - Supports Ketu own sign in Pisces (default) or Scorpio (alternative).
+    - In higher vargas (is_varga=True), whole-sign rules govern cleanly: primary sign confers
+      Moolatrikona (for 45 Virūpas in Saptavargaja Bala), secondary sign confers Own Sign,
+      and exaltation/debilitation spans the full sign.
+    - In D1, degree bounds are applied for Moolatrikona and optional kala_degree debilitation.
     """
-    is_kala = (debilitation_mode == "kala_degree")
-
     # 1. SUN
     if planet == "Sun":
         if sign == "Aries":
@@ -173,7 +168,7 @@ def get_dignity(
         if sign == "Libra":
             return "Debilitated"
         if sign == "Leo":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Moolatrikona"
             return "Moolatrikona" if degree <= 20.0 else "Own Sign"
 
@@ -184,9 +179,7 @@ def get_dignity(
                 return "Exalted"
             return "Exalted" if degree <= 3.0 else "Moolatrikona"
         if sign == "Scorpio":
-            if is_varga or debilitation_mode in ("traditional", "whole_sign"):
-                return "Debilitated"
-            if degree <= 3.0:
+            if is_varga or debilitation_mode in ("traditional", "whole_sign") or degree <= 3.0:
                 return "Debilitated"
         elif sign == "Cancer":
             return "Own Sign"
@@ -198,7 +191,7 @@ def get_dignity(
         if sign == "Cancer":
             return "Debilitated"
         if sign == "Aries":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Moolatrikona"
             return "Moolatrikona" if degree <= 12.0 else "Own Sign"
         if sign == "Scorpio":
@@ -215,9 +208,7 @@ def get_dignity(
                 return "Moolatrikona"
             return "Own Sign"
         if sign == "Pisces":
-            if is_varga or debilitation_mode in ("traditional", "whole_sign"):
-                return "Debilitated"
-            if degree <= 15.0:
+            if is_varga or debilitation_mode in ("traditional", "whole_sign") or degree <= 15.0:
                 return "Debilitated"
         elif sign == "Gemini":
             return "Own Sign"
@@ -229,7 +220,7 @@ def get_dignity(
         if sign == "Capricorn":
             return "Debilitated"
         if sign == "Sagittarius":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Moolatrikona"
             return "Moolatrikona" if degree <= 10.0 else "Own Sign"
         if sign == "Pisces":
@@ -242,7 +233,7 @@ def get_dignity(
         if sign == "Virgo":
             return "Debilitated"
         if sign == "Libra":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Moolatrikona"
             return "Moolatrikona" if degree <= 15.0 else "Own Sign"
         if sign == "Taurus":
@@ -255,7 +246,7 @@ def get_dignity(
         if sign == "Aries":
             return "Debilitated"
         if sign == "Aquarius":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Moolatrikona"
             return "Moolatrikona" if degree <= 20.0 else "Own Sign"
         if sign == "Capricorn":
@@ -274,8 +265,9 @@ def get_dignity(
 
     # 9. KETU
     elif planet == "Ketu":
+        # Classical rule: Exaltation in Scorpio supersedes Own Sign
         if sign == "Scorpio":
-            return "Exalted"  # Exaltation takes precedence in Scorpio
+            return "Exalted"
         if sign == "Taurus":
             return "Debilitated"
         if sign == "Sagittarius":
@@ -343,7 +335,6 @@ def calculate_chart_dignities(
         varga_dignities[v_name] = {}
         is_varga = (v_name != "D1")
 
-        # Iterate over all 9 bodies present in the varga
         for p_name in all_grahas:
             if p_name not in v_grahas:
                 continue
@@ -351,7 +342,7 @@ def calculate_chart_dignities(
             sign = p_data["sign"]
             raw_lord = SIGN_LORDS[sign]
 
-            # Co-rulership resolution for Aquarius (Rahu) and Scorpio/Pisces (Ketu)
+            # Co-rulership resolution for Aquarius (Rahu) and Pisces/Scorpio (Ketu)
             is_own_house = (
                 (raw_lord == p_name)
                 or (p_name == "Rahu" and sign == "Aquarius")

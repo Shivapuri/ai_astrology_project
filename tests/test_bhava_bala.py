@@ -15,6 +15,7 @@ from jyotish.bhavas.bhava_bala import (
     _evaluate_karako_bhava_nasaya,
     _evaluate_sandhi_leakage,
     _evaluate_three_focal_points,
+    _evaluate_dpk_triad,
     get_sign_genus
 )
 from jyotish.generate_jyotish import generate_kala_chart
@@ -544,6 +545,211 @@ def test_dpk_4_23_lord_in_lagna_upacaya(calibrated_shadbala):
     atm = calculate_house_atmosphere(baseline, bhavas)
     auspicious = " ".join(atm[1]["auspicious_influences"])
     assert "Lagna Upacaya H10 (DPK 4.23 growth)" in auspicious
+
+
+def test_dpk_15_1_debilitated_lord_not_strong_and_penalized(calibrated_shadbala):
+    """
+    Certifies DPK 15.1 (Hīnāri-mūḍhair): A debilitated house lord cannot be classified
+    as strong even if its Shadbala virūpas exceed the required minimum threshold,
+    and the house receives a -20.0 penalty in Atmosphere.
+    """
+    # Aries Lagna (0.0°). House 9 is Sagittarius (ruled by Jupiter).
+    # Jupiter is in Capricorn (280.0°), where it is debilitated.
+    # In calibrated_shadbala, Jupiter has 485.0 Virūpas (> 390.0 required).
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Jupiter": {"lon": 280.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    
+    lord_status = bhavas[9]["lord_status"]
+    assert lord_status["is_debilitated"] is True
+    assert lord_status["is_strong"] is False
+
+    atm = bhavas[9]["atmosphere"]
+    inauspicious_str = " ".join(atm["inauspicious_influences"])
+    auspicious_str = " ".join(atm["auspicious_influences"])
+
+    assert "debilitated in Capricorn (Hīna per DPK 15.1)" in inauspicious_str
+    assert "Fortified Lord Jupiter" not in auspicious_str
+
+
+def test_synchronized_root_classification_and_summary_verdict(calibrated_shadbala):
+    """
+    Certifies that the root classification and summary_verdict of bhava_results
+    are perfectly synchronized with the Atmosphere model.
+    """
+    baseline = MockChartBaseline(
+        ascendant=44.5,
+        planets={
+            "Sun": {"lon": 74.5, "is_combust": False},
+            "Moon": {"lon": 134.5, "is_combust": False},
+            "Mars": {"lon": 194.5, "is_combust": False},
+            "Mercury": {"lon": 78.0, "is_combust": False},
+            "Jupiter": {"lon": 224.5, "is_combust": False},
+            "Venus": {"lon": 44.5, "is_combust": False},
+            "Saturn": {"lon": 29.5, "is_combust": False}
+        }
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    
+    for h in range(1, 13):
+        atm = bhavas[h]["atmosphere"]
+        atm_clean = atm["classification"].split()[0]
+        assert bhavas[h]["classification"] == atm_clean
+        assert bhavas[h]["classification"] in ("Puṣṭa", "Miśra", "Hīna")
+        assert f"is {atm_clean}:" in bhavas[h]["summary_verdict"]
+        assert f"Atmosphere: {atm['net_atmosphere_score']:+.1f}" in bhavas[h]["summary_verdict"]
+        assert atm["environmental_weather"] in bhavas[h]["summary_verdict"]
+
+
+def test_dpk_15_6_karaka_planet_strength_in_triad(calibrated_shadbala):
+    """
+    Certifies DPK 15.6: The DPK Triad evaluates both the Kāraka Lagna dispositor
+    AND the natural Kāraka planet itself, averaging their potencies.
+    """
+    # Evaluate House 5 (children, natural Kāraka is Jupiter).
+    # Jupiter placed in Capricorn (280.0°). Its dispositor is Saturn.
+    # In calibrated_shadbala: Saturn = 340.0 / 300.0 = 1.133.
+    # Set Jupiter's virūpas to 195.0 (195.0 / 390.0 = 0.50).
+    shadbala_copy = dict(calibrated_shadbala)
+    shadbala_copy["Jupiter"] = {"Total_Virupas": 195.0, "Total_Rupas": 3.25, "Dig_Bala": 20.0}
+
+    triad = _evaluate_dpk_triad(
+        house_num=5,
+        asc_sign_idx=0,
+        chandra_sign_idx=0,
+        planet_positions={"Jupiter": 280.0, "Saturn": 280.0},
+        shadbala_results=shadbala_copy
+    )
+    karaka_part = triad["from_karaka_lagna"]
+    # 5th house from Capricorn (9) is Taurus (1), ruled by Venus.
+    # Dispositor of 5th from Karaka (Venus) potency = 420.0 / 330.0 = 1.27
+    # Natural Karaka planet (Jupiter) potency = 195.0 / 390.0 = 0.50
+    # Average = (1.2727 + 0.50) / 2 = 0.89
+    assert karaka_part["dispositor_potency"] == 1.27
+    assert karaka_part["karaka_graha_potency"] == 0.5
+    assert karaka_part["potency_ratio"] == 0.89
+
+
+def test_dusthana_lord_in_upacaya_bhavat_bhavam_exemption(calibrated_shadbala):
+    """
+    Certifies that a dusthāna lord (House 6) placed in an Upacaya (House 11, 6th from 6th)
+    is exempt from Bhavāt Bhavam dusthāna penalties (-15) and receives the Upacaya growth bonus (+10).
+    """
+    # Aries Lagna (0.0°). House 6 is Virgo (ruled by Mercury).
+    # Mercury is placed in Aquarius in House 11 (315.0°).
+    # Distance from H6 to H11 is +6 houses (Bhavāt Bhavam 6th from 6th).
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Mercury": {"lon": 315.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    
+    atm = bhavas[6]["atmosphere"]
+    inauspicious_str = " ".join(atm["inauspicious_influences"])
+    auspicious_str = " ".join(atm["auspicious_influences"])
+
+    # Must NOT have Bhavāt Bhavam penalty
+    assert "displaced into 6/8/12 from its own sign" not in inauspicious_str
+    # Must have Lagna Upacaya growth bonus
+    assert "Lagna Upacaya H11 (DPK 4.23 growth)" in auspicious_str
+
+
+def test_combust_lord_not_strong_and_penalized(calibrated_shadbala):
+    """
+    Certifies DPK 15.1 (Mūḍha): A combust house lord cannot be classified as strong
+    even if its Shadbala virūpas exceed required threshold, and the house is penalized.
+    """
+    # Aries Lagna (0.0°). House 9 is Sagittarius (Jupiter).
+    # Jupiter is in Sagittarius (250.0°, own sign) with 485.0 Virūpas, but combust.
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Jupiter": {"lon": 250.0, "is_combust": True}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    lord_status = bhavas[9]["lord_status"]
+    assert lord_status["is_combust"] is True
+    assert lord_status["is_strong"] is False
+
+    atm = bhavas[9]["atmosphere"]
+    inauspicious_str = " ".join(atm["inauspicious_influences"])
+    auspicious_str = " ".join(atm["auspicious_influences"])
+    assert "Fortified Lord Jupiter" not in auspicious_str
+    assert "combust the Sun (Mūḍha per DPK 15.1)" in inauspicious_str
+
+
+def test_focal_points_and_karako_connected_to_atmosphere(calibrated_shadbala):
+    """
+    Certifies that Kārakobhāvanāśāya, Triad concordance, and Three Focal Points ruination
+    are directly connected to the final Atmosphere score and influences.
+    """
+    # Solitary Jupiter in H5 (Leo, 130.0°) with Aries Lagna (0.0°)
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Jupiter": {"lon": 130.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    atm5 = bhavas[5]["atmosphere"]
+    inauspicious5 = " ".join(atm5["inauspicious_influences"])
+
+    # 1. Kārakobhāvanāśāya is connected to Atmosphere
+    assert "Kārakobhāvanāśāya triggered" in inauspicious5
+
+    # 2. Check Three Focal Points Ruination connected to Atmosphere
+    # Create chart where H5 is flanked by Mars in H4 and Saturn in H6 (Papakartari)
+    flanked_strict = {
+        4: [{"name": "Mars"}],
+        6: [{"name": "Saturn"}]
+    }
+    # Focal point evaluation with Jupiter depleted & combust
+    shad_copy = dict(calibrated_shadbala)
+    shad_copy["Jupiter"] = {"Total_Virupas": 150.0, "Total_Rupas": 2.5, "Dig_Bala": 10.0}
+    res_focal = _evaluate_three_focal_points(
+        house_num=5, lord="Sun", lord_house=12, main_karaka="Jupiter",
+        planet_positions={"Jupiter": 130.0, "Sun": 350.0}, asc_sign_idx=0,
+        house_occupant_map=flanked_strict, shadbala_results=shad_copy,
+        combustion_map={"Jupiter": True}
+    )
+    assert res_focal["is_ruined"] is True
+
+    # When attached to bhava_results and evaluated in atmosphere:
+    mock_bhavas = {
+        5: {
+            "total_virupas": 300.0, "augmented_virupas": 300.0, "lord": "Sun", "sign": "Leo",
+            "lord_status": {"is_strong": False, "placed_house": 12, "bhavat_bhavam_distance": 8},
+            "occupants": [], "sandhi_analysis": {}, "kartari_yoga": {}, "occupant_diagnostics": {},
+            "karaka_analysis": {"is_afflicted": False}, "dpk_triad": {"concordance": "latent"},
+            "three_focal_points": res_focal, "bhava_drishti_bala": 0.0
+        }
+    }
+    atm_mock = calculate_house_atmosphere(baseline, mock_bhavas)
+    inauspicious_focal = " ".join(atm_mock[5]["inauspicious_influences"])
+    assert "Vad-Bhāva Ruination (DPK 15.18)" in inauspicious_focal
+    assert "Latent Triad Concordance" in inauspicious_focal
+
+
+def test_focal_point_dusthana_scope_non_dusthana_placement(calibrated_shadbala):
+    """
+    Certifies that when a dusthāna lord (House 6) is placed in Lagna (House 1, Kendra),
+    it is NOT exempt from displacement ruin because House 1 is not a dusthāna.
+    """
+    # Aries Lagna (asc_sign_idx = 0). House 6 is Virgo (ruled by Mercury).
+    # Mercury placed in Aries (House 1). Distance from H6 to H1 is +8 houses.
+    focal = _evaluate_three_focal_points(
+        house_num=6,
+        lord="Mercury",
+        lord_house=1,  # In Kendra, not Dusthana!
+        main_karaka="Mars",
+        planet_positions={"Mercury": 15.0, "Mars": 75.0},
+        asc_sign_idx=0,
+        house_occupant_map={},
+        shadbala_results=calibrated_shadbala
+    )
+    # Since lord_house 1 is not in DUHSTHANA_HOUSES, lord_in_bhava_dusthana must be True
+    assert "Lord: True" in focal["details"]
+
+
 
 
 

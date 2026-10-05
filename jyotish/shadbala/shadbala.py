@@ -759,7 +759,7 @@ def calculate_subha_phala(
                 d_str = d_entry.get("dignity", "Neutral") if isinstance(d_entry, dict) else str(d_entry)
 
             if "Exalted" in d_str: pts = 60.0
-            elif "Moolatrikona" in d_str: pts = 45.0
+            elif "Moolatrikona" in d_str: pts = 45.0 if v == "D1" else 30.0
             elif "Own Sign" in d_str: pts = 30.0
             elif "Great Friend" in d_str: pts = 22.5
             elif "Friend" in d_str: pts = 15.0
@@ -798,7 +798,7 @@ def calculate_subha_phala(
         dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
 
         if "Exalted" in dignity: pts = 60.0
-        elif "Moolatrikona" in dignity: pts = 45.0
+        elif "Moolatrikona" in dignity: pts = 45.0 if is_rasi else 30.0
         elif "Own Sign" in dignity: pts = 30.0
         elif "Great Friend" in dignity: pts = 22.5
         elif "Friend" in dignity: pts = 15.0

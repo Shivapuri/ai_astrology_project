@@ -552,7 +552,11 @@ def _evaluate_dpk_triad(
 
     p_asc = get_lord_potency(lord_asc)
     p_chandra = get_lord_potency(lord_chandra)
-    p_karaka = get_lord_potency(lord_karaka)
+    
+    # DPK 15.6: Evaluate both Kāraka Lagna dispositor AND Kāraka planet itself
+    p_karaka_house_lord = get_lord_potency(lord_karaka)
+    p_karaka_graha = get_lord_potency(main_karaka)
+    p_karaka = round((p_karaka_house_lord + p_karaka_graha) / 2.0, 2)
 
     composite_potency = ((1.0 * p_asc) + (0.5 * p_chandra) + (0.25 * p_karaka)) / 1.75
     strong_count = sum(1 for p in (p_asc, p_chandra, p_karaka) if p >= 1.0)
@@ -568,7 +572,15 @@ def _evaluate_dpk_triad(
     return {
         "from_janma_lagna": {"house": house_num, "sign": SIGNS[h_asc_sign], "lord": lord_asc, "potency_ratio": round(p_asc, 2)},
         "from_chandra_lagna": {"house": house_num, "sign": SIGNS[h_chandra_sign], "lord": lord_chandra, "potency_ratio": round(p_chandra, 2)},
-        "from_karaka_lagna": {"house": house_num, "sign": SIGNS[h_karaka_sign], "lord": lord_karaka, "karaka": main_karaka, "potency_ratio": round(p_karaka, 2)},
+        "from_karaka_lagna": {
+            "house": house_num,
+            "sign": SIGNS[h_karaka_sign],
+            "lord": lord_karaka,
+            "karaka": main_karaka,
+            "potency_ratio": round(p_karaka, 2),
+            "dispositor_potency": round(p_karaka_house_lord, 2),
+            "karaka_graha_potency": round(p_karaka_graha, 2)
+        },
         "concordance": concordance,
         "concordance_score": round(strong_count / 3.0, 2),
         "weighted_triad_potency": round(composite_potency, 2)
@@ -616,9 +628,12 @@ def _evaluate_three_focal_points(
     ]
     bhava_afflicted = is_strictly_papakartari(house_num) or (len(bhava_malefics) >= 2)
 
-    # Focal Point 2: Lord Affliction (Bhavāt Bhavam displacement, dignity & combustion: DPK 15.1)
-    bhavat_dist = (lord_house - house_num) % 12 + 1
-    lord_in_bhava_dusthana = (bhavat_dist in {6, 8, 12}) and not (house_num in DUHSTHANA_HOUSES and lord_house in DUHSTHANA_HOUSES)
+    # Own dusthāna lords in dusthānas (Harsha, Sarala, Vimala) are exempt from displacement ruin
+    bhavat_dist = ((lord_house - house_num) % 12) + 1
+    lord_in_bhava_dusthana = (
+        (bhavat_dist in {6, 8, 12}) 
+        and not (house_num in DUHSTHANA_HOUSES and lord_house in DUHSTHANA_HOUSES)
+    )
     lord_virupas = float(shadbala_results.get(lord, {}).get("Total_Virupas", 0.0))
     lord_weak = (lord_virupas / PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)) < 0.90 if lord in shadbala_results else False
 
@@ -869,13 +884,24 @@ def calculate_bhava_bala(
             lord_lon = float(planet_positions[lord])
             lord_sign_idx = int(lord_lon / 30.0)
             lord_house = (lord_sign_idx - asc_sign_idx) % 12 + 1
+            lord_sign = SIGNS[lord_sign_idx]
         else:
             lord_sign_idx = sign_idx
             lord_house = house_num
+            lord_sign = sign_name
+
         bhavat_dist = (lord_house - house_num) % 12 + 1
         lord_meta = planet_metadata.get(lord, {})
         req_virupas = PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)
-        is_lord_strong = (adhipathi_bala / req_virupas) >= 1.0
+        
+        # DPK 15.1: Lord cannot be classified as strong if debilitated (Hīna) or combust (Mūḍha)
+        is_lord_debilitated = (DEBILITATION_SIGNS.get(lord) == lord_sign)
+        is_lord_combust = bool(lord_meta.get("is_combust", is_combust_map.get(lord, False)))
+        is_lord_strong = (
+            ((adhipathi_bala / req_virupas) >= 1.0) 
+            and not is_lord_debilitated 
+            and not is_lord_combust
+        )
 
         # Upacayas from the bhāva that foster growth without dusthāna corruption: 3, 10, 11
         lord_in_upacaya_from_bhava = bhavat_dist in {3, 10, 11}
@@ -885,14 +911,15 @@ def calculate_bhava_bala(
         lord_status = {
             "lord": lord,
             "placed_house": lord_house,
-            "placed_sign": SIGNS[lord_sign_idx],
+            "placed_sign": lord_sign,
             "bhavat_bhavam_distance": bhavat_dist,
             "is_in_kendra": lord_house in KENDRA_HOUSES,
             "is_in_trikona": lord_house in TRIKONA_HOUSES,
             "is_in_dusthana": is_lord_displaced_in_dusthana,
             "is_in_upacaya_from_bhava": lord_in_upacaya_from_bhava,
             "is_in_upacaya_from_lagna": lord_in_upacaya_from_lagna,
-            "is_combust": lord_meta.get("is_combust", is_combust_map.get(lord, False)),
+            "is_debilitated": is_lord_debilitated,
+            "is_combust": is_lord_combust,
             "in_war": lord_meta.get("in_war", False),
             "is_strong": is_lord_strong,
             "potency_ratio": round(adhipathi_bala / req_virupas, 2)
@@ -927,48 +954,6 @@ def calculate_bhava_bala(
             if raw_lagna_aspect and raw_lagna_aspect >= 30.0:
                 lagnesha_aspects = True
 
-        # Composite Classification: Puṣṭa | Miśra | Hīna
-        score = 0
-        if augmented_virupas >= 450.0:
-            score += 2
-        elif augmented_virupas >= 350.0:
-            score += 1
-        else:
-            score -= 1
-
-        if is_lord_strong:
-            score += 1
-        if lord_status["is_in_dusthana"] or lord_status["is_combust"]:
-            score -= 1
-        if lord_in_upacaya_from_bhava or (lord_in_upacaya_from_lagna and not is_lord_displaced_in_dusthana):
-            score += 1
-        if kartari_diag["type"] == "shubhakartari":
-            score += 1
-        elif kartari_diag["type"] == "papakartari":
-            score -= 1
-        if occ_diag["upacaya_empowered"]:
-            score += 1
-        if sandhi_diag["cusp_in_sandhi"] or len(sandhi_diag["wall_leakages"]) > 0:
-            score -= 1
-        if karaka_diag["is_afflicted"]:
-            score -= 1
-        if focal_diag["is_ruined"]:
-            score -= 2
-
-        if score >= 2:
-            classification = "Pusta"
-        elif score <= -1:
-            classification = "Hina"
-        else:
-            classification = "Misra"
-
-        summary_verdict = (
-            f"House {house_num} ({sign_name}) is {classification}: {total_rupas} Rūpas. "
-            f"Lord {lord} in H{lord_house}. "
-            f"Kartarī: {kartari_diag['type']}. "
-            f"Triad Concordance: {triad_diag['concordance']}."
-        )
-
         bhava_results[house_num] = {
             # Legacy Parāśarī contract
             "house": house_num,
@@ -995,8 +980,8 @@ def calculate_bhava_bala(
             "dpk_triad": triad_diag,
             "three_focal_points": focal_diag,
             "lagnesha_aspecting": lagnesha_aspects,
-            "classification": classification,
-            "summary_verdict": summary_verdict
+            "classification": "Pending",
+            "summary_verdict": ""
         }
 
     # ---------------------------------------------------------
@@ -1016,8 +1001,20 @@ def calculate_bhava_bala(
     )
 
     for h in range(1, 13):
+        atm = atmosphere_data.get(h, {})
         bhava_results[h]["harsha_bala"] = harsha_data["dusthana_joy"].get(h, {})
-        bhava_results[h]["atmosphere"] = atmosphere_data.get(h, {})
+        bhava_results[h]["atmosphere"] = atm
+        
+        # Single Source of Truth: Synchronize root classification with Atmosphere
+        raw_class = atm.get("classification", "Miśra")
+        clean_class = raw_class.split()[0]  # Extracts "Puṣṭa", "Miśra", or "Hīna"
+        bhava_results[h]["classification"] = clean_class
+        bhava_results[h]["summary_verdict"] = (
+            f"House {h} ({bhava_results[h]['sign']}) is {clean_class}: "
+            f"{bhava_results[h]['total_rupas']} Rūpas (Atmosphere: {atm.get('net_atmosphere_score', 0.0):+.1f}, "
+            f"{atm.get('environmental_weather', 'Balanced')}). "
+            f"Lord {bhava_results[h]['lord']} in H{bhava_results[h]['lord_status']['placed_house']}."
+        )
 
     return bhava_results
 
@@ -1245,6 +1242,9 @@ def calculate_house_atmosphere(
         sandhi = b.get("sandhi_analysis", {})
         kartari = b.get("kartari_yoga", {})
         occ_diag = b.get("occupant_diagnostics", {})
+        karaka_diag = b.get("karaka_analysis", {})
+        triad_diag = b.get("dpk_triad", {})
+        focal_diag = b.get("three_focal_points", {})
         drishti_bala = float(b.get("bhava_drishti_bala", 0.0))
         h_harsha = harsha_data.get("dusthana_joy", {}).get(h, {})
 
@@ -1260,27 +1260,31 @@ def calculate_house_atmosphere(
         elif augmented_virupas < 320.0:
             inauspicious.append(f"Sub-baseline Virūpas ({augmented_virupas:.1f}v / {augmented_virupas/60.0:.2f} Rūpas)")
 
-        # 2. Lord Capacity & Placements
+        # 2. Lord Capacity & Placements (DPK 15.1 Hīnāri-mūḍha)
         if lord_status.get("is_strong"):
             score += 15.0
             auspicious.append(f"Fortified Lord {lord} ({lord_status.get('potency_ratio', 1.0)}x required minimum)")
         else:
             score -= 10.0
-            inauspicious.append(f"Lord {lord} below required minimum virūpas")
+            inauspicious.append(f"Lord {lord} below required minimum virūpas or deficient in dignity")
+
+        if lord_status.get("is_debilitated"):
+            score -= 20.0
+            inauspicious.append(f"Lord {lord} debilitated in {lord_status.get('placed_sign')} (Hīna per DPK 15.1)")
 
         if lord_status.get("is_combust"):
             score -= 20.0
-            inauspicious.append(f"Lord {lord} combust the Sun (Asta)")
+            inauspicious.append(f"Lord {lord} combust the Sun (Mūḍha per DPK 15.1)")
 
         if lord_status.get("in_war"):
             score -= 15.0
-            inauspicious.append(f"Lord {lord} defeated in planetary war (Yuddha)")
+            inauspicious.append(f"Lord {lord} defeated in planetary war (Nīpīḍita)")
 
         # Bhavat Bhavam displacement vs Viparita
         placed_h = lord_status.get("placed_house", 1)
         bhavat_dist = lord_status.get("bhavat_bhavam_distance", 1)
         
-        if h in (6, 8, 12) and h_harsha.get("is_active"):
+        if h in DUHSTHANA_HOUSES and h_harsha.get("is_active"):
             score += 25.0
             if h_harsha.get("viparita_active"):
                 auspicious.append(f"{h_harsha.get('yoga_name')} Yoga active in Dusthana H{h}")
@@ -1288,7 +1292,7 @@ def calculate_house_atmosphere(
                 auspicious.append(f"Tajika Planetary Joy active in Dusthana H{h} ({'Mars' if h == 6 else 'Saturn'})")
             else:
                 auspicious.append(f"{h_harsha.get('yoga_name')} Yoga active in Dusthana H{h}")
-        elif bhavat_dist in {6, 8, 12}:
+        elif (bhavat_dist in {6, 8, 12}) and (h not in DUHSTHANA_HOUSES):
             score -= 15.0
             inauspicious.append(f"Lord {lord} displaced into 6/8/12 from its own sign (+{bhavat_dist}h)")
 
@@ -1348,6 +1352,25 @@ def calculate_house_atmosphere(
         if sandhi.get("cusp_in_sandhi"):
             score -= 15.0
             inauspicious.append("Bhāva Sandhi (cusp degree within 1° of sign border)")
+
+        # 7. Kārakobhāvanāśāya Check (Living Significations)
+        if karaka_diag.get("is_afflicted"):
+            score -= 15.0
+            inauspicious.append(karaka_diag.get("details", "Kārakobhāvanāśāya active"))
+
+        # 8. Phaladeepika Triad Concordance (DPK 15.6)
+        concordance = triad_diag.get("concordance")
+        if concordance == "exceptional":
+            score += 10.0
+            auspicious.append("Exceptional Triad Concordance (Lagna, Moon, and Kāraka alignments strong)")
+        elif concordance == "latent":
+            score -= 10.0
+            inauspicious.append("Latent Triad Concordance (all three Lagnas lack requisite strength)")
+
+        # 9. Three Focal Points Ruination Verdict (DPK 15.18 Vad-Bhāva)
+        if focal_diag.get("is_ruined"):
+            score -= 25.0
+            inauspicious.append(f"Vad-Bhāva Ruination (DPK 15.18): {focal_diag.get('details')}")
 
         net_score = round(max(-100.0, min(100.0, score)), 1)
 

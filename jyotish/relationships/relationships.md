@@ -62,13 +62,11 @@ As implemented in `generate_jyotish.py` and `relationships.py`:
 - **Varga-Specific Distances (Tātkālika Anchored to $D_1$):**
   *Tātkālika Maitrī* (Temporary Friendship) is ALWAYS calculated using the planetary positions in the physical sky of the $D_1$ (Rāśi) chart, even when determining Dignity for higher Vargas like $D_9$ or $D_{60}$. Divisional charts are mathematical harmonics, not physical sky positions.
 
-- **Intra-Varga Invariance Rule & Dual Modes:**
-  - Under `whole_sign` / `traditional` (Canonical Classical Standard, *BPHS* Ch. 27 v. 4–6):
-    - Sub-degree bounds ($0^\circ\text{--}12^\circ$, $0^\circ\text{--}20^\circ$) belong exclusively to the physical $D_1$ sign arc where one sign must be split between Moolatrikona and Own Sign.
-    - In higher divisional vargas ($D_2$ through $D_{60}$), the planet's primary Moolatrikona sign (Aries for Mars, Leo for Sun, Sagittarius for Jupiter, Libra for Venus, Aquarius for Saturn) confers full `"Moolatrikona"` dignity (yielding the classical 45 Virūpas in *Saptavargaja Bala*), while its secondary sign (Scorpio for Mars, Pisces for Jupiter, Taurus for Venus, Capricorn for Saturn) confers pure `"Own Sign"` (30 Virūpas).
-    - Exaltations and debilitations govern the entire $30^\circ$ sign: Moon in Taurus is universally `"Exalted"`, and Moon in Scorpio / Mercury in Pisces is universally `"Debilitated"`.
-  - Under `kala_degree` (Ernst Wilhelm / Kala software mode):
-    - Intra-varga degree coordinates within the division are evaluated across vargas matching Ernst Wilhelm's calibrated software exports.
+- **Intra-Varga Invariance Rule:**
+  - In all higher divisional vargas ($D_2$ through $D_{60}$, with `is_varga=True`), whole-sign rules govern cleanly and unconditionally across all modes:
+    - Primary Moolatrikona signs (Aries for Mars, Leo for Sun, Sagittarius for Jupiter, Libra for Venus, Aquarius for Saturn) confer full `"Moolatrikona"` dignity (yielding the classical 45 Virūpas in *Saptavargaja Bala*), while secondary signs confer pure `"Own Sign"` (30 Virūpas).
+    - Exaltations and debilitations govern the entire $30^\circ$ sign: Moon in Taurus and Mercury in Virgo are universally `"Exalted"`, and Moon in Scorpio / Mercury in Pisces are universally `"Debilitated"`.
+  - Sub-degree degree bounds ($0^\circ\text{--}12^\circ$, $0^\circ\text{--}20^\circ$) belong exclusively to the physical sky of the $D_1$ (Rāśi) chart.
 
 - **Debilitation Calculation Modes (`debilitation_mode`):**
   - `kala_degree` (Empirical Option):
