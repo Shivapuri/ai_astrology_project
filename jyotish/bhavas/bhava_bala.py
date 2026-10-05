@@ -1,4 +1,12 @@
 """
+=============================================================================
+ASTRA CORE CALCULUS - FROZEN & CERTIFIED COMPONENT (HEMISPHERE A)
+=============================================================================
+STATUS: CERTIFIED & LOCKED
+DO NOT MODIFY FORMULAS, CONSTANTS, OR SIGNATURES IN THIS FILE.
+DOWNSTREAM ENGINES (YOGAS, DASHAS, REPORTS, UI) DEPEND ON THIS CONTRACT.
+=============================================================================
+
 jyotish/bhavas/bhava_bala.py
 ============================
 Enterprise-Grade House Capacity & Bhāva Synthesis Engine for Astra Jyotish.

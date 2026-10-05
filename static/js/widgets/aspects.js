@@ -72,9 +72,22 @@
                         const cSign = cData ? cData.sign : pSign;
                         html += `<td class="tooltip-target" data-tooltip="<strong>Conjunction (Yuti): ${p} & ${c}</strong><br>• Both planets occupy <strong>${cSign}</strong>.<br>• In Vedic astrology, sharing a sign creates direct synthesis and intense mutual exchange of energies." style="color:var(--status-malefic); font-weight:bold; cursor:help;">Y</td>`;
                     } else {
-                        const entry = aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
-                        if (entry && entry.raw > 0) {
-                            const rawRounded = Math.round(entry.raw);
+                        let entry = aspects && aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
+                        if (!entry && currentData && currentData.aspect_matrices) {
+                            if (!isHouse && currentData.aspect_matrices.graha_drishti && currentData.aspect_matrices.graha_drishti.incoming && currentData.aspect_matrices.graha_drishti.incoming[cKey]) {
+                                const rawVal = currentData.aspect_matrices.graha_drishti.incoming[cKey][p];
+                                if (rawVal !== undefined) {
+                                    entry = { raw: rawVal, plus: 0, minus: 0, net: 0 };
+                                }
+                            } else if (isHouse && dataKey === 'equal_cusps' && currentData.aspect_matrices.cusp_drishti && currentData.aspect_matrices.cusp_drishti.by_house && currentData.aspect_matrices.cusp_drishti.by_house[c]) {
+                                const rawVal = currentData.aspect_matrices.cusp_drishti.by_house[c][p];
+                                if (rawVal !== undefined) {
+                                    entry = { raw: rawVal, plus: 0, minus: 0, net: 0 };
+                                }
+                            }
+                        }
+                    if (entry && entry.raw > 0) {
+                        const rawRounded = Math.round(entry.raw);
                             
                             let cLon = 0;
                             let targetName = '';
@@ -149,7 +162,11 @@
             let plusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Benefic Aspect (+)</strong><br>Sum of supportive, harmonious aspectual rays received from benefics."><strong style="color: var(--status-benefic);">+</strong></td>`;
             columnsList.forEach(c => {
                 const cKey = c.toString();
-                const v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
+                let v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
+                if (!v && currentData && currentData.aspect_matrices && currentData.aspect_matrices.benefic_malefic_totals) {
+                    const bm = isHouse ? currentData.aspect_matrices.benefic_malefic_totals.cusps?.[c] : currentData.aspect_matrices.benefic_malefic_totals.planets?.[cKey];
+                    if (bm) v = Math.round(bm.plus !== undefined ? bm.plus : (bm.benefic_virupas || 0));
+                }
                 const tgt = isHouse ? `House ${c}` : c;
                 const tip = `<strong>${tgt} — Total Benefic Aspect (+)</strong><br>Receives a total of <strong>+${v} Virūpas</strong> of auspicious, protective aspectual rays from benefics.`;
                 plusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: var(--status-benefic); font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
@@ -163,7 +180,11 @@
             let minusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Malefic Aspect (-)</strong><br>Sum of stressful or frictional aspectual tension received from malefics."><strong style="color: var(--status-malefic);">-</strong></td>`;
             columnsList.forEach(c => {
                 const cKey = c.toString();
-                const v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
+                let v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
+                if (!v && currentData && currentData.aspect_matrices && currentData.aspect_matrices.benefic_malefic_totals) {
+                    const bm = isHouse ? currentData.aspect_matrices.benefic_malefic_totals.cusps?.[c] : currentData.aspect_matrices.benefic_malefic_totals.planets?.[cKey];
+                    if (bm) v = Math.round(bm.minus !== undefined ? bm.minus : (bm.malefic_virupas || 0));
+                }
                 const tgt = isHouse ? `House ${c}` : c;
                 const tip = `<strong>${tgt} — Total Malefic Aspect (-)</strong><br>Receives a total of <strong>-${v} Virūpas</strong> of challenging, frictional aspectual pressure from malefics.`;
                 minusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: var(--status-malefic); font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;

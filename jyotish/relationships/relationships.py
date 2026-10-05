@@ -1,4 +1,12 @@
 """
+=============================================================================
+ASTRA CORE CALCULUS - FROZEN & CERTIFIED COMPONENT (HEMISPHERE A)
+=============================================================================
+STATUS: CERTIFIED & LOCKED
+DO NOT MODIFY FORMULAS, CONSTANTS, OR SIGNATURES IN THIS FILE.
+DOWNSTREAM ENGINES (YOGAS, DASHAS, REPORTS, UI) DEPEND ON THIS CONTRACT.
+=============================================================================
+
 Astra Astrological Engine — Stage 2A: Relational Calculus & Dignity Matrix
 Canonical implementation supporting both Ernst Wilhelm (Kala) and Mantreśvara (Phaladīpikā).
 """

@@ -57,9 +57,11 @@
             const modLabel = modMeta.label || signObj.modality;
             const modSanskrit = modMeta.sanskrit || '';
 
-            const aspects = (window.AstroCatalog && window.AstroCatalog.getAspectingSigns)
-                ? window.AstroCatalog.getAspectingSigns(sign)
-                : [];
+            const aspects = (currentData && currentData.aspect_matrices && currentData.aspect_matrices.rasi_drishti && currentData.aspect_matrices.rasi_drishti.sign_to_signs && currentData.aspect_matrices.rasi_drishti.sign_to_signs[sign])
+                ? currentData.aspect_matrices.rasi_drishti.sign_to_signs[sign]
+                : ((window.AstroCatalog && window.AstroCatalog.getAspectingSigns)
+                    ? window.AstroCatalog.getAspectingSigns(sign)
+                    : []);
             const occupants = occupantsMap[sign] || [];
 
             const aspectedPlanets = [];

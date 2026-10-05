@@ -114,17 +114,21 @@ function updateVargaDignitiesTable(cell, chartData) {
             let html = `<td class="tooltip-target" data-tooltip="<strong>${v} — ${vDesc}</strong><br>Click to display this harmonic chart in the main window." style="cursor:help;"><strong>${v.replace('D', '')}</strong></td>`;
 
             const vData = (currentData && currentData.vargas) ? currentData.vargas[v] : null;
-            if (vData && vData.grahas) {
+            const vDignities = (currentData && currentData.dignities && currentData.dignities.varga_dignities) ? currentData.dignities.varga_dignities[v] : null;
+            if ((vData && vData.grahas) || vDignities) {
                 planets.forEach(p => {
                     let digStr = '';
                     let tooltip = '';
-                    if (vData.grahas[p] && vData.grahas[p].dignity_breakdown) {
-                        const d = vData.grahas[p].dignity_breakdown;
-                        digStr = d.final_dignity;
+                    const d = (vData && vData.grahas && vData.grahas[p] && vData.grahas[p].dignity_breakdown)
+                        || (vDignities && vDignities[p])
+                        || null;
+                    if (d) {
+                        digStr = d.final_dignity || d.dignity || '';
                         const abbrev = mapDig(digStr);
                         const fullName = getFullName(abbrev);
+                        const pSign = (vData && vData.grahas && vData.grahas[p]) ? vData.grahas[p].sign : (d.sign || '');
 
-                        tooltip = `<strong>${p} in ${v} (${vData.grahas[p].sign})</strong><br>• <strong>Dignity:</strong> ${fullName} (${abbrev})<br>• <strong>Host Lord:</strong> ${d.sign_lord}<br>• <strong>Natural Bond:</strong> ${d.natural_relationship}<br>• <strong>Temporary Position:</strong> ${d.temporary_relationship}<br>• <strong>Compound Relationship:</strong> ${d.compound_relationship}`;
+                        tooltip = `<strong>${p} in ${v} (${pSign})</strong><br>• <strong>Dignity:</strong> ${fullName} (${abbrev})<br>• <strong>Host Lord:</strong> ${d.sign_lord || '--'}<br>• <strong>Natural Bond:</strong> ${d.natural_relationship || '--'}<br>• <strong>Temporary Position:</strong> ${d.temporary_relationship || '--'}<br>• <strong>Compound Relationship:</strong> ${d.compound_relationship || '--'}`;
                     }
 
                     const abbrev = mapDig(digStr);

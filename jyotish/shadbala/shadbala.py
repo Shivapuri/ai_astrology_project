@@ -1,5 +1,12 @@
 """
-================================================================================
+=============================================================================
+ASTRA CORE CALCULUS - FROZEN & CERTIFIED COMPONENT (HEMISPHERE A)
+=============================================================================
+STATUS: CERTIFIED & LOCKED
+DO NOT MODIFY FORMULAS, CONSTANTS, OR SIGNATURES IN THIS FILE.
+DOWNSTREAM ENGINES (YOGAS, DASHAS, REPORTS, UI) DEPEND ON THIS CONTRACT.
+=============================================================================
+
 ASTRA JYOTISH ENGINE - STAGE 2B: PLANETARY STRENGTH & SHADBALA
 ================================================================================
 Master computation engine for the classical Six-Fold Planetary Strength (Ṣaḍbala),

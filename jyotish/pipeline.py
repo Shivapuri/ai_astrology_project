@@ -300,63 +300,44 @@ class ChartPipeline:
 
         d1_grahas = vargas_data["D1"]["grahas"]
 
-        # Planetary Friendships, Dignity & Avasthas across all Vargas
+        # Planetary Friendships, Dignity & Avasthas across all Vargas (Direct Single Source of Truth)
+        varga_dignities = self.dignities.get("varga_dignities", {})
+        comb_status = self.baseline.combustion_status
+
         for v_name, v_data in vargas_data.items():
             for p_name, p_data in v_data["grahas"].items():
-                if p_name in ["Rahu", "Ketu"]:
-                    proxy = "Saturn" if p_name == "Rahu" else "Mars"
-                    sign = p_data["sign"]
-                    sign_lord = rel.SIGN_LORDS[sign]
-                    p_v_idx = ZODIAC_SIGNS.index(sign)
-                    sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
-                    
-                    nat = rel.get_natural_relationship(p_name, sign_lord)
-                    p_d1_idx = ZODIAC_SIGNS.index(d1_grahas[p_name]["sign"])
-                    sign_lord_d1_idx = ZODIAC_SIGNS.index(d1_grahas[sign_lord]["sign"])
-                    tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
-                    cmp = rel.get_compound_relationship(nat, tmp)
-                    p_deg = p_data["degree_0_to_30"]
-                    nat_dig = rel.get_dignity(p_name, sign, nat, p_deg, debilitation_mode=self.debilitation_mode)
-                    cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg, debilitation_mode=self.debilitation_mode)
-                    
-                    p_data["dignity_breakdown"] = {
-                        "sign_lord": sign_lord,
-                        "natural_relationship": nat,
-                        "temporary_relationship": tmp,
-                        "compound_relationship": cmp,
-                        "natural_dignity": nat_dig,
-                        "final_dignity": cmp_dig
-                    }
+                p_deg = p_data.get("degree_0_to_30", 0.0)
+                v_dig = varga_dignities.get(v_name, {}).get(p_name, {})
+                sign_lord = v_dig.get("sign_lord", rel.SIGN_LORDS.get(p_data["sign"], ""))
+                nat_rel = v_dig.get("natural_relationship", "Neutral")
+                tmp_rel = v_dig.get("temporary_relationship", "Neutral")
+                cmp_rel = v_dig.get("compound_relationship", "Neutral")
+                cmp_dig = v_dig.get("dignity", "Neutral")
+
+                # Natural dignity (based on natural relationship without temporal modifier)
+                if nat_rel == "Self":
+                    nat_dig = cmp_dig
                 else:
-                    sign = p_data["sign"]
-                    sign_lord = rel.SIGN_LORDS[sign]
-                    
-                    if sign_lord == p_name:
-                        nat, tmp, cmp = "Self", "Self", "Self"
-                        p_deg = p_data["degree_0_to_30"]
-                        nat_dig = rel.get_dignity(p_name, sign, "Self", p_deg, debilitation_mode=self.debilitation_mode)
-                        cmp_dig = nat_dig
-                    else:
-                        p_v_idx = ZODIAC_SIGNS.index(sign)
-                        sign_lord_v_idx = ZODIAC_SIGNS.index(v_data["grahas"][sign_lord]["sign"])
-                        
-                        nat = rel.get_natural_relationship(p_name, sign_lord)
-                        p_d1_idx = ZODIAC_SIGNS.index(d1_grahas[p_name]["sign"])
-                        sign_lord_d1_idx = ZODIAC_SIGNS.index(d1_grahas[sign_lord]["sign"])
-                        tmp = rel.get_temporary_relationship(p_d1_idx, sign_lord_d1_idx)
-                        cmp = rel.get_compound_relationship(nat, tmp)
-                        p_deg = p_data["degree_0_to_30"]
-                        nat_dig = rel.get_dignity(p_name, sign, nat, p_deg, debilitation_mode=self.debilitation_mode)
-                        cmp_dig = rel.get_dignity(p_name, sign, cmp, p_deg, debilitation_mode=self.debilitation_mode)
-                        
-                    p_data["dignity_breakdown"] = {
-                        "sign_lord": sign_lord,
-                        "natural_relationship": nat,
-                        "temporary_relationship": tmp,
-                        "compound_relationship": cmp,
-                        "natural_dignity": nat_dig,
-                        "final_dignity": cmp_dig
-                    }
+                    nat_dig = rel.get_dignity(
+                        p_name,
+                        p_data["sign"],
+                        nat_rel,
+                        p_deg,
+                        debilitation_mode=self.debilitation_mode,
+                        is_varga=(v_name != "D1")
+                    )
+
+                p_data["dignity_breakdown"] = {
+                    "sign_lord": sign_lord,
+                    "natural_relationship": nat_rel,
+                    "temporary_relationship": tmp_rel,
+                    "compound_relationship": cmp_rel,
+                    "natural_dignity": nat_dig,
+                    "final_dignity": cmp_dig,
+                    "dignity": cmp_dig,
+                    "avastha": v_dig.get("avastha", "")
+                }
+                p_data["dignity"] = cmp_dig
                 
                 # Conjunct planets in this varga
                 conjunct_planets = [
@@ -386,52 +367,22 @@ class ChartPipeline:
                 p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
                 is_retrograde = p_data.get("is_retrograde", False)
 
-                # Combustion (Physical phenomenon, evaluated from D1)
-                is_combust = False
-                sun_dist = None
-                comb_orb = None
-                comb_severity = None
-                comb_range = None
-                if p_name not in ["Sun", "Rahu", "Ketu"]:
-                    sun_lon = d1_longitudes["Sun"]
-                    p_lon_d1 = d1_longitudes[p_name]
-                    dist = min((sun_lon - p_lon_d1) % 360, (p_lon_d1 - sun_lon) % 360)
-                    sun_dist = round(dist, 4)
-                    
-                    if p_name == "Mercury":
-                        orb = 12.0 if is_retrograde else 14.0
-                    elif p_name == "Venus":
-                        orb = 8.0 if is_retrograde else 10.0
-                    elif p_name == "Moon":
-                        orb = 12.0
-                    elif p_name == "Mars":
-                        orb = 17.0
-                    elif p_name == "Jupiter":
-                        orb = 11.0
-                    elif p_name == "Saturn":
-                        orb = 15.0
-                    else:
-                        orb = 8.0
-                    
-                    comb_ranges = {
-                        "Moon": "12° - 15°",
-                        "Mars": "8° - 17°",
-                        "Mercury": "2° - 14°",
-                        "Jupiter": "8° - 11°",
-                        "Venus": "4° - 10°",
-                        "Saturn": "8° - 15°"
-                    }
-                    comb_range = comb_ranges.get(p_name, f"{orb}°")
-                    comb_orb = orb
-                    is_combust = dist < orb
-                    if is_combust:
-                        comb_severity = "Deep (< 3°)" if dist < 3.0 else "Moderate"
-                
-                p_data["is_combust"] = is_combust
-                p_data["sun_distance"] = sun_dist
-                p_data["combustion_orb"] = comb_orb
-                p_data["combustion_severity"] = comb_severity
-                p_data["combustion_range"] = comb_range
+                # Combustion (Physical phenomenon, sourced directly from certified baseline)
+                if p_name in ("Sun", "Rahu", "Ketu"):
+                    is_combust = False
+                    p_data["is_combust"] = False
+                    p_data["sun_distance"] = None
+                    p_data["combustion_orb"] = None
+                    p_data["combustion_severity"] = "None"
+                    p_data["combustion_range"] = "None"
+                else:
+                    c_info = comb_status.get(p_name, {})
+                    is_combust = c_info.get("is_combust", False)
+                    p_data["is_combust"] = is_combust
+                    p_data["sun_distance"] = c_info.get("sun_distance")
+                    p_data["combustion_orb"] = c_info.get("combustion_orb")
+                    p_data["combustion_severity"] = c_info.get("combustion_severity")
+                    p_data["combustion_range"] = c_info.get("combustion_range")
                 
                 lagna_sign = v_data["lagna"]["sign"]
                 lagna_idx = ZODIAC_SIGNS.index(lagna_sign)
@@ -799,6 +750,8 @@ class ChartPipeline:
             },
             "shadbala": self.shadbala,
             "bhava_bala": self.bhava_bala,
+            "dignities": self.dignities,
+            "aspect_matrices": self.aspect_matrices,
             "avastha_matrix": self.avastha_matrices,
             "varga_lajjitadi_net_modifiers": avasthas.calculate_varga_lajjitadi_net_modifiers(vargas_data),
             "advanced_aspects": varga_aspects["D1"],

@@ -30,6 +30,21 @@ It utilizes a unified, **Integrated Approach**:
   - `jyotish/avasthas/*.md` -> Rules for all Avastha submodules (`bala.py`, `jagrat.py`, etc.)
 - Before calculating or guessing astrological logic, always read the corresponding `.md` file and verify against BPHS.
 
+### 🔒 FROZEN CORE CALCULUS (STRICTLY READ-ONLY)
+The following foundational calculation modules are certified, scripturally audited, and FROZEN.
+AI agents are strictly forbidden from modifying formulas, signatures, or logic in these files:
+- `jyotish/baseline.py`
+- `jyotish/baseline_math.py`
+- `jyotish/baseline_tables.py`
+- `jyotish/relationships/relationships.py`
+- `jyotish/aspects/aspects.py`
+- `jyotish/shadbala/shadbala.py`
+- `jyotish/bhavas/bhava_bala.py`
+
+Future development (Yogas, Dashas, Transits, Reports, UI) must IMPORT from these files as
+read-only dependencies and NEVER alter their internal math.
+
+
 ## Reference & Cache
 - Ephemeris cache and star data are stored in `/cache/` and `/jyotish/cache/`.
 - Astrological reference diagrams, audio transcripts, and Sanskrit texts reside in `/source-material/`.
