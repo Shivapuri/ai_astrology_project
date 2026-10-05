@@ -19,7 +19,9 @@ from .planetary_evaluation import (
     calculate_continuous_drishti,
     build_aspect_graph_data,
     calculate_conjunction_power,
-    assemble_unified_graha_cockpit
+    assemble_unified_graha_cockpit,
+    generate_master_diagnostic_payload,
+    MASTER_DIAGNOSTIC_COLUMNS
 )
 from .lagna_evaluation import evaluate_lagna_vitality
 
@@ -39,5 +41,7 @@ __all__ = [
     "calculate_continuous_drishti",
     "build_aspect_graph_data",
     "calculate_conjunction_power",
-    "assemble_unified_graha_cockpit"
+    "assemble_unified_graha_cockpit",
+    "generate_master_diagnostic_payload",
+    "MASTER_DIAGNOSTIC_COLUMNS"
 ]

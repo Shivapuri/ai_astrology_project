@@ -32,7 +32,6 @@ from jyotish.bhavas.bhava_bala import (
     calculate_bhava_bala,
     calculate_harsha_bala,
     calculate_house_atmosphere,
-    generate_master_diagnostic_payload
 )
 import jyotish.avasthas as avasthas
 from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEAR_DAYS
@@ -216,7 +215,7 @@ class ChartPipeline:
 
     @cached_property
     def master_diagnostic(self) -> Dict[str, Any]:
-        return generate_master_diagnostic_payload(
+        return planetary_evaluation.generate_master_diagnostic_payload(
             baseline=self.baseline,
             shadbala_results=self.shadbala,
             dignities=self.dignities,

@@ -15,11 +15,13 @@ from jyotish.bhavas.bhava_bala import (
     calculate_bhava_drishti_bala,
     calculate_harsha_bala,
     calculate_house_atmosphere,
-    generate_master_diagnostic_payload,
     get_sign_genus,
     SIGNS,
     SIGN_LORDS,
     ZERO_HOUSES,
+)
+from jyotish.planetary_evaluation.planetary_evaluation import (
+    generate_master_diagnostic_payload,
     MASTER_DIAGNOSTIC_COLUMNS,
 )
 
