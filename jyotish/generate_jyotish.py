@@ -51,7 +51,14 @@ def generate_kala_chart(
     nakshatra_system: str = "ERNST_DHRUVA",
     debilitation_mode: str = "kala_degree",
     dig_bala_mode: str = "campanus",
-    kendra_bala_mode: str = "flat_parashara"
+    kendra_bala_mode: str = "flat_parashara",
+    phala_mode: str = "arithmetic",
+    pillar_mode: str = "kala_breakdown",
+    trimsamsa_mode: str = "harmonic_kala",
+    saptavarga_mode: str = "kala",
+    drik_mode: str = "kala_weighted",
+    ayana_tradition: str = "parashara",
+    **kwargs
 ) -> Dict[str, Any]:
     """
     Master Orchestration Interface for Ernst Wilhelm's Kala Vedic Astrology Engine.
@@ -75,7 +82,14 @@ def generate_kala_chart(
         nakshatra_system=nakshatra_system,
         debilitation_mode=debilitation_mode,
         dig_bala_mode=dig_bala_mode,
-        kendra_bala_mode=kendra_bala_mode
+        kendra_bala_mode=kendra_bala_mode,
+        phala_mode=phala_mode,
+        pillar_mode=pillar_mode,
+        trimsamsa_mode=trimsamsa_mode,
+        saptavarga_mode=saptavarga_mode,
+        drik_mode=drik_mode,
+        ayana_tradition=ayana_tradition,
+        **kwargs
     )
     result = pipeline.to_dict()
 

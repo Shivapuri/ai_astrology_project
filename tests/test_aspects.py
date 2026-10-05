@@ -1,5 +1,11 @@
 import pytest
-from jyotish.aspects.aspects import get_rasi_drishti, get_graha_drishti, get_all_graha_drishtis, get_all_rasi_drishtis
+from jyotish.aspects.aspects import (
+    get_rasi_drishti,
+    get_graha_drishti,
+    get_all_graha_drishtis,
+    get_all_rasi_drishtis,
+    calculate_advanced_graha_aspects,
+)
 
 def test_rasi_drishti_cardinal():
     """Moveable signs aspect Fixed signs EXCEPT the adjacent one."""
@@ -103,3 +109,30 @@ def test_all_rasi_drishtis():
     
     # Aries does not aspect Taurus (adjacent), so Sun does not aspect Mars
     assert "Sun" not in results["Mars"]
+
+
+def test_advanced_graha_aspects_yutis_bidirectional_nodes():
+    """
+    Rahu and Ketu do not cast Graha Drishti rays, but they form two-way Yutis (conjunctions)
+    with physical planets in the same sign, while mathematical points (Lagna, MC) are excluded.
+    """
+    planets_data = {
+        "Jupiter": {"longitude": 125.0, "sign": "Leo"},
+        "Rahu": {"longitude": 128.0, "sign": "Leo"},
+        "Lagna": {"longitude": 122.0, "sign": "Leo"},
+        "MC": {"longitude": 129.0, "sign": "Leo"},
+        "Saturn": {"longitude": 215.0, "sign": "Scorpio"},
+    }
+    shadbala_data = {}
+    res = calculate_advanced_graha_aspects(planets_data, shadbala_data)
+
+    # Jupiter and Rahu are in the same sign (Leo)
+    assert "Rahu" in res["yutis"]["Jupiter"], "Jupiter's yutis must include Rahu"
+    assert "Jupiter" in res["yutis"]["Rahu"], "Rahu's yutis must include Jupiter"
+
+    # Non-planetary sensitive points (Lagna, MC) must not appear in yutis
+    assert "Lagna" not in res["yutis"]["Jupiter"]
+    assert "MC" not in res["yutis"]["Jupiter"]
+    assert "Lagna" not in res["yutis"]["Rahu"]
+    assert "MC" not in res["yutis"]["Rahu"]
+

@@ -39,13 +39,13 @@ OWN_SIGNS = {
     "Venus": ["Taurus", "Libra"], "Saturn": ["Capricorn", "Aquarius"]
 }
 
-# Standard Disc Diameters in arcseconds per BPHS 28.19 for Planetary War
+# Standard Disc Diameters in arcminutes / angulas per BPHS 28.19 for Planetary War
 BIMBA_PARIMANAS = {
     "Mars": 9.4,
     "Mercury": 6.6,
-    "Jupiter": 190.4,
+    "Jupiter": 10.4,   # Corrected from 190.4 per BPHS 28.19
     "Venus": 16.6,
-    "Saturn": 158.0
+    "Saturn": 4.8      # Corrected from 158.0 per BPHS 28.19
 }
 
 # Classical Minimum Required Strengths in Virūpas (60 Virūpas = 1.0 Rūpa)
@@ -114,15 +114,27 @@ def calculate_saptavarga_bala(
     planet: str,
     planet_positions: Dict[str, float],
     dignities_map: Optional[Dict[str, Any]] = None,
-    vargas_positions: Optional[Dict[str, Dict[str, Any]]] = None
+    vargas_positions: Optional[Dict[str, Dict[str, Any]]] = None,
+    trimsamsa_mode: str = "harmonic_kala",
+    saptavarga_mode: str = "kala"
 ) -> float:
     """
     Calculates Saptavarga (7-Divisional) Positional Strength across:
     D1, D2, D3, D7, D9, D12, D30.
     Consumes precalculated varga longitudes and Stage 2A compound friendships
     when available to eliminate redundant calculations.
+
+    Modes:
+      - trimsamsa_mode:
+        - 'harmonic_kala' (DEFAULT): Equal 1° harmonic Trimsamsa matching Ernst Wilhelm's
+          Kala software calibration (and ground-truth benchmark CSVs).
+        - 'unequal_parashara': Classical unequal planetary bounds per BPHS 6.27-29 & Phaladīpikā 3.5.
+      - saptavarga_mode:
+        - 'kala' (DEFAULT): Exact parity with Kala software outputs where Venus in Pisces
+          across vargas yields 10.0 Virūpas (Neutral).
+        - 'parashara': Evaluates compound relationship dynamically without override.
     """
-    from jyotish.baseline_math import calculate_varga_longitude
+    from jyotish.baseline_math import calculate_varga_longitude, calculate_unequal_trimsamsa
     from jyotish.relationships.relationships import (
         SIGN_LORDS, get_natural_relationship, get_temporary_relationship, get_compound_relationship
     )
@@ -136,30 +148,35 @@ def calculate_saptavarga_bala(
     for varga in vargas:
         is_d1 = (varga == "D1")
 
-        # 1. Harmonic Longitude: check precomputed Stage 1 vargas first (D1 through D12)
-        # Note: D30 in Saptavarga Bala is the equal 1° harmonic trimsamsa per classical texts
-        if vargas_positions and varga in vargas_positions and varga != "D30":
-            v_chart = vargas_positions[varga]
-            if isinstance(v_chart, dict) and "grahas" in v_chart and planet in v_chart["grahas"]:
-                v_entry = v_chart["grahas"][planet]
-                varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
-            elif isinstance(v_chart, dict) and planet in v_chart:
-                v_entry = v_chart[planet]
-                varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+        if varga == "D30" and trimsamsa_mode == "unequal_parashara":
+            t_res = calculate_unequal_trimsamsa(p1_d1_lon)
+            varga_sign_name = t_res["sign"]
+            sign_lord = t_res["ruler"]
+        else:
+            # 1. Harmonic Longitude: check precomputed Stage 1 vargas first (D1 through D12)
+            # Note: D30 in Saptavarga Bala is the equal 1° harmonic trimsamsa per Kala software
+            if vargas_positions and varga in vargas_positions and varga != "D30":
+                v_chart = vargas_positions[varga]
+                if isinstance(v_chart, dict) and "grahas" in v_chart and planet in v_chart["grahas"]:
+                    v_entry = v_chart["grahas"][planet]
+                    varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+                elif isinstance(v_chart, dict) and planet in v_chart:
+                    v_entry = v_chart[planet]
+                    varga_lon = v_entry["longitude"] if isinstance(v_entry, dict) else float(v_entry)
+                else:
+                    varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
             else:
                 varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
-        else:
-            varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
 
-        varga_sign_idx = int((varga_lon % 360.0) / 30.0)
-        varga_sign_name = SIGNS[varga_sign_idx]
-        sign_lord = SIGN_LORDS[varga_sign_name]
+            varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+            varga_sign_name = SIGNS[varga_sign_idx]
+            sign_lord = SIGN_LORDS[varga_sign_name]
 
         if sign_lord == planet:
             total_virupas += get_saptavarga_points(planet, varga_sign_name, "", is_d1=is_d1)
             continue
 
-        if not is_d1 and planet == "Venus" and varga_sign_name == "Pisces":
+        if saptavarga_mode == "kala" and not is_d1 and planet == "Venus" and varga_sign_name == "Pisces":
             total_virupas += 10.0
             continue
 
@@ -376,18 +393,35 @@ def calculate_dig_bala(
 # 3. PILLAR 3: KĀLA BALA (TEMPORAL STRENGTH) & YUDDHA BALA
 # ==============================================================================
 
-def calculate_nathonnatha_bala(planet: str, sun_lon: float, mc_lon: float) -> float:
+def calculate_nathonnatha_bala(
+    planet: str,
+    sun_lon: float,
+    mc_lon: Optional[float] = None,
+    ascendant_lon: Optional[float] = None,
+    asc_lon: Optional[float] = None
+) -> float:
     """
-    Diurnal / Nocturnal Strength (Nathonnatha Bala: 0 to 60 Virūpas).
-    Evaluated from the Sun's angular distance to the Nadir / Midnight point (IC = MC + 180°).
+    Diurnal / Nocturnal Strength (Nathonnatha Bala: 0 to 60 Virūpas per BPHS 28.8-9).
+    Evaluated from the Sun's angular distance to the Nadir / Midnight point.
     - Sun, Jupiter, Venus thrive during the day (maximum at Midday / MC).
     - Moon, Mars, Saturn thrive at night (maximum at Midnight / IC).
     - Mercury receives full strength (60 Virūpas) constantly.
+
+    In Whole Sign geometry, Nadir (IC) is ascendant_lon + 90° (or mc_lon + 180°).
     """
     if planet == "Mercury":
         return 60.0
 
-    ic_lon = (mc_lon + 180.0) % 360.0
+    asc = ascendant_lon if ascendant_lon is not None else asc_lon
+    if asc is not None and mc_lon is None:
+        ic_lon = (asc + 90.0) % 360.0
+    elif mc_lon is not None:
+        ic_lon = (mc_lon + 180.0) % 360.0
+    elif asc is not None:
+        ic_lon = (asc + 90.0) % 360.0
+    else:
+        ic_lon = 0.0
+
     dist_from_ic = abs(sun_lon - ic_lon) % 360.0
     if dist_from_ic > 180.0:
         dist_from_ic = 360.0 - dist_from_ic
@@ -550,15 +584,45 @@ def calculate_yuddha_bala(
 # 4. PILLAR 4: AYANA BALA (SOLSTICE / DECLINATION STRENGTH)
 # ==============================================================================
 
-def calculate_ayana_bala(planet: str, birth_time_jd: Optional[float] = None, planet_lon: Optional[float] = None) -> float:
+def calculate_ayana_bala(
+    planet: str,
+    *args,
+    planet_lon: Optional[float] = None,
+    tradition: str = "parashara",
+    birth_time_jd: Optional[float] = None,
+    **kwargs
+) -> float:
     """
-    Ayana Bala using BPHS Chapter 27 Khandakas [45, 33, 12].
+    Ayana Bala using BPHS Chapter 28 Khandakas [45, 33, 12] (BPHS 28.15-18).
     Evaluated from Tropical Sayana distance from the nearest equinox. 100% ephemeris-free.
+
+    Robust signature supports:
+      - calculate_ayana_bala(planet, planet_lon)
+      - calculate_ayana_bala(planet, planet_lon, tradition="parashara" | "phaladeepika")
+      - Legacy: calculate_ayana_bala(planet, birth_time_jd, planet_lon)
     """
-    if planet_lon is None:
+    resolved_lon = planet_lon
+    resolved_tradition = tradition or kwargs.get("tradition", "parashara")
+
+    if len(args) == 1:
+        val = args[0]
+        if val is not None:
+            if isinstance(val, (int, float)) and val <= 360.0:
+                resolved_lon = float(val)
+    elif len(args) >= 2:
+        arg0, arg1 = args[0], args[1]
+        if isinstance(arg1, str):
+            resolved_lon = float(arg0) if arg0 is not None else None
+            resolved_tradition = arg1
+        elif isinstance(arg0, (int, float)) and arg0 > 360.0 and isinstance(arg1, (int, float)):
+            resolved_lon = float(arg1)
+        elif isinstance(arg0, (int, float)):
+            resolved_lon = float(arg0)
+
+    if resolved_lon is None:
         return 0.0
 
-    norm_lon = planet_lon % 360.0
+    norm_lon = resolved_lon % 360.0
     if norm_lon < 90.0:
         bhuja, is_uttara = norm_lon, True
     elif norm_lon < 180.0:
@@ -581,7 +645,12 @@ def calculate_ayana_bala(planet: str, birth_time_jd: Optional[float] = None, pla
     elif planet in ["Moon", "Saturn"]:
         res = 30.0 - vir if is_uttara else 30.0 + vir
     elif planet == "Mercury":
-        res = 30.0 + vir
+        if resolved_tradition == "phaladeepika":
+            # Mantreśvara Ch. 4.5: Mercury groups with Moon & Saturn (favors Southern course)
+            res = 30.0 - vir if is_uttara else 30.0 + vir
+        else:
+            # Śrīpati / Ernst Wilhelm Kala standard: Mercury gains at both extremes
+            res = 30.0 + vir
     else:
         res = 0.0
 
@@ -668,12 +737,19 @@ def calculate_drik_bala(
     lon: Optional[float] = None,
     planet_positions: Optional[Dict[str, float]] = None,
     is_moon_benefic: bool = True,
-    incoming_aspects: Optional[Dict[str, float]] = None
+    incoming_aspects: Optional[Dict[str, float]] = None,
+    mode: str = "kala_weighted"
 ) -> float:
     """
-    Aspectual Strength (Dṛk Bala).
+    Aspectual Strength (Dṛk Bala per BPHS 28.29-31).
     Consumes precalculated incoming Graha Dṛṣṭi matrix from Stage 2A directly,
     or calculates from planet positions.
+
+    Modes:
+      - 'kala_weighted' (DEFAULT): Ernst Wilhelm / Kala software standard where
+        Jupiter and Mercury add full aspect (100%), and Venus / Moon add 1/4 (25%).
+      - 'symmetric_parashara': Classical BPHS 28.29-31 where all benefics add 1/4 (25%)
+        and all malefics subtract 1/4 (25%).
     """
     malefics = ["Sun", "Mars", "Saturn"]
     if not is_moon_benefic:
@@ -689,7 +765,7 @@ def calculate_drik_bala(
             if p_other in malefics:
                 total_drik -= raw_drishti / 4.0
             else:
-                if p_other in ["Jupiter", "Mercury"]:
+                if mode == "kala_weighted" and p_other in ["Jupiter", "Mercury"]:
                     total_drik += raw_drishti
                 else:
                     total_drik += raw_drishti / 4.0
@@ -708,7 +784,7 @@ def calculate_drik_bala(
             if p_other in malefics:
                 total_drik -= raw_drishti / 4.0
             else:
-                if p_other in ["Jupiter", "Mercury"]:
+                if mode == "kala_weighted" and p_other in ["Jupiter", "Mercury"]:
                     total_drik += raw_drishti
                 else:
                     total_drik += raw_drishti / 4.0
@@ -844,6 +920,12 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
     debilitation_mode = kwargs.get("debilitation_mode", "kala_degree")
     dig_bala_mode = kwargs.get("dig_bala_mode", "whole_sign")
     kendra_bala_mode = kwargs.get("kendra_bala_mode", "flat_parashara")
+    phala_mode = kwargs.get("phala_mode", "arithmetic")
+    trimsamsa_mode = kwargs.get("trimsamsa_mode", "harmonic_kala")
+    saptavarga_mode = kwargs.get("saptavarga_mode", "kala")
+    drik_mode = kwargs.get("drik_mode", "kala_weighted")
+    pillar_mode = kwargs.get("pillar_mode", "kala_breakdown")
+    ayana_tradition = kwargs.get("ayana_tradition", "parashara")
     lon = kwargs.get("lon", kwargs.get("longitude", 0.0))
     lat = kwargs.get("lat", kwargs.get("latitude", 0.0))
 
@@ -957,7 +1039,9 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             p,
             planet_positions,
             dignities_map=dignities,
-            vargas_positions=vargas_positions
+            vargas_positions=vargas_positions,
+            trimsamsa_mode=trimsamsa_mode,
+            saptavarga_mode=saptavarga_mode
         )
         ojayugma = calculate_ojayugmarasyamsa_bala(p, pl_lon)
         kendra = calculate_kendra_bala(pl_lon, ascendant_lon, mode=kendra_bala_mode)
@@ -976,9 +1060,10 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         )
 
         # 3. Kāla Bala (Preliminary)
-        nathonnatha = calculate_nathonnatha_bala(p, sun_lon, mc_lon)
+        nathonnatha = calculate_nathonnatha_bala(p, sun_lon, mc_lon=mc_lon, ascendant_lon=ascendant_lon)
         paksha = calculate_paksha_bala(p, moon_lon, sun_lon)
         tribhaga = calculate_tribhaga_bala(p, sun_lon, ascendant_lon)
+        ayana = calculate_ayana_bala(p, planet_lon=pl_lon, tradition=ayana_tradition)
 
         abda_lord = time_lords.get("Varsha", time_lords.get("Abda"))
         abda = 15.0 if p == abda_lord else 0.0
@@ -987,7 +1072,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         hora = 60.0 if p == time_lords.get("Hora") else 0.0
 
         kaala_pre = nathonnatha + paksha + tribhaga + abda + masa + vara + hora
-        pre_war_scores[p] = sthana + dig + kaala_pre
+        pre_war_scores[p] = sthana + dig + kaala_pre + (ayana if pillar_mode == "canonical_parashara" else 0.0)
 
         preliminary_data[p] = {
             "pl_lon": pl_lon,
@@ -1005,6 +1090,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             "masa": masa,
             "vara": vara,
             "hora": hora,
+            "ayana": ayana,
             "kaala_pre": kaala_pre
         }
 
@@ -1037,14 +1123,13 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         vara = p_data["vara"]
         hora = p_data["hora"]
         kaala_pre = p_data["kaala_pre"]
+        ayana = p_data["ayana"]
 
         yuddha = yuddha_adjustments.get(p, 0.0)
         kaala = kaala_pre + yuddha
+        kaala_canonical = kaala + ayana
 
-        # 4. Ayana Bala
-        ayana = calculate_ayana_bala(p, birth_time_jd, pl_lon)
-
-        # 5. Cheṣṭā Bala
+        # 4. Cheṣṭā Bala
         if p == "Sun":
             cheshta = ayana
         elif p == "Moon":
@@ -1056,10 +1141,10 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
                 p, birth_time_jd, pl_lon, seeghrocca=seeghrocca
             )
 
-        # 6. Naisargika Bala
+        # 5. Naisargika Bala
         naisarg = naisargika[p]
 
-        # 7. Dṛk Bala
+        # 6. Dṛk Bala
         incoming_aspects = None
         if aspect_matrices and "graha_drishti" in aspect_matrices:
             incoming_aspects = aspect_matrices["graha_drishti"].get("incoming", {}).get(p)
@@ -1069,17 +1154,30 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             lon=pl_lon,
             planet_positions=planet_positions,
             is_moon_benefic=is_moon_benefic,
-            incoming_aspects=incoming_aspects
+            incoming_aspects=incoming_aspects,
+            mode=drik_mode
         )
 
-        # 8. Qualities: Iṣṭa & Kaṣṭa Phala
+        # 7. Qualities: Iṣṭa & Kaṣṭa Phala (BPHS 29.4-5 geometric mean vs Kala arithmetic mean)
         uccha_clamped = max(0.0, min(60.0, uccha))
         cheshta_clamped = max(0.0, min(60.0, cheshta))
-        ishta_phala = (uccha_clamped + cheshta_clamped) / 2.0
-        kashta_phala = (max(0.0, 60.0 - uccha_clamped) + max(0.0, 60.0 - cheshta_clamped)) / 2.0
+        ishta_arithmetic = round((uccha_clamped + cheshta_clamped) / 2.0, 2)
+        kashta_arithmetic = round(60.0 - ishta_arithmetic, 2)
+        ishta_geometric = round(math.sqrt(uccha_clamped * cheshta_clamped), 2)
+        kashta_geometric = round(math.sqrt(max(0.0, 60.0 - uccha_clamped) * max(0.0, 60.0 - cheshta_clamped)), 2)
+
+        if phala_mode in ["geometric", "parashara_geometric"]:
+            ishta_phala = ishta_geometric
+            kashta_phala = kashta_geometric
+        else:
+            ishta_phala = ishta_arithmetic
+            kashta_phala = kashta_arithmetic
 
         # Totals
-        total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik, 1)
+        if pillar_mode == "canonical_parashara":
+            total_virupas = round(sthana + dig + kaala_canonical + cheshta + naisarg + drik, 1)
+        else:
+            total_virupas = round(sthana + dig + kaala + ayana + cheshta + naisarg + drik, 1)
         total_rupas = round(total_virupas / 60.0, 2)
 
         subha_phala = calculate_subha_phala(
@@ -1111,7 +1209,8 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             "Pct_Required_Dig": round((dig / req_dig) * 100.0, 1),
 
             # Pillar 3: Kāla Bala
-            "Kala_Bala": round(kaala, 1),
+            "Kala_Bala": round(kaala_canonical if pillar_mode == "canonical_parashara" else kaala, 1),
+            "Kala_Bala_Canonical": round(kaala_canonical, 1),
             "Natonnata_Bala": round(nathonnatha, 2),
             "Paksha_Bala": round(paksha, 2),
             "Tribhaga_Bala": round(tribhaga, 1),
@@ -1120,7 +1219,8 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             "Dina_Bala": round(vara, 1),
             "Hora_Bala": round(hora, 1),
             "Required_Kaala": req_kaala,
-            "Pct_Required_Kaala": round((kaala / req_kaala) * 100.0, 1),
+            "Pct_Required_Kaala": round(((kaala_canonical if pillar_mode == "canonical_parashara" else kaala) / req_kaala) * 100.0, 1),
+            "Pct_Required_Kaala_Canonical": round((kaala_canonical / req_kaala) * 100.0, 1),
 
             # Pillar 4: Ayana Bala
             "Ayana_Bala": round(ayana, 2),
@@ -1137,16 +1237,39 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             "Naisargika_Bala": round(naisarg, 2),
             "Yuddha_Bala": round(yuddha, 2),
 
+            # Canonical 6 Pillars (BPHS Ch. 27-28 aggregation)
+            "Canonical_6_Pillars": {
+                "Sthana_Bala": round(sthana, 1),
+                "Dig_Bala": round(dig, 2),
+                "Kala_Bala": round(kaala_canonical, 1),
+                "Cheshta_Bala": round(cheshta, 2),
+                "Naisargika_Bala": round(naisarg, 2),
+                "Drik_Bala": round(drik, 1),
+                "Total_Virupas": round(sthana + dig + kaala_canonical + cheshta + naisarg + drik, 1)
+            },
+
             # Totals & Ratios
             "Total_Virupas": round(total_virupas, 1),
             "Total_Rupas": round(total_rupas, 2),
             "Required_Total": req_total,
             "Pct_Required_Total": round((total_virupas / req_total) * 100.0, 1),
             "is_strong": round(total_virupas / req_total, 2) >= 1.0,
+            "is_strong_all_pillars": (
+                total_virupas >= req_total and
+                sthana >= req_sthana and
+                dig >= req_dig and
+                kaala_canonical >= req_kaala and
+                cheshta >= req_cheshta and
+                ayana >= req_ayana
+            ),
 
             # Qualities (Mood & Auspiciousness)
             "Ishta_Phala": round(ishta_phala, 2),
             "Kashta_Phala": round(kashta_phala, 2),
+            "Ishta_Phala_Geometric": round(ishta_geometric, 2),
+            "Kashta_Phala_Geometric": round(kashta_geometric, 2),
+            "Ishta_Phala_Arithmetic": round(ishta_arithmetic, 2),
+            "Kashta_Phala_Arithmetic": round(kashta_arithmetic, 2),
             "Subha_Phala": round(subha_phala, 2),
             "Asubha_Phala": round(asubha_phala, 2)
         }

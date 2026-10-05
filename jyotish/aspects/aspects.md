@@ -107,3 +107,17 @@ The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[
 ## 4. Multi-Varga Aspect Adapter (`calculate_varga_aspects`)
 `calculate_varga_aspects(baseline, varga="D1") -> Dict[str, Any]` provides a clean, unified adapter that consumes `baseline.vargas[varga]` directly without requiring callers to unpack longitude lists, cusps, and ascendant coordinates.
 
+In the legacy helper `calculate_advanced_graha_aspects`, Yutis (same-sign conjunctions) are bidirectional between all planets and shadow nodes (Rāhu and Ketu), excluding only mathematical sensitive points (`Lagna`, `MC`).
+
+---
+
+## 5. Downstream Pipeline Contract (Stage 2A $\rightarrow$ Stage 3)
+In `calculate_aspect_matrices`, `totals_cusps` calculates the qualitative balance by summing raw Virūpa values directly ($1.0 \times \text{Ray}$), representing the **unattenuated qualitative envelope**.
+
+When Stage 3 (`bhava_bala.py`) calculates canonical **Bhāva Dṛṣṭi Bala** under Maharishi Parāśara (*BPHS* Ch. 27), it consumes `cusp_drishti["by_house"][h][p]` and applies scriptural fractional multipliers:
+- **Jupiter and Benefic Mercury:** Full positive value ($\times +1.0$, scaled to $/2.0$ if combust or debilitated).
+- **Venus and Bright Moon:** Quarter positive value ($\times +0.25$).
+- **Natural Malefics (Sun, Mars, Saturn, Dark Moon, Afflicted Mercury):** Negative quarter value ($\times -0.25$).
+- **House Lord on its own house cusp (*Phaladīpikā* Ch. 15.1–3):** Full positive value ($\times +1.0$, reduced to $+0.25$ if combust or debilitated), defending its own house even if a natural malefic.
+
+

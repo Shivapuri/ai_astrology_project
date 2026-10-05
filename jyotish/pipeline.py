@@ -116,6 +116,12 @@ class ChartPipeline:
         debilitation_mode: str = "kala_degree",
         dig_bala_mode: str = "campanus",
         kendra_bala_mode: str = "flat_parashara",
+        phala_mode: str = "arithmetic",
+        pillar_mode: str = "kala_breakdown",
+        trimsamsa_mode: str = "harmonic_kala",
+        saptavarga_mode: str = "kala",
+        drik_mode: str = "kala_weighted",
+        ayana_tradition: str = "parashara",
         baseline: Optional[ChartBaseline] = None
     ):
         self.name = name
@@ -136,6 +142,12 @@ class ChartPipeline:
         self.debilitation_mode = debilitation_mode
         self.dig_bala_mode = dig_bala_mode
         self.kendra_bala_mode = kendra_bala_mode
+        self.phala_mode = phala_mode
+        self.pillar_mode = pillar_mode
+        self.trimsamsa_mode = trimsamsa_mode
+        self.saptavarga_mode = saptavarga_mode
+        self.drik_mode = drik_mode
+        self.ayana_tradition = ayana_tradition
         self._provided_baseline = baseline
 
     # =========================================================================
@@ -184,7 +196,13 @@ class ChartPipeline:
             aspect_matrices=self.aspect_matrices,
             debilitation_mode=self.debilitation_mode,
             dig_bala_mode=self.dig_bala_mode,
-            kendra_bala_mode=self.kendra_bala_mode
+            kendra_bala_mode=self.kendra_bala_mode,
+            phala_mode=self.phala_mode,
+            pillar_mode=self.pillar_mode,
+            trimsamsa_mode=self.trimsamsa_mode,
+            saptavarga_mode=self.saptavarga_mode,
+            drik_mode=self.drik_mode,
+            ayana_tradition=self.ayana_tradition
         )
 
     # =========================================================================

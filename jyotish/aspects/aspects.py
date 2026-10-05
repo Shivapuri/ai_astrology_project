@@ -330,7 +330,7 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
         results["yutis"][aspected] = []
         aspected_sign = aspected_info.get("sign")
         for other, other_info in planets_data.items():
-            if other != aspected and other not in NON_CASTING_BODIES and aspected_sign and other_info.get("sign") == aspected_sign:
+            if other != aspected and other not in ["Lagna", "MC"] and aspected_sign and other_info.get("sign") == aspected_sign:
                 results["yutis"][aspected].append(other)
                 
         aspected_lon = aspected_info.get("longitude", 0.0)

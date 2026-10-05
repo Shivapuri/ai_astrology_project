@@ -245,7 +245,9 @@ Drik Bala evaluates the strength a planet receives from the aspects (Drishti) of
 - Aspects from Benefics (Jupiter, Mercury, Venus, Moon) increase strength.
 - Aspects from Malefics (Sun, Mars, Saturn) decrease strength.
 
-Only a quarter (1/4) of a malefic's aspect is deducted, and only a quarter (1/4) of a benefic's aspect is added, **except** for Mercury and Jupiter, whose full aspect values are added.
+#### Execution Modes
+1. `'kala_weighted'` (**DEFAULT**): Ernst Wilhelm / Kala software standard where Jupiter and Mercury cast full aspect ($100\%$, $+1.0$), while Venus and waxing Moon cast one-quarter aspect ($+0.25$). Malefics deduct one-quarter aspect ($-0.25$).
+2. `'symmetric_parashara'`: Classical Parāśarī formula (BPHS 28.29–31) where all benefics add one-quarter aspect ($+0.25$) and all malefics subtract one-quarter aspect ($-0.25$).
 
 The aspect value is a mathematically precise piecewise function that awards 60 Virupas at direct opposition (180°), 30 Virupas at a trine (120°), and scales geometrically across the zodiac.
 
@@ -262,11 +264,16 @@ The aspect value is a mathematically precise piecewise function that awards 60 V
 ### Phase 7: Ishta and Kashta Phalas (Auspicious / Inauspicious Effects)
 Beyond standard strength (Bala), the exact measure of a planet's tendency to give good (Ishta) or evil (Kashta) results during its Dasa (planetary period) is calculated mathematically.
 
-While some classical commentaries formulate Ishta/Kashta as the geometric mean ($\sqrt{U \times C}$), Ernst Wilhelm's *Kala* software standardizes on the balanced arithmetic mean:
-$$\text{Ishta Phala} = \frac{U + C}{2}, \quad \text{Kashta Phala} = \frac{(60 - U) + (60 - C)}{2}$$
-where $U$ is the clamped Uccha Bala ($0 \le U \le 60$) and $C$ is the clamped Cheshta Bala ($0 \le C \le 60$).
+#### Execution Modes
+1. `'arithmetic'` (**DEFAULT**): Ernst Wilhelm's *Kala* software standardizes on the balanced arithmetic mean:
+   $$\text{Ishta Phala} = \frac{U + C}{2}, \quad \text{Kashta Phala} = \frac{(60 - U) + (60 - C)}{2}$$
+   where $U$ is the clamped Uccha Bala ($0 \le U \le 60$) and $C$ is the clamped Cheshta Bala ($0 \le C \le 60$).
+   This enforces the mathematical conservation law $\text{Ishta} + \text{Kashta} = 60.0\text{ Virūpas}$ across all reporting tables.
+2. `'parashara_geometric'` / `'geometric'`: Classical Parāśarī formula per BPHS 29.5:
+   $$\text{Ishta Phala} = \sqrt{\text{Uccha Bala} \times \text{Cheṣṭā Bala}}$$
+   $$\text{Kaṣṭa Phala} = \sqrt{(60.0 - \text{Uccha Bala}) \times (60.0 - \text{Cheṣṭā Bala})}$$
 
-This enforces the mathematical conservation law $\text{Ishta} + \text{Kashta} = 60.0\text{ Virūpas}$ across all reporting tables.
+Both geometric and arithmetic values are always exported in the engine result dictionary (`Ishta_Phala_Geometric`, `Ishta_Phala_Arithmetic`) alongside the active mode choice.
 
 ### Ishta / Kashta Rules
 > कथ्याम्यथा भावानां खेटानां च पदं द्विज । अथ चेष्टमनिष्टं च ग्रहानां कथयाम्यहम्।ह् । यद्।ह्वशाच्च प्रयच्छन्ति शुभाऽशुभदशाफलम्।ह् ॥ १॥
@@ -294,9 +301,14 @@ $$\text{Bimba Difference} = |\text{Bimba Winner} - \text{Bimba Loser}|$$
 $$\text{War Points} = \frac{\text{Bala Difference}}{\text{Bimba Difference}}$$
 
 The victor gains $+\text{War Points}$ added to its Kala Bala; the defeated planet loses $-\text{War Points}$.
-Standard planetary disc diameters (*Bimba Parimanas* in arcseconds per BPHS 28.19): Mars ($9.4''$), Mercury ($6.6''$), Jupiter ($190.4''$), Venus ($16.6''$), Saturn ($158.0''$).
+Standard planetary disc diameters (*Bimba Parimanas* in arcminutes/angulas per BPHS 28.19): Mars ($9.4'$), Mercury ($6.6'$), Jupiter ($10.4'$), Venus ($16.6'$), Saturn ($4.8'$).
 
 ---
+
+### Phase 9: Pillar Architecture Modes (Canonical 6 Pillars vs. Kala Breakdown)
+The engine provides two configurable aggregation models via `pillar_mode`:
+1. `'kala_breakdown'` (**DEFAULT**): Preserves exact parity with Ernst Wilhelm's *Kala* software 25-row breakdown tables and ground-truth benchmark CSVs (`angelina_jolie_shadbala_breakdown.csv`). Ayana Bala and Kala Bala are displayed as separate metrics with distinct Parāśarī threshold benchmarks (`Required_Kaala` and `Required_Ayana`).
+2. `'canonical_parashara'`: Implements the classical 6-pillar architecture of BPHS Chapters 27–28 and Phaladīpikā Chapter 4, where Ayana Bala is intrinsically nested inside Kāla Bala. Both modes produce mathematically consistent Total Virūpas sums. The engine also exports a dedicated `Canonical_6_Pillars` dictionary across all runs.
 
 ## 4. Bhava Bala Subsystem (House Strength)
 Bhava Bala measures the strength of each of the 12 astrological houses (*Bhavas*) to manifest auspicious results. Calibrated to BPHS Chapters 28–30 and Ernst Wilhelm's Kala methodology, each house's total strength is composed of three foundational pillars:

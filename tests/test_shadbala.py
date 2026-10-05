@@ -329,8 +329,8 @@ def test_calculate_yuddha_bala_mechanics():
     
     # Mars has higher northern latitude (1.5 > -0.5) -> Mars is Winner, Saturn is Loser
     # Bala diff = |400 - 350| = 50.0
-    # Bimba diff = |9.4 - 158.0| = 148.6
-    expected_pts = round(50.0 / 148.6, 2)  # 0.34
+    # Bimba diff = |9.4 - 4.8| = 4.6 (BPHS 28.19)
+    expected_pts = round(50.0 / 4.6, 2)  # 10.87
     assert adj["Mars"] == expected_pts
     assert adj["Saturn"] == -expected_pts
 
@@ -345,5 +345,70 @@ def test_calculate_yuddha_bala_venus_invariance():
     adj = calculate_yuddha_bala(pre_war, longitudes, latitudes, use_latitude=True)
     assert adj["Venus"] > 0.0
     assert adj["Mars"] < 0.0
+
+
+def test_ayana_bala_signature_resilience():
+    from jyotish.shadbala.shadbala import calculate_ayana_bala
+    # Direct planet + longitude signature (no JD needed)
+    val_direct = calculate_ayana_bala("Sun", 73.42)
+    assert val_direct > 50.0  # Northern declination near solstice
+    # Legacy planet + JD + longitude
+    val_legacy = calculate_ayana_bala("Sun", 2450000.5, 73.42)
+    assert val_legacy == val_direct
+    # Keyword planet_lon
+    val_kw = calculate_ayana_bala("Sun", planet_lon=73.42)
+    assert val_kw == val_direct
+    # Mercury tradition toggle
+    val_merc_parashara = calculate_ayana_bala("Mercury", 73.42, tradition="parashara")
+    val_merc_phaladeepika = calculate_ayana_bala("Mercury", 73.42, tradition="phaladeepika")
+    assert val_merc_parashara >= 30.0
+    assert val_merc_phaladeepika <= 30.0  # Northern course reduces Mercury in Phaladeepika
+
+
+def test_nathonnatha_bala_ascendant_geometry():
+    from jyotish.shadbala.shadbala import calculate_nathonnatha_bala
+    # Whole Sign: When Ascendant is 0°, MC is 270°, IC is 90°
+    # If Sun is at 90° (IC / midnight), Moon gets max nocturnal strength (60)
+    assert calculate_nathonnatha_bala("Moon", 90.0, ascendant_lon=0.0) == 60.0
+    # If Sun is at 270° (MC / midday), Sun gets max diurnal strength (60)
+    assert calculate_nathonnatha_bala("Sun", 270.0, ascendant_lon=0.0) == 60.0
+
+
+def test_canonical_parashara_6_pillars_mode():
+    import math
+    from jyotish.baseline import ChartBaseline
+    from jyotish.generate_jyotish import generate_kala_chart
+    from jyotish.shadbala.shadbala import calculate_shadbala
+    chart = generate_kala_chart(
+        name="Angelina Jolie", year=1975, month=6, day=4,
+        hour=9, minute=9, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0,
+        dig_bala_mode="campanus"
+    )
+    baseline = ChartBaseline(
+        name="Angelina Jolie", year=1975, month=6, day=4,
+        hour=9, minute=9, second=0, latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+    )
+    # Calculate with canonical_parashara mode
+    res = calculate_shadbala(
+        baseline,
+        pillar_mode="canonical_parashara",
+        phala_mode="parashara_geometric",
+        dig_bala_mode="campanus"
+    )
+    for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+        p_data = res[p]
+        # In canonical mode, Kala Bala includes Ayana Bala
+        expected_canonical_kala = round(chart["shadbala"][p]["Kala_Bala"] + chart["shadbala"][p]["Ayana_Bala"], 1)
+        assert abs(p_data["Kala_Bala"] - expected_canonical_kala) <= 0.2
+        # Canonical 6 pillars sum exactly to Total_Virupas
+        c6 = p_data["Canonical_6_Pillars"]
+        c6_sum = round(c6["Sthana_Bala"] + c6["Dig_Bala"] + c6["Kala_Bala"] + c6["Cheshta_Bala"] + c6["Naisargika_Bala"] + c6["Drik_Bala"], 1)
+        assert abs(c6_sum - p_data["Total_Virupas"]) <= 0.2
+        # Geometric Ishta Phala matches sqrt(U * C)
+        u = chart["shadbala"][p]["Uccha_Bala"]
+        c = chart["shadbala"][p]["Cheshta_Bala"]
+        exp_ishta = round(math.sqrt(u * c), 2)
+        assert abs(p_data["Ishta_Phala"] - exp_ishta) <= 0.05
+
 
 
