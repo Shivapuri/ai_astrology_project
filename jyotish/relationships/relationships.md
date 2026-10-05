@@ -1,6 +1,6 @@
 # Jyotish Engine: Planetary Friendships & Dignity (relationships.py)
 
-This file serves as the foundational astrological relationship engine based on Parashara and Ernst Wilhelm's Kala software.
+This file serves as the foundational astrological relationship engine based on *Bṛhat Parāśara Horā Śāstra* (BPHS), Mantreśvara's *Phaladīpikā*, and Ernst Wilhelm's Kala software.
 
 ---
 
@@ -18,14 +18,20 @@ Whenever the software says a planet is in a "Great Friend's Sign," it is using t
 ## 2. Technical AI Description (Logic Constraints)
 If you are modifying `relationships.py`, strictly observe these mathematical rules:
 
-1. **Three-Tier Friendship System:**
-   - `get_natural_relationship()` (Naisargika): Calculated from the planet's *Moolatrikona* sign. Returns: "Friend", "Neutral", "Enemy".
-   - `get_temporary_relationship()` (Tatkalika): Based purely on physical distance in the D1 (Rasi) chart. "3 signs in front, 3 behind" = Friend. Others (conjunct, or 5, 6, 7, 8, 9 away) = Enemy.
-   - `get_compound_relationship()` (Panchadha): Mathematical sum of Natural + Temporary. Returns 5 levels: "Great Friend", "Friend", "Neutral", "Enemy", "Great Enemy".
+1. **Three-Tier Friendship System & Matrix Scope:**
+   - Evaluates a complete $9 \times 9$ bidirectional matrix covering all 7 physical planets plus Rāhu and Ketu (`natural_relationships`, `temporary_relationships`, `compound_relationships`), preventing `KeyError` exceptions when physical planets query nodes.
+   - `get_natural_relationship()` (*Naisargika*):
+     - Physical planets follow BPHS Ch. 15 *Moolatrikona* derivations.
+     - Rāhu and Ketu follow Mantreśvara’s *Phaladīpikā* (Ch. 8 & 20) Asura coalition: Friends with Mercury, Venus, Saturn; Neutral with Mars; Enemies with Sun, Moon, Jupiter.
+   - `get_temporary_relationship()` (*Tātkālika*): Based purely on physical distance in the $D_1$ (Rasi) chart. Houses 2, 3, 4, 10, 11, 12 ($+1, +2, +3, +9, +10, +11$) = Friend. Others (conjunct, or 5, 6, 7, 8, 9 away) = Enemy. Same body comparison ($p_1 == p_2$) returns `"Self"`.
+   - `get_compound_relationship()` (*Pañcadhā*): Mathematical sum of Natural + Temporary $(-2 \text{ to } +2)$. Returns 5 levels: `"Great Friend"`, `"Friend"`, `"Neutral"`, `"Enemy"`, `"Great Enemy"` (or `"Self"`).
 
 2. **Dignity Logic (`get_dignity`):**
    - Must check fixed dignities FIRST (Exalted, Debilitated, Moolatrikona, Own Sign).
-   - If none match, it returns the sign lord's compound relationship (e.g., "Great Friend's Sign", "Enemy's Sign").
+   - Rahu fixed dignities: Exalted in Taurus, Debilitated in Scorpio, Moolatrikona in Gemini, Own Sign in Aquarius.
+   - Ketu fixed dignities: Exalted in Scorpio, Debilitated in Taurus, Moolatrikona in Sagittarius, Own Sign in Pisces (*Mīna*, resolving dual Jupiter-Saturn rulership symmetry).
+   - Co-rulership identity: Rāhu in Aquarius and Ketu in Pisces evaluate `effective_lord = p_name`, yielding `"Self"` for natural, temporary, and compound relationships, outputting pure `"Own Sign"` (*Sva-kṣetra* / *Svastha*).
+   - If none match, it returns the sign lord's compound relationship (e.g., `"Great Friend's Sign"`, `"Enemy's Sign"`).
 
 3. **Rāśi Aspects (`get_rasi_drishti`):**
    - Rāśi Dṛṣṭi resides in `jyotish/aspects/aspects.py` as `get_rasi_drishti` (rather than inside `relationships.py`) and is imported where needed.
@@ -48,22 +54,70 @@ The rules in this file are directly grounded in the **Brihat Parashara Hora Shas
 > “Friendly at the time as well as naturally so – great friendship. Friendship if friendly and neutral. Enemies if inimical and neutral. Neutral if friendly and inimical. Both inimical – great enmity. Thus should the astrologer examine the nativity when pronouncing effects.”
 > *— Brihat Parashara Hora Shastra: Nature and Form of the Grahas, 57-58*
 
+---
+
 ## 4. Special Astrological Exceptions & Limits
 As implemented in `generate_jyotish.py` and `relationships.py`:
-- **Varga Specific Distances (Tatkalika):** Tatkalika (Temporary Friendship) is ALWAYS calculated using the planetary positions in the D1 (Rasi) chart, even when determining Dignity for higher Vargas like D9 or D60.
+
+- **Varga-Specific Distances (Tātkālika Anchored to $D_1$):**
+  *Tātkālika Maitrī* (Temporary Friendship) is ALWAYS calculated using the planetary positions in the physical sky of the $D_1$ (Rāśi) chart, even when determining Dignity for higher Vargas like $D_9$ or $D_{60}$. Divisional charts are mathematical harmonics, not physical sky positions.
+
+- **Intra-Varga Invariance Rule & Dual Modes:**
+  - Under `whole_sign` / `traditional` (Canonical Classical Standard, *BPHS* Ch. 27 v. 4–6):
+    - Sub-degree bounds ($0^\circ\text{--}12^\circ$, $0^\circ\text{--}20^\circ$) belong exclusively to the physical $D_1$ sign arc where one sign must be split between Moolatrikona and Own Sign.
+    - In higher divisional vargas ($D_2$ through $D_{60}$), the planet's primary Moolatrikona sign (Aries for Mars, Leo for Sun, Sagittarius for Jupiter, Libra for Venus, Aquarius for Saturn) confers full `"Moolatrikona"` dignity (yielding the classical 45 Virūpas in *Saptavargaja Bala*), while its secondary sign (Scorpio for Mars, Pisces for Jupiter, Taurus for Venus, Capricorn for Saturn) confers pure `"Own Sign"` (30 Virūpas).
+    - Exaltations and debilitations govern the entire $30^\circ$ sign: Moon in Taurus is universally `"Exalted"`, and Moon in Scorpio / Mercury in Pisces is universally `"Debilitated"`.
+  - Under `kala_degree` (Ernst Wilhelm / Kala software mode):
+    - Intra-varga degree coordinates within the division are evaluated across vargas matching Ernst Wilhelm's calibrated software exports.
+
 - **Debilitation Calculation Modes (`debilitation_mode`):**
-  - `kala_degree` (Default):
-    - Moon: Debilitated strictly between 0° and 3° Scorpio. Beyond 3°, reverts to Panchadha Maitri with Mars.
-    - Mercury: Debilitated strictly between 0° and 15° Pisces. Beyond 15°, reverts to Panchadha Maitri with Jupiter.
-  - `whole_sign` / `traditional`:
+  - `kala_degree` (Empirical Option):
+    Derived from Ernst Wilhelm's *Kala* software. Deep debilitation (*Parama Nīca*) degree limits are treated as boundaries:
+    - Moon: Debilitated strictly between 0° and 3° Scorpio. Beyond 3°, reverts to Pañcadhā Maitrī with Mars.
+    - Mercury: Debilitated strictly between 0° and 15° Pisces. Beyond 15°, reverts to Pañcadhā Maitrī with Jupiter.
+  - `whole_sign` / `traditional` (Canonical Classical Standard):
+    Adheres strictly to *BPHS* Ch. 3 and *Phaladīpikā* Ch. 2 orthodoxy, where debilitation governs the entire $30^\circ$ sign:
     - Moon: Debilitated across all 0°–30° of Scorpio.
     - Mercury: Debilitated across all 0°–30° of Pisces.
-- **Even Rasi Varga Reversals:** Dasamsa (D10) and Chaturvimsamsa (D24) strictly follow the Parashara rule: "Reverse for Even Rasis". This means for Even signs, we start from the 9th sign (or Cancer for D24) and count **backwards** instead of forwards.
+
+- **Even Rasi Varga Reversals:**
+  Dasamsa ($D_{10}$) and Chaturvimsamsa ($D_{24}$) strictly follow the Parashara rule: "Reverse for Even Rasis". This means for Even signs, we start from the 9th sign (or Cancer for $D_{24}$) and count **backwards** instead of forwards.
 
 ---
 
 ## 5. Stage 2A Master Dignity Orchestrator (`calculate_chart_dignities`)
-The master function `calculate_chart_dignities(baseline: ChartBaseline, debilitation_mode: str = "kala_degree") -> Dict[str, Any]` connects the Stage 1 `ChartBaseline` directly to the relationship engine:
-1. **Precalculates D1 Temporary Friendship:** For all 7 physical planets using whole-sign sign differences $(s_2 - s_1) \pmod{12}$.
-2. **Precalculates Pañcadhā Maitrī:** For all 7 physical planets plus Rāhu (Saturn proxy) and Ketu (Mars proxy).
-3. **Decomposes Varga Dignities Across All 16 Divisional Charts:** Evaluates each planet's dignity in D1 through D60 using its exact divisional sign and degree within sign, preserving the chosen `debilitation_mode`.
+The master function `calculate_chart_dignities(baseline: ChartBaseline, debilitation_mode: str = "whole_sign") -> Dict[str, Any]` connects the Stage 1 `ChartBaseline` directly to the relationship engine:
+1. **Precalculates Full 9x9 Friendship Matrices:** Bidirectional natural, temporary, and compound relationships for all 7 physical planets and nodes.
+2. **Decomposes Varga Dignities Across All 16 Divisional Charts:** Evaluates each planet's dignity in $D_1$ through $D_{60}$ with `is_varga = (v_name != "D1")`.
+3. **Functional Avasthā Overrides (*Phaladīpikā* Ch. 3 v. 19):**
+   In $D_1$, physical celestial impairment takes functional precedence over sign placement:
+   - **Combust (*Vikala*):** If a planet (other than Sun, Rahu, or Ketu) is combust within orb by the Sun, its $D_1$ avasthā is set to `"Vikala"` (impaired / deprived).
+   - **Defeated in War (*Nīpīḍita*):** If a planet is defeated in planetary war (*Graha Yuddha* $\le 1^\circ$), its $D_1$ avasthā is set to `"Nipidita"` (vanquished / oppressed).
+4. **Canonical Dīptādi Avasthā Output:** Maps every sign dignity directly into its classical physiological mood:
+
+| Planetary Dignity | Sanskrit Dīptādi Avasthā | Psychological / Functional State |
+| :--- | :--- | :--- |
+| **Exalted** | *Pradīpta* | Radiant, effulgent, highly victorious |
+| **Moolatrikona** | *Sukhita* | Delighted, comfortable, prosperous |
+| **Own Sign** | *Svastha* | Confident, at home, independent |
+| **Great Friend's Sign** | *Mudita* | Rejoicing, happy, affectionate, supported |
+| **Friend's Sign** | *Mudita* | Happy (*suhṛd-gehe* per *Phaladīpikā* 3.18) |
+| **Neutral's Sign** | *Śānta* | Calm, peaceful, steady (*sama-bhavane*) |
+| **Enemy's Sign** | *Dīna* | Distressed, sorrowful, depressed |
+| **Great Enemy's Sign** | *Dīna* | Distressed, impoverished |
+| **Debilitated** | *Khala* | Fallen, tormented, disruptive |
+| **Combust** | *Vikala* | Impaired, scorched by the Sun |
+| **Defeated in War** | *Nīpīḍita* | Vanquished, suppressed in planetary war |
+
+5. **Daśavarga Vaiśeṣikāṃśa Ladder (*Phaladīpikā* Ch. 3 v. 6–7):**
+   Computes the cumulative count of favorable vargas (Exalted, Moolatrikona, Own Sign, Great Friend, Friend) across the 10 classical vargas ($D_1, D_2, D_3, D_7, D_9, D_{10}, D_{12}, D_{16}, D_{30}, D_{60}$):
+   - 2 favorable vargas = *Pārijāta*
+   - 3 favorable vargas = *Uttama*
+   - 4 favorable vargas = *Gopura*
+   - 5 favorable vargas = *Siṁhāsana*
+   - 6 favorable vargas = *Parvata*
+   - 7 favorable vargas = *Devaloka*
+   - 8 favorable vargas = *Suraloka*
+   - 9 favorable vargas = *Airāvata*
+   - 10 favorable vargas = *Brahmapada*
+   Returned under `"vaisesikamsha"` in the master dictionary.

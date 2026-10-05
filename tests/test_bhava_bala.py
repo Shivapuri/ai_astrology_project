@@ -11,7 +11,10 @@ from jyotish.bhavas.bhava_bala import (
     calculate_bhava_drishti_bala,
     calculate_harsha_bala,
     calculate_house_atmosphere,
+    _evaluate_occupants,
     _evaluate_karako_bhava_nasaya,
+    _evaluate_sandhi_leakage,
+    _evaluate_three_focal_points,
     get_sign_genus
 )
 from jyotish.generate_jyotish import generate_kala_chart
@@ -366,5 +369,181 @@ def test_missing_mars_or_saturn_does_not_trigger_phantom_joy():
     )
     assert harsha_taurus["dusthana_joy"][12]["karaka_joy_in_house"] is False
     assert harsha_taurus["dusthana_joy"][12]["is_active"] is False
+
+
+def test_lagna_lord_malefic_aspect_not_turned_benefic_in_drishti_bala():
+    """
+    Certifies BPHS Ch. 27 v. 28-29: A malefic Lagna lord (e.g. Mars for Aries Lagna)
+    aspecting another house cusp (e.g. 7th house Libra) is deducted as a malefic ray,
+    NOT converted into a positive protective ray in quantitative Bhāva Dṛṣṭi Bala.
+    """
+    aspect_matrices = {"cusp_drishti": {"Mars": {7: 60.0}}}
+    val = calculate_bhava_drishti_bala(
+        bhava_madhya_lon=180.0,
+        planet_positions={"Mars": 0.0},
+        aspect_matrices=aspect_matrices,
+        house_num=7,
+        target_house_lord="Venus",
+        lagna_lord="Mars"
+    )
+    # Mars is natural malefic and not lord of House 7 -> 60.0 / 4.0 deducted = -15.0 Virūpas
+    assert val == -15.0
+
+
+def test_harsha_sarala_vimala_yogas_in_other_dusthanas(calibrated_shadbala):
+    """
+    Certifies Phaladīpikā 6.63, 6.65, 6.69: Harsha, Sarala, and Vimala Yogas
+    activate when dusthana lords reside in ANY dusthana house (6, 8, or 12).
+    """
+    # Aries Lagna: H6 lord is Mercury. Place Mercury in Scorpio (H8, 220°).
+    harsha_res = calculate_harsha_bala(
+        baseline=None,
+        planet_positions={"Mercury": 220.0},
+        ascendant_lon=0.0,
+        is_day_birth=True
+    )
+    h6 = harsha_res["dusthana_joy"][6]
+    assert h6["viparita_active"] is True
+    assert h6["is_active"] is True
+    assert h6["bonus_units"] == 20.0
+    assert "Harsha Yoga" in h6["effect"]
+    assert "in H8" in h6["effect"]
+
+    # Verify atmosphere celebrates Harsha Yoga and does not penalize displacement
+    baseline = MockChartBaseline(ascendant=0.0, planets={"Mercury": {"lon": 220.0, "is_combust": False}})
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    atm = calculate_house_atmosphere(baseline, bhavas, harsha_data=harsha_res)
+    h6_atm = atm[6]
+    auspicious = " ".join(h6_atm["auspicious_influences"])
+    inauspicious = " ".join(h6_atm["inauspicious_influences"])
+    assert "Harsha Yoga active in Dusthana H6" in auspicious
+    assert "displaced into 6/8/12" not in inauspicious
+
+
+def test_karako_bhava_nasaya_exemption_in_own_sign_and_exaltation():
+    """
+    Certifies DPK 16.1-3: A solitary kāraka in its own sign or exaltation sign
+    is fortified and exempt from Kārakobhāvanāśāya.
+    """
+    # Jupiter in 5th house in Sagittarius (own sign) -> exempt
+    res_sagit = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}], sign_name="Sagittarius")
+    assert res_sagit["is_afflicted"] is False
+    assert "exempted" in res_sagit["details"].lower()
+
+    # Jupiter in 5th house in Cancer (exaltation) -> exempt
+    res_cancer = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}], sign_name="Cancer")
+    assert res_cancer["is_afflicted"] is False
+    assert "exempted" in res_cancer["details"].lower()
+
+    # Jupiter in 5th house in Gemini (neutral/ordinary sign) -> afflicted
+    res_gemini = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}], sign_name="Gemini")
+    assert res_gemini["is_afflicted"] is True
+
+    # Venus in 7th house in Pisces (exaltation) -> exempt
+    res_pisces = _evaluate_karako_bhava_nasaya(7, [{"name": "Venus"}], sign_name="Pisces")
+    assert res_pisces["is_afflicted"] is False
+
+    # Venus in 7th house in Virgo (debilitation) -> afflicted
+    res_virgo = _evaluate_karako_bhava_nasaya(7, [{"name": "Venus"}], sign_name="Virgo")
+    assert res_virgo["is_afflicted"] is True
+
+
+def test_satruhanta_active_when_natural_malefic_lord_in_own_sign_in_h6():
+    """
+    Certifies that a natural malefic lord occupying its own sign in an Upacaya (House 6)
+    acts as both a supportive ruler (DPK 15.1) and activates Satruhantā.
+    """
+    # Scorpio Lagna: House 6 is Aries (ruled by Mars). Mars is in Aries in H6.
+    occ_diag = _evaluate_occupants(
+        house_num=6,
+        occupants=[{"name": "Mars"}],
+        house_lord="Mars"
+    )
+    assert occ_diag["satruhanta_active"] is True
+    assert occ_diag["upacaya_empowered"] is True
+    assert "Mars" in occ_diag["benefics"]
+    assert "Mars" in occ_diag["malefics"]
+
+    # Capricorn Lagna: House 1 is Capricorn (ruled by Saturn). Saturn in H1.
+    occ_h1 = _evaluate_occupants(
+        house_num=1,
+        occupants=[{"name": "Saturn"}],
+        house_lord="Saturn"
+    )
+    assert occ_h1["satruhanta_active"] is False
+    assert occ_h1["upacaya_empowered"] is False
+    assert "Saturn" in occ_h1["benefics"]
+    assert len(occ_h1["malefics"]) == 0
+
+
+def test_three_focal_points_strict_papakartari_and_dignities(calibrated_shadbala):
+    """
+    Certifies strict Pāpakartarī (relieved by benefic presence) and lord/kāraka dignities.
+    """
+    # Flanked with benefic relief: Mars in H4, Saturn in H6, but Venus also in H4
+    flanked_relieved = {
+        4: [{"name": "Mars"}, {"name": "Venus"}],
+        6: [{"name": "Saturn"}]
+    }
+    res_relieved = _evaluate_three_focal_points(
+        house_num=5, lord="Jupiter", lord_house=5, main_karaka="Jupiter",
+        planet_positions={"Jupiter": 130.0}, asc_sign_idx=0,
+        house_occupant_map=flanked_relieved, shadbala_results=calibrated_shadbala
+    )
+    # Not strictly besieged due to Venus relief on the 12th flank
+    assert "Bhāva: False" in res_relieved["details"]
+
+    # Strictly flanked: Mars in H4, Saturn in H6, no benefics
+    flanked_strict = {
+        4: [{"name": "Mars"}],
+        6: [{"name": "Saturn"}]
+    }
+    res_strict = _evaluate_three_focal_points(
+        house_num=5, lord="Jupiter", lord_house=5, main_karaka="Jupiter",
+        planet_positions={"Jupiter": 130.0}, asc_sign_idx=0,
+        house_occupant_map=flanked_strict, shadbala_results=calibrated_shadbala
+    )
+    assert "Bhāva: True" in res_strict["details"]
+
+    # Lord debilitated: Sun in Libra (195.0°)
+    res_deb = _evaluate_three_focal_points(
+        house_num=1, lord="Sun", lord_house=7, main_karaka="Sun",
+        planet_positions={"Sun": 195.0}, asc_sign_idx=0,
+        house_occupant_map={}, shadbala_results=calibrated_shadbala
+    )
+    assert "Lord: True" in res_deb["details"]
+
+
+def test_sandhi_leakage_fallback_without_deg_in_sign():
+    """
+    Certifies that _evaluate_sandhi_leakage safely computes deg_in_sign from lon
+    when deg_in_sign is not explicitly provided in the occupant dict.
+    """
+    occ = [{"name": "Saturn", "lon": 29.5}]
+    res = _evaluate_sandhi_leakage(house_num=12, cusp_lon=350.0, occupants=occ)
+    assert len(res["wall_leakages"]) == 1
+    assert res["wall_leakages"][0]["planet"] == "Saturn"
+    assert res["wall_leakages"][0]["deg_in_sign"] == 29.5
+    assert res["wall_leakages"][0]["leakage_direction"] == "forward"
+    assert res["wall_leakages"][0]["target_house"] == 1
+
+
+def test_dpk_4_23_lord_in_lagna_upacaya(calibrated_shadbala):
+    """
+    Certifies Phaladīpikā 4.23: When a house lord is placed in an Upacaya house (3, 6, 10, 11)
+    from Lagna without dusthana corruption, it receives the growth bonus.
+    """
+    # Aries Lagna (0.0°). Mars (lord of H1) in Capricorn in House 10 (280.0°).
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Mars": {"lon": 280.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    assert bhavas[1]["lord_status"]["is_in_upacaya_from_lagna"] is True
+
+    atm = calculate_house_atmosphere(baseline, bhavas)
+    auspicious = " ".join(atm[1]["auspicious_influences"])
+    assert "Lagna Upacaya H10 (DPK 4.23 growth)" in auspicious
+
 
 

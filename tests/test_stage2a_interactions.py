@@ -26,6 +26,7 @@ from jyotish.relationships.relationships import (
     get_temporary_relationship,
     get_compound_relationship,
     get_dignity,
+    DIPTADI_AVASTHA_MAP,
     SIGN_LORDS as REL_SIGN_LORDS,
     VIMSHOTTARI_SEQUENCE as REL_VIMSHOTTARI
 )
@@ -73,8 +74,12 @@ def test_stage2a_angelina_jolie_relationships():
         assert p1 in temp_rel
         assert p1 in comp_rel
         for p2 in PHYSICAL_PLANETS:
-            assert temp_rel[p1][p2] in ["Friend", "Enemy"]
-            assert comp_rel[p1][p2] in ["Great Friend", "Friend", "Neutral", "Enemy", "Great Enemy"]
+            if p1 == p2:
+                assert temp_rel[p1][p2] == "Self"
+                assert comp_rel[p1][p2] == "Self"
+            else:
+                assert temp_rel[p1][p2] in ["Friend", "Enemy"]
+                assert comp_rel[p1][p2] in ["Great Friend", "Friend", "Neutral", "Enemy", "Great Enemy"]
 
     # Sun & Mercury are conjunct in Gemini (distance 0 -> house 1 -> Temporary Enemy)
     assert temp_rel["Sun"]["Mercury"] == "Enemy"
@@ -98,17 +103,26 @@ def test_stage2a_angelina_jolie_relationships():
     # Saturn natural to Venus is Friend. Friend + Enemy = Neutral.
     assert comp_rel["Saturn"]["Venus"] == "Neutral"
 
-    # Rāhu and Ketu proxy evaluation in natural, temporary, and compound relationships
+    # Rāhu and Ketu evaluation in natural, temporary, and compound relationships
+    # Default: Ernst Wilhelm methodology (Śanivad Rāhuḥ, Kujavad Ketuḥ)
     nat_rel = dignity_data["natural_relationships"]
     assert "Rahu" in nat_rel
     assert "Ketu" in nat_rel
     assert nat_rel["Rahu"]["Mercury"] == "Friend"   # Saturn proxy views Mercury as Friend
     assert nat_rel["Ketu"]["Sun"] == "Friend"       # Mars proxy views Sun as Friend
+    assert nat_rel["Ketu"]["Mercury"] == "Enemy"    # Mars proxy views Mercury as Enemy
+    assert nat_rel["Sun"]["Ketu"] == "Friend"       # Bidirectional Sun view of Mars/Ketu
+    assert nat_rel["Mercury"]["Rahu"] == "Friend"   # Bidirectional Mercury view of Saturn/Rahu
+
+    # Alternate: Mantreśvara Phaladīpikā Asura coalition toggle
+    assert get_natural_relationship("Ketu", "Sun", nodal_methodology="phaladipika") == "Enemy"
+    assert get_natural_relationship("Ketu", "Mercury", nodal_methodology="phaladipika") == "Friend"
+    assert get_natural_relationship("Sun", "Ketu", nodal_methodology="phaladipika") == "Enemy"
 
     assert "Rahu" in comp_rel
     assert "Ketu" in comp_rel
-    # Rahu uses Saturn proxy: Saturn natural to Mercury is Friend; Rahu in Scorpio (7), Mercury in Gemini (2)
-    # Distance (2 - 7) % 12 = 7 (8th house -> Enemy) -> Friend + Enemy = Neutral
+    # Bidirectional presence: no KeyError on physical -> node
+    assert comp_rel["Mercury"]["Rahu"] == "Neutral"
     assert comp_rel["Rahu"]["Mercury"] == "Neutral"
 
 
@@ -138,26 +152,36 @@ def test_stage2a_angelina_jolie_varga_dignities():
             assert "temporary_relationship" in entry
             assert "compound_relationship" in entry
             assert "dignity" in entry
+            assert "avastha" in entry
             assert entry["dignity"] in [
                 "Exalted", "Moolatrikona", "Own Sign",
                 "Great Friend's Sign", "Friend's Sign", "Neutral's Sign",
                 "Enemy's Sign", "Great Enemy's Sign", "Debilitated"
             ]
+            assert entry["avastha"] in [
+                "Pradipta", "Sukhita", "Svastha", "Mudita", "Santa", "Dina", "Khala", "Vikala", "Nipidita"
+            ]
 
-    # Specific D1 Dignities
+    # Specific D1 Dignities and Avasthas
     d1 = varga_dig["D1"]
     assert d1["Sun"]["dignity"] == "Enemy's Sign"        # Sun in Gemini (ruled by Mercury, compound Enemy)
+    assert d1["Sun"]["avastha"] == "Dina"
     assert d1["Mars"]["dignity"] == "Moolatrikona"       # Mars in Aries (<= 12°)
+    assert d1["Mars"]["avastha"] == "Sukhita"
     assert d1["Mercury"]["dignity"] == "Own Sign"        # Mercury in Gemini (> 20° is own sign)
+    assert d1["Mercury"]["avastha"] == "Vikala"          # Combust by Sun in Gemini (Phaladipika override)
 
-    # Specific D9 Navāṃśa Dignities
+    # Specific D9 Navāṃśa Dignities and Avasthas
     d9 = varga_dig["D9"]
     assert d9["Venus"]["sign"] == "Pisces"
     assert d9["Venus"]["dignity"] == "Exalted"           # Venus exalted in Pisces
+    assert d9["Venus"]["avastha"] == "Pradipta"
     assert d9["Mars"]["sign"] == "Cancer"
     assert d9["Mars"]["dignity"] == "Debilitated"        # Mars debilitated in Cancer
+    assert d9["Mars"]["avastha"] == "Khala"
     assert d9["Moon"]["sign"] == "Cancer"
     assert d9["Moon"]["dignity"] == "Own Sign"           # Moon in own sign Cancer
+    assert d9["Moon"]["avastha"] == "Svastha"
 
 
 def test_stage2a_debilitation_modes():
@@ -261,9 +285,174 @@ def test_stage2a_shivapuri_case():
     assert sun_d1["temporary_relationship"] == "Friend"
     assert sun_d1["compound_relationship"] == "Great Friend"
     assert sun_d1["dignity"] == "Great Friend's Sign"
+    assert sun_d1["avastha"] == "Mudita"
 
     # 2. Aspect matrix sizes
     assert len(aspects["planet_to_planet"]) == 11
     assert len(aspects["planet_to_cusp"]) == 7
     for p in PHYSICAL_PLANETS:
         assert len(aspects["planet_to_cusp"][p]) == 12
+
+
+def test_stage2a_ketu_and_rahu_dignities():
+    """
+    Verifies the bug fix for Ketu's dead-code own sign (Pisces) and full dignity spectrum.
+    """
+    # Ketu
+    assert get_dignity("Ketu", "Pisces", compound_rel="Neutral") == "Own Sign"
+    assert get_dignity("Ketu", "Scorpio", compound_rel="Neutral") == "Exalted"
+    assert get_dignity("Ketu", "Taurus", compound_rel="Neutral") == "Debilitated"
+    assert get_dignity("Ketu", "Sagittarius", compound_rel="Neutral") == "Moolatrikona"
+    assert get_dignity("Ketu", "Aries", compound_rel="Great Friend") == "Great Friend's Sign"
+
+    # Rahu
+    assert get_dignity("Rahu", "Aquarius", compound_rel="Neutral") == "Own Sign"
+    assert get_dignity("Rahu", "Taurus", compound_rel="Neutral") == "Exalted"
+    assert get_dignity("Rahu", "Scorpio", compound_rel="Neutral") == "Debilitated"
+    assert get_dignity("Rahu", "Gemini", compound_rel="Neutral") == "Moolatrikona"
+    assert get_dignity("Rahu", "Leo", compound_rel="Enemy") == "Enemy's Sign"
+
+
+def test_stage2a_intra_varga_invariance():
+    """
+    Verifies the Intra-Varga Invariance Rule:
+    Sub-degree boundaries (Moolatrikona degree spans, exaltation boundaries,
+    and kala_degree cutoffs) apply strictly to D1. Higher vargas (is_varga=True)
+    confer Moolatrikona for the primary sign and Own Sign for the secondary sign.
+    """
+    # 1. Sun in Leo: D1 <= 20 is MT, > 20 is Own Sign. In higher vargas, Moolatrikona.
+    assert get_dignity("Sun", "Leo", "Self", degree=10.0, is_varga=False) == "Moolatrikona"
+    assert get_dignity("Sun", "Leo", "Self", degree=25.0, is_varga=False) == "Own Sign"
+    assert get_dignity("Sun", "Leo", "Self", degree=10.0, is_varga=True) == "Moolatrikona"
+
+    # 2. Moon in Taurus: D1 <= 3 is Exalted, > 3 is MT. In higher vargas, always Exalted.
+    assert get_dignity("Moon", "Taurus", "Self", degree=2.0, is_varga=False) == "Exalted"
+    assert get_dignity("Moon", "Taurus", "Self", degree=15.0, is_varga=False) == "Moolatrikona"
+    assert get_dignity("Moon", "Taurus", "Self", degree=15.0, is_varga=True) == "Exalted"
+
+    # 3. Moon in Scorpio under kala_degree: D1 > 3 falls back to host compound rel.
+    # In higher vargas, always Debilitated.
+    assert get_dignity("Moon", "Scorpio", "Friend", degree=15.0, debilitation_mode="kala_degree", is_varga=False) == "Friend's Sign"
+    assert get_dignity("Moon", "Scorpio", "Friend", degree=15.0, debilitation_mode="kala_degree", is_varga=True) == "Debilitated"
+
+    # 4. Mercury in Virgo: D1 <= 15 is Exalted, <= 20 MT, > 20 Own Sign. In higher vargas, always Exalted.
+    assert get_dignity("Mercury", "Virgo", "Self", degree=10.0, is_varga=False) == "Exalted"
+    assert get_dignity("Mercury", "Virgo", "Self", degree=18.0, is_varga=False) == "Moolatrikona"
+    assert get_dignity("Mercury", "Virgo", "Self", degree=25.0, is_varga=False) == "Own Sign"
+    assert get_dignity("Mercury", "Virgo", "Self", degree=18.0, is_varga=True) == "Exalted"
+
+    # 5. Mercury in Pisces under kala_degree: D1 > 15 falls back to host compound rel.
+    # In higher vargas, always Debilitated.
+    assert get_dignity("Mercury", "Pisces", "Neutral", degree=20.0, debilitation_mode="kala_degree", is_varga=False) == "Neutral's Sign"
+    assert get_dignity("Mercury", "Pisces", "Neutral", degree=20.0, debilitation_mode="kala_degree", is_varga=True) == "Debilitated"
+
+    # 6. Mars in Aries (MT) vs Scorpio (Own Sign) in higher vargas
+    assert get_dignity("Mars", "Aries", "Self", degree=5.0, is_varga=True) == "Moolatrikona"
+    assert get_dignity("Mars", "Scorpio", "Self", degree=5.0, is_varga=True) == "Own Sign"
+
+    # 7. Jupiter in Sagittarius (MT) vs Pisces (Own Sign) in higher vargas
+    assert get_dignity("Jupiter", "Sagittarius", "Self", degree=5.0, is_varga=True) == "Moolatrikona"
+    assert get_dignity("Jupiter", "Pisces", "Self", degree=5.0, is_varga=True) == "Own Sign"
+
+    # 8. Venus in Libra (MT) vs Taurus (Own Sign) in higher vargas
+    assert get_dignity("Venus", "Libra", "Self", degree=5.0, is_varga=True) == "Moolatrikona"
+    assert get_dignity("Venus", "Taurus", "Self", degree=5.0, is_varga=True) == "Own Sign"
+
+    # 9. Saturn in Aquarius (MT) vs Capricorn (Own Sign) in higher vargas
+    assert get_dignity("Saturn", "Aquarius", "Self", degree=5.0, is_varga=True) == "Moolatrikona"
+    assert get_dignity("Saturn", "Capricorn", "Self", degree=5.0, is_varga=True) == "Own Sign"
+
+
+def test_stage2a_diptadi_avastha_matrix():
+    """
+    Verifies that the canonical 9 Diptadi Avasthas map 1-to-1 according to Phaladipika Ch. 3 v. 18-19.
+    """
+    expected_mapping = {
+        "Exalted": "Pradipta",
+        "Moolatrikona": "Sukhita",
+        "Own Sign": "Svastha",
+        "Great Friend's Sign": "Mudita",
+        "Friend's Sign": "Mudita",
+        "Neutral's Sign": "Santa",
+        "Enemy's Sign": "Dina",
+        "Great Enemy's Sign": "Dina",
+        "Debilitated": "Khala",
+        "Combust": "Vikala",
+        "Defeated in War": "Nipidita",
+    }
+    for dignity, expected_avastha in expected_mapping.items():
+        assert DIPTADI_AVASTHA_MAP[dignity] == expected_avastha
+
+
+def test_stage2a_vaisesikamsha_ladder():
+    """
+    Verifies the Dasavarga Vaisesikamsha ladder calculation across 10 vargas for the 7 physical grahas.
+    """
+    baseline = ChartBaseline(
+        name="Angelina Jolie",
+        year=1975, month=6, day=4, hour=9, minute=9, second=0,
+        latitude=34.0522, longitude=-118.2437, timezone_offset=-7.0
+    )
+    dignity_data = calculate_chart_dignities(baseline)
+    assert "vaisesikamsha" in dignity_data
+    v_ladder = dignity_data["vaisesikamsha"]
+
+    # Restricted to the 7 physical grahas per classical scripture (Phaladipika Ch. 3 v. 6)
+    assert len(v_ladder) == len(PHYSICAL_PLANETS)
+    for p in PHYSICAL_PLANETS:
+        assert p in v_ladder
+        assert "favorable_count" in v_ladder[p]
+        assert "title" in v_ladder[p]
+        assert 0 <= v_ladder[p]["favorable_count"] <= 10
+
+    assert "Rahu" not in v_ladder
+    assert "Ketu" not in v_ladder
+
+
+def test_stage2a_rahu_ketu_own_sign_metadata():
+    """
+    Verifies that Rahu in Aquarius and Ketu (in Scorpio or Pisces) are evaluated as 'Self'
+    rather than adopting relative guest-host compound relationships.
+    """
+    chart_dict = {
+        "name": "NodeTest",
+        "year": 1990, "month": 1, "day": 1, "hour": 12, "minute": 0, "second": 0,
+        "latitude": 0.0, "longitude": 0.0, "timezone_offset": 0.0
+    }
+    baseline = ChartBaseline(**chart_dict)
+    # Inject mock vargas to isolate Rahu in Aquarius and Ketu in Pisces/Scorpio
+    baseline.vargas["D1"]["grahas"]["Rahu"]["sign"] = "Aquarius"
+    baseline.vargas["D1"]["grahas"]["Ketu"]["sign"] = "Pisces"
+
+    # 1. Pisces as Ketu's own sign
+    dignity_data_pisces = calculate_chart_dignities(baseline, ketu_own_sign="Pisces")
+    rahu_d1 = dignity_data_pisces["varga_dignities"]["D1"]["Rahu"]
+    ketu_d1_pisces = dignity_data_pisces["varga_dignities"]["D1"]["Ketu"]
+
+    assert rahu_d1["sign_lord"] == "Rahu"
+    assert rahu_d1["natural_relationship"] == "Self"
+    assert rahu_d1["temporary_relationship"] == "Self"
+    assert rahu_d1["compound_relationship"] == "Self"
+    assert rahu_d1["dignity"] == "Own Sign"
+    assert rahu_d1["avastha"] == "Svastha"
+
+    assert ketu_d1_pisces["sign_lord"] == "Ketu"
+    assert ketu_d1_pisces["natural_relationship"] == "Self"
+    assert ketu_d1_pisces["temporary_relationship"] == "Self"
+    assert ketu_d1_pisces["compound_relationship"] == "Self"
+    assert ketu_d1_pisces["dignity"] == "Own Sign"
+    assert ketu_d1_pisces["avastha"] == "Svastha"
+
+    # 2. Scorpio as Ketu's own sign (Ernst Wilhelm baseline)
+    baseline.vargas["D1"]["grahas"]["Ketu"]["sign"] = "Scorpio"
+    dignity_data_scorpio = calculate_chart_dignities(baseline, ketu_own_sign="Scorpio")
+    ketu_d1_scorpio = dignity_data_scorpio["varga_dignities"]["D1"]["Ketu"]
+
+    assert ketu_d1_scorpio["sign_lord"] == "Ketu"
+    assert ketu_d1_scorpio["natural_relationship"] == "Self"
+    assert ketu_d1_scorpio["temporary_relationship"] == "Self"
+    assert ketu_d1_scorpio["compound_relationship"] == "Self"
+    # Exaltation takes precedence in Scorpio for Ketu
+    assert ketu_d1_scorpio["dignity"] == "Exalted"
+    assert ketu_d1_scorpio["avastha"] == "Pradipta"
+

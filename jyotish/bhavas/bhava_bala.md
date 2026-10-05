@@ -59,19 +59,19 @@ $$\text{Distance} = |h - \text{Zero House}| \pmod{12}$$
 $$\text{If } \text{Distance} > 6: \quad \text{Distance} = 12 - \text{Distance}$$
 $$\text{Bhava Digbala} = \text{Distance} \times 10.0 \text{ Virūpas}$$
 
-#### 3. Bhava Dṛṣṭi Bala (Aspect Rays on Bhava Madhya)
+##### 3. Bhava Dṛṣṭi Bala (Aspect Rays on Bhava Madhya)
 Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
 - **Phaladeepika 15.1–3 House Lord Protection Rule (Conditioned by Combustion & Debilitation):**
   - If the aspecting planet is the lord of the aspected house, its aspect is protective ($+1.0 \times \text{Ray}$), even for natural malefics (e.g. Saturn aspecting Capricorn/Aquarius, Mars aspecting Aries/Scorpio).
   - **Canonical Qualification:** If the lord is combust (*mūḍha/asta*) or debilitated (*hīna/nīca*), its defense is severely impaired and scaled down to $+0.25 \times \text{Ray}$.
-- **Phaladeepika 15.9 Lagneśa Precedence:** If the Ascendant Lord (*Lagneśa*) aspects any house cusp, its ray is treated as protective ($+1.0 \times \text{Ray}$), scaled down to $+0.25 \times \text{Ray}$ if combust or debilitated.
+- **Parāśarī Quantitative Purity (BPHS Ch. 27 v. 28–29):** The Ascendant Lord (*Lagneśa*) aspecting other houses does NOT receive $+1.0$ inversion in quantitative Virūpas (preventing Kuja Doṣa on the 7th cusp from registering as a benefic ray). Rather, Lagneśa aspect is evaluated qualitatively in House Atmosphere per DPK 15.9 ($+15.0$).
 - **Jupiter & Benefic Mercury:** $+1.0 \times \text{Ray}$ (scaled down to $+0.5 \times \text{Ray}$ if combust or debilitated).
 - **Venus & Benefic Moon ($\text{Paksha Bala} \ge 30$):** $+0.25 \times \text{Ray}$.
-- **Natural Malefics (Sun, Mars, Saturn, Dark Moon, Afflicted Mercury):** $-0.25 \times \text{Ray}$ (unless aspecting own house or Ascendant lord).
+- **Natural Malefics (Sun, Mars, Saturn, Dark Moon, Afflicted Mercury):** $-0.25 \times \text{Ray}$ (unless aspecting own house).
 
 ---
 
-### B. Mantreśvara’s *Phaladeepika* Diagnostic Layer (Ch. 4, 14, 15)
+### B. Mantreśvara’s *Phaladeepika* Diagnostic Layer (Ch. 4, 6, 14, 15, 16)
 
 1. **Lord's Digbala Re-Count (DPK Ch. 4):** Houses are directional structures (*diśā*). The directional strength of the house lord (`Dig_Bala`) is added as an augmented bonus to the house.
 2. **Sign Gender vs. Diurnal Sect (DPK Ch. 4):**
@@ -79,33 +79,38 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
    - Night birth + Even (feminine) sign: $+15$ Virūpas.
 3. **Bhāva Sandhi & Wall Leakage (DPK Ch. 14):**
    - Cusps or occupants within $1.0^\circ$ of a sign border ($<1^\circ$ or $>29^\circ$) exhibit cross-border energy leakage with a directional transfer ratio. Non-planetary points (Lagna, MC) are excluded from occupant calculations.
-4. **Neutralization of Malefics in Own Sign (DPK 15.1):** When a natural malefic occupies its own sign (*svakṣetra*), it functions as a supportive house lord (*svakṣetre śubhakṛt*), routing to benefics and receiving $+15.0$ atmospheric bonus rather than malefic non-upacaya penalties.
-5. **Upacaya Malefic Dynamics & Śatruhantā:** Malefics occupying Upacaya houses (3, 6, 11) empower the native. Malefics in the 6th house activate the `satruhanta_active` flag (conqueror of enemies/obstacles).
+4. **Neutralization of Malefics in Own Sign & Upacaya Dynamics (DPK 15.1, 4.23):** 
+   - When a natural malefic occupies its own sign (*svakṣetra*), it functions as a supportive house lord (*svakṣetre śubhakṛt*), routing to benefics and receiving $+15.0$ atmospheric bonus rather than malefic non-upacaya penalties.
+   - In Upacaya houses (3, 6, 11), a malefic lord in its own sign also empowers growth and activates the `satruhanta_active` flag in House 6 (conqueror of enemies/obstacles).
+   - When any house lord occupies an Upacaya house (3, 6, 10, 11) from Janma Lagna without dusthāna corruption, it experiences steady expansion and growth per DPK 4.23 (`is_in_upacaya_from_lagna`).
+5. **Upacaya Malefic Dynamics & Śatruhantā:** Malefics occupying Upacaya houses (3, 6, 11) empower the native. Malefics in the 6th house activate the `satruhanta_active` flag.
 6. **Lagneśa Flourishing Rule & Major Ray Threshold (DPK 15.9):** 
    - Presence of the Ascendant lord in houses $h \neq 1$ confers an automatic $+15.0$ flourishing bonus (in House 1, the bonus is cleanly awarded once under resident lord).
    - An aspect from the Ascendant lord must carry at least a palpable half-glance ($\ge 30.0$ Virūpas) to trigger the $+15.0$ flourishing bonus, preventing sub-perceptual non-zero aspects from artificially inflating the chart.
 7. **Bhavāt Bhavam Upacayas vs. Trika Dusthāna Displacement:**
    - Uncorrupted growth from the evaluated house is fostered strictly by Upacayas **3, 10, and 11** from that house.
    - Displacement into the **6th, 8th, or 12th from its home sign** is a Trika dusthāna displacement causing house decay (*bhāva-nāśa* per DPK 15.2–3) and receives a $-15.0$ penalty without simultaneous Upacaya reward.
-8. **Own-Dusthāna Lord Exemption (Houses 6, 8, 12):**
-   - When a lord of house 6, 8, or 12 resides in its own sign (*svakṣetra*), it forms an auspicious *Harṣa*, *Sarala*, or *Vimala* Yoga.
-   - It is exempt from `is_in_dusthana` displacement penalties (`lord_house in DUHSTHANA_HOUSES and lord_house != house_num`).
+8. **Own-Dusthāna Lord Exemption & Viparīta Yogas (Houses 6, 8, 12):**
+   - When a lord of house 6, 8, or 12 resides in ANY dusthāna (6, 8, 12), it forms an auspicious *Harṣa*, *Sarala*, or *Vimala* Yoga per DPK 6.57–70.
+   - It is exempt from `is_in_dusthana` displacement penalties (`(lord_house in DUHSTHANA_HOUSES) and not (house_num in DUHSTHANA_HOUSES)`).
 9. **Kārakobhāvanāśāya (Restricted to Living Significations / Jīva-Kārakas):**
    Solitary occupancy by the primary natural significator impairs living relationships:
    - House 3: Mars (Younger siblings)
    - House 5: Jupiter (Progeny)
    - House 7: Venus (Spouse/Partner)
    - House 9: Sun (Father)
-   - **Canonical Exception:** House 8 with solitary Saturn is explicitly protected (*Āyuṣkāraka* promotes longevity).
+   - **Canonical Exceptions:** 
+     - House 8 with solitary Saturn is explicitly protected (*Āyuṣkāraka* promotes longevity).
+     - **DPK 16.1–3 Exemption:** A solitary kāraka occupying its own sign (*svabhavana*) or sign of exaltation (*svoccha*) is fortified and exempt from Kārakobhāvanāśāya.
    - Non-living houses (2, 4, 10, 11, 12) never trigger Kārakobhāvanāśāya.
 10. **Normalized DPK Triad Triangulation (DPK Ch. 15 Text 6):**
-   Evaluated from Janma Lagna (Weight 1.0), Chandra Lagna (Weight 0.5), and Kāraka Lagna (Weight 0.25), normalized by total weight ($1.75$):
-   $$\text{composite\_potency} = \frac{(1.0 \times p_{\text{asc}}) + (0.5 \times p_{\text{chandra}}) + (0.25 \times p_{\text{karaka}})}{1.75}$$
+    Evaluated from Janma Lagna (Weight 1.0), Chandra Lagna (Weight 0.5), and Kāraka Lagna (Weight 0.25), normalized by total weight ($1.75$):
+    $$\text{composite\_potency} = \frac{(1.0 \times p_{\text{asc}}) + (0.5 \times p_{\text{chandra}}) + (0.25 \times p_{\text{karaka}})}{1.75}$$
 11. **3-Focal-Point Rule (DPK Ch. 15 Texts 1–3, 18) & Bhavāt Bhavam:**
-   - **Point 1 (The Bhāva):** Afflicted if flanked between malefics (*Pāpakartarī*) or occupied by $\ge 2$ malefics (excluding its lord). Dusthāna houses (6, 8, 12) are not self-ruining.
-   - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign (*Bhavāt Bhavam* displacement: `bhavat_dist in {6, 8, 12}`), flanked by malefics, or depleted in Ṣaḍbala ($< 90\%$ of required virūpas).
-   - **Point 3 (The Kāraka):** Afflicted if placed in a dusthāna from Lagna (except Saturn in the 8th), flanked by malefics, or depleted in Ṣaḍbala ($< 90\%$). Missing kārakas are safely handled without defaulting to $0.0^\circ$ Aries.
-   - **Ruination Verdict:** If $\ge 2$ focal points are afflicted, the house is classified as ruined (*vad-bhāva / bhad-bhāva*).
+    - **Point 1 (The Bhāva):** Afflicted if strictly besieged between malefics (*Pāpakartarī* without benefic relief) or occupied by $\ge 2$ malefics (excluding its lord). Dusthāna houses (6, 8, 12) are not self-ruining.
+    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign (except dusthāna lords in dusthāna), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), or combust (*Mūḍha* per DPK 15.1).
+    - **Point 3 (The Kāraka):** Afflicted if placed in a dusthāna from Lagna (except Saturn in the 8th), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated, or combust. Missing kārakas are safely handled without defaulting to $0.0^\circ$ Aries.
+    - **Ruination Verdict:** If $\ge 2$ focal points are afflicted, the house is classified as ruined (*vad-bhāva / bhad-bhāva*).
 12. **Final Qualitative Synthesis:** Synthesizes qualitative classification into:
     - **Puṣṭa** (Fortified/Flourishing)
     - **Miśra** (Balanced/Mixed)
@@ -123,9 +128,9 @@ Harsha Bala ("Strength of Cheerfulness") measures the inner joy, comfort, and na
 
 **Dusthana Reversals: Disentangling Canonical Viparīta Yogas from Tajika Joy:**
 - **Canonical Viparīta Yogas (Phaladīpikā 6.57–70):**
-  - **Harsha Yoga (6th House):** 6th lord in 6th house converts debt and enemies into victory and immunity.
-  - **Sarala Yoga (8th House):** 8th lord in 8th house converts crisis into fearless endurance and longevity.
-  - **Vimala Yoga (12th House):** 12th lord in 12th house converts loss and solitude into spiritual release and detachment.
+  - **Harsha Yoga (6th House):** 6th lord in 6th, 8th, or 12th house converts debt and enemies into victory and immunity.
+  - **Sarala Yoga (8th House):** 8th lord in 6th, 8th, or 12th house converts crisis into fearless endurance and longevity.
+  - **Vimala Yoga (12th House):** 12th lord in 6th, 8th, or 12th house converts loss and solitude into spiritual release and detachment.
 - **Tajika Planetary Joy:**
   - **Mars in 6th House:** Planetary joy and Upacaya courage (*Śatruhantā*), distinct from Harsha Yoga.
   - **Saturn in 12th House:** Planetary joy and ascetic detachment, distinct from Vimala Yoga.
