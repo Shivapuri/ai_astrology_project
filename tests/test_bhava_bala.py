@@ -9,6 +9,9 @@ from jyotish.bhavas.bhava_bala import (
     calculate_bhava_bala,
     calculate_bhava_dig_bala,
     calculate_bhava_drishti_bala,
+    calculate_harsha_bala,
+    calculate_house_atmosphere,
+    _evaluate_karako_bhava_nasaya,
     get_sign_genus
 )
 from jyotish.generate_jyotish import generate_kala_chart
@@ -196,3 +199,172 @@ def test_bhava_bala_full_chart_integration():
         assert "bhava_drishti_bala" in res
         assert res["total_virupas"] > 0
         assert res["total_rupas"] == round(res["total_virupas"] / 60.0, 2)
+
+
+def test_combust_lord_aspect_protection_mitigated():
+    """Verify that a combust or debilitated lord does not cast full +1.0 aspect protection."""
+    # Saturn owning Capricorn (House 10), but combust the Sun
+    res = calculate_bhava_drishti_bala(
+        bhava_madhya_lon=285.0,
+        planet_positions={"Saturn": 15.0, "Sun": 16.0},
+        target_house_lord="Saturn",
+        combustion_map={"Saturn": True}
+    )
+    # Fallback aspect from Aries (15°) to Capricorn (285°) is 10th-house aspect (~60 Virupas).
+    # Combust scale (0.25) -> ~15.0 Virupas, NOT full 60.0.
+    assert res < 30.0
+
+
+def test_malefic_in_own_sign_not_penalized_in_atmosphere(calibrated_shadbala):
+    """Verify that Saturn in Capricorn in House 1 is NOT treated as a hostile malefic occupant."""
+    baseline = MockChartBaseline(
+        ascendant=275.0,
+        planets={"Saturn": {"lon": 285.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    atmosphere = calculate_house_atmosphere(baseline, bhavas)
+    
+    h1_atm = atmosphere[1]
+    auspicious_text = " ".join(h1_atm["auspicious_influences"])
+    inauspicious_text = " ".join(h1_atm["inauspicious_influences"])
+    
+    assert "House lord Saturn resident in own sign Capricorn" in auspicious_text
+    assert "Malefic occupant Saturn in non-upacaya H1" not in inauspicious_text
+
+
+def test_karako_bhava_nasaya_living_vs_non_living():
+    """Verify Jupiter in 5th triggers affliction, but Jupiter solitary in 11th does NOT."""
+    res_h5 = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}])
+    assert res_h5["is_afflicted"] is True
+
+    res_h11 = _evaluate_karako_bhava_nasaya(11, [{"name": "Jupiter"}])
+    assert res_h11["is_afflicted"] is False
+
+
+def test_saturn_in_8th_longevity_exception():
+    """Verify Saturn solitary in 8th house does NOT trigger Karako Bhava Nasaya."""
+    res_h8 = _evaluate_karako_bhava_nasaya(8, [{"name": "Saturn"}])
+    assert res_h8["is_afflicted"] is False
+    assert "Āyuṣkāraka" in res_h8["details"]
+
+
+def test_bhavat_bhavam_6th_displacement_collision_resolved(calibrated_shadbala):
+    """
+    Certifies that when a house lord is displaced into the 6th from its own sign
+    (bhavat_dist == 6), it receives the dusthana penalty and is NOT awarded
+    the Upacaya bonus (which is restricted to {3, 10, 11}).
+    """
+    # Aries Ascendant (0.0°). House 1 lord is Mars.
+    # Place Mars in Virgo (160.0°), which is House 6.
+    # bhavat_dist = (6 - 1) % 12 + 1 = 6.
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Mars": {"lon": 160.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    atmosphere = calculate_house_atmosphere(baseline, bhavas)
+    
+    h1_lord_status = bhavas[1]["lord_status"]
+    assert h1_lord_status["bhavat_bhavam_distance"] == 6
+    assert h1_lord_status["is_in_upacaya_from_bhava"] is False
+    
+    h1_atm = atmosphere[1]
+    inauspicious_text = " ".join(h1_atm["inauspicious_influences"])
+    auspicious_text = " ".join(h1_atm["auspicious_influences"])
+    assert "displaced into 6/8/12 from its own sign (+6h)" in inauspicious_text
+    assert "Bhavāt Bhavam Upacaya (+6h)" not in auspicious_text
+
+
+def test_lord_in_own_dusthana_not_penalized_as_displaced(calibrated_shadbala):
+    """
+    Certifies that when the lord of a dusthana house (6, 8, or 12) resides in its own sign,
+    it is Svastha (forming Viparita/Harsha/Sarala/Vimala Yoga) and NOT penalized with is_in_dusthana=True.
+    """
+    # Gemini Ascendant (70.0°). House 6 is Scorpio (ruled by Mars).
+    # Place Mars in Scorpio (220.0°, House 6).
+    baseline = MockChartBaseline(
+        ascendant=70.0,
+        planets={"Mars": {"lon": 220.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    h6_status = bhavas[6]["lord_status"]
+    
+    assert h6_status["placed_house"] == 6
+    assert h6_status["is_in_dusthana"] is False  # Own-house exemption active!
+
+
+def test_lagnesha_aspect_threshold_major_ray():
+    """
+    Certifies that Lagnesha aspect must be a major/palpable ray (>= 30.0 Virūpas)
+    to trigger the DPK 15.9 flourishing flag.
+    """
+    # Subtle ray (< 30 Virūpas)
+    aspect_matrices_subtle = {"cusp_drishti": {"Mars": {4: 15.0}}}
+    baseline_subtle = MockChartBaseline(ascendant=0.0, planets={"Mars": {"lon": 160.0}})
+    bhavas_subtle = calculate_bhava_bala(
+        baseline_subtle,
+        {"Mars": {"Total_Virupas": 350.0, "Dig_Bala": 20.0}},
+        aspect_matrices=aspect_matrices_subtle,
+        house_system="whole_sign"
+    )
+    assert bhavas_subtle[4]["lagnesha_aspecting"] is False
+
+    # Major ray (>= 30 Virūpas)
+    aspect_matrices_major = {"cusp_drishti": {"Mars": {4: 45.0}}}
+    bhavas_major = calculate_bhava_bala(
+        baseline_subtle,
+        {"Mars": {"Total_Virupas": 350.0, "Dig_Bala": 20.0}},
+        aspect_matrices=aspect_matrices_major,
+        house_system="whole_sign"
+    )
+    assert bhavas_major[4]["lagnesha_aspecting"] is True
+
+
+def test_no_double_counting_lagnesha_in_house_1(calibrated_shadbala):
+    """
+    Certifies that in House 1, if Lagnesha is resident, the +15.0 bonus is awarded once
+    under 'resident in own sign', avoiding double-counting with 'lagnesha_present'.
+    """
+    baseline = MockChartBaseline(
+        ascendant=0.0,  # Aries Lagna, lord Mars
+        planets={"Mars": {"lon": 10.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    atmosphere = calculate_house_atmosphere(baseline, bhavas)
+    
+    h1_atm = atmosphere[1]
+    auspicious = h1_atm["auspicious_influences"]
+    
+    own_sign_matches = [x for x in auspicious if "House lord Mars resident in own sign" in x]
+    lagnesha_matches = [x for x in auspicious if "Lagnesha present in the house" in x]
+    
+    assert len(own_sign_matches) == 1
+    assert len(lagnesha_matches) == 0  # Not double-counted!
+
+
+def test_missing_mars_or_saturn_does_not_trigger_phantom_joy():
+    """
+    Certifies that missing Mars or Saturn in coordinate dict does NOT default to 0.0° Aries,
+    which would falsely activate Mars Joy for Scorpio Ascendant or Saturn Joy for Taurus Ascendant.
+    """
+    # Scorpio Ascendant (asc_sign_idx = 7), Mars completely omitted
+    harsha_scorpio = calculate_harsha_bala(
+        baseline=None,
+        planet_positions={},
+        ascendant_lon=225.0,  # Scorpio
+        is_day_birth=True
+    )
+    assert harsha_scorpio["dusthana_joy"][6]["karaka_joy_in_house"] is False
+    assert harsha_scorpio["dusthana_joy"][6]["is_active"] is False
+
+    # Taurus Ascendant (asc_sign_idx = 1), Saturn completely omitted
+    harsha_taurus = calculate_harsha_bala(
+        baseline=None,
+        planet_positions={},
+        ascendant_lon=45.0,  # Taurus
+        is_day_birth=True
+    )
+    assert harsha_taurus["dusthana_joy"][12]["karaka_joy_in_house"] is False
+    assert harsha_taurus["dusthana_joy"][12]["is_active"] is False
+
+
