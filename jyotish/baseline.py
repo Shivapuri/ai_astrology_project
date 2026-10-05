@@ -745,6 +745,8 @@ class ChartBaseline:
                 "is_in_planetary_war": p_war["is_in_planetary_war"],
                 "is_war_winner": p_war["is_war_winner"],
                 "is_war_loser": p_war["is_war_loser"],
+                "is_defeated": p_war["is_war_loser"],
+                "in_war": p_war["is_war_loser"],
                 "war_opponent": p_war["war_opponent"],
                 "war_details": p_war["war_details"]
             }
@@ -1173,6 +1175,16 @@ class ChartBaseline:
             "conjunctions": self.conjunctions
         }
         return self._cached_to_dict_data
+
+    @property
+    def planets(self) -> Dict[str, Dict[str, Any]]:
+        """Convenience accessor returning coordinates of celestial bodies."""
+        return self.coordinates
+
+    @property
+    def cusps(self) -> List[float]:
+        """Convenience accessor returning raw Campanus house cusp longitudes."""
+        return self.astronomical_anchors.get("raw_campanus_cusps", [])
 
 
 __all__ = [
