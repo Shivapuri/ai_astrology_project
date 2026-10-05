@@ -12,11 +12,14 @@ def test_drishti_value():
     
 def test_nathonnatha_bala():
     # Sun at MC (Midday) gets 60
-    assert calculate_nathonnatha_bala("Sun", 90.0, 90.0) == 60.0
+    assert calculate_nathonnatha_bala("Sun", 90.0, mc_lon=90.0) == 60.0
     # Moon at IC (Midnight) gets 60
-    assert calculate_nathonnatha_bala("Moon", 270.0, 90.0) == 60.0
+    assert calculate_nathonnatha_bala("Moon", 270.0, mc_lon=90.0) == 60.0
     # Mercury always 60
-    assert calculate_nathonnatha_bala("Mercury", 45.0, 100.0) == 60.0
+    assert calculate_nathonnatha_bala("Mercury", 45.0, mc_lon=100.0) == 60.0
+    # Positional 3-argument invocation treats angle as Ascendant in Whole Sign
+    # Asc = 0° -> IC = 90° -> Sun at 90° is at Midnight -> Moon gets 60
+    assert calculate_nathonnatha_bala("Moon", 90.0, 0.0) == 60.0
 
 from jyotish.generate_jyotish import generate_kala_chart
 
@@ -347,6 +350,21 @@ def test_calculate_yuddha_bala_venus_invariance():
     assert adj["Mars"] < 0.0
 
 
+def test_calculate_yuddha_bala_defensive_floor():
+    from jyotish.shadbala.shadbala import calculate_yuddha_bala
+    # Saturn has low pre-war points (5.0 Virupas) and loses to Mars
+    # Calculated war_pts is 10.87, but must be clamped to 5.0 to prevent negative score
+    pre_war = {"Mars": 400.0, "Saturn": 5.0}
+    longitudes = {"Mars": 280.5, "Saturn": 281.2}
+    latitudes = {"Mars": 1.5, "Saturn": -0.5}
+
+    adj = calculate_yuddha_bala(pre_war, longitudes, latitudes, use_latitude=True)
+    assert adj["Saturn"] == -5.0
+    assert adj["Mars"] == 5.0
+    assert pre_war["Saturn"] + adj["Saturn"] >= 0.0
+
+
+
 def test_ayana_bala_signature_resilience():
     from jyotish.shadbala.shadbala import calculate_ayana_bala
     # Direct planet + longitude signature (no JD needed)
@@ -409,6 +427,63 @@ def test_canonical_parashara_6_pillars_mode():
         c = chart["shadbala"][p]["Cheshta_Bala"]
         exp_ishta = round(math.sqrt(u * c), 2)
         assert abs(p_data["Ishta_Phala"] - exp_ishta) <= 0.05
+
+
+def test_ayana_bala_unnormalized_longitudes():
+    from jyotish.shadbala.shadbala import calculate_ayana_bala
+    # 365.0° must normalize to 5.0° without being dropped to 0.0
+    val_norm = calculate_ayana_bala("Sun", 5.0)
+    val_unnorm = calculate_ayana_bala("Sun", 365.0)
+    assert val_norm > 0.0
+    assert abs(val_norm - val_unnorm) < 0.001
+
+    # In two-argument legacy call, un-normalized longitude (e.g., 370.0)
+    # must not be mistaken for Julian Date (> 10000.0)
+    val_unnorm_2arg = calculate_ayana_bala("Sun", 370.0, "parashara")
+    val_norm_2arg = calculate_ayana_bala("Sun", 10.0, "parashara")
+    assert abs(val_unnorm_2arg - val_norm_2arg) < 0.001
+
+
+def test_drik_bala_node_guard():
+    from jyotish.shadbala.shadbala import calculate_drik_bala
+    # Include Rahu, Ketu, and Lagna in positions
+    positions = {
+        "Sun": 10.0,
+        "Jupiter": 70.0,  # Benefic aspect
+        "Rahu": 100.0,
+        "Ketu": 280.0,
+        "Lagna": 15.0
+    }
+    # Calculate Drik with and without nodes to verify nodes have 0 impact
+    positions_without_nodes = {
+        "Sun": 10.0,
+        "Jupiter": 70.0
+    }
+    drik_with_nodes = calculate_drik_bala("Sun", planet_positions=positions)
+    drik_without_nodes = calculate_drik_bala("Sun", planet_positions=positions_without_nodes)
+    assert drik_with_nodes == drik_without_nodes
+
+
+def test_subha_phala_trimsamsa_modes():
+    from jyotish.shadbala.shadbala import calculate_subha_phala
+    # Sun at 4° Aries: in Mars bound (unequal) vs Leo (harmonic)
+    positions = {
+        "Sun": 4.0,
+        "Moon": 45.0,
+        "Mars": 12.0,
+        "Mercury": 60.0,
+        "Jupiter": 120.0,
+        "Venus": 30.0,
+        "Saturn": 200.0
+    }
+    subha_parashara = calculate_subha_phala("Sun", positions, trimsamsa_mode="unequal_parashara")
+    subha_harmonic = calculate_subha_phala("Sun", positions, trimsamsa_mode="harmonic_kala")
+    assert subha_parashara > 0.0
+    assert subha_harmonic > 0.0
+    # Values reflect differing bound ruler assignments
+    assert isinstance(subha_parashara, float)
+    assert isinstance(subha_harmonic, float)
+
 
 
 

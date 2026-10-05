@@ -106,15 +106,24 @@ Depending on the gender of the planet, it thrives in different 10-degree segment
 - **3rd Drekkana (20°–30°):** Female planets (Moon, Venus) gain 15 Virupas.
 
 ### Phase 3: Sthana Bala - Component 5: Saptavarga Bala (Seven-fold Divisional Strength)
-Planets are evaluated not just in the main birth chart (D1), but across 7 different divisional charts (Hora, Drekkana, Saptamsa, Navamsa, Dvadasamsa, and Trimsamsa). In each of these 7 charts, the planet is awarded Virupas based on its dignity:
-- Moolatrikona: 45 Virupas
+Planets are evaluated not just in the main birth chart (D1), but across 7 different divisional charts (Hora, Drekkana, Saptamsa, Navamsa, Dvadasamsa, and Trimsamsa). In each of these 7 charts, the planet is awarded Virupas based on its compound dignity:
+- Moolatrikona: 45 Virupas (D1 only; 30 Virupas in vargas)
 - Own Sign: 30 Virupas
 - Great Friend's Sign: 20 Virupas
 - Friend's Sign: 15 Virupas
 - Neutral's Sign: 10 Virupas
 - Enemy's Sign: 4 Virupas
 - Great Enemy's Sign: 2 Virupas
-*(These dignity points are derived directly from the planet's compound relationship with the sign's ruling planet).*
+
+#### Execution Modes
+1. `trimsamsa_mode`:
+   - `'unequal_parashara'` (**DEFAULT** for standalone `calculate_saptavarga_bala` & canonical mode): Classical unequal planetary bounds per BPHS 6.27–29 and *Phaladeepika* 3.5.
+     - Odd Signs: 0°–5° Mars, 5°–10° Saturn, 10°–18° Jupiter, 18°–25° Mercury, 25°–30° Venus.
+     - Even Signs: 0°–5° Venus, 5°–12° Mercury, 12°–20° Jupiter, 20°–25° Saturn, 25°–30° Mars.
+   - `'harmonic_kala'`: Equal 1° harmonic Trimsamsa ($30 \times \lambda \pmod{360^\circ}$) calibrated against Ernst Wilhelm's *Kala* software tables.
+2. `saptavarga_mode`:
+   - `'parashara'` (**DEFAULT** for standalone & canonical mode): Dynamic compound relationship evaluation across all divisional charts without ad-hoc overrides.
+   - `'kala'`: Preserves exact parity with Kala software tables where Venus in Pisces across higher vargas yields 10.0 Virūpas (Neutral).
 
 ---
 
@@ -275,6 +284,16 @@ Beyond standard strength (Bala), the exact measure of a planet's tendency to giv
 
 Both geometric and arithmetic values are always exported in the engine result dictionary (`Ishta_Phala_Geometric`, `Ishta_Phala_Arithmetic`) alongside the active mode choice.
 
+### Phase 7B: Śubha and Aśubha Phala (Divisional Auspiciousness)
+Śubha Phala quantifies the aggregate positive fruit a planet yields based on its dignity evaluated across the Saptavargas ($D_1, D_2, D_3, D_7, D_9, D_{12}, D_{30}$):
+$$\text{Śubha Phala} = \frac{\text{Points}_{D1} + \sum_{v \in \{D_2..D_{30}\}} \frac{\text{Points}_v}{2}}{4.0}$$
+$$\text{Aśubha Phala} = 60.0 - \text{Śubha Phala}$$
+
+#### Trimsamsa Harmonization
+`calculate_subha_phala` accepts `trimsamsa_mode` and strictly harmonizes with Saptavarga Bala:
+- `'unequal_parashara'` (**DEFAULT**): Maps $D_{30}$ to Parāśara's 5 planetary bounds to establish the bound lord and compound dignity.
+- `'harmonic_kala'`: Uses the equal 1° harmonic ($30 \times \lambda$) for Kala software compatibility.
+
 ### Ishta / Kashta Rules
 > कथ्याम्यथा भावानां खेटानां च पदं द्विज । अथ चेष्टमनिष्टं च ग्रहानां कथयाम्यहम्।ह् । यद्।ह्वशाच्च प्रयच्छन्ति शुभाऽशुभदशाफलम्।ह् ॥ १॥
 > स्वनीचोनो ग्रह शोध्यः षड्।ह्भाधिक्ये भमण्डलात्।ह् । सैको राशिर्भवेदुच्चरश्मिर्द्विघ्नांशसंयुतः ॥ २॥
@@ -295,12 +314,13 @@ When two of the five star planets (Mars, Mercury, Jupiter, Venus, Saturn) are in
 2. **Celestial Latitude:** The planet with greater northern celestial latitude wins (per Surya Siddhanta / Kala).
 3. **Longitude Fallback:** The planet with lower longitude wins if latitudes are virtually identical.
 
-#### War Point Formula
+#### War Point Formula & Defensive Floor
 $$\text{Bala Difference} = |\text{Pre-War Winner} - \text{Pre-War Loser}|$$
-$$\text{Bimba Difference} = |\text{Bimba Winner} - \text{Bimba Loser}|$$
-$$\text{War Points} = \frac{\text{Bala Difference}}{\text{Bimba Difference}}$$
+$$\text{Bimba Difference} = \max(1.0, |\text{Bimba Winner} - \text{Bimba Loser}|)$$
+$$\text{Raw War Points} = \frac{\text{Bala Difference}}{\text{Bimba Difference}}$$
+$$\text{War Points} = \min(\text{Raw War Points}, \max(0.0, \text{Pre-War Score}_{\text{loser}}))$$
 
-The victor gains $+\text{War Points}$ added to its Kala Bala; the defeated planet loses $-\text{War Points}$.
+The victor gains $+\text{War Points}$ added to its Kala Bala; the defeated planet loses $-\text{War Points}$. In alignment with classical commentators, the deduction is clamped to ensure the defeated planet's physical strength cannot be driven below zero ($0.0$ Virūpas).
 Standard planetary disc diameters (*Bimba Parimanas* in arcminutes/angulas per BPHS 28.19): Mars ($9.4'$), Mercury ($6.6'$), Jupiter ($10.4'$), Venus ($16.6'$), Saturn ($4.8'$).
 
 ---

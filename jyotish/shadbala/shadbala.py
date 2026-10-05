@@ -17,9 +17,34 @@ import math
 from typing import Dict, Any, Optional, List
 
 try:
-    from jyotish.baseline_math import calculate_varga_longitude
+    from jyotish.baseline_math import calculate_varga_longitude, calculate_unequal_trimsamsa
 except ImportError:
-    from jyotish.generate_jyotish import calculate_varga_longitude
+    try:
+        from jyotish.baseline import calculate_varga_longitude, calculate_unequal_trimsamsa
+    except ImportError:
+        try:
+            from jyotish.generate_jyotish import calculate_varga_longitude
+        except ImportError:
+            def calculate_varga_longitude(lon: float, varga: str) -> float:
+                h = int(varga.replace("D", "")) if varga.startswith("D") else 1
+                return (lon * h) % 360.0
+
+        def calculate_unequal_trimsamsa(lon: float) -> Dict[str, Any]:
+            sign_idx = int((lon % 360.0) / 30.0)
+            deg = lon % 30.0
+            is_odd = (sign_idx % 2 == 0)
+            if is_odd:
+                if deg < 5.0: return {"sign": "Aries", "ruler": "Mars", "degree_in_sign": deg * 6.0}
+                elif deg < 10.0: return {"sign": "Aquarius", "ruler": "Saturn", "degree_in_sign": (deg - 5.0) * 6.0}
+                elif deg < 18.0: return {"sign": "Sagittarius", "ruler": "Jupiter", "degree_in_sign": (deg - 10.0) * 3.75}
+                elif deg < 25.0: return {"sign": "Gemini", "ruler": "Mercury", "degree_in_sign": (deg - 18.0) * 4.2857}
+                else: return {"sign": "Libra", "ruler": "Venus", "degree_in_sign": (deg - 25.0) * 6.0}
+            else:
+                if deg < 5.0: return {"sign": "Taurus", "ruler": "Venus", "degree_in_sign": deg * 6.0}
+                elif deg < 12.0: return {"sign": "Virgo", "ruler": "Mercury", "degree_in_sign": (deg - 5.0) * 4.2857}
+                elif deg < 20.0: return {"sign": "Pisces", "ruler": "Jupiter", "degree_in_sign": (deg - 12.0) * 3.75}
+                elif deg < 25.0: return {"sign": "Capricorn", "ruler": "Saturn", "degree_in_sign": (deg - 20.0) * 6.0}
+                else: return {"sign": "Scorpio", "ruler": "Mars", "degree_in_sign": (deg - 25.0) * 6.0}
 
 SIGNS = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -115,8 +140,8 @@ def calculate_saptavarga_bala(
     planet_positions: Dict[str, float],
     dignities_map: Optional[Dict[str, Any]] = None,
     vargas_positions: Optional[Dict[str, Dict[str, Any]]] = None,
-    trimsamsa_mode: str = "harmonic_kala",
-    saptavarga_mode: str = "kala"
+    trimsamsa_mode: str = "unequal_parashara",
+    saptavarga_mode: str = "parashara"
 ) -> float:
     """
     Calculates Saptavarga (7-Divisional) Positional Strength across:
@@ -126,15 +151,14 @@ def calculate_saptavarga_bala(
 
     Modes:
       - trimsamsa_mode:
-        - 'harmonic_kala' (DEFAULT): Equal 1° harmonic Trimsamsa matching Ernst Wilhelm's
+        - 'unequal_parashara' (DEFAULT): Classical unequal planetary bounds per BPHS 6.27-29 & Phaladīpikā 3.5.
+        - 'harmonic_kala': Equal 1° harmonic Trimsamsa matching Ernst Wilhelm's
           Kala software calibration (and ground-truth benchmark CSVs).
-        - 'unequal_parashara': Classical unequal planetary bounds per BPHS 6.27-29 & Phaladīpikā 3.5.
       - saptavarga_mode:
-        - 'kala' (DEFAULT): Exact parity with Kala software outputs where Venus in Pisces
-          across vargas yields 10.0 Virūpas (Neutral).
-        - 'parashara': Evaluates compound relationship dynamically without override.
+        - 'parashara' (DEFAULT): Evaluates compound relationship dynamically without override.
+        - 'kala': Parity with Kala software outputs where Venus in Pisces
+          across higher vargas yields 10.0 Virūpas (Neutral).
     """
-    from jyotish.baseline_math import calculate_varga_longitude, calculate_unequal_trimsamsa
     from jyotish.relationships.relationships import (
         SIGN_LORDS, get_natural_relationship, get_temporary_relationship, get_compound_relationship
     )
@@ -396,6 +420,7 @@ def calculate_dig_bala(
 def calculate_nathonnatha_bala(
     planet: str,
     sun_lon: float,
+    *args,
     mc_lon: Optional[float] = None,
     ascendant_lon: Optional[float] = None,
     asc_lon: Optional[float] = None
@@ -408,15 +433,23 @@ def calculate_nathonnatha_bala(
     - Mercury receives full strength (60 Virūpas) constantly.
 
     In Whole Sign geometry, Nadir (IC) is ascendant_lon + 90° (or mc_lon + 180°).
+    Keyword-only cusps prevent positional parameter inversion traps.
     """
     if planet == "Mercury":
         return 60.0
 
     asc = ascendant_lon if ascendant_lon is not None else asc_lon
-    if asc is not None and mc_lon is None:
+    mc = mc_lon
+
+    # If passed positionally as calculate_nathonnatha_bala(planet, sun_lon, angle),
+    # treat angle as the Whole Sign sensitive Ascendant
+    if args and mc is None and asc is None:
+        asc = float(args[0])
+
+    if asc is not None and mc is None:
         ic_lon = (asc + 90.0) % 360.0
-    elif mc_lon is not None:
-        ic_lon = (mc_lon + 180.0) % 360.0
+    elif mc is not None:
+        ic_lon = (mc + 180.0) % 360.0
     elif asc is not None:
         ic_lon = (asc + 90.0) % 360.0
     else:
@@ -568,11 +601,14 @@ def calculate_yuddha_bala(
                     loser = p2 if winner == p1 else p1
 
                 bimba_diff = abs(BIMBA_PARIMANAS[winner] - BIMBA_PARIMANAS[loser])
-                if bimba_diff == 0:
+                if bimba_diff < 1.0:
                     bimba_diff = 1.0
 
                 bala_diff = abs(pre_war_balas[winner] - pre_war_balas[loser])
                 war_pts = round(bala_diff / bimba_diff, 2)
+
+                # Ensure war deduction does not drive pre-war score below zero
+                war_pts = min(war_pts, max(0.0, pre_war_balas[loser]))
 
                 adjustments[winner] += war_pts
                 adjustments[loser] -= war_pts
@@ -606,23 +642,24 @@ def calculate_ayana_bala(
 
     if len(args) == 1:
         val = args[0]
-        if val is not None:
-            if isinstance(val, (int, float)) and val <= 360.0:
-                resolved_lon = float(val)
+        if val is not None and isinstance(val, (int, float)):
+            # Distinguish longitude (< 10000.0) from Julian Day (> 2000000.0)
+            if val < 10000.0:
+                resolved_lon = float(val) % 360.0
     elif len(args) >= 2:
         arg0, arg1 = args[0], args[1]
         if isinstance(arg1, str):
-            resolved_lon = float(arg0) if arg0 is not None else None
+            resolved_lon = float(arg0) % 360.0 if arg0 is not None else None
             resolved_tradition = arg1
-        elif isinstance(arg0, (int, float)) and arg0 > 360.0 and isinstance(arg1, (int, float)):
-            resolved_lon = float(arg1)
+        elif isinstance(arg0, (int, float)) and arg0 > 10000.0 and isinstance(arg1, (int, float)):
+            resolved_lon = float(arg1) % 360.0
         elif isinstance(arg0, (int, float)):
-            resolved_lon = float(arg0)
+            resolved_lon = float(arg0) % 360.0
 
     if resolved_lon is None:
         return 0.0
 
-    norm_lon = resolved_lon % 360.0
+    norm_lon = float(resolved_lon) % 360.0
     if norm_lon < 90.0:
         bhuja, is_uttara = norm_lon, True
     elif norm_lon < 180.0:
@@ -760,7 +797,7 @@ def calculate_drik_bala(
     # Fast Path: Precalculated matrix from calculate_aspect_matrices
     if incoming_aspects is not None:
         for p_other, raw_drishti in incoming_aspects.items():
-            if p_other == planet or raw_drishti <= 0:
+            if p_other == planet or p_other not in PHYSICAL_PLANETS or raw_drishti <= 0:
                 continue
             if p_other in malefics:
                 total_drik -= raw_drishti / 4.0
@@ -776,7 +813,7 @@ def calculate_drik_bala(
     if planet_positions:
         p_lon = lon if lon is not None else planet_positions[planet]
         for p_other, lon_other in planet_positions.items():
-            if p_other == planet:
+            if p_other == planet or p_other not in PHYSICAL_PLANETS:
                 continue
             raw_drishti = aspects.get_graha_drishti(p_other, lon_other, p_lon)
             if raw_drishti <= 0:
@@ -796,10 +833,10 @@ def calculate_subha_phala(
     planet: str,
     planet_positions: Dict[str, float],
     dignities_map: Optional[Dict[str, Any]] = None,
-    debilitation_mode: str = "kala_degree"
+    debilitation_mode: str = "kala_degree",
+    trimsamsa_mode: str = "unequal_parashara"
 ) -> float:
     """Calculates Śubha Phala across Saptavargas (D1, D2, D3, D7, D9, D12, D30)."""
-    from jyotish.baseline_math import calculate_varga_longitude
     from jyotish.relationships.relationships import (
         SIGN_LORDS, get_natural_relationship, get_temporary_relationship,
         get_compound_relationship, get_dignity
@@ -813,13 +850,20 @@ def calculate_subha_phala(
         total_subha = 0.0
         for v in vargas:
             if v == "D30":
-                # Saptavarga Bala & Subha Phala require equal 1° harmonic Trimsamsa
                 p1_d1_lon = planet_positions[planet]
                 p1_d1_idx = int(p1_d1_lon / 30.0)
-                v_lon = (p1_d1_lon * 30.0) % 360.0
-                s_idx = int((v_lon % 360.0) / 30.0)
-                s_name = SIGNS[s_idx]
-                sign_lord = SIGN_LORDS[s_name]
+                if trimsamsa_mode == "unequal_parashara":
+                    t_res = calculate_unequal_trimsamsa(p1_d1_lon)
+                    s_name = t_res["sign"]
+                    sign_lord = t_res["ruler"]
+                    deg_in_sign = t_res.get("degree_in_sign", p1_d1_lon % 30.0)
+                else:
+                    v_lon = (p1_d1_lon * 30.0) % 360.0
+                    s_idx = int((v_lon % 360.0) / 30.0)
+                    s_name = SIGNS[s_idx]
+                    sign_lord = SIGN_LORDS[s_name]
+                    deg_in_sign = v_lon % 30.0
+
                 lord_d1_lon = planet_positions.get(sign_lord)
                 if lord_d1_lon is None:
                     compound = "Neutral"
@@ -828,7 +872,6 @@ def calculate_subha_phala(
                     natural = get_natural_relationship(planet, sign_lord)
                     temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
                     compound = get_compound_relationship(natural, temporary)
-                deg_in_sign = v_lon % 30.0
                 d_str = get_dignity(planet, s_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
             else:
                 d_entry = v_dignities.get(v, {}).get(planet, {})
@@ -855,10 +898,18 @@ def calculate_subha_phala(
     p1_d1_idx = int(p1_d1_lon / 30.0)
 
     for varga in vargas:
-        varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
-        varga_sign_idx = int((varga_lon % 360.0) / 30.0)
-        varga_sign_name = SIGNS[varga_sign_idx]
-        sign_lord = SIGN_LORDS[varga_sign_name]
+        if varga == "D30" and trimsamsa_mode == "unequal_parashara":
+            t_res = calculate_unequal_trimsamsa(p1_d1_lon)
+            varga_sign_name = t_res["sign"]
+            sign_lord = t_res["ruler"]
+            deg_in_sign = t_res.get("degree_in_sign", p1_d1_lon % 30.0)
+        else:
+            varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
+            varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+            varga_sign_name = SIGNS[varga_sign_idx]
+            sign_lord = SIGN_LORDS[varga_sign_name]
+            deg_in_sign = varga_lon % 30.0
+
         is_rasi = (varga == "D1")
 
         lord_d1_lon = planet_positions.get(sign_lord)
@@ -870,7 +921,6 @@ def calculate_subha_phala(
             temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
             compound = get_compound_relationship(natural, temporary)
 
-        deg_in_sign = varga_lon % 30.0
         dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
 
         if "Exalted" in dignity: pts = 60.0
@@ -920,12 +970,34 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
     debilitation_mode = kwargs.get("debilitation_mode", "kala_degree")
     dig_bala_mode = kwargs.get("dig_bala_mode", "whole_sign")
     kendra_bala_mode = kwargs.get("kendra_bala_mode", "flat_parashara")
-    phala_mode = kwargs.get("phala_mode", "arithmetic")
-    trimsamsa_mode = kwargs.get("trimsamsa_mode", "harmonic_kala")
-    saptavarga_mode = kwargs.get("saptavarga_mode", "kala")
-    drik_mode = kwargs.get("drik_mode", "kala_weighted")
     pillar_mode = kwargs.get("pillar_mode", "kala_breakdown")
     ayana_tradition = kwargs.get("ayana_tradition", "parashara")
+
+    # Harmonize sub-modes based on pillar_mode unless explicitly overridden
+    trimsamsa_mode_arg = kwargs.get("trimsamsa_mode", None)
+    saptavarga_mode_arg = kwargs.get("saptavarga_mode", None)
+    drik_mode_arg = kwargs.get("drik_mode", None)
+    phala_mode_arg = kwargs.get("phala_mode", None)
+
+    if trimsamsa_mode_arg is not None:
+        trimsamsa_mode = trimsamsa_mode_arg
+    else:
+        trimsamsa_mode = "unequal_parashara" if pillar_mode == "canonical_parashara" else "harmonic_kala"
+
+    if saptavarga_mode_arg is not None:
+        saptavarga_mode = saptavarga_mode_arg
+    else:
+        saptavarga_mode = "parashara" if pillar_mode == "canonical_parashara" else "kala"
+
+    if drik_mode_arg is not None:
+        drik_mode = drik_mode_arg
+    else:
+        drik_mode = "symmetric_parashara" if pillar_mode == "canonical_parashara" else "kala_weighted"
+
+    if phala_mode_arg is not None:
+        phala_mode = phala_mode_arg
+    else:
+        phala_mode = "parashara_geometric" if pillar_mode == "canonical_parashara" else "arithmetic"
     lon = kwargs.get("lon", kwargs.get("longitude", 0.0))
     lat = kwargs.get("lat", kwargs.get("latitude", 0.0))
 
@@ -1181,7 +1253,11 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         total_rupas = round(total_virupas / 60.0, 2)
 
         subha_phala = calculate_subha_phala(
-            p, planet_positions, dignities_map=dignities, debilitation_mode=debilitation_mode
+            p,
+            planet_positions,
+            dignities_map=dignities,
+            debilitation_mode=debilitation_mode,
+            trimsamsa_mode=trimsamsa_mode
         )
         asubha_phala = max(0.0, 60.0 - subha_phala)
 

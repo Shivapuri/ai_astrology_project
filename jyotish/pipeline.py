@@ -116,11 +116,11 @@ class ChartPipeline:
         debilitation_mode: str = "kala_degree",
         dig_bala_mode: str = "campanus",
         kendra_bala_mode: str = "flat_parashara",
-        phala_mode: str = "arithmetic",
+        phala_mode: Optional[str] = None,
         pillar_mode: str = "kala_breakdown",
-        trimsamsa_mode: str = "harmonic_kala",
-        saptavarga_mode: str = "kala",
-        drik_mode: str = "kala_weighted",
+        trimsamsa_mode: Optional[str] = None,
+        saptavarga_mode: Optional[str] = None,
+        drik_mode: Optional[str] = None,
         ayana_tradition: str = "parashara",
         baseline: Optional[ChartBaseline] = None
     ):
