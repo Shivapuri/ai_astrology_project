@@ -112,7 +112,7 @@ def test_stage2a_angelina_jolie_relationships():
     assert nat_rel["Ketu"]["Sun"] == "Friend"       # Mars proxy views Sun as Friend
     assert nat_rel["Ketu"]["Mercury"] == "Enemy"    # Mars proxy views Mercury as Enemy
     assert nat_rel["Sun"]["Ketu"] == "Friend"       # Bidirectional Sun view of Mars/Ketu
-    assert nat_rel["Mercury"]["Rahu"] == "Friend"   # Bidirectional Mercury view of Saturn/Rahu
+    assert nat_rel["Mercury"]["Rahu"] == "Neutral"  # Bidirectional Mercury view of Saturn/Rahu (Mercury is neutral to Saturn)
 
     # Alternate: Mantreśvara Phaladīpikā Asura coalition toggle
     assert get_natural_relationship("Ketu", "Sun", nodal_methodology="phaladipika") == "Enemy"
@@ -122,8 +122,8 @@ def test_stage2a_angelina_jolie_relationships():
     assert "Rahu" in comp_rel
     assert "Ketu" in comp_rel
     # Bidirectional presence: no KeyError on physical -> node
-    assert comp_rel["Mercury"]["Rahu"] == "Neutral"
-    assert comp_rel["Rahu"]["Mercury"] == "Neutral"
+    assert comp_rel["Mercury"]["Rahu"] == "Enemy"    # Neutral + Enemy = Enemy
+    assert comp_rel["Rahu"]["Mercury"] == "Neutral"  # Friend + Enemy = Neutral
 
 
 def test_stage2a_angelina_jolie_varga_dignities():

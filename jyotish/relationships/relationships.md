@@ -86,7 +86,7 @@ As implemented in `generate_jyotish.py` and `relationships.py`:
 ---
 
 ## 5. Stage 2A Master Dignity Orchestrator (`calculate_chart_dignities`)
-The master function `calculate_chart_dignities(baseline: ChartBaseline, debilitation_mode: str = "whole_sign") -> Dict[str, Any]` connects the Stage 1 `ChartBaseline` directly to the relationship engine:
+The master function `calculate_chart_dignities(baseline: ChartBaseline, debilitation_mode: str = "kala_degree", nodal_methodology: str = "ernst_wilhelm", ketu_own_sign: str = "Pisces") -> Dict[str, Any]` connects the Stage 1 `ChartBaseline` directly to the relationship engine:
 1. **Precalculates Full 9x9 Friendship Matrices:** Bidirectional natural, temporary, and compound relationships for all 7 physical planets and nodes.
 2. **Decomposes Varga Dignities Across All 16 Divisional Charts:** Evaluates each planet's dignity in $D_1$ through $D_{60}$ with `is_varga = (v_name != "D1")`.
 3. **Functional Avasthā Overrides (*Phaladīpikā* Ch. 3 v. 19):**

@@ -157,12 +157,12 @@ def get_dignity(
     degree: float = 0.0,
     debilitation_mode: str = "kala_degree",
     is_varga: bool = False,
-    ketu_own_sign: str = "Scorpio",
+    ketu_own_sign: str = "Pisces",
 ) -> str:
     """
     Evaluates final planetary dignity.
     - Preserves Ernst Wilhelm's kala_degree default bounds while supporting classical whole_sign.
-    - Supports Ketu own sign in Scorpio (Ernst Wilhelm) or Pisces (orthodox alternative).
+    - Supports Ketu own sign in Pisces (default) or Scorpio (alternative).
     """
     is_kala = (debilitation_mode == "kala_degree")
 
@@ -180,7 +180,7 @@ def get_dignity(
     # 2. MOON
     elif planet == "Moon":
         if sign == "Taurus":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Exalted"
             return "Exalted" if degree <= 3.0 else "Moolatrikona"
         if sign == "Scorpio":
@@ -207,7 +207,7 @@ def get_dignity(
     # 4. MERCURY
     elif planet == "Mercury":
         if sign == "Virgo":
-            if is_varga and not is_kala:
+            if is_varga:
                 return "Exalted"
             if degree <= 15.0:
                 return "Exalted"
@@ -290,7 +290,7 @@ def calculate_chart_dignities(
     baseline: "ChartBaseline",
     debilitation_mode: str = "kala_degree",
     nodal_methodology: str = "ernst_wilhelm",
-    ketu_own_sign: str = "Scorpio",
+    ketu_own_sign: str = "Pisces",
 ) -> Dict[str, Any]:
     """
     Stage 2A Master Orchestrator.
