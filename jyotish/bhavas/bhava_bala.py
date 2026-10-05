@@ -765,10 +765,16 @@ def calculate_bhava_bala(
                 if not is_combust and isinstance(combustion_map, dict):
                     c_entry = combustion_map.get(p, {})
                     is_combust = bool(c_entry.get("is_combust", False)) if isinstance(c_entry, dict) else bool(c_entry)
+                is_defeated_in_war = bool(
+                    getattr(p_data, 'is_war_loser', p_data.get('is_war_loser',
+                    getattr(p_data, 'is_defeated', p_data.get('is_defeated',
+                    getattr(p_data, 'in_war', p_data.get('in_war', False))))))
+                )
                 planet_metadata[p] = {
                     "lon": p_lon,
                     "is_combust": is_combust,
-                    "in_war": bool(getattr(p_data, 'in_war', p_data.get('in_war', False))),
+                    "in_war": is_defeated_in_war,
+                    "is_defeated": is_defeated_in_war,
                     "speed": float(getattr(p_data, 'speed', p_data.get('speed', 1.0)))
                 }
 
@@ -894,13 +900,15 @@ def calculate_bhava_bala(
         lord_meta = planet_metadata.get(lord, {})
         req_virupas = PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)
         
-        # DPK 15.1: Lord cannot be classified as strong if debilitated (Hīna) or combust (Mūḍha)
+        # DPK 15.1: Lord cannot be classified as strong if debilitated (Hīna), combust (Mūḍha), or defeated in war (Nīpīḍita)
         is_lord_debilitated = (DEBILITATION_SIGNS.get(lord) == lord_sign)
         is_lord_combust = bool(lord_meta.get("is_combust", is_combust_map.get(lord, False)))
+        is_lord_defeated = bool(lord_meta.get("is_defeated", lord_meta.get("in_war", False)))
         is_lord_strong = (
             ((adhipathi_bala / req_virupas) >= 1.0) 
             and not is_lord_debilitated 
             and not is_lord_combust
+            and not is_lord_defeated
         )
 
         # Upacayas from the bhāva that foster growth without dusthāna corruption: 3, 10, 11
@@ -920,7 +928,8 @@ def calculate_bhava_bala(
             "is_in_upacaya_from_lagna": lord_in_upacaya_from_lagna,
             "is_debilitated": is_lord_debilitated,
             "is_combust": is_lord_combust,
-            "in_war": lord_meta.get("in_war", False),
+            "in_war": is_lord_defeated,
+            "is_defeated": is_lord_defeated,
             "is_strong": is_lord_strong,
             "potency_ratio": round(adhipathi_bala / req_virupas, 2)
         }
@@ -1276,7 +1285,7 @@ def calculate_house_atmosphere(
             score -= 20.0
             inauspicious.append(f"Lord {lord} combust the Sun (Mūḍha per DPK 15.1)")
 
-        if lord_status.get("in_war"):
+        if lord_status.get("in_war") or lord_status.get("is_defeated"):
             score -= 15.0
             inauspicious.append(f"Lord {lord} defeated in planetary war (Nīpīḍita)")
 

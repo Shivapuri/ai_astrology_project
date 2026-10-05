@@ -760,20 +760,17 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
             s_idx = sign_indices.get(s, 0)
             sign_indices[s] = s_idx + 1
             
-            houses_away = int(diff // 30) + 1
-            deg_round = round(diff, 1)
-            vir_round = round(virupas, 1)
-            
-            if houses_away == 7:
-                rule_exp = "7th House Full Opposition (100% full mutual sight)"
-            elif name_from == "Mars" and houses_away in [4, 8]:
-                rule_exp = f"Mars Special {houses_away}th House Glance (Chaturasra/Randhra Drishti)"
-            elif name_from == "Jupiter" and houses_away in [5, 9]:
-                rule_exp = f"Jupiter Special {houses_away}th House Glance (Trikona Dharma & Wisdom Drishti)"
-            elif name_from == "Saturn" and houses_away in [3, 10]:
-                rule_exp = f"Saturn Special {houses_away}th House Glance (Upachaya Duty & Persistence Drishti)"
-            else:
-                rule_exp = f"Partial Parāśari Angle ({deg_round}° separation, {houses_away}th house away)"
+            asp_explanation = get_aspect_explanation(
+                aspecting_planet=name_from,
+                aspecting_lon=lon_from,
+                aspected_lon=lon_to,
+                aspected_name=name_to,
+                aspecting_dignity=dignity_from,
+                is_moon_bright=((moon_lon - sun_lon) % 360.0 < 180.0),
+            )
+            rule_exp = asp_explanation["rule_name"]
+            deg_round = asp_explanation["separation_deg"]
+            vir_round = asp_explanation["virupas"]
                 
             if is_benefic:
                 col = "#D4AC0D" if dignity_from == "Exalted" else "#16a34a"

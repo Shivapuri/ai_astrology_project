@@ -787,6 +787,46 @@ def test_dynamic_occupant_beneficence_in_atmosphere(calibrated_shadbala):
     assert "Benefic occupant Mercury" not in auspicious8_merc
 
 
+def test_defeated_lord_in_planetary_war(calibrated_shadbala):
+    """
+    Certifies that a house lord defeated in planetary war (Nīpīḍita per DPK 15.1):
+    1. Is flagged as in_war / is_defeated.
+    2. Cannot be classified as fortified (is_strong = False).
+    3. Receives a -15.0 penalty in House Atmosphere.
+    4. Conversely, the war winner is NOT afflicted.
+    """
+    # Case 1: Defeated lord in planetary war (Mars defeated)
+    baseline_defeated = MockChartBaseline(
+        ascendant=0.0,
+        planets={
+            "Mars": {"lon": 10.0, "is_combust": False, "is_war_loser": True, "is_war_winner": False}
+        }
+    )
+    bhavas_def = calculate_bhava_bala(baseline_defeated, calibrated_shadbala, house_system="whole_sign")
+    h1_def = bhavas_def[1]
+    assert h1_def["lord_status"]["in_war"] is True
+    assert h1_def["lord_status"]["is_defeated"] is True
+    assert h1_def["lord_status"]["is_strong"] is False  # Cannot be strong if defeated
+    inauspicious_def = " ".join(h1_def["atmosphere"]["inauspicious_influences"])
+    assert "Lord Mars defeated in planetary war (Nīpīḍita)" in inauspicious_def
+
+    # Case 2: Winning lord in planetary war (Mars winner)
+    baseline_winner = MockChartBaseline(
+        ascendant=0.0,
+        planets={
+            "Mars": {"lon": 10.0, "is_combust": False, "is_war_loser": False, "is_war_winner": True}
+        }
+    )
+    bhavas_win = calculate_bhava_bala(baseline_winner, calibrated_shadbala, house_system="whole_sign")
+    h1_win = bhavas_win[1]
+    assert h1_win["lord_status"]["in_war"] is False
+    assert h1_win["lord_status"]["is_defeated"] is False
+    assert h1_win["lord_status"]["is_strong"] is True  # Fortified since not defeated
+    inauspicious_win = " ".join(h1_win["atmosphere"]["inauspicious_influences"])
+    assert "Lord Mars defeated in planetary war (Nīpīḍita)" not in inauspicious_win
+
+
+
 
 
 
