@@ -56,7 +56,7 @@ def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon:
     cast by `aspecting_planet` upon the longitude `aspected_lon`.
     Returns a float from 0.0 to 60.0 (Virupas).
     """
-    if aspecting_planet in ["Rahu", "Ketu"]:
+    if aspecting_planet in NON_CASTING_BODIES:
         return 0.0
         
     diff = (aspected_lon - aspecting_lon) % 360.0
@@ -101,45 +101,88 @@ def get_graha_drishti(aspecting_planet: str, aspecting_lon: float, aspected_lon:
             
     return float(min(max(raw_drishti, 0.0), 60.0))
 
-def get_aspect_explanation(aspecting_planet: str, aspecting_lon: float, aspected_lon: float, aspected_name: str = "", aspecting_dignity: str = "Neutral") -> Dict[str, Any]:
+def get_aspect_explanation(
+    aspecting_planet: str,
+    aspecting_lon: float,
+    aspected_lon: float,
+    aspected_name: str = "",
+    aspecting_dignity: str = "Neutral",
+    is_moon_bright: bool = True,
+    is_mercury_afflicted: bool = False,
+) -> Dict[str, Any]:
     """
     Returns detailed explanation for Graha Drishti between two coordinates,
     including exact angular separation, Virūpa potency, Parāśara rule name,
-    whether the aspect is Benefic (Subha) or Malefic (Aśubha), and suggested line style.
+    whether the aspect is Benefic (Śubha) or Malefic (Aśubha), and suggested line style.
+    Anchored to exact angular milestone proximity (Sphuṭa Dṛṣṭi).
     """
+    if aspecting_planet in NON_CASTING_BODIES:
+        return {
+            "aspecting": aspecting_planet,
+            "aspected": aspected_name,
+            "separation_deg": round((aspected_lon - aspecting_lon) % 360.0, 1),
+            "virupas": 0.0,
+            "rule_name": f"{aspecting_planet} does not cast Graha Dṛṣṭi",
+            "is_benefic": False,
+            "line_style": "none",
+            "nature_label": "Non-Casting Point",
+            "dignity": aspecting_dignity,
+        }
+
     diff = (aspected_lon - aspecting_lon) % 360.0
     virupas = get_graha_drishti(aspecting_planet, aspecting_lon, aspected_lon)
-    houses_away = int(diff // 30) + 1
-    
-    if houses_away == 7:
-        rule_name = "7th House Full Opposition (100% full mutual glance)"
-    elif aspecting_planet == "Mars" and houses_away in [4, 8]:
-        rule_name = f"Mars Special {houses_away}th House Glance (Chaturasra/Randhra Drishti)"
-    elif aspecting_planet == "Jupiter" and houses_away in [5, 9]:
-        rule_name = f"Jupiter Special {houses_away}th House Glance (Trikona Dharma & Wisdom Drishti)"
-    elif aspecting_planet == "Saturn" and houses_away in [3, 10]:
-        rule_name = f"Saturn Special {houses_away}th House Glance (Upachaya Duty & Persistence Drishti)"
-    else:
-        rule_name = f"Partial Parāśari Angle ({round(diff)}° separation, {houses_away}th house away)"
 
-    is_natural_benefic = aspecting_planet in ["Jupiter", "Venus", "Mercury"]
-    is_benefic = is_natural_benefic and aspecting_dignity not in ["Debilitated", "Enemy", "Great Enemy"]
-    if aspecting_planet in ["Saturn", "Mars", "Sun", "Rahu", "Ketu"]:
+    if virupas == 0.0:
+        rule_name = f"No Aspect / Blind Angle ({round(diff, 1)}° separation)"
+        line_style = "none"
+        nature_label = "No Aspect (0 Virūpas)"
         is_benefic = False
+    else:
+        # Classical Benefic/Malefic Determination (BPHS Ch. 3 / Phaladīpikā Ch. 2)
+        if aspecting_planet in ["Jupiter", "Venus"]:
+            is_benefic = True
+        elif aspecting_planet == "Mercury":
+            is_benefic = not is_mercury_afflicted
+        elif aspecting_planet == "Moon":
+            is_benefic = is_moon_bright
+        else:
+            is_benefic = False
 
-    nature_label = "Benefic Light (Subha Dṛṣṭi — Continuous line)" if is_benefic else "Malefic Tension (Aśubha Dṛṣṭi — Dashed line)"
+        line_style = "continuous" if is_benefic else "dashed"
+        nature_label = (
+            "Benefic Light (Śubha Dṛṣṭi — Continuous line)"
+            if is_benefic
+            else "Malefic Tension (Aśubha Dṛṣṭi — Dashed line)"
+        )
+
+        # Milestone proximity rules
+        if aspecting_planet == "Mars" and abs(diff - 210.0) < 30.0:
+            rule_name = f"Mars Special 8th Glance / Randhra ({round(diff, 1)}° separation)"
+        elif aspecting_planet == "Mars" and abs(diff - 90.0) < 30.0:
+            rule_name = f"Mars Special 4th Glance / Caturasra ({round(diff, 1)}° separation)"
+        elif aspecting_planet == "Jupiter" and abs(diff - 120.0) < 30.0:
+            rule_name = f"Jupiter Special 5th Glance / Trikona ({round(diff, 1)}° separation)"
+        elif aspecting_planet == "Jupiter" and abs(diff - 240.0) < 30.0:
+            rule_name = f"Jupiter Special 9th Glance / Dharma ({round(diff, 1)}° separation)"
+        elif aspecting_planet == "Saturn" and abs(diff - 60.0) < 30.0:
+            rule_name = f"Saturn Special 3rd Glance / Upachaya ({round(diff, 1)}° separation)"
+        elif aspecting_planet == "Saturn" and abs(diff - 270.0) < 30.0:
+            rule_name = f"Saturn Special 10th Glance / Karma ({round(diff, 1)}° separation)"
+        elif abs(diff - 180.0) <= 15.0:
+            rule_name = f"7th Full Opposition Glance ({round(diff, 1)}° separation)"
+        else:
+            rule_name = f"General Parāśarī Graduated Glance ({round(diff, 1)}° separation)"
 
     return {
         "aspecting": aspecting_planet,
         "aspected": aspected_name,
         "separation_deg": round(diff, 1),
-        "houses_away": houses_away,
         "virupas": round(virupas, 1),
         "rule_name": rule_name,
         "is_benefic": is_benefic,
-        "line_style": "continuous" if is_benefic else "dashed",
+        "line_style": line_style,
         "nature_label": nature_label,
-        "dignity": aspecting_dignity
+        "dignity": aspecting_dignity,
     }
 
 def get_all_graha_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, Dict[str, float]]:
@@ -207,12 +250,22 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
     results = {"planets": {}, "cusps": {}, "equal_cusps": {}, "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}}, "yutis": {}}
     
     # Helper to determine if planet is benefic or malefic for Drishti
-    def is_benefic(p_name, moon_lon, sun_lon):
-        if p_name in ["Jupiter", "Venus", "Mercury"]:
+    def is_benefic(p_name, moon_lon, sun_lon, aspecting_sign=None):
+        if p_name in ["Jupiter", "Venus"]:
+            return True
+        if p_name == "Mercury":
+            if aspecting_sign:
+                has_mal = any(
+                    other_info.get("sign") == aspecting_sign
+                    for m_name, other_info in planets_data.items()
+                    if m_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+                )
+                if has_mal:
+                    return False
             return True
         if p_name == "Moon":
             diff = (moon_lon - sun_lon) % 360.0
-            return diff < 180.0
+            return 30.0 <= diff <= 330.0
         return False
 
     sun_lon = planets_data.get("Sun", {}).get("longitude", 0.0)
@@ -224,7 +277,7 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
         totals_dict[aspected_key] = {"plus": 0.0, "minus": 0.0, "net": 0.0}
         
         for aspecting, aspecting_info in planets_data.items():
-            if aspecting in ["Rahu", "Ketu"] or aspecting == aspected_key:
+            if aspecting in NON_CASTING_BODIES or aspecting == aspected_key:
                 continue
                 
             aspecting_lon = aspecting_info.get("longitude", 0.0)
@@ -238,7 +291,14 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
                 plus = 0.0
                 minus = 0.0
                 
-                if is_benefic(aspecting, moon_lon, sun_lon):
+                # Check house lord protection on cusp evaluation
+                target_lord = None
+                if isinstance(aspected_key, int) and ascendant_lon is not None:
+                    asc_sign_idx = int(ascendant_lon // 30) % 12
+                    target_sign_idx = (asc_sign_idx + aspected_key - 1) % 12
+                    target_lord = SIGN_LORDS[ZODIAC_SIGNS[target_sign_idx]]
+
+                if aspecting == target_lord or is_benefic(aspecting, moon_lon, sun_lon, sign1):
                     plus = raw
                 else:
                     minus = raw
@@ -270,7 +330,7 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
         results["yutis"][aspected] = []
         aspected_sign = aspected_info.get("sign")
         for other, other_info in planets_data.items():
-            if other != aspected and other not in ["Rahu", "Ketu"] and aspected_sign and other_info.get("sign") == aspected_sign:
+            if other != aspected and other not in NON_CASTING_BODIES and aspected_sign and other_info.get("sign") == aspected_sign:
                 results["yutis"][aspected].append(other)
                 
         aspected_lon = aspected_info.get("longitude", 0.0)
@@ -407,8 +467,8 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
     is_merc_combust = baseline.combustion_status.get("Mercury", {}).get("is_combust", False)
     merc_sign_idx = coords["Mercury"]["sign_index"]
     merc_with_malefic = any(
-        coords[m]["sign_index"] == merc_sign_idx
-        for m in ["Mars", "Saturn", "Rahu", "Ketu"]
+        m in coords and coords[m]["sign_index"] == merc_sign_idx
+        for m in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
     )
     is_merc_benefic = (not is_merc_combust) and (not merc_with_malefic)
     is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)

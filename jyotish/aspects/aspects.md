@@ -49,6 +49,23 @@ Three planets have "special" glances that are added on top of the base calculati
 ### How it is Used
 Graha Drishti reveals the psychological and qualitative influence planets have on one another. It is used heavily in *Shadbala* (the 6-fold strength calculation) and for timing events using planetary periods (like Vimshottari Dasha).
 
+### Sphuṭa Dṛṣṭi Milestone Proximity Labeling (`get_aspect_explanation`)
+To preserve pure degree-based continuous longitudinal glancing without sign or house binning distortion, aspect labels and classical rules are identified via angular proximity to exact Parāśarī milestones rather than integer sign/house bins:
+- **Opposition:** Peak at 180° ($\pm 15^\circ$ orb)
+- **Mars Special 4th / Caturasra:** Peak at 90° ($\pm 30^\circ$ orb)
+- **Mars Special 8th / Randhra:** Peak at 210° ($\pm 30^\circ$ orb)
+- **Jupiter Special 5th / Trikona:** Peak at 120° ($\pm 30^\circ$ orb)
+- **Jupiter Special 9th / Dharma:** Peak at 240° ($\pm 30^\circ$ orb)
+- **Saturn Special 3rd / Upachaya:** Peak at 60° ($\pm 30^\circ$ orb)
+- **Saturn Special 10th / Karma:** Peak at 270° ($\pm 30^\circ$ orb)
+- **General Parāśarī Glance:** All other angles are labeled as continuous graduated Parāśarī glances.
+
+#### Engine Contracts & Zero-State Rules
+1. **Non-Casting Bodies Guard:** Non-physical points and shadow nodes (`Rahu`, `Ketu`, `Lagna`, `MC`) do not cast Graha Dṛṣṭi rays. Evaluated rays yield $0.0$ Virūpas with `line_style: "none"` and `nature_label: "Non-Casting Point"`.
+2. **Zero-Virūpa Ray Neutrality:** Angular separations with $0.0$ Virūpas yield `line_style: "none"`, `nature_label: "No Aspect (0 Virūpas)"`, and `rule_name: "No Aspect / Blind Angle"`, preventing spurious malefic tension lines in frontend SVG charts.
+3. **Natural Benefic Ray Invariance (*BPHS* Ch. 3.21):** Jupiter and Venus unconditionally cast Śubha (benefic continuous) rays. Dignity affects their strength/manifestation, not their intrinsic benefic glance.
+4. **Mercury Malefic Affliction (*BPHS* Ch. 3.21 / *Phaladīpikā* Ch. 2.27):** The Sun is an inherent natural malefic (*Krūra*). Mercury conjoined with the Sun (even outside combustion orb) or with Mars, Saturn, Rahu, or Ketu becomes functionally malefic.
+
 ---
 
 ## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)

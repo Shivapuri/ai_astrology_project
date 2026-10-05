@@ -296,9 +296,10 @@ def test_calculate_varga_aspects_adapter():
 def test_mercury_malefic_conjunction_rule():
     """
     Verifies that Mercury becomes a functional malefic when conjoined with natural malefics
-    (Mars, Saturn, Rahu, Ketu) per BPHS Ch. 3 and Phaladeepika Ch. 2.27.
-    - Kailash: Mercury in Scorpio (free from combustion and no malefics in Scorpio) -> Benefic (True)
+    (Sun, Mars, Saturn, Rahu, Ketu) per BPHS Ch. 3.21 and Phaladeepika Ch. 2.27.
+    - Kailash: Mercury in Scorpio with Sun (natural malefic) -> Malefic (False)
     - Native Shivapuri: Mercury in Libra with Saturn (natural malefic) -> Malefic (False)
+    - Unafflicted Chart (1990-05-21): Mercury in Taurus free from all natural malefics -> Benefic (True)
     """
     kailash = ChartBaseline(
         name="Kailash",
@@ -306,7 +307,8 @@ def test_mercury_malefic_conjunction_rule():
         latitude=52.20296, longitude=8.0448, timezone_offset=1.0
     )
     kailash_aspects = calculate_aspect_matrices(kailash)
-    assert kailash_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
+    # Sun in Scorpio conjoins Mercury in Scorpio -> Mercury is Malefic per BPHS Ch. 3.21
+    assert kailash_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is False
 
     shivapuri = ChartBaseline(
         name="Shivapuri",
@@ -317,6 +319,15 @@ def test_mercury_malefic_conjunction_rule():
     shiv_aspects = calculate_aspect_matrices(shivapuri)
     # Saturn in Libra conjoins Mercury in Libra -> Mercury is Malefic
     assert shiv_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is False
+
+    # Unafflicted Mercury: Mercury in Taurus, Sun in Gemini, Mars in Pisces, Saturn in Capricorn, Rahu in Aquarius, Ketu in Leo
+    unafflicted = ChartBaseline(
+        name="UnafflictedMercury",
+        year=1990, month=5, day=21, hour=12, minute=0, second=0,
+        latitude=0.0, longitude=0.0, timezone_offset=0.0
+    )
+    unafflicted_aspects = calculate_aspect_matrices(unafflicted)
+    assert unafflicted_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
 
 
 def test_house_lord_protection_rule():

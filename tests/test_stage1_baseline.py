@@ -242,7 +242,16 @@ def test_cross_border_graha_yuddha_and_coordinates_flag():
         assert "is_in_planetary_war" in coords[p]
         assert "is_war_winner" in coords[p]
         assert "is_war_loser" in coords[p]
+        assert "is_defeated" in coords[p]
+        assert "in_war" in coords[p]
+        assert coords[p]["is_defeated"] == coords[p]["is_war_loser"]
+        assert coords[p]["in_war"] == coords[p]["is_war_loser"]
         assert "war_opponent" in coords[p]
+
+    # Verify convenience accessors
+    assert chart.planets == chart.coordinates
+    assert isinstance(chart.cusps, (list, tuple))
+    assert len(chart.cusps) == 12
 
 
 def test_to_dict_serialization():

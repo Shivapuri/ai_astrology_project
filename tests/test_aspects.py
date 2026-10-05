@@ -57,10 +57,12 @@ def test_graha_drishti_special():
     assert get_graha_drishti("Venus", 0.0, 75.0) < 60.0
     assert get_graha_drishti("Mercury", 0.0, 135.0) < 60.0
 
-def test_graha_drishti_nodes():
-    """Rahu and Ketu do not cast Graha Drishti."""
+def test_graha_drishti_non_casting_bodies():
+    """Rahu, Ketu, Lagna, and MC do not cast Graha Drishti."""
     assert get_graha_drishti("Rahu", 0.0, 180.0) == 0.0
     assert get_graha_drishti("Ketu", 0.0, 180.0) == 0.0
+    assert get_graha_drishti("Lagna", 0.0, 180.0) == 0.0
+    assert get_graha_drishti("MC", 0.0, 180.0) == 0.0
 
 def test_all_graha_drishtis():
     """Test the batch calculation for all planets."""
