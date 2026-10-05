@@ -1199,6 +1199,20 @@ def generate_master_diagnostic_payload(
     if bhava_results is None:
         bhava_results = calculate_bhava_bala(baseline, shadbala_results, aspect_matrices)
 
+    if planetary_evaluation is None and hasattr(baseline, "vargas"):
+        try:
+            from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+            planetary_evaluation = calculate_planetary_evaluation(
+                vargas_data=baseline.vargas,
+                shadbala_data=shadbala_results,
+                advanced_aspects=aspect_matrices,
+                baseline=baseline
+            )
+        except Exception:
+            planetary_evaluation = None
+
+    pe_planets = (planetary_evaluation.get("planets") or planetary_evaluation) if planetary_evaluation else {}
+
     v_chart = baseline.vargas.get(varga, baseline.vargas.get("D1", {}))
     v_grahas = v_chart.get("grahas", {})
     d1_grahas = baseline.vargas.get("D1", {}).get("grahas", {})
@@ -1357,6 +1371,8 @@ def generate_master_diagnostic_payload(
             "summary": f"{n_info.get('nakshatra', '')} P{n_info.get('pada', 1)} ({n_info.get('nakshatra_lord', '')})"
         }
 
+        pe_p = pe_planets.get(p, {}) if isinstance(pe_planets, dict) else {}
+
         # Col 8: Avasthas
         from jyotish.baseline_math import calculate_baladi_state
         from jyotish.avasthas.jagrat import get_jagrat_avastha
@@ -1367,47 +1383,76 @@ def generate_master_diagnostic_payload(
         deep = get_deeptadi_avastha(dignity_str, is_retro, is_combust, yuti)
         raw_lajj = g.get("avasthas", {}).get("lajjitadi", [])
 
-        col8 = {
-            "baladi": bal.get("state", ""),
-            "jagradadi": jag,
-            "deeptadi": deep,
-            "lajjitadi": raw_lajj,
-            "summary": f"{bal.get('state', '').split()[0]} • {jag} • {deep}"
-        }
+        if pe_p:
+            bal_obj = pe_p.get("baladi_avastha", {})
+            bal_state = bal_obj.get("state") or bal.get("state", "")
+            jag_obj = pe_p.get("jagradaadi", {})
+            jag_state = jag_obj.get("sanskrit") or jag_obj.get("state") or jag
+            deep_obj = pe_p.get("deepthaadi", {})
+            deep_state = deep_obj.get("state") or deep
+            lajj_state = pe_p.get("calibrated_lajjitadi") or pe_p.get("lajjitadi") or raw_lajj
+            bal_short = bal_state.split()[0] if bal_state else ""
+            summary_col8 = f"{bal_short} • {jag_state} • {deep_state}".strip(" •")
+            col8 = {
+                "baladi": bal_state,
+                "jagradadi": jag_state,
+                "deeptadi": deep_state,
+                "lajjitadi": lajj_state,
+                "summary": summary_col8
+            }
+        else:
+            col8 = {
+                "baladi": bal.get("state", ""),
+                "jagradadi": jag,
+                "deeptadi": deep,
+                "lajjitadi": raw_lajj,
+                "summary": f"{bal.get('state', '').split()[0]} • {jag} • {deep}"
+            }
 
         # Col 9: Archetype & Vitality (1-10)
-        # Derive vitality from dignity, Shadbala, and modifiers
-        eff = bal.get("efficiency_factor", 1.0)
-        base_vit = 5.0 + (pct_req - 100.0) * 0.03
-        if dignity_str in ("Exalted", "Moolatrikona", "Own Sign"):
-            base_vit += 1.5
-        elif dignity_str in ("Bitter Enemy", "Debilitated"):
-            base_vit -= 1.5
-
-        if is_combust:
-            base_vit -= 1.5
-        if in_war:
-            base_vit += 1.0 if war_detail.get("winner") == p else -2.0
-
-        vit_score = round(max(1.0, min(10.0, 5.0 + (base_vit - 5.0) * (0.8 + 0.2 * eff))), 1)
-
-        # Archetype name per 9-tier classification
-        if vit_score >= 8.5:
-            archetype = "Generous King" if dignity_str in ("Exalted", "Moolatrikona") else "Armed Dictator"
-        elif vit_score >= 6.5:
-            archetype = "Noble Guardian" if dignity_str in ("Own Sign", "Great Friend") else "Pragmatic Executive"
-        elif vit_score >= 4.5:
-            archetype = "Sincere Friend" if "Friend" in dignity_str else "Dutiful Realist"
-        elif vit_score >= 3.0:
-            archetype = "Embattled Striver"
+        if pe_p:
+            vit_data = pe_p.get("vitality", {})
+            vit_score = float(pe_p.get("vitality_score", vit_data.get("vitality_score", 5.0)))
+            archetype = pe_p.get("vitality_tier") or vit_data.get("vitality_tier") or vit_data.get("archetype_name") or pe_p.get("archetype", {}).get("title", "The Dutiful Realist")
+            calc_receipt = vit_data.get("calculation_receipt", {})
+            receipt = calc_receipt.get("summary") or vit_data.get("subcaption_text") or f"Intent: {vit_data.get('subcaption_intent_pct', 50):.0f}% | Power: {vit_data.get('subcaption_power_pct', 100):.0f}% -> {vit_score:.1f}/10"
+            col9 = {
+                "archetype": archetype,
+                "vitality_score": vit_score,
+                "receipt": receipt
+            }
         else:
-            archetype = "Toothless Bully" if "Enemy" in dignity_str else "Exhausted Recluse"
+            eff = bal.get("efficiency_factor", 1.0)
+            base_vit = 5.0 + (pct_req - 100.0) * 0.03
+            if dignity_str in ("Exalted", "Moolatrikona", "Own Sign"):
+                base_vit += 1.5
+            elif dignity_str in ("Bitter Enemy", "Debilitated"):
+                base_vit -= 1.5
 
-        col9 = {
-            "archetype": archetype,
-            "vitality_score": vit_score,
-            "receipt": f"Base {base_vit:.1f} scaled by biological efficiency {eff:.2f} -> {vit_score:.1f}/10"
-        }
+            if is_combust:
+                base_vit -= 1.5
+            if in_war:
+                base_vit += 1.0 if war_detail.get("winner") == p else -2.0
+
+            vit_score = round(max(1.0, min(10.0, 5.0 + (base_vit - 5.0) * (0.8 + 0.2 * eff))), 1)
+
+            # Archetype name per 9-tier classification
+            if vit_score >= 8.5:
+                archetype = "Generous King" if dignity_str in ("Exalted", "Moolatrikona") else "Armed Dictator"
+            elif vit_score >= 6.5:
+                archetype = "Noble Guardian" if dignity_str in ("Own Sign", "Great Friend") else "Pragmatic Executive"
+            elif vit_score >= 4.5:
+                archetype = "Sincere Friend" if "Friend" in dignity_str else "Dutiful Realist"
+            elif vit_score >= 3.0:
+                archetype = "Embattled Striver"
+            else:
+                archetype = "Toothless Bully" if "Enemy" in dignity_str else "Exhausted Recluse"
+
+            col9 = {
+                "archetype": archetype,
+                "vitality_score": vit_score,
+                "receipt": f"Base {base_vit:.1f} scaled by biological efficiency {eff:.2f} -> {vit_score:.1f}/10"
+            }
 
         rows.append({
             "planet": p,

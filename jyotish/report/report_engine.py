@@ -22,6 +22,12 @@ from jyotish.nakshatras.lore import (
 )
 from jyotish.report.prominence import compute_planetary_prominence
 from jyotish.report.varga_environment import compute_varga_environment
+from jyotish.report.interpretation_engine import (
+    synthesize_background_canvas,
+    generate_planetary_interpretations,
+    compute_harmonic_overlays
+)
+from jyotish.yogas.contextual_yogas import detect_contextual_yogas
 
 
 ZODIAC_SIGNS = [
@@ -665,6 +671,35 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
 
     # 5. Section 5: Elemental & Modal Balance (4 Elements & 3 Modes Tables)
     elemental_and_modal = compute_elemental_and_modal_balance(vargas_data, prominence_map)
+    env_tally = compute_varga_environment(vargas_data, prominence_map=prominence_map)
+
+    # 6. Section 6: Macrocosmic Background Canvas Synthesis
+    background_canvas = synthesize_background_canvas(
+        polarity_core={},
+        operational_axis={"is_vargottama": rising_signs.get("is_vargottama", False)},
+        env_tally=env_tally,
+        nak_dominance=nak_dominance
+    )
+
+    # 7. Section 7: Sequential Planetary Interpretations (#1 Chart Commander through Rank #9)
+    pe_planets = planetary_eval.get("planets", planetary_eval) if planetary_eval else {}
+    sequential_interpretations = generate_planetary_interpretations(
+        prominence_rankings=planetary_rankings,
+        vargas_data=vargas_data,
+        nakshatras_grahas=nakshatras_grahas,
+        planetary_eval=pe_planets,
+        canvas=background_canvas
+    )
+
+    # 8. Section 8: Degree-Specific Harmonic Varga Overlays (D9, D7, D10 onto D1)
+    harmonic_overlays = compute_harmonic_overlays(vargas_data=vargas_data)
+
+    # 9. Contextual Setup Yogas
+    try:
+        contextual_yogas_list = detect_contextual_yogas(chart_data)
+        contextual_yogas = [y.to_dict() for y in contextual_yogas_list]
+    except Exception:
+        contextual_yogas = []
 
     return {
         "title": "Astra Chart Assessment Report",
@@ -683,6 +718,11 @@ def generate_report_payload(chart_data: Dict[str, Any]) -> Dict[str, Any]:
         },
         "elemental_and_modal_balance": elemental_and_modal,
         "planetary_rankings": planetary_rankings,
+        "background_canvas": background_canvas,
+        "sequential_interpretations": sequential_interpretations,
+        "planetary_interpretations": sequential_interpretations,
+        "harmonic_overlays": harmonic_overlays,
+        "contextual_yogas": contextual_yogas,
         "significations_data": get_significations_data(),
         "flowcharts": get_significations_flowcharts()
     }

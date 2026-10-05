@@ -567,36 +567,34 @@ class ChartPipeline:
                 v_data["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
 
         # Stamp Karakas onto Vargas
-        self._chara_karakas = karakas.calculate_chara_karakas(vargas_data["D1"]["grahas"])
-        self._functional_roles_d1 = karakas.calculate_functional_roles(vargas_data["D1"]["lagna"]["sign"])
-        self._varga_functional_roles = karakas.get_all_varga_functional_roles(vargas_data)
+        chara_k = karakas.calculate_chara_karakas(vargas_data["D1"]["grahas"])
+        fn_roles_d1 = karakas.calculate_functional_roles(vargas_data["D1"]["lagna"]["sign"])
+        v_fn_roles = karakas.get_all_varga_functional_roles(vargas_data)
 
         for v_name, v_data in vargas_data.items():
-            v_roles = self._varga_functional_roles.get(v_name, {})
+            v_roles = v_fn_roles.get(v_name, {})
             for p_name, p_data in v_data["grahas"].items():
-                p_data["chara_karaka"] = self._chara_karakas.get(p_name, {})
+                p_data["chara_karaka"] = chara_k.get(p_name, {})
                 p_data["functional_role"] = v_roles.get(p_name, {})
-                p_data["d1_functional_role"] = self._functional_roles_d1.get(p_name, {})
+                p_data["d1_functional_role"] = fn_roles_d1.get(p_name, {})
 
         return vargas_data
 
     # =========================================================================
     # STAGE 4: Downstream Synthesis (Dashas, Vimshopaka, Karakas, Yogas, Reports)
     # =========================================================================
-    @property
+    @cached_property
     def chara_karakas(self) -> Dict[str, Any]:
-        self.vargas
-        return self._chara_karakas
+        return karakas.calculate_chara_karakas(self.vargas["D1"]["grahas"])
 
-    @property
+    @cached_property
     def functional_roles_d1(self) -> Dict[str, Any]:
-        self.vargas
-        return self._functional_roles_d1
+        return karakas.calculate_functional_roles(self.vargas["D1"]["lagna"]["sign"])
 
-    @property
+    @cached_property
     def varga_functional_roles(self) -> Dict[str, Any]:
-        self.vargas
-        return self._varga_functional_roles
+        return karakas.get_all_varga_functional_roles(self.vargas)
+
     @cached_property
     def dasha_timeline(self) -> Dict[str, Any]:
         anchors = self.baseline.astronomical_anchors
@@ -793,6 +791,7 @@ class ChartPipeline:
             "vimshopaka": self.vimshopaka_export,
             "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()},
             "planetary_evaluation": self.planetary_evaluation,
+            "master_diagnostic": self.master_diagnostic,
             "karakas": {
                 "chara": self.chara_karakas,
                 "functional": self.functional_roles_d1,

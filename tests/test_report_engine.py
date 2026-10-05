@@ -336,7 +336,7 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert "report" in chart
     rep = chart["report"]
 
-    # 1. Assert payload contains all 9 required top-level keys
+    # 1. Assert payload contains all 14 required top-level keys
     expected_top_keys = {
         "title",
         "ascendant_and_moon",
@@ -345,6 +345,11 @@ def test_generate_kala_chart_report_payload_streamlined():
         "balance_of_nakshatra_types",
         "elemental_and_modal_balance",
         "planetary_rankings",
+        "background_canvas",
+        "sequential_interpretations",
+        "planetary_interpretations",
+        "harmonic_overlays",
+        "contextual_yogas",
         "significations_data",
         "flowcharts"
     }
@@ -432,16 +437,27 @@ def test_generate_kala_chart_report_payload_streamlined():
     assert "signs" in rep["significations_data"]
     assert "houses" in rep["significations_data"]
 
-    # 9. Assert purged automated narrative essays and synthesis engines do NOT exist in the payload
+    # 9. Assert background_canvas, sequential_interpretations, harmonic_overlays, contextual_yogas
+    assert "introversion_extroversion" in rep["background_canvas"]
+    assert "practicality_idealism" in rep["background_canvas"]
+    assert "defiance_cooperation" in rep["background_canvas"]
+    assert "intellectual_emotional" in rep["background_canvas"]
+
+    assert len(rep["sequential_interpretations"]) >= 7
+    assert rep["sequential_interpretations"][0]["is_chart_commander"] is True
+    assert rep["planetary_interpretations"] == rep["sequential_interpretations"]
+
+    assert "contacts" in rep["harmonic_overlays"]
+    assert "orb_limit_deg" in rep["harmonic_overlays"]
+
+    assert isinstance(rep["contextual_yogas"], list)
+
+    # 10. Assert purged legacy ad-hoc keys do NOT exist in the payload
     purged_keys = [
         "polarity_core",
         "operational_axis",
         "environmental_tally",
-        "contextual_yogas",
-        "background_canvas",
-        "planetary_interpretations",
-        "synthesis_ingredients",
-        "harmonic_overlays"
+        "synthesis_ingredients"
     ]
     for key in purged_keys:
         assert key not in rep, f"Purged key '{key}' still exists in report payload!"

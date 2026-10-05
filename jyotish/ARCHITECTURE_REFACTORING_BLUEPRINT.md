@@ -10,6 +10,8 @@ This blueprint defines the master architectural refactoring for the Astra calcul
 * **Stage 2A (`relationships.py`):** 100% Certified.
 * **Stage 2A (`aspects.py`):** 100% Certified.
 * **Stage 2B (`shadbala.py`):** 100% Certified.
+* **Stage 3 (`bhavas/bhava_bala.py`):** 100% Certified.
+* **Stage 4 (`pipeline.py`, `report/`, `yogas/`):** 100% Certified.
 
 ---
 
@@ -26,8 +28,8 @@ Re-architect the computation pipeline into a **Single Source of Truth** using a 
 1. **Stage 1 (Completed & 100% Certified):** Master Astronomical & Coordinate Baseline Engine (`ChartBaseline` in `baseline.py`, `baseline_math.py`, `baseline_tables.py`). Computes 100% deterministic physical/geometric facts (ephemeris, coordinates, sensitive points, 16 vargas, upagrahas, and raw distance matrices). Contains **zero house evaluations, zero house atmosphere scoring, zero dignity scoring, and zero Shadbala**.
 2. **Stage 2A (Completed & 100% Certified):** Interaction & Relationship Matrices (`relationships.py` and `aspects.py`: Graha Dṛṣṭi 0–60 Virūpas, Pañcadhā Maitrī 5-fold friendship, Varga Dignities, Rāśi Dṛṣṭi, Dynamic Benefic/Malefic breakdown).
 3. **Stage 2B (Completed & 100% Certified):** Planetary Strength & Shadbala (`shadbala.py`: 6-fold Shadbala, Sthāna Bala, Kāla Bala, Cheṣṭā Bala, Ayana Bala, Dṛk Bala, Naisargika Bala, Quantitative & Qualitative Avasthās, with Dual-Mode Campanus Kala Parity and Pure Whole Sign Tropical 90° Cardinal Compass architecture).
-4. **Stage 3 (Next Focus):** House Evaluation, Atmosphere & Diagnostic Cockpit (Bhāva Bala, Harsha Bala, House Base Scores, Master Diagnostic table).
-5. **Stage 4:** Downstream Consumers (Classical Yogas & Breakers, Vimshottari Dashas, Gochara Transits, Full Narrative Reports).
+4. **Stage 3 (Completed & 100% Certified):** House Evaluation, Atmosphere & Diagnostic Cockpit (Bhāva Bala, Harsha Bala, House Base Scores, Master Diagnostic table).
+5. **Stage 4 (Completed & 100% Certified):** Downstream Consumers (Classical Yogas & Breakers, Vimshottari Dashas, Gochara Transits, Full Narrative Reports).
 
 ```mermaid
 flowchart TD
@@ -265,7 +267,7 @@ Stage 1 is fully decoupled into a clean 3-file modular architecture:
 
 ---
 
-### Stage 3: House Engines & Diagnostic Cockpit (NEXT FOCUS)
+### Stage 3: House Engines & Diagnostic Cockpit (COMPLETED & CERTIFIED)
 *Goal: Synthesize planet and house states into the Master Diagnostic Table.*
 * **1. Bhāva Bala (House Strength):**
   * Bhāvadhipati Bala (Lord's strength), Bhāva Dig Bala, Bhāva Dṛṣṭi Bala.
