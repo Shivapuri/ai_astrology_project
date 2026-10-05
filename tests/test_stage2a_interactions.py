@@ -28,7 +28,6 @@ from jyotish.relationships.relationships import (
     get_dignity,
     DIPTADI_AVASTHA_MAP,
     SIGN_LORDS as REL_SIGN_LORDS,
-    VIMSHOTTARI_SEQUENCE as REL_VIMSHOTTARI
 )
 from jyotish.aspects.aspects import (
     calculate_aspect_matrices,
@@ -44,7 +43,6 @@ def test_stage2a_clean_import_hygiene():
     """Verifies single source of truth: no duplicate constant definitions, no swisseph calls."""
     # 1. Constants are identical single-source imports
     assert REL_SIGN_LORDS == SIGN_LORDS
-    assert REL_VIMSHOTTARI == VIMSHOTTARI_SEQUENCE
     assert ASP_ZODIAC_SIGNS == ZODIAC_SIGNS
 
     # 2. Neither relationships nor aspects imports swisseph directly

@@ -22,7 +22,9 @@ If you are modifying `relationships.py`, strictly observe these mathematical rul
    - Evaluates a complete $9 \times 9$ bidirectional matrix covering all 7 physical planets plus Rāhu and Ketu (`natural_relationships`, `temporary_relationships`, `compound_relationships`), preventing `KeyError` exceptions when physical planets query nodes.
    - `get_natural_relationship()` (*Naisargika*):
      - Physical planets follow BPHS Ch. 15 *Moolatrikona* derivations.
-     - Rāhu and Ketu follow Mantreśvara’s *Phaladīpikā* (Ch. 8 & 20) Asura coalition: Friends with Mercury, Venus, Saturn; Neutral with Mars; Enemies with Sun, Moon, Jupiter.
+     - Rāhu and Ketu support dual methodologies via `nodal_methodology`:
+       - `"ernst_wilhelm"` (Default): Rāhu acts as Saturn's proxy and Ketu acts as Mars's proxy (*Śanivad Rāhuḥ, Kujavad Ketuḥ*).
+       - `"phaladipika"`: Both nodes follow Mantreśvara’s *Phaladīpikā* (Ch. 8 & 20) Asura coalition: Friends with Mercury, Venus, Saturn; Neutral with Mars; Enemies with Sun, Moon, Jupiter.
    - `get_temporary_relationship()` (*Tātkālika*): Based purely on physical distance in the $D_1$ (Rasi) chart. Houses 2, 3, 4, 10, 11, 12 ($+1, +2, +3, +9, +10, +11$) = Friend. Others (conjunct, or 5, 6, 7, 8, 9 away) = Enemy. Same body comparison ($p_1 == p_2$) returns `"Self"`.
    - `get_compound_relationship()` (*Pañcadhā*): Mathematical sum of Natural + Temporary $(-2 \text{ to } +2)$. Returns 5 levels: `"Great Friend"`, `"Friend"`, `"Neutral"`, `"Enemy"`, `"Great Enemy"` (or `"Self"`).
 

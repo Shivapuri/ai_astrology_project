@@ -3,14 +3,12 @@ Astra Astrological Engine — Stage 2A: Relational Calculus & Dignity Matrix
 Canonical implementation supporting both Ernst Wilhelm (Kala) and Mantreśvara (Phaladīpikā).
 """
 
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any
 from jyotish.baseline import (
     ChartBaseline,
     SIGN_LORDS,
-    PLANETS_ORDER,
     VARGAS_LIST,
     NAISARGIKA_SAMBANDHA,
-    VIMSHOTTARI_SEQUENCE,
 )
 
 # Canonical 9 Diptadi Avastha Categorization (Phaladipika Ch. 3 v. 18-19)
@@ -157,7 +155,7 @@ def get_dignity(
     """
     Evaluates final planetary dignity.
     - In higher vargas (is_varga=True), whole-sign rules govern cleanly: primary sign confers
-      Moolatrikona (for 45 Virūpas in Saptavargaja Bala), secondary sign confers Own Sign,
+      Moolatrikona (yielding 45 Virūpas in Saptavargaja Bala), secondary sign confers Own Sign,
       and exaltation/debilitation spans the full sign.
     - In D1, degree bounds are applied for Moolatrikona and optional kala_degree debilitation.
     """
@@ -181,7 +179,7 @@ def get_dignity(
         if sign == "Scorpio":
             if is_varga or debilitation_mode in ("traditional", "whole_sign") or degree <= 3.0:
                 return "Debilitated"
-        elif sign == "Cancer":
+        if sign == "Cancer":
             return "Own Sign"
 
     # 3. MARS
@@ -210,7 +208,7 @@ def get_dignity(
         if sign == "Pisces":
             if is_varga or debilitation_mode in ("traditional", "whole_sign") or degree <= 15.0:
                 return "Debilitated"
-        elif sign == "Gemini":
+        if sign == "Gemini":
             return "Own Sign"
 
     # 5. JUPITER

@@ -750,6 +750,44 @@ def test_focal_point_dusthana_scope_non_dusthana_placement(calibrated_shadbala):
     assert "Lord: True" in focal["details"]
 
 
+def test_dynamic_occupant_beneficence_in_atmosphere(calibrated_shadbala):
+    """
+    Certifies that calculate_house_atmosphere honors dynamic beneficence:
+    - A dark Moon (Paksha Bala < 30.0) in non-upacaya is penalized as a malefic (-15.0).
+    - An afflicted Mercury in non-upacaya is penalized as a malefic (-15.0).
+    """
+    # Case 1: Dark Moon (Paksha Bala = 12.0) in House 8 (Scorpio) with Aries Lagna (0.0°)
+    shad_dark_moon = dict(calibrated_shadbala)
+    shad_dark_moon["Moon"] = {
+        "Total_Virupas": 380.0, "Total_Rupas": 6.33, "Paksha_Bala": 12.0, "Dig_Bala": 20.0
+    }
+    baseline_moon = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Moon": {"lon": 225.0, "is_combust": False}}
+    )
+    bhavas_moon = calculate_bhava_bala(baseline_moon, shad_dark_moon, house_system="whole_sign")
+    atm8 = bhavas_moon[8]["atmosphere"]
+    inauspicious8 = " ".join(atm8["inauspicious_influences"])
+    auspicious8 = " ".join(atm8["auspicious_influences"])
+
+    assert "Malefic occupant Moon in non-upacaya H8" in inauspicious8
+    assert "Benefic occupant Moon" not in auspicious8
+
+    # Case 2: Combust Mercury in House 8 (Scorpio)
+    baseline_merc = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Mercury": {"lon": 225.0, "is_combust": True}}
+    )
+    bhavas_merc = calculate_bhava_bala(baseline_merc, calibrated_shadbala, house_system="whole_sign")
+    atm8_merc = bhavas_merc[8]["atmosphere"]
+    inauspicious8_merc = " ".join(atm8_merc["inauspicious_influences"])
+    auspicious8_merc = " ".join(atm8_merc["auspicious_influences"])
+
+    assert "Malefic occupant Mercury in non-upacaya H8" in inauspicious8_merc
+    assert "Benefic occupant Mercury" not in auspicious8_merc
+
+
+
 
 
 

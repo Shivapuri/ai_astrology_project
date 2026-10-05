@@ -1313,6 +1313,10 @@ def calculate_house_atmosphere(
             score += 15.0
             auspicious.append("Lagnesha aspecting the house with major ray (DPK 15.9 flourishing)")
 
+        # Use dynamically calibrated benefic/malefic lists from occ_diag (honoring Moon & Mercury status)
+        dyn_benefics = occ_diag.get("benefics", [])
+        dyn_malefics = occ_diag.get("malefics", [])
+
         for occ in occupants:
             p_name = occ.get("name")
             if p_name not in VALID_PLANETS:
@@ -1321,10 +1325,10 @@ def calculate_house_atmosphere(
             if p_name == lord:
                 score += 15.0
                 auspicious.append(f"House lord {p_name} resident in own sign {sign}")
-            elif p_name in NATURAL_BENEFICS:
+            elif p_name in dyn_benefics:
                 score += 10.0
                 auspicious.append(f"Benefic occupant {p_name} in sign {sign}")
-            elif p_name in NATURAL_MALEFICS:
+            elif p_name in dyn_malefics:
                 if h in UPACAYA_HOUSES:
                     score += 10.0
                     auspicious.append(f"Constructive malefic {p_name} in Upacaya H{h}")
