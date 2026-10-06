@@ -1,0 +1,33 @@
+<template id="tmpl-bhava-bala">
+    <div class="widget-content" id="tab-bhava-bala">
+        <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Bhāva Bala &amp; House Capacity</span>
+                <span style="font-size: 12px; background: #eadecc; color: #5a4233; padding: 2px 6px; border-radius: 3px; font-weight: bold;">Stage 3</span>
+            </div>
+            <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
+        </div>
+        <div class="responsive-table-container" style="padding: 4px;">
+            <div class="scale-wrapper">
+                <table class="bhava-bala-grid" style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px;">
+                    <thead>
+                        <tr>
+                            <th style="text-align: left; padding: 6px 8px;">House</th>
+                            <th style="text-align: left; padding: 6px 8px;">Sign &amp; Lord</th>
+                            <th style="text-align: right; padding: 6px 8px;">Lord Bala</th>
+                            <th style="text-align: right; padding: 6px 8px;">Dig Bala</th>
+                            <th style="text-align: right; padding: 6px 8px;">Dṛṣṭi Bala</th>
+                            <th style="text-align: right; padding: 6px 8px;">Total Virūpas</th>
+                            <th style="text-align: right; padding: 6px 8px;">Total Rūpas</th>
+                            <th style="text-align: right; padding: 6px 8px;">Augmented</th>
+                            <th style="text-align: left; padding: 6px 8px;">Harṣa Joy</th>
+                            <th style="text-align: left; padding: 6px 8px;">Atmosphere Weather</th>
+                            <th style="text-align: left; padding: 6px 8px;">Verdict</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</template>

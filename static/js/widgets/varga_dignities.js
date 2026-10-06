@@ -119,8 +119,8 @@ function updateVargaDignitiesTable(cell, chartData) {
                 planets.forEach(p => {
                     let digStr = '';
                     let tooltip = '';
-                    const d = (vData && vData.grahas && vData.grahas[p] && vData.grahas[p].dignity_breakdown)
-                        || (vDignities && vDignities[p])
+                    const d = (vDignities && vDignities[p])
+                        || (vData && vData.grahas && vData.grahas[p] && vData.grahas[p].dignity_breakdown)
                         || null;
                     if (d) {
                         digStr = d.final_dignity || d.dignity || '';

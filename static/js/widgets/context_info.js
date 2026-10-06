@@ -306,7 +306,62 @@
         const elemMeta = (window.AstroCatalog && hSignObj && window.AstroCatalog.elements) ? window.AstroCatalog.elements[hSignObj.element] : null;
         const elementLabel = hSignObj ? `${hSignObj.element}${elemMeta ? ' (' + elemMeta.sanskrit + ')' : ''}` : '';
         const modMeta = (window.AstroCatalog && hSignObj && window.AstroCatalog.modalities) ? window.AstroCatalog.modalities[hSignObj.modality] : null;
-        const modalityLabel = hSignObj ? `${hSignObj.modality}${modMeta ? ' (' + modMeta.sanskrit + ')' : ''}` : '';
+        const bBala = (currentData && currentData.bhava_bala) ? (currentData.bhava_bala[houseNum] || currentData.bhava_bala[String(houseNum)]) : null;
+        const hJoy = (currentData && currentData.harsha_bala && currentData.harsha_bala.dusthana_joy) ? currentData.harsha_bala.dusthana_joy[houseNum] : null;
+        const atm = (currentData && currentData.house_atmosphere) ? (currentData.house_atmosphere[houseNum] || currentData.house_atmosphere[String(houseNum)]) : null;
+
+        let step6Content = '';
+        if (bBala) {
+            const totVir = bBala.total_virupas !== undefined ? bBala.total_virupas.toFixed(1) : '--';
+            const totRup = bBala.total_rupas !== undefined ? bBala.total_rupas.toFixed(2) : (bBala.total_virupas !== undefined ? (bBala.total_virupas / 60).toFixed(2) : '--');
+            const augVir = bBala.augmented_virupas !== undefined ? bBala.augmented_virupas.toFixed(1) : totVir;
+            const lordVir = bBala.bhavadhipathi_bala !== undefined ? bBala.bhavadhipathi_bala.toFixed(1) : '--';
+            const digVir = bBala.bhava_digbala !== undefined ? bBala.bhava_digbala.toFixed(1) : '--';
+            const drishtiVir = bBala.bhava_drishti_bala !== undefined ? ((bBala.bhava_drishti_bala >= 0 ? '+' : '') + bBala.bhava_drishti_bala.toFixed(1)) : '--';
+
+            let joyText = '';
+            if ([6, 8, 12].includes(houseNum)) {
+                if (hJoy && hJoy.is_active) {
+                    joyText = `<div style="margin-top:2px;"><strong>Harṣa Joy:</strong> <span style="color:var(--status-benefic); font-weight:700;">${hJoy.yoga_name} Yoga (+${hJoy.bonus_units}u)</span> — ${hJoy.effect}</div>`;
+                } else if (hJoy) {
+                    joyText = `<div style="margin-top:2px;"><strong>Harṣa Joy:</strong> <span style="color:var(--text-muted);">${hJoy.effect || 'Standard House'}</span></div>`;
+                }
+            }
+
+            let atmText = '';
+            if (atm) {
+                const weather = atm.environmental_weather || '--';
+                const score = atm.net_atmosphere_score !== undefined ? ((atm.net_atmosphere_score >= 0 ? '+' : '') + atm.net_atmosphere_score.toFixed(1)) : '--';
+                const cls = atm.classification || '--';
+                atmText = `
+                    <div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-subtle, #e5e7eb);">
+                        <div><strong>Atmosphere:</strong> <span style="font-weight:700;">${weather}</span> (Score: <span style="font-family:monospace; font-weight:700;">${score}</span>)</div>
+                        <div><strong>Condition:</strong> <span>${cls}</span></div>
+                    </div>
+                `;
+            }
+
+            let sandhiText = '';
+            if (bBala.sandhi_analysis && bBala.sandhi_analysis.cusp_in_sandhi) {
+                sandhiText = `<div style="color:var(--status-malefic); font-size:12px; margin-top:2px;">• Cusp in Sandhi Junction (${bBala.sandhi_analysis.cusp_dist_to_border.toFixed(1)}° from border)</div>`;
+            }
+            if (bBala.sandhi_analysis && bBala.sandhi_analysis.wall_leakages && bBala.sandhi_analysis.wall_leakages.length > 0) {
+                const leaks = bBala.sandhi_analysis.wall_leakages.map(w => `${w.planet} leaking into H${w.target_house}`).join(', ');
+                sandhiText += `<div style="color:var(--status-warning, #d97706); font-size:12px; margin-top:2px;">• Wall Leakage: ${leaks}</div>`;
+            }
+
+            step6Content = `
+                <div style="font-size: 12px; line-height: 1.5;">
+                    <div><strong>Total Capacity:</strong> <strong style="font-family:monospace;">${totVir}v</strong> (${totRup} Rūpas) | <strong>Augmented:</strong> <span style="font-family:monospace;">${augVir}v</span></div>
+                    <div style="color:var(--text-muted); font-size:12px;">Pillars: Lord ${lordVir}v • Direction ${digVir}v • Aspect ${drishtiVir}v</div>
+                    ${joyText}
+                    ${atmText}
+                    ${sandhiText}
+                </div>
+            `;
+        } else {
+            step6Content = `<div style="font-size: 12px; color: var(--text-muted);">Strength data not available for this chart.</div>`;
+        }
 
         const liveInspectorHtml = `
             <div class="bhava-inspector-card">
@@ -356,6 +411,12 @@
                             Open ${targetVarga.varga} ↗
                         </button>
                     </div>
+                </div>
+
+                <!-- Step 6: House Strength & Harṣa Bala -->
+                <div class="bhava-step">
+                    <div class="bhava-step-title"><span>6. House Strength & Harṣa Bala</span></div>
+                    ${step6Content}
                 </div>
             </div>
         `;
@@ -489,32 +550,50 @@
                     const plOrder = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"];
                     
                     plOrder.forEach(p => {
-                        if (p !== id && advInfo.planets && advInfo.planets[p] && advInfo.planets[p][id]) {
+                        let rawVal = 0;
+                        let isBen = false;
+                        if (p !== id && advInfo && advInfo.planets && advInfo.planets[p] && advInfo.planets[p][id]) {
                             const entry = advInfo.planets[p][id];
-                            if (entry.raw >= 30) {
-                                const isBen = entry.plus > 0;
-                                const colorClass = isBen ? 'text-benefic' : 'text-malefic';
-                                outgoingRays.push(`<span class="${colorClass}" style="font-weight:600;">➔ ${p} (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
-                            }
+                            rawVal = entry.raw || 0;
+                            isBen = entry.plus > 0;
+                        } else if (p !== id && currentData && currentData.aspect_matrices && currentData.aspect_matrices.graha_drishti && currentData.aspect_matrices.graha_drishti.outgoing && currentData.aspect_matrices.graha_drishti.outgoing[id] && currentData.aspect_matrices.graha_drishti.outgoing[id][p] !== undefined) {
+                            rawVal = currentData.aspect_matrices.graha_drishti.outgoing[id][p];
+                            isBen = currentData.aspect_matrices.benefic_malefic_totals?.classification?.[id] ?? (id === 'Jupiter' || id === 'Venus');
+                        }
+                        if (rawVal >= 30) {
+                            const colorClass = isBen ? 'text-benefic' : 'text-malefic';
+                            outgoingRays.push(`<span class="${colorClass}" style="font-weight:600;">➔ ${p} (${Math.round(rawVal)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
                         }
                     });
-                    if (advInfo.cusps && (advInfo.cusps[1] || advInfo.cusps['1']) && (advInfo.cusps[1] || advInfo.cusps['1'])[id]) {
+                    let rawLagnaVal = 0;
+                    let lagnaBen = false;
+                    if (advInfo && advInfo.cusps && (advInfo.cusps[1] || advInfo.cusps['1']) && (advInfo.cusps[1] || advInfo.cusps['1'])[id]) {
                         const entry = (advInfo.cusps[1] || advInfo.cusps['1'])[id];
-                        if (entry.raw >= 30) {
-                            const isBen = entry.plus > 0;
-                            const colorClass = isBen ? 'text-benefic' : 'text-malefic';
-                            outgoingRays.push(`<span class="${colorClass}" style="font-weight:600;">➔ Lagna (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
-                        }
+                        rawLagnaVal = entry.raw || 0;
+                        lagnaBen = entry.plus > 0;
+                    } else if (currentData && currentData.aspect_matrices && currentData.aspect_matrices.cusp_drishti && currentData.aspect_matrices.cusp_drishti.by_house && currentData.aspect_matrices.cusp_drishti.by_house[1] && currentData.aspect_matrices.cusp_drishti.by_house[1][id] !== undefined) {
+                        rawLagnaVal = currentData.aspect_matrices.cusp_drishti.by_house[1][id];
+                        lagnaBen = currentData.aspect_matrices.benefic_malefic_totals?.classification?.[id] ?? (id === 'Jupiter' || id === 'Venus');
+                    }
+                    if (rawLagnaVal >= 30) {
+                        const colorClass = lagnaBen ? 'text-benefic' : 'text-malefic';
+                        outgoingRays.push(`<span class="${colorClass}" style="font-weight:600;">➔ Lagna (${Math.round(rawLagnaVal)}v ${lagnaBen ? 'Solid' : 'Dashed'})</span>`);
                     }
 
                     plOrder.forEach(p => {
-                        if (p !== id && advInfo.planets && advInfo.planets[id] && advInfo.planets[id][p]) {
+                        let rawVal = 0;
+                        let isBen = false;
+                        if (p !== id && advInfo && advInfo.planets && advInfo.planets[id] && advInfo.planets[id][p]) {
                             const entry = advInfo.planets[id][p];
-                            if (entry.raw >= 30) {
-                                const isBen = entry.plus > 0;
-                                const colorClass = isBen ? 'text-benefic' : 'text-malefic';
-                                incomingRays.push(`<span class="${colorClass}" style="font-weight:600;">⬅ ${p} (${Math.round(entry.raw)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
-                            }
+                            rawVal = entry.raw || 0;
+                            isBen = entry.plus > 0;
+                        } else if (p !== id && currentData && currentData.aspect_matrices && currentData.aspect_matrices.graha_drishti && currentData.aspect_matrices.graha_drishti.incoming && currentData.aspect_matrices.graha_drishti.incoming[id] && currentData.aspect_matrices.graha_drishti.incoming[id][p] !== undefined) {
+                            rawVal = currentData.aspect_matrices.graha_drishti.incoming[id][p];
+                            isBen = currentData.aspect_matrices.benefic_malefic_totals?.classification?.[p] ?? (p === 'Jupiter' || p === 'Venus');
+                        }
+                        if (rawVal >= 30) {
+                            const colorClass = isBen ? 'text-benefic' : 'text-malefic';
+                            incomingRays.push(`<span class="${colorClass}" style="font-weight:600;">⬅ ${p} (${Math.round(rawVal)}v ${isBen ? 'Solid' : 'Dashed'})</span>`);
                         }
                     });
 

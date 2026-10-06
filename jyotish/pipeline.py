@@ -190,7 +190,7 @@ class ChartPipeline:
     # =========================================================================
     @cached_property
     def shadbala(self) -> Dict[str, Any]:
-        return calculate_shadbala(
+        raw_shadbala = calculate_shadbala(
             self.baseline,
             dignities=self.dignities,
             aspect_matrices=self.aspect_matrices,
@@ -204,6 +204,28 @@ class ChartPipeline:
             drik_mode=self.drik_mode,
             ayana_tradition=self.ayana_tradition
         )
+        enriched = {}
+        for p, vals in raw_shadbala.items():
+            if isinstance(vals, dict):
+                p_dict = dict(vals)
+                # Lowercase aliases expected by app.js updateShadbalaTable
+                p_dict.setdefault("sthana_bala", p_dict.get("Sthana_Bala", 0.0))
+                p_dict.setdefault("dig_bala", p_dict.get("Dig_Bala", 0.0))
+                p_dict.setdefault("kala_bala", p_dict.get("Kala_Bala", 0.0))
+                p_dict.setdefault("cheshta_bala", p_dict.get("Cheshta_Bala", 0.0))
+                p_dict.setdefault("naisargika_bala", p_dict.get("Naisargika_Bala", 0.0))
+                p_dict.setdefault("drik_bala", p_dict.get("Drik_Bala", 0.0))
+                p_dict.setdefault("total_rupa", p_dict.get("Total_Rupas", 0.0))
+                p_dict.setdefault("total_virupas", p_dict.get("Total_Virupas", 0.0))
+                req_tot = p_dict.get("Required_Total", 0.0)
+                p_dict.setdefault("required_rupa", round(req_tot / 60.0, 2) if req_tot else 0.0)
+                p_dict.setdefault("required_total", req_tot)
+                pct_req = p_dict.get("Pct_Required_Total")
+                p_dict.setdefault("ratio", (pct_req / 100.0) if pct_req is not None else ((p_dict.get("Total_Virupas", 0.0) / req_tot) if req_tot else 1.0))
+                enriched[p] = p_dict
+            else:
+                enriched[p] = vals
+        return enriched
 
     # =========================================================================
     # STAGE 3: House Capabilities, Bhava Bala & Master Cockpit
@@ -750,6 +772,8 @@ class ChartPipeline:
             },
             "shadbala": self.shadbala,
             "bhava_bala": self.bhava_bala,
+            "harsha_bala": self.harsha_bala,
+            "house_atmosphere": self.house_atmosphere,
             "dignities": self.dignities,
             "aspect_matrices": self.aspect_matrices,
             "avastha_matrix": self.avastha_matrices,

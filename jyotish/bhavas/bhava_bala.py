@@ -1269,6 +1269,15 @@ def calculate_house_atmosphere(
         inauspicious = []
         score = 0.0
 
+        # Lord resident unblemished check (DPK 15.1–3, 15.18 Sva-kṣetra protective anchor)
+        lord_resident_unblemished = (
+            lord in [o.get("name") for o in occupants]
+            and not lord_status.get("is_debilitated")
+            and not lord_status.get("is_combust")
+            and not lord_status.get("is_defeated")
+            and not lord_status.get("in_war")
+        )
+
         # 1. Base Parashari Virupas + DPK Ch. 4 Augmentation
         v_diff = augmented_virupas - 360.0
         score += (v_diff * 0.15)
@@ -1278,12 +1287,19 @@ def calculate_house_atmosphere(
             inauspicious.append(f"Sub-baseline Virūpas ({augmented_virupas:.1f}v / {augmented_virupas/60.0:.2f} Rūpas)")
 
         # 2. Lord Capacity & Placements (DPK 15.1 Hīnāri-mūḍha)
+        req_virupas = PLANET_REQUIRED_VIRUPAS.get(lord, 360.0)
+        adhipathi_bala = float(b.get("bhavadhipathi_bala", lord_status.get("potency_ratio", 1.0) * req_virupas))
+        ratio = (adhipathi_bala / req_virupas) if req_virupas > 0 else 1.0
+
         if lord_status.get("is_strong"):
             score += 15.0
-            auspicious.append(f"Fortified Lord {lord} ({lord_status.get('potency_ratio', 1.0)}x required minimum)")
-        else:
-            score -= 10.0
-            inauspicious.append(f"Lord {lord} below required minimum virūpas or deficient in dignity")
+            auspicious.append(f"Fortified Lord {lord} ({lord_status.get('potency_ratio', round(ratio, 2))}x required minimum)")
+        elif ratio < 0.95:
+            # Linear continuous gradient with 5% grace tolerance (Ratio >= 0.95 incurs 0 penalty)
+            deficit_ratio = (req_virupas - adhipathi_bala) / req_virupas
+            penalty = round(deficit_ratio * 10.0, 1)
+            score -= penalty
+            inauspicious.append(f"Lord {lord} below required minimum virūpas (-{penalty:.1f} deficit)")
 
         if lord_status.get("is_debilitated"):
             score -= 20.0
@@ -1297,12 +1313,12 @@ def calculate_house_atmosphere(
             score -= 15.0
             inauspicious.append(f"Lord {lord} defeated in planetary war (Nīpīḍita)")
 
-        # Bhavat Bhavam displacement vs Viparita
+        # Bhavat Bhavam displacement vs Dusthana dynamics
         placed_h = lord_status.get("placed_house", 1)
         bhavat_dist = lord_status.get("bhavat_bhavam_distance", 1)
         
         if h in DUHSTHANA_HOUSES and h_harsha.get("is_active"):
-            score += 25.0
+            # Informational reporting only — formal event yogas do not inject point bonuses into Stage 3
             if h_harsha.get("viparita_active"):
                 auspicious.append(f"{h_harsha.get('yoga_name')} Yoga active in Dusthana H{h}")
             elif h_harsha.get("karaka_joy_in_house"):
@@ -1346,6 +1362,12 @@ def calculate_house_atmosphere(
                 score += 10.0
                 auspicious.append(f"Benefic occupant {p_name} in sign {sign}")
             elif p_name in dyn_malefics:
+                if p_name in ["Rahu", "Ketu"] and lord_resident_unblemished:
+                    # Attenuate penalty from -15.0 to -3.0 to reflect ascetic renunciation
+                    score -= 3.0
+                    auspicious.append(f"Ascetic {p_name} moderated by resident lord {lord}")
+                    continue
+
                 if h in UPACAYA_HOUSES:
                     score += 10.0
                     auspicious.append(f"Constructive malefic {p_name} in Upacaya H{h}")
@@ -1366,8 +1388,12 @@ def calculate_house_atmosphere(
             score += 20.0
             auspicious.append("Śubhakartarī (house flanked by benefic planets)")
         elif kartari.get("type") == "papakartari":
-            score -= 20.0
-            inauspicious.append("Pāpakartarī (house besieged between malefic planets)")
+            if lord_resident_unblemished:
+                score -= 10.0
+                inauspicious.append("Pāpakartarī (house besieged, but dampened 50% by resident lord)")
+            else:
+                score -= 20.0
+                inauspicious.append("Pāpakartarī (house besieged between malefic planets)")
 
         # 6. Sandhi Leakage
         if sandhi.get("cusp_in_sandhi"):
@@ -1389,18 +1415,24 @@ def calculate_house_atmosphere(
             inauspicious.append("Latent Triad Concordance (all three Lagnas lack requisite strength)")
 
         # 9. Three Focal Points Ruination Verdict (DPK 15.18 Vad-Bhāva)
-        if focal_diag.get("is_ruined"):
+        if focal_diag.get("is_ruined") and not lord_resident_unblemished:
             score -= 25.0
             inauspicious.append(f"Vad-Bhāva Ruination (DPK 15.18): {focal_diag.get('details')}")
 
         net_score = round(max(-100.0, min(100.0, score)), 1)
+        if lord_resident_unblemished:
+            # Sva-kṣetra Veto Floor (DPK 15.1–3 & 15.18): Unblemished resident lord anchors the house
+            net_score = max(-10.0, net_score)
 
         if net_score >= 25.0:
             classification = "Puṣṭa (Fortified / Flourishing)"
         elif net_score <= -20.0:
-            classification = "Hīna (Deficient / Strained)"
+            classification = "Hīna (Deficient / Afflicted)"
         else:
-            classification = "Miśra (Mixed / Dynamic)"
+            classification = "Miśra (Mixed / Dynamic / Resilient)"
+
+        if lord_resident_unblemished and classification.startswith("Hīna"):
+            classification = "Miśra (Mixed / Dynamic / Resilient)"
 
         if net_score >= 40.0:
             weather = "Radiant & Unopposed"

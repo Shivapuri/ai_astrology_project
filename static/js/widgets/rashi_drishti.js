@@ -21,6 +21,13 @@
         const vargaSelect = cell.querySelector('.varga-select');
         const varga = vargaSelect ? vargaSelect.value : 'D1';
 
+        if (vargaSelect && !vargaSelect.dataset.listenerBound) {
+            vargaSelect.dataset.listenerBound = 'true';
+            vargaSelect.addEventListener('change', () => {
+                updateRashiDrishtiWidget(cell, chartData);
+            });
+        }
+
         const catalogSigns = (typeof window !== 'undefined' && window.AstroCatalog)
             ? window.AstroCatalog.signs
             : [
@@ -57,11 +64,18 @@
             const modLabel = modMeta.label || signObj.modality;
             const modSanskrit = modMeta.sanskrit || '';
 
-            const aspects = (currentData && currentData.aspect_matrices && currentData.aspect_matrices.rasi_drishti && currentData.aspect_matrices.rasi_drishti.sign_to_signs && currentData.aspect_matrices.rasi_drishti.sign_to_signs[sign])
-                ? currentData.aspect_matrices.rasi_drishti.sign_to_signs[sign]
-                : ((window.AstroCatalog && window.AstroCatalog.getAspectingSigns)
-                    ? window.AstroCatalog.getAspectingSigns(sign)
-                    : []);
+            let aspects = null;
+            if (currentData && currentData.aspect_matrices && currentData.aspect_matrices.rasi_drishti) {
+                const rd = currentData.aspect_matrices.rasi_drishti;
+                aspects = (rd.sign_to_signs && rd.sign_to_signs[sign])
+                    || rd[sign]
+                    || (rd.by_sign && rd.by_sign[sign])
+                    || null;
+            }
+            if (!aspects && window.AstroCatalog && window.AstroCatalog.getAspectingSigns) {
+                aspects = window.AstroCatalog.getAspectingSigns(sign);
+            }
+            if (!aspects) aspects = [];
             const occupants = occupantsMap[sign] || [];
 
             const aspectedPlanets = [];

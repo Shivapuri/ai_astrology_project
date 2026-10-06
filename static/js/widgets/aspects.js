@@ -77,12 +77,25 @@
                             if (!isHouse && currentData.aspect_matrices.graha_drishti && currentData.aspect_matrices.graha_drishti.incoming && currentData.aspect_matrices.graha_drishti.incoming[cKey]) {
                                 const rawVal = currentData.aspect_matrices.graha_drishti.incoming[cKey][p];
                                 if (rawVal !== undefined) {
-                                    entry = { raw: rawVal, plus: 0, minus: 0, net: 0 };
+                                    const isBenefic = currentData.aspect_matrices.benefic_malefic_totals?.classification?.[p] ?? (p === 'Jupiter' || p === 'Venus');
+                                    entry = {
+                                        raw: rawVal,
+                                        plus: isBenefic ? rawVal : 0,
+                                        minus: isBenefic ? 0 : rawVal,
+                                        net: isBenefic ? rawVal : -rawVal
+                                    };
                                 }
-                            } else if (isHouse && dataKey === 'equal_cusps' && currentData.aspect_matrices.cusp_drishti && currentData.aspect_matrices.cusp_drishti.by_house && currentData.aspect_matrices.cusp_drishti.by_house[c]) {
+                            } else if (isHouse && (dataKey === 'equal_cusps' || dataKey === 'cusps') && currentData.aspect_matrices.cusp_drishti && currentData.aspect_matrices.cusp_drishti.by_house && currentData.aspect_matrices.cusp_drishti.by_house[c]) {
                                 const rawVal = currentData.aspect_matrices.cusp_drishti.by_house[c][p];
                                 if (rawVal !== undefined) {
-                                    entry = { raw: rawVal, plus: 0, minus: 0, net: 0 };
+                                    const isLord = (currentData.vargas?.D1?.grahas?.[p]?.ruled_houses || []).includes(Number(c));
+                                    const isBenefic = isLord || (currentData.aspect_matrices.benefic_malefic_totals?.classification?.[p] ?? (p === 'Jupiter' || p === 'Venus'));
+                                    entry = {
+                                        raw: rawVal,
+                                        plus: isBenefic ? rawVal : 0,
+                                        minus: isBenefic ? 0 : rawVal,
+                                        net: isBenefic ? rawVal : -rawVal
+                                    };
                                 }
                             }
                         }

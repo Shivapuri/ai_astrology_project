@@ -837,6 +837,7 @@ function updateAllWidgets() {
             else if (type.startsWith('aspects-') && typeof updateAspectsWidgetForCell === 'function') updateAspectsWidgetForCell(cell);
             else if (type === 'info' && typeof refreshContextInfoForCell === 'function') refreshContextInfoForCell(cell);
             else if (type === 'shadbala-table' && typeof updateShadbalaTableWidget === 'function') updateShadbalaTableWidget();
+            else if (type === 'bhava-bala' && typeof updateBhavaBalaWidget === 'function') updateBhavaBalaWidget(cell, chartData);
             else if (type === 'notes' && typeof updateNotesWidget === 'function') updateNotesWidget(cell);
             else if (type === 'rashi-drishti' && typeof updateRashiDrishtiWidget === 'function') updateRashiDrishtiWidget(cell);
             else if (type === 'sign-attributes' && typeof updateSignAttributesWidget === 'function') updateSignAttributesWidget(cell);
@@ -1774,23 +1775,32 @@ function updateShadbalaTable() {
         legacyTbody.innerHTML = "";
         planetsOrder.forEach(p => {
             if (!sb[p]) return;
-            const data = sb[p];
-            const isQualified = data.ratio >= 1.0;
+            const sthana = data.sthana_bala !== undefined ? data.sthana_bala : data.Sthana_Bala;
+            const dig = data.dig_bala !== undefined ? data.dig_bala : data.Dig_Bala;
+            const kala = data.kala_bala !== undefined ? data.kala_bala : data.Kala_Bala;
+            const cheshta = data.cheshta_bala !== undefined ? data.cheshta_bala : data.Cheshta_Bala;
+            const naisargika = data.naisargika_bala !== undefined ? data.naisargika_bala : data.Naisargika_Bala;
+            const drik = data.drik_bala !== undefined ? data.drik_bala : data.Drik_Bala;
+            const totRupa = data.total_rupa !== undefined ? data.total_rupa : data.Total_Rupas;
+            const reqRupa = data.required_rupa !== undefined ? data.required_rupa : (data.Required_Total ? data.Required_Total / 60 : undefined);
+            const ratioVal = data.ratio !== undefined ? data.ratio : (data.Pct_Required_Total ? data.Pct_Required_Total / 100 : (totRupa && reqRupa ? totRupa / reqRupa : 1.0));
+
+            const isQualified = ratioVal >= 1.0;
             const statusColor = isQualified ? "var(--status-benefic)" : "var(--status-malefic)";
             const statusText = isQualified ? "Strong" : "Weak";
 
             const tr = document.createElement("tr");
             tr.innerHTML = `
                 <td><strong>${p}</strong></td>
-                <td>${data.sthana_bala ? data.sthana_bala.toFixed(1) : '-'}</td>
-                <td>${data.dig_bala ? data.dig_bala.toFixed(1) : '-'}</td>
-                <td>${data.kala_bala ? data.kala_bala.toFixed(1) : '-'}</td>
-                <td>${data.cheshta_bala ? data.cheshta_bala.toFixed(1) : '-'}</td>
-                <td>${data.naisargika_bala ? data.naisargika_bala.toFixed(1) : '-'}</td>
-                <td>${data.drik_bala ? data.drik_bala.toFixed(1) : '-'}</td>
-                <td><strong>${data.total_rupa ? data.total_rupa.toFixed(2) : '-'}</strong></td>
-                <td>${data.required_rupa ? data.required_rupa.toFixed(2) : '-'}</td>
-                <td><strong style="color: ${statusColor}">${statusText} (${(data.ratio * 100).toFixed(0)}%)</strong></td>
+                <td>${sthana !== undefined ? Number(sthana).toFixed(1) : '-'}</td>
+                <td>${dig !== undefined ? Number(dig).toFixed(1) : '-'}</td>
+                <td>${kala !== undefined ? Number(kala).toFixed(1) : '-'}</td>
+                <td>${cheshta !== undefined ? Number(cheshta).toFixed(1) : '-'}</td>
+                <td>${naisargika !== undefined ? Number(naisargika).toFixed(1) : '-'}</td>
+                <td>${drik !== undefined ? Number(drik).toFixed(1) : '-'}</td>
+                <td><strong>${totRupa !== undefined ? Number(totRupa).toFixed(2) : '-'}</strong></td>
+                <td>${reqRupa !== undefined ? Number(reqRupa).toFixed(2) : '-'}</td>
+                <td><strong style="color: ${statusColor}">${statusText} (${(ratioVal * 100).toFixed(0)}%)</strong></td>
             `;
             legacyTbody.appendChild(tr);
         });

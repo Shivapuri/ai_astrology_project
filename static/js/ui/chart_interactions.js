@@ -662,7 +662,7 @@
         resetFloatingWindowPosition();
 
         if (card) {
-            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita', 'report'].includes(widgetType);
+            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'bhava-bala', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita', 'report'].includes(widgetType);
             const w = isWide ? Math.min(1480, window.innerWidth - 40) : Math.min(1000, window.innerWidth - 40);
             const h = Math.min(840, window.innerHeight - 60);
             card.style.width = w + 'px';
@@ -959,15 +959,21 @@
                 let outVir = 0;
                 if (planetId !== 'Lagna' && adv && adv.planets && adv.planets[rowId] && adv.planets[rowId][planetId]) {
                     outVir = Math.round(adv.planets[rowId][planetId].raw || 0);
+                } else if (planetId !== 'Lagna' && currentData?.aspect_matrices?.graha_drishti?.outgoing?.[planetId]?.[rowId] !== undefined) {
+                    outVir = Math.round(currentData.aspect_matrices.graha_drishti.outgoing[planetId][rowId]);
                 }
 
                 let inVir = 0;
                 if (planetId === 'Lagna') {
                     if (adv && adv.cusps && (adv.cusps[1] || adv.cusps['1']) && (adv.cusps[1] || adv.cusps['1'])[rowId]) {
                         inVir = Math.round((adv.cusps[1] || adv.cusps['1'])[rowId].raw || 0);
+                    } else if (currentData?.aspect_matrices?.cusp_drishti?.by_house?.[1]?.[rowId] !== undefined) {
+                        inVir = Math.round(currentData.aspect_matrices.cusp_drishti.by_house[1][rowId]);
                     }
                 } else if (adv && adv.planets && adv.planets[planetId] && adv.planets[planetId][rowId]) {
                     inVir = Math.round(adv.planets[planetId][rowId].raw || 0);
+                } else if (currentData?.aspect_matrices?.graha_drishti?.incoming?.[planetId]?.[rowId] !== undefined) {
+                    inVir = Math.round(currentData.aspect_matrices.graha_drishti.incoming[planetId][rowId]);
                 }
 
                 let rowLon = 0;

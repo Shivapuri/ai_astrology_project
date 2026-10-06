@@ -826,6 +826,88 @@ def test_defeated_lord_in_planetary_war(calibrated_shadbala):
     assert "Lord Mars defeated in planetary war (Nīpīḍita)" not in inauspicious_win
 
 
+def test_swami_shivapuri_5th_house_benchmark():
+    """
+    Certifies Mantreśvara's Phaladīpikā (Ch. 15.1–3 & 15.18) on the Swami Shivapuri benchmark:
+    Leo Lagna with:
+    - Jupiter (Lord of 5th) in Sagittarius (5th house) at 377.5 Virūpas (96.8% of 390 required, no combustion/debilitation).
+    - Ketu in 5th house.
+    - Sun + Saturn in 4th house, dark Moon (< 30 Paksha Bala) in 6th house (Pāpakartarī).
+    
+    Expected Result:
+    - House 5 evaluates to a positive score (approximately +10.0 to +15.0 or tempered positive).
+    - Categorized as Miśra (Tempered & Resilient), NEVER Hīna.
+    - Sva-kṣetra Veto Floor prevents house ruination when unblemished lord is resident at home.
+    - Ketu penalty is moderated from -15.0 to -3.0 by resident lord.
+    - Pāpakartarī penalty is dampened 50% from -20.0 to -10.0 by resident lord.
+    """
+    baseline = MockChartBaseline(
+        ascendant=125.0,  # Leo Lagna (Whole sign: H1 Leo, H4 Scorpio, H5 Sagittarius, H6 Capricorn)
+        planets={
+            "Sun": {"lon": 220.0, "is_combust": False},
+            "Saturn": {"lon": 230.0, "is_combust": False},
+            "Jupiter": {"lon": 250.0, "is_combust": False},
+            "Ketu": {"lon": 255.0, "is_combust": False},
+            "Moon": {"lon": 280.0, "is_combust": False},
+            "Mars": {"lon": 10.0, "is_combust": False},
+            "Mercury": {"lon": 190.0, "is_combust": False},
+            "Venus": {"lon": 160.0, "is_combust": False},
+            "Rahu": {"lon": 75.0, "is_combust": False},
+        }
+    )
+    shadbala = {
+        "Sun": {"Total_Virupas": 400.0, "Total_Rupas": 6.67, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+        "Moon": {"Total_Virupas": 350.0, "Total_Rupas": 5.83, "Dig_Bala": 30.0, "Paksha_Bala": 15.0},  # Dark Moon < 30
+        "Mars": {"Total_Virupas": 350.0, "Total_Rupas": 5.83, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+        "Mercury": {"Total_Virupas": 420.0, "Total_Rupas": 7.0, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+        "Jupiter": {"Total_Virupas": 377.5, "Total_Rupas": 6.29, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+        "Venus": {"Total_Virupas": 350.0, "Total_Rupas": 5.83, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+        "Saturn": {"Total_Virupas": 350.0, "Total_Rupas": 5.83, "Dig_Bala": 30.0, "Paksha_Bala": 30.0},
+    }
+
+    bhavas = calculate_bhava_bala(baseline, shadbala, house_system="whole_sign")
+    h5 = bhavas[5]
+    atm5 = h5["atmosphere"]
+
+    # 1. House 5 evaluates to a positive score (never Hīna <= -20.0)
+    assert atm5["net_atmosphere_score"] > 0.0
+    assert h5["classification"] == "Miśra"
+    assert "Hīna" not in atm5["classification"]
+
+    # 2. Check influence diagnostics
+    inauspicious_str = " ".join(atm5["inauspicious_influences"])
+    auspicious_str = " ".join(atm5["auspicious_influences"])
+
+    assert "House lord Jupiter resident in own sign Sagittarius" in auspicious_str
+    assert "Ascetic Ketu moderated by resident lord Jupiter" in auspicious_str
+    assert "dampened 50% by resident lord" in inauspicious_str
+    assert "Vad-Bhāva Ruination" not in inauspicious_str
+
+    # 3. Verify with certified astronomical baseline of Swami Shivapuri
+    from jyotish.baseline import ChartBaseline
+    from jyotish.relationships.relationships import calculate_chart_dignities
+    from jyotish.aspects.aspects import calculate_aspect_matrices
+    from jyotish.shadbala.shadbala import calculate_shadbala
+
+    shivapuri = ChartBaseline(
+        name="Shivapuri",
+        year=1983, month=11, day=10, hour=22, minute=20, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0,
+        nakshatra_system="ERNST_DHRUVA"
+    )
+    dignities = calculate_chart_dignities(shivapuri)
+    aspects = calculate_aspect_matrices(shivapuri)
+    sb = calculate_shadbala(shivapuri, dignities=dignities, aspect_matrices=aspects)
+    bb = calculate_bhava_bala(shivapuri, sb, aspects)
+    atm_shiv = bb[5]["atmosphere"]
+
+    assert 10.0 <= atm_shiv["net_atmosphere_score"] <= 15.0
+    assert bb[5]["classification"] == "Miśra"
+    assert "Hīna" not in atm_shiv["classification"]
+    assert "Tempered & Resilient" in atm_shiv["environmental_weather"]
+
+
+
 
 
 
