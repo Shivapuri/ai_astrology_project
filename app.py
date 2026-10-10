@@ -59,7 +59,7 @@ def index():
         
     return render_template('index.html', natives=dropdown_natives, all_natives=all_natives, knowledge_base=knowledge_base)
 
-def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0, nakshatra_system="ERNST_DHRUVA", debilitation_mode="kala_degree"):
+def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_override=None, time_override=None, offset_seconds=0, nakshatra_system="ERNST_DHRUVA", debilitation_mode="kala_degree", d2_mode="parashari", trimsamsa_mode="parashari"):
     try:
         date_str = str(date_override) if date_override else str(native.get('date', '01/01/2000'))
         year, month, day = native_manager.parse_date_to_parts(date_str)
@@ -130,7 +130,9 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
         d24_mode=d24_mode,
         place=native.get('place', ''),
         nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        d2_mode=d2_mode,
+        trimsamsa_mode=trimsamsa_mode
     )
     chart["preview_info"] = {
         "is_preview": is_preview,
@@ -198,6 +200,8 @@ def get_chart(native_id):
         
     d10_mode = request.args.get('d10_mode', 'reverse')
     d24_mode = request.args.get('d24_mode', 'reverse')
+    d2_mode = request.args.get('d2_mode', 'parashari')
+    trimsamsa_mode = request.args.get('trimsamsa_mode', 'parashari')
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
     show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
@@ -213,7 +217,9 @@ def get_chart(native_id):
         time_override=time_override,
         offset_seconds=offset_seconds,
         nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        d2_mode=d2_mode,
+        trimsamsa_mode=trimsamsa_mode
     )
     
     # Efficient SVG generation:
@@ -255,6 +261,8 @@ def get_chart_svg(native_id):
     outer = request.args.get('outer', 'D9' if varga == 'D1' else varga)
     d10_mode = request.args.get('d10_mode', 'reverse')
     d24_mode = request.args.get('d24_mode', 'reverse')
+    d2_mode = request.args.get('d2_mode', 'parashari')
+    trimsamsa_mode = request.args.get('trimsamsa_mode', 'parashari')
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
     show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
@@ -270,7 +278,9 @@ def get_chart_svg(native_id):
         time_override=time_override,
         offset_seconds=offset_seconds,
         nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        d2_mode=d2_mode,
+        trimsamsa_mode=trimsamsa_mode
     )
 
     vargas = chart_data.get("vargas", {})

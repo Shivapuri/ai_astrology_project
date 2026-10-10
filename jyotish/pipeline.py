@@ -118,10 +118,11 @@ class ChartPipeline:
         kendra_bala_mode: str = "flat_parashara",
         phala_mode: Optional[str] = None,
         pillar_mode: str = "kala_breakdown",
-        trimsamsa_mode: Optional[str] = None,
+        trimsamsa_mode: str = "parashari",
         saptavarga_mode: Optional[str] = None,
         drik_mode: Optional[str] = None,
         ayana_tradition: str = "parashara",
+        d2_mode: str = "parashari",
         baseline: Optional[ChartBaseline] = None
     ):
         self.name = name
@@ -144,10 +145,11 @@ class ChartPipeline:
         self.kendra_bala_mode = kendra_bala_mode
         self.phala_mode = phala_mode
         self.pillar_mode = pillar_mode
-        self.trimsamsa_mode = trimsamsa_mode
+        self.trimsamsa_mode = trimsamsa_mode or "parashari"
         self.saptavarga_mode = saptavarga_mode
         self.drik_mode = drik_mode
         self.ayana_tradition = ayana_tradition
+        self.d2_mode = d2_mode
         self._provided_baseline = baseline
 
     # =========================================================================
@@ -171,7 +173,9 @@ class ChartPipeline:
             place=self.place,
             d10_mode=self.d10_mode,
             d24_mode=self.d24_mode,
-            nakshatra_system=self.nakshatra_system
+            nakshatra_system=self.nakshatra_system,
+            d2_mode=self.d2_mode,
+            trimsamsa_mode=self.trimsamsa_mode
         )
 
     # =========================================================================
@@ -275,8 +279,8 @@ class ChartPipeline:
         jd = anchors["jd_utc"]
         d1_longitudes = {p: coords[p]["longitude"] for p in coords}
 
-        # Harmonize D30 coordinates for Kala harmonic varga calculations
-        if "D30" in vargas_data:
+        # Only overwrite with harmonic coordinates if harmonic mode is explicitly requested
+        if "D30" in vargas_data and getattr(self, "trimsamsa_mode", None) == "harmonic":
             for p_name, g_entry in vargas_data["D30"]["grahas"].items():
                 if "continuous_harmonic_longitude" in g_entry:
                     g_entry["longitude"] = g_entry["continuous_harmonic_longitude"]
@@ -289,35 +293,69 @@ class ChartPipeline:
 
         # Populate bhava occupancy for each varga (pure math, zero ephemeris)
         for v_name, v_dict in vargas_data.items():
-            v_cusps = [c["longitude"] for c in v_dict.get("cusps", [])]
-            if len(v_cusps) == 12:
-                bhavas = []
-                for i in range(12):
-                    prev_cusp = v_cusps[(i - 1) % 12]
-                    curr_cusp = v_cusps[i]
-                    next_cusp = v_cusps[(i + 1) % 12]
+            if v_name == "D1":
+                v_cusps = [c["longitude"] for c in v_dict.get("cusps", [])]
+                if len(v_cusps) == 12:
+                    bhavas = []
+                    for i in range(12):
+                        prev_cusp = v_cusps[(i - 1) % 12]
+                        curr_cusp = v_cusps[i]
+                        next_cusp = v_cusps[(i + 1) % 12]
 
-                    diff_prev = (curr_cusp - prev_cusp) % 360.0
-                    start = (prev_cusp + diff_prev / 2.0) % 360.0
-                    diff_next = (next_cusp - curr_cusp) % 360.0
-                    end = (curr_cusp + diff_next / 2.0) % 360.0
+                        diff_prev = (curr_cusp - prev_cusp) % 360.0
+                        start = (prev_cusp + diff_prev / 2.0) % 360.0
+                        diff_next = (next_cusp - curr_cusp) % 360.0
+                        end = (curr_cusp + diff_next / 2.0) % 360.0
+
+                        bhavas.append({
+                            "house": i + 1,
+                            "start": round(start, 4),
+                            "cusp": round(curr_cusp, 4),
+                            "end": round(end, 4),
+                            "planets": []
+                        })
+
+                    for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+                        p_lon = v_dict["lagna"]["longitude"] if p_name == "Lagna" else v_dict["grahas"][p_name]["longitude"]
+                        for bhava in bhavas:
+                            s = bhava["start"]
+                            e = bhava["end"]
+                            in_house = (s <= p_lon < e) if s <= e else (p_lon >= s or p_lon < e)
+                            if in_house:
+                                bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
+                    v_dict["bhavas"] = bhavas
+            else:
+                # Divisional charts: Classical Whole Sign Houses (Rāśi Bhāva) anchored to the Varga Ascendant
+                l_sign = v_dict["lagna"]["sign"]
+                l_sign_idx = ZODIAC_SIGNS.index(l_sign) if l_sign in ZODIAC_SIGNS else v_dict["lagna"].get("sign_index", 0)
+                l_deg_in_sign = v_dict["lagna"].get("degree_0_to_30", 0.0)
+
+                bhavas = []
+                for h in range(1, 13):
+                    sign_idx = (l_sign_idx + h - 1) % 12
+                    h_sign_name = ZODIAC_SIGNS[sign_idx]
+                    start = float(sign_idx * 30.0)
+                    end = float((sign_idx + 1) * 30.0)
+                    cusp = round(start + (l_deg_in_sign if h == 1 else 15.0), 4)
+
+                    house_planets = []
+                    if h == 1:
+                        house_planets.append("Asc")
+                    for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+                        if p_name in v_dict["grahas"]:
+                            p_sign = v_dict["grahas"][p_name]["sign"]
+                            if p_sign == h_sign_name:
+                                house_planets.append(p_name)
 
                     bhavas.append({
-                        "house": i + 1,
+                        "house": h,
+                        "sign": h_sign_name,
+                        "sign_index": sign_idx,
                         "start": round(start, 4),
-                        "cusp": round(curr_cusp, 4),
+                        "cusp": cusp,
                         "end": round(end, 4),
-                        "planets": []
+                        "planets": house_planets
                     })
-
-                for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
-                    p_lon = v_dict["lagna"]["longitude"] if p_name == "Lagna" else v_dict["grahas"][p_name]["longitude"]
-                    for bhava in bhavas:
-                        s = bhava["start"]
-                        e = bhava["end"]
-                        in_house = (s <= p_lon < e) if s <= e else (p_lon >= s or p_lon < e)
-                        if in_house:
-                            bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
                 v_dict["bhavas"] = bhavas
 
         d1_grahas = vargas_data["D1"]["grahas"]

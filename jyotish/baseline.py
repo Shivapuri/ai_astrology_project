@@ -37,6 +37,7 @@ from jyotish.baseline_tables import (
     VIMSHOTTARI_YEARS,
     COMBUSTION_ORBS,
     VARGAS_LIST,
+    PLANET_SYMBOLS,
     SHASTIAMSA_DEITIES,
     SHASTIAMSA_MALEFIC_ODD,
     CHANDRA_KRIYAS_DATA,
@@ -60,6 +61,7 @@ from jyotish.baseline_math import (
     calculate_unequal_trimsamsa,
     calculate_shastiamsa_details,
     calculate_baladi_state,
+    get_varga_ruler_info,
     get_eq_from_ecl,
     find_preceding_solar_crossing,
 )
@@ -87,7 +89,9 @@ class ChartBaseline:
         place: str = "",
         d10_mode: str = "reverse",
         d24_mode: str = "reverse",
-        nakshatra_system: str = "ERNST_DHRUVA"
+        nakshatra_system: str = "ERNST_DHRUVA",
+        d2_mode: str = "parashari",
+        trimsamsa_mode: str = "parashari"
     ):
         self.name = name
         self.year = year
@@ -103,6 +107,8 @@ class ChartBaseline:
         self.d10_mode = d10_mode
         self.d24_mode = d24_mode
         self.nakshatra_system = nakshatra_system
+        self.d2_mode = d2_mode
+        self.trimsamsa_mode = trimsamsa_mode
 
     # =========================================================================
     # 1. TIME & ASTRONOMICAL ANCHORS (Swiss Ephemeris called ONCE)
@@ -898,25 +904,53 @@ class ChartBaseline:
         vargas_data = {}
         for v in VARGAS_LIST:
             v_grahas = {}
+            is_planetary_varga = (v in ("D2", "D3", "D30"))
             for p in PLANETS_ORDER:
+                base_p_lon = d1_lons[p]
+                base_p_sign_idx = int(base_p_lon // 30)
+                base_p_deg = base_p_lon % 30.0
+                r_info = get_varga_ruler_info(
+                    v, base_p_sign_idx, base_p_deg,
+                    d2_mode=self.d2_mode, d10_mode=self.d10_mode, d24_mode=self.d24_mode, trimsamsa_mode=self.trimsamsa_mode
+                )
+
                 if v == "D30":
-                    t_info = calculate_unequal_trimsamsa(d1_lons[p])
-                    h_lon = (d1_lons[p] * 30.0) % 360.0
+                    t_info = calculate_unequal_trimsamsa(base_p_lon)
+                    h_lon = (base_p_lon * 30.0) % 360.0
                     h_idx = int(h_lon // 30)
+
+                    if self.trimsamsa_mode == "harmonic":
+                        primary_lon = round(h_lon, 4)
+                        primary_s_idx = h_idx
+                        primary_sign = ZODIAC_SIGNS[h_idx]
+                        primary_deg = round(h_lon % 30.0, 4)
+                    else:
+                        primary_lon = t_info["longitude"]
+                        primary_s_idx = t_info["sign_index"]
+                        primary_sign = t_info["sign"]
+                        primary_deg = t_info["degree_in_sign"]
+
                     g_entry = {
-                        "longitude": t_info["longitude"],
-                        "sign_index": t_info["sign_index"],
-                        "sign": t_info["sign"],
-                        "degree_0_to_30": t_info["degree_in_sign"],
-                        "degree_in_sign": t_info["degree_in_sign"],
+                        "longitude": primary_lon,
+                        "sign_index": primary_s_idx,
+                        "sign": primary_sign,
+                        "degree_0_to_30": primary_deg,
+                        "degree_in_sign": primary_deg,
                         "continuous_harmonic_longitude": round(h_lon, 4),
                         "continuous_sign": ZODIAC_SIGNS[h_idx],
                         "continuous_degree_in_sign": round(h_lon % 30.0, 4),
                         "is_retrograde": bodies[p]["is_retrograde"],
-                        "parashari_trimsamsa": t_info
+                        "parashari_trimsamsa": t_info,
+                        "ruler": r_info["ruler"],
+                        "ruler_symbol": r_info["ruler_symbol"],
+                        "bound_ruler": r_info.get("bound_ruler", t_info["ruler"]),
+                        "bound_symbol": r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_info["ruler"], "")),
+                        "is_planetary_varga": True
                     }
                 else:
-                    v_lon = calculate_varga_longitude(d1_lons[p], v, self.d10_mode, self.d24_mode) % 360.0
+                    v_lon = calculate_varga_longitude(
+                        base_p_lon, v, d10_mode=self.d10_mode, d24_mode=self.d24_mode, d2_mode=self.d2_mode, trimsamsa_mode=self.trimsamsa_mode
+                    ) % 360.0
                     s_idx = int(v_lon // 30)
                     deg_in_sign = round(v_lon % 30.0, 4)
 
@@ -926,47 +960,101 @@ class ChartBaseline:
                         "sign": ZODIAC_SIGNS[s_idx],
                         "degree_0_to_30": deg_in_sign,
                         "degree_in_sign": deg_in_sign,
-                        "is_retrograde": bodies[p]["is_retrograde"]
+                        "is_retrograde": bodies[p]["is_retrograde"],
+                        "ruler": r_info["ruler"],
+                        "ruler_symbol": r_info["ruler_symbol"],
+                        "is_planetary_varga": is_planetary_varga
                     }
                     if v == "D1":
                         g_entry["latitude"] = bodies[p]["latitude"]
+                    elif v == "D2":
+                        g_entry["hora_lord"] = r_info.get("hora_lord", r_info["ruler"])
+                        g_entry["hora_symbol"] = r_info.get("hora_symbol", r_info["ruler_symbol"])
+                        g_entry["hora_polarity"] = r_info.get("hora_polarity", "Solar" if r_info["ruler"] == "Sun" else "Lunar")
                     elif v == "D60":
-                        g_entry["shastiamsa"] = calculate_shastiamsa_details(d1_lons[p])
+                        g_entry["shastiamsa"] = calculate_shastiamsa_details(base_p_lon)
 
                 v_grahas[p] = g_entry
 
+            base_l_lon = d1_lons["Lagna"]
+            base_l_sign_idx = int(base_l_lon // 30)
+            base_l_deg = base_l_lon % 30.0
+            l_r_info = get_varga_ruler_info(
+                v, base_l_sign_idx, base_l_deg,
+                d2_mode=self.d2_mode, d10_mode=self.d10_mode, d24_mode=self.d24_mode, trimsamsa_mode=self.trimsamsa_mode
+            )
+
             if v == "D30":
-                t_lagna = calculate_unequal_trimsamsa(d1_lons["Lagna"])
-                h_l_lon = (d1_lons["Lagna"] * 30.0) % 360.0
+                t_lagna = calculate_unequal_trimsamsa(base_l_lon)
+                h_l_lon = (base_l_lon * 30.0) % 360.0
                 h_l_idx = int(h_l_lon // 30)
+                if self.trimsamsa_mode == "harmonic":
+                    l_prim_lon = round(h_l_lon, 4)
+                    l_prim_s_idx = h_l_idx
+                    l_prim_sign = ZODIAC_SIGNS[h_l_idx]
+                    l_prim_deg = round(h_l_lon % 30.0, 4)
+                else:
+                    l_prim_lon = t_lagna["longitude"]
+                    l_prim_s_idx = t_lagna["sign_index"]
+                    l_prim_sign = t_lagna["sign"]
+                    l_prim_deg = t_lagna["degree_in_sign"]
+
                 v_lagna = {
-                    "longitude": t_lagna["longitude"],
-                    "sign_index": t_lagna["sign_index"],
-                    "sign": t_lagna["sign"],
-                    "degree_0_to_30": t_lagna["degree_in_sign"],
-                    "degree_in_sign": t_lagna["degree_in_sign"],
+                    "longitude": l_prim_lon,
+                    "sign_index": l_prim_s_idx,
+                    "sign": l_prim_sign,
+                    "degree_0_to_30": l_prim_deg,
+                    "degree_in_sign": l_prim_deg,
                     "continuous_harmonic_longitude": round(h_l_lon, 4),
                     "continuous_sign": ZODIAC_SIGNS[h_l_idx],
                     "continuous_degree_in_sign": round(h_l_lon % 30.0, 4),
-                    "parashari_trimsamsa": t_lagna
+                    "parashari_trimsamsa": t_lagna,
+                    "ruler": l_r_info["ruler"],
+                    "ruler_symbol": l_r_info["ruler_symbol"],
+                    "bound_ruler": l_r_info.get("bound_ruler", t_lagna["ruler"]),
+                    "bound_symbol": l_r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_lagna["ruler"], "")),
+                    "is_planetary_varga": True
                 }
 
-                t_mc = calculate_unequal_trimsamsa(d1_lons["MC"])
-                h_mc_lon = (d1_lons["MC"] * 30.0) % 360.0
+                base_mc_lon = d1_lons["MC"]
+                t_mc = calculate_unequal_trimsamsa(base_mc_lon)
+                h_mc_lon = (base_mc_lon * 30.0) % 360.0
                 h_mc_idx = int(h_mc_lon // 30)
+                mc_r_info = get_varga_ruler_info(
+                    v, int(base_mc_lon // 30), base_mc_lon % 30.0,
+                    d2_mode=self.d2_mode, d10_mode=self.d10_mode, d24_mode=self.d24_mode, trimsamsa_mode=self.trimsamsa_mode
+                )
+                if self.trimsamsa_mode == "harmonic":
+                    mc_prim_lon = round(h_mc_lon, 4)
+                    mc_prim_s_idx = h_mc_idx
+                    mc_prim_sign = ZODIAC_SIGNS[h_mc_idx]
+                    mc_prim_deg = round(h_mc_lon % 30.0, 4)
+                else:
+                    mc_prim_lon = t_mc["longitude"]
+                    mc_prim_s_idx = t_mc["sign_index"]
+                    mc_prim_sign = t_mc["sign"]
+                    mc_prim_deg = t_mc["degree_in_sign"]
+
                 v_mc = {
-                    "longitude": t_mc["longitude"],
-                    "sign_index": t_mc["sign_index"],
-                    "sign": t_mc["sign"],
-                    "degree_0_to_30": t_mc["degree_in_sign"],
-                    "degree_in_sign": t_mc["degree_in_sign"],
+                    "longitude": mc_prim_lon,
+                    "sign_index": mc_prim_s_idx,
+                    "sign": mc_prim_sign,
+                    "degree_0_to_30": mc_prim_deg,
+                    "degree_in_sign": mc_prim_deg,
                     "continuous_harmonic_longitude": round(h_mc_lon, 4),
                     "continuous_sign": ZODIAC_SIGNS[h_mc_idx],
                     "continuous_degree_in_sign": round(h_mc_lon % 30.0, 4),
-                    "parashari_trimsamsa": t_mc
+                    "parashari_trimsamsa": t_mc,
+                    "ruler": mc_r_info["ruler"],
+                    "ruler_symbol": mc_r_info["ruler_symbol"],
+                    "bound_ruler": mc_r_info.get("bound_ruler", t_mc["ruler"]),
+                    "bound_symbol": mc_r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_mc["ruler"], "")),
+                    "is_planetary_varga": True
                 }
             else:
-                l_lon = calculate_varga_longitude(d1_lons["Lagna"], v, self.d10_mode, self.d24_mode) % 360.0
+                l_lon = calculate_varga_longitude(
+                    base_l_lon, v, d10_mode=self.d10_mode, d24_mode=self.d24_mode, d2_mode=self.d2_mode, trimsamsa_mode=self.trimsamsa_mode
+                ) % 360.0
                 l_idx = int(l_lon // 30)
                 l_deg = round(l_lon % 30.0, 4)
                 v_lagna = {
@@ -974,24 +1062,45 @@ class ChartBaseline:
                     "sign_index": l_idx,
                     "sign": ZODIAC_SIGNS[l_idx],
                     "degree_0_to_30": l_deg,
-                    "degree_in_sign": l_deg
+                    "degree_in_sign": l_deg,
+                    "ruler": l_r_info["ruler"],
+                    "ruler_symbol": l_r_info["ruler_symbol"],
+                    "is_planetary_varga": is_planetary_varga
                 }
+                if v == "D2":
+                    v_lagna["hora_lord"] = l_r_info.get("hora_lord", l_r_info["ruler"])
+                    v_lagna["hora_symbol"] = l_r_info.get("hora_symbol", l_r_info["ruler_symbol"])
+                    v_lagna["hora_polarity"] = l_r_info.get("hora_polarity", "Solar" if l_r_info["ruler"] == "Sun" else "Lunar")
+                elif v == "D60":
+                    v_lagna["shastiamsa"] = calculate_shastiamsa_details(base_l_lon)
 
                 # Project MC across all 16 divisional charts
-                mc_v_lon = calculate_varga_longitude(d1_lons["MC"], v, self.d10_mode, self.d24_mode) % 360.0
+                base_mc_lon = d1_lons["MC"]
+                mc_v_lon = calculate_varga_longitude(
+                    base_mc_lon, v, d10_mode=self.d10_mode, d24_mode=self.d24_mode, d2_mode=self.d2_mode, trimsamsa_mode=self.trimsamsa_mode
+                ) % 360.0
                 mc_idx = int(mc_v_lon // 30)
                 mc_deg = round(mc_v_lon % 30.0, 4)
+                mc_r_info = get_varga_ruler_info(
+                    v, int(base_mc_lon // 30), base_mc_lon % 30.0,
+                    d2_mode=self.d2_mode, d10_mode=self.d10_mode, d24_mode=self.d24_mode, trimsamsa_mode=self.trimsamsa_mode
+                )
                 v_mc = {
                     "longitude": round(mc_v_lon, 4),
                     "sign_index": mc_idx,
                     "sign": ZODIAC_SIGNS[mc_idx],
                     "degree_0_to_30": mc_deg,
-                    "degree_in_sign": mc_deg
+                    "degree_in_sign": mc_deg,
+                    "ruler": mc_r_info["ruler"],
+                    "ruler_symbol": mc_r_info["ruler_symbol"],
+                    "is_planetary_varga": is_planetary_varga
                 }
-
-                if v == "D60":
-                    v_lagna["shastiamsa"] = calculate_shastiamsa_details(d1_lons["Lagna"])
-                    v_mc["shastiamsa"] = calculate_shastiamsa_details(d1_lons["MC"])
+                if v == "D2":
+                    v_mc["hora_lord"] = mc_r_info.get("hora_lord", mc_r_info["ruler"])
+                    v_mc["hora_symbol"] = mc_r_info.get("hora_symbol", mc_r_info["ruler_symbol"])
+                    v_mc["hora_polarity"] = mc_r_info.get("hora_polarity", "Solar" if mc_r_info["ruler"] == "Sun" else "Lunar")
+                elif v == "D60":
+                    v_mc["shastiamsa"] = calculate_shastiamsa_details(base_mc_lon)
 
             # Divisional projected cusps for SVG rendering
             v_cusps = []
@@ -999,16 +1108,28 @@ class ChartBaseline:
                 if v == "D30":
                     t_c = calculate_unequal_trimsamsa(c_lon)
                     h_c_lon = (c_lon * 30.0) % 360.0
+                    if self.trimsamsa_mode == "harmonic":
+                        c_prim_lon = round(h_c_lon, 4)
+                        c_prim_s_idx = int(h_c_lon // 30)
+                        c_prim_sign = ZODIAC_SIGNS[c_prim_s_idx]
+                        c_prim_deg = round(h_c_lon % 30.0, 4)
+                    else:
+                        c_prim_lon = t_c["longitude"]
+                        c_prim_s_idx = t_c["sign_index"]
+                        c_prim_sign = t_c["sign"]
+                        c_prim_deg = t_c["degree_in_sign"]
                     v_cusps.append({
-                        "longitude": t_c["longitude"],
-                        "sign_index": t_c["sign_index"],
-                        "sign": t_c["sign"],
-                        "degree_0_to_30": t_c["degree_in_sign"],
-                        "degree_in_sign": t_c["degree_in_sign"],
+                        "longitude": c_prim_lon,
+                        "sign_index": c_prim_s_idx,
+                        "sign": c_prim_sign,
+                        "degree_0_to_30": c_prim_deg,
+                        "degree_in_sign": c_prim_deg,
                         "continuous_harmonic_longitude": round(h_c_lon, 4)
                     })
                 else:
-                    vc_lon = calculate_varga_longitude(c_lon, v, self.d10_mode, self.d24_mode) % 360.0
+                    vc_lon = calculate_varga_longitude(
+                        c_lon, v, d10_mode=self.d10_mode, d24_mode=self.d24_mode, d2_mode=self.d2_mode, trimsamsa_mode=self.trimsamsa_mode
+                    ) % 360.0
                     c_s_idx = int(vc_lon // 30)
                     v_cusps.append({
                         "longitude": round(vc_lon, 4),
@@ -1202,6 +1323,7 @@ __all__ = [
     "VIMSHOTTARI_YEARS",
     "COMBUSTION_ORBS",
     "VARGAS_LIST",
+    "PLANET_SYMBOLS",
     "SHASTIAMSA_DEITIES",
     "SHASTIAMSA_MALEFIC_ODD",
     "CHANDRA_KRIYAS_DATA",
@@ -1223,6 +1345,7 @@ __all__ = [
     "calculate_unequal_trimsamsa",
     "calculate_shastiamsa_details",
     "calculate_baladi_state",
+    "get_varga_ruler_info",
     "get_eq_from_ecl",
     "find_preceding_solar_crossing",
 ]

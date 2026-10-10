@@ -48,6 +48,12 @@ PLANET_ABBREVIATIONS: Dict[str, str] = {
     "Lagna": "Lg", "MC": "MC"
 }
 
+PLANET_SYMBOLS: Dict[str, str] = {
+    "Sun": "☉", "Moon": "☽", "Mars": "♂", "Mercury": "☿",
+    "Jupiter": "♃", "Venus": "♀", "Saturn": "♄", "Rahu": "☊", "Ketu": "☋",
+    "Lagna": "Asc", "MC": "MC"
+}
+
 COMBUSTION_ORBS: Dict[str, float] = {
     "Moon": 12.0,
     "Mars": 17.0,
@@ -117,9 +123,10 @@ SHASTIAMSA_DEITIES: List[str] = [
     "Amrita", "Payodhi", "Bhramana", "Chandrarekha"
 ]
 
-# 24 Malefic Shastiamsa indices in odd signs (1-indexed per classical texts)
+# Classical 24 Malefic Shastiamsa indices in odd signs (1-indexed per BPHS Ch. 6 / Phaladeepika Ch. 3)
+# Correction: 39 (Poornachandra) is benefic; 41 (Kulanasa) is malefic.
 SHASTIAMSA_MALEFIC_ODD: Set[int] = {
-    1, 2, 8, 9, 10, 11, 12, 15, 16, 30, 31, 32, 33, 34, 35, 39, 40, 42, 43, 44, 48, 51, 52, 59
+    1, 2, 8, 9, 10, 11, 12, 15, 16, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43, 44, 48, 51, 52, 59
 }
 
 # =============================================================================

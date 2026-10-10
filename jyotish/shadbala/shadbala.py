@@ -179,14 +179,26 @@ def calculate_saptavarga_bala(
     for varga in vargas:
         is_d1 = (varga == "D1")
 
-        if varga == "D30" and trimsamsa_mode == "unequal_parashara":
-            t_res = calculate_unequal_trimsamsa(p1_d1_lon)
-            varga_sign_name = t_res["sign"]
-            sign_lord = t_res["ruler"]
+        if varga == "D30":
+            if trimsamsa_mode == "unequal_parashara":
+                t_res = calculate_unequal_trimsamsa(p1_d1_lon)
+                varga_sign_name = t_res["sign"]
+                sign_lord = t_res["ruler"]
+            else:
+                # Harmonic 30 for Kala software parity
+                varga_lon = (p1_d1_lon * 30.0) % 360.0
+                varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+                varga_sign_name = SIGNS[varga_sign_idx]
+                sign_lord = SIGN_LORDS[varga_sign_name]
+        elif varga == "D2" and saptavarga_mode == "kala":
+            # Kala software uses cyclical 12-sign Horā for Saptavargaja Bala
+            varga_lon = calculate_varga_longitude(p1_d1_lon, "D2", d2_mode="cyclical")
+            varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+            varga_sign_name = SIGNS[varga_sign_idx]
+            sign_lord = SIGN_LORDS[varga_sign_name]
         else:
             # 1. Harmonic Longitude: check precomputed Stage 1 vargas first (D1 through D12)
-            # Note: D30 in Saptavarga Bala is the equal 1° harmonic trimsamsa per Kala software
-            if vargas_positions and varga in vargas_positions and varga != "D30":
+            if vargas_positions and varga in vargas_positions:
                 v_chart = vargas_positions[varga]
                 if isinstance(v_chart, dict) and "grahas" in v_chart and planet in v_chart["grahas"]:
                     v_entry = v_chart["grahas"][planet]
@@ -841,7 +853,8 @@ def calculate_subha_phala(
     planet_positions: Dict[str, float],
     dignities_map: Optional[Dict[str, Any]] = None,
     debilitation_mode: str = "kala_degree",
-    trimsamsa_mode: str = "unequal_parashara"
+    trimsamsa_mode: str = "unequal_parashara",
+    saptavarga_mode: str = "kala"
 ) -> float:
     """Calculates Śubha Phala across Saptavargas (D1, D2, D3, D7, D9, D12, D30)."""
     from jyotish.relationships.relationships import (
@@ -880,6 +893,23 @@ def calculate_subha_phala(
                     temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
                     compound = get_compound_relationship(natural, temporary)
                 d_str = get_dignity(planet, s_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
+            elif v == "D2" and saptavarga_mode == "kala":
+                p1_d1_lon = planet_positions[planet]
+                p1_d1_idx = int(p1_d1_lon / 30.0)
+                v_lon = calculate_varga_longitude(p1_d1_lon, "D2", d2_mode="cyclical")
+                s_idx = int((v_lon % 360.0) / 30.0)
+                s_name = SIGNS[s_idx]
+                sign_lord = SIGN_LORDS[s_name]
+                deg_in_sign = v_lon % 30.0
+                lord_d1_lon = planet_positions.get(sign_lord)
+                if lord_d1_lon is None:
+                    compound = "Neutral"
+                else:
+                    lord_d1_idx = int(lord_d1_lon / 30.0)
+                    natural = get_natural_relationship(planet, sign_lord)
+                    temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
+                    compound = get_compound_relationship(natural, temporary)
+                d_str = get_dignity(planet, s_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
             else:
                 d_entry = v_dignities.get(v, {}).get(planet, {})
                 d_str = d_entry.get("dignity", "Neutral") if isinstance(d_entry, dict) else str(d_entry)
@@ -905,11 +935,24 @@ def calculate_subha_phala(
     p1_d1_idx = int(p1_d1_lon / 30.0)
 
     for varga in vargas:
-        if varga == "D30" and trimsamsa_mode == "unequal_parashara":
-            t_res = calculate_unequal_trimsamsa(p1_d1_lon)
-            varga_sign_name = t_res["sign"]
-            sign_lord = t_res["ruler"]
-            deg_in_sign = t_res.get("degree_in_sign", p1_d1_lon % 30.0)
+        if varga == "D30":
+            if trimsamsa_mode == "unequal_parashara":
+                t_res = calculate_unequal_trimsamsa(p1_d1_lon)
+                varga_sign_name = t_res["sign"]
+                sign_lord = t_res["ruler"]
+                deg_in_sign = t_res.get("degree_in_sign", p1_d1_lon % 30.0)
+            else:
+                varga_lon = (p1_d1_lon * 30.0) % 360.0
+                varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+                varga_sign_name = SIGNS[varga_sign_idx]
+                sign_lord = SIGN_LORDS[varga_sign_name]
+                deg_in_sign = varga_lon % 30.0
+        elif varga == "D2" and saptavarga_mode == "kala":
+            varga_lon = calculate_varga_longitude(p1_d1_lon, "D2", d2_mode="cyclical")
+            varga_sign_idx = int((varga_lon % 360.0) / 30.0)
+            varga_sign_name = SIGNS[varga_sign_idx]
+            sign_lord = SIGN_LORDS[varga_sign_name]
+            deg_in_sign = varga_lon % 30.0
         else:
             varga_lon = calculate_varga_longitude(p1_d1_lon, varga)
             varga_sign_idx = int((varga_lon % 360.0) / 30.0)
@@ -1264,7 +1307,8 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             planet_positions,
             dignities_map=dignities,
             debilitation_mode=debilitation_mode,
-            trimsamsa_mode=trimsamsa_mode
+            trimsamsa_mode=trimsamsa_mode,
+            saptavarga_mode=saptavarga_mode
         )
         asubha_phala = max(0.0, 60.0 - subha_phala)
 

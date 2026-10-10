@@ -54,10 +54,11 @@ def generate_kala_chart(
     kendra_bala_mode: str = "flat_parashara",
     phala_mode: Optional[str] = None,
     pillar_mode: str = "kala_breakdown",
-    trimsamsa_mode: Optional[str] = None,
+    trimsamsa_mode: str = "harmonic",
     saptavarga_mode: Optional[str] = None,
     drik_mode: Optional[str] = None,
     ayana_tradition: str = "parashara",
+    d2_mode: str = "cyclical",
     **kwargs
 ) -> Dict[str, Any]:
     """
@@ -89,6 +90,7 @@ def generate_kala_chart(
         saptavarga_mode=saptavarga_mode,
         drik_mode=drik_mode,
         ayana_tradition=ayana_tradition,
+        d2_mode=d2_mode,
         **kwargs
     )
     result = pipeline.to_dict()

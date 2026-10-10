@@ -20,6 +20,8 @@ if os.path.exists(_ephe_path):
 
 from jyotish.baseline_tables import (
     ZODIAC_SIGNS,
+    SIGN_LORDS,
+    PLANET_SYMBOLS,
     VIMSHOTTARI_SEQUENCE,
     VIMSHOTTARI_YEARS,
     SHASTIAMSA_DEITIES,
@@ -44,7 +46,9 @@ def calculate_varga_longitude(
     longitude: float,
     varga: str,
     d10_mode: str = "reverse",
-    d24_mode: str = "reverse"
+    d24_mode: str = "reverse",
+    d2_mode: str = "parashari",
+    trimsamsa_mode: str = "harmonic"
 ) -> float:
     """Harmonic coordinate transformation across 16 divisional charts."""
     sign_idx = int(longitude // 30)
@@ -62,9 +66,19 @@ def calculate_varga_longitude(
         return longitude
     elif varga == "D2":
         div_size = 15.0
-        div_index = int(deg // div_size)
-        varga_sign = (sign_idx + div_index * 6) % 12
-        return (varga_sign * 30.0) + ((deg % div_size) / div_size * 30.0)
+        div_index = min(1, int(deg // div_size))
+        if d2_mode in ("cyclical", "parivritti", "12_signs"):
+            varga_sign = (sign_idx + div_index * 6) % 12
+            return (varga_sign * 30.0) + ((deg % div_size) / div_size * 30.0)
+        else:
+            # Classical Parāśarī Horā (bipolar Sun / Moon allocation):
+            # Odd signs: 0°-15° -> Sun (Leo, sign index 4); 15°-30° -> Moon (Cancer, sign index 3)
+            # Even signs: 0°-15° -> Moon (Cancer, sign index 3); 15°-30° -> Sun (Leo, sign index 4)
+            if is_odd:
+                varga_sign = 4 if div_index == 0 else 3
+            else:
+                varga_sign = 3 if div_index == 0 else 4
+            return (varga_sign * 30.0) + ((deg % div_size) / div_size * 30.0)
     elif varga == "D3":
         div_size = 10.0
         div_index = int(deg // div_size)
@@ -119,7 +133,10 @@ def calculate_varga_longitude(
         start = (element * 3) % 12
         return uniform_varga(27, start)
     elif varga == "D30":
-        return (longitude * 30.0) % 360.0
+        if trimsamsa_mode == "harmonic":
+            return (longitude * 30.0) % 360.0
+        else:
+            return calculate_unequal_trimsamsa(longitude)["longitude"]
     elif varga == "D40":
         start = 0 if is_odd else 6
         return uniform_varga(40, start)
@@ -212,10 +229,133 @@ def calculate_shastiamsa_details(longitude: float) -> Dict[str, Any]:
         "deity": deity,
         "nature": "Ashubha / Malefic" if is_malefic else "Shubha / Benefic",
         "is_benefic": not is_malefic,
+        "is_malefic": is_malefic,
         "harmonic_longitude": round(harmonic_lon, 4),
         "harmonic_sign": ZODIAC_SIGNS[h_idx],
         "degree_0_to_30": round(harmonic_lon % 30.0, 4)
     }
+
+
+def get_varga_ruler_info(
+    varga: str,
+    sign_idx: int,
+    deg_in_sign: float,
+    d2_mode: str = "parashari",
+    d10_mode: str = "reverse",
+    d24_mode: str = "reverse",
+    trimsamsa_mode: str = "parashari"
+) -> Dict[str, Any]:
+    """
+    Returns planetary lord metadata, symbols, and classification across divisional charts.
+    """
+    is_odd = (sign_idx % 2 == 0)
+    deg = deg_in_sign % 30.0
+
+    if varga == "D2":
+        div_size = 15.0
+        div_index = min(1, int(deg // div_size))
+        is_sun = (div_index == 0) if is_odd else (div_index == 1)
+        hora_lord = "Sun" if is_sun else "Moon"
+        hora_symbol = "☉" if is_sun else "☽"
+        hora_polarity = "Solar" if is_sun else "Lunar"
+        category = "Solar / Pingala" if is_sun else "Lunar / Ida"
+
+        if d2_mode in ("cyclical", "parivritti", "12_signs"):
+            v_sign_idx = (sign_idx + div_index * 6) % 12
+            ruler = SIGN_LORDS[ZODIAC_SIGNS[v_sign_idx]]
+            symbol = PLANET_SYMBOLS.get(ruler, "")
+            return {
+                "ruler": ruler,
+                "symbol": symbol,
+                "ruler_symbol": symbol,
+                "category": category,
+                "varga_type": "planetary",
+                "is_planetary_varga": True,
+                "hora_lord": hora_lord,
+                "hora_symbol": hora_symbol,
+                "hora_polarity": hora_polarity
+            }
+        else:
+            return {
+                "ruler": hora_lord,
+                "symbol": hora_symbol,
+                "ruler_symbol": hora_symbol,
+                "category": category,
+                "varga_type": "planetary",
+                "is_planetary_varga": True,
+                "hora_lord": hora_lord,
+                "hora_symbol": hora_symbol,
+                "hora_polarity": hora_polarity
+            }
+
+    elif varga == "D3":
+        div_index = min(2, int(deg // 10.0))
+        target_sign_idx = (sign_idx + div_index * 4) % 12
+        ruler = SIGN_LORDS[ZODIAC_SIGNS[target_sign_idx]]
+        symbol = PLANET_SYMBOLS.get(ruler, "")
+        return {
+            "ruler": ruler,
+            "symbol": symbol,
+            "ruler_symbol": symbol,
+            "category": f"Drekkāṇa Trine {div_index + 1}",
+            "varga_type": "planetary_triad",
+            "is_planetary_varga": True
+        }
+
+    elif varga == "D30":
+        base_lon = sign_idx * 30.0 + deg
+        t_info = calculate_unequal_trimsamsa(base_lon)
+        bound_ruler = t_info["ruler"]
+        bound_symbol = PLANET_SYMBOLS.get(bound_ruler, "")
+
+        if trimsamsa_mode == "harmonic":
+            harmonic_lon = (base_lon * 30.0) % 360.0
+            h_sign_idx = int(harmonic_lon // 30) % 12
+            h_sign_name = ZODIAC_SIGNS[h_sign_idx]
+            ruler = SIGN_LORDS[h_sign_name]
+            symbol = PLANET_SYMBOLS.get(ruler, "")
+            return {
+                "ruler": ruler,
+                "symbol": symbol,
+                "ruler_symbol": symbol,
+                "bound_ruler": bound_ruler,
+                "bound_symbol": bound_symbol,
+                "category": "Harmonic D30",
+                "varga_type": "planetary_bounds",
+                "is_planetary_varga": True
+            }
+        else:
+            return {
+                "ruler": bound_ruler,
+                "symbol": bound_symbol,
+                "ruler_symbol": bound_symbol,
+                "bound_ruler": bound_ruler,
+                "bound_symbol": bound_symbol,
+                "bound_sign": t_info["sign"],
+                "bound_degree": t_info["bound_degree"],
+                "category": f"Triṁśāṁśa {bound_ruler}",
+                "varga_type": "planetary_bounds",
+                "is_planetary_varga": True
+            }
+
+    else:
+        # Zodiacal Vargas (D1, D4, D7, D9, D10, D12, D16, D20, D24, D27, D40, D45, D60)
+        base_lon = sign_idx * 30.0 + deg
+        v_lon = calculate_varga_longitude(
+            base_lon, varga, d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode
+        )
+        h_sign_idx = int((v_lon % 360.0) // 30) % 12
+        h_sign_name = ZODIAC_SIGNS[h_sign_idx]
+        ruler = SIGN_LORDS[h_sign_name]
+        symbol = PLANET_SYMBOLS.get(ruler, "")
+        return {
+            "ruler": ruler,
+            "symbol": symbol,
+            "ruler_symbol": symbol,
+            "category": f"{h_sign_name} Lord",
+            "varga_type": "zodiacal",
+            "is_planetary_varga": False
+        }
 
 
 def calculate_baladi_state(sign: str, deg_in_sign: float) -> Dict[str, Any]:
