@@ -584,7 +584,8 @@ def add_native():
         name_sound_value=int(data.get('name_sound_value', 0)),
         notes=data.get('notes', ''),
         category=data.get('category', 'General'),
-        in_dropdown=data.get('in_dropdown', True)
+        in_dropdown=data.get('in_dropdown', True),
+        male=data.get('male', True)
     )
     return jsonify(new_native)
 

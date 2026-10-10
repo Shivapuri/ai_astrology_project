@@ -318,40 +318,47 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             };
 
             function getDignityScore(digName, planet = null, sign = null, degree = null) {
-                if (!digName) return 37.5;
+                if (!digName) return 50.0;
                 const cleaned = digName.replace("'s Sign", "").replace(" Sign", "").trim().toLowerCase();
                 
-                // Exaltation
+                // Exaltation (Uccha)
                 if (cleaned.includes('exalt') || cleaned.includes('uccha')) return 100.0;
                 
                 // Moolatrikona
                 if (cleaned.includes('moolatrikona') || cleaned.includes('moola')) {
-                    if (planet && degree !== null && degree !== undefined && MOOLATRIKONA_RANGES_JS[planet]) {
-                        const [mtSign, minD, maxD] = MOOLATRIKONA_RANGES_JS[planet];
-                        if (sign && sign === mtSign && (degree < minD || degree > maxD)) {
-                            return (sign && oddSigns.has(sign)) ? 75.0 : 62.5;
-                        }
-                    }
-                    return 87.5;
+                    return 95.0;
                 }
                 
-                // Own Sign
-                if (cleaned.includes('own')) {
-                    if (sign) {
-                        return oddSigns.has(sign) ? 75.0 : 62.5;
-                    }
-                    return 68.75;
+                // Own Sign (Swakshetra / Svastha)
+                if (cleaned.includes('own') || cleaned.includes('svastha') || cleaned.includes('swak') || cleaned.includes('svak')) {
+                    return 90.0;
                 }
                 
-                // Compound Relationships (Panchadha Maitri)
-                if (cleaned.includes('great friend') || cleaned.includes('adhi mitra')) return 60.0;
-                if (cleaned.includes('friend') || cleaned.includes('mitra')) return 50.0;
-                if (cleaned.includes('neutral') || cleaned.includes('sama')) return 37.5;
-                if (cleaned.includes('great enemy') || cleaned.includes('adhi shatru')) return 20.0;
-                if (cleaned.includes('enemy') || cleaned.includes('shatru')) return 25.0;
-                if (cleaned.includes('debilit') || cleaned.includes('neecha') || cleaned.includes('fall')) return 12.5;
+                // Compound Relationships (Panchadha Maitri) - Phaladeepika Ch. 3 native scale
+                if (cleaned.includes('great friend') || cleaned.includes('adhi mitra') || cleaned.includes('adhi-mitra')) return 80.0;
+                if (cleaned.includes('friend') || cleaned.includes('mitra')) return 60.0;
+                if (cleaned.includes('neutral') || cleaned.includes('sama')) return 50.0;
+                if (cleaned.includes('great enemy') || cleaned.includes('adhi shatru') || cleaned.includes('adhi-shatru')) return 20.0;
+                if (cleaned.includes('enemy') || cleaned.includes('shatru')) return 40.0;
+                if (cleaned.includes('debilit') || cleaned.includes('neecha') || cleaned.includes('fall')) return 0.0;
                 
-                return 37.5;
+                return 50.0;
+            }
+
+            function getDignityTextColor(score) {
+                const val = Number(score);
+                // All above neutral (> 50): Green tiers
+                if (val >= 90) return '#166534'; // Deep Forest Green (Exalted 100, Moolatrikona 95, Own Sign 90)
+                if (val >= 75) return '#15803d'; // Rich Green (Great Friend 80)
+                if (val > 50.5) return '#16a34a'; // Vibrant Leaf Green (Friend 60 and all composite averages > 50)
+
+                // Neutral (= 50): Slate Gray
+                if (val >= 49.5 && val <= 50.5) return '#475569'; // Balanced Slate Gray (Neutral 50)
+
+                // All below neutral (< 50): Orange and Red tiers
+                if (val >= 30) return '#ea580c'; // Clear Vibrant Orange (Enemy 40 and composite averages < 50)
+                if (val > 5)   return '#dc2626'; // Vivid Red (Great Enemy 20)
+                return '#991b1b';                // Deep Maroon Red (Debilitation 0)
             }
 
             function classifyGrahaArchetype(dignityPct, shadbalaPct, isNeechaBhanga = false, isNode = false) {
@@ -1391,7 +1398,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             }
 
             function buildFallbackCockpit(graha, pEval, pD1, d1Sign, signLord, effDig, sbVir, sbPct, netVitality, quad, vitRes) {
-                const vWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1 };
+                const vWeights = { 'D1': 1.00, 'D9': 0.75, 'D7': 0.50, 'D10': 0.25, 'D12': 0.50, 'D16': 0.25 };
                 const vb = (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) || {};
                 const shadvargaRows = Object.keys(vWeights).map(vgKey => {
                     const item = vb[vgKey] || {};
@@ -1485,7 +1492,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 let s1RowsHtml = (s1.rows || []).map(r => `
                     <tr style="border-bottom: 1px solid var(--border-subtle);">
                         <td style="padding: 5px 6px; font-weight: 700; color: var(--text-heading); font-size: 12.5px;">${r.varga}</td>
-                        <td style="padding: 5px 6px; color: var(--text-muted); font-size: 12px;">${Number(r.weight || 0).toFixed(0)}v</td>
+                        <td style="padding: 5px 6px; color: var(--text-muted); font-size: 12px;">${Number(r.weight || 0).toFixed(2)}</td>
                         <td style="padding: 5px 6px; font-size: 12.5px;">${r.sign}</td>
                         <td style="padding: 5px 6px; font-weight: 600; font-size: 12px;">${r.dignity}</td>
                         <td style="padding: 5px 6px; font-weight: 700; color: #0284c7; font-size: 12.5px;">${Number(r.score_pct || 0).toFixed(0)}%</td>
@@ -1725,7 +1732,16 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const lordDigRaw = dBreak.final_dignity || lordGraha.dignity || 'Neutral';
                 const cleanLordDig = lordDigRaw.replace("'s Sign", "").replace(" Sign", "").trim();
                 const lordDigPct = getDignityScore(cleanLordDig, lgLord, lordSign, lordDegVal);
-                let lordDigColor = '#475569';
+                const lgLordEval = (peData && peData.planets && peData.planets[lgLord]) ? peData.planets[lgLord] : null;
+                const lordShadvargaPct = (lgLordEval && lgLordEval.step1_shadvarga && lgLordEval.step1_shadvarga.weighted_dignity_pct !== undefined)
+                    ? Number(lgLordEval.step1_shadvarga.weighted_dignity_pct)
+                    : (backendLagna && backendLagna.lord && backendLagna.lord.shadvarga_dignity_pct !== undefined
+                        ? Number(backendLagna.lord.shadvarga_dignity_pct)
+                        : lordDigPct);
+                const lordRashiColor = getDignityTextColor(lordDigPct);
+                const lordShadvargaColor = getDignityTextColor(lordShadvargaPct);
+
+                let lordDigColor = lordRashiColor;
                 let lordDigBg = '#f8fafc';
                 let lordDigBorder = '#cbd5e1';
                 const lDigLow = lordDigRaw.toLowerCase();
@@ -1981,7 +1997,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                 const lagnaTip = `<strong>Ascendant (Lagna / Tanū Bhāva)</strong><br>• Rising degree on the eastern horizon at birth in ${varga}.<br>• The foundational engine and reference frame against which all 12 houses and yogas manifest.`;
                 const lgPlacementTip = `<strong>Lagna: ${lgSign} ${lgDeg} (House 1)</strong><br>• <strong>Rising Sign:</strong> Core zodiac archetype of self-expression in ${varga}.<br>• <strong>Ascendant Lord:</strong> <strong>${lgLord}</strong> (Lagneśa).<br>• <strong>Nakshatra:</strong> ${lgNak}.`;
-                const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord} [${cleanLordDig}]</strong><br>• <strong>5-Fold Dignity:</strong> ${lordDigRaw} in ${lordSign} (${lordWHouse}th house from Lagna).<br>• <strong>Dignity Score:</strong> ${lordDigPct.toFixed(0)}% essential dignity.<br>• <strong>Core Teaching:</strong> The Lagna Lord is the captain of the ship.`;
+                const lgLordTip = `<strong>Lagneśa (Ascendant Lord): ${lgLord} [${cleanLordDig}]</strong><br>• <strong>5-Fold Dignity:</strong> ${lordDigRaw} in ${lordSign} (${lordWHouse}th house from Lagna).<br>• <strong>Dignity Score:</strong> ${lordDigPct.toFixed(0)}% essential dignity.<br>• <strong>Ṣaḍvarga Dignity:</strong> ${lordShadvargaPct.toFixed(1)}% (weighted across 6 harmonic divisions).<br>• <strong>Core Teaching:</strong> The Lagna Lord is the captain of the ship.`;
                 const lgHostTip = `<strong>Lagna Lord Host Dispositor: ${lordHost}</strong><br>• <strong>Host Condition:</strong> ${lordHostDig.toFixed(0)}% Dignity • ${lordHostSb.toFixed(0)}% Muscle.<br>• <strong>Anchor Status:</strong> Evaluates foundational support underpinning the captain's vessel.`;
                 const lgPowerTip = `<strong>Lagna Vitality & Muscle Engine</strong><br>• <strong>Captain's Shadbala:</strong> ${sbVir} Virūpas (${sbPct !== null ? sbPct + '%' : '--'} of required, Rank #${sbRank || '--'}).<br>• <strong>Horizon Sky-Light:</strong> Net ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas (Benefic: +${c1Plus.toFixed(1)}, Malefic: -${c1Minus.toFixed(1)}).`;
                 const lgInfluencesTip = `<strong>Horizon Influences & Aspects</strong><br>• <strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lagnaConj.join(', ') : 'None (clean horizon)'}.<br>• <strong>Net Dṛṣṭi:</strong> ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Virūpas.<br>• <strong>Enclosure:</strong> ${kartariType}.`;
@@ -2024,12 +2040,14 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
-                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-size: 12px; font-weight:700; white-space:nowrap;">
-                                    Captain: ${lgCaptainBadge}
+                            <div class="diagnostic-table-cell-2line tooltip-target" style="align-items:center; justify-content:center; cursor:help;" data-tooltip="${escapeTooltipAttr(lgLordTip)}">
+                                <div style="font-size: 12.5px; font-weight:700; white-space:nowrap; font-variant-numeric: tabular-nums;">
+                                    <span style="color:${lordRashiColor};">${cleanLordDig} ${lordDigPct.toFixed(0)}</span>
+                                    <span style="color:#94a3b8; font-weight:400; margin:0 3px;">/</span>
+                                    <span style="color:${lordShadvargaColor};">${lordShadvargaPct.toFixed(1)}</span>
                                 </div>
-                                <div style="font-size: 12px; color:#475569; font-weight:600;">
-                                    &rarr; Lord: <strong>${lgLord}</strong>
+                                <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap;">
+                                    Captain: <strong>${lgLord}</strong>
                                 </div>
                             </div>
                         </td>
@@ -2104,7 +2122,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                         </div>
                                         <div class="drawer-card-body">
                                             <div><strong>Lagneśa (Ascendant Lord):</strong> ${lgLord} in ${lordSign} (House ${lordWHouse})</div>
-                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span class="micro-tag" style="background:${lordDigBg}; color:${lordDigColor}; border-color:${lordDigBorder}; font-weight:bold;">${cleanLordDig} (${lordDigPct.toFixed(0)}%)</span></div>
+                                            <div style="margin-top:2px;"><strong>Essential Dignity:</strong> <span style="color:${lordRashiColor}; font-weight:700;">${cleanLordDig} ${lordDigPct.toFixed(0)}</span> <span style="color:#94a3b8; font-weight:400; margin:0 3px;">/</span> <span style="color:${lordShadvargaColor}; font-weight:700;">${lordShadvargaPct.toFixed(1)}</span> <span style="font-size:12px; color:#64748b;">(Ṣaḍvarga)</span></div>
                                             <div style="margin-top:2px;"><strong>Dispositor of Captain:</strong> ${lordHost} (${lordHostDig.toFixed(0)}% dignity, ${lordHostSb.toFixed(0)}% muscle)</div>
                                             <div style="margin-top:4px; font-size:12px; color:#64748b;">The Lagna Lord serves as the captain of the physical vessel. Its dignity and stamina set the baseline capacity to manifest destiny.</div>
                                         </div>
@@ -2492,9 +2510,15 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                 const effSb = vitRes.effective_shadbala_pct;
 
                 // Cell 3: Essential Dignity HTML
-                let digBadge = '';
+                const baseShadvargaPct = (pEval.step1_shadvarga && pEval.step1_shadvarga.weighted_dignity_pct !== undefined)
+                    ? Number(pEval.step1_shadvarga.weighted_dignity_pct)
+                    : Number(dignityPct);
+                const rashiColor = getDignityTextColor(dignityPct);
+                const shadvargaColor = getDignityTextColor(baseShadvargaPct);
+
+                let digTooltip = '';
                 const funcDig = pEval.functional_dignity || (pEval.step4_house_field ? {
-                    base_dignity_pct: dignityPct,
+                    base_dignity_pct: baseShadvargaPct,
                     base_dignity_name: cleanDig,
                     terrain_mod_pct: pEval.step4_house_field.terrain_mod_pct || 0,
                     lordship_mod_pct: pEval.step4_house_field.lordship_mod_pct || 0,
@@ -2529,18 +2553,12 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                     digStyle = 'background:#f8fafc; color:#334155; border:1px solid #cbd5e1; font-weight:600;';
                     digIcon = '';
                     digClass = 'tag-neutral';
-                    const nodeDigTip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
+                    digTooltip = `<strong>${graha} Dispositor Reflection (${signLord})</strong><br>` +
                         `• <strong>Why No 5-Fold Dignity:</strong> As shadow mathematical nodes (Chhāyā Grahas), Rahu & Ketu have no physical body or own sign.<br>` +
+                        `• <strong>Base Ṣaḍvarga Dignity:</strong> ${baseShadvargaPct.toFixed(1)}% (weighted across 6 harmonic divisions).<br>` +
                         `• <strong>Effective Dignity:</strong> ${effDig.toFixed(0)}% (reflecting host ${signLord}'s ${hostDig.toFixed(0)}% dignity with sign affinity).<br>` +
                         `• <strong>Current Sign:</strong> Residing in ${sign}, mirroring ${signLord}'s state.` +
                         funcDigMathBlock;
-                    digBadge = `
-                        <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(nodeDigTip)}">
-                            <span class="micro-tag tag-neutral">Proxy (${signLord})</span>
-                            <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${effDig.toFixed(0)}% Dignity</div>
-                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#64748b;">Chhāyā Reflection</div>`}
-                        </div>
-                    `;
                 } else {
                     let whyReason = '';
                     if (rawDig.includes('Exalt')) {
@@ -2558,11 +2576,6 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                             `• <strong>5-Fold Synthesis (Panchadhā):</strong> ${natRel} + ${tempRel} &rarr; <strong>${compRel} (${cleanDig})</strong>.`;
                     }
 
-                    const digTooltip = `<strong>${graha} Dignity in ${varga}: ${cleanDig} (${dignityPct.toFixed(0)}%)</strong><br>` +
-                        `${whyReason}<br><br>` +
-                        `• <strong>How it feels:</strong> ${digMeaning}` +
-                        funcDigMathBlock;
-
                     digClass = 'tag-neutral';
                     if (rawDig.includes('Exalt') || rawDig.includes('Moola') || rawDig.includes('Own') || rawDig.includes('Friend')) {
                         digClass = 'tag-benefic';
@@ -2570,13 +2583,17 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                         digClass = 'tag-malefic';
                     }
 
-                    digBadge = `
-                        <div class="tooltip-target" style="text-align:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
-                            <span class="micro-tag ${digClass}">${cleanDig}</span>
-                            <div style="font-size: 12px; font-weight:bold; color:#1e293b; margin-top:2px;">${dignityPct.toFixed(0)}% Dignity</div>
-                            ${funcDig && varga === 'D1' ? `<div style="font-size: 12px; font-weight:700; color:#2563eb; margin-top:1px;" title="Functional Dignity after House Terrain & Lordship">Func: ${Number(funcDig.functional_dignity_pct).toFixed(1)}%</div>` : `<div style="font-size: 12px; color:#78716c;">Nat: ${natRel.slice(0,3)} &bull; Tmp: ${tempRel.slice(0,3)}</div>`}
-                        </div>
-                    `;
+                    digTooltip = (varga === 'D1')
+                        ? `<strong>${graha} Base Ṣaḍvarga Dignity: ${baseShadvargaPct.toFixed(1)}%</strong><br>` +
+                          `• <strong>D1 Sign Placement:</strong> ${cleanDig} (${dignityPct.toFixed(0)}% in ${sign})<br>` +
+                          `• <strong>6-Varga Weighted Composite:</strong> ${baseShadvargaPct.toFixed(1)}% (D1 1.00, D9 0.75, D7 0.50, D12 0.50, D10 0.25, D16 0.25 / 3.25)<br><br>` +
+                          `${whyReason}<br><br>` +
+                          `• <strong>How it feels:</strong> ${digMeaning}` +
+                          funcDigMathBlock
+                        : `<strong>${graha} Dignity in ${varga}: ${cleanDig} (${dignityPct.toFixed(0)}%)</strong><br>` +
+                          `${whyReason}<br><br>` +
+                          `• <strong>How it feels:</strong> ${digMeaning}` +
+                          funcDigMathBlock;
                 }
 
                 // Cell 4: Host Dispositor HTML
@@ -3136,15 +3153,18 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                 let shadvargaHtml = '';
                 if (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) {
                     const vb = pEval.step1_shadvarga.varga_breakdown;
-                    const vWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1 };
-                    const vRows = Object.keys(vWeights).map(vgKey => {
+                    const canonicalWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1, 'D7': 0.5, 'D10': 0.25, 'D16': 0.25 };
+                    const vOrder = ['D1', 'D2', 'D3', 'D7', 'D9', 'D10', 'D12', 'D16', 'D30'].filter(k => vb[k] !== undefined);
+                    const vKeys = vOrder.length > 0 ? vOrder : Object.keys(vb);
+                    const vRows = vKeys.map(vgKey => {
                         const item = vb[vgKey] || {};
+                        const wt = item.weight !== undefined ? item.weight : (canonicalWeights[vgKey] !== undefined ? canonicalWeights[vgKey] : 1.0);
                         return `<tr>
                             <td style="font-weight:700;">${vgKey}</td>
                             <td>${item.sign || '--'}</td>
                             <td>${item.dignity || '--'}</td>
                             <td style="text-align:right;">${item.score !== undefined ? item.score.toFixed(1) + '%' : '--'}</td>
-                            <td style="text-align:right; color:#78716c;">${vWeights[vgKey]}</td>
+                            <td style="text-align:right; color:#78716c;">${typeof wt === 'number' && wt % 1 !== 0 ? wt.toFixed(2) : wt}</td>
                         </tr>`;
                     }).join('');
                     shadvargaHtml = `
@@ -3155,7 +3175,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                                     <th>Sign</th>
                                     <th>Dignity</th>
                                     <th style="text-align:right;">Score</th>
-                                    <th style="text-align:right;">Pts</th>
+                                    <th style="text-align:right;">Wt</th>
                                 </tr>
                             </thead>
                             <tbody>${vRows}</tbody>
@@ -3381,14 +3401,11 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                             </div>
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
-                            <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-size: 12px; font-weight:700; white-space:nowrap;">
-                                    ${isNode ? `<span class="micro-tag tag-neutral">Proxy (${signLord})</span>` : `<span class="micro-tag ${digClass}">${cleanDig} ${dignityPct.toFixed(0)}%</span>`}
-                                    <span style="color:#64748b; font-size: 12px; margin:0 1px;">&rarr;</span>
-                                    <strong style="color:#1e293b; font-size: 12px;">${Math.round(effDig)}%</strong>
-                                </div>
-                                <div style="font-size: 12px; font-weight:600; white-space:nowrap;">
-                                    ${peerShiftHtml}
+                            <div class="diagnostic-table-cell-2line tooltip-target" style="align-items:center; justify-content:center; cursor:help;" data-tooltip="${escapeTooltipAttr(digTooltip)}">
+                                <div style="font-size: 12.5px; font-weight:700; white-space:nowrap; font-variant-numeric: tabular-nums;">
+                                    <span style="color:${rashiColor};">${isNode ? `Proxy (${signLord})` : cleanDig} ${dignityPct.toFixed(0)}</span>
+                                    <span style="color:#94a3b8; font-weight:400; margin:0 3px;">/</span>
+                                    <span style="color:${shadvargaColor};">${baseShadvargaPct.toFixed(1)}</span>
                                 </div>
                             </div>
                         </td>

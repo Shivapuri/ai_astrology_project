@@ -129,13 +129,13 @@ function updatePlanetaryEvaluationWidget(cell, chartData) {
                 // Tooltip for Shadvarga
                 const s1 = data.step1_shadvarga || {};
                 const vb = s1.varga_breakdown || {};
-                let shadvargaTip = `<strong>${p} Shadvarga Breakdown (Avg: ${s1.average_dignity_pct}%)</strong><br>`;
-                shadvargaTip += `• D1 Rashi: ${vb.D1?.sign || '-'} (${vb.D1?.dignity || '-'}, ${vb.D1?.score || 0}%)<br>`;
-                shadvargaTip += `• D2 Hora: ${vb.D2?.sign || '-'} (${vb.D2?.dignity || '-'}, ${vb.D2?.score || 0}%)<br>`;
-                shadvargaTip += `• D3 Drekkana: ${vb.D3?.sign || '-'} (${vb.D3?.dignity || '-'}, ${vb.D3?.score || 0}%)<br>`;
-                shadvargaTip += `• D9 Navamsha: ${vb.D9?.sign || '-'} (${vb.D9?.dignity || '-'}, ${vb.D9?.score || 0}%)<br>`;
-                shadvargaTip += `• D12 Dwadashamsha: ${vb.D12?.sign || '-'} (${vb.D12?.dignity || '-'}, ${vb.D12?.score || 0}%)<br>`;
-                shadvargaTip += `• D30 Trimshamsha: ${vb.D30?.sign || '-'} (${vb.D30?.dignity || '-'}, ${vb.D30?.score || 0}%)<br>`;
+                let shadvargaTip = `<strong>${p} Ṣaḍvarga Dignity (Weighted: ${s1.weighted_dignity_pct}%)</strong><br>`;
+                const vOrder = ['D1', 'D2', 'D3', 'D7', 'D9', 'D10', 'D12', 'D16', 'D30'].filter(k => vb[k] !== undefined);
+                const vKeys = vOrder.length > 0 ? vOrder : Object.keys(vb);
+                vKeys.forEach(k => {
+                    const item = vb[k] || {};
+                    shadvargaTip += `• ${k}: ${item.sign || '-'} (${item.dignity || '-'}, ${item.score !== undefined ? item.score : 0}%)<br>`;
+                });
                 shadvargaTip += `<em>Centered Base Score: ${s1.base_centered_score >= 0 ? '+' : ''}${s1.base_centered_score}%</em>`;
 
                 // Tooltip for Host Rescue

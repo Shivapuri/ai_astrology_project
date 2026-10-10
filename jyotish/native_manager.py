@@ -263,7 +263,7 @@ def atomic_write_natives(filepath: str, natives: List[Dict[str, Any]], allow_emp
 
     return True
 
-def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0, notes: str = "", category: str = "General", in_dropdown: bool = True) -> Dict[str, Any]:
+def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon: float, tz: str, place: str = "Custom", country: str = "", name_sound_value: int = 0, notes: str = "", category: str = "General", in_dropdown: bool = True, male: bool = True) -> Dict[str, Any]:
     """Adds a new native with atomic safety and standard DD/MM/YYYY date."""
     if not _acquire_lock(filepath):
         raise RuntimeError("Could not acquire lock to save native")
@@ -275,7 +275,7 @@ def save_native(filepath: str, name: str, date: str, time: str, lat: float, lon:
             "id": str(uuid.uuid4()),
             "name": name,
             "type": "radix",
-            "male": True,
+            "male": bool(male),
             "date": std_date,
             "time": time,
             "tz": tz,
