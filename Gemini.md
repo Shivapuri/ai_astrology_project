@@ -25,6 +25,7 @@ It utilizes a unified, **Integrated Approach**:
 - The project previously used a dual Western/Vedic engine approach; this has been deprecated. Do not recreate the `/western/` folder.
 - **Twin Markdown Pattern**: EVERY mathematical module in `/jyotish/` has a strict companion `.md` file that you MUST read before touching the Python code. These files contain the exact logical rules and Sanskrit proofs:
   - `jyotish/generate_jyotish.md` -> Rules for `generate_jyotish.py` (Orchestration, Dashas, Nakshatras, Houses)
+  - `jyotish/baseline_vargas.md` -> Rules for the 16 Divisional Charts (Ṣoḍaśavarga) in `baseline_tables.py`, `baseline_math.py`, and `pipeline.py`
   - `jyotish/relationships.md` -> Rules for `relationships.py`
   - `jyotish/shadbala/shadbala.md` -> Rules for `shadbala.py`
   - `jyotish/avasthas/*.md` -> Rules for all Avastha submodules (`bala.py`, `jagrat.py`, etc.)
