@@ -943,6 +943,8 @@ class ChartBaseline:
                         "parashari_trimsamsa": t_info,
                         "ruler": r_info["ruler"],
                         "ruler_symbol": r_info["ruler_symbol"],
+                        "display_entity": r_info["display_entity"],
+                        "display_symbol": r_info["display_symbol"],
                         "bound_ruler": r_info.get("bound_ruler", t_info["ruler"]),
                         "bound_symbol": r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_info["ruler"], "")),
                         "is_planetary_varga": True
@@ -963,6 +965,8 @@ class ChartBaseline:
                         "is_retrograde": bodies[p]["is_retrograde"],
                         "ruler": r_info["ruler"],
                         "ruler_symbol": r_info["ruler_symbol"],
+                        "display_entity": r_info["display_entity"],
+                        "display_symbol": r_info["display_symbol"],
                         "is_planetary_varga": is_planetary_varga
                     }
                     if v == "D1":
@@ -970,7 +974,7 @@ class ChartBaseline:
                     elif v == "D2":
                         g_entry["hora_lord"] = r_info.get("hora_lord", r_info["ruler"])
                         g_entry["hora_symbol"] = r_info.get("hora_symbol", r_info["ruler_symbol"])
-                        g_entry["hora_polarity"] = r_info.get("hora_polarity", "Solar" if r_info["ruler"] == "Sun" else "Lunar")
+                        g_entry["hora_polarity"] = r_info.get("hora_polarity", "Solar / Pingala" if r_info["ruler"] == "Sun" else "Lunar / Ida")
                     elif v == "D60":
                         g_entry["shastiamsa"] = calculate_shastiamsa_details(base_p_lon)
 
@@ -1011,6 +1015,8 @@ class ChartBaseline:
                     "parashari_trimsamsa": t_lagna,
                     "ruler": l_r_info["ruler"],
                     "ruler_symbol": l_r_info["ruler_symbol"],
+                    "display_entity": l_r_info["display_entity"],
+                    "display_symbol": l_r_info["display_symbol"],
                     "bound_ruler": l_r_info.get("bound_ruler", t_lagna["ruler"]),
                     "bound_symbol": l_r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_lagna["ruler"], "")),
                     "is_planetary_varga": True
@@ -1047,6 +1053,8 @@ class ChartBaseline:
                     "parashari_trimsamsa": t_mc,
                     "ruler": mc_r_info["ruler"],
                     "ruler_symbol": mc_r_info["ruler_symbol"],
+                    "display_entity": mc_r_info["display_entity"],
+                    "display_symbol": mc_r_info["display_symbol"],
                     "bound_ruler": mc_r_info.get("bound_ruler", t_mc["ruler"]),
                     "bound_symbol": mc_r_info.get("bound_symbol", PLANET_SYMBOLS.get(t_mc["ruler"], "")),
                     "is_planetary_varga": True
@@ -1065,12 +1073,14 @@ class ChartBaseline:
                     "degree_in_sign": l_deg,
                     "ruler": l_r_info["ruler"],
                     "ruler_symbol": l_r_info["ruler_symbol"],
+                    "display_entity": l_r_info["display_entity"],
+                    "display_symbol": l_r_info["display_symbol"],
                     "is_planetary_varga": is_planetary_varga
                 }
                 if v == "D2":
                     v_lagna["hora_lord"] = l_r_info.get("hora_lord", l_r_info["ruler"])
                     v_lagna["hora_symbol"] = l_r_info.get("hora_symbol", l_r_info["ruler_symbol"])
-                    v_lagna["hora_polarity"] = l_r_info.get("hora_polarity", "Solar" if l_r_info["ruler"] == "Sun" else "Lunar")
+                    v_lagna["hora_polarity"] = l_r_info.get("hora_polarity", "Solar / Pingala" if l_r_info["ruler"] == "Sun" else "Lunar / Ida")
                 elif v == "D60":
                     v_lagna["shastiamsa"] = calculate_shastiamsa_details(base_l_lon)
 
@@ -1093,12 +1103,14 @@ class ChartBaseline:
                     "degree_in_sign": mc_deg,
                     "ruler": mc_r_info["ruler"],
                     "ruler_symbol": mc_r_info["ruler_symbol"],
+                    "display_entity": mc_r_info["display_entity"],
+                    "display_symbol": mc_r_info["display_symbol"],
                     "is_planetary_varga": is_planetary_varga
                 }
                 if v == "D2":
                     v_mc["hora_lord"] = mc_r_info.get("hora_lord", mc_r_info["ruler"])
                     v_mc["hora_symbol"] = mc_r_info.get("hora_symbol", mc_r_info["ruler_symbol"])
-                    v_mc["hora_polarity"] = mc_r_info.get("hora_polarity", "Solar" if mc_r_info["ruler"] == "Sun" else "Lunar")
+                    v_mc["hora_polarity"] = mc_r_info.get("hora_polarity", "Solar / Pingala" if mc_r_info["ruler"] == "Sun" else "Lunar / Ida")
                 elif v == "D60":
                     v_mc["shastiamsa"] = calculate_shastiamsa_details(base_mc_lon)
 

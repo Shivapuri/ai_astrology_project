@@ -324,6 +324,32 @@ class ChartPipeline:
                             if in_house:
                                 bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
                     v_dict["bhavas"] = bhavas
+            elif v_name == "D2":
+                # Binary Solar / Lunar chambers for D2
+                chambers = [
+                    {
+                        "chamber": 1,
+                        "ruler": "Sun",
+                        "symbol": "☉",
+                        "polarity": "Solar / Pingala",
+                        "planets": [p for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+                                    if v_dict["grahas"][p].get("hora_lord") == "Sun"]
+                    },
+                    {
+                        "chamber": 2,
+                        "ruler": "Moon",
+                        "symbol": "☽",
+                        "polarity": "Lunar / Ida",
+                        "planets": [p for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+                                    if v_dict["grahas"][p].get("hora_lord") == "Moon"]
+                    }
+                ]
+                if v_dict["lagna"].get("hora_lord") == "Sun":
+                    chambers[0]["planets"].insert(0, "Asc")
+                else:
+                    chambers[1]["planets"].insert(0, "Asc")
+                v_dict["bhavas"] = chambers
+                v_dict["is_binary_varga"] = True
             else:
                 # Divisional charts: Classical Whole Sign Houses (Rāśi Bhāva) anchored to the Varga Ascendant
                 l_sign = v_dict["lagna"]["sign"]

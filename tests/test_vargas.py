@@ -23,16 +23,17 @@ from jyotish.generate_jyotish import generate_kala_chart
 
 
 # =============================================================================
-# 1. D60 MALEFIC AUDIT
+# 1. D60 MALEFIC AUDIT (PHALADEEPIKA CH. 3 TEXT 5)
 # =============================================================================
 def test_d60_malefic_set_and_slice_classification():
     """
-    Verifies that slice 39 (Poornachandra / Full Moon) is auspicious (Shubha/benefic),
-    while slice 41 (Kulanasa / Lineage Destroyer) is inauspicious (Ashubha/malefic).
+    Verifies that slice 39 (Poornachandra / Full Moon) is malefic (Ashubha/malefic),
+    while slice 41 (Kulanasa / Lineage Destroyer) is non-malefic (Shubha/benefic),
+    strictly conforming to Mantreswara's Phaladeepika Ch. 3 Text 5.
     """
     # Check set catalog
-    assert 39 not in SHASTIAMSA_MALEFIC_ODD, "Slice 39 (Poornachandra) must NOT be in malefic set"
-    assert 41 in SHASTIAMSA_MALEFIC_ODD, "Slice 41 (Kulanasa) MUST be in malefic set"
+    assert 39 in SHASTIAMSA_MALEFIC_ODD, "Slice 39 (Poornachandra) MUST be in malefic set per Phaladeepika"
+    assert 41 not in SHASTIAMSA_MALEFIC_ODD, "Slice 41 (Kulanasa) must NOT be in malefic set per Phaladeepika"
 
     # Odd sign test: Aries (0°–30°):
     # Slice 39 spans 19.0° to 19.5° (part_idx 38 -> slice 39)
@@ -40,18 +41,18 @@ def test_d60_malefic_set_and_slice_classification():
     details_39 = calculate_shastiamsa_details(lon_slice_39)
     assert details_39["slice_number"] == 39
     assert details_39["deity"] == "Poornachandra"
-    assert details_39["is_benefic"] is True
-    assert details_39["is_malefic"] is False
-    assert details_39["nature"] == "Shubha / Benefic"
+    assert details_39["is_benefic"] is False
+    assert details_39["is_malefic"] is True
+    assert details_39["nature"] == "Ashubha / Malefic"
 
     # Slice 41 spans 20.0° to 20.5° (part_idx 40 -> slice 41)
     lon_slice_41 = 20.25
     details_41 = calculate_shastiamsa_details(lon_slice_41)
     assert details_41["slice_number"] == 41
     assert details_41["deity"] == "Kulanasa"
-    assert details_41["is_malefic"] is True
-    assert details_41["is_benefic"] is False
-    assert details_41["nature"] == "Ashubha / Malefic"
+    assert details_41["is_malefic"] is False
+    assert details_41["is_benefic"] is True
+    assert details_41["nature"] == "Shubha / Benefic"
 
 
 # =============================================================================
@@ -74,7 +75,8 @@ def test_d2_parashari_hora_calculations():
     info_5_aries = get_varga_ruler_info("D2", 0, 5.0, d2_mode="parashari")
     assert info_5_aries["ruler"] == "Sun"
     assert info_5_aries["symbol"] == "☉"
-    assert info_5_aries["hora_polarity"] == "Solar"
+    assert info_5_aries["display_symbol"] == "☉"
+    assert "Solar" in info_5_aries["hora_polarity"]
 
     # 20° Aries (odd sign, 15°–30°)
     lon_20_aries = 20.0
@@ -84,7 +86,8 @@ def test_d2_parashari_hora_calculations():
     info_20_aries = get_varga_ruler_info("D2", 0, 20.0, d2_mode="parashari")
     assert info_20_aries["ruler"] == "Moon"
     assert info_20_aries["symbol"] == "☽"
-    assert info_20_aries["hora_polarity"] == "Lunar"
+    assert info_20_aries["display_symbol"] == "☽"
+    assert "Lunar" in info_20_aries["hora_polarity"]
 
     # 5° Taurus (even sign, 0°–15°)
     lon_5_taurus = 35.0
@@ -94,7 +97,8 @@ def test_d2_parashari_hora_calculations():
     info_5_taurus = get_varga_ruler_info("D2", 1, 5.0, d2_mode="parashari")
     assert info_5_taurus["ruler"] == "Moon"
     assert info_5_taurus["symbol"] == "☽"
-    assert info_5_taurus["hora_polarity"] == "Lunar"
+    assert info_5_taurus["display_symbol"] == "☽"
+    assert "Lunar" in info_5_taurus["hora_polarity"]
 
     # 20° Taurus (even sign, 15°–30°)
     lon_20_taurus = 50.0
@@ -104,7 +108,8 @@ def test_d2_parashari_hora_calculations():
     info_20_taurus = get_varga_ruler_info("D2", 1, 20.0, d2_mode="parashari")
     assert info_20_taurus["ruler"] == "Sun"
     assert info_20_taurus["symbol"] == "☉"
-    assert info_20_taurus["hora_polarity"] == "Solar"
+    assert info_20_taurus["display_symbol"] == "☉"
+    assert "Solar" in info_20_taurus["hora_polarity"]
 
     # Thorough sweep: verify that across all 360 degrees, Parashari D2 ONLY produces Cancer or Leo
     for deg in range(0, 360):
@@ -120,9 +125,57 @@ def test_d2_cyclical_legacy_mode():
     assert int(d2_cyc // 30) % 12 == 0  # Aries
 
 
+def test_d2_binary_chambers_structure():
+    """
+    Verifies that D2 produces 2 binary chambers (Solar / Pingala and Lunar / Ida)
+    instead of 12 whole sign houses with 10 empty signs.
+    """
+    chart = generate_kala_chart(
+        name="HoraChamberTest",
+        year=1995, month=5, day=15, hour=14, minute=30,
+        latitude=51.5074, longitude=-0.1278, timezone_offset=1.0,
+        d2_mode="parashari"
+    )
+    d2 = chart["vargas"]["D2"]
+    assert d2.get("is_binary_varga") is True
+    bhavas = d2.get("bhavas", [])
+    assert len(bhavas) == 2, "D2 must have exactly 2 chambers"
+
+    c1, c2 = bhavas[0], bhavas[1]
+    assert c1["chamber"] == 1
+    assert c1["ruler"] == "Sun"
+    assert c1["symbol"] == "☉"
+    assert "Solar" in c1["polarity"]
+
+    assert c2["chamber"] == 2
+    assert c2["ruler"] == "Moon"
+    assert c2["symbol"] == "☽"
+    assert "Lunar" in c2["polarity"]
+
+    # Verify all 9 planets + Ascendant are accounted for
+    all_occupants = c1["planets"] + c2["planets"]
+    assert "Asc" in all_occupants
+    for p in PLANETS_ORDER:
+        assert p in all_occupants
+
+
 # =============================================================================
-# 3. D30 TRIṀŚĀṀŚA INTEGRITY
+# 3. D3 & D30 PLANETARY REPRESENTATION & TRIṀŚĀṀŚA INTEGRITY
 # =============================================================================
+def test_d3_planetary_representation():
+    """
+    Verifies that in D3 (Drekkāṇa), 15° Aries (second trine -> Leo)
+    is ruled by Sun with symbol ☉ and category Drekkāṇa Trine 2.
+    """
+    r_info = get_varga_ruler_info("D3", 0, 15.0)
+    assert r_info["ruler"] == "Sun"
+    assert r_info["symbol"] == "☉"
+    assert r_info["display_symbol"] == "☉"
+    assert r_info["display_entity"] == "☉ Sun"
+    assert r_info["varga_type"] == "planetary_triad"
+    assert r_info["is_planetary_varga"] is True
+
+
 def test_d30_trimsamsa_integrity():
     """
     Verifies that in standard mode, a planet at 15° Aries is placed in Sagittarius ruled by Jupiter (♃),
@@ -137,9 +190,12 @@ def test_d30_trimsamsa_integrity():
     r_info = get_varga_ruler_info("D30", 0, 15.0)
     assert r_info["ruler"] == "Jupiter"
     assert r_info["symbol"] == "♃"
+    assert r_info["display_symbol"] == "♃"
+    assert r_info["display_entity"] == "♃ Jupiter"
     assert r_info["bound_ruler"] == "Jupiter"
     assert r_info["bound_symbol"] == "♃"
     assert r_info["varga_type"] == "planetary_bounds"
+    assert r_info["is_planetary_varga"] is True
 
     # Sweep entire zodiac: confirm Cancer and Leo NEVER appear in classical D30
     for sign_i in range(12):
@@ -233,8 +289,8 @@ def test_whole_sign_varga_bhavas():
 # =============================================================================
 def test_varga_ruler_and_symbol_enrichment():
     """
-    Verifies that all 16 divisional charts have ruler, ruler_symbol, and
-    is_planetary_varga populated on all entities and Lagna.
+    Verifies that all 16 divisional charts have ruler, ruler_symbol,
+    display_entity, display_symbol, and is_planetary_varga populated on all entities and Lagna.
     """
     chart = generate_kala_chart(
         name="EnrichmentTest",
@@ -249,6 +305,8 @@ def test_varga_ruler_and_symbol_enrichment():
         lagna = v_data["lagna"]
         assert "ruler" in lagna and isinstance(lagna["ruler"], str)
         assert "ruler_symbol" in lagna and isinstance(lagna["ruler_symbol"], str)
+        assert "display_entity" in lagna and isinstance(lagna["display_entity"], str)
+        assert "display_symbol" in lagna and isinstance(lagna["display_symbol"], str)
         assert "is_planetary_varga" in lagna
 
         if v_name in ("D2", "D3", "D30"):
@@ -259,7 +317,7 @@ def test_varga_ruler_and_symbol_enrichment():
         if v_name == "D2":
             assert lagna["hora_lord"] in ("Sun", "Moon")
             assert lagna["hora_symbol"] in ("☉", "☽")
-            assert lagna["hora_polarity"] in ("Solar", "Lunar")
+            assert "Solar" in lagna["hora_polarity"] or "Lunar" in lagna["hora_polarity"]
         elif v_name == "D30":
             assert "bound_ruler" in lagna
             assert "bound_symbol" in lagna
@@ -268,11 +326,13 @@ def test_varga_ruler_and_symbol_enrichment():
             g = v_data["grahas"][p_name]
             assert "ruler" in g
             assert "ruler_symbol" in g
+            assert "display_entity" in g
+            assert "display_symbol" in g
             assert "is_planetary_varga" in g
             if v_name == "D2":
                 assert g["hora_lord"] in ("Sun", "Moon")
                 assert g["hora_symbol"] in ("☉", "☽")
-                assert g["hora_polarity"] in ("Solar", "Lunar")
+                assert "Solar" in g["hora_polarity"] or "Lunar" in g["hora_polarity"]
             elif v_name == "D30":
                 assert "bound_ruler" in g
                 assert "bound_symbol" in g

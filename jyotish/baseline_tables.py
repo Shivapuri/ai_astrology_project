@@ -123,10 +123,9 @@ SHASTIAMSA_DEITIES: List[str] = [
     "Amrita", "Payodhi", "Bhramana", "Chandrarekha"
 ]
 
-# Classical 24 Malefic Shastiamsa indices in odd signs (1-indexed per BPHS Ch. 6 / Phaladeepika Ch. 3)
-# Correction: 39 (Poornachandra) is benefic; 41 (Kulanasa) is malefic.
+# 24 Malefic Shastiamsa indices in odd signs per Phaladeepika Ch. 3 Text 5
 SHASTIAMSA_MALEFIC_ODD: Set[int] = {
-    1, 2, 8, 9, 10, 11, 12, 15, 16, 30, 31, 32, 33, 34, 35, 40, 41, 42, 43, 44, 48, 51, 52, 59
+    1, 2, 8, 9, 10, 11, 12, 15, 16, 30, 31, 32, 33, 34, 35, 39, 40, 42, 43, 44, 48, 51, 52, 59
 }
 
 # =============================================================================

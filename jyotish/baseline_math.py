@@ -48,7 +48,7 @@ def calculate_varga_longitude(
     d10_mode: str = "reverse",
     d24_mode: str = "reverse",
     d2_mode: str = "parashari",
-    trimsamsa_mode: str = "harmonic"
+    trimsamsa_mode: str = "parashari"
 ) -> float:
     """Harmonic coordinate transformation across 16 divisional charts."""
     sign_idx = int(longitude // 30)
@@ -257,8 +257,7 @@ def get_varga_ruler_info(
         is_sun = (div_index == 0) if is_odd else (div_index == 1)
         hora_lord = "Sun" if is_sun else "Moon"
         hora_symbol = "☉" if is_sun else "☽"
-        hora_polarity = "Solar" if is_sun else "Lunar"
-        category = "Solar / Pingala" if is_sun else "Lunar / Ida"
+        hora_polarity = "Solar / Pingala" if is_sun else "Lunar / Ida"
 
         if d2_mode in ("cyclical", "parivritti", "12_signs"):
             v_sign_idx = (sign_idx + div_index * 6) % 12
@@ -268,7 +267,9 @@ def get_varga_ruler_info(
                 "ruler": ruler,
                 "symbol": symbol,
                 "ruler_symbol": symbol,
-                "category": category,
+                "display_entity": f"{symbol} {ruler}",
+                "display_symbol": symbol,
+                "category": hora_polarity,
                 "varga_type": "planetary",
                 "is_planetary_varga": True,
                 "hora_lord": hora_lord,
@@ -280,7 +281,9 @@ def get_varga_ruler_info(
                 "ruler": hora_lord,
                 "symbol": hora_symbol,
                 "ruler_symbol": hora_symbol,
-                "category": category,
+                "display_entity": f"{hora_symbol} {hora_lord}",
+                "display_symbol": hora_symbol,
+                "category": hora_polarity,
                 "varga_type": "planetary",
                 "is_planetary_varga": True,
                 "hora_lord": hora_lord,
@@ -297,6 +300,8 @@ def get_varga_ruler_info(
             "ruler": ruler,
             "symbol": symbol,
             "ruler_symbol": symbol,
+            "display_entity": f"{symbol} {ruler}",
+            "display_symbol": symbol,
             "category": f"Drekkāṇa Trine {div_index + 1}",
             "varga_type": "planetary_triad",
             "is_planetary_varga": True
@@ -318,8 +323,12 @@ def get_varga_ruler_info(
                 "ruler": ruler,
                 "symbol": symbol,
                 "ruler_symbol": symbol,
+                "display_entity": f"{symbol} {ruler}",
+                "display_symbol": symbol,
                 "bound_ruler": bound_ruler,
                 "bound_symbol": bound_symbol,
+                "bound_sign": t_info["sign"],
+                "bound_degree": t_info["bound_degree"],
                 "category": "Harmonic D30",
                 "varga_type": "planetary_bounds",
                 "is_planetary_varga": True
@@ -329,11 +338,13 @@ def get_varga_ruler_info(
                 "ruler": bound_ruler,
                 "symbol": bound_symbol,
                 "ruler_symbol": bound_symbol,
+                "display_entity": f"{bound_symbol} {bound_ruler}",
+                "display_symbol": bound_symbol,
                 "bound_ruler": bound_ruler,
                 "bound_symbol": bound_symbol,
                 "bound_sign": t_info["sign"],
                 "bound_degree": t_info["bound_degree"],
-                "category": f"Triṁśāṁśa {bound_ruler}",
+                "category": f"Triṁśāṁśa Bound ({bound_ruler})",
                 "varga_type": "planetary_bounds",
                 "is_planetary_varga": True
             }
@@ -352,7 +363,9 @@ def get_varga_ruler_info(
             "ruler": ruler,
             "symbol": symbol,
             "ruler_symbol": symbol,
-            "category": f"{h_sign_name} Lord",
+            "display_entity": h_sign_name,
+            "display_symbol": symbol,
+            "category": f"{h_sign_name} ({ruler})",
             "varga_type": "zodiacal",
             "is_planetary_varga": False
         }
