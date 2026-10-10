@@ -127,19 +127,81 @@ function updateVargaDignitiesTable(cell, chartData) {
     };
 
     // Ṣaḍvarga Row Definitions (Phaladīpikā 3.1–4 & Vic DiCara Methodology)
+    // Ṣaḍvarga Row Definitions (Phaladīpikā 3.1–4 & Vic DiCara Methodology)
+    // Note: D5 (Triṁśāṁśa 5 Bounds) sits in sequence between D3 and D9
     const shadvargaRowsDef = [
-        { code: 'D1',  displayCode: 'D1', weight: 2, title: 'Rāśi (Physical Baseline)' },
-        { code: 'D2',  displayCode: 'D2', weight: 1, title: 'Horā (Solar & Lunar Wealth Chambers)' },
-        { code: 'D3',  displayCode: 'D3', weight: 1, title: 'Drekkāṇa (Decanate Initiative)' },
-        { code: 'D30', displayCode: 'D5', weight: 1, title: 'Triṁśāṁśa (5 Planetary Bounds)' },
-        { code: 'D9',  displayCode: 'D9', weight: 2, title: 'Navāṁśa (Soul Essence & Destiny)' },
-        { code: 'D12', displayCode: 'D12', weight: 1, title: 'Dvādaśāṁśa (Ancestral Lineage)' }
+        { code: 'D1',  displayCode: 'D1', weight: 2, title: 'Rāśi (Physical Baseline)', isPillar: true },
+        { code: 'D2',  displayCode: 'D2', weight: 1, title: 'Horā (Solar & Lunar Wealth Chambers)', isPillar: false },
+        { code: 'D3',  displayCode: 'D3', weight: 1, title: 'Drekkāṇa (Decanate Initiative)', isPillar: false },
+        { code: 'D30', displayCode: 'D5', weight: 1, title: 'Triṁśāṁśa (5 Planetary Bounds / D30)', isPillar: false },
+        { code: 'D9',  displayCode: 'D9', weight: 2, title: 'Navāṁśa (Soul Essence & Destiny)', isPillar: true },
+        { code: 'D12', displayCode: 'D12', weight: 1, title: 'Dvādaśāṁśa (Ancestral Lineage)', isPillar: false }
     ];
 
     const shodashavargaList = [
         'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12',
         'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
     ];
+
+    // Master Lagna Lords Detection (D1 Lagneśa, D3 Drekkāṇa Lord, D9 Navāṁśa Lord)
+    const signLords = {
+        'Aries': 'Mars', 'Taurus': 'Venus', 'Gemini': 'Mercury', 'Cancer': 'Moon',
+        'Leo': 'Sun', 'Virgo': 'Mercury', 'Libra': 'Venus', 'Scorpio': 'Mars',
+        'Sagittarius': 'Jupiter', 'Capricorn': 'Saturn', 'Aquarius': 'Saturn', 'Pisces': 'Jupiter'
+    };
+
+    const peData = currentData.planetary_evaluation || {};
+    const masterLords = (peData && peData.summary && peData.summary.master_lords) || {};
+
+    const d1Lagna = (currentData.vargas && currentData.vargas.D1 && currentData.vargas.D1.lagna) || currentData.lagna || {};
+    const d1LagnaSign = d1Lagna.sign || '';
+    const lagnaLordPlanet = (masterLords.lagna_lord && masterLords.lagna_lord.planet)
+        || d1Lagna.lord
+        || signLords[d1LagnaSign] || '';
+
+    const d3Lagna = (currentData.vargas && currentData.vargas.D3 && currentData.vargas.D3.lagna) || {};
+    const d3LagnaSign = d3Lagna.sign || '';
+    const drekkanaLordPlanet = (masterLords.drekkana_lord && masterLords.drekkana_lord.planet)
+        || d3Lagna.lord
+        || signLords[d3LagnaSign] || '';
+
+    const d9Lagna = (currentData.vargas && currentData.vargas.D9 && currentData.vargas.D9.lagna) || {};
+    const d9LagnaSign = d9Lagna.sign || '';
+    const navamshaLordPlanet = (masterLords.navamsha_lord && masterLords.navamsha_lord.planet)
+        || d9Lagna.lord
+        || signLords[d9LagnaSign] || '';
+
+    function getPlanetLordBadges(planetName) {
+        const badges = [];
+        if (planetName === lagnaLordPlanet) {
+            badges.push({
+                letter: 'L',
+                num: '1',
+                title: 'Lagneśa (D1 Lagna Lord)',
+                desc: `Rules D1 Ascendant (${d1LagnaSign || '--'}). Master of physical vitality, constitution & life direction.`,
+                cls: 'lord-l'
+            });
+        }
+        if (planetName === drekkanaLordPlanet) {
+            badges.push({
+                letter: 'D',
+                num: '3',
+                title: 'Drekkāṇa Lord (D3 Lagna Lord)',
+                desc: `Rules D3 Ascendant (${d3LagnaSign || '--'}). Master of bodily courage, energy & worldly drive.`,
+                cls: 'lord-d'
+            });
+        }
+        if (planetName === navamshaLordPlanet) {
+            badges.push({
+                letter: 'N',
+                num: '9',
+                title: 'Navāṁśa Lord (D9 Lagna Lord)',
+                desc: `Rules D9 Ascendant (${d9LagnaSign || '--'}). Master of soul dharma, inner contentment & spiritual fortune.`,
+                cls: 'lord-n'
+            });
+        }
+        return badges;
+    }
 
     widgetContainers.forEach(container => {
         // ---------------------------------------------------------------------
@@ -151,9 +213,26 @@ function updateVargaDignitiesTable(cell, chartData) {
             const planetWeightedSums = { Sun: 0, Moon: 0, Mars: 0, Mercury: 0, Jupiter: 0, Venus: 0, Saturn: 0 };
             const pePlanets = (currentData.planetary_evaluation && currentData.planetary_evaluation.planets) || {};
 
+            // Update column header badges for master lords
+            planets.forEach(p => {
+                const th = container.querySelector(`.shadvarga-weighted-table th[data-planet="${p}"]`);
+                if (th) {
+                    const lordBadges = getPlanetLordBadges(p);
+                    const tagsContainer = th.querySelector('.th-lord-tags');
+                    if (tagsContainer) {
+                        tagsContainer.innerHTML = lordBadges.map(b => `
+                            <span class="shadvarga-lord-badge ${b.cls} tooltip-target" data-tooltip="<strong>${b.title}</strong><br>${escapeTooltipAttr(b.desc)}" style="cursor:help;">${b.letter}</span>
+                        `).join('');
+                    }
+                }
+            });
+
             shadvargaRowsDef.forEach(rowDef => {
                 const tr = document.createElement('tr');
                 tr.style.cursor = 'pointer';
+                if (rowDef.isPillar) {
+                    tr.classList.add('shadvarga-row-pillar');
+                }
                 tr.onclick = function() {
                     const chartCell = (window.currentActiveCell && window.currentActiveCell.dataset.widget === 'chart')
                         ? window.currentActiveCell
@@ -169,11 +248,16 @@ function updateVargaDignitiesTable(cell, chartData) {
                     }
                 };
 
+                const wtCellBg = rowDef.isPillar ? '#e0f2fe' : '#faf6ee';
+                const wtCellColor = rowDef.isPillar ? '#0284c7' : '#4a3325';
+                const lblCellBg = rowDef.isPillar ? '#f8fafc' : '#faf6ee';
+                const lblCellColor = rowDef.isPillar ? '#0f172a' : '#4a3325';
+
                 let rowHtml = `
-                    <td style="font-weight: 800; color: #4a3325; background: #faf6ee; padding: 6px 4px; font-size: 13px;">${rowDef.weight}</td>
-                    <td style="font-weight: 700; color: #4a3325; background: #faf6ee; padding: 6px 6px; text-align: left; font-size: 12.5px;">
+                    <td style="font-weight: 800; color: ${wtCellColor}; background: ${wtCellBg}; padding: 6px 4px; font-size: ${rowDef.isPillar ? '13.5px' : '13px'};">${rowDef.weight}</td>
+                    <td style="font-weight: 800; color: ${lblCellColor}; background: ${lblCellBg}; padding: 6px 6px; text-align: left; font-size: 12.5px;">
                         <span class="tooltip-target" data-tooltip="<strong>${rowDef.displayCode} (${rowDef.code}) — ${rowDef.title}</strong><br>• Canonical Weight: <strong>${rowDef.weight}</strong><br>Click to display this chart in the primary view." style="cursor:help;">
-                            ${rowDef.displayCode}
+                            ${rowDef.displayCode} ${rowDef.isPillar ? '<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:12px; padding:1px 3px; border-radius:2px; margin-left:3px;">2× Pillar</span>' : ''}
                         </span>
                     </td>
                 `;
@@ -196,12 +280,13 @@ function updateVargaDignitiesTable(cell, chartData) {
                     const glyphHtml = getZodiacGlyphHtml(signName);
                     const col = getDignityColor(score);
                     const tip = `<strong>${p} in ${rowDef.displayCode} (${signName})</strong><br>• <strong>Dignity:</strong> ${dignityName}<br>• <strong>Score:</strong> ${score.toFixed(0)}%<br>• <strong>Division Ruler:</strong> ${ruler}<br>• <strong>Weight Multiplier:</strong> ${rowDef.weight}x (${rowDef.title})`;
+                    const cellBg = rowDef.isPillar ? '#f8fafc' : 'transparent';
 
                     rowHtml += `
-                        <td style="padding: 6px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3); border-bottom: 1px solid var(--border-subtle, #e2d7c3); font-variant-numeric: tabular-nums;">
-                            <div class="tooltip-target shadvarga-cell-content" data-tooltip="${escapeTooltipAttr(tip)}" style="cursor:help;">
+                        <td style="padding: 6px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3); border-bottom: 1px solid var(--border-subtle, #e2d7c3); font-variant-numeric: tabular-nums; background: ${cellBg};">
+                            <div class="tooltip-target shadvarga-cell-content" data-tooltip="${escapeTooltipAttr(tip)}" style="cursor:help; font-weight: ${rowDef.isPillar ? '800' : '500'};">
                                 ${glyphHtml}
-                                <span style="font-weight: 700; font-size: 13px; color: ${col};">${score.toFixed(0)}</span>
+                                <span style="font-weight: ${rowDef.isPillar ? '800' : '700'}; font-size: 13px; color: ${col};">${score.toFixed(0)}</span>
                             </div>
                         </td>
                     `;
@@ -233,11 +318,18 @@ function updateVargaDignitiesTable(cell, chartData) {
                 const isHigh = weightedVal >= 50;
                 const badgeClass = isHigh ? 'high' : 'low';
                 const tip = `<strong>${p} Weighted Ṣaḍvarga: ${weightedVal}%</strong><br>• Raw Weighted Sum: ${planetWeightedSums[p].toFixed(1)} / 800<br>• Status: ${isHigh ? 'High Dignity (Long-Life & Prosperity)' : 'Vulnerability (Requires Dispositor Support)'}`;
+                const lordBadges = getPlanetLordBadges(p);
+                const lordBadgesHtml = lordBadges.length > 0 ? `
+                    <div class="shadvarga-lord-badges-wrap" style="display:flex; gap:2px; justify-content:center; align-items:center; margin-top:2px;">
+                        ${lordBadges.map(b => `<span class="shadvarga-lord-badge ${b.cls} tooltip-target" data-tooltip="<strong>${b.title}</strong><br>${escapeTooltipAttr(b.desc)}" style="cursor:help;">${b.letter}</span>`).join('')}
+                    </div>
+                ` : '';
 
                 totalHtml += `
-                    <td style="padding: 7px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3);">
-                        <div class="tooltip-target" data-tooltip="${escapeTooltipAttr(tip)}" style="display:flex; justify-content:center; align-items:center; cursor:help;">
+                    <td style="padding: 5px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3);">
+                        <div class="tooltip-target" data-tooltip="${escapeTooltipAttr(tip)}" style="display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px; cursor:help;">
                             <span class="shadvarga-score-badge ${badgeClass}">${weightedVal}</span>
+                            ${lordBadgesHtml}
                         </div>
                     </td>
                 `;

@@ -1398,7 +1398,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             }
 
             function buildFallbackCockpit(graha, pEval, pD1, d1Sign, signLord, effDig, sbVir, sbPct, netVitality, quad, vitRes) {
-                const vWeights = { 'D1': 1.00, 'D9': 0.75, 'D2': 0.50, 'D3': 0.50, 'D12': 0.50, 'D30': 0.50 };
+                const vWeights = { 'D1': 2, 'D2': 1, 'D3': 1, 'D30': 1, 'D9': 2, 'D12': 1 };
                 const vb = (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) || {};
                 const shadvargaRows = Object.keys(vWeights).map(vgKey => {
                     const item = vb[vgKey] || {};
@@ -1489,15 +1489,25 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const s4 = cockpit.stage4_synthesis || { vitality_score: 5.0, archetype_title: 'Pragmatic Executive', vitality_tier: 'Resilient', summary_text: '', baladi: {}, deepthaadi: {}, affliction_badges: [] };
 
                 // 1. Shadvarga Rows (Column 1)
-                let s1RowsHtml = (s1.rows || []).map(r => `
-                    <tr style="border-bottom: 1px solid var(--border-subtle);">
-                        <td style="padding: 5px 6px; font-weight: 700; color: var(--text-heading); font-size: 12.5px;">${r.varga}</td>
-                        <td style="padding: 5px 6px; color: var(--text-muted); font-size: 12px;">${Number(r.weight || 0).toFixed(2)}</td>
-                        <td style="padding: 5px 6px; font-size: 12.5px;">${r.sign}</td>
-                        <td style="padding: 5px 6px; font-weight: 600; font-size: 12px;">${r.dignity}</td>
-                        <td style="padding: 5px 6px; font-weight: 700; color: #0284c7; font-size: 12.5px;">${Number(r.score_pct || 0).toFixed(0)}%</td>
-                    </tr>
-                `).join('');
+                let s1RowsHtml = (s1.rows || []).map(r => {
+                    const isPillar = (r.varga === 'D1' || r.varga === 'D9');
+                    const rowBg = isPillar ? 'background: #f8fafc;' : '';
+                    const borderLeft = isPillar ? 'border-left: 3px solid #0284c7;' : '';
+                    const vLabel = r.varga === 'D30' ? 'D30 (D5)' : r.varga;
+                    const weightVal = (typeof r.weight === 'number' && r.weight % 1 === 0) ? r.weight : Number(r.weight || 0).toFixed(0);
+
+                    return `
+                        <tr style="border-bottom: 1px solid var(--border-subtle); ${rowBg} ${borderLeft}">
+                            <td style="padding: 5px 6px; font-weight: 800; color: ${isPillar ? '#0284c7' : 'var(--text-heading)'}; font-size: 12.5px;">
+                                ${vLabel} ${isPillar ? `<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; font-size:12px; font-weight:800; padding:1px 3px; border-radius:2px; margin-left:3px;">2× Pillar</span>` : ''}
+                            </td>
+                            <td style="padding: 5px 6px; font-weight: ${isPillar ? '800' : '400'}; color: ${isPillar ? '#0284c7' : 'var(--text-muted)'}; font-size: 12px;">${weightVal}</td>
+                            <td style="padding: 5px 6px; font-size: 12.5px; font-weight: ${isPillar ? '600' : '400'};">${r.sign}</td>
+                            <td style="padding: 5px 6px; font-weight: 600; font-size: 12px;">${r.dignity}</td>
+                            <td style="padding: 5px 6px; font-weight: 800; color: #0284c7; font-size: ${isPillar ? '13px' : '12.5px'};">${Number(r.score_pct || 0).toFixed(0)}%</td>
+                        </tr>
+                    `;
+                }).join('');
 
                 // 2. Peer Alliances (Column 2) - Clean Badges, No Smileys
                 let peerRowsHtml = (s2.peer_influences || []).map(rel => {
@@ -2586,7 +2596,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                     digTooltip = (varga === 'D1')
                         ? `<strong>${graha} Base Ṣaḍvarga Dignity: ${baseShadvargaPct.toFixed(1)}%</strong><br>` +
                           `• <strong>D1 Sign Placement:</strong> ${cleanDig} (${dignityPct.toFixed(0)}% in ${sign})<br>` +
-                          `• <strong>6-Varga Weighted Composite:</strong> ${baseShadvargaPct.toFixed(1)}% (D1 1.00, D9 0.75, D2 0.50, D3 0.50, D12 0.50, D30 0.50 / 3.75)<br><br>` +
+                          `• <strong>6-Varga Weighted Composite:</strong> ${baseShadvargaPct.toFixed(1)}% (D1 2, D9 2, D2 1, D3 1, D12 1, D30 1 / 8)<br><br>` +
                           `${whyReason}<br><br>` +
                           `• <strong>How it feels:</strong> ${digMeaning}` +
                           funcDigMathBlock
@@ -3153,18 +3163,21 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                 let shadvargaHtml = '';
                 if (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) {
                     const vb = pEval.step1_shadvarga.varga_breakdown;
-                    const canonicalWeights = { 'D1': 6, 'D2': 2, 'D3': 4, 'D9': 5, 'D12': 2, 'D30': 1, 'D7': 0.5, 'D10': 0.25, 'D16': 0.25 };
-                    const vOrder = ['D1', 'D2', 'D3', 'D7', 'D9', 'D10', 'D12', 'D16', 'D30'].filter(k => vb[k] !== undefined);
+                    const canonicalWeights = { 'D1': 2, 'D2': 1, 'D3': 1, 'D30': 1, 'D9': 2, 'D12': 1 };
+                    const vOrder = ['D1', 'D2', 'D3', 'D30', 'D9', 'D12'].filter(k => vb[k] !== undefined);
                     const vKeys = vOrder.length > 0 ? vOrder : Object.keys(vb);
                     const vRows = vKeys.map(vgKey => {
                         const item = vb[vgKey] || {};
                         const wt = item.weight !== undefined ? item.weight : (canonicalWeights[vgKey] !== undefined ? canonicalWeights[vgKey] : 1.0);
-                        return `<tr>
-                            <td style="font-weight:700;">${vgKey}</td>
-                            <td>${item.sign || '--'}</td>
+                        const isPillar = (vgKey === 'D1' || vgKey === 'D9');
+                        const rowBg = isPillar ? 'background: #f8fafc;' : '';
+                        const vLabel = vgKey === 'D30' ? 'D30 (D5)' : vgKey;
+                        return `<tr style="${rowBg}">
+                            <td style="font-weight:800; color:${isPillar ? '#0284c7' : 'inherit'};">${vLabel} ${isPillar ? '<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; font-size:12px; font-weight:800; padding:1px 3px; border-radius:2px; margin-left:2px;">2×</span>' : ''}</td>
+                            <td style="${isPillar ? 'font-weight:600;' : ''}">${item.sign || '--'}</td>
                             <td>${item.dignity || '--'}</td>
-                            <td style="text-align:right;">${item.score !== undefined ? item.score.toFixed(1) + '%' : '--'}</td>
-                            <td style="text-align:right; color:#78716c;">${typeof wt === 'number' && wt % 1 !== 0 ? wt.toFixed(2) : wt}</td>
+                            <td style="text-align:right; font-weight:${isPillar ? '800' : '600'}; color:#0284c7;">${item.score !== undefined ? item.score.toFixed(1) + '%' : '--'}</td>
+                            <td style="text-align:right; font-weight:${isPillar ? '800' : '400'}; color:${isPillar ? '#0284c7' : '#78716c'};">${typeof wt === 'number' && wt % 1 !== 0 ? wt.toFixed(1) : wt}</td>
                         </tr>`;
                     }).join('');
                     shadvargaHtml = `
@@ -3181,7 +3194,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                             <tbody>${vRows}</tbody>
                         </table>
                         <div style="font-size: 12px; margin-top:2px;">
-                            <strong>Viṁśopaka:</strong> ${pEval.step1_shadvarga.weighted_dignity_pct || dignityPct}% (${pEval.step1_shadvarga.predominance_desc || ''})
+                            <strong>Ṣaḍvarga Weighted:</strong> ${(Number(pEval.step1_shadvarga.weighted_dignity_pct || dignityPct)).toFixed(1)}% (${pEval.step1_shadvarga.predominance_desc || ''})
                         </div>
                     `;
                 } else {

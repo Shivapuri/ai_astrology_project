@@ -155,18 +155,18 @@ TRUE_DEBILITATION_MAP = {
 RAHU_STRONG_SIGNS = {"Aries", "Taurus", "Cancer", "Scorpio", "Aquarius"}
 KETU_STRONG_SIGNS = {"Taurus", "Gemini", "Virgo", "Sagittarius", "Pisces"}
 
-SHADVARGA_LIST = ["D1", "D2", "D3", "D9", "D12", "D30"]
+SHADVARGA_LIST = ["D1", "D2", "D3", "D30", "D9", "D12"]
 
 SHADVARGA_WEIGHTS: Dict[str, float] = {
-    "D1": 1.00,
-    "D9": 0.75,
-    "D2": 0.50,
-    "D3": 0.50,
-    "D12": 0.50,
-    "D30": 0.50
+    "D1": 2.0,
+    "D2": 1.0,
+    "D3": 1.0,
+    "D30": 1.0,
+    "D9": 2.0,
+    "D12": 1.0
 }
 
-SHADVARGA_DIVISOR: float = 3.75
+SHADVARGA_DIVISOR: float = 8.0
 
 
 def get_dignity_score(
@@ -235,24 +235,24 @@ def clamp(val: float, min_val: float, max_val: float) -> float:
 # -------------------------------------------------------------------------
 def calculate_shadvarga_dignity(v_breakdown: Dict[str, Any], planet: str) -> float:
     """
-    Phaladīpikā Ch. 3 (Texts 1-4) canonical weighted divisional dignity engine across Ṣaḍvarga:
-    - D1 (Rāśi): 1.00 (Pūrṇa / Full)
-    - D9 (Navāṁśa): 0.75 (rāśi-bhāva-tulyaṁ standard)
-    - D2 (Horā): 0.50 (Ardha / Half)
-    - D3 (Drekkāṇa): 0.50 (Ardha / Half)
-    - D12 (Dvādaśāṁśa): 0.50 (Ardha / Half)
-    - D30 (Triṁśāṁśa): 0.50 (Ardha / Half)
-    Total Normalizing Divisor = 3.75.
+    Phaladīpikā Ch. 3 / Vic DiCara canonical weighted divisional dignity engine across Ṣaḍvarga:
+    - D1 (Rāśi): 2.0 (Pūrṇa / Full weight 2)
+    - D2 (Horā): 1.0 (Ardha / Half weight 1)
+    - D3 (Drekkāṇa): 1.0 (Ardha / Half weight 1)
+    - D30 (Triṁśāṁśa): 1.0 (Ardha / Half weight 1)
+    - D9 (Navāṁśa): 2.0 (rāśi-bhāva-tulyaṁ standard weight 2)
+    - D12 (Dvādaśāṁśa): 1.0 (Ardha / Half weight 1)
+    Total Normalizing Divisor = 8.0.
 
     Formula:
     Final Dignity = (
-        (S_D1 * 1.00) + 
-        (S_D9 * 0.75) + 
-        (S_D2 * 0.50) + 
-        (S_D3 * 0.50) + 
-        (S_D12 * 0.50) + 
-        (S_D30 * 0.50)
-    ) / 3.75
+        (S_D1 * 2.0) + 
+        (S_D2 * 1.0) + 
+        (S_D3 * 1.0) + 
+        (S_D30 * 1.0) + 
+        (S_D9 * 2.0) + 
+        (S_D12 * 1.0)
+    ) / 8.0
     """
     weighted_sum = 0.0
     for v_name, weight in SHADVARGA_WEIGHTS.items():
@@ -585,7 +585,7 @@ def assemble_unified_graha_cockpit(
     """
     # -------------------------------------------------------------------------
     # STAGE 1: Shadvarga Foundation Table (Canonical Phaladīpikā Ṣaḍvarga)
-    # Weights: D1: 1.00, D9: 0.75, D2: 0.50, D3: 0.50, D12: 0.50, D30: 0.50 (Divisor: 3.75)
+    # Weights: D1: 2, D2: 1, D3: 1, D30: 1, D9: 2, D12: 1 (Divisor: 8.0)
     # -------------------------------------------------------------------------
     v_breakdown = step1_info.get("varga_breakdown", {})
     shadvarga_rows = []
@@ -594,7 +594,7 @@ def assemble_unified_graha_cockpit(
         v_data = v_breakdown.get(v_code, {})
         shadvarga_rows.append({
             "varga": v_code,
-            "weight": SHADVARGA_WEIGHTS.get(v_code, 0.50),
+            "weight": SHADVARGA_WEIGHTS.get(v_code, 1.0),
             "sign": v_data.get("sign", "-"),
             "dignity": v_data.get("dignity", "Neutral"),
             "score_pct": v_data.get("score", 50.0)

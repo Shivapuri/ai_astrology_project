@@ -49,16 +49,16 @@ $$\begin{aligned}
 > *daśāṁśa-ṣaṣṭyaṁśa-kalāṁśa-hīnās te sapta-vargāś ca visaptam-āṁśāḥ ṣaḍvarga-saṁjñās...*  
 > (“Subtracting D10, D60, and D16 gives the Saptavarga; subtracting D7 from that gives what is known as Ṣaḍvarga.”)
 
-Under *Phaladīpikā 3.3*, the divisional weighting hierarchy assigns:
-- **D1 (Rāśi):** Weight = $1.00$ (Full / *Pūrṇa*)
-- **D9 (Navāṁśa):** Weight = $0.75$ (*rāśi-bhāva-tulyaṁ* balanced standard)
-- **D2 (Horā):** Weight = $0.50$ (Half / *Ardha*)
-- **D3 (Drekkāṇa):** Weight = $0.50$ (Half / *Ardha*)
-- **D12 (Dvādaśāṁśa):** Weight = $0.50$ (Half / *Ardha*)
-- **D30 (Triṁśāṁśa):** Weight = $0.50$ (Half / *Ardha*)
-- **Total Divisor:** $1.00 + 0.75 + 0.50 + 0.50 + 0.50 + 0.50 = \mathbf{3.75}$
+Under *Phaladīpikā 3.3* and Vic DiCara's weighted system, the divisional weighting hierarchy assigns:
+- **D1 (Rāśi):** Weight = $2$ (Full / *Pūrṇa* Primary Anchor)
+- **D2 (Horā):** Weight = $1$ (Half / *Ardha*)
+- **D3 (Drekkāṇa):** Weight = $1$ (Half / *Ardha*)
+- **D30 (Triṁśāṁśa / 5 Bounds):** Weight = $1$ (Half / *Ardha*)
+- **D9 (Navāṁśa):** Weight = $2$ (*rāśi-bhāva-tulyaṁ* balanced standard Primary Anchor)
+- **D12 (Dvādaśāṁśa):** Weight = $1$ (Half / *Ardha*)
+- **Total Divisor:** $2 + 1 + 1 + 1 + 2 + 1 = \mathbf{8}$
 
-$$\text{Final Weighted Dignity} = \frac{(S_{\text{D1}} \times 1.00) + (S_{\text{D9}} \times 0.75) + (S_{\text{D2}} \times 0.50) + (S_{\text{D3}} \times 0.50) + (S_{\text{D12}} \times 0.50) + (S_{\text{D30}} \times 0.50)}{3.75}$$
+$$\text{Final Weighted Dignity} = \frac{(S_{\text{D1}} \times 2) + (S_{\text{D2}} \times 1) + (S_{\text{D3}} \times 1) + (S_{\text{D30}} \times 1) + (S_{\text{D9}} \times 2) + (S_{\text{D12}} \times 1)}{8}$$
 
 #### Structural Differentiation: Rāśi Vargas vs. Graha Vargas
 1. **Rāśi Vargas (Zodiacal Harmonics — D1, D9, D12):** Map directly to standard 12 zodiac signs (Aries through Pisces). Standard Exaltation, Debilitation, Moolatrikona, Own Sign, and Compound Friendship to sign lord apply.

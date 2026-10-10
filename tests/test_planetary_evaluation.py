@@ -710,11 +710,11 @@ def test_parashari_lordship_modifiers():
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
     assert s4_jup["expression_score"] == -20.0
-    assert fd_jup["functional_dignity_pct"] == 83.2
+    assert fd_jup["functional_dignity_pct"] == 81.7
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
     assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
-    assert "Layer 2 Functional Dignity = 83.2%" in fd_jup["math_formula"]
+    assert "Layer 2 Functional Dignity = 81.7%" in fd_jup["math_formula"]
 
     # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
     vargas_case2 = {
@@ -745,8 +745,8 @@ def test_parashari_lordship_modifiers():
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
     assert s4_sat["expression_score"] == -12.5
-    assert fd_sat["functional_dignity_pct"] == 52.0
-    assert "Layer 2 Functional Dignity = 52.0%" in fd_sat["math_formula"]
+    assert fd_sat["functional_dignity_pct"] == 52.6
+    assert "Layer 2 Functional Dignity = 52.6%" in fd_sat["math_formula"]
 
     # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
     vargas_case3 = {
@@ -779,8 +779,8 @@ def test_parashari_lordship_modifiers():
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
     assert s4_sat3["expression_score"] == 32.5
-    assert fd_sat3["functional_dignity_pct"] == 52.0
-    assert "Layer 2 Functional Dignity = 52.0%" in fd_sat3["math_formula"]
+    assert fd_sat3["functional_dignity_pct"] == 52.6
+    assert "Layer 2 Functional Dignity = 52.6%" in fd_sat3["math_formula"]
 
 
 def test_moon_phase_and_illumination_spectrum():
@@ -994,7 +994,7 @@ def test_mars_in_scorpio_12th_house_dignity():
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
     assert f_dig["lordship_mod_pct"] == 15.0
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
-    assert f_dig["functional_dignity_pct"] == 65.8
+    assert f_dig["functional_dignity_pct"] == 64.6
     assert s4_mars["expression_score"] == 15.0
     assert "House 12" in f_dig["math_steps"][1]
 
@@ -1657,7 +1657,7 @@ def test_unified_graha_cockpit_structure_and_invariants(test_chart):
         s1 = cockpit["stage1_shadvarga"]
         assert "rows" in s1
         assert len(s1["rows"]) == 6
-        expected_weights = {"D1": 1.00, "D9": 0.75, "D2": 0.50, "D3": 0.50, "D12": 0.50, "D30": 0.50}
+        expected_weights = {"D1": 2.0, "D9": 2.0, "D2": 1.0, "D3": 1.0, "D12": 1.0, "D30": 1.0}
         for row in s1["rows"]:
             v = row["varga"]
             assert v in expected_weights
@@ -1803,25 +1803,25 @@ def test_detect_planetary_wars_with_baseline():
 
 def test_native_divisional_dignity_engine_6_charts_weights():
     """
-    Validates Phaladeepika Ch. 3 native weighted divisional dignity engine:
+    Validates Phaladeepika Ch. 3 / Vic DiCara native weighted divisional dignity engine:
     1. Evaluates specifically canonical Phaladīpikā Ṣaḍvarga: D1, D2, D3, D9, D12, D30.
-    2. Weight hierarchy: D1 (1.00), D9 (0.75), D2 (0.50), D3 (0.50), D12 (0.50), D30 (0.50).
-    3. Normalizing divisor = 3.75.
+    2. Weight hierarchy: D1 (2.0), D9 (2.0), D2 (1.0), D3 (1.0), D12 (1.0), D30 (1.0).
+    3. Normalizing divisor = 8.0.
     """
     from jyotish.planetary_evaluation.planetary_evaluation import (
         calculate_shadvarga_dignity, SHADVARGA_LIST, SHADVARGA_WEIGHTS, SHADVARGA_DIVISOR
     )
 
-    assert SHADVARGA_LIST == ["D1", "D2", "D3", "D9", "D12", "D30"]
+    assert SHADVARGA_LIST == ["D1", "D2", "D3", "D30", "D9", "D12"]
     assert SHADVARGA_WEIGHTS == {
-        "D1": 1.00, "D9": 0.75, "D2": 0.50, "D3": 0.50, "D12": 0.50, "D30": 0.50
+        "D1": 2.0, "D2": 1.0, "D3": 1.0, "D30": 1.0, "D9": 2.0, "D12": 1.0
     }
-    assert SHADVARGA_DIVISOR == 3.75
+    assert SHADVARGA_DIVISOR == 8.0
 
     # Test arbitrary breakdown:
     # D1 = 100, D9 = 80, D2 = 90, D3 = 60, D12 = 50, D30 = 40
-    # Weighted = (100*1.0 + 80*0.75 + 90*0.5 + 60*0.5 + 50*0.5 + 40*0.5) / 3.75
-    #          = (100 + 60 + 45 + 30 + 25 + 20) / 3.75 = 280 / 3.75 = 74.6666... -> 74.67
+    # Weighted = (100*2.0 + 80*2.0 + 90*1.0 + 60*1.0 + 50*1.0 + 40*1.0) / 8.0
+    #          = (200 + 160 + 90 + 60 + 50 + 40) / 8.0 = 600 / 8.0 = 75.0
     breakdown = {
         "D1": {"score": 100.0, "sign": "Aries", "dignity": "Exalted"},
         "D9": {"score": 80.0, "sign": "Leo", "dignity": "Great Friend's Sign"},
@@ -1831,7 +1831,7 @@ def test_native_divisional_dignity_engine_6_charts_weights():
         "D30": {"score": 40.0, "sign": "Taurus", "dignity": "Enemy's Sign"},
     }
     score = calculate_shadvarga_dignity(breakdown, "Sun")
-    assert score == 74.67
+    assert score == 75.0
 
 
 def test_native_scale_exact_symmetry():
@@ -1864,14 +1864,15 @@ def test_angelina_jolie_divisional_breakdown_precision(test_chart):
     """
     Validates that on Angelina Jolie's chart, each planet's step1_shadvarga
     accurately sources divisional dignities from the baseline for canonical Phaladīpikā Ṣaḍvarga
-    [D1, D2, D3, D9, D12, D30] using 3.75 divisor and Graha Varga domain rules.
+    [D1, D2, D3, D9, D12, D30] using 8.0 divisor (D1:2, D9:2, D2:1, D3:1, D12:1, D30:1).
     """
     eval_data = test_chart["planetary_evaluation"]
     planets = eval_data["planets"]
 
-    # Venus: D1=50, D9=100 (Exalted), D2=50 (Neutral Horā), D3=60, D12=80, D30=60 -> 66.67%
+    # Venus: D1=50, D9=100 (Exalted), D2=50 (Neutral Horā), D3=60, D12=80, D30=60
+    # Sum = 50*2 + 100*2 + 50*1 + 60*1 + 80*1 + 60*1 = 550 / 8 = 68.75%
     ven = planets["Venus"]["step1_shadvarga"]
-    assert ven["weighted_dignity_pct"] == 66.67
+    assert ven["weighted_dignity_pct"] == 68.75
     assert ven["varga_breakdown"]["D9"]["dignity"] == "Exalted"
     assert ven["varga_breakdown"]["D9"]["score"] == 100.0
     assert ven["varga_breakdown"]["D2"]["score"] == 50.0
@@ -1879,17 +1880,19 @@ def test_angelina_jolie_divisional_breakdown_precision(test_chart):
     assert ven["varga_breakdown"]["D12"]["score"] == 80.0
     assert ven["varga_breakdown"]["D30"]["score"] == 60.0
 
-    # Moon: D1=40, D9=90 (Own Sign), D2=0 (Inauspicious Horā, gentle Moon in odd sign + Sun Hora), D3=80, D12=80, D30=40 -> 55.33%
+    # Moon: D1=40, D9=90 (Own Sign), D2=0 (Inauspicious Horā, gentle Moon in odd sign + Sun Hora), D3=80, D12=80, D30=40
+    # Sum = 40*2 + 90*2 + 0*1 + 80*1 + 80*1 + 40*1 = 460 / 8 = 57.50%
     moon = planets["Moon"]["step1_shadvarga"]
-    assert moon["weighted_dignity_pct"] == 55.33
+    assert moon["weighted_dignity_pct"] == 57.50
     assert moon["varga_breakdown"]["D9"]["score"] == 90.0
     assert moon["varga_breakdown"]["D2"]["score"] == 0.0
     assert moon["varga_breakdown"]["D2"]["dignity"] == "Inauspicious Horā (0%)"
     assert moon["varga_breakdown"]["D3"]["score"] == 80.0
 
-    # Mars: D1=95 (Moolatrikona), D9=0 (Debilitated), D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=80, D12=80, D30=50 -> 66.67%
+    # Mars: D1=95 (Moolatrikona), D9=0 (Debilitated), D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=80, D12=80, D30=50
+    # Sum = 95*2 + 0*2 + 100*1 + 80*1 + 80*1 + 50*1 = 500 / 8 = 62.50%
     mars = planets["Mars"]["step1_shadvarga"]
-    assert mars["weighted_dignity_pct"] == 66.67
+    assert mars["weighted_dignity_pct"] == 62.50
     assert mars["varga_breakdown"]["D1"]["score"] == 95.0
     assert mars["varga_breakdown"]["D9"]["score"] == 0.0
     assert mars["varga_breakdown"]["D2"]["score"] == 100.0
@@ -1897,9 +1900,10 @@ def test_angelina_jolie_divisional_breakdown_precision(test_chart):
     assert mars["varga_breakdown"]["D3"]["score"] == 80.0
     assert mars["varga_breakdown"]["D30"]["score"] == 50.0
 
-    # Sun: D1=40, D9=50, D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=50, D12=80, D30=80 -> 62.00%
+    # Sun: D1=40, D9=50, D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=50, D12=80, D30=80
+    # Sum = 40*2 + 50*2 + 100*1 + 50*1 + 80*1 + 80*1 = 490 / 8 = 61.25%
     sun = planets["Sun"]["step1_shadvarga"]
-    assert sun["weighted_dignity_pct"] == 62.00
+    assert sun["weighted_dignity_pct"] == 61.25
     assert sun["varga_breakdown"]["D2"]["score"] == 100.0
     assert sun["varga_breakdown"]["D2"]["dignity"] == "Auspicious Horā (100%)"
     assert sun["varga_breakdown"]["D30"]["score"] == 80.0
@@ -1991,4 +1995,67 @@ def test_priyanka_chopra_moon_in_gemini_leo_hora():
     assert moon_d2["ruler"] == "Sun"
     assert moon_d2["score"] == 0.0
     assert moon_d2["dignity"] == "Inauspicious Horā (0%)"
+
+
+def test_priyanka_chopra_shadvarga_weighted_dignity_parity():
+    """
+    Validates exact parity between backend Ṣaḍvarga weighted dignity
+    and Vic DiCara's weighted table on Priyanka Chopra's chart (Screenshot 2026-10-10 at 17.28.52):
+    - Weights: D1: 2, D9: 2, D2: 1, D3: 1, D12: 1, D30 (D5): 1 / Divisor: 8.0
+    - Exact rounded totals match DiCara's slide:
+      Sun: 64 (510 / 8 = 63.75)
+      Moon: 35 (280 / 8 = 35.0)
+      Mars: 56 (450 / 8 = 56.25)
+      Mercury: 54 (430 / 8 = 53.75)
+      Jupiter: 79 (635 / 8 = 79.38)
+      Venus: 71 (565 / 8 = 70.62)
+      Saturn: 76 (605 / 8 = 75.62)
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_shadvarga_dignity
+
+    priyanka_vargas = {
+        "Sun": {
+            "D1": {"score": 80.0}, "D2": {"score": 50.0}, "D3": {"score": 50.0},
+            "D30": {"score": 50.0}, "D9": {"score": 50.0}, "D12": {"score": 100.0}
+        },
+        "Moon": {
+            "D1": {"score": 80.0}, "D2": {"score": 0.0}, "D3": {"score": 30.0},
+            "D30": {"score": 30.0}, "D9": {"score": 30.0}, "D12": {"score": 0.0}
+        },
+        "Mars": {
+            "D1": {"score": 30.0}, "D2": {"score": 50.0}, "D3": {"score": 50.0},
+            "D30": {"score": 50.0}, "D9": {"score": 95.0}, "D12": {"score": 50.0}
+        },
+        "Mercury": {
+            "D1": {"score": 50.0}, "D2": {"score": 50.0}, "D3": {"score": 70.0},
+            "D30": {"score": 0.0}, "D9": {"score": 70.0}, "D12": {"score": 70.0}
+        },
+        "Jupiter": {
+            "D1": {"score": 80.0}, "D2": {"score": 100.0}, "D3": {"score": 80.0},
+            "D30": {"score": 15.0}, "D9": {"score": 100.0}, "D12": {"score": 80.0}
+        },
+        "Venus": {
+            "D1": {"score": 80.0}, "D2": {"score": 50.0}, "D3": {"score": 50.0},
+            "D30": {"score": 95.0}, "D9": {"score": 90.0}, "D12": {"score": 30.0}
+        },
+        "Saturn": {
+            "D1": {"score": 100.0}, "D2": {"score": 50.0}, "D3": {"score": 95.0},
+            "D30": {"score": 70.0}, "D9": {"score": 95.0}, "D12": {"score": 0.0}
+        }
+    }
+
+    expected_rounded = {
+        "Sun": 64,
+        "Moon": 35,
+        "Mars": 56,
+        "Mercury": 54,
+        "Jupiter": 79,
+        "Venus": 71,
+        "Saturn": 76
+    }
+
+    for p, v_data in priyanka_vargas.items():
+        score = calculate_shadvarga_dignity(v_data, p)
+        assert round(score) == expected_rounded[p], f"{p} expected {expected_rounded[p]}, got {score} (round: {round(score)})"
+
 
