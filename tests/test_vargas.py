@@ -336,3 +336,29 @@ def test_varga_ruler_and_symbol_enrichment():
             elif v_name == "D30":
                 assert "bound_ruler" in g
                 assert "bound_symbol" in g
+
+
+# =============================================================================
+# 6. PIPELINE CLEANLINESS & CALCULATION SETTINGS AUDIT
+# =============================================================================
+def test_pipeline_cleanliness_and_settings():
+    """
+    Verifies that ChartPipeline and its serialized dictionary:
+    1. Contain d2_mode and trimsamsa_mode in calculation_settings.
+    2. Do NOT contain or reference exact_dignities anywhere.
+    """
+    pipe = ChartPipeline(
+        name="CleanlinessTest",
+        year=1995, month=5, day=15, hour=14, minute=30,
+        latitude=51.5074, longitude=-0.1278, timezone_offset=1.0,
+        d2_mode="parashari", trimsamsa_mode="parashari"
+    )
+    assert not hasattr(pipe, "exact_dignities"), "ChartPipeline must NOT have exact_dignities property"
+
+    data = pipe.to_dict()
+    assert "exact_dignities" not in data, "Serialized payload must NOT contain exact_dignities key"
+    assert "d2_mode" in data["calculation_settings"], "calculation_settings must include d2_mode"
+    assert data["calculation_settings"]["d2_mode"] == "parashari"
+    assert "trimsamsa_mode" in data["calculation_settings"], "calculation_settings must include trimsamsa_mode"
+    assert data["calculation_settings"]["trimsamsa_mode"] == "parashari"
+

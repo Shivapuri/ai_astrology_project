@@ -806,8 +806,10 @@ class ChartPipeline:
                 "place": self.place
             },
             "calculation_settings": {
+                "d2_mode": self.d2_mode,
                 "d10_mode": self.d10_mode,
                 "d24_mode": self.d24_mode,
+                "trimsamsa_mode": self.trimsamsa_mode,
                 "debilitation_mode": self.debilitation_mode,
                 "nakshatra_system": self.nakshatra_system,
                 "ayanamsa_name": "Lahiri / Chitra Paksha" if self.nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)"
