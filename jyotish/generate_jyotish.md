@@ -61,9 +61,16 @@ If you are modifying `generate_jyotish.py` or `jyotish/pipeline.py`, you must st
 *   **Lord & Sub-Lord:** Each Nakshatra's Vimshottari lord is divided into 9 unequal sub-divisions proportional to the Vimshottari dasha years (out of 120 years total), beginning with the lord of the nakshatra itself.
 *   **Relative Speed Ratio:** Instantaneous daily motion compared against mean motion:
     $$\text{Speed Ratio} = \left(\frac{\text{Instantaneous Motion}}{\text{Mean Motion}}\right) \times 100\%$$
-### E. Divisional Charts (Vargas) - Dasamsa (D10) Modes
-*   **Default (Kala Reverse for Even Signs):** Ernst Wilhelm's recommended setting in Kala (`Parashara - Reverse for Even Rasis *`). For even signs, the 10 divisions count in reverse (backward) starting from the 9th sign ($(\text{sign\_idx} + 8 - \text{div\_index}) \pmod{12}$).
-*   **Contemporary Direct (Vic DiCara / Traditional):** Slices count forward starting from the 9th sign ($(\text{sign\_idx} + 8 + \text{div\_index}) \pmod{12}$).
+### E. Divisional Charts (Vargas - Ṣoḍaśavarga)
+*   **Comprehensive Specification:** Complete mathematical algorithms, geometry, and structural rules for all 16 divisional charts (D1 through D60) are codified in [`jyotish/baseline_vargas.md`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/baseline_vargas.md).
+*   **Three Structural Families:**
+    - **Graha Vargas (Planetary Domains):** D2 (Horā), D3 (Drekkāṇa), D30 (Triṁśāṁśa). D2 features a 2-Chamber Binary Model (Solar vs. Lunar).
+    - **Rāśi Vargas (Zodiacal Harmonics):** D1, D4, D7, D9, D10, D12, D16, D20, D24, D27, D40, D45. Evaluated via Whole Sign Houses (*Rāśi Bhāva*) anchored to each Varga Lagna.
+    - **Aṁśa Varga (Polarity Arcs):** D60 (Ṣaṣṭiāṁśa). Evaluates 60 half-degree slices with 24 malefic arcs per *Phaladīpikā* 3.5.
+*   **Daśāṁśa (D10) Modes:**
+    - *Default (Kala Reverse for Even Signs):* For even signs, the 10 divisions count backward starting from the 9th sign ($(\text{sign\_idx} + 8 - \text{div\_index}) \pmod{12}$).
+    - *Direct Mode:* Slices count forward starting from the 9th sign ($(\text{sign\_idx} + 8 + \text{div\_index}) \pmod{12}$).
+*   **Triṁśāṁśa (D30) Parāśarī Protection:** Preserves classical unequal bounds (Mars, Saturn, Jupiter, Mercury, Venus) without harmonic overwrite unless `trimsamsa_mode == "harmonic"`.
 ### F. Karakas & Parashari Functional Roles
 *   **Chara Karakas (7-Graha Scheme, BPHS Ch. 32):** Ranks the 7 classical physical planets (Sun through Saturn) by degree traversed in sign ($0^\circ \text{ to } 30^\circ$) in descending order to identify AK through DK. Calculated on D1 longitudes and preserved across all Vargas.
 *   **Functional Rulerships (BPHS Ch. 34):** Identifies house lords from Whole Sign Ascendant. Computes Yogakaraka (simultaneous lordship of Kendra and Trikona), Lagneśa, Māraka (H2/H7), and Bādhaka (Movable $\rightarrow$ H11, Fixed $\rightarrow$ H9, Dual $\rightarrow$ H7). Evaluated for D1 and dynamically for each Varga Lagna.
