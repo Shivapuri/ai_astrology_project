@@ -1398,7 +1398,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             }
 
             function buildFallbackCockpit(graha, pEval, pD1, d1Sign, signLord, effDig, sbVir, sbPct, netVitality, quad, vitRes) {
-                const vWeights = { 'D1': 1.00, 'D9': 0.75, 'D7': 0.50, 'D10': 0.25, 'D12': 0.50, 'D16': 0.25 };
+                const vWeights = { 'D1': 1.00, 'D9': 0.75, 'D2': 0.50, 'D3': 0.50, 'D12': 0.50, 'D30': 0.50 };
                 const vb = (pEval.step1_shadvarga && pEval.step1_shadvarga.varga_breakdown) || {};
                 const shadvargaRows = Object.keys(vWeights).map(vgKey => {
                     const item = vb[vgKey] || {};
@@ -2586,7 +2586,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                     digTooltip = (varga === 'D1')
                         ? `<strong>${graha} Base Ṣaḍvarga Dignity: ${baseShadvargaPct.toFixed(1)}%</strong><br>` +
                           `• <strong>D1 Sign Placement:</strong> ${cleanDig} (${dignityPct.toFixed(0)}% in ${sign})<br>` +
-                          `• <strong>6-Varga Weighted Composite:</strong> ${baseShadvargaPct.toFixed(1)}% (D1 1.00, D9 0.75, D7 0.50, D12 0.50, D10 0.25, D16 0.25 / 3.25)<br><br>` +
+                          `• <strong>6-Varga Weighted Composite:</strong> ${baseShadvargaPct.toFixed(1)}% (D1 1.00, D9 0.75, D2 0.50, D3 0.50, D12 0.50, D30 0.50 / 3.75)<br><br>` +
                           `${whyReason}<br><br>` +
                           `• <strong>How it feels:</strong> ${digMeaning}` +
                           funcDigMathBlock

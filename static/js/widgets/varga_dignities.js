@@ -1,73 +1,111 @@
 /**
  * Astra Varga Dignities Matrix Widget
  *
- * Displays a comprehensive grid of the 16 Shodasa Vargas and the Panchadha Sambandha
- * (5-fold compound dignity) of the 7 classical planets (Sun through Saturn).
+ * Implements:
+ * 1. Ṣaḍvarga Weighted Matrix (Phaladīpikā 3.1–4 & Vic DiCara Methodology):
+ *    - Canonical integer weights: D1: 2, D2: 1, D3: 1, D5 (D30): 1, D9: 2, D12: 1 (Divisor: 8)
+ *    - Sign glyph + exact dignity score per cell
+ *    - Bottom weighted total row (W) with Auspicious (≥50) vs Inauspicious (<50) indicators
+ *    - Dispositor rescue annotations
+ * 2. Ṣoḍaśavarga Complete 16-Harmonics Grid:
+ *    - Comprehensive 16-division grid (D1 through D60) with sign glyphs, scores, and relationship tooltips
  */
+
+function switchVargaDignitiesView(btn, viewName) {
+    if (!btn) return;
+    const widgetContent = btn.closest('#tab-varga-dignities') || btn.closest('.widget-content') || document;
+    
+    // Toggle active state on buttons
+    const buttons = widgetContent.querySelectorAll('.varga-dignities-tab-btn');
+    buttons.forEach(b => {
+        if (b.dataset.view === viewName) {
+            b.classList.add('active');
+            b.style.background = '#4a3325';
+            b.style.color = '#fffdfa';
+        } else {
+            b.classList.remove('active');
+            b.style.background = 'transparent';
+            b.style.color = '#4a3325';
+        }
+    });
+
+    // Toggle panes
+    const paneShadvarga = widgetContent.querySelector('#pane-shadvarga');
+    const paneShodasha = widgetContent.querySelector('#pane-shodashavarga');
+    
+    if (paneShadvarga && paneShodasha) {
+        if (viewName === 'shadvarga') {
+            paneShadvarga.style.display = 'block';
+            paneShodasha.style.display = 'none';
+        } else {
+            paneShadvarga.style.display = 'none';
+            paneShodasha.style.display = 'block';
+        }
+    }
+
+    try {
+        localStorage.setItem('astra_varga_dignities_view', viewName);
+    } catch (e) {}
+}
 
 function updateVargaDignitiesTable(cell, chartData) {
     const currentData = chartData || window.currentChartData;
-    let tbodies = [];
+    if (!currentData) return;
 
-    if (cell) {
-        const tbody = cell.querySelector('tbody');
-        if (tbody) tbodies.push(tbody);
-    } else {
-        tbodies = Array.from(document.querySelectorAll('#vargaDignitiesTable tbody, .grid-cell[data-widget="dignities"] tbody'));
-    }
+    const root = cell || document;
+    const widgetContainers = cell
+        ? [cell.querySelector('#tab-varga-dignities') || cell]
+        : Array.from(document.querySelectorAll('#tab-varga-dignities, .grid-cell[data-widget="dignities"]'));
 
-    if (tbodies.length === 0) return;
+    if (widgetContainers.length === 0) return;
 
-    const vargasList = [
-        'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12',
-        'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
-    ];
     const planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
 
-    const mapDig = (fullStr) => {
-        if (!fullStr) return '-';
-        const s = fullStr.toLowerCase();
-        if (s.includes('exalt')) return 'EX';
-        if (s.includes('debilitat')) return 'DB';
-        if (s.includes('mool') || s.includes('mul')) return 'MT';
-        if (s.includes('own')) return 'OH';
-        if (s.includes('great friend')) return 'GF';
-        if (s.includes('great enemy')) return 'GE';
-        if (s.includes('friend')) return 'F';
-        if (s.includes('enemy')) return 'E';
-        if (s.includes('neutral')) return 'N';
-        return '-';
-    };
+    function escapeTooltipAttr(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
 
-    const getFullName = (abbrev) => {
-        const map = {
-            'EX': 'Exalted',
-            'DB': 'Debilitated',
-            'MT': 'Moolatrikona',
-            'OH': 'Own House',
-            'GF': 'Great Friend',
-            'GE': 'Great Enemy',
-            'F':  'Friend',
-            'E':  'Enemy',
-            'N':  'Neutral'
-        };
-        return map[abbrev] || abbrev;
-    };
+    function getDignityColor(score) {
+        const s = Number(score || 0);
+        if (s >= 90) return '#15803d'; // Green (Exalted, Moolatrikona, Own)
+        if (s >= 70) return '#0d9488'; // Teal (Great Friend, Friend)
+        if (s >= 50) return '#475569'; // Slate (Neutral)
+        if (s >= 30) return '#d97706'; // Amber (Enemy)
+        return '#dc2626';             // Red (Great Enemy, Debilitated, Inauspicious Horā)
+    }
 
-    const getColorForAbbrev = (abbrev) => {
-        switch (abbrev) {
-            case 'EX': return 'var(--dignity-exalted, #16a34a)';
-            case 'DB': return 'var(--dignity-debilitated, #dc2626)';
-            case 'OH':
-            case 'MT': return 'var(--dignity-own, #0284c7)';
-            case 'GF': return 'var(--dignity-great-friend, #0d9488)';
-            case 'GE': return 'var(--dignity-great-enemy, #ea580c)';
-            case 'F':  return 'var(--dignity-friend, #22c55e)';
-            case 'E':  return 'var(--dignity-enemy, #f97316)';
-            case 'N':  return 'var(--dignity-neutral, #64748b)';
-            default:   return 'inherit';
+    function getZodiacGlyphHtml(signName) {
+        if (typeof TableBuilder !== 'undefined' && TableBuilder.renderZodiacGlyph) {
+            return TableBuilder.renderZodiacGlyph(signName);
         }
-    };
+        if (typeof window !== 'undefined' && window.AstroCatalog) {
+            const s = window.AstroCatalog.getSign(signName);
+            if (s && s.glyph) {
+                return `<span class="zodiac-line-glyph" style="font-family:var(--font-astro-glyphs); font-variant-emoji:text;">${s.glyph}</span>`;
+            }
+        }
+        return signName ? signName.slice(0, 2) : '—';
+    }
+
+    function mapDigAbbrev(fullStr) {
+        if (!fullStr) return 'N';
+        const s = fullStr.toLowerCase();
+        if (s.includes('exalt') || s.includes('uccha')) return 'EX';
+        if (s.includes('debilitat') || s.includes('neecha')) return 'DB';
+        if (s.includes('mool') || s.includes('mul')) return 'MT';
+        if (s.includes('own') || s.includes('swak') || s.includes('svastha')) return 'OH';
+        if (s.includes('great friend') || s.includes('adhi mitra')) return 'GF';
+        if (s.includes('great enemy') || s.includes('adhi shatru')) return 'GE';
+        if (s.includes('friend') || s.includes('mitra')) return 'F';
+        if (s.includes('enemy') || s.includes('shatru')) return 'E';
+        if (s.includes('neutral') || s.includes('sama')) return 'N';
+        return 'N';
+    }
 
     const vargaDescriptions = {
         'D1': 'Rāśi (Physical Existence & Baseline Life)',
@@ -88,80 +126,232 @@ function updateVargaDignitiesTable(cell, chartData) {
         'D60': 'Ṣaṣṭyāṁśa (Root Past-Life Karmas & Destiny Seeds)'
     };
 
-    tbodies.forEach(tbody => {
-        tbody.innerHTML = '';
+    // Ṣaḍvarga Row Definitions (Phaladīpikā 3.1–4 & Vic DiCara Methodology)
+    const shadvargaRowsDef = [
+        { code: 'D1',  displayCode: 'D1', weight: 2, title: 'Rāśi (Physical Baseline)' },
+        { code: 'D2',  displayCode: 'D2', weight: 1, title: 'Horā (Solar & Lunar Wealth Chambers)' },
+        { code: 'D3',  displayCode: 'D3', weight: 1, title: 'Drekkāṇa (Decanate Initiative)' },
+        { code: 'D30', displayCode: 'D5', weight: 1, title: 'Triṁśāṁśa (5 Planetary Bounds)' },
+        { code: 'D9',  displayCode: 'D9', weight: 2, title: 'Navāṁśa (Soul Essence & Destiny)' },
+        { code: 'D12', displayCode: 'D12', weight: 1, title: 'Dvādaśāṁśa (Ancestral Lineage)' }
+    ];
 
-        vargasList.forEach(v => {
-            const tr = document.createElement('tr');
-            tr.style.cursor = 'pointer';
-            tr.title = `Click to view ${v} in main chart`;
-            tr.onclick = function() {
-                const chartCell = (window.currentActiveCell && window.currentActiveCell.dataset.widget === 'chart')
-                    ? window.currentActiveCell
-                    : document.querySelector('.grid-cell[data-widget="chart"]');
-                if (chartCell) {
-                    const select = chartCell.querySelector('.varga-select');
-                    if (select) {
-                        select.value = v;
-                        if (typeof window.updateWidget === 'function') {
-                            window.updateWidget(chartCell);
+    const shodashavargaList = [
+        'D1', 'D2', 'D3', 'D4', 'D7', 'D9', 'D10', 'D12',
+        'D16', 'D20', 'D24', 'D27', 'D30', 'D40', 'D45', 'D60'
+    ];
+
+    widgetContainers.forEach(container => {
+        // ---------------------------------------------------------------------
+        // 1. Render Ṣaḍvarga Weighted View (DiCara Table Matching Screenshot)
+        // ---------------------------------------------------------------------
+        const shadvargaTbody = container.querySelector('.shadvarga-weighted-tbody');
+        if (shadvargaTbody) {
+            shadvargaTbody.innerHTML = '';
+            const planetWeightedSums = { Sun: 0, Moon: 0, Mars: 0, Mercury: 0, Jupiter: 0, Venus: 0, Saturn: 0 };
+            const pePlanets = (currentData.planetary_evaluation && currentData.planetary_evaluation.planets) || {};
+
+            shadvargaRowsDef.forEach(rowDef => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.onclick = function() {
+                    const chartCell = (window.currentActiveCell && window.currentActiveCell.dataset.widget === 'chart')
+                        ? window.currentActiveCell
+                        : document.querySelector('.grid-cell[data-widget="chart"]');
+                    if (chartCell) {
+                        const select = chartCell.querySelector('.varga-select');
+                        if (select) {
+                            select.value = rowDef.code;
+                            if (typeof window.updateWidget === 'function') {
+                                window.updateWidget(chartCell);
+                            }
                         }
                     }
-                }
-            };
+                };
 
-            const vDesc = vargaDescriptions[v] || v;
-            let html = `<td class="tooltip-target" data-tooltip="<strong>${v} — ${vDesc}</strong><br>Click to display this harmonic chart in the main window." style="cursor:help;"><strong>${v.replace('D', '')}</strong></td>`;
+                let rowHtml = `
+                    <td style="font-weight: 800; color: #4a3325; background: #faf6ee; padding: 6px 4px; font-size: 13px;">${rowDef.weight}</td>
+                    <td style="font-weight: 700; color: #4a3325; background: #faf6ee; padding: 6px 6px; text-align: left; font-size: 12.5px;">
+                        <span class="tooltip-target" data-tooltip="<strong>${rowDef.displayCode} (${rowDef.code}) — ${rowDef.title}</strong><br>• Canonical Weight: <strong>${rowDef.weight}</strong><br>Click to display this chart in the primary view." style="cursor:help;">
+                            ${rowDef.displayCode}
+                        </span>
+                    </td>
+                `;
 
-            const vData = (currentData && currentData.vargas) ? currentData.vargas[v] : null;
-            const vDignities = (currentData && currentData.dignities && currentData.dignities.varga_dignities) ? currentData.dignities.varga_dignities[v] : null;
-            if ((vData && vData.grahas) || vDignities) {
+                planets.forEach(p => {
+                    const pEval = pePlanets[p] || {};
+                    const step1 = pEval.step1_shadvarga || {};
+                    const vb = step1.varga_breakdown || {};
+                    const vEntry = vb[rowDef.code] || {};
+
+                    const vData = (currentData.vargas && currentData.vargas[rowDef.code]) ? currentData.vargas[rowDef.code] : null;
+                    const pData = (vData && vData.grahas) ? vData.grahas[p] : null;
+                    const signName = vEntry.sign || (pData && pData.sign) || '—';
+                    const score = (vEntry.score !== undefined) ? Number(vEntry.score) : 50.0;
+                    const dignityName = vEntry.dignity || (pData && pData.dignity) || 'Neutral';
+                    const ruler = vEntry.ruler || (pData && pData.ruler) || (pData && pData.dignity_breakdown && pData.dignity_breakdown.sign_lord) || '—';
+
+                    planetWeightedSums[p] += score * rowDef.weight;
+
+                    const glyphHtml = getZodiacGlyphHtml(signName);
+                    const col = getDignityColor(score);
+                    const tip = `<strong>${p} in ${rowDef.displayCode} (${signName})</strong><br>• <strong>Dignity:</strong> ${dignityName}<br>• <strong>Score:</strong> ${score.toFixed(0)}%<br>• <strong>Division Ruler:</strong> ${ruler}<br>• <strong>Weight Multiplier:</strong> ${rowDef.weight}x (${rowDef.title})`;
+
+                    rowHtml += `
+                        <td style="padding: 6px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3); border-bottom: 1px solid var(--border-subtle, #e2d7c3); font-variant-numeric: tabular-nums;">
+                            <div class="tooltip-target shadvarga-cell-content" data-tooltip="${escapeTooltipAttr(tip)}" style="cursor:help;">
+                                ${glyphHtml}
+                                <span style="font-weight: 700; font-size: 13px; color: ${col};">${score.toFixed(0)}</span>
+                            </div>
+                        </td>
+                    `;
+                });
+
+                tr.innerHTML = rowHtml;
+                shadvargaTbody.appendChild(tr);
+            });
+
+            // -----------------------------------------------------------------
+            // Summary Bottom Row (W: Weighted Dignity with Divisor 8)
+            // -----------------------------------------------------------------
+            const totalTr = document.createElement('tr');
+            totalTr.className = 'weighted-total-row';
+            totalTr.style.background = 'var(--bg-surface-alt, #f7f3eb)';
+            totalTr.style.borderTop = '2px solid var(--border-strong, #cbd5e1)';
+
+            let totalHtml = `
+                <td style="font-weight: 800; font-size: 13.5px; color: #4a3325; background: #eee5d3; padding: 7px 4px;">W</td>
+                <td style="font-weight: 800; font-size: 12.5px; color: #4a3325; background: #eee5d3; padding: 7px 6px; text-align: left;">
+                    <span class="tooltip-target" data-tooltip="<strong>Weighted Ṣaḍvarga Dignity (Divisor: 8)</strong><br>Formula: (D1×2 + D2×1 + D3×1 + D5×1 + D9×2 + D12×1) ÷ 8<br>• Blue Badge (≥50): Indicates long-life, flourishing, and worldly expansion.<br>• Pink Badge (&lt;50): Indicates foundational vulnerability requiring dispositor rescue." style="cursor:help;">
+                        Weighted
+                    </span>
+                </td>
+            `;
+
+            planets.forEach(p => {
+                const weightedVal = Math.round(planetWeightedSums[p] / 8.0);
+                const isHigh = weightedVal >= 50;
+                const badgeClass = isHigh ? 'high' : 'low';
+                const tip = `<strong>${p} Weighted Ṣaḍvarga: ${weightedVal}%</strong><br>• Raw Weighted Sum: ${planetWeightedSums[p].toFixed(1)} / 800<br>• Status: ${isHigh ? 'High Dignity (Long-Life & Prosperity)' : 'Vulnerability (Requires Dispositor Support)'}`;
+
+                totalHtml += `
+                    <td style="padding: 7px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3);">
+                        <div class="tooltip-target" data-tooltip="${escapeTooltipAttr(tip)}" style="display:flex; justify-content:center; align-items:center; cursor:help;">
+                            <span class="shadvarga-score-badge ${badgeClass}">${weightedVal}</span>
+                        </div>
+                    </td>
+                `;
+            });
+
+            totalTr.innerHTML = totalHtml;
+            shadvargaTbody.appendChild(totalTr);
+        }
+
+        // ---------------------------------------------------------------------
+        // 2. Render Ṣoḍaśavarga Complete 16-Harmonics Grid
+        // ---------------------------------------------------------------------
+        const shodashaTbody = container.querySelector('.shodashavarga-tbody') || container.querySelector('#vargaDignitiesTable tbody');
+        if (shodashaTbody) {
+            shodashaTbody.innerHTML = '';
+
+            shodashavargaList.forEach(v => {
+                const tr = document.createElement('tr');
+                tr.style.cursor = 'pointer';
+                tr.onclick = function() {
+                    const chartCell = (window.currentActiveCell && window.currentActiveCell.dataset.widget === 'chart')
+                        ? window.currentActiveCell
+                        : document.querySelector('.grid-cell[data-widget="chart"]');
+                    if (chartCell) {
+                        const select = chartCell.querySelector('.varga-select');
+                        if (select) {
+                            select.value = v;
+                            if (typeof window.updateWidget === 'function') {
+                                window.updateWidget(chartCell);
+                            }
+                        }
+                    }
+                };
+
+                const vDesc = vargaDescriptions[v] || v;
+                let html = `
+                    <td class="tooltip-target" data-tooltip="<strong>${v} — ${vDesc}</strong><br>Click to display this harmonic chart in the primary view." style="text-align:left; padding:6px 8px; font-weight:700; color:var(--text-heading, #4a3325); cursor:help; background:#faf6ee;">
+                        ${v} <span style="font-weight:400; font-size:12px; color:var(--text-muted);">${v === 'D1' ? '(Rāśi)' : (v === 'D9' ? '(Navāṁśa)' : '')}</span>
+                    </td>
+                `;
+
+                const vData = (currentData.vargas && currentData.vargas[v]) ? currentData.vargas[v] : null;
+                const vDignities = (currentData.dignities && currentData.dignities.varga_dignities) ? currentData.dignities.varga_dignities[v] : null;
+
                 planets.forEach(p => {
                     let digStr = '';
-                    let tooltip = '';
-                    const d = (vDignities && vDignities[p])
+                    let pSign = '';
+                    let d = (vDignities && vDignities[p])
                         || (vData && vData.grahas && vData.grahas[p] && vData.grahas[p].dignity_breakdown)
                         || null;
+
                     if (d) {
                         digStr = d.final_dignity || d.dignity || '';
-                        const abbrev = mapDig(digStr);
-                        const fullName = getFullName(abbrev);
-                        const pSign = (vData && vData.grahas && vData.grahas[p]) ? vData.grahas[p].sign : (d.sign || '');
-
-                        tooltip = `<strong>${p} in ${v} (${pSign})</strong><br>• <strong>Dignity:</strong> ${fullName} (${abbrev})<br>• <strong>Host Lord:</strong> ${d.sign_lord || '--'}<br>• <strong>Natural Bond:</strong> ${d.natural_relationship || '--'}<br>• <strong>Temporary Position:</strong> ${d.temporary_relationship || '--'}<br>• <strong>Compound Relationship:</strong> ${d.compound_relationship || '--'}`;
+                        pSign = (vData && vData.grahas && vData.grahas[p]) ? vData.grahas[p].sign : (d.sign || '');
                     }
 
-                    const abbrev = mapDig(digStr);
-                    const color = getColorForAbbrev(abbrev);
+                    const abbrev = mapDigAbbrev(digStr);
+                    const glyphHtml = getZodiacGlyphHtml(pSign);
+                    const color = (abbrev === 'EX' || abbrev === 'MT' || abbrev === 'OH')
+                        ? '#15803d'
+                        : (abbrev === 'GF' || abbrev === 'F')
+                            ? '#0d9488'
+                            : (abbrev === 'DB' || abbrev === 'GE')
+                                ? '#dc2626'
+                                : (abbrev === 'E')
+                                    ? '#d97706'
+                                    : '#475569';
 
-                    html += `<td class="tooltip-target" data-tooltip="${tooltip}" style="color:${color}; font-weight:bold; cursor:help;">${abbrev}</td>`;
+                    const tip = `<strong>${p} in ${v} (${pSign || '—'})</strong><br>• <strong>Dignity:</strong> ${digStr || 'Neutral'} (${abbrev})<br>• <strong>Host Lord:</strong> ${(d && d.sign_lord) || '—'}<br>• <strong>Compound Bond:</strong> ${(d && d.compound_relationship) || '—'}`;
+
+                    html += `
+                        <td style="padding: 6px 4px; border-right: 1px solid var(--border-subtle, #e2d7c3); border-bottom: 1px solid var(--border-subtle, #e2d7c3); font-variant-numeric: tabular-nums;">
+                            <div class="tooltip-target" data-tooltip="${escapeTooltipAttr(tip)}" style="display:flex; justify-content:center; align-items:center; gap:4px; cursor:help;">
+                                ${glyphHtml}
+                                <span style="font-weight:700; font-size:12.5px; color:${color};">${abbrev}</span>
+                            </div>
+                        </td>
+                    `;
                 });
-            } else {
-                html += `<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`;
-            }
-            tr.innerHTML = html;
-            tbody.appendChild(tr);
-        });
-    });
-}
 
-// Register with WidgetRegistry
-if (typeof window !== 'undefined' && window.widgetRegistry) {
-    window.widgetRegistry.register('dignities', {
-        id: 'dignities',
-        title: 'Dignities in Vargas',
-        icon: '',
-        category: 'Dignity',
-        render: function(container, chartData, options) {
-            updateVargaDignitiesTable(container, chartData);
-        },
-        onUpdate: function(cell, chartData) {
-            updateVargaDignitiesTable(cell, chartData);
+                tr.innerHTML = html;
+                shodashaTbody.appendChild(tr);
+            });
         }
     });
+
+    // Check saved view preference
+    try {
+        const savedView = localStorage.getItem('astra_varga_dignities_view');
+        if (savedView) {
+            const activeBtn = document.querySelector(`.varga-dignities-tab-btn[data-view="${savedView}"]`);
+            if (activeBtn) switchVargaDignitiesView(activeBtn, savedView);
+        }
+    } catch (e) {}
 }
 
-// Global exports
+// Attach globally for browser use
 if (typeof window !== 'undefined') {
+    window.switchVargaDignitiesView = switchVargaDignitiesView;
     window.updateVargaDignitiesTable = updateVargaDignitiesTable;
+
+    // Register with WidgetRegistry
+    if (window.widgetRegistry) {
+        window.widgetRegistry.register('dignities', {
+            id: 'dignities',
+            title: 'Planetary Dignities (Vargas)',
+            icon: '',
+            category: 'Dignity',
+            render: function(container, chartData, options) {
+                updateVargaDignitiesTable(container, chartData);
+            },
+            onUpdate: function(cell, chartData) {
+                updateVargaDignitiesTable(cell, chartData);
+            }
+        });
+    }
 }

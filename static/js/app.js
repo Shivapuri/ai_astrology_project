@@ -751,13 +751,13 @@ function updateWidget(cell) {
                 circularWheelBtn.style.borderColor = '#d8b4fe';
             } else if (currWheelMode === 'zodiacal' || currWheelMode === 'varga_slices') {
                 circularWheelBtn.innerHTML = '🪐 Core Vargas ⟳';
-                circularWheelBtn.title = 'Current: Core Zodiacal Vargas (D9, D7, D10, D12, D16). Click to switch to Classical Vargas.';
+                circularWheelBtn.title = 'Current: Core Vargas (D1, D2, D3, D30, D9, D12). Click to switch to Classical Vargas.';
                 circularWheelBtn.style.background = '#e0e7ff';
                 circularWheelBtn.style.color = '#3730a3';
                 circularWheelBtn.style.borderColor = '#c7d2fe';
             } else {
                 circularWheelBtn.innerHTML = '⭐ Nakshatras ⟳';
-                circularWheelBtn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Zodiacal Vargas.';
+                circularWheelBtn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Vargas.';
                 circularWheelBtn.style.background = '#fef3c7';
                 circularWheelBtn.style.color = '#92400e';
                 circularWheelBtn.style.borderColor = '#fcd34d';
@@ -1408,13 +1408,13 @@ function syncCircularWheelModeUI() {
             btn.style.borderColor = '#d8b4fe';
         } else if (mode === 'zodiacal' || mode === 'varga_slices') {
             btn.innerHTML = '🪐 Core Vargas ⟳';
-            btn.title = 'Current: Core Zodiacal Vargas (D9, D7, D10, D12, D16). Click to switch to Classical Vargas.';
+            btn.title = 'Current: Core Vargas (D1, D2, D3, D30, D9, D12). Click to switch to Classical Vargas.';
             btn.style.background = '#e0e7ff';
             btn.style.color = '#3730a3';
             btn.style.borderColor = '#c7d2fe';
         } else {
             btn.innerHTML = '⭐ Nakshatras ⟳';
-            btn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Zodiacal Vargas.';
+            btn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Vargas.';
             btn.style.background = '#fef3c7';
             btn.style.color = '#92400e';
             btn.style.borderColor = '#fcd34d';

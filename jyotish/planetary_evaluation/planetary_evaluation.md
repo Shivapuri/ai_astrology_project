@@ -21,23 +21,71 @@ The **Planetary Evaluation & Master Graha Diagnostics** engine provides an indep
 
 ---
 
-## 🧮 2. The Master Dignity Scale (Kurczak 12.5% Step Scale & Panchadha Maitri)
+## 🧮 2. The Master Dignity Scale (Phaladīpikā Ch. 3 Native Scale & Canonical Ṣaḍvarga)
 
-Essential dignity is computed using Sage Parashara's 5-Fold Compound Relationship (*Panchadha Maitri*), combined with Ryan Kurczak's 12.5% mathematical step scale, odd/even sign gender polarity, and classical Moolatrikona degree bounds:
+Essential dignity is computed using Sage Parāśara's 5-Fold Compound Relationship (*Pañcadha Maitrī*), combined with Mantreśvara's explicit percentage scale and divisional weighting hierarchy (*Phaladīpikā* Chapter 3 live stream):
 
-| Compound Dignity State | Canonical Sanskrit Term | Percentage Score | Archetypal Meaning & Psychological Foundation |
-| :--- | :--- | :---: | :--- |
-| **Exalted** | *Uccha* | **100.0%** | Peak sovereign nobility; flawless archetypal expression; selfless, expansive virtue. |
-| **Moolatrikona** | *Moolatrikona* | **87.5%** | Royal office; planetary duty fulfilled with joyful mastery and purposeful command. |
-| **Own Positive Sign** (Odd/Male) | *Sva-kshetra (Puruṣa)* | **75.0%** | Domicile authority; active, assertive, outward projection of planetary gifts. |
-| **Own Sign Midpoint** | *Sva-kshetra* | **68.75%** | Neutral baseline when sign polarity is not explicitly evaluated. |
-| **Own Negative Sign** (Even/Female) | *Sva-kshetra (Strī)* | **62.5%** | Receptive domicile; inward, introspective, grounded, and self-contained power. |
-| **Great Friend** | *Adhi Mitra* | **60.0%** | Warm, honored guest; highly cooperative, generous, and comfortable foundation. |
-| **Friend** | *Mitra* | **50.0%** | Welcomed companion; pleasant relations, steady support, constructive baseline. |
-| **Neutral** | *Sama* | **37.5% – 50.0%** | Pragmatic business partner; dynamic tilt based on host support and aspect weather. |
-| **Enemy** | *Shatru* | **25.0%** | Strained friction; defensive, guarded, or awkward operational environment. |
-| **Great Enemy** | *Adhi Shatru* | **20.0%** | Severe hostility; heavy resistance, deep friction, and high effort required. |
-| **Debilitated** | *Neecha* | **12.5%** | Acute distress, inverted values, deep vulnerability; raw material for transmutation. |
+| Dignity Status | Sanskrit Name | Score (%) | Deviation from Neutral ($50$) | Astrological Definition |
+| :--- | :--- | :---: | :---: | :--- |
+| **Deep Exaltation** | *Uccha* | **$100.0\%$** | $+50$ | Theoretical peak ceiling; flawless archetypal inspiration. |
+| **Moolatrikona** | *Mūlatrikoṇa* | **$95.0\%$** | $+45$ | Root/foundation sign; royal office and purposeful command. |
+| **Own Sign (Domicile)** | *Svakṣetra* | **$90.0\%$** | $+40$ | Domicile/self-situated; unconditionally superior to being a guest. |
+| **Great Friend** | *Adhi Mitra* | **$80.0\%$** | $+30$ | Natural Friend $+$ Temporal Friend; honored guest. |
+| **Friend** | *Mitra* | **$60.0\%$** | $+10$ | Net positive friendly host; cooperative and supportive. |
+| **Neutral** | *Sama* | **$50.0\%$** | $0$ | Baseline balance point; pragmatic mutual neutrality. |
+| **Enemy** | *Śatru* | **$40.0\%$** | $-10$ | Net negative host; friction and resistance. |
+| **Great Enemy** | *Adhi Śatru* | **$20.0\%$** | $-30$ | Natural Enemy $+$ Temporal Enemy; severe hostility. |
+| **Debilitation** | *Nīca* | **$0.0\%$** | $-50$ | Absolute minimum floor; acute distress, raw material for transmutation. |
+
+### 2.0 Canonical Phaladīpikā Ṣaḍvarga & Normalizing Weighting (Phaladīpikā 3.1–4)
+According to Mantreśvara’s *Phaladīpikā* (Chapter 3, Texts 1–3), divisional tiers are explicitly derived by subtraction:
+$$\begin{aligned}
+\textbf{Daśavarga (10):} &\quad \text{D1, D2, D3, D7, D9, D10, D12, D16, D30, D60} \\
+\textbf{Saptavarga (7):} &\quad \text{Daśavarga} - \{\text{D10, D16, D60}\} = \text{D1, D2, D3, D7, D9, D12, D30} \\
+\textbf{Ṣaḍvarga (6):} &\quad \text{Saptavarga} - \{\text{D7}\} = \mathbf{D1,\, D2,\, D3,\, D9,\, D12,\, D30}
+\end{aligned}$$
+
+*Phaladīpikā 3.2* states:
+> *daśāṁśa-ṣaṣṭyaṁśa-kalāṁśa-hīnās te sapta-vargāś ca visaptam-āṁśāḥ ṣaḍvarga-saṁjñās...*  
+> (“Subtracting D10, D60, and D16 gives the Saptavarga; subtracting D7 from that gives what is known as Ṣaḍvarga.”)
+
+Under *Phaladīpikā 3.3*, the divisional weighting hierarchy assigns:
+- **D1 (Rāśi):** Weight = $1.00$ (Full / *Pūrṇa*)
+- **D9 (Navāṁśa):** Weight = $0.75$ (*rāśi-bhāva-tulyaṁ* balanced standard)
+- **D2 (Horā):** Weight = $0.50$ (Half / *Ardha*)
+- **D3 (Drekkāṇa):** Weight = $0.50$ (Half / *Ardha*)
+- **D12 (Dvādaśāṁśa):** Weight = $0.50$ (Half / *Ardha*)
+- **D30 (Triṁśāṁśa):** Weight = $0.50$ (Half / *Ardha*)
+- **Total Divisor:** $1.00 + 0.75 + 0.50 + 0.50 + 0.50 + 0.50 = \mathbf{3.75}$
+
+$$\text{Final Weighted Dignity} = \frac{(S_{\text{D1}} \times 1.00) + (S_{\text{D9}} \times 0.75) + (S_{\text{D2}} \times 0.50) + (S_{\text{D3}} \times 0.50) + (S_{\text{D12}} \times 0.50) + (S_{\text{D30}} \times 0.50)}{3.75}$$
+
+#### Structural Differentiation: Rāśi Vargas vs. Graha Vargas
+1. **Rāśi Vargas (Zodiacal Harmonics — D1, D9, D12):** Map directly to standard 12 zodiac signs (Aries through Pisces). Standard Exaltation, Debilitation, Moolatrikona, Own Sign, and Compound Friendship to sign lord apply.
+2. **D2 (Horā — The Solar & Lunar Wealth Chambers / Phaladīpikā 3.4 & Vic DiCara):**
+   - **Geometric Halves:**
+     - Odd (Male) Signs: $0^\circ-15^\circ$ = Sun (Solar / Pingalā); $15^\circ-30^\circ$ = Moon (Lunar / Iḍā).
+     - Even (Female) Signs: $0^\circ-15^\circ$ = Moon (Lunar / Iḍā); $15^\circ-30^\circ$ = Sun (Solar / Pingalā).
+   - **Gender & Natural Temperament Triad ($100\%$, $50\%$, $0\%$):**
+     Horā governs *Dhana* (wealth and resources). Wealth demands martial resolve in masculine domains and diplomatic grace in feminine domains. Horā does not use standard host friendship; it evaluates gender alignment:
+     - **Male alignment:** Odd Sign (Male) AND Solar Horā (Sun).
+     - **Female alignment:** Even Sign (Female) AND Lunar Horā (Moon).
+     - **Auspicious Horā ($100.0\%$):** Natural Malefics (*Krūra*: Sun, Mars, Saturn, Rahu, Ketu) in Male alignment, OR Natural Benefics/Gentle Planets (*Saumya*: Moon, Jupiter, Venus, Mercury) in Female alignment.
+     - **Inauspicious Horā ($0.0\%$):** Natural Malefics in Female alignment, OR Natural Benefics/Gentle Planets (*Saumya*: Moon, Jupiter, Venus, Mercury) in Male alignment.
+     - **Neutral Horā ($50.0\%$ — *Miśre Samaphalam*):** Any mixed condition (e.g., Malefic in Odd sign but Lunar Horā, or in Even sign but Solar Horā).
+     - **The Moon's Archetypal Feminine Role:** The Moon is the ruler and eternal archetype of the feminine/lunar half. Waning or dim illumination does not convert the gentle Moon into a masculine solar soldier. In D2, the Moon is strictly classified as *Natural Saumya* (Benefic/Gentle), receiving $0.0\%$ when trapped in a Male alignment (e.g., Moon in Gemini in Leo Horā, as taught by Vic DiCara).
+3. **D3 (Drekkāṇa) & D30 (Triṁśāṁśa — Domain Lordship & Pañcadhā Maitrī):**
+   - **D3 (Drekkāṇa):** Trinal decanate lord (1st, 5th, or 9th lord from sign).
+   - **D30 (Triṁśāṁśa):** Unequal planetary bounds (Mars, Saturn, Jupiter, Mercury, Venus).
+   - **Dignity Rules:**
+     - Exaltation and Debilitation **do not exist** in D3 or D30.
+     - If $\text{planet} == \text{ruler}$: **Own Sign / Domicile ($90.0\%$)** (*Svakṣetra* / *Svat-triṁśe*).
+     - Otherwise: Determined strictly via 5-Fold Compound Friendship (*Pañcadhā Maitrī*) toward the division ruler:
+       - **Great Friend (*Adhi Mitra*):** $80.0\%$
+       - **Friend (*Mitra*):** $60.0\%$
+       - **Neutral (*Sama*):** $50.0\%$
+       - **Enemy (*Śatru*):** $40.0\%$
+       - **Great Enemy (*Adhi Śatru*):** $20.0\%$
 
 ### 2.1 Deep Exaltation & Debilitation Degrees (*Paramoccha* & *Parama-Neecha*)
 * **Sun:** Exalted at $10^\circ$ Aries / Debilitated at $10^\circ$ Libra

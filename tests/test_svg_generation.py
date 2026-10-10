@@ -505,13 +505,13 @@ def test_circular_chart_varga_slices_mode():
     assert '<circle cx="0" cy="0" r="140"' in svg_varga
     assert '<circle cx="0" cy="0" r="120"' in svg_varga
 
-    # 3. Concentric rings container & harmonic glyphs present for D9, D7, D10, D12, D16
+    # 3. Concentric rings container & glyphs present for Core Shadvarga: D2, D3, D30, D9, D12
     assert 'class="varga-concentric-rings' in svg_varga
+    assert 'data-varga="D2"' in svg_varga
+    assert 'data-varga="D3"' in svg_varga
+    assert 'data-varga="D30"' in svg_varga
     assert 'data-varga="D9"' in svg_varga
-    assert 'data-varga="D7"' in svg_varga
-    assert 'data-varga="D10"' in svg_varga
     assert 'data-varga="D12"' in svg_varga
-    assert 'data-varga="D16"' in svg_varga
     assert 'class="interactive varga-slice-glyph"' in svg_varga
 
     # 4. Continuous planetary radial piercing rays (spokes) across all 5 varga rings

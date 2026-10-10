@@ -1993,4 +1993,105 @@
     }
 }
 
+/* =========================================================================
+   Varga Dignities & Ṣaḍvarga Weighted Matrix (DiCara / Phaladīpikā 3.1–4)
+   ========================================================================= */
+.varga-dignities-tab-btn {
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    color: var(--text-heading, #4a3325);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.varga-dignities-tab-btn:hover {
+    background: var(--bg-surface-hover, #f5efe6);
+}
+.varga-dignities-tab-btn.active {
+    background: #4a3325 !important;
+    color: #fffdfa !important;
+}
+
+.shadvarga-weighted-table th {
+    background: #f3ede2;
+    color: var(--text-heading, #4a3325);
+    font-weight: 700;
+    border-bottom: 2px solid var(--border-strong, #cbd5e1);
+    border-right: 1px solid var(--border-subtle, #e2d7c3);
+}
+
+.shadvarga-weighted-table td {
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--border-subtle, #e2d7c3);
+    border-right: 1px solid var(--border-subtle, #e2d7c3);
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+}
+
+.shadvarga-weighted-table td:first-child,
+.shadvarga-weighted-table th:first-child {
+    width: 44px;
+    font-weight: 800;
+    background: #faf6ee;
+    color: var(--text-heading, #4a3325);
+    text-align: center;
+}
+
+.shadvarga-weighted-table td:nth-child(2),
+.shadvarga-weighted-table th:nth-child(2) {
+    width: 75px;
+    font-weight: 700;
+    background: #faf6ee;
+    color: var(--text-heading, #4a3325);
+    text-align: left;
+    padding-left: 8px;
+}
+
+.shadvarga-weighted-table tbody tr:hover td {
+    background-color: #f7eedd !important;
+}
+
+.shadvarga-cell-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-variant-numeric: tabular-nums;
+}
+
+.shadvarga-cell-content .zodiac-line-glyph {
+    font-size: 13.5px;
+    font-family: var(--font-astro-glyphs, "STIX Two Math", "DejaVu Sans", sans-serif);
+    font-variant-emoji: text;
+}
+
+.shadvarga-weighted-table tr.weighted-total-row td {
+    background: #f7f3eb !important;
+    border-top: 2px solid var(--border-strong, #cbd5e1);
+    font-weight: 800;
+}
+
+.shadvarga-score-badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-weight: 800;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.2px;
+}
+.shadvarga-score-badge.high {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+}
+.shadvarga-score-badge.low {
+    background: #ffe4e6;
+    color: #be123c;
+    border: 1px solid #fda4af;
+}
+
+
 

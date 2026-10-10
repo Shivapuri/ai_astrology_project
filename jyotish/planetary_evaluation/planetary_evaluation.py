@@ -62,39 +62,48 @@ MASTER_DIAGNOSTIC_COLUMNS: List[str] = [
     "Archetype & Vitality"
 ]
 
-# Dignity Score mapping based on Ryan Kurczak (The Art and Science of Vedic Astrology Vol 1 Ch 6)
+# Dignity Score mapping based on Phaladeepika Ch. 3 native percentage scale (0% to 100%)
 # and classical Panchadha Maitri 5-fold compound relationships:
-# Exalted: 100%, Moolatrikona: 87.5%, Own Positive: 75%, Own Negative: 62.5%,
-# Great Friend: 60%, Friend: 50%, Neutral: 37.5%, Enemy: 25%, Great Enemy: 20%, Debilitated: 12.5%
+# Deep Exaltation: 100%, Moolatrikona: 95%, Own Sign: 90%,
+# Great Friend: 80%, Friend: 60%, Neutral: 50%, Enemy: 40%, Great Enemy: 20%, Debilitation: 0%
 DIGNITY_SCORE_MAP: Dict[str, float] = {
+    "Deep Exaltation": 100.0,
     "Exalted": 100.0,
     "Exaltation": 100.0,
     "Paramoccha": 100.0,
     "Uccha": 100.0,
-    "Moolatrikona": 87.5,
-    "Own Positive Sign": 75.0,
-    "Own Negative Sign": 62.5,
-    "Own Sign": 68.75,  # Balanced midpoint if gender is unspecified
-    "Own House": 68.75,
-    "Sva-kshetra": 68.75,
-    "Great Friend's Sign": 60.0,
-    "Great Friend": 60.0,
-    "Adhi-mitra": 60.0,
-    "Friend's Sign": 50.0,
-    "Friend": 50.0,
-    "Mitra": 50.0,
-    "Neutral's Sign": 37.5,
-    "Neutral": 37.5,
-    "Sama": 37.5,
-    "Enemy's Sign": 25.0,
-    "Enemy": 25.0,
-    "Shatru": 25.0,
+    "Moolatrikona": 95.0,
+    "Mūlatrikoṇa": 95.0,
+    "Own Sign": 90.0,
+    "Own House": 90.0,
+    "Svakṣetra": 90.0,
+    "Swakshetra": 90.0,
+    "Svastha": 90.0,
+    "Sva-kshetra": 90.0,
+    "Own Positive Sign": 90.0,
+    "Own Negative Sign": 90.0,
+    "Great Friend's Sign": 80.0,
+    "Great Friend": 80.0,
+    "Adhi-mitra": 80.0,
+    "Adhi Mitra": 80.0,
+    "Friend's Sign": 60.0,
+    "Friend": 60.0,
+    "Mitra": 60.0,
+    "Neutral's Sign": 50.0,
+    "Neutral": 50.0,
+    "Sama": 50.0,
+    "Enemy's Sign": 40.0,
+    "Enemy": 40.0,
+    "Shatru": 40.0,
     "Great Enemy's Sign": 20.0,
     "Great Enemy": 20.0,
     "Adhi-shatru": 20.0,
-    "Debilitated": 12.5,
-    "Debilitation": 12.5,
-    "Neecha": 12.5
+    "Adhi Shatru": 20.0,
+    "Debilitated": 0.0,
+    "Debilitation": 0.0,
+    "Neecha": 0.0,
+    "Nīca": 0.0,
+    "Parama Neecha": 0.0,
 }
 
 ODD_SIGNS = {"Aries", "Gemini", "Leo", "Libra", "Sagittarius", "Aquarius"}
@@ -148,6 +157,18 @@ KETU_STRONG_SIGNS = {"Taurus", "Gemini", "Virgo", "Sagittarius", "Pisces"}
 
 SHADVARGA_LIST = ["D1", "D2", "D3", "D9", "D12", "D30"]
 
+SHADVARGA_WEIGHTS: Dict[str, float] = {
+    "D1": 1.00,
+    "D9": 0.75,
+    "D2": 0.50,
+    "D3": 0.50,
+    "D12": 0.50,
+    "D30": 0.50
+}
+
+SHADVARGA_DIVISOR: float = 3.75
+
+
 def get_dignity_score(
     dignity_str: str,
     planet: Optional[str] = None,
@@ -155,49 +176,46 @@ def get_dignity_score(
     degree: float = 0.0
 ) -> float:
     """
-    Normalizes dignity string and returns its 0-100% score per Ryan Kurczak's 12.5% step scale
-    and classical Panchadha Maitri. Dynamically handles own positive/negative signs,
-    single-ruling luminary domicile parity (75.0%), and moolatrikona degree bounds.
+    Normalizes dignity string and returns its 0-100% score per Phaladeepika Ch. 3 native scale:
+    - Deep Exaltation (Uccha): 100.0%
+    - Moolatrikona: 95.0%
+    - Own Sign (Swakshetra): 90.0%
+    - Great Friend (Adhi Mitra): 80.0%
+    - Friend (Mitra): 60.0%
+    - Neutral (Sama): 50.0%
+    - Enemy (Shatru): 40.0%
+    - Great Enemy (Adhi Shatru): 20.0%
+    - Debilitation (Neecha): 0.0%
     """
     if not dignity_str:
-        return 37.5
+        return 50.0
     cleaned = dignity_str.strip()
     c_low = cleaned.lower()
 
-    if "exalt" in c_low:
+    if "exalt" in c_low or "uccha" in c_low or "paramoccha" in c_low:
         return 100.0
     if "moola" in c_low:
-        if planet and degree is not None and planet in MOOLATRIKONA_RANGES:
-            mt_sign, min_d, max_d = MOOLATRIKONA_RANGES[planet]
-            if sign and sign == mt_sign and (degree < min_d or degree > max_d):
-                if planet in ("Sun", "Moon"):
-                    return 75.0
-                return 75.0 if sign in ODD_SIGNS else 62.5
-        return 87.5
-    if "own" in c_low or "svastha" in c_low or "house" in c_low:
-        # Luminary Domicile Parity (Light on Life): Sun in Leo, Moon in Cancer = 75.0%
-        if planet in ("Sun", "Moon") and sign in ("Leo", "Cancer"):
-            return 75.0
-        if sign and sign in ODD_SIGNS:
-            return 75.0
-        elif sign and sign in EVEN_SIGNS:
-            return 62.5
-        return 68.75
-    if "great friend" in c_low or "adhi-mitra" in c_low:
+        return 95.0
+    if "own" in c_low or "svastha" in c_low or "house" in c_low or "svak" in c_low or "swak" in c_low:
+        return 90.0
+    if "great friend" in c_low or "adhi-mitra" in c_low or "adhi mitra" in c_low:
+        return 80.0
+    if "friend" in c_low:
         return 60.0
-    if "friend" in c_low and "great" not in c_low:
-        return 50.0
     if "neutral" in c_low or "sama" in c_low:
-        return 37.5
-    if "great enemy" in c_low or "adhi-shatru" in c_low:
+        return 50.0
+    if "great enemy" in c_low or "adhi-shatru" in c_low or "adhi shatru" in c_low:
         return 20.0
-    if "enemy" in c_low:
-        return 25.0
-    if "debilit" in c_low or "neecha" in c_low:
-        return 12.5
-
-    if planet in ("Sun", "Moon") and sign in ("Leo", "Cancer") and "moola" not in c_low and "exalt" not in c_low:
-        return 75.0
+    if "enemy" in c_low or "shatru" in c_low:
+        return 40.0
+    if "debilit" in c_low or "neecha" in c_low or "nīca" in c_low:
+        return 0.0
+    if "auspicious" in c_low or "100%" in c_low:
+        return 100.0
+    if "inauspicious" in c_low or "0%" in c_low:
+        return 0.0
+    if "neutral" in c_low:
+        return 50.0
 
     if cleaned in DIGNITY_SCORE_MAP:
         return DIGNITY_SCORE_MAP[cleaned]
@@ -205,7 +223,7 @@ def get_dignity_score(
         if key.lower() == c_low:
             return val
 
-    return 37.5
+    return 50.0
 
 
 def clamp(val: float, min_val: float, max_val: float) -> float:
@@ -213,33 +231,35 @@ def clamp(val: float, min_val: float, max_val: float) -> float:
 
 
 # -------------------------------------------------------------------------
-# 1. Step 1: Base Dignity & Luminary Domicile Parity (Ruleset 1)
+# 1. Step 1: Base Dignity & Native Divisional Weighting (Phaladipika Ch. 3)
 # -------------------------------------------------------------------------
 def calculate_shadvarga_dignity(v_breakdown: Dict[str, Any], planet: str) -> float:
     """
-    Parāśara's classical 20-point Shadvarga weights (BPHS Ch. 6, Verse 4):
-    D1: 6.0, D9: 5.0, D3: 4.0, D2: 2.0, D12: 2.0, D30: 1.0 (Total = 20.0).
-    Moolatrikona applies STRICTLY to D1; elsewhere, evaluates as Own Sign.
-    Luminaries in Domicile evaluate to 75.0% parity.
+    Phaladīpikā Ch. 3 (Texts 1-4) canonical weighted divisional dignity engine across Ṣaḍvarga:
+    - D1 (Rāśi): 1.00 (Pūrṇa / Full)
+    - D9 (Navāṁśa): 0.75 (rāśi-bhāva-tulyaṁ standard)
+    - D2 (Horā): 0.50 (Ardha / Half)
+    - D3 (Drekkāṇa): 0.50 (Ardha / Half)
+    - D12 (Dvādaśāṁśa): 0.50 (Ardha / Half)
+    - D30 (Triṁśāṁśa): 0.50 (Ardha / Half)
+    Total Normalizing Divisor = 3.75.
+
+    Formula:
+    Final Dignity = (
+        (S_D1 * 1.00) + 
+        (S_D9 * 0.75) + 
+        (S_D2 * 0.50) + 
+        (S_D3 * 0.50) + 
+        (S_D12 * 0.50) + 
+        (S_D30 * 0.50)
+    ) / 3.75
     """
-    SHADVARGA_WEIGHTS = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
     weighted_sum = 0.0
     for v_name, weight in SHADVARGA_WEIGHTS.items():
-        score = v_breakdown[v_name]["score"]
-        sign = v_breakdown[v_name]["sign"]
-        dignity = v_breakdown[v_name]["dignity"]
-        
-        # Enforce D1-only restriction for Moolatrikona
-        if v_name != "D1" and ("moola" in dignity.lower()):
-            if planet in ("Sun", "Moon"):
-                score = 75.0
-            else:
-                score = 75.0 if sign in ODD_SIGNS else 62.5
-        elif planet in ("Sun", "Moon") and sign in ("Leo", "Cancer") and ("moola" not in dignity.lower()) and ("exalt" not in dignity.lower()):
-            score = 75.0  # Domicile baseline for single-ruling luminaries
-            
-        weighted_sum += score * (weight / 20.0)
-    return round(weighted_sum, 1)
+        v_entry = v_breakdown.get(v_name, {})
+        score = float(v_entry.get("score", 50.0))
+        weighted_sum += score * weight
+    return round(weighted_sum / SHADVARGA_DIVISOR, 2)
 
 
 # -------------------------------------------------------------------------
@@ -564,17 +584,17 @@ def assemble_unified_graha_cockpit(
     Assembles the 3-Column Diagnostic Cockpit payload for a single planet.
     """
     # -------------------------------------------------------------------------
-    # STAGE 1: Shadvarga Foundation Table (Weights: D1:6, D9:5, D3:4, D2:2, D12:2, D30:1)
+    # STAGE 1: Shadvarga Foundation Table (Canonical Phaladīpikā Ṣaḍvarga)
+    # Weights: D1: 1.00, D9: 0.75, D2: 0.50, D3: 0.50, D12: 0.50, D30: 0.50 (Divisor: 3.75)
     # -------------------------------------------------------------------------
-    v_weights = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
     v_breakdown = step1_info.get("varga_breakdown", {})
     shadvarga_rows = []
     
-    for v_code in ["D1", "D2", "D3", "D9", "D12", "D30"]:
+    for v_code in SHADVARGA_LIST:
         v_data = v_breakdown.get(v_code, {})
         shadvarga_rows.append({
             "varga": v_code,
-            "weight": v_weights.get(v_code, 1.0),
+            "weight": SHADVARGA_WEIGHTS.get(v_code, 0.50),
             "sign": v_data.get("sign", "-"),
             "dignity": v_data.get("dignity", "Neutral"),
             "score_pct": v_data.get("score", 50.0)
@@ -2381,6 +2401,45 @@ def calculate_planetary_evaluation(
     planets_eval_order = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
     
     # -------------------------------------------------------------------------
+    # Moon Illumination & Phase (Paksha Bala - BPHS 3.11 & Vol 1 p. 15)
+    # Needed for Variable Moon Benefic/Malefic status in D2 Horā & Step 4 terrain
+    # -------------------------------------------------------------------------
+    sun_d1_info = d1_grahas.get("Sun", {})
+    moon_d1_info = d1_grahas.get("Moon", {})
+    sun_lon_val = float(sun_d1_info.get("longitude", 0.0))
+    moon_lon_val = float(moon_d1_info.get("longitude", 0.0))
+    moon_elongation_val = (moon_lon_val - sun_lon_val) % 360.0
+    moon_paksha_ratio = 1.0 - abs(moon_elongation_val - 180.0) / 180.0  # 1.0 = Full, 0.0 = New
+    moon_illum_pct = round(moon_paksha_ratio * 100.0, 1)
+    moon_is_waxing = (moon_elongation_val <= 180.0)
+    moon_paksha_name = "Waxing (Shukla Paksha)" if moon_is_waxing else "Waning (Krishna Paksha)"
+    moon_icon = "🌔" if moon_is_waxing else "🌘"
+
+    # Continuous Gradual Illumination Spectrum (BPHS 28.10-11):
+    # - 50% to 100% illumination: scales gradually from 0.0 to 1.0 (0% to +25% benefic terrain)
+    # - 0% to 50% illumination: scales gradually from 1.0 to 0.0 (+25% to 0% malefic terrain)
+    if moon_illum_pct >= 50.0:
+        moon_gradual_factor = (moon_illum_pct - 50.0) / 50.0
+        moon_light_type = "Bright Benefic Light (Pūrṇendu)" if moon_illum_pct >= 70.0 else "Waxing Intermediate Light"
+        moon_terrain_spectrum = "bright_gradual"
+    else:
+        moon_gradual_factor = (50.0 - moon_illum_pct) / 50.0
+        moon_light_type = "Dim/Dark Malefic Light (Kṣīṇendu)" if moon_illum_pct < 30.0 else "Waning Intermediate Light"
+        moon_terrain_spectrum = "dark_gradual"
+
+    moon_phase_summary = {
+        "is_waxing": moon_is_waxing,
+        "paksha": "Shukla" if moon_is_waxing else "Krishna",
+        "paksha_name": moon_paksha_name,
+        "elongation_deg": round(moon_elongation_val, 1),
+        "illumination_pct": moon_illum_pct,
+        "gradual_factor": round(moon_gradual_factor, 3),
+        "light_type": moon_light_type,
+        "terrain_spectrum": moon_terrain_spectrum,
+        "badge": f"{moon_icon} {'Waxing' if moon_is_waxing else 'Waning'} ({moon_illum_pct:.0f}%)"
+    }
+
+    # -------------------------------------------------------------------------
     # STEP 1: Calculate Base Shadvarga Dignity for all planets first
     # -------------------------------------------------------------------------
     shadvarga_scores: Dict[str, Dict[str, Any]] = {}
@@ -2393,29 +2452,147 @@ def calculate_planetary_evaluation(
         score_list = []
         
         for v_name in SHADVARGA_LIST:
-            v_info = vargas_data.get(v_name, {})
-            v_p = v_info.get("grahas", {}).get(p, {})
-            sign = v_p.get("sign", "Aries")
-            deg = float(v_p.get("degree_0_to_30", 0.0))
-            dignity_str = v_p.get("dignity_breakdown", {}).get("final_dignity") or v_p.get("dignity") or "Neutral's Sign"
-            score = get_dignity_score(dignity_str, planet=p, sign=sign, degree=deg)
-            
-            # Nodal adjustment for Rahu/Ketu
-            if p == "Rahu" and sign in RAHU_STRONG_SIGNS:
-                score = max(score, 75.0)
-            elif p == "Ketu" and sign in KETU_STRONG_SIGNS:
-                score = max(score, 75.0)
-                
-            v_breakdown[v_name] = {
-                "sign": sign,
-                "dignity": dignity_str,
-                "score": round(score, 1)
-            }
-            score_list.append(score)
+            v_info = vargas_data.get(v_name)
+            if not v_info and baseline and hasattr(baseline, "vargas"):
+                v_info = baseline.vargas.get(v_name, {})
+            v_p = (v_info.get("grahas", {}) if v_info else {}).get(p, {})
+
+            if v_name == "D2":
+                # -------------------------------------------------------------
+                # D2 (Horā): Gender & Temperament Triad (Phaladīpikā Ch. 3 / Vic DiCara)
+                # -------------------------------------------------------------
+                p_d1 = d1_grahas.get(p, {})
+                p_d1_lon = float(p_d1.get("longitude", 0.0))
+                p_s_idx = int(p_d1.get("sign_index", p_d1_lon // 30.0))
+                p_deg = float(p_d1.get("degree_0_to_30", p_d1_lon % 30.0))
+
+                is_odd_sign = (p_s_idx % 2 == 0)  # 0=Aries (odd), 1=Taurus (even)...
+                is_sun_hora = (p_deg < 15.0) if is_odd_sign else (p_deg >= 15.0)
+                hora_ruler = "Sun" if is_sun_hora else "Moon"
+
+                # In D2, the classification is strictly Natural Saumya (Benefic/Gentle/Female)
+                # vs Natural Krūra (Malefic/Tough/Male).
+                # The Moon is the ruler and eternal archetype of the feminine/lunar half:
+                if p in ("Moon", "Jupiter", "Venus", "Mercury"):
+                    is_benefic = True
+                else:  # Sun, Mars, Saturn, Rahu, Ketu
+                    is_benefic = False
+
+                # Male alignment: Odd Sign + Solar Horā
+                # Female alignment: Even Sign + Lunar Horā
+                is_male_aligned = is_odd_sign and is_sun_hora
+                is_female_aligned = (not is_odd_sign) and (not is_sun_hora)
+
+                if (not is_benefic and is_male_aligned) or (is_benefic and is_female_aligned):
+                    dignity_str = "Auspicious Horā (100%)"
+                    score = 100.0
+                elif (not is_benefic and is_female_aligned) or (is_benefic and is_male_aligned):
+                    dignity_str = "Inauspicious Horā (0%)"
+                    score = 0.0
+                else:
+                    # Mixed (Mishre Samaphalam - Phaladīpikā 3.4)
+                    dignity_str = "Neutral Horā (50%)"
+                    score = 50.0
+
+                v_breakdown[v_name] = {
+                    "sign": "Leo" if is_sun_hora else "Cancer",
+                    "dignity": dignity_str,
+                    "score": round(score, 2),
+                    "ruler": hora_ruler
+                }
+                score_list.append(score)
+
+            elif v_name in ("D3", "D30"):
+                # -------------------------------------------------------------
+                # D3 (Drekkāṇa) & D30 (Triṁśāṁśa): Domain Lordship & Pañcadhā Maitrī
+                # -------------------------------------------------------------
+                ruler = None
+                if v_name == "D3":
+                    ruler = v_p.get("ruler")
+                elif v_name == "D30":
+                    ruler = v_p.get("bound_ruler") or v_p.get("ruler")
+
+                # Robust fallback derivation from D1 coordinates if missing from v_p
+                p_d1 = d1_grahas.get(p, {})
+                p_d1_lon = float(p_d1.get("longitude", 0.0))
+                p_s_idx = int(p_d1.get("sign_index", p_d1_lon // 30.0))
+                p_deg = float(p_d1.get("degree_0_to_30", p_d1_lon % 30.0))
+
+                if not ruler:
+                    if v_name == "D3":
+                        dec_idx = min(2, int(p_deg // 10.0))
+                        target_sign_idx = (p_s_idx + dec_idx * 4) % 12
+                        ruler = rel.SIGN_LORDS[ZODIAC_SIGNS[target_sign_idx]]
+                    elif v_name == "D30":
+                        from jyotish.baseline_math import calculate_unequal_trimsamsa
+                        t_info = calculate_unequal_trimsamsa(p_d1_lon)
+                        ruler = t_info["ruler"]
+
+                # Sva-varga / Own Domain rule:
+                # a. Exaltation and Debilitation DO NOT exist in D3 or D30.
+                # b. If planet == ruler: Assign "Own Sign" / Svakṣetra (90.0%).
+                # c. Otherwise: Calculate compound relationship (Pañcadhā Maitrī) between planet and ruler.
+                if p == ruler:
+                    dignity_str = "Own Sign"
+                    score = 90.0
+                else:
+                    p_d1_idx = int(p_d1.get("sign_index", ZODIAC_SIGNS.index(p_d1.get("sign", "Aries")) if p_d1.get("sign") in ZODIAC_SIGNS else 0))
+                    ruler_d1 = d1_grahas.get(ruler, {})
+                    ruler_d1_idx = int(ruler_d1.get("sign_index", ZODIAC_SIGNS.index(ruler_d1.get("sign", "Aries")) if ruler_d1.get("sign") in ZODIAC_SIGNS else 0))
+
+                    nat_rel = rel.get_natural_relationship(p, ruler)
+                    temp_rel = rel.get_temporary_relationship(p_d1_idx, ruler_d1_idx)
+                    cmp_rel = rel.get_compound_relationship(nat_rel, temp_rel)
+
+                    if cmp_rel == "Great Friend":
+                        dignity_str = "Great Friend's Sign"
+                        score = 80.0
+                    elif cmp_rel == "Friend":
+                        dignity_str = "Friend's Sign"
+                        score = 60.0
+                    elif cmp_rel == "Enemy":
+                        dignity_str = "Enemy's Sign"
+                        score = 40.0
+                    elif cmp_rel == "Great Enemy":
+                        dignity_str = "Great Enemy's Sign"
+                        score = 20.0
+                    else:  # "Neutral"
+                        dignity_str = "Neutral's Sign"
+                        score = 50.0
+
+                sign = v_p.get("sign")
+                if not sign:
+                    sign = ruler
+
+                v_breakdown[v_name] = {
+                    "sign": sign,
+                    "dignity": dignity_str,
+                    "score": round(score, 2),
+                    "ruler": ruler
+                }
+                score_list.append(score)
+            else:
+                # Zodiacal Vargas (D1, D9, D12)
+                sign = v_p.get("sign", "Aries")
+                deg = float(v_p.get("degree_0_to_30", 0.0))
+                dignity_str = v_p.get("dignity_breakdown", {}).get("final_dignity") or v_p.get("dignity")
+                if not dignity_str and v_name == "D1" and p in d1_grahas:
+                    d1_entry = d1_grahas[p]
+                    dignity_str = d1_entry.get("dignity_breakdown", {}).get("final_dignity") or d1_entry.get("dignity")
+                if not dignity_str:
+                    dignity_str = "Neutral's Sign"
+                score = get_dignity_score(dignity_str, planet=p, sign=sign, degree=deg)
+
+                v_breakdown[v_name] = {
+                    "sign": sign,
+                    "dignity": dignity_str,
+                    "score": round(score, 2)
+                }
+                score_list.append(score)
             
         weighted_score = calculate_shadvarga_dignity(v_breakdown, p)
-        avg_score = sum(score_list) / max(1, len(score_list))
-        base_centered = 2.0 * (weighted_score - 50.0)
+        avg_score = round(sum(score_list) / max(1, len(score_list)), 2)
+        base_centered = round(2.0 * (weighted_score - 50.0), 2)
         
         if weighted_score >= 60.0:
             predominance = "Shubhamsha Bahule"
@@ -2428,9 +2605,9 @@ def calculate_planetary_evaluation(
             pred_desc = "Balanced / Moderate Divisions (40%–60%)"
             
         shadvarga_scores[p] = {
-            "average_dignity_pct": round(avg_score, 1),
-            "weighted_dignity_pct": round(weighted_score, 1),
-            "base_centered_score": round(base_centered, 1),
+            "average_dignity_pct": avg_score,
+            "weighted_dignity_pct": weighted_score,
+            "base_centered_score": base_centered,
             "predominance": predominance,
             "predominance_desc": pred_desc,
             "varga_breakdown": v_breakdown
@@ -2467,44 +2644,6 @@ def calculate_planetary_evaluation(
         jagradaadi_map[p_name] = calculate_jagradaadi_avastha(p_name, p_sign_node, p_nat_dig)
         p_deg_node = float(p_d1_node.get("degree_0_to_30", float(p_d1_node.get("longitude", 0.0)) % 30.0))
         baladi_map[p_name] = calculate_baladi_avastha(p_sign_node, p_deg_node)
-
-    # -------------------------------------------------------------------------
-    # Moon Illumination & Phase (Paksha Bala - BPHS 3.11 & Vol 1 p. 15)
-    # -------------------------------------------------------------------------
-    sun_d1_info = d1_grahas.get("Sun", {})
-    moon_d1_info = d1_grahas.get("Moon", {})
-    sun_lon_val = float(sun_d1_info.get("longitude", 0.0))
-    moon_lon_val = float(moon_d1_info.get("longitude", 0.0))
-    moon_elongation_val = (moon_lon_val - sun_lon_val) % 360.0
-    moon_paksha_ratio = 1.0 - abs(moon_elongation_val - 180.0) / 180.0  # 1.0 = Full, 0.0 = New
-    moon_illum_pct = round(moon_paksha_ratio * 100.0, 1)
-    moon_is_waxing = (moon_elongation_val <= 180.0)
-    moon_paksha_name = "Waxing (Shukla Paksha)" if moon_is_waxing else "Waning (Krishna Paksha)"
-    moon_icon = "🌔" if moon_is_waxing else "🌘"
-
-    # Continuous Gradual Illumination Spectrum (BPHS 28.10-11):
-    # - 50% to 100% illumination: scales gradually from 0.0 to 1.0 (0% to +25% benefic terrain)
-    # - 0% to 50% illumination: scales gradually from 1.0 to 0.0 (+25% to 0% malefic terrain)
-    if moon_illum_pct >= 50.0:
-        moon_gradual_factor = (moon_illum_pct - 50.0) / 50.0
-        moon_light_type = "Bright Benefic Light (Pūrṇendu)" if moon_illum_pct >= 70.0 else "Waxing Intermediate Light"
-        moon_terrain_spectrum = "bright_gradual"
-    else:
-        moon_gradual_factor = (50.0 - moon_illum_pct) / 50.0
-        moon_light_type = "Dim/Dark Malefic Light (Kṣīṇendu)" if moon_illum_pct < 30.0 else "Waning Intermediate Light"
-        moon_terrain_spectrum = "dark_gradual"
-
-    moon_phase_summary = {
-        "is_waxing": moon_is_waxing,
-        "paksha": "Shukla" if moon_is_waxing else "Krishna",
-        "paksha_name": moon_paksha_name,
-        "elongation_deg": round(moon_elongation_val, 1),
-        "illumination_pct": moon_illum_pct,
-        "gradual_factor": round(moon_gradual_factor, 3),
-        "light_type": moon_light_type,
-        "terrain_spectrum": moon_terrain_spectrum,
-        "badge": f"{moon_icon} {'Waxing' if moon_is_waxing else 'Waning'} ({moon_illum_pct:.0f}%)"
-    }
 
     # -------------------------------------------------------------------------
     # STEPS 2, 3, 4 & SYNTHESIS: Full Evaluation per planet
@@ -2999,7 +3138,7 @@ def calculate_planetary_evaluation(
         )
 
         human_readable = (
-            f"1. Base Shadvarga dignity across D1, D2, D3, D9, D12, D30 averages {avg_dignity:.1f}% ({step1_info['predominance']}), "
+            f"1. Base divisional dignity across {', '.join(SHADVARGA_LIST)} averages {avg_dignity:.1f}% (weighted: {base_dignity:.1f}%, {step1_info['predominance']}), "
             f"giving a centered base score of {base_centered:+.1f}%.\n"
             f"2. {rescue_notes} [{host_bonus:+.1f}%].\n"
             f"3. Aspect rays from benefics/malefics modify by {clamped_aspect_net:+.1f}%.\n"
@@ -3364,6 +3503,12 @@ def calculate_planetary_evaluation(
             p_dict.setdefault("avasthas", {})["calibrated_lajjitadi"] = planets_result[p_name]["calibrated_lajjitadi"]
 
     lagna_eval = evaluate_lagna_vitality(vargas_data, shadbala_data, advanced_aspects, "D1")
+    if lagna_eval and "lord" in lagna_eval and lagna_eval["lord"]:
+        lord_name = lagna_eval["lord"].get("name")
+        if lord_name and lord_name in planets_result:
+            lord_eval = planets_result[lord_name]
+            lagna_eval["lord"]["dignity_score"] = lord_eval.get("step1_shadvarga", {}).get("varga_breakdown", {}).get("D1", {}).get("score", get_dignity_score(lagna_eval["lord"].get("dignity", "")))
+            lagna_eval["lord"]["shadvarga_dignity_pct"] = lord_eval.get("step1_shadvarga", {}).get("weighted_dignity_pct", lagna_eval["lord"]["dignity_score"])
 
     return {
         "summary": {
@@ -3530,12 +3675,20 @@ def generate_master_diagnostic_payload(
             cmp = get_compound_relationship(nat, tmp)
             dignity_str = get_dignity(p, p_sign, cmp, p_deg)
 
+        dignity_clean = dignity_str.replace("'s Sign", "").replace(" Sign", "").strip()
+        dig_score = get_dignity_score(dignity_clean, p, p_sign, p_deg)
+        pe_p = pe_planets.get(p, {})
+        shadvarga_pct = pe_p.get("step1_shadvarga", {}).get("weighted_dignity_pct", dig_score) if pe_p else dig_score
+
         col3 = {
             "dignity": dignity_str,
+            "dignity_clean": dignity_clean,
+            "dignity_score": dig_score,
+            "shadvarga_dignity_pct": shadvarga_pct,
             "natural_relationship": nat,
             "temporary_relationship": tmp,
             "compound_relationship": cmp,
-            "summary": f"{dignity_str} ({cmp})"
+            "summary": f"{dignity_clean} {int(dig_score)} / {shadvarga_pct:.1f}"
         }
 
         # Col 4: Dispositor (Rasi Lord)

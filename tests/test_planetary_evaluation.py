@@ -173,25 +173,22 @@ def test_dayalpuri_jupiter_exalted_archetype():
 
 
 def test_kurczak_dignity_scale_and_moolatrikona():
-    """Verify Kurczak 12.5% step scale, odd/even sign polarity, and Moolatrikona degree bounds."""
+    """Verify Phaladeepika Ch. 3 native percentage scale (0% to 100%) and 50% neutral symmetry."""
     from jyotish.planetary_evaluation.planetary_evaluation import get_dignity_score
     
     assert get_dignity_score("Exalted") == 100.0
-    assert get_dignity_score("Great Friend") == 60.0
-    assert get_dignity_score("Friend") == 50.0
-    assert get_dignity_score("Neutral") == 37.5
-    assert get_dignity_score("Enemy") == 25.0
+    assert get_dignity_score("Moolatrikona") == 95.0
+    assert get_dignity_score("Own Sign") == 90.0
+    assert get_dignity_score("Great Friend") == 80.0
+    assert get_dignity_score("Friend") == 60.0
+    assert get_dignity_score("Neutral") == 50.0
+    assert get_dignity_score("Enemy") == 40.0
     assert get_dignity_score("Great Enemy") == 20.0
-    assert get_dignity_score("Debilitated") == 12.5
+    assert get_dignity_score("Debilitated") == 0.0
 
-    # Own Sign Polarity: Odd sign = 75.0%, Even sign = 62.5%
-    assert get_dignity_score("Own Sign", planet="Mars", sign="Aries") == 75.0
-    assert get_dignity_score("Own Sign", planet="Mars", sign="Scorpio") == 62.5
-
-    # Moolatrikona degree ranges:
-    # Mars MT in Aries 0°-12° -> 87.5%; beyond 12° -> Own positive sign 75.0%
-    assert get_dignity_score("Moolatrikona", planet="Mars", sign="Aries", degree=5.0) == 87.5
-    assert get_dignity_score("Moolatrikona", planet="Mars", sign="Aries", degree=18.0) == 75.0
+    # Own Sign domicile: 90.0% unconditionally
+    assert get_dignity_score("Own Sign", planet="Mars", sign="Aries") == 90.0
+    assert get_dignity_score("Own Sign", planet="Mars", sign="Scorpio") == 90.0
 
 
 def test_nine_tier_archetype_matrix():
@@ -713,11 +710,11 @@ def test_parashari_lordship_modifiers():
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
     assert s4_jup["expression_score"] == -20.0
-    assert fd_jup["functional_dignity_pct"] == 55.4
+    assert fd_jup["functional_dignity_pct"] == 83.2
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
     assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
-    assert "Layer 2 Functional Dignity = 55.4%" in fd_jup["math_formula"]
+    assert "Layer 2 Functional Dignity = 83.2%" in fd_jup["math_formula"]
 
     # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
     vargas_case2 = {
@@ -742,14 +739,14 @@ def test_parashari_lordship_modifiers():
     s4_sat = sat_res["step4_house_field"]
     fd_sat = sat_res["functional_dignity"]
 
-    # In D1, Saturn in Aries is Debilitated (12.5% base in Kurczak scale)
+    # In D1, Saturn in Aries is Debilitated (0.0% base in native scale)
     assert s4_sat["house_num"] == 10
     assert s4_sat["terrain_mod_pct"] == 0.0  # Decoupled from terrain
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
     assert s4_sat["expression_score"] == -12.5
-    assert fd_sat["functional_dignity_pct"] == 28.9
-    assert "Layer 2 Functional Dignity = 28.9%" in fd_sat["math_formula"]
+    assert fd_sat["functional_dignity_pct"] == 52.0
+    assert "Layer 2 Functional Dignity = 52.0%" in fd_sat["math_formula"]
 
     # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
     vargas_case3 = {
@@ -782,8 +779,8 @@ def test_parashari_lordship_modifiers():
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
     assert s4_sat3["expression_score"] == 32.5
-    assert fd_sat3["functional_dignity_pct"] == 28.9
-    assert "Layer 2 Functional Dignity = 28.9%" in fd_sat3["math_formula"]
+    assert fd_sat3["functional_dignity_pct"] == 52.0
+    assert "Layer 2 Functional Dignity = 52.0%" in fd_sat3["math_formula"]
 
 
 def test_moon_phase_and_illumination_spectrum():
@@ -989,15 +986,15 @@ def test_mars_in_scorpio_12th_house_dignity():
     f_dig = mars["functional_dignity"]
     s4_mars = mars["step4_house_field"]
 
-    # 1. Base dignity for Scorpio must be 62.5% (even sign own sign)
-    assert f_dig["base_dignity_pct"] == 62.5
+    # 1. Base dignity for Scorpio must be 90.0% (own sign on native scale)
+    assert f_dig["base_dignity_pct"] == 90.0
     # 2. House Terrain for H12 is 0.0%
     assert f_dig["terrain_mod_pct"] == 0.0
-    assert f_dig["terrain_dignity_pct"] == 62.5
+    assert f_dig["terrain_dignity_pct"] == 90.0
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
     assert f_dig["lordship_mod_pct"] == 15.0
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
-    assert f_dig["functional_dignity_pct"] == 42.1
+    assert f_dig["functional_dignity_pct"] == 65.8
     assert s4_mars["expression_score"] == 15.0
     assert "House 12" in f_dig["math_steps"][1]
 
@@ -1634,7 +1631,7 @@ def test_unified_graha_cockpit_structure_and_invariants(test_chart):
     """
     Verify the 3-Column Diagnostic Cockpit structure and architectural invariants:
     1. Cockpit payload presence on all planets.
-    2. Shadvarga 6-Varga table structure with correct canonical weights (D1:6, D9:5, D3:4, D2:2, D12:2, D30:1).
+    2. Shadvarga 6-Varga table structure with correct canonical Phaladīpikā weights (D1: 1.00, D9: 0.75, D2: 0.50, D3: 0.50, D12: 0.50, D30: 0.50).
     3. Drishti curve threshold: Only aspects >= 12.0 Virūpas are included in stage3_aspect_graphs.
     4. Influencer Bālādi is contextual only; mathematical shift uses Jāgradādi alertness.
     5. Naisargika Sambandha directionality: Natural Friends produce positive vector, Natural Enemies produce negative vector.
@@ -1660,7 +1657,7 @@ def test_unified_graha_cockpit_structure_and_invariants(test_chart):
         s1 = cockpit["stage1_shadvarga"]
         assert "rows" in s1
         assert len(s1["rows"]) == 6
-        expected_weights = {"D1": 6.0, "D9": 5.0, "D3": 4.0, "D2": 2.0, "D12": 2.0, "D30": 1.0}
+        expected_weights = {"D1": 1.00, "D9": 0.75, "D2": 0.50, "D3": 0.50, "D12": 0.50, "D30": 0.50}
         for row in s1["rows"]:
             v = row["varga"]
             assert v in expected_weights
@@ -1804,15 +1801,194 @@ def test_detect_planetary_wars_with_baseline():
     assert "Northern Declination" in wars["Mars"]["reason"]
 
 
+def test_native_divisional_dignity_engine_6_charts_weights():
+    """
+    Validates Phaladeepika Ch. 3 native weighted divisional dignity engine:
+    1. Evaluates specifically canonical Phaladīpikā Ṣaḍvarga: D1, D2, D3, D9, D12, D30.
+    2. Weight hierarchy: D1 (1.00), D9 (0.75), D2 (0.50), D3 (0.50), D12 (0.50), D30 (0.50).
+    3. Normalizing divisor = 3.75.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import (
+        calculate_shadvarga_dignity, SHADVARGA_LIST, SHADVARGA_WEIGHTS, SHADVARGA_DIVISOR
+    )
+
+    assert SHADVARGA_LIST == ["D1", "D2", "D3", "D9", "D12", "D30"]
+    assert SHADVARGA_WEIGHTS == {
+        "D1": 1.00, "D9": 0.75, "D2": 0.50, "D3": 0.50, "D12": 0.50, "D30": 0.50
+    }
+    assert SHADVARGA_DIVISOR == 3.75
+
+    # Test arbitrary breakdown:
+    # D1 = 100, D9 = 80, D2 = 90, D3 = 60, D12 = 50, D30 = 40
+    # Weighted = (100*1.0 + 80*0.75 + 90*0.5 + 60*0.5 + 50*0.5 + 40*0.5) / 3.75
+    #          = (100 + 60 + 45 + 30 + 25 + 20) / 3.75 = 280 / 3.75 = 74.6666... -> 74.67
+    breakdown = {
+        "D1": {"score": 100.0, "sign": "Aries", "dignity": "Exalted"},
+        "D9": {"score": 80.0, "sign": "Leo", "dignity": "Great Friend's Sign"},
+        "D2": {"score": 90.0, "sign": "Leo", "dignity": "Own Sign"},
+        "D3": {"score": 60.0, "sign": "Sagittarius", "dignity": "Friend's Sign"},
+        "D12": {"score": 50.0, "sign": "Gemini", "dignity": "Neutral's Sign"},
+        "D30": {"score": 40.0, "sign": "Taurus", "dignity": "Enemy's Sign"},
+    }
+    score = calculate_shadvarga_dignity(breakdown, "Sun")
+    assert score == 74.67
 
 
+def test_native_scale_exact_symmetry():
+    """Validates exact mathematical symmetry around the 50% neutral baseline."""
+    from jyotish.planetary_evaluation.planetary_evaluation import get_dignity_score
+
+    neutral = get_dignity_score("Neutral")
+    assert neutral == 50.0
+
+    # Symmetric pairs:
+    # Exaltation (+50) / Debilitation (-50)
+    assert get_dignity_score("Exalted") - neutral == 50.0
+    assert get_dignity_score("Debilitated") - neutral == -50.0
+
+    # Great Friend (+30) / Great Enemy (-30)
+    assert get_dignity_score("Great Friend") - neutral == 30.0
+    assert get_dignity_score("Great Enemy") - neutral == -30.0
+
+    # Friend (+10) / Enemy (-10)
+    assert get_dignity_score("Friend") - neutral == 10.0
+    assert get_dignity_score("Enemy") - neutral == -10.0
+
+    # Executive Apex
+    assert get_dignity_score("Own Sign") == 90.0
+    assert get_dignity_score("Moolatrikona") == 95.0
+    assert get_dignity_score("Exalted") == 100.0
 
 
+def test_angelina_jolie_divisional_breakdown_precision(test_chart):
+    """
+    Validates that on Angelina Jolie's chart, each planet's step1_shadvarga
+    accurately sources divisional dignities from the baseline for canonical Phaladīpikā Ṣaḍvarga
+    [D1, D2, D3, D9, D12, D30] using 3.75 divisor and Graha Varga domain rules.
+    """
+    eval_data = test_chart["planetary_evaluation"]
+    planets = eval_data["planets"]
+
+    # Venus: D1=50, D9=100 (Exalted), D2=50 (Neutral Horā), D3=60, D12=80, D30=60 -> 66.67%
+    ven = planets["Venus"]["step1_shadvarga"]
+    assert ven["weighted_dignity_pct"] == 66.67
+    assert ven["varga_breakdown"]["D9"]["dignity"] == "Exalted"
+    assert ven["varga_breakdown"]["D9"]["score"] == 100.0
+    assert ven["varga_breakdown"]["D2"]["score"] == 50.0
+    assert ven["varga_breakdown"]["D2"]["dignity"] == "Neutral Horā (50%)"
+    assert ven["varga_breakdown"]["D12"]["score"] == 80.0
+    assert ven["varga_breakdown"]["D30"]["score"] == 60.0
+
+    # Moon: D1=40, D9=90 (Own Sign), D2=0 (Inauspicious Horā, gentle Moon in odd sign + Sun Hora), D3=80, D12=80, D30=40 -> 55.33%
+    moon = planets["Moon"]["step1_shadvarga"]
+    assert moon["weighted_dignity_pct"] == 55.33
+    assert moon["varga_breakdown"]["D9"]["score"] == 90.0
+    assert moon["varga_breakdown"]["D2"]["score"] == 0.0
+    assert moon["varga_breakdown"]["D2"]["dignity"] == "Inauspicious Horā (0%)"
+    assert moon["varga_breakdown"]["D3"]["score"] == 80.0
+
+    # Mars: D1=95 (Moolatrikona), D9=0 (Debilitated), D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=80, D12=80, D30=50 -> 66.67%
+    mars = planets["Mars"]["step1_shadvarga"]
+    assert mars["weighted_dignity_pct"] == 66.67
+    assert mars["varga_breakdown"]["D1"]["score"] == 95.0
+    assert mars["varga_breakdown"]["D9"]["score"] == 0.0
+    assert mars["varga_breakdown"]["D2"]["score"] == 100.0
+    assert mars["varga_breakdown"]["D2"]["dignity"] == "Auspicious Horā (100%)"
+    assert mars["varga_breakdown"]["D3"]["score"] == 80.0
+    assert mars["varga_breakdown"]["D30"]["score"] == 50.0
+
+    # Sun: D1=40, D9=50, D2=100 (Auspicious Horā, malefic in odd sign + Sun Hora), D3=50, D12=80, D30=80 -> 62.00%
+    sun = planets["Sun"]["step1_shadvarga"]
+    assert sun["weighted_dignity_pct"] == 62.00
+    assert sun["varga_breakdown"]["D2"]["score"] == 100.0
+    assert sun["varga_breakdown"]["D2"]["dignity"] == "Auspicious Horā (100%)"
+    assert sun["varga_breakdown"]["D30"]["score"] == 80.0
 
 
+def test_d2_hora_gender_temperament_triad():
+    """
+    Validates Phaladīpikā 3.4 & Vic DiCara's Gender x Natural Temperament Triad for Horā (D2):
+    - Malefics flourish in tough, male environments (Odd sign + Sun Horā) -> 100%.
+    - Benefics flourish in gentle, female environments (Even sign + Moon Horā) -> 100%.
+    - Malefics suffer in female environments (Even sign + Moon Horā) -> 0%.
+    - Benefics suffer in male environments (Odd sign + Sun Horā) -> 0%.
+    - Mixed alignments yield 50% (Mishre Samaphalam).
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
+
+    # Synthetic chart: Sun in Aries 5° (Odd, Sun Horā), Venus in Taurus 5° (Even, Moon Horā),
+    # Saturn in Taurus 5° (Even, Moon Horā), Jupiter in Aries 5° (Odd, Sun Horā),
+    # Mars in Aries 20° (Odd, Moon Horā -> Mixed)
+    mock_chart = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "sign_index": 0},
+                "Moon": {"sign": "Libra", "degree_0_to_30": 5.0, "longitude": 185.0, "sign_index": 6},  # Full Moon (100% illum -> benefic)
+                "Mars": {"sign": "Aries", "degree_0_to_30": 20.0, "longitude": 20.0, "sign_index": 0},  # Odd sign + Moon Horā -> Mixed
+                "Jupiter": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "sign_index": 0}, # Benefic in Odd + Sun Horā -> 0%
+                "Venus": {"sign": "Taurus", "degree_0_to_30": 5.0, "longitude": 35.0, "sign_index": 1}, # Benefic in Even + Moon Horā -> 100%
+                "Saturn": {"sign": "Taurus", "degree_0_to_30": 5.0, "longitude": 35.0, "sign_index": 1},# Malefic in Even + Moon Horā -> 0%
+                "Mercury": {"sign": "Gemini", "degree_0_to_30": 20.0, "longitude": 80.0, "sign_index": 2}, # Benefic in Odd + Moon Horā -> Mixed 50%
+                "Rahu": {"sign": "Aries", "degree_0_to_30": 5.0, "longitude": 5.0, "sign_index": 0},     # Malefic in Odd + Sun Horā -> 100%
+                "Ketu": {"sign": "Libra", "degree_0_to_30": 5.0, "longitude": 185.0, "sign_index": 6}
+            }
+        }
+    }
+
+    eval_res = calculate_planetary_evaluation(mock_chart)
+    planets = eval_res["planets"]
+
+    # 1. Malefic in Odd + Sun Horā -> 100%
+    assert planets["Sun"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 100.0
+    assert planets["Sun"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Auspicious Horā (100%)"
+    assert planets["Rahu"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 100.0
+
+    # 2. Benefic in Even + Moon Horā -> 100%
+    assert planets["Venus"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 100.0
+    assert planets["Venus"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Auspicious Horā (100%)"
+
+    # 3. Malefic in Even + Moon Horā -> 0%
+    assert planets["Saturn"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 0.0
+    assert planets["Saturn"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Inauspicious Horā (0%)"
+
+    # 4. Benefic in Odd + Sun Horā -> 0% (Inauspicious Horā)
+    assert planets["Jupiter"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 0.0
+    assert planets["Jupiter"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Inauspicious Horā (0%)"
+    # Moon is eternally Saumya (gentle/female); in Odd sign + Sun Horā it receives 0% (like Priyanka Chopra)
+    assert planets["Moon"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 0.0
+    assert planets["Moon"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Inauspicious Horā (0%)"
+
+    # 5. Mixed alignments -> 50% (Mishre Samaphalam)
+    assert planets["Mars"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 50.0
+    assert planets["Mars"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Neutral Horā (50%)"
+    assert planets["Mercury"]["step1_shadvarga"]["varga_breakdown"]["D2"]["score"] == 50.0
+    assert planets["Mercury"]["step1_shadvarga"]["varga_breakdown"]["D2"]["dignity"] == "Neutral Horā (50%)"
 
 
+def test_priyanka_chopra_moon_in_gemini_leo_hora():
+    """
+    Validates Vic DiCara's explicit teaching on Priyanka Chopra's chart:
+    Moon in Gemini at 8° (Odd sign, 0°-15° is Sun/Leo Horā).
+    Even with waning or waxing light, the Moon is eternally Saumya (gentle/female).
+    Placed in a purely masculine environment (Odd sign + Solar Horā),
+    she gets 0% (Inauspicious Horā), not 100%.
+    """
+    from jyotish.planetary_evaluation.planetary_evaluation import calculate_planetary_evaluation
 
-
-
+    chart = {
+        "D1": {
+            "lagna": {"sign": "Aries", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Moon": {"sign": "Gemini", "degree_0_to_30": 8.0, "longitude": 68.0, "sign_index": 2},
+                "Sun": {"sign": "Cancer", "degree_0_to_30": 2.0, "longitude": 92.0, "sign_index": 3},  # Dim Moon (~24° elongation)
+            }
+        }
+    }
+    eval_res = calculate_planetary_evaluation(chart)
+    moon_d2 = eval_res["planets"]["Moon"]["step1_shadvarga"]["varga_breakdown"]["D2"]
+    assert moon_d2["sign"] == "Leo"
+    assert moon_d2["ruler"] == "Sun"
+    assert moon_d2["score"] == 0.0
+    assert moon_d2["dignity"] == "Inauspicious Horā (0%)"
 

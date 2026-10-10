@@ -1,27 +1,76 @@
 <template id="tmpl-dignities">
-        <div class="widget-content" id="tab-varga-dignities">
-            <div class="chart-toolbar" style="padding: 3px 8px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center;">
-                <span style="color: #4a3325; font-weight: bold; font-size: 12px;">Dignities in Vargas</span>
+    <div class="widget-content" id="tab-varga-dignities" style="display: flex; flex-direction: column; height: 100%;">
+        <div class="chart-toolbar" style="padding: 4px 8px; background: #fbf7ef; border-bottom: 1px solid #e2d7c3; display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="color: #4a3325; font-weight: 700; font-size: 12.5px;">Planetary Dignities</span>
+                <div class="table-view-toggle" style="display: inline-flex; border: 1px solid #d5c8b2; border-radius: 4px; overflow: hidden; background: #fffdfa;">
+                    <button type="button" class="varga-dignities-tab-btn active" data-view="shadvarga" onclick="switchVargaDignitiesView(this, 'shadvarga')">Ṣaḍvarga (Weighted)</button>
+                    <button type="button" class="varga-dignities-tab-btn" data-view="shodashavarga" onclick="switchVargaDignitiesView(this, 'shodashavarga')">Ṣoḍaśavarga (16 Harmonics)</button>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+                <span class="varga-dignities-subtitle text-muted" style="font-size: 12px;">Phaladīpikā 3.1–4 • Vic DiCara Methodology</span>
                 <button type="button" class="btn-widget-maximize" title="Maximize Table (Full Screen)" onclick="maximizeTableFromWidget(this)">⛶</button>
             </div>
-            <div class="responsive-table-container" style="padding: 4px;">
-                <div class="scale-wrapper">
-                    <table id="vargaDignitiesTable" class="dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center;">
+        </div>
+        <div class="responsive-table-container" style="padding: 6px; flex: 1; overflow: auto;">
+            <div class="scale-wrapper" style="width: 100%;">
+                <!-- Ṣaḍvarga Weighted Table View (Default / Matches DiCara Screenshot) -->
+                <div class="dignities-view-pane" id="pane-shadvarga" style="display: block;">
+                    <table class="shadvarga-weighted-table master-diagnostic-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; font-size: 13px;">
                         <thead>
-                            <tr>
-                                <th>Varga</th>
-                                <th>Su</th>
-                                <th>Mo</th>
-                                <th>Ma</th>
-                                <th>Me</th>
-                                <th>Ju</th>
-                                <th>Ve</th>
-                                <th>Sa</th>
+                            <tr style="background: var(--bg-surface-muted, #f3ede2); border-bottom: 2px solid var(--border-strong, #cbd5e1);">
+                                <th style="width: 48px; padding: 6px 4px; font-size: 12px; font-weight: 700;">W</th>
+                                <th style="width: 80px; padding: 6px 6px; font-size: 12.5px; font-weight: 700; text-align: left;">Varga</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">☉ Su</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">☽ Mo</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">♂ Ma</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">☿ Me</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">♃ Ju</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">♀ Ve</th>
+                                <th style="padding: 6px 4px; font-size: 13px;">♄ Sa</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody class="shadvarga-weighted-tbody"></tbody>
+                    </table>
+
+                    <!-- Interpretive Annotation Cards (Matching DiCara Screenshot) -->
+                    <div class="shadvarga-interpretive-footer" style="margin-top: 10px; padding: 8px 10px; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e2d7c3); border-radius: 6px; font-size: 12px; line-height: 1.5;">
+                        <div style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="status-indicator benefic"><span class="indicator-dot"></span><strong style="color: #0369a1;">Score ≥ 50</strong></span>
+                                <span style="color: var(--text-primary, #334155);">→ Indicates Long-life, Vitality &amp; Prosperity</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span class="status-indicator malefic"><span class="indicator-dot"></span><strong style="color: #be123c;">Score &lt; 50</strong></span>
+                                <span style="color: var(--text-primary, #334155);">→ Indicates Foundational Friction / Vulnerability</span>
+                            </div>
+                        </div>
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 3px solid #16a34a; border-radius: 4px; padding: 5px 8px; color: #166534; font-size: 12px;">
+                            <strong>Vic DiCara Host Principle:</strong> Even when a planet shows lower divisional dignity, if its host dispositors are fortified and strong, it overcomes the initial vulnerability to grant extraordinary endurance, executive power, and "kingship"!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ṣoḍaśavarga Complete 16-Harmonics Table View -->
+                <div class="dignities-view-pane" id="pane-shodashavarga" style="display: none;">
+                    <table id="vargaDignitiesTable" class="master-diagnostic-table dignity-grid" style="width: 100%; border-collapse: separate; border-spacing: 0; text-align: center; font-size: 13px;">
+                        <thead>
+                            <tr style="background: var(--bg-surface-muted, #f3ede2); border-bottom: 2px solid var(--border-strong, #cbd5e1);">
+                                <th style="width: 90px; text-align: left; padding: 6px 8px;">Varga</th>
+                                <th style="padding: 6px 4px;">☉ Su</th>
+                                <th style="padding: 6px 4px;">☽ Mo</th>
+                                <th style="padding: 6px 4px;">♂ Ma</th>
+                                <th style="padding: 6px 4px;">☿ Me</th>
+                                <th style="padding: 6px 4px;">♃ Ju</th>
+                                <th style="padding: 6px 4px;">♀ Ve</th>
+                                <th style="padding: 6px 4px;">♄ Sa</th>
+                            </tr>
+                        </thead>
+                        <tbody class="shodashavarga-tbody"></tbody>
                     </table>
                 </div>
             </div>
         </div>
-    </template>
+    </div>
+</template>
