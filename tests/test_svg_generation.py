@@ -380,3 +380,202 @@ def test_nakshatra_display_north_south_and_biwheel():
     bi_svg_off = generate_biwheel_chart(items, items, inner_name="D1", outer_name="D9", show_nakshatras=False)
     assert "Ashw" not in bi_svg_off
     assert "Rohi" not in bi_svg_off
+
+
+def test_biwheel_d2_hora_outer_glyphs_and_subdivisions():
+    from jyotish.draw_chart import generate_biwheel_chart
+    inner_items = [
+        {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 5, "minute": 10, "is_retrograde": False},
+        {"type": "planet", "name": "Sun", "sign": "Aries", "degree": 10, "minute": 20, "is_retrograde": False},
+        {"type": "planet", "name": "Moon", "sign": "Taurus", "degree": 20, "minute": 40, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    outer_items = [
+        {
+            "type": "planet", "name": "Lagna", "sign": "Leo", "degree": 10, "minute": 20, "is_retrograde": False,
+            "hora_lord": "Sun", "hora_symbol": "☉", "hora_polarity": "Solar / Pingala"
+        },
+        {
+            "type": "planet", "name": "Sun", "sign": "Leo", "degree": 20, "minute": 40, "is_retrograde": False,
+            "hora_lord": "Sun", "hora_symbol": "☉", "hora_polarity": "Solar / Pingala"
+        },
+        {
+            "type": "planet", "name": "Moon", "sign": "Cancer", "degree": 11, "minute": 20, "is_retrograde": False,
+            "hora_lord": "Moon", "hora_symbol": "☽", "hora_polarity": "Lunar / Ida"
+        }
+    ]
+    svg_d2 = generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D2")
+    
+    # 1. Outer sign glyph must show Sun (☉) and Moon (☽), NOT Leo (♌) or Cancer (♋)
+    assert '<text class="outer-sign-glyph"' in svg_d2
+    assert '>☉</text>' in svg_d2
+    assert '>☽</text>' in svg_d2
+    
+    # 2. Harmonic subdivision ring must contain D2 Hora divisions (Solar and Lunar halves)
+    assert 'data-type="varga-division" data-varga="D2"' in svg_d2
+    assert 'D2 Horā:' in svg_d2
+    assert 'Solar / Pingala' in svg_d2
+    assert 'Lunar / Ida' in svg_d2
+
+
+def test_biwheel_d3_drekkana_outer_glyphs_and_subdivisions():
+    from jyotish.draw_chart import generate_biwheel_chart
+    inner_items = [
+        {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 5, "minute": 10, "is_retrograde": False},
+        {"type": "planet", "name": "Mars", "sign": "Aries", "degree": 15, "minute": 20, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    outer_items = [
+        {
+            "type": "planet", "name": "Lagna", "sign": "Aries", "degree": 15, "minute": 30, "is_retrograde": False,
+            "ruler": "Mars", "display_symbol": "♂", "display_entity": "♂ Mars"
+        },
+        {
+            "type": "planet", "name": "Mars", "sign": "Leo", "degree": 16, "minute": 0, "is_retrograde": False,
+            "ruler": "Sun", "display_symbol": "☉", "display_entity": "☉ Sun"
+        }
+    ]
+    svg_d3 = generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D3")
+    
+    # 1. Outer sign glyph shows decan lord symbols
+    assert '<text class="outer-sign-glyph"' in svg_d3
+    assert '>♂</text>' in svg_d3
+    assert '>☉</text>' in svg_d3
+    
+    # 2. Harmonic subdivision ring must contain Drekkana decan divisions
+    assert 'data-type="varga-division" data-varga="D3"' in svg_d3
+    assert 'D3 Drekkāṇa Trine' in svg_d3
+
+
+def test_biwheel_d30_trimsamsa_outer_glyphs_and_subdivisions():
+    from jyotish.draw_chart import generate_biwheel_chart
+    inner_items = [
+        {"type": "planet", "name": "Lagna", "sign": "Aries", "degree": 5, "minute": 10, "is_retrograde": False},
+        {"type": "planet", "name": "Saturn", "sign": "Aries", "degree": 7, "minute": 20, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Aries"}
+    ]
+    outer_items = [
+        {
+            "type": "planet", "name": "Lagna", "sign": "Aries", "degree": 25, "minute": 0, "is_retrograde": False,
+            "bound_ruler": "Mars", "bound_symbol": "♂", "bound_degree": 5.0, "bound_sign": "Aries"
+        },
+        {
+            "type": "planet", "name": "Saturn", "sign": "Aquarius", "degree": 12, "minute": 0, "is_retrograde": False,
+            "bound_ruler": "Saturn", "bound_symbol": "♄", "bound_degree": 2.0, "bound_sign": "Aquarius"
+        }
+    ]
+    svg_d30 = generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D30")
+    
+    # 1. Outer sign glyph shows bound ruler symbols
+    assert '<text class="outer-sign-glyph"' in svg_d30
+    assert '>♂</text>' in svg_d30
+    assert '>♄</text>' in svg_d30
+    
+    # 2. Harmonic subdivision ring must contain Parashari Trimsamsa bound divisions
+    assert 'data-type="varga-division" data-varga="D30"' in svg_d30
+    assert 'D30 Triṁśāṁśa Bound:' in svg_d30
+
+
+def test_circular_chart_varga_slices_mode():
+    from jyotish.draw_chart import generate_circular_chart
+    items = [
+        {"type": "planet", "name": "Lagna", "sign": "Leo", "degree": 9, "minute": 33, "is_retrograde": False},
+        {"type": "planet", "name": "Jupiter", "sign": "Aries", "degree": 18, "minute": 15, "is_retrograde": False},
+        {"type": "planet", "name": "Mars", "sign": "Aries", "degree": 14, "minute": 8, "is_retrograde": False},
+        {"type": "planet", "name": "Moon", "sign": "Gemini", "degree": 11, "minute": 54, "is_retrograde": False},
+        {"type": "planet", "name": "Sun", "sign": "Gemini", "degree": 17, "minute": 51, "is_retrograde": False},
+        {"type": "planet", "name": "Saturn", "sign": "Cancer", "degree": 17, "minute": 55, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Leo", "degree": 9, "minute": 33},
+        {"type": "cusp", "text": "10", "sign": "Taurus", "degree": 5, "minute": 20}
+    ]
+    svg_varga = generate_circular_chart(
+        items, mode="symbol", varga_name="D1", ayanamsha=0.0, root_planet="Lagna", wheel_mode="varga_slices"
+    )
+
+    # 1. Title and center hub indicate Concentric Varga Wheel
+    assert "D1 Concentric Varga Wheel" in svg_varga
+    assert ">Vargas</text>" in svg_varga
+
+    # 2. Concentric boundary circles for 5 stacked varga rings (radii: 120, 140, 153, 166, 179, 192, 205)
+    assert '<circle cx="0" cy="0" r="205"' in svg_varga
+    assert '<circle cx="0" cy="0" r="192"' in svg_varga
+    assert '<circle cx="0" cy="0" r="179"' in svg_varga
+    assert '<circle cx="0" cy="0" r="166"' in svg_varga
+    assert '<circle cx="0" cy="0" r="153"' in svg_varga
+    assert '<circle cx="0" cy="0" r="140"' in svg_varga
+    assert '<circle cx="0" cy="0" r="120"' in svg_varga
+
+    # 3. Concentric rings container & harmonic glyphs present for D9, D7, D10, D12, D16
+    assert 'class="varga-concentric-rings' in svg_varga
+    assert 'data-varga="D9"' in svg_varga
+    assert 'data-varga="D7"' in svg_varga
+    assert 'data-varga="D10"' in svg_varga
+    assert 'data-varga="D12"' in svg_varga
+    assert 'data-varga="D16"' in svg_varga
+    assert 'class="interactive varga-slice-glyph"' in svg_varga
+
+    # 4. Continuous planetary radial piercing rays (spokes) across all 5 varga rings
+    assert '<g class="varga-piercing-spokes"' in svg_varga
+    assert '<line class="varga-piercing-ray" data-planet="Mars"' in svg_varga
+    assert '<line class="varga-piercing-ray" data-planet="Jupiter"' in svg_varga
+    assert '<circle class="varga-piercing-dot" data-planet="Sun"' in svg_varga
+    assert '<line class="varga-piercing-ray" data-planet="Lagna"' in svg_varga
+
+    # 5. Default nakshatras mode should NOT have varga-concentric-rings or piercing rays
+    svg_nak = generate_circular_chart(
+        items, mode="symbol", varga_name="D1", ayanamsha=0.0, root_planet="Lagna", wheel_mode="nakshatras"
+    )
+    assert '<g class="varga-concentric-rings">' not in svg_nak
+    assert '<g class="varga-piercing-spokes"' not in svg_nak
+
+
+def test_circular_chart_classical_varga_mode():
+    from jyotish.draw_chart import generate_circular_chart
+    items = [
+        {"type": "planet", "name": "Lagna", "sign": "Leo", "degree": 9, "minute": 33, "is_retrograde": False},
+        {"type": "planet", "name": "Jupiter", "sign": "Aries", "degree": 18, "minute": 15, "is_retrograde": False},
+        {"type": "planet", "name": "Mars", "sign": "Aries", "degree": 14, "minute": 8, "is_retrograde": False},
+        {"type": "planet", "name": "Moon", "sign": "Gemini", "degree": 11, "minute": 54, "is_retrograde": False},
+        {"type": "planet", "name": "Sun", "sign": "Gemini", "degree": 17, "minute": 51, "is_retrograde": False},
+        {"type": "planet", "name": "Saturn", "sign": "Cancer", "degree": 17, "minute": 55, "is_retrograde": False},
+        {"type": "cusp", "text": "1", "sign": "Leo", "degree": 9, "minute": 33},
+        {"type": "cusp", "text": "10", "sign": "Taurus", "degree": 5, "minute": 20}
+    ]
+    svg_class = generate_circular_chart(
+        items, mode="symbol", varga_name="D1", ayanamsha=0.0, root_planet="Lagna", wheel_mode="mantreshwara"
+    )
+
+    # 1. Title and center hub indicate Classical Varga Wheel
+    assert "D1 Classical Varga Wheel" in svg_class
+    assert ">Classical</text>" in svg_class
+
+    # 2. Concentric boundary circles for D2, D3, D30, D60 (radii: 120, 140, 156, 172, 188, 205)
+    assert '<circle cx="0" cy="0" r="205"' in svg_class
+    assert '<circle cx="0" cy="0" r="188"' in svg_class
+    assert '<circle cx="0" cy="0" r="172"' in svg_class
+    assert '<circle cx="0" cy="0" r="156"' in svg_class
+    assert '<circle cx="0" cy="0" r="140"' in svg_class
+    assert '<circle cx="0" cy="0" r="120"' in svg_class
+
+    # 3. Concentric rings container & classical specialized rings
+    assert 'class="varga-concentric-rings varga-classical-rings"' in svg_class
+    assert 'data-varga="D2"' in svg_class
+    assert 'class="d2-slice-bg"' in svg_class
+    assert 'data-varga="D3"' in svg_class
+    assert 'data-varga="D30"' in svg_class
+    assert 'data-varga="D60"' in svg_class
+    assert 'class="d60-slice"' in svg_class
+    assert 'data-nature="ashubha"' in svg_class
+    assert 'data-nature="shubha"' in svg_class
+
+    # 4. Continuous planetary radial piercing rays (spokes) with rich D2/D3/D30/D60 tooltip
+    assert '<g class="varga-piercing-spokes"' in svg_class
+    assert '<line class="varga-piercing-ray" data-planet="Mars"' in svg_class
+    assert '<circle class="varga-piercing-dot" data-planet="Sun"' in svg_class
+    assert 'D2:' in svg_class
+    assert 'D3:' in svg_class
+    assert 'D30:' in svg_class
+    assert 'D60 #' in svg_class
+
+
+

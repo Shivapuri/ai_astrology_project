@@ -20,11 +20,14 @@ class Store {
             selectedEntity: null,
             d10Mode: localStorage.getItem('astra_d10_mode') || 'reverse',
             d24Mode: localStorage.getItem('astra_d24_mode') || 'reverse',
+            d2Mode: localStorage.getItem('astra_d2_mode') || 'parashari',
+            trimsamsaMode: localStorage.getItem('astra_trimsamsa_mode') || 'parashari',
             nakshatraSystem: localStorage.getItem('astra_nakshatra_system') || 'ERNST_DHRUVA',
             debilitationMode: localStorage.getItem('astra_debilitation_mode') || 'kala_degree',
             notation: localStorage.getItem('astra_notation') || 'symbol',
             showSiSigns: localStorage.getItem('astra_show_si_signs') !== 'false',
-            showNakshatras: localStorage.getItem('astra_show_nakshatras') === 'true'
+            showNakshatras: localStorage.getItem('astra_show_nakshatras') === 'true',
+            circularWheelMode: localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras'
         };
     }
 
@@ -59,6 +62,18 @@ class Store {
             window.currentD10Mode = updates.d10Mode;
             localStorage.setItem('astra_d10_mode', updates.d10Mode);
         }
+        if (updates.d24Mode !== undefined) {
+            window.currentD24Mode = updates.d24Mode;
+            localStorage.setItem('astra_d24_mode', updates.d24Mode);
+        }
+        if (updates.d2Mode !== undefined) {
+            window.currentD2Mode = updates.d2Mode;
+            localStorage.setItem('astra_d2_mode', updates.d2Mode);
+        }
+        if (updates.trimsamsaMode !== undefined) {
+            window.currentTrimsamsaMode = updates.trimsamsaMode;
+            localStorage.setItem('astra_trimsamsa_mode', updates.trimsamsaMode);
+        }
         if (updates.nakshatraSystem !== undefined) {
             window.currentNakshatraSystem = updates.nakshatraSystem;
             localStorage.setItem('astra_nakshatra_system', updates.nakshatraSystem);
@@ -74,6 +89,10 @@ class Store {
         if (updates.showNakshatras !== undefined) {
             window.currentShowNakshatras = updates.showNakshatras;
             localStorage.setItem('astra_show_nakshatras', updates.showNakshatras);
+        }
+        if (updates.circularWheelMode !== undefined) {
+            window.currentCircularWheelMode = updates.circularWheelMode;
+            localStorage.setItem('astra_circular_wheel_mode', updates.circularWheelMode);
         }
 
         // Notify specific keys and general state change
@@ -120,9 +139,12 @@ if (typeof window !== 'undefined') {
     window.astraStore = store;
     window.currentD10Mode = store.state.d10Mode;
     window.currentD24Mode = store.state.d24Mode;
+    window.currentD2Mode = store.state.d2Mode;
+    window.currentTrimsamsaMode = store.state.trimsamsaMode;
     window.currentNakshatraSystem = store.state.nakshatraSystem;
     window.currentNotation = store.state.notation;
     window.showSiSigns = store.state.showSiSigns;
+    window.currentCircularWheelMode = store.state.circularWheelMode;
     window.currentChartData = null;
     window.currentSvgs = null;
     window.currentLoadedNative = null;

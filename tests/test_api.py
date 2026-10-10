@@ -331,6 +331,45 @@ def test_chart_svg_show_nakshatras_api(client):
     assert 'font-size="5.8"' in main_data['svgs']['D1']['north']
 
 
+def test_chart_svg_wheel_mode_api(client):
+    # 1. Fetch circular SVG with wheel_mode=varga_slices
+    res_varga = client.get('/api/chart/adolf-hitler/svg?style=circular&wheel_mode=varga_slices')
+    assert res_varga.status_code == 200
+    data_varga = json.loads(res_varga.data)
+    assert 'varga-concentric-rings' in data_varga['svg']
+    assert 'varga-piercing-spokes' in data_varga['svg']
+    assert 'data-varga="D9"' in data_varga['svg']
+
+    # 2. Fetch circular SVG with wheel_mode=nakshatras (default)
+    res_nak = client.get('/api/chart/adolf-hitler/svg?style=circular&wheel_mode=nakshatras')
+    assert res_nak.status_code == 200
+    data_nak = json.loads(res_nak.data)
+    assert 'varga-concentric-rings' not in data_nak['svg']
+    assert 'varga-piercing-spokes' not in data_nak['svg']
+
+    # 3. Main chart endpoint with wheel_mode=varga_slices
+    res_main = client.get('/api/chart/adolf-hitler?wheel_mode=varga_slices')
+    assert res_main.status_code == 200
+    main_data = json.loads(res_main.data)
+    assert 'varga-concentric-rings' in main_data['svgs']['D1']['circular']
+
+    # 4. Fetch circular SVG with wheel_mode=mantreshwara
+    res_mantra = client.get('/api/chart/adolf-hitler/svg?style=circular&wheel_mode=mantreshwara')
+    assert res_mantra.status_code == 200
+    data_mantra = json.loads(res_mantra.data)
+    assert 'varga-classical-rings' in data_mantra['svg']
+    assert 'data-varga="D2"' in data_mantra['svg']
+    assert 'data-varga="D60"' in data_mantra['svg']
+
+    # 5. Fetch circular SVG with wheel_mode=zodiacal
+    res_zod = client.get('/api/chart/adolf-hitler/svg?style=circular&wheel_mode=zodiacal')
+    assert res_zod.status_code == 200
+    data_zod = json.loads(res_zod.data)
+    assert 'varga-zodiacal-rings' in data_zod['svg']
+    assert 'data-varga="D9"' in data_zod['svg']
+
+
+
 
 
 

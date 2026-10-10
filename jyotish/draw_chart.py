@@ -6,6 +6,12 @@ from jyotish.relationships.relationships import (
     get_dignity, get_compound_relationship, get_natural_relationship, 
     get_temporary_relationship, SIGN_LORDS
 )
+from jyotish.baseline_tables import PLANET_SYMBOLS, ZODIAC_SIGNS
+from jyotish.baseline_math import (
+    calculate_varga_longitude,
+    calculate_shastiamsa_details,
+    get_varga_ruler_info
+)
 
 ASTRO_FONT_STACK = 'STIX Two Math, Cambria Math, DejaVu Sans, Noto Sans Symbols 2, Apple Symbols, Segoe UI Symbol, sans-serif'
 
@@ -205,34 +211,74 @@ def get_nakshatra_abbreviation(name: str, length: int = 4) -> str:
     return name[:length]
 
 def parse_varga_data(varga_data):
+    if not varga_data:
+        return []
     items = []
     
     # Lagna
-    l_sign = varga_data["lagna"]["sign"]
-    l_deg = varga_data["lagna"]["degree_0_to_30"]
-    minutes = int((l_deg - int(l_deg)) * 60)
-    items.append({
-        "type": "planet",
-        "name": "Lagna",
-        "sign": l_sign,
-        "degree": int(l_deg),
-        "minute": minutes,
-        "nakshatra": varga_data["lagna"].get("nakshatra", "")
-    })
+    l_data = varga_data.get("lagna", {})
+    if l_data:
+        l_sign = l_data.get("sign", "Aries")
+        l_deg = l_data.get("degree_0_to_30", 0.0)
+        minutes = int((l_deg - int(l_deg)) * 60)
+        lagna_item = {
+            "type": "planet",
+            "name": "Lagna",
+            "sign": l_sign,
+            "degree": int(l_deg),
+            "minute": minutes,
+            "nakshatra": l_data.get("nakshatra", ""),
+            "longitude": l_data.get("longitude", 0.0),
+            "ruler": l_data.get("ruler", ""),
+            "ruler_symbol": l_data.get("ruler_symbol", ""),
+            "display_entity": l_data.get("display_entity", ""),
+            "display_symbol": l_data.get("display_symbol", ""),
+            "is_planetary_varga": l_data.get("is_planetary_varga", False)
+        }
+        if "hora_lord" in l_data:
+            lagna_item["hora_lord"] = l_data["hora_lord"]
+            lagna_item["hora_symbol"] = l_data.get("hora_symbol", "")
+            lagna_item["hora_polarity"] = l_data.get("hora_polarity", "")
+        if "bound_ruler" in l_data:
+            lagna_item["bound_ruler"] = l_data["bound_ruler"]
+            lagna_item["bound_symbol"] = l_data.get("bound_symbol", "")
+            lagna_item["bound_sign"] = l_data.get("bound_sign", "")
+            lagna_item["bound_degree"] = l_data.get("bound_degree", 0.0)
+        if "shastiamsa" in l_data:
+            lagna_item["shastiamsa"] = l_data["shastiamsa"]
+        items.append(lagna_item)
     
     # Grahas
-    for p_name, p_data in varga_data["grahas"].items():
-        deg = p_data["degree_0_to_30"]
+    for p_name, p_data in varga_data.get("grahas", {}).items():
+        deg = p_data.get("degree_0_to_30", 0.0)
         minutes = int((deg - int(deg)) * 60)
-        items.append({
+        g_item = {
             "type": "planet",
             "name": p_name,
-            "sign": p_data["sign"],
+            "sign": p_data.get("sign", ""),
             "degree": int(deg),
             "minute": minutes,
             "is_retrograde": p_data.get("is_retrograde", False),
-            "nakshatra": p_data.get("nakshatra", "")
-        })
+            "nakshatra": p_data.get("nakshatra", ""),
+            "longitude": p_data.get("longitude", 0.0),
+            "ruler": p_data.get("ruler", ""),
+            "ruler_symbol": p_data.get("ruler_symbol", ""),
+            "display_entity": p_data.get("display_entity", ""),
+            "display_symbol": p_data.get("display_symbol", ""),
+            "is_planetary_varga": p_data.get("is_planetary_varga", False)
+        }
+        if "hora_lord" in p_data:
+            g_item["hora_lord"] = p_data["hora_lord"]
+            g_item["hora_symbol"] = p_data.get("hora_symbol", "")
+            g_item["hora_polarity"] = p_data.get("hora_polarity", "")
+        if "bound_ruler" in p_data:
+            g_item["bound_ruler"] = p_data["bound_ruler"]
+            g_item["bound_symbol"] = p_data.get("bound_symbol", "")
+            g_item["bound_sign"] = p_data.get("bound_sign", "")
+            g_item["bound_degree"] = p_data.get("bound_degree", 0.0)
+        if "shastiamsa" in p_data:
+            g_item["shastiamsa"] = p_data["shastiamsa"]
+        items.append(g_item)
         
     # House Cusps
     for i, cusp in enumerate(varga_data.get("cusps", [])):
@@ -240,7 +286,7 @@ def parse_varga_data(varga_data):
         items.append({
             "type": "cusp",
             "text": str(i + 1),
-            "sign": cusp["sign"],
+            "sign": cusp.get("sign", ""),
             "degree": int(c_deg),
             "minute": int((c_deg - int(c_deg)) * 60),
             "longitude": cusp.get("longitude", 0),
@@ -924,7 +970,10 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'",
                 "is_retrograde": item.get("is_retrograde", False),
-                "nakshatra": item.get("nakshatra", "")
+                "nakshatra": item.get("nakshatra", ""),
+                "hora_polarity": item.get("hora_polarity", ""),
+                "display_entity": item.get("display_entity", ""),
+                "shastiamsa": item.get("shastiamsa")
             })
 
     svg = '<svg width="100%" height="100%" viewBox="-10 -10 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
@@ -971,6 +1020,14 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
     elif root_planet == "Sun":
         chart_title = f"{varga_name} Surya Lagna"
         chart_sub = "Sun as Ascendant (H1)"
+    elif varga_name == "D2":
+        chart_sub = "Horā (Solar ☉ / Lunar ☽ Chambers)"
+    elif varga_name == "D3":
+        chart_sub = "Drekkāṇa (Planetary Triads)"
+    elif varga_name == "D30":
+        chart_sub = "Triṁśāṁśa (5 Parāśarī Bounds)"
+    elif varga_name == "D60":
+        chart_sub = "Ṣaṣṭiāṁśa (60 Deities & Polarity)"
 
     svg += generate_south_indian_center(items_by_sign, chart_title, chart_sub, mode=mode)
 
@@ -1100,7 +1157,18 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
             is_retro = p.get("is_retrograde", False)
             retro_badge = " R" if is_retro else ""
             retro_label = " [Retrograde (R)]" if is_retro else ""
-            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
+            v_detail = ""
+            if varga_name == "D2" and p.get("hora_polarity"):
+                v_detail = f" [{p['hora_polarity']}]"
+            elif varga_name == "D3" and p.get("display_entity"):
+                v_detail = f" [Drekkāṇa: {p['display_entity']}]"
+            elif varga_name == "D30" and p.get("display_entity"):
+                v_detail = f" [Triṁśāṁśa: {p['display_entity']}]"
+            elif varga_name == "D60" and p.get("shastiamsa"):
+                s_info = p["shastiamsa"]
+                v_detail = f" [Ṣaṣṭiāṁśa #{s_info.get('shastiamsa_number', s_info.get('slice_number', ''))}: {s_info.get('deity', '')} ({s_info.get('nature', '')})]"
+
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label}{v_detail} — {p['deg']}{retro_badge} {p['sign']}"
             
             font_sz = "13" if (mode == "symbol" and p["name"] != "Lagna") else ("12" if mode == "devanagari" else "11")
             glyph_cls = "graha-glyph" if mode == "symbol" and p["name"] != "Lagna" else ""
@@ -1337,7 +1405,10 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 "sign": item["sign"],
                 "deg": f"{item['degree']}°{item['minute']:02d}'",
                 "is_retrograde": item.get("is_retrograde", False),
-                "nakshatra": item.get("nakshatra", "")
+                "nakshatra": item.get("nakshatra", ""),
+                "hora_polarity": item.get("hora_polarity", ""),
+                "display_entity": item.get("display_entity", ""),
+                "shastiamsa": item.get("shastiamsa")
             })
 
 
@@ -1414,7 +1485,18 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             is_retro = p.get("is_retrograde", False)
             retro_badge = " R" if is_retro else ""
             retro_label = " [Retrograde (R)]" if is_retro else ""
-            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label} — {p['deg']}{retro_badge} {p['sign']}"
+            v_detail = ""
+            if varga_name == "D2" and p.get("hora_polarity"):
+                v_detail = f" [{p['hora_polarity']}]"
+            elif varga_name == "D3" and p.get("display_entity"):
+                v_detail = f" [Drekkāṇa: {p['display_entity']}]"
+            elif varga_name == "D30" and p.get("display_entity"):
+                v_detail = f" [Triṁśāṁśa: {p['display_entity']}]"
+            elif varga_name == "D60" and p.get("shastiamsa"):
+                s_info = p["shastiamsa"]
+                v_detail = f" [Ṣaṣṭiāṁśa #{s_info.get('shastiamsa_number', s_info.get('slice_number', ''))}: {s_info.get('deity', '')} ({s_info.get('nature', '')})]"
+
+            tooltip = f"{dev_name} / {info['full_sa']} ({info['full_en']}){retro_label}{v_detail} — {p['deg']}{retro_badge} {p['sign']}"
             
             nak_abbr = get_nakshatra_abbreviation(p.get("nakshatra", ""), length=4) if show_nakshatras else ""
             rect_h = 38 if (show_nakshatras and nak_abbr) else 30
@@ -1682,33 +1764,96 @@ def relax_planet_angles(planets, has_ascendant_barrier=True, is_outer=False):
     for i in range(n):
         planets[i]["draw_angle"] = pos[i] % 360
 
-def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree"):
+def generate_circular_chart(
+    items,
+    mode="symbol",
+    varga_name="D1",
+    ayanamsha=0,
+    root_planet="Lagna",
+    wheel_mode="nakshatras",
+    debilitation_mode: str = "kala_degree",
+    d10_mode: str = "reverse"
+):
+    if wheel_mode in ("kala_degree", "strict_parashari"):
+        debilitation_mode = wheel_mode
+        wheel_mode = "nakshatras"
+    valid_wheel_modes = ("nakshatras", "zodiacal", "varga_slices", "mantreshwara", "classical", "planetary", "varga_planets")
+    if wheel_mode not in valid_wheel_modes:
+        wheel_mode = "nakshatras"
+
     svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
     # SVG Defs for Astro Fonts
     svg += '<defs>\n'
     svg += '  <style>\n'
-    svg += '    .zodiac-line-glyph, .natal-sign-glyph, .outer-sign-glyph, .sub-sign-symbol, .glyph-symbol, .graha-glyph {\n'
+    svg += '    .zodiac-line-glyph, .natal-sign-glyph, .outer-sign-glyph, .sub-sign-symbol, .glyph-symbol, .graha-glyph, .varga-slice-glyph {\n'
     svg += f'      font-family: var(--font-astro-glyphs, {ASTRO_FONT_STACK}) !important;\n'
     svg += '      font-variant-emoji: text !important;\n'
     svg += '    }\n'
+    svg += '    .d2-slice-bg { cursor: pointer; transition: fill-opacity 0.15s; }\n'
+    svg += '    .d2-slice-bg:hover { fill-opacity: 0.75 !important; }\n'
+    svg += '    .d60-slice { cursor: pointer; transition: fill-opacity 0.15s; }\n'
+    svg += '    .d60-slice:hover { fill-opacity: 0.85 !important; }\n'
     svg += '  </style>\n'
     svg += '</defs>\n'
     
-    r_nak_outer = 200
-    r_nak_inner = 175
-    r_rasi_inner = 155
-    r_bhava_outer = 46
-    r_bhava_inner = 30
+    is_zodiacal_wheel = (wheel_mode in ("zodiacal", "varga_slices"))
+    is_classical_wheel = (wheel_mode in ("mantreshwara", "classical", "planetary"))
+    is_varga_wheel = is_zodiacal_wheel or is_classical_wheel
+    
+    # Concentric Radii Geometry
+    if is_varga_wheel:
+        # Concentric Varga Rings outside D1 (120-140) up to r=205
+        r_rasi_inner = 120
+        r_rasi_outer = 140
+        r_bhava_outer = 46
+        r_bhava_inner = 30
+        r_pl_base = 110
+        r_deg_base = 99
+        r_min_base = 88
+    else:
+        # Standard 27-Nakshatra Ring Geometry
+        r_nak_outer = 200
+        r_nak_inner = 175
+        r_rasi_inner = 155
+        r_bhava_outer = 46
+        r_bhava_inner = 30
+        r_pl_base = 145
+        r_deg_base = 134
+        r_min_base = 123
     
     root_title = "Chandra Lagna" if root_planet == "Moon" else ("Surya Lagna" if root_planet == "Sun" else "Circular Chart")
-    svg += f'<title>{varga_name} {root_title}</title>\n'
+    if is_classical_wheel:
+        chart_heading = f"{varga_name} Classical Varga Wheel"
+    elif is_zodiacal_wheel:
+        chart_heading = f"{varga_name} Concentric Varga Wheel"
+    else:
+        chart_heading = f"{varga_name} {root_title}"
+    svg += f'<title>{chart_heading}</title>\n'
     
     # Outer circuits
     circle_stroke = "0.7"
-    svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
-    svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
-    svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    if is_classical_wheel:
+        # Concentric Classical Varga Rings: D1 (120-140), D2 (140-156), D3 (156-172), D30 (172-188), D60 (188-205)
+        svg += f'<circle cx="0" cy="0" r="205" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="188" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="172" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="156" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="140" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="120" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    elif is_zodiacal_wheel:
+        # Concentric Zodiacal Varga Rings: D1 (120-140), D9 (140-153), D7 (153-166), D10 (166-179), D12 (179-192), D16 (192-205)
+        svg += f'<circle cx="0" cy="0" r="205" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="192" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="179" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="166" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="153" fill="none" stroke="#5C4433" stroke-width="0.5"/>\n'
+        svg += f'<circle cx="0" cy="0" r="140" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="120" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+    else:
+        svg += f'<circle cx="0" cy="0" r="{r_nak_outer}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="{r_nak_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
+        svg += f'<circle cx="0" cy="0" r="{r_rasi_inner}" fill="none" stroke="#5C4433" stroke-width="{circle_stroke}"/>\n'
     
     anchor_item = next((it for it in items if it.get("name") == root_planet), None)
     if not anchor_item:
@@ -1727,25 +1872,227 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         rad = math.radians(angle_deg)
         return r * math.cos(rad), r * math.sin(rad)
 
-    # 1. Nakshatras
-    nak_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
-                 "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
-                 "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
-                 "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", 
-                 "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
-                 
-    for i in range(27):
-        start_lon = ayanamsha + i * (360.0 / 27.0)
-        angle_start = lon_to_angle(start_lon)
-        angle_mid = lon_to_angle(start_lon + (360.0 / 54.0))
-        
-        x1, y1 = polar_coords(r_nak_inner, angle_start)
-        x2, y2 = polar_coords(r_nak_outer, angle_start)
-        svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="0.5" stroke-dasharray="2,2"/>\n'
-        
-        lx, ly = polar_coords( (r_nak_inner + r_nak_outer)/2, angle_mid)
-        rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
-        svg += f'<text class="interactive" data-type="nakshatra" data-id="{nak_names[i]}" x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})" style="cursor: pointer;">{nak_names[i][:4]}.</text>\n'
+    # 1. Outer Ring: 3-Mode Wheel (Nakshatras | Zodiacal Vargas | Classical Vargas)
+    if is_classical_wheel:
+        svg += '<g class="varga-concentric-rings varga-classical-rings">\n'
+        for i in range(12):
+            sign_start_lon = i * 30.0
+            sign_name = signs_list[i]
+            angle_start = lon_to_angle(sign_start_lon)
+            is_odd = (i % 2 == 0)
+
+            # Solid 30° radial sign separator from r=120 to r=205 across D1 and all 4 classical varga rings
+            x1_sep, y1_sep = polar_coords(120, angle_start)
+            x2_sep, y2_sep = polar_coords(205, angle_start)
+            svg += f'<line class="varga-sign-divider" x1="{x1_sep:.1f}" y1="{y1_sep:.1f}" x2="{x2_sep:.1f}" y2="{y2_sep:.1f}" stroke="#5C4433" stroke-width="0.8"/>\n'
+
+            # ----------------------------------------------------
+            # Ring 1: D2 (Horā — Two Bipolar Halves, r=140 to r=156)
+            # ----------------------------------------------------
+            d2_slices = [
+                (0.0, 15.0, "Sun" if is_odd else "Moon", "☉" if is_odd else "☽", "#d97706" if is_odd else "#2563eb", "Solar / Pingala" if is_odd else "Lunar / Ida", "#fef3c7" if is_odd else "#e0f2fe"),
+                (15.0, 30.0, "Moon" if is_odd else "Sun", "☽" if is_odd else "☉", "#2563eb" if is_odd else "#d97706", "Lunar / Ida" if is_odd else "Solar / Pingala", "#e0f2fe" if is_odd else "#fef3c7")
+            ]
+            for k, (s_deg, e_deg, h_lord, h_sym, h_col, h_pol, h_bg) in enumerate(d2_slices):
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                ang_s = lon_to_angle(div_start_lon)
+                ang_e = lon_to_angle(div_end_lon)
+                ang_m = lon_to_angle(div_mid_lon)
+
+                bx1, by1 = polar_coords(156, ang_s)
+                bx2, by2 = polar_coords(156, ang_e)
+                bx3, by3 = polar_coords(140, ang_e)
+                bx4, by4 = polar_coords(140, ang_s)
+                title_d2 = f"D2 Horā: {h_sym} {h_lord} ({h_pol}) ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<polygon class="d2-slice-bg" data-varga="D2" data-lord="{h_lord}" points="{bx1:.1f},{by1:.1f} {bx2:.1f},{by2:.1f} {bx3:.1f},{by3:.1f} {bx4:.1f},{by4:.1f}" fill="{h_bg}" fill-opacity="0.45"><title>{title_d2}</title></polygon>\n'
+
+                if k > 0:
+                    dx1, dy1 = polar_coords(140, ang_s)
+                    dx2, dy2 = polar_coords(156, ang_s)
+                    svg += f'<line class="varga-slice-tick" data-varga="D2" x1="{dx1:.1f}" y1="{dy1:.1f}" x2="{dx2:.1f}" y2="{dy2:.1f}" stroke="#b8af9f" stroke-width="0.5" stroke-dasharray="1.5,1.5"/>\n'
+
+                smx, smy = polar_coords(148, ang_m)
+                rot_sub = ang_m if (ang_m % 360) > 90 and (ang_m % 360) < 270 else ang_m + 180
+                svg += f'<text class="interactive varga-slice-glyph" data-type="varga-slice" data-varga="D2" data-lord="{h_lord}" x="{smx:.1f}" y="{smy:.1f}" font-size="6.0" fill="{h_col}" opacity="0.95" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub:.1f} {smx:.1f} {smy:.1f})" style="cursor: pointer; font-variant-emoji: text;"><title>{title_d2}</title>{h_sym}</text>\n'
+
+            # ----------------------------------------------------
+            # Ring 2: D3 (Drekkāṇa — Trinal Thirds, r=156 to r=172)
+            # ----------------------------------------------------
+            triad_offsets = [0, 4, 8]
+            for k in range(3):
+                s_deg = k * 10.0
+                e_deg = (k + 1) * 10.0
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                ang_s = lon_to_angle(div_start_lon)
+                ang_m = lon_to_angle(div_mid_lon)
+
+                if k > 0:
+                    dx1, dy1 = polar_coords(156, ang_s)
+                    dx2, dy2 = polar_coords(172, ang_s)
+                    svg += f'<line class="varga-slice-tick" data-varga="D3" x1="{dx1:.1f}" y1="{dy1:.1f}" x2="{dx2:.1f}" y2="{dy2:.1f}" stroke="#b8af9f" stroke-width="0.5" stroke-dasharray="1.5,1.5"/>\n'
+
+                target_s_idx = (i + triad_offsets[k]) % 12
+                target_sign = signs_list[target_s_idx]
+                ruler = SIGN_LORDS[target_sign]
+                r_sym = PLANET_SYMBOLS.get(ruler, ruler[:2])
+                r_col = planet_notations.get(ruler, {}).get("color", "#795548")
+                smx, smy = polar_coords(164, ang_m)
+                rot_sub = ang_m if (ang_m % 360) > 90 and (ang_m % 360) < 270 else ang_m + 180
+                title_d3 = f"D3 Drekkāṇa Trine {k + 1}: {r_sym} {ruler} ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<text class="interactive varga-slice-glyph" data-type="varga-slice" data-varga="D3" data-lord="{ruler}" x="{smx:.1f}" y="{smy:.1f}" font-size="5.8" fill="{r_col}" opacity="0.95" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub:.1f} {smx:.1f} {smy:.1f})" style="cursor: pointer; font-variant-emoji: text;"><title>{title_d3}</title>{r_sym}</text>\n'
+
+            # --------------------------------------------------------------------
+            # Ring 3: D30 (Triṁśāṁśa — 5 Unequal Planetary Bounds, r=172 to r=188)
+            # --------------------------------------------------------------------
+            if is_odd:
+                bounds = [
+                    (0.0, 5.0, "Mars", "♂"),
+                    (5.0, 10.0, "Saturn", "♄"),
+                    (10.0, 18.0, "Jupiter", "♃"),
+                    (18.0, 25.0, "Mercury", "☿"),
+                    (25.0, 30.0, "Venus", "♀")
+                ]
+            else:
+                bounds = [
+                    (0.0, 5.0, "Venus", "♀"),
+                    (5.0, 12.0, "Mercury", "☿"),
+                    (12.0, 20.0, "Jupiter", "♃"),
+                    (20.0, 25.0, "Saturn", "♄"),
+                    (25.0, 30.0, "Mars", "♂")
+                ]
+            for k, (s_deg, e_deg, b_ruler, b_sym) in enumerate(bounds):
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                ang_s = lon_to_angle(div_start_lon)
+                ang_m = lon_to_angle(div_mid_lon)
+
+                if k > 0:
+                    dx1, dy1 = polar_coords(172, ang_s)
+                    dx2, dy2 = polar_coords(188, ang_s)
+                    svg += f'<line class="varga-slice-tick" data-varga="D30" x1="{dx1:.1f}" y1="{dy1:.1f}" x2="{dx2:.1f}" y2="{dy2:.1f}" stroke="#b8af9f" stroke-width="0.5" stroke-dasharray="1.5,1.5"/>\n'
+
+                b_col = planet_notations.get(b_ruler, {}).get("color", "#795548")
+                smx, smy = polar_coords(180, ang_m)
+                rot_sub = ang_m if (ang_m % 360) > 90 and (ang_m % 360) < 270 else ang_m + 180
+                title_d30 = f"D30 Triṁśāṁśa Bound: {b_sym} {b_ruler} ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<text class="interactive varga-slice-glyph" data-type="varga-slice" data-varga="D30" data-lord="{b_ruler}" x="{smx:.1f}" y="{smy:.1f}" font-size="5.5" fill="{b_col}" opacity="0.95" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub:.1f} {smx:.1f} {smy:.1f})" style="cursor: pointer; font-variant-emoji: text;"><title>{title_d30}</title>{b_sym}</text>\n'
+
+            # -------------------------------------------------------------------------
+            # Ring 4: D60 (Ṣaṣṭiāṁśa — 60 Half-Degree Arcs & Malefic Sieve, r=188 to 205)
+            # -------------------------------------------------------------------------
+            for k in range(60):
+                s_deg = k * 0.5
+                e_deg = (k + 1) * 0.5
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                ang_s = lon_to_angle(div_start_lon)
+                ang_e = lon_to_angle(div_end_lon)
+
+                d60_info = calculate_shastiamsa_details(div_mid_lon)
+                is_mal = d60_info["is_malefic"]
+                d_num = d60_info["slice_number"]
+                deity = d60_info["deity"]
+                nature = d60_info["nature"]
+                fill_col = "#C0392B" if is_mal else "#27AE60"
+                fill_op = "0.45" if is_mal else "0.30"
+
+                bx1, by1 = polar_coords(205, ang_s)
+                bx2, by2 = polar_coords(205, ang_e)
+                bx3, by3 = polar_coords(188, ang_e)
+                bx4, by4 = polar_coords(188, ang_s)
+                title_d60 = f"D60 Ṣaṣṭiāṁśa #{d_num}: {deity} — {nature} ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<polygon class="d60-slice" data-varga="D60" data-slice="{d_num}" data-nature="{"ashubha" if is_mal else "shubha"}" points="{bx1:.1f},{by1:.1f} {bx2:.1f},{by2:.1f} {bx3:.1f},{by3:.1f} {bx4:.1f},{by4:.1f}" fill="{fill_col}" fill-opacity="{fill_op}"><title>{title_d60}</title></polygon>\n'
+
+                if k % 10 == 0 and k > 0:
+                    dx1, dy1 = polar_coords(188, ang_s)
+                    dx2, dy2 = polar_coords(205, ang_s)
+                    svg += f'<line class="varga-slice-tick" data-varga="D60" x1="{dx1:.1f}" y1="{dy1:.1f}" x2="{dx2:.1f}" y2="{dy2:.1f}" stroke="#b8af9f" stroke-width="0.4" opacity="0.6"/>\n'
+
+        svg += '</g>\n'
+    elif is_zodiacal_wheel:
+        varga_rings = [
+            {"varga": "D9",  "harmonic": 9,  "r_inner": 140, "r_outer": 153, "fs": "4.8", "name": "Navāṁśa (D9)"},
+            {"varga": "D7",  "harmonic": 7,  "r_inner": 153, "r_outer": 166, "fs": "4.8", "name": "Saptāṁśa (D7)"},
+            {"varga": "D10", "harmonic": 10, "r_inner": 166, "r_outer": 179, "fs": "4.6", "name": "Daśāṁśa (D10)"},
+            {"varga": "D12", "harmonic": 12, "r_inner": 179, "r_outer": 192, "fs": "4.4", "name": "Dvādaśāṁśa (D12)"},
+            {"varga": "D16", "harmonic": 16, "r_inner": 192, "r_outer": 205, "fs": "4.2", "name": "Ṣoḍaśāṁśa (D16)"},
+        ]
+        svg += '<g class="varga-concentric-rings varga-zodiacal-rings">\n'
+        for i in range(12):
+            sign_start_lon = i * 30.0
+            sign_name = signs_list[i]
+            angle_start = lon_to_angle(sign_start_lon)
+            
+            # Solid 30° radial sign separator from r=120 to r=205 across D1 and all 5 varga rings
+            x1_sep, y1_sep = polar_coords(120, angle_start)
+            x2_sep, y2_sep = polar_coords(205, angle_start)
+            svg += f'<line class="varga-sign-divider" x1="{x1_sep:.1f}" y1="{y1_sep:.1f}" x2="{x2_sep:.1f}" y2="{y2_sep:.1f}" stroke="#5C4433" stroke-width="0.8"/>\n'
+            
+            # Slices across the 5 rings
+            for ring in varga_rings:
+                v_name = ring["varga"]
+                harmonic_n = ring["harmonic"]
+                r_in = ring["r_inner"]
+                r_out = ring["r_outer"]
+                r_mid = (r_in + r_out) / 2.0
+                fs = ring["fs"]
+                slice_deg = 30.0 / harmonic_n
+                
+                for k in range(harmonic_n):
+                    s_deg = k * slice_deg
+                    e_deg = (k + 1) * slice_deg
+                    div_start_lon = sign_start_lon + s_deg
+                    div_end_lon = sign_start_lon + e_deg
+                    div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                    
+                    angle_div_start = lon_to_angle(div_start_lon)
+                    angle_div_mid = lon_to_angle(div_mid_lon)
+                    
+                    # Subtle radial tick line between slices
+                    if k > 0:
+                        tx1, ty1 = polar_coords(r_in, angle_div_start)
+                        tx2, ty2 = polar_coords(r_out, angle_div_start)
+                        svg += f'<line class="varga-slice-tick" data-varga="{v_name}" x1="{tx1:.1f}" y1="{ty1:.1f}" x2="{tx2:.1f}" y2="{ty2:.1f}" stroke="#b8af9f" stroke-width="0.4" stroke-dasharray="1.5,1.5"/>\n'
+                        
+                    # Derive harmonic sign
+                    div_v_lon = calculate_varga_longitude(div_mid_lon, v_name, d10_mode=d10_mode)
+                    sub_s_idx = int((div_v_lon % 360.0) // 30) % 12
+                    sub_sign_name = signs_list[sub_s_idx]
+                    sub_sym, sub_col, _ = sign_symbols[sub_sign_name]
+                    
+                    # Centered Unicode line glyph
+                    smx, smy = polar_coords(r_mid, angle_div_mid)
+                    rot = angle_div_mid if (angle_div_mid % 360) > 90 and (angle_div_mid % 360) < 270 else angle_div_mid + 180
+                    slice_title = f"{ring['name']} in {sub_sign_name} ({s_deg:.2f}° - {e_deg:.2f}° of {sign_name})"
+                    
+                    svg += f'<text class="interactive varga-slice-glyph" data-type="varga-slice" data-varga="{v_name}" data-sign="{sub_sign_name}" x="{smx:.1f}" y="{smy:.1f}" font-size="{fs}" fill="{sub_col}" opacity="0.85" text-anchor="middle" dominant-baseline="central" transform="rotate({rot:.1f} {smx:.1f} {smy:.1f})" style="cursor: pointer; font-variant-emoji: text;"><title>{slice_title}</title>{sub_sym}</text>\n'
+        svg += '</g>\n'
+    else:
+        # Standard 27 Nakshatras
+        nak_names = ["Ashwini", "Bharani", "Krittika", "Rohini", "Mrigashira", "Ardra", 
+                     "Punarvasu", "Pushya", "Ashlesha", "Magha", "Purva Phalguni", "Uttara Phalguni", 
+                     "Hasta", "Chitra", "Swati", "Vishakha", "Anuradha", "Jyeshtha", 
+                     "Mula", "Purva Ashadha", "Uttara Ashadha", "Shravana", "Dhanishta", "Shatabhisha", 
+                     "Purva Bhadrapada", "Uttara Bhadrapada", "Revati"]
+                     
+        for i in range(27):
+            start_lon = ayanamsha + i * (360.0 / 27.0)
+            angle_start = lon_to_angle(start_lon)
+            angle_mid = lon_to_angle(start_lon + (360.0 / 54.0))
+            
+            x1, y1 = polar_coords(r_nak_inner, angle_start)
+            x2, y2 = polar_coords(r_nak_outer, angle_start)
+            svg += f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="#5C4433" stroke-width="0.5" stroke-dasharray="2,2"/>\n'
+            
+            lx, ly = polar_coords( (r_nak_inner + r_nak_outer)/2, angle_mid)
+            rot = angle_mid if (angle_mid % 360) > 90 and (angle_mid % 360) < 270 else angle_mid + 180
+            svg += f'<text class="interactive" data-type="nakshatra" data-id="{nak_names[i]}" x="{lx}" y="{ly}" font-size="7" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot} {lx} {ly})" style="cursor: pointer;">{nak_names[i][:4]}.</text>\n'
 
     # 2 & 3. Tropical Rasis and Bhavas (Whole Signs)
     for i in range(12):
@@ -1754,6 +2101,8 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         angle_end = lon_to_angle(start_lon + 30.0)
         angle_mid = lon_to_angle(start_lon + 15.0)
         bhava_num = (i - anchor_s_idx + 12) % 12 + 1
+        sign_name = signs_list[i]
+        s_sym, s_col, _ = sign_symbols[sign_name]
         
         # Permanent Harmonious House Color Fills (Kendras 1,4,7,10 | Trikonas 5,9 | Other Houses)
         if bhava_num in (1, 4, 7, 10):
@@ -1770,10 +2119,11 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         sec_d = annular_sector(r_bhava_inner, r_rasi_inner, angle_start, angle_end)
         svg += f'<path class="{cls}" d="{sec_d}" fill="{fill_col}"/>\n'
 
-        # Draw Rasi separator line
-        x1, y1 = polar_coords(r_rasi_inner, angle_start)
-        x2, y2 = polar_coords(r_nak_inner, angle_start)
-        svg += f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="#5C4433" stroke-width="1"/>\n'
+        if not is_varga_wheel:
+            # Draw Rasi separator line
+            x1, y1 = polar_coords(r_rasi_inner, angle_start)
+            x2, y2 = polar_coords(r_nak_inner, angle_start)
+            svg += f'<line x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="#5C4433" stroke-width="1"/>\n'
         
         # Whole House boundaries (Bhavas) - Green dense dashed line
         x3, y3 = polar_coords(r_bhava_outer, angle_start)
@@ -1786,10 +2136,13 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         svg += f'<line x1="{x5:.1f}" y1="{y5:.1f}" x2="{x6:.1f}" y2="{y6:.1f}" stroke="#000000" stroke-width="0.8"/>\n'
         
         # Rasi symbol label
-        lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
-        sign_name = signs_list[i]
-        s_sym, s_col, _ = sign_symbols[sign_name]
-        svg += f'<text class="interactive" data-type="sign" data-id="{sign_name}" x="{lx:.1f}" y="{ly:.1f}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
+        if is_varga_wheel:
+            # Centered inside D1 base sign ring (r=120 to 140)
+            lx, ly = polar_coords(130, angle_mid)
+            svg += f'<text class="interactive natal-sign-glyph" data-type="sign" data-id="{sign_name}" x="{lx:.1f}" y="{ly:.1f}" font-size="11" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer; font-variant-emoji: text;">{s_sym}</text>\n'
+        else:
+            lx, ly = polar_coords( (r_rasi_inner + r_nak_inner)/2, angle_mid)
+            svg += f'<text class="interactive" data-type="sign" data-id="{sign_name}" x="{lx:.1f}" y="{ly:.1f}" font-size="14" fill="{s_col}" text-anchor="middle" dominant-baseline="central" style="cursor: pointer;">{s_sym}</text>\n'
 
         # Bhava number label (Whole Sign) in the middle of the bhava ring (r=38)
         bx, by = polar_coords( (r_bhava_inner + r_bhava_outer)/2, angle_mid)
@@ -1798,7 +2151,14 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
     # Bhava outer separating circle and inner center circle
     svg += f'<circle cx="0" cy="0" r="{r_bhava_outer}" fill="none" stroke="#27AE60" stroke-width="{circle_stroke}"/>\n'
     svg += f'<circle class="interactive-center-circle" cx="0" cy="0" r="{r_bhava_inner}" fill="#faf7f0" fill-opacity="0.95" stroke="#5C4433" stroke-width="0.8" style="cursor: pointer;"><title>Click to clear filter</title></circle>\n'
-    svg += f'<text x="0" y="0" font-size="8.5" font-weight="bold" fill="#4a3325" text-anchor="middle" dominant-baseline="central" pointer-events="none">{varga_name}</text>\n'
+    if is_classical_wheel:
+        svg += f'<text x="0" y="-3.5" font-size="7.5" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">{varga_name}</text>\n'
+        svg += f'<text x="0" y="5.5" font-size="5.0" font-weight="600" fill="#6b21a8" text-anchor="middle" pointer-events="none">Classical</text>\n'
+    elif is_zodiacal_wheel:
+        svg += f'<text x="0" y="-3.5" font-size="7.5" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">{varga_name}</text>\n'
+        svg += f'<text x="0" y="5.5" font-size="5.5" font-weight="600" fill="#3730a3" text-anchor="middle" pointer-events="none">Vargas</text>\n'
+    else:
+        svg += f'<text x="0" y="0" font-size="8.5" font-weight="bold" fill="#4a3325" text-anchor="middle" dominant-baseline="central" pointer-events="none">{varga_name}</text>\n'
 
     # 4. House Cusps (Campanus lines in D1, only for physical Lagna root)
     cusps = [it for it in items if it.get("type") == "cusp"]
@@ -1930,7 +2290,18 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
         
         dignity_str = dignity_map.get(p_name, "")
         dignity_tag = f" [{dignity_str}]" if dignity_str else ""
-        tooltip = f"{info.get('full_sa', p_name)}{dignity_tag} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}"
+        v_detail = ""
+        if varga_name == "D2" and item.get("hora_polarity"):
+            v_detail = f" [{item['hora_polarity']}]"
+        elif varga_name == "D3" and item.get("display_entity"):
+            v_detail = f" [Drekkāṇa: {item['display_entity']}]"
+        elif varga_name == "D30" and item.get("display_entity"):
+            v_detail = f" [Triṁśāṁśa: {item['display_entity']}]"
+        elif varga_name == "D60" and item.get("shastiamsa"):
+            s_info = item["shastiamsa"]
+            v_detail = f" [Ṣaṣṭiāṁśa #{s_info.get('shastiamsa_number', s_info.get('slice_number', ''))}: {s_info.get('deity', '')} ({s_info.get('nature', '')})]"
+
+        tooltip = f"{info.get('full_sa', p_name)}{dignity_tag}{v_detail} — {item['degree']}° {item['minute']:02d}'{retro_badge} in {item['sign']}"
         svg += f'<g class="interactive planet-glyph" data-type="planet" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
         mid_x, mid_y = polar_coords(r_rasi_inner - 20.5, angle)
         svg += f'<circle class="planet-highlight-bg" fill="none" stroke="none" cx="{mid_x:.1f}" cy="{mid_y:.1f}" r="17"/>\n'
@@ -1956,11 +2327,61 @@ def generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=0, 
             cx, cy = polar_coords(r_rasi_inner, true_angle)
             svg += f'<line x1="{px}" y1="{py}" x2="{cx}" y2="{cy}" stroke="{color}" stroke-width="0.5" opacity="0.35"/>\n'
 
+    # 7. Continuous Planetary Radial Piercing Rays (Spokes) for Concentric Varga Wheel
+    if is_varga_wheel:
+        svg += '<g class="varga-piercing-spokes" opacity="0.85">\n'
+        for p in planets_to_draw:
+            p_name = p["item"]["name"]
+            p_col = planet_notations.get(p_name, {}).get("color", "#795548")
+            true_angle = p["true_angle"]
+            draw_angle = p["draw_angle"]
+            x_inner, y_inner = polar_coords(112, true_angle)
+            x_outer, y_outer = polar_coords(205, true_angle)
+            if is_classical_wheel:
+                p_lon = p["lon"]
+                s_idx = p["sign_idx"]
+                deg_in_sign = p_lon % 30.0
+                d2_info = get_varga_ruler_info("D2", s_idx, deg_in_sign)
+                d3_info = get_varga_ruler_info("D3", s_idx, deg_in_sign)
+                d30_info = get_varga_ruler_info("D30", s_idx, deg_in_sign)
+                d60_info = calculate_shastiamsa_details(p_lon)
+                tip = (
+                    f"{p_name} ({p['item']['degree']}° {p['item']['minute']:02d}' {p['item']['sign']}) — "
+                    f"D2: {d2_info['symbol']} {d2_info['ruler']} ({d2_info['category']}) | "
+                    f"D3: {d3_info['symbol']} {d3_info['ruler']} | "
+                    f"D30: {d30_info['bound_symbol']} {d30_info['bound_ruler']} Bound ({d30_info.get('bound_sign', '')}) | "
+                    f"D60 #{d60_info['shastiamsa_number']}: {d60_info['deity']} ({d60_info['nature']})"
+                )
+            else:
+                tip = f"{p_name} ({p['item']['degree']}° {p['item']['minute']:02d}' {p['item']['sign']}) harmonic spoke across D1, D9, D7, D10, D12, D16"
+            svg += f'<line class="varga-piercing-ray" data-planet="{p_name}" x1="{x_inner:.1f}" y1="{y_inner:.1f}" x2="{x_outer:.1f}" y2="{y_outer:.1f}" stroke="{p_col}" stroke-width="0.8" opacity="0.6"><title>{tip}</title></line>\n'
+            svg += f'<circle class="varga-piercing-dot" data-planet="{p_name}" cx="{x_outer:.1f}" cy="{y_outer:.1f}" r="1.6" fill="{p_col}" stroke="#FFFFFF" stroke-width="0.4"><title>{tip}</title></circle>\n'
+            ang_diff = abs((draw_angle - true_angle + 180.0) % 360.0 - 180.0)
+            if ang_diff > 1.2:
+                lx1, ly1 = polar_coords(r_pl_base + 3, draw_angle)
+                lx2, ly2 = polar_coords(112, true_angle)
+                svg += f'<line class="varga-spoke-leader" data-planet="{p_name}" x1="{lx1:.1f}" y1="{ly1:.1f}" x2="{lx2:.1f}" y2="{ly2:.1f}" stroke="{p_col}" stroke-width="0.6" stroke-dasharray="1.5,1.5" opacity="0.5"><title>{tip}</title></line>\n'
+        svg += '</g>\n'
+
     svg += '</svg>\n'
     return svg
 
 
-def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name="D9", mode="symbol", ayanamsha=0, root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
+def generate_biwheel_chart(
+    inner_items,
+    outer_items,
+    inner_name="D1",
+    outer_name="D9",
+    mode="symbol",
+    ayanamsha=0,
+    root_planet="Lagna",
+    debilitation_mode: str = "kala_degree",
+    show_nakshatras: bool = False,
+    d10_mode: str = "reverse",
+    d24_mode: str = "reverse",
+    d2_mode: str = "parashari",
+    trimsamsa_mode: str = "parashari"
+):
     """
     Generates a concentric dual-wheel Harmonic Bi-Wheel SVG chart (Vic DiCara / Ernst Wilhelm style).
     - Inner Ring (Radius ~62 to ~138): Natal Chart (D1 / Rashi).
@@ -1983,7 +2404,7 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
       * Radiant golden beam connecting inner and outer planet directly through the matching subdivision slice,
         with dual golden halos.
     """
-    from jyotish.generate_jyotish import calculate_varga_longitude
+    from jyotish.baseline_math import calculate_varga_longitude
 
     svg = '<svg width="100%" height="100%" viewBox="-210 -210 420 420" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: sans-serif;">\n'
     
@@ -2116,31 +2537,117 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         svg += f'<text x="{lx30}" y="{ly30}" font-size="5.5" font-weight="600" fill="#5C4433" text-anchor="middle" dominant-baseline="central" transform="rotate({rot30} {lx30} {ly30})">30°</text>\n'
 
         # Harmonic Subdivisions within this sign (for learning purposes)
-        for k in range(harmonic_n):
-            div_start_lon = sign_start_lon + k * (30.0 / harmonic_n)
-            div_end_lon = sign_start_lon + (k + 1) * (30.0 / harmonic_n)
-            div_mid_lon = (div_start_lon + div_end_lon) / 2.0
-            angle_div_start = lon_to_angle(div_start_lon)
-            angle_div_mid = lon_to_angle(div_mid_lon)
-            
-            # Sub-slice divider tick line across the Zodiac border ring
-            if k > 0:
-                dx1, dy1 = polar_coords(r_divider_inner, angle_div_start)
-                dx2, dy2 = polar_coords(r_divider_outer, angle_div_start)
-                svg += f'<line class="harmonic-subdivision-tick" x1="{dx1}" y1="{dy1}" x2="{dx2}" y2="{dy2}" stroke="#b8af9f" stroke-width="0.6" stroke-dasharray="2,2"/>\n'
-                
-            # Divisional sign determination
-            div_v_lon = calculate_varga_longitude(div_mid_lon, outer_name)
-            sub_s_idx = int(div_v_lon // 30) % 12
-            sub_sign_name = signs_list[sub_s_idx]
-            sub_sym, sub_col, _ = sign_symbols[sub_sign_name]
-            
-            # Subtle sub-sign glyph near outer edge of Zodiac border (radius ~159.5) for learning
-            if harmonic_n <= 12:
-                sub_font_sz = "5.5" if harmonic_n <= 9 else "4.5"
+        # 1. D2 (Horā): Solar / Lunar halves
+        if outer_name == "D2":
+            is_odd = (i % 2 == 0)
+            slices = [
+                (0.0, 15.0, "Sun" if is_odd else "Moon", "☉" if is_odd else "☽", "#d97706" if is_odd else "#2563eb", "Solar / Pingala" if is_odd else "Lunar / Ida"),
+                (15.0, 30.0, "Moon" if is_odd else "Sun", "☽" if is_odd else "☉", "#2563eb" if is_odd else "#d97706", "Lunar / Ida" if is_odd else "Solar / Pingala")
+            ]
+            for k, (s_deg, e_deg, h_lord, h_sym, h_col, h_pol) in enumerate(slices):
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                angle_div_start = lon_to_angle(div_start_lon)
+                angle_div_mid = lon_to_angle(div_mid_lon)
+                if k > 0:
+                    dx1, dy1 = polar_coords(r_divider_inner, angle_div_start)
+                    dx2, dy2 = polar_coords(r_divider_outer, angle_div_start)
+                    svg += f'<line class="harmonic-subdivision-tick" x1="{dx1}" y1="{dy1}" x2="{dx2}" y2="{dy2}" stroke="#b8af9f" stroke-width="0.6" stroke-dasharray="2,2"/>\n'
                 smx, smy = polar_coords(r_divider_outer - 4.5, angle_div_mid)
                 rot_sub = angle_div_mid if (angle_div_mid % 360) > 90 and (angle_div_mid % 360) < 270 else angle_div_mid + 180
-                svg += f'<text class="interactive sub-sign-symbol" data-type="varga-division" data-varga="{outer_name}" data-sign="{sub_sign_name}" x="{smx}" y="{smy}" font-size="{sub_font_sz}" fill="{sub_col}" opacity="0.8" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub} {smx} {smy})" style="cursor: pointer;"><title>{outer_name} division: {sub_sign_name} ({round(k * 30.0 / harmonic_n, 1)}° - {round((k + 1) * 30.0 / harmonic_n, 1)}° of {sign_name})</title>{sub_sym}</text>\n'
+                title_text = f"D2 Horā: {h_sym} {h_lord} ({h_pol}) ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<text class="interactive sub-sign-symbol" data-type="varga-division" data-varga="D2" data-lord="{h_lord}" x="{smx}" y="{smy}" font-size="5.5" fill="{h_col}" opacity="0.9" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub} {smx} {smy})" style="cursor: pointer;"><title>{title_text}</title>{h_sym}</text>\n'
+
+        # 2. D3 (Drekkāṇa): Planetary Decans
+        elif outer_name == "D3":
+            triad_offsets = [0, 4, 8]
+            for k in range(3):
+                s_deg = k * 10.0
+                e_deg = (k + 1) * 10.0
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                angle_div_start = lon_to_angle(div_start_lon)
+                angle_div_mid = lon_to_angle(div_mid_lon)
+                if k > 0:
+                    dx1, dy1 = polar_coords(r_divider_inner, angle_div_start)
+                    dx2, dy2 = polar_coords(r_divider_outer, angle_div_start)
+                    svg += f'<line class="harmonic-subdivision-tick" x1="{dx1}" y1="{dy1}" x2="{dx2}" y2="{dy2}" stroke="#b8af9f" stroke-width="0.6" stroke-dasharray="2,2"/>\n'
+                target_s_idx = (i + triad_offsets[k]) % 12
+                ruler = SIGN_LORDS[ZODIAC_SIGNS[target_s_idx]]
+                r_sym = PLANET_SYMBOLS.get(ruler, "")
+                r_col = planet_notations.get(ruler, {}).get("color", "#795548")
+                smx, smy = polar_coords(r_divider_outer - 4.5, angle_div_mid)
+                rot_sub = angle_div_mid if (angle_div_mid % 360) > 90 and (angle_div_mid % 360) < 270 else angle_div_mid + 180
+                title_text = f"D3 Drekkāṇa Trine {k + 1}: {r_sym} {ruler} ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<text class="interactive sub-sign-symbol" data-type="varga-division" data-varga="D3" data-lord="{ruler}" x="{smx}" y="{smy}" font-size="5.5" fill="{r_col}" opacity="0.9" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub} {smx} {smy})" style="cursor: pointer;"><title>{title_text}</title>{r_sym}</text>\n'
+
+        # 3. D30 (Triṁśāṁśa): 5 Unequal Bounds (Parāśarī mode)
+        elif outer_name == "D30" and trimsamsa_mode == "parashari":
+            is_odd = (i % 2 == 0)
+            if is_odd:
+                bounds = [
+                    (0.0, 5.0, "Mars", "♂"),
+                    (5.0, 10.0, "Saturn", "♄"),
+                    (10.0, 18.0, "Jupiter", "♃"),
+                    (18.0, 25.0, "Mercury", "☿"),
+                    (25.0, 30.0, "Venus", "♀")
+                ]
+            else:
+                bounds = [
+                    (0.0, 5.0, "Venus", "♀"),
+                    (5.0, 12.0, "Mercury", "☿"),
+                    (12.0, 20.0, "Jupiter", "♃"),
+                    (20.0, 25.0, "Saturn", "♄"),
+                    (25.0, 30.0, "Mars", "♂")
+                ]
+            for k, (s_deg, e_deg, b_ruler, b_sym) in enumerate(bounds):
+                div_start_lon = sign_start_lon + s_deg
+                div_end_lon = sign_start_lon + e_deg
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                angle_div_start = lon_to_angle(div_start_lon)
+                angle_div_mid = lon_to_angle(div_mid_lon)
+                if k > 0:
+                    dx1, dy1 = polar_coords(r_divider_inner, angle_div_start)
+                    dx2, dy2 = polar_coords(r_divider_outer, angle_div_start)
+                    svg += f'<line class="harmonic-subdivision-tick" x1="{dx1}" y1="{dy1}" x2="{dx2}" y2="{dy2}" stroke="#b8af9f" stroke-width="0.6" stroke-dasharray="2,2"/>\n'
+                b_col = planet_notations.get(b_ruler, {}).get("color", "#795548")
+                smx, smy = polar_coords(r_divider_outer - 4.5, angle_div_mid)
+                rot_sub = angle_div_mid if (angle_div_mid % 360) > 90 and (angle_div_mid % 360) < 270 else angle_div_mid + 180
+                title_text = f"D30 Triṁśāṁśa Bound: {b_sym} {b_ruler} ({s_deg:.1f}° - {e_deg:.1f}° of {sign_name})"
+                svg += f'<text class="interactive sub-sign-symbol" data-type="varga-division" data-varga="D30" data-lord="{b_ruler}" x="{smx}" y="{smy}" font-size="5.0" fill="{b_col}" opacity="0.9" font-weight="bold" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub} {smx} {smy})" style="cursor: pointer;"><title>{title_text}</title>{b_sym}</text>\n'
+
+        # 4. Standard Harmonic Subdivisions (Rāśi Vargas & D60)
+        else:
+            for k in range(harmonic_n):
+                div_start_lon = sign_start_lon + k * (30.0 / harmonic_n)
+                div_end_lon = sign_start_lon + (k + 1) * (30.0 / harmonic_n)
+                div_mid_lon = (div_start_lon + div_end_lon) / 2.0
+                angle_div_start = lon_to_angle(div_start_lon)
+                angle_div_mid = lon_to_angle(div_mid_lon)
+                
+                # Sub-slice divider tick line across the Zodiac border ring
+                if k > 0:
+                    dx1, dy1 = polar_coords(r_divider_inner, angle_div_start)
+                    dx2, dy2 = polar_coords(r_divider_outer, angle_div_start)
+                    svg += f'<line class="harmonic-subdivision-tick" x1="{dx1}" y1="{dy1}" x2="{dx2}" y2="{dy2}" stroke="#b8af9f" stroke-width="0.6" stroke-dasharray="2,2"/>\n'
+                    
+                # Divisional sign determination
+                div_v_lon = calculate_varga_longitude(
+                    div_mid_lon, outer_name,
+                    d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode
+                )
+                sub_s_idx = int((div_v_lon % 360.0) // 30) % 12
+                sub_sign_name = signs_list[sub_s_idx]
+                sub_sym, sub_col, _ = sign_symbols[sub_sign_name]
+                
+                # Subtle sub-sign glyph near outer edge of Zodiac border (radius ~159.5) for learning
+                if harmonic_n <= 12:
+                    sub_font_sz = "5.5" if harmonic_n <= 9 else "4.5"
+                    smx, smy = polar_coords(r_divider_outer - 4.5, angle_div_mid)
+                    rot_sub = angle_div_mid if (angle_div_mid % 360) > 90 and (angle_div_mid % 360) < 270 else angle_div_mid + 180
+                    svg += f'<text class="interactive sub-sign-symbol" data-type="varga-division" data-varga="{outer_name}" data-sign="{sub_sign_name}" x="{smx}" y="{smy}" font-size="{sub_font_sz}" fill="{sub_col}" opacity="0.8" text-anchor="middle" dominant-baseline="central" transform="rotate({rot_sub} {smx} {smy})" style="cursor: pointer;"><title>{outer_name} division: {sub_sign_name} ({round(k * 30.0 / harmonic_n, 1)}° - {round((k + 1) * 30.0 / harmonic_n, 1)}° of {sign_name})</title>{sub_sym}</text>\n'
 
     # Inner D1 Bhava dashed circle
     svg += f'<circle cx="0" cy="0" r="{r_bhava_circle}" fill="none" stroke="#27AE60" stroke-width="0.6" stroke-dasharray="3,2"/>\n'
@@ -2296,7 +2803,14 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         draw_ang = p["draw_angle"]
         p_name = p["item"]["name"]
         p_col = planet_notations.get(p_name, {}).get("color", "#795548")
-        tip = f"{outer_name} {p_name} True Degree Alignment ({p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']})"
+        if outer_name == "D2":
+            tip = f"D2 {p_name} True Alignment ({p['item'].get('hora_polarity', '')} {p['item'].get('hora_symbol', '')})"
+        elif outer_name == "D3":
+            tip = f"D3 {p_name} True Alignment ({p['item'].get('ruler', '')} {p['item'].get('display_symbol', '')} in {p['sign']})"
+        elif outer_name == "D30":
+            tip = f"D30 {p_name} True Alignment (Bound of {p['item'].get('bound_ruler', '')} {p['item'].get('bound_symbol', '')})"
+        else:
+            tip = f"{outer_name} {p_name} True Degree Alignment ({p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']})"
         
         # Connection leader line from displaced outer planet glyph (r = 171, draw_angle) to start of ray (r = 168.5, true_angle)
         ang_diff = abs((draw_ang - ang + 180.0) % 360.0 - 180.0)
@@ -2410,10 +2924,47 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
             
         # Natal House alignment
         d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
-        tooltip = f"{outer_name} {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{retro_badge} (Natal House {d1_house})"
-        
-        # Divisional Sign symbol and color for outer planet
-        s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
+
+        # Determine outer domain symbol, color, and tooltip based on Varga structural family
+        if outer_name == "D2":
+            hora_lord = item.get("hora_lord", "")
+            hora_pol = item.get("hora_polarity", "")
+            hora_sym = item.get("hora_symbol", "")
+            if not hora_sym:
+                hora_sym = "☉" if (hora_lord == "Sun" or "Solar" in str(hora_pol)) else "☽"
+            out_sym = hora_sym
+            out_col = "#d97706" if out_sym == "☉" else "#2563eb"
+            pol_lbl = hora_pol or ("Solar / Pingala" if out_sym == "☉" else "Lunar / Ida")
+            lord_lbl = hora_lord or ("Sun" if out_sym == "☉" else "Moon")
+            tooltip = f"D2 {info.get('full_sa', p_name)} — {pol_lbl} ({out_sym} {lord_lbl}) [{item['sign']} {item['degree']}° {item['minute']:02d}'] (Natal House {d1_house})"
+        elif outer_name == "D3":
+            ruler = item.get("ruler", "")
+            ruler_sym = item.get("display_symbol") or item.get("ruler_symbol") or (planet_notations.get(ruler, {}).get("symbol") if ruler else "")
+            out_sym = ruler_sym if ruler_sym else sign_symbols.get(item["sign"], ("?", "#000", "?"))[0]
+            out_col = planet_notations.get(ruler, {}).get("color", "#795548") if ruler else sign_symbols.get(item["sign"], ("?", "#000", "?"))[1]
+            tooltip = f"D3 {info.get('full_sa', p_name)} — Decan of {ruler} ({out_sym}) {item['degree']}° {item['minute']:02d}' in {item['sign']} (Natal House {d1_house})"
+        elif outer_name == "D30":
+            bound_ruler = item.get("bound_ruler", "")
+            bound_sym = item.get("bound_symbol") or item.get("display_symbol") or (planet_notations.get(bound_ruler, {}).get("symbol") if bound_ruler else "")
+            out_sym = bound_sym if bound_sym else sign_symbols.get(item["sign"], ("?", "#000", "?"))[0]
+            out_col = planet_notations.get(bound_ruler, {}).get("color", "#795548") if bound_ruler else sign_symbols.get(item["sign"], ("?", "#000", "?"))[1]
+            bound_deg = item.get("bound_degree")
+            deg_str = f"{bound_deg:.1f}°" if bound_deg is not None else f"{item['degree']}° {item['minute']:02d}'"
+            tooltip = f"D30 {info.get('full_sa', p_name)} — Bound of {bound_ruler} ({out_sym}) {deg_str} in {item.get('bound_sign', item['sign'])} (Natal House {d1_house})"
+        elif outer_name == "D60":
+            s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
+            out_sym = s_sym
+            out_col = s_col
+            shastiamsa = item.get("shastiamsa", {})
+            deity = shastiamsa.get("deity", "")
+            nature = shastiamsa.get("nature", "")
+            shast_str = f" — {deity} ({nature})" if deity else ""
+            tooltip = f"D60 {info.get('full_sa', p_name)}{shast_str} in {item['sign']} {item['degree']}° {item['minute']:02d}'{retro_badge} (Natal House {d1_house})"
+        else:
+            s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
+            out_sym = s_sym
+            out_col = s_col
+            tooltip = f"{outer_name} {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{retro_badge} (Natal House {d1_house})"
         
         svg += f'<g class="interactive planet-glyph outer-planet" data-type="planet" data-varga="{outer_name}" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
         mid_x, mid_y = polar_coords(180.0, angle)
@@ -2430,9 +2981,9 @@ def generate_biwheel_chart(inner_items, outer_items, inner_name="D1", outer_name
         # Planet Glyph
         svg += f'<text class="glyph-symbol outer-glyph" x="{px}" y="{py}" font-size="{font_sz}" stroke="#FAF6F0" stroke-width="2.2" paint-order="stroke" stroke-linejoin="round" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
         
-        # Divisional Sign Glyph in outer ring (so user immediately sees which sign outer planet occupies)
+        # Divisional Sign Glyph in outer ring (so user immediately sees which domain/sign outer planet occupies)
         sx, sy = polar_coords(r_out_sign, angle)
-        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="5.5" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="outer-sign-glyph" x="{sx}" y="{sy}" font-size="5.5" stroke="#FAF6F0" stroke-width="0.9" paint-order="stroke" stroke-linejoin="round" fill="{out_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{out_sym}</text>\n'
         
         svg += '</g>\n'
     svg += '</g>\n'

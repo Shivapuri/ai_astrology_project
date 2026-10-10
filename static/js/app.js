@@ -670,6 +670,11 @@ function switchWidgetChartType(btn, type) {
         biwheelInnerLabel.style.display = (type === 'biwheel') ? 'inline' : 'none';
     }
 
+    const wheelModeBtn = widget.querySelector('.btn-wheel-mode-toggle');
+    if (wheelModeBtn) {
+        wheelModeBtn.style.display = (type === 'circular') ? 'inline-flex' : 'none';
+    }
+
     const cell = widget.closest('.grid-cell');
     if (cell) {
         updateWidget(cell);
@@ -730,6 +735,35 @@ function updateWidget(cell) {
             }
         }
 
+        // Sync Circular wheel mode toggle button
+        const isCircularActive = cell.querySelector('.view-circular.active') !== null;
+        const circularWheelBtn = cell.querySelector('.btn-wheel-mode-toggle');
+        if (circularWheelBtn) {
+            circularWheelBtn.style.display = isCircularActive ? 'inline-flex' : 'none';
+            const currWheelMode = (window.astraStore && window.astraStore.state.circularWheelMode)
+                ? window.astraStore.state.circularWheelMode
+                : (window.currentCircularWheelMode || localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras');
+            if (currWheelMode === 'classical' || currWheelMode === 'mantreshwara') {
+                circularWheelBtn.innerHTML = '⚡ Classical Vargas ⟳';
+                circularWheelBtn.title = 'Current: Classical Vargas (D2 Horā, D3 Drekkāṇa, D30 Triṁśāṁśa, D60 Ṣaṣṭiāṁśa). Click to switch to Nakshatras.';
+                circularWheelBtn.style.background = '#f3e8ff';
+                circularWheelBtn.style.color = '#6b21a8';
+                circularWheelBtn.style.borderColor = '#d8b4fe';
+            } else if (currWheelMode === 'zodiacal' || currWheelMode === 'varga_slices') {
+                circularWheelBtn.innerHTML = '🪐 Core Vargas ⟳';
+                circularWheelBtn.title = 'Current: Core Zodiacal Vargas (D9, D7, D10, D12, D16). Click to switch to Classical Vargas.';
+                circularWheelBtn.style.background = '#e0e7ff';
+                circularWheelBtn.style.color = '#3730a3';
+                circularWheelBtn.style.borderColor = '#c7d2fe';
+            } else {
+                circularWheelBtn.innerHTML = '⭐ Nakshatras ⟳';
+                circularWheelBtn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Zodiacal Vargas.';
+                circularWheelBtn.style.background = '#fef3c7';
+                circularWheelBtn.style.color = '#92400e';
+                circularWheelBtn.style.borderColor = '#fcd34d';
+            }
+        }
+
         const vData = svgs[varga];
         const vSvgMode = (vData && vData[currentNotation]) ? vData[currentNotation] : vData;
 
@@ -778,12 +812,15 @@ function updateWidget(cell) {
                 } else {
                     const natId = (typeof window.currentLoadedNative !== 'undefined' && window.currentLoadedNative?.id) || document.getElementById('nativeSelect')?.value || '';
                     const offsetSec = activePreviewOffsetSeconds || 0;
-                    const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${currentNakshatraSystem}_${currentDebilitationMode}_${offsetSec}`;
+                    const d24Mode = (window.astraStore && window.astraStore.state.d24Mode) ? window.astraStore.state.d24Mode : (window.currentD24Mode || 'reverse');
+                    const d2Mode = (window.astraStore && window.astraStore.state.d2Mode) ? window.astraStore.state.d2Mode : (window.currentD2Mode || 'parashari');
+                    const trimsamsaMode = (window.astraStore && window.astraStore.state.trimsamsaMode) ? window.astraStore.state.trimsamsaMode : (window.currentTrimsamsaMode || 'parashari');
+                    const cacheKey = `${natId}_${innerVarga}_${outerVarga}_${currentNotation}_${rootPlanet}_${currentD10Mode}_${d24Mode}_${d2Mode}_${trimsamsaMode}_${currentNakshatraSystem}_${currentDebilitationMode}_${offsetSec}`;
                     if (window.biwheelDynamicCache && window.biwheelDynamicCache[cacheKey]) {
                         b.innerHTML = window.biwheelDynamicCache[cacheKey];
                     } else if (natId) {
                         if (!window.biwheelDynamicCache) window.biwheelDynamicCache = {};
-                        const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&nakshatra_system=${currentNakshatraSystem}&debilitation_mode=${currentDebilitationMode}&offset_seconds=${offsetSec}`;
+                        const url = `/api/chart/${natId}/biwheel?inner=${innerVarga}&outer=${outerVarga}&mode=${currentNotation}&root=${rootPlanet}&d10_mode=${currentD10Mode}&d24_mode=${d24Mode}&d2_mode=${d2Mode}&trimsamsa_mode=${trimsamsaMode}&nakshatra_system=${currentNakshatraSystem}&debilitation_mode=${currentDebilitationMode}&offset_seconds=${offsetSec}`;
                         fetch(url)
                             .then(res => res.json())
                             .then(data => {
@@ -1323,6 +1360,66 @@ function syncD10ModeUI() {
         }
     });
     updateMenuCheckmarks();
+}
+
+async function setCircularWheelMode(mode) {
+    if (window.currentCircularWheelMode === mode && window.astraStore?.state?.circularWheelMode === mode) return;
+    window.currentCircularWheelMode = mode;
+    localStorage.setItem('astra_circular_wheel_mode', mode);
+    if (window.astraStore) {
+        window.astraStore.setState({ circularWheelMode: mode });
+    }
+    syncCircularWheelModeUI();
+    if (window.currentSvgs) {
+        window.currentSvgs = null;
+    }
+    if (typeof window.loadChart === 'function') await window.loadChart();
+}
+
+async function toggleCircularWheelMode(btn) {
+    const currentMode = (window.astraStore && window.astraStore.state.circularWheelMode)
+        ? window.astraStore.state.circularWheelMode
+        : (window.currentCircularWheelMode || localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras');
+    
+    let nextMode = 'nakshatras';
+    if (currentMode === 'nakshatras') {
+        nextMode = 'zodiacal';
+    } else if (currentMode === 'zodiacal' || currentMode === 'varga_slices') {
+        nextMode = 'classical';
+    } else {
+        nextMode = 'nakshatras';
+    }
+    await setCircularWheelMode(nextMode);
+}
+
+function syncCircularWheelModeUI() {
+    const mode = (window.astraStore && window.astraStore.state.circularWheelMode)
+        ? window.astraStore.state.circularWheelMode
+        : (window.currentCircularWheelMode || localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras');
+    document.querySelectorAll('.btn-wheel-mode-toggle').forEach(btn => {
+        const cell = btn.closest('.grid-cell');
+        const isCircularActive = cell ? (cell.querySelector('.view-circular.active') !== null) : false;
+        btn.style.display = isCircularActive ? 'inline-flex' : 'none';
+        if (mode === 'classical' || mode === 'mantreshwara') {
+            btn.innerHTML = '⚡ Classical Vargas ⟳';
+            btn.title = 'Current: Classical Vargas (D2 Horā, D3 Drekkāṇa, D30 Triṁśāṁśa, D60 Ṣaṣṭiāṁśa). Click to switch to Nakshatras.';
+            btn.style.background = '#f3e8ff';
+            btn.style.color = '#6b21a8';
+            btn.style.borderColor = '#d8b4fe';
+        } else if (mode === 'zodiacal' || mode === 'varga_slices') {
+            btn.innerHTML = '🪐 Core Vargas ⟳';
+            btn.title = 'Current: Core Zodiacal Vargas (D9, D7, D10, D12, D16). Click to switch to Classical Vargas.';
+            btn.style.background = '#e0e7ff';
+            btn.style.color = '#3730a3';
+            btn.style.borderColor = '#c7d2fe';
+        } else {
+            btn.innerHTML = '⭐ Nakshatras ⟳';
+            btn.title = 'Current: 27 Nakshatras Ring. Click to switch to Core Zodiacal Vargas.';
+            btn.style.background = '#fef3c7';
+            btn.style.color = '#92400e';
+            btn.style.borderColor = '#fcd34d';
+        }
+    });
 }
 
 function syncModalNotationUI() {
@@ -2045,6 +2142,9 @@ if (typeof window !== 'undefined') {
     window.setD10Mode = setD10Mode;
     window.toggleD10Mode = toggleD10Mode;
     window.syncD10ModeUI = syncD10ModeUI;
+    window.setCircularWheelMode = setCircularWheelMode;
+    window.toggleCircularWheelMode = toggleCircularWheelMode;
+    window.syncCircularWheelModeUI = syncCircularWheelModeUI;
     window.switchNotation = switchNotation;
     window.syncModalNotationUI = syncModalNotationUI;
     window.onModalNotationChange = onModalNotationChange;
