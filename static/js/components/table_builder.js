@@ -119,10 +119,27 @@ function renderZodiacGlyph(signName) {
     return `<span class="zodiac-line-glyph" title="${signName}">${glyph}</span>`;
 }
 
+const GRAHA_COLOR_TOKENS = {
+    'Sun': 'var(--graha-sun, #ea580c)',
+    'Moon': 'var(--graha-moon, #475569)',
+    'Mars': 'var(--graha-mars, #dc2626)',
+    'Mercury': 'var(--graha-mercury, #16a34a)',
+    'Jupiter': 'var(--graha-jupiter, #d97706)',
+    'Venus': 'var(--graha-venus, #db2777)',
+    'Saturn': 'var(--graha-saturn, #334155)',
+    'Rahu': 'var(--graha-rahu, #4f46e5)',
+    'Ketu': 'var(--graha-ketu, #78716c)',
+    'Lagna': 'var(--graha-lagna, #0284c7)',
+    'Asc': 'var(--graha-lagna, #0284c7)',
+    'Ascendant': 'var(--graha-lagna, #0284c7)'
+};
+
 function renderPlanetGlyph(planetName) {
     const p = (typeof window !== 'undefined' && window.AstroCatalog) ? window.AstroCatalog.getPlanet(planetName) : null;
     const glyph = p ? p.glyph : (PLANET_LINE_GLYPHS[planetName] || planetName);
-    return `<span class="graha-glyph" title="${planetName}">${glyph}</span>`;
+    const col = (p && p.colorToken) ? p.colorToken : (GRAHA_COLOR_TOKENS[planetName] || '');
+    const styleAttr = col ? ` style="color:${col};"` : '';
+    return `<span class="graha-glyph" title="${planetName}" data-planet="${planetName}"${styleAttr}>${glyph}</span>`;
 }
 
 function renderPlanetPill(planetName, degStr = '', isRetro = false) {

@@ -21,6 +21,9 @@ from .planetary_evaluation import (
     calculate_conjunction_power,
     assemble_unified_graha_cockpit,
     generate_master_diagnostic_payload,
+    filter_adaptive_aspects,
+    evaluate_bidirectional_and_mutual_aspects,
+    evaluate_detailed_conjunctions,
     MASTER_DIAGNOSTIC_COLUMNS
 )
 from .lagna_evaluation import evaluate_lagna_vitality
@@ -43,5 +46,8 @@ __all__ = [
     "calculate_conjunction_power",
     "assemble_unified_graha_cockpit",
     "generate_master_diagnostic_payload",
+    "filter_adaptive_aspects",
+    "evaluate_bidirectional_and_mutual_aspects",
+    "evaluate_detailed_conjunctions",
     "MASTER_DIAGNOSTIC_COLUMNS"
 ]

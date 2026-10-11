@@ -750,6 +750,128 @@
             box-shadow: none !important;
         }
 
+        /* Master Graha Diagnostic Table Responsive Wrapping */
+        .master-diagnostic-table,
+        .diagnostic-table {
+            table-layout: auto !important;
+        }
+
+        .master-diagnostic-table th,
+        .master-diagnostic-table td,
+        .diagnostic-table th,
+        .diagnostic-table td {
+            white-space: normal;
+            word-break: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .master-diagnostic-table th:nth-child(6),
+        .master-diagnostic-table td:nth-child(6),
+        .diagnostic-table th:nth-child(6),
+        .diagnostic-table td:nth-child(6) {
+            min-width: 140px;
+            max-width: 220px;
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+
+        .master-diagnostic-table .drishti-yuti-cell,
+        .diagnostic-table .drishti-yuti-cell,
+        .master-diagnostic-table td:nth-child(6) .diagnostic-table-cell-2line {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            min-width: 140px;
+            max-width: 220px;
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
+        }
+
+        .master-diagnostic-table .planet-glyph,
+        .diagnostic-drawer-cockpit .planet-glyph {
+            font-family: var(--font-astro-glyphs), STIX Two Math, serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            line-height: 1;
+            font-variant-emoji: text;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        /* Planetary Chart Color Tokens for Glyphs */
+        .planet-glyph[data-planet="Sun"], .graha-glyph[data-planet="Sun"] { color: var(--graha-sun, #ea580c); }
+        .planet-glyph[data-planet="Moon"], .graha-glyph[data-planet="Moon"] { color: var(--graha-moon, #475569); }
+        .planet-glyph[data-planet="Mars"], .graha-glyph[data-planet="Mars"] { color: var(--graha-mars, #dc2626); }
+        .planet-glyph[data-planet="Mercury"], .graha-glyph[data-planet="Mercury"] { color: var(--graha-mercury, #16a34a); }
+        .planet-glyph[data-planet="Jupiter"], .graha-glyph[data-planet="Jupiter"] { color: var(--graha-jupiter, #d97706); }
+        .planet-glyph[data-planet="Venus"], .graha-glyph[data-planet="Venus"] { color: var(--graha-venus, #db2777); }
+        .planet-glyph[data-planet="Saturn"], .graha-glyph[data-planet="Saturn"] { color: var(--graha-saturn, #334155); }
+        .planet-glyph[data-planet="Rahu"], .graha-glyph[data-planet="Rahu"] { color: var(--graha-rahu, #4f46e5); }
+        .planet-glyph[data-planet="Ketu"], .graha-glyph[data-planet="Ketu"] { color: var(--graha-ketu, #78716c); }
+        .planet-glyph[data-planet="Lagna"], .graha-glyph[data-planet="Lagna"],
+        .planet-glyph[data-planet="Asc"], .graha-glyph[data-planet="Asc"],
+        .planet-glyph[data-planet="Ascendant"], .graha-glyph[data-planet="Ascendant"] { color: var(--graha-lagna, #0284c7); }
+
+        .master-diagnostic-table .conjunct-symbol,
+        .diagnostic-drawer-cockpit .conjunct-symbol {
+            font-family: var(--font-astro-glyphs), STIX Two Math, serif !important;
+            font-size: 1.3rem !important;
+            font-weight: 700 !important;
+            line-height: 1 !important;
+            display: inline-block !important;
+            vertical-align: middle !important;
+            color: var(--text-heading) !important;
+            margin-right: 1px !important;
+        }
+
+        .master-diagnostic-table .mutual-circuit,
+        .diagnostic-drawer-cockpit .mutual-circuit {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .master-diagnostic-table .virupa-val,
+        .diagnostic-drawer-cockpit .virupa-val {
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        /* Cockpit Responsive 3-Column Layout */
+        .diagnostic-drawer-cockpit .cockpit-grid {
+            display: grid;
+            grid-template-columns: minmax(200px, 1.1fr) minmax(320px, 2.1fr) minmax(280px, 1.8fr);
+            gap: 12px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .diagnostic-drawer-cockpit .cockpit-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        .cockpit-shadvarga-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+            margin-bottom: 8px;
+            table-layout: auto;
+        }
+
+        .cockpit-shadvarga-table th,
+        .cockpit-shadvarga-table td {
+            white-space: normal !important;
+            overflow-wrap: break-word !important;
+            word-break: normal !important;
+        }
+
         /* Clean 2-Line Coordinate Layouts */
         .placement-readout {
             display: flex;
@@ -927,20 +1049,24 @@
             color: #e2d7c3;
         }
 
-        /* Drawer Grid: Card 3 Aspect Waves spans 2 columns on desktop */
-        .drawer-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;
-            gap: 12px !important;
-            width: 100%;
+        /* Responsive Drawer Grid & Card Containers */
+        .drawer-grid,
+        .side-by-side-grid,
+        .lagna-cards-container {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+            gap: 1rem !important;
+            width: 100% !important;
+            overflow: hidden !important;
+            box-sizing: border-box !important;
         }
 
-        @media (min-width: 900px) {
-            .drawer-card.drawer-card-aspects,
-            .drawer-card[data-card="aspect-weather"],
-            .drawer-card[data-card="aspects"] {
-                grid-column: span 2 !important;
-            }
+        .drawer-card {
+            min-width: 0 !important;
+            overflow: hidden !important;
+            word-break: break-word !important;
+            overflow-wrap: break-word !important;
+            box-sizing: border-box !important;
         }
 
         .drawer-card.is-expanded {

@@ -241,6 +241,64 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
             const rahuStrongSigns = new Set(["Taurus", "Gemini", "Virgo", "Aquarius"]);
             const ketuStrongSigns = new Set(["Scorpio", "Sagittarius", "Pisces"]);
 
+            const GRAHA_CHART_COLORS = {
+                'Sun': 'var(--graha-sun, #ea580c)',
+                'Moon': 'var(--graha-moon, #475569)',
+                'Mars': 'var(--graha-mars, #dc2626)',
+                'Mercury': 'var(--graha-mercury, #16a34a)',
+                'Jupiter': 'var(--graha-jupiter, #d97706)',
+                'Venus': 'var(--graha-venus, #db2777)',
+                'Saturn': 'var(--graha-saturn, #334155)',
+                'Rahu': 'var(--graha-rahu, #4f46e5)',
+                'Ketu': 'var(--graha-ketu, #78716c)',
+                'Lagna': 'var(--graha-lagna, #0284c7)',
+                'Asc': 'var(--graha-lagna, #0284c7)',
+                'Ascendant': 'var(--graha-lagna, #0284c7)',
+                'MC': '#0284c7',
+                'Uranus': '#0284c7',
+                'Neptune': '#0d9488',
+                'Pluto': '#475569'
+            };
+
+            const getAstroGlyph = (plName) => {
+                const glyphMap = {
+                    'Sun': '☉\uFE0E',
+                    'Moon': '☽\uFE0E',
+                    'Mars': '♂\uFE0E',
+                    'Mercury': '☿\uFE0E',
+                    'Jupiter': '♃\uFE0E',
+                    'Venus': '♀\uFE0E',
+                    'Saturn': '♄\uFE0E',
+                    'Rahu': '☊\uFE0E',
+                    'Ketu': '☋\uFE0E',
+                    'Lagna': 'Asc\uFE0E',
+                    'Ascendant': 'Asc\uFE0E',
+                    'MC': 'MC\uFE0E'
+                };
+                return glyphMap[plName] || plName;
+            };
+
+            const getGrahaChartColor = (plName) => {
+                if (!plName) return 'var(--text-heading, #1e293b)';
+                if (typeof window !== 'undefined' && window.AstroCatalog && window.AstroCatalog.getPlanet) {
+                    const pObj = window.AstroCatalog.getPlanet(plName);
+                    if (pObj && pObj.colorToken) return pObj.colorToken;
+                }
+                return GRAHA_CHART_COLORS[plName] || 'var(--text-heading, #1e293b)';
+            };
+
+            const renderPlanetGlyphWithColor = (plName, extraStyle = '', customFontSize = '1.15rem') => {
+                const glyph = getAstroGlyph(plName);
+                const color = getGrahaChartColor(plName);
+                return `<span class="planet-glyph" data-planet="${plName}" style="color:${color}; font-size:${customFontSize}; font-weight:600; line-height:1; font-family:var(--font-astro-glyphs), serif; font-variant-emoji:text; display:inline-block; vertical-align:middle; ${extraStyle}">${glyph}</span>`;
+            };
+
+            const getGrahaNatureColor = (plName) => {
+                const malefics = ['Saturn', 'Mars', 'Sun', 'Rahu', 'Ketu'];
+                if (malefics.includes(plName)) return '#dc2626'; // Crimson / Red
+                return '#16a34a'; // Emerald / Green
+            };
+
             function formatDeg(deg_float) {
                 if (deg_float === undefined || deg_float === null) return '--';
                 let d = Math.floor(deg_float);
@@ -1459,7 +1517,18 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                             bonus_pct: Number((pEval.step2_host_rescue && pEval.step2_host_rescue.bonus_pct) || 0.0)
                         },
                         peer_influences: peerInfluences,
-                        functional_dignity_pct: Number(effDig)
+                        functional_dignity_pct: Number(effDig),
+                        conjunctions: (pEval.step3_aspects && pEval.step3_aspects.conjunctions) || [],
+                        aspects: (pEval.step3_aspects && pEval.step3_aspects.aspects) || [],
+                        incoming_aspects: (pEval.step3_aspects && pEval.step3_aspects.aspects) || [],
+                        outgoing_aspects: pEval.outgoing_aspects || [],
+                        mutual_aspects: pEval.mutual_aspects || [],
+                        combustion: {
+                            is_combust: Boolean(pEval.is_combust),
+                            sun_distance: pEval.sun_distance,
+                            combustion_orb: pEval.combustion_orb,
+                            severity: (pEval.sun_distance !== null && pEval.sun_distance < 3.0) ? 'Deep' : (pEval.is_combust ? 'Moderate' : 'None')
+                        }
                     },
                     stage3_kinetic_muscle: {
                         total_virupas: Number(sbVir || 0),
@@ -1498,76 +1567,216 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                     return `
                         <tr style="border-bottom: 1px solid var(--border-subtle); ${rowBg} ${borderLeft}">
-                            <td style="padding: 5px 6px; font-weight: 800; color: ${isPillar ? '#0284c7' : 'var(--text-heading)'}; font-size: 12.5px;">
-                                ${vLabel} ${isPillar ? `<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; font-size:12px; font-weight:800; padding:1px 3px; border-radius:2px; margin-left:3px;">2× Pillar</span>` : ''}
+                            <td style="padding: 5px 6px; font-weight: 800; color: ${isPillar ? '#0284c7' : 'var(--text-heading)'}; font-size: 12px; white-space: normal; overflow-wrap: break-word;">
+                                ${vLabel} ${isPillar ? `<span style="color:#0284c7; font-size:12px; font-weight:800; margin-left:3px; white-space:nowrap;">(2× Pillar)</span>` : ''}
                             </td>
-                            <td style="padding: 5px 6px; font-weight: ${isPillar ? '800' : '400'}; color: ${isPillar ? '#0284c7' : 'var(--text-muted)'}; font-size: 12px;">${weightVal}</td>
-                            <td style="padding: 5px 6px; font-size: 12.5px; font-weight: ${isPillar ? '600' : '400'};">${r.sign}</td>
-                            <td style="padding: 5px 6px; font-weight: 600; font-size: 12px;">${r.dignity}</td>
-                            <td style="padding: 5px 6px; font-weight: 800; color: #0284c7; font-size: ${isPillar ? '13px' : '12.5px'};">${Number(r.score_pct || 0).toFixed(0)}%</td>
+                            <td style="padding: 5px 6px; font-weight: ${isPillar ? '800' : '400'}; color: ${isPillar ? '#0284c7' : 'var(--text-muted)'}; font-size: 12px; white-space: normal;">${weightVal}</td>
+                            <td style="padding: 5px 6px; font-size: 12px; font-weight: ${isPillar ? '600' : '400'}; white-space: normal; overflow-wrap: break-word;">${r.sign}</td>
+                            <td style="padding: 5px 6px; font-weight: 600; font-size: 12px; white-space: normal; overflow-wrap: break-word;">${r.dignity}</td>
+                            <td style="padding: 5px 6px; font-weight: 800; color: #0284c7; font-size: 12px; white-space: normal; text-align: right;">${Number(r.score_pct || 0).toFixed(0)}%</td>
                         </tr>
                     `;
                 }).join('');
 
-                // 2. Peer Alliances (Column 2) - Clean Badges, No Smileys
-                let peerRowsHtml = (s2.peer_influences || []).map(rel => {
-                    let lajjBadge = (rel.lajjitadi_states && rel.lajjitadi_states.length > 0)
-                        ? rel.lajjitadi_states.map(st => {
-                            let isBeneficState = (st.state === 'Mudita' || st.state === 'Garvita');
-                            let bg = isBeneficState ? '#dcfce7' : '#fee2e2';
-                            let col = isBeneficState ? '#166534' : '#991b1b';
-                            let border = isBeneficState ? '#86efac' : '#fca5a5';
-                            return `<span class="badge" style="background:${bg}; color:${col}; border:1px solid ${border}; font-size:12px; font-weight:600; padding:1px 5px; border-radius:3px;">
-                                ${st.state} (${st.severity})
-                            </span>`;
-                        }).join(' ')
-                        : `<span style="color:var(--text-muted); font-size:12px;">Undisturbed</span>`;
+                // Section 1: Aspects (Dṛṣṭi Rays & Mutual Glances)
+                const incomingAsps = s2.aspects || s2.incoming_aspects || (s2.peer_influences ? s2.peer_influences.filter(r => r.contact_type && r.contact_type.includes('Aspect')) : []);
+                const mutualAsps = s2.mutual_aspects || [];
+                const outgoingAsps = s2.outgoing_aspects || [];
 
-                    let shiftNum = Number(rel.dignity_shift_pct || 0);
-                    let shiftColor = shiftNum > 0 ? '#15803d' : (shiftNum < 0 ? '#b91c1c' : '#64748b');
-                    let shiftStr = (shiftNum >= 0 ? '+' : '') + shiftNum.toFixed(1) + '%';
+                let incomingRowsHtml = '';
+                if (incomingAsps && incomingAsps.length > 0) {
+                    incomingRowsHtml = incomingAsps.map(asp => {
+                        const aspG = asp.planet || asp.influencer || asp.from_planet || asp.source || '';
+                        const gGlyphHtml = renderPlanetGlyphWithColor(aspG);
+                        const gNatureColor = getGrahaNatureColor(aspG);
+                        const virVal = Number(asp.virupas !== undefined ? asp.virupas : (asp.contact_virupas !== undefined ? asp.contact_virupas : (asp.raw_virupas || 0)));
+                        const pwrPct = Math.round((virVal / 60.0) * 100);
+                        let tierLabel = asp.tier;
+                        if (!tierLabel) {
+                            tierLabel = virVal >= 45.0 ? 'Dominant (≥45v)' : (virVal >= 30.0 ? 'Strong (≥30v)' : 'Subtle Glance (Quiet Field)');
+                        }
+                        const isSubtle = asp.is_subtle || virVal < 30.0;
+                        return `
+                            <tr style="border-bottom: 1px solid var(--border-subtle);">
+                                <td style="padding: 5px 6px; font-weight: 700; font-size: 12px; color: var(--text-heading); white-space: nowrap;">
+                                    ${gGlyphHtml}
+                                    <span style="font-size: 12px; font-weight: 600; margin-left: 4px;">${aspG}</span>
+                                </td>
+                                <td style="padding: 5px 6px; text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; font-weight: 700; color: ${gNatureColor};">${virVal.toFixed(1)}v</td>
+                                <td style="padding: 5px 6px; text-align: right; font-variant-numeric: tabular-nums; font-size: 12px; color: var(--text-muted); font-weight: 600;">${pwrPct}%</td>
+                                <td style="padding: 5px 6px; text-align: right; font-size: 12px; font-weight: 600; color: ${isSubtle ? '#64748b' : 'var(--text-heading)'};">
+                                    ${tierLabel}
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
+                }
 
-                    let baladiState = (rel.baladi && rel.baladi.state) ? rel.baladi.state : 'Yuva';
-                    let baladiEff = (rel.baladi && rel.baladi.efficiency_pct !== undefined) ? Number(rel.baladi.efficiency_pct).toFixed(0) : '100';
-                    let jagradadiState = (rel.jagradadi && rel.jagradadi.state) ? rel.jagradadi.state : 'Jāgrata';
-                    let jagradadiMult = (rel.jagradadi && rel.jagradadi.multiplier_pct !== undefined) ? rel.jagradadi.multiplier_pct : 100;
-                    let virupasNum = Number(rel.contact_virupas || 0);
-                    let powerPctNum = Number(rel.contact_power_pct || 0);
+                const incomingTableHtml = incomingRowsHtml ? `
+                    <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 4px; table-layout: auto;">
+                        <thead>
+                            <tr style="background: #faf7f2; color: var(--text-heading); font-size: 12px;">
+                                <th style="padding: 3px 6px; text-align: left;">Ray (Source)</th>
+                                <th style="padding: 3px 6px; text-align: right;">Virūpas</th>
+                                <th style="padding: 3px 6px; text-align: right;">Power</th>
+                                <th style="padding: 3px 6px; text-align: right;">Tier</th>
+                            </tr>
+                        </thead>
+                        <tbody>${incomingRowsHtml}</tbody>
+                    </table>
+                ` : `<div style="color: var(--text-muted); font-size: 12px; font-style: italic; padding: 4px 0;">No active incoming aspect rays.</div>`;
 
-                    return `
-                        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 12px; line-height: 1.45;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                <span style="font-weight: 700; font-size: 13px; color: var(--text-heading);">
-                                    ${rel.glyph || ''} ${rel.influencer} <span style="font-size: 12px; font-weight: 600; color: var(--text-muted);">&bull; ${rel.contact_type}</span>
-                                </span>
-                                <span style="font-weight: 800; font-size: 13px; color: ${shiftColor};">${shiftStr}</span>
+                let mutualAlertsHtml = '';
+                if (mutualAsps && mutualAsps.length > 0) {
+                    const pGlyphHtml = renderPlanetGlyphWithColor(p);
+                    const pNatureColor = getGrahaNatureColor(p);
+                    mutualAlertsHtml = mutualAsps.map(m => {
+                        const mPlanet = m.planet || '';
+                        const mGlyphHtml = renderPlanetGlyphWithColor(mPlanet);
+                        const mNatureColor = getGrahaNatureColor(mPlanet);
+                        const inV = Number(m.incoming_virupas || 0).toFixed(0);
+                        const outV = Number(m.outgoing_virupas || 0).toFixed(0);
+                        return `
+                            <div style="border-left: 3px solid #0284c7; padding: 6px 8px; margin-top: 6px; font-size: 12px; color: var(--text-heading); line-height: 1.4; background: transparent; border-bottom: 1px solid var(--border-subtle);">
+                                <strong>⇄ Mutual Aspect Circuit:</strong>
+                                ${pGlyphHtml} <span class="virupa-val" style="color: ${pNatureColor}; font-weight: 700;">${outV}v</span>
+                                <span style="font-weight: 700; color: #475569; margin: 0 2px;">⇄</span>
+                                ${mGlyphHtml} <span class="virupa-val" style="color: ${mNatureColor}; font-weight: 700;">${inV}v</span>
+                                <span style="color: var(--text-muted); font-size: 12px; margin-left: 3px;">(${p} ⇄ ${mPlanet})</span> &mdash; Functions as an intimate planetary bond (Sambandha per Phaladeepika 15.30).
                             </div>
-                            <div style="color: var(--text-primary); margin-bottom: 3px; font-size: 12.5px;">
-                                <strong>Contact Strength:</strong> ${virupasNum.toFixed(1)}v (${rel.contact_metric} &bull; ${powerPctNum.toFixed(0)}%)
+                        `;
+                    }).join('');
+                }
+
+                let outgoingRaysText = 'None';
+                if (outgoingAsps && outgoingAsps.length > 0) {
+                    outgoingRaysText = outgoingAsps.map(o => {
+                        const oPlanet = o.planet || o.target || '';
+                        const oGlyphHtml = renderPlanetGlyphWithColor(oPlanet);
+                        const oVir = Number(o.virupas || 0).toFixed(0);
+                        const oNatureColor = getGrahaNatureColor(oPlanet);
+                        return `<span style="display: inline-flex; align-items: center; gap: 2px; margin-right: 6px; white-space: nowrap;">${oGlyphHtml} <span style="font-size: 12px; font-weight: 600;">${oPlanet}</span> (<span class="virupa-val" style="color: ${oNatureColor}; font-weight: 700;">${oVir}v</span>)</span>`;
+                    }).join(' ');
+                }
+
+                const aspectsCardHtml = `
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 12px;">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Aspects (Dṛṣṭi Rays &amp; Mutual Glances)</span>
+                            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Phaladīpikā Ch. 26</span>
+                        </div>
+                        ${incomingTableHtml}
+                        ${mutualAlertsHtml}
+                        <div style="margin-top: 6px; padding-top: 5px; border-top: 1px dashed var(--border-subtle); font-size: 12px; color: var(--text-primary); display: flex; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <strong>Outgoing Rays Cast:</strong> ${outgoingRaysText}
+                        </div>
+                    </div>
+                `;
+
+                // Section 2: Conjunctions & Solar Combustion (Yuti & Astangata)
+                const conjs = s2.conjunctions || (s2.peer_influences ? s2.peer_influences.filter(r => r.contact_type && r.contact_type.includes('Conjunction')) : []);
+                let conjRowsHtml = '';
+                if (conjs && conjs.length > 0) {
+                    conjRowsHtml = conjs.map(c => {
+                        const cPlanet = c.planet || c.influencer || c.source || '';
+                        const cGlyphHtml = renderPlanetGlyphWithColor(cPlanet);
+                        const isCross = Boolean(c.cross_border);
+                        const orbStr = c.formatted_orb || (c.degree_diff !== undefined ? Number(c.degree_diff).toFixed(1) + '°' : (c.contact_metric || '--'));
+                        const bandStr = c.orb_band || 'Moderate';
+                        const statusText = isCross
+                            ? `<span style="color: #b45309; font-weight: 600;">Cross-Border [75% Attenuation]</span>`
+                            : `<span style="color: #15803d; font-weight: 600;">Same House / Co-present</span>`;
+                        return `
+                            <div style="padding: 5px 0; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: 12px; flex-wrap: wrap; gap: 4px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <span class="conjunct-symbol" style="color: var(--text-muted); margin-right: 2px;">☌</span>
+                                    ${cGlyphHtml}
+                                    <strong style="font-size: 12px; color: var(--text-heading);">${cPlanet}</strong>
+                                    <span style="color: var(--text-muted); margin: 0 2px;">&mdash;</span>
+                                    ${statusText}
+                                </div>
+                                <div style="text-align: right; font-size: 12px;">
+                                    <span style="font-variant-numeric: tabular-nums; font-weight: 700; color: var(--text-heading);">${orbStr}</span>
+                                    <span style="color: var(--text-muted); font-size: 12px; margin-left: 3px;">(${bandStr})</span>
+                                </div>
                             </div>
-                            <div style="color: var(--text-muted); font-size: 12px; margin-bottom: 3px;">
-                                <strong>Influencer Status:</strong> Bālādi: ${baladiState} (${baladiEff}%) | Jāgradādi: ${jagradadiState} (${jagradadiMult}%)
+                        `;
+                    }).join('');
+                } else {
+                    conjRowsHtml = `<div style="color: var(--text-muted); font-size: 12px; font-style: italic; padding: 4px 0;">No active conjunctions (within same sign or 10° boundary).</div>`;
+                }
+
+                // Solar Combustion Status
+                const comb = s2.combustion || {};
+                const isComb = Boolean(comb.is_combust !== undefined ? comb.is_combust : (s4.affliction_badges && s4.affliction_badges.some(b => String(b).includes('Combust'))));
+                const sDist = (comb.sun_distance !== undefined && comb.sun_distance !== null) ? Number(comb.sun_distance) : null;
+                const cOrb = (comb.combustion_orb !== undefined && comb.combustion_orb !== null) ? Number(comb.combustion_orb) : null;
+                const sDistStr = sDist !== null ? `${Math.floor(sDist)}° ${Math.round((sDist % 1) * 60).toString().padStart(2, '0')}' (${sDist.toFixed(2)}°)` : '--';
+                const isDeep = sDist !== null && sDist < 3.0;
+                const sevNote = isDeep ? 'Deep (<3°)' : 'Moderate';
+
+                let combustionSectionHtml = '';
+                if (p === 'Sun') {
+                    combustionSectionHtml = `
+                        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-subtle); font-size: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <span style="color: var(--text-muted);">&bull;</span>
+                                <strong>Solar Combustion:</strong>
+                                <span style="color: var(--text-heading); font-weight: 700;">Solar Source</span>
                             </div>
-                            <div style="color: var(--text-heading); font-size: 12px; display: flex; align-items: center; gap: 4px;">
-                                <strong>Lajjitādi State:</strong> ${lajjBadge}
+                            <div style="color: var(--text-muted); font-size: 12px;">Center of Solar System</div>
+                        </div>
+                    `;
+                } else if (isComb) {
+                    combustionSectionHtml = `
+                        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-subtle); font-size: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <span style="color: var(--text-muted);">&bull;</span>
+                                <strong>Solar Combustion:</strong>
+                                <span style="color: #dc2626; font-weight: 700;">Astangata (Solar Combustion)</span>
+                            </div>
+                            <div style="font-size: 12px; color: var(--text-heading);">
+                                Separation: <strong style="color: #dc2626;">${sDistStr}</strong> &bull; Orb Threshold: <strong>${cOrb !== null ? cOrb.toFixed(1) + '°' : '--'}</strong> &bull; Severity: <strong style="color: #dc2626;">${sevNote}</strong>
                             </div>
                         </div>
                     `;
-                }).join('');
-
-                if (!peerRowsHtml) {
-                    peerRowsHtml = `<div style="color: var(--text-muted); font-size: 12px; font-style: italic; padding: 12px 0;">No active conjunctions or direct Parashari aspects received.</div>`;
+                } else {
+                    combustionSectionHtml = `
+                        <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border-subtle); font-size: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px;">
+                            <div style="display: flex; align-items: center; gap: 5px;">
+                                <span style="color: var(--text-muted);">&bull;</span>
+                                <strong>Solar Combustion:</strong>
+                                <span style="color: #16a34a; font-weight: 700;">Unafflicted by Solar Rays</span>
+                            </div>
+                            <div style="color: var(--text-muted); font-size: 12px;">
+                                ${sDist !== null ? `Sun Distance: ${sDist.toFixed(1)}°` : 'Safe solar distance'}
+                            </div>
+                        </div>
+                    `;
                 }
+
+                const conjunctionsCardHtml = `
+                    <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 8px; font-size: 12px;">
+                        <div style="font-size: 12px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Conjunctions &amp; Combustion (Yuti &amp; Astangata)</span>
+                            <span style="font-size: 12px; color: var(--text-muted); font-weight: 500;">Phaladīpikā 15.30 / BPHS</span>
+                        </div>
+                        ${conjRowsHtml}
+                        ${combustionSectionHtml}
+                    </div>
+                `;
 
                 // 3. Aspect Graphs (Column 3)
                 let graphsHtml = graphs.map(g => {
                     let svg = g.graph ? renderContinuousAspectSvg(g.graph, p) : '';
                     let virVal = Number(g.virupas || 0);
                     let pwrVal = Number(g.power_pct || 0);
+                    const srcGlyphHtml = renderPlanetGlyphWithColor(g.source);
+                    const tgtGlyphHtml = renderPlanetGlyphWithColor(p);
                     return `
                         <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 8px 10px; margin-bottom: 10px;">
                             <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
-                                <span>${g.glyph || ''} ${g.source} &rarr; ${p} Gaze</span>
+                                <span style="display:inline-flex; align-items:center; gap:3px;">${srcGlyphHtml} ${g.source} &rarr; ${tgtGlyphHtml} ${p} Gaze</span>
                                 <span style="color: #0284c7;">${virVal.toFixed(1)}v (${pwrVal.toFixed(0)}%)</span>
                             </div>
                             <div style="width: 100%; overflow: hidden;">
@@ -1600,8 +1809,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         
                         <!-- TOP STRIP: IDENTITY + KINETIC MUSCLE (SHADBALA) + SCORE -->
                         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 14px; flex-wrap: wrap; gap: 10px;">
-                            <div style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
-                                ${cockpit.glyph || ''} ${p} in ${cockpit.sign || ''} ${degVal.toFixed(2)}&deg;
+                            <div style="font-size: 15px; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 5px;">
+                                ${renderPlanetGlyphWithColor(p, 'margin-right: 4px;', '1.25rem')} ${p} in ${cockpit.sign || ''} ${degVal.toFixed(2)}&deg;
                             </div>
                             
                             <!-- Shadbala Kinetic Muscle Bar -->
@@ -1626,21 +1835,21 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </div>
 
                         <!-- MAIN 3-COLUMN BODY -->
-                        <div style="display: grid; grid-template-columns: minmax(220px, 1.1fr) minmax(360px, 2.1fr) minmax(300px, 1.8fr); gap: 12px; width: 100%;">
+                        <div class="cockpit-grid" style="display: grid; grid-template-columns: minmax(200px, 1.1fr) minmax(320px, 2.1fr) minmax(280px, 1.8fr); gap: 12px; width: 100%;">
                             
                             <!-- COLUMN 1: STAGE 1 ESSENTIAL FOUNDATION -->
                             <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px; display: flex; flex-direction: column;">
                                 <div style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-heading); margin-bottom: 6px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 4px;">
                                     1. Essential Foundation (Shadvarga)
                                 </div>
-                                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left; margin-bottom: 8px;">
+                                <table class="cockpit-shadvarga-table" style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left; margin-bottom: 8px; table-layout: auto;">
                                     <thead>
                                         <tr style="background: #faf7f2; color: var(--text-heading); font-size: 12px;">
-                                            <th style="padding: 4px 6px;">Varga</th>
-                                            <th style="padding: 4px 6px;">Wt</th>
-                                            <th style="padding: 4px 6px;">Sign</th>
-                                            <th style="padding: 4px 6px;">Dignity</th>
-                                            <th style="padding: 4px 6px;">Score</th>
+                                            <th style="padding: 4px 6px; min-width: 65px; white-space: normal;">Varga</th>
+                                            <th style="padding: 4px 6px; min-width: 25px; white-space: normal;">Wt</th>
+                                            <th style="padding: 4px 6px; min-width: 60px; white-space: normal;">Sign</th>
+                                            <th style="padding: 4px 6px; min-width: 70px; white-space: normal;">Dignity</th>
+                                            <th style="padding: 4px 6px; min-width: 45px; text-align: right; white-space: normal;">Score</th>
                                         </tr>
                                     </thead>
                                     <tbody>${s1RowsHtml}</tbody>
@@ -1659,13 +1868,14 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
 
                                 <!-- Dispositor Bedrock Sub-card -->
                                 <div style="background: #faf7f2; border: 1px solid var(--border-subtle); border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 12px; display: flex; justify-content: space-between; align-items: center;">
-                                    <span><strong>Host Dispositor:</strong> ${hostBedrock.planet} (${hostBedrock.status})</span>
+                                    <span style="display: flex; align-items: center; gap: 4px;"><strong>Host Dispositor:</strong> ${hostBedrock.planet !== '-' ? renderPlanetGlyphWithColor(hostBedrock.planet, 'margin-right: 2px;') : ''}${hostBedrock.planet} (${hostBedrock.status})</span>
                                     <span style="font-weight: 700; color: ${hostBonus >= 0 ? '#15803d' : '#b91c1c'};">${(hostBonus >= 0 ? '+' : '') + hostBonus.toFixed(1)}%</span>
                                 </div>
 
-                                <!-- Peer Influence List -->
-                                <div style="flex: 1; overflow-y: auto;">
-                                    ${peerRowsHtml}
+                                <!-- Aspects & Conjunctions Cards -->
+                                <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
+                                    ${aspectsCardHtml}
+                                    ${conjunctionsCardHtml}
                                 </div>
                             </div>
 
@@ -1699,17 +1909,9 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                     Biological Vitality: ${baladiData.state || '-'} (${baladiData.efficiency_pct !== undefined ? baladiData.efficiency_pct : 100}%)
                                 </span>
                                 <span style="padding: 2px 7px; background: #faf7f2; border: 1px solid var(--border-subtle); border-radius: 4px; font-weight: 600;">
-                                    Conscious Mood: ${deepthaadiData.state || '-'}
+                                    Conscious Mood: ${deepthaadiData.state || '-'} (${deepthaadiData.multiplier_pct !== undefined ? deepthaadiData.multiplier_pct : 100}%)
                                 </span>
-                                ${afflictions.map(b => {
-                                    const cleanB = (typeof b === 'string') ? b.replace(/^[\p{Emoji}\u2600-\u27BF\uFE0F\s]+/u, '') : b;
-                                    return `<span style="padding: 2px 7px; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 4px; font-weight: 700;">
-                                        ${cleanB}
-                                    </span>`;
-                                }).join('')}
                             </div>
-                        </div>
-
                     </div>
                 `;
             }
@@ -1789,19 +1991,30 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const sbVir = (sbLord.Total_Virupas !== undefined) ? Number(sbLord.Total_Virupas).toFixed(1) : '--';
                 const sbPct = (sbLord.Pct_Required_Total !== undefined) ? Math.round(sbLord.Pct_Required_Total) : null;
                 const sbRank = sbLord.Relative_Rank !== undefined ? sbLord.Relative_Rank : null;
+                const sbReq = (sbLord.Required_Virupas !== undefined && sbLord.Required_Virupas !== null) ? Number(sbLord.Required_Virupas).toFixed(0) : (sbLord.required_virupas ? Number(sbLord.required_virupas).toFixed(0) : '360');
                 const ishta = (sbLord.Ishta_Phala !== undefined) ? Number(sbLord.Ishta_Phala).toFixed(1) : '--';
                 const kashta = (sbLord.Kashta_Phala !== undefined) ? Number(sbLord.Kashta_Phala).toFixed(1) : '--';
 
-                // Aspects on Cusp 1
-                const cuspTotals = adv_aspects && adv_aspects.totals && adv_aspects.totals.cusps ? (adv_aspects.totals.cusps[1] || adv_aspects.totals.cusps['1'] || {}) : {};
-                const c1Net = cuspTotals.net !== undefined ? Number(cuspTotals.net) : 0.0;
-                const c1Plus = cuspTotals.plus !== undefined ? Number(cuspTotals.plus) : 0.0;
-                const c1Minus = cuspTotals.minus !== undefined ? Number(cuspTotals.minus) : 0.0;
+                // Aspects on Cusp 1 - Sourced strictly from baseline aspect_matrices contract
+                const aspectMatrices = currentChartData.aspect_matrices || null;
+                const cusp1ByHouse = (aspectMatrices && aspectMatrices.cusp_drishti && aspectMatrices.cusp_drishti.by_house)
+                    ? (aspectMatrices.cusp_drishti.by_house[1] || aspectMatrices.cusp_drishti.by_house['1'] || {})
+                    : {};
+                const cusp1Totals = (aspectMatrices && aspectMatrices.benefic_malefic_totals && aspectMatrices.benefic_malefic_totals.cusps)
+                    ? (aspectMatrices.benefic_malefic_totals.cusps[1] || aspectMatrices.benefic_malefic_totals.cusps['1'] || {})
+                    : (adv_aspects && adv_aspects.totals && adv_aspects.totals.cusps ? (adv_aspects.totals.cusps[1] || adv_aspects.totals.cusps['1'] || {}) : {});
+                const beneficClassification = (aspectMatrices && aspectMatrices.benefic_malefic_totals && aspectMatrices.benefic_malefic_totals.classification)
+                    ? aspectMatrices.benefic_malefic_totals.classification
+                    : {};
+
+                const c1Plus = cusp1Totals.plus !== undefined ? Number(cusp1Totals.plus) : (cusp1Totals.benefic_virupas !== undefined ? Number(cusp1Totals.benefic_virupas) : 0.0);
+                const c1Minus = cusp1Totals.minus !== undefined ? Number(cusp1Totals.minus) : (cusp1Totals.malefic_virupas !== undefined ? Number(cusp1Totals.malefic_virupas) : 0.0);
+                const c1Net = cusp1Totals.net !== undefined ? Number(cusp1Totals.net) : (cusp1Totals.net_virupas !== undefined ? Number(cusp1Totals.net_virupas) : (c1Plus - c1Minus));
                 
                 // Special Cusp Aspects
                 const c1Indiv = adv_aspects && adv_aspects.cusps ? (adv_aspects.cusps[1] || adv_aspects.cusps['1'] || {}) : {};
-                const jupAspectVir = c1Indiv.Jupiter ? Number(c1Indiv.Jupiter.net || c1Indiv.Jupiter.plus || 0) : 0;
-                const lordAspectVir = c1Indiv[lgLord] ? Number(c1Indiv[lgLord].net || c1Indiv[lgLord].plus || 0) : 0;
+                const jupAspectVir = (cusp1ByHouse.Jupiter !== undefined ? Number(cusp1ByHouse.Jupiter) : (c1Indiv.Jupiter ? Number(c1Indiv.Jupiter.net || c1Indiv.Jupiter.plus || 0) : 0));
+                const lordAspectVir = (cusp1ByHouse[lgLord] !== undefined ? Number(cusp1ByHouse[lgLord]) : (c1Indiv[lgLord] ? Number(c1Indiv[lgLord].net || c1Indiv[lgLord].plus || 0) : 0));
 
                 // Occupants of H1
                 const lagnaConj = [];
@@ -1932,28 +2145,153 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         : `<span class="status-indicator neutral"><span class="indicator-dot"></span><span>${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)} Vir Net Neutral</span></span>`;
                 }
                 
-                const lagnaAspList = [];
-                Object.keys(c1Indiv).forEach(aspG => {
-                    const rawV = Math.abs(c1Indiv[aspG].net || c1Indiv[aspG].plus || c1Indiv[aspG].minus || 0);
+                // Build Cusp 1 inflowing aspect rays strictly aligned with baseline
+                const physicalPlanets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'];
+                const cusp1Rays = [];
+
+                physicalPlanets.forEach(pName => {
+                    let rawV = 0.0;
+                    if (cusp1ByHouse[pName] !== undefined) {
+                        rawV = Number(cusp1ByHouse[pName]);
+                    } else if (c1Indiv[pName]) {
+                        rawV = Math.abs(Number(c1Indiv[pName].net !== undefined ? c1Indiv[pName].net : (c1Indiv[pName].plus || c1Indiv[pName].minus || 0.0)));
+                    }
                     if (rawV > 0) {
-                        const fromPlanetData = v_grahas[aspG] || {};
-                        const fromDignityBreakdown = fromPlanetData.dignity_breakdown || {};
-                        const fromDignityName = fromDignityBreakdown.final_dignity || fromPlanetData.dignity || 'Neutral';
-                        const fromDignityClean = fromDignityName.replace("'s Sign", "").replace(" Sign", "").trim();
-                        const fromDignityPct = getDignityScore(fromDignityClean, aspG, fromPlanetData.sign || '', fromPlanetData.degree_0_to_30 || 15.0);
-                        
-                        lagnaAspList.push({
-                            from_planet: aspG,
-                            raw_virupas: rawV,
+                        const isLord = (pName === lgLord);
+                        let isProtective = false;
+                        let tagText = 'Malefic Pressure';
+                        let tagClass = 'tag-malefic';
+                        let tagStyle = 'background:#fee2e2; color:#991b1b; border:1px solid #fca5a5;';
+                        let valColor = '#dc2626';
+
+                        if (isLord) {
+                            // Phaladīpikā 15.1–3: Lagnesha protects own cusp unconditionally
+                            isProtective = true;
+                            tagText = 'Lagneśa Protection';
+                            tagClass = 'tag-neutral';
+                            tagStyle = 'background:#fef3c7; color:#92400e; border:1px solid #fcd34d;';
+                            valColor = '#16a34a';
+                        } else if (beneficClassification[pName] === true || (beneficClassification[pName] === undefined && ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(pName))) {
+                            isProtective = true;
+                            tagText = 'Protective Glance';
+                            tagClass = 'tag-benefic';
+                            tagStyle = 'background:#dcfce7; color:#166534; border:1px solid #86efac;';
+                            valColor = '#16a34a';
+                        }
+
+                        cusp1Rays.push({
+                            planet: pName,
                             virupas: rawV,
-                            from_dignity_name: fromDignityClean,
-                            from_dignity_pct: fromDignityPct,
-                            is_debilitated: fromDignityClean.toLowerCase().includes('debilitat'),
-                            is_distorted: false
+                            is_lord: isLord,
+                            is_protective: isProtective,
+                            tag_text: tagText,
+                            tag_class: tagClass,
+                            tag_style: tagStyle,
+                            color: valColor
                         });
                     }
                 });
+                cusp1Rays.sort((a, b) => b.virupas - a.virupas);
+
+                const lagnaAspList = cusp1Rays.map(r => {
+                    const fromPlanetData = v_grahas[r.planet] || {};
+                    const fromDignityBreakdown = fromPlanetData.dignity_breakdown || {};
+                    const fromDignityName = fromDignityBreakdown.final_dignity || fromPlanetData.dignity || 'Neutral';
+                    const fromDignityClean = fromDignityName.replace("'s Sign", "").replace(" Sign", "").trim();
+                    const fromDignityPct = getDignityScore(fromDignityClean, r.planet, fromPlanetData.sign || '', fromPlanetData.degree_0_to_30 || 15.0);
+                    return {
+                        from_planet: r.planet,
+                        raw_virupas: r.virupas,
+                        virupas: r.virupas,
+                        from_dignity_name: fromDignityClean,
+                        from_dignity_pct: fromDignityPct,
+                        is_debilitated: fromDignityClean.toLowerCase().includes('debilitat'),
+                        is_distorted: false,
+                        is_protective: r.is_protective,
+                        tag_text: r.tag_text
+                    };
+                });
                 const lagnaDrishtiHtml = renderAspectVisionBadges(lagnaAspList);
+
+                // Column 6: Drishti & Yuti for Lagna Horizon
+                let lgNetText = '';
+                let lgNetColor = '#64748b';
+                if (c1Net > 0) {
+                    lgNetText = `+${c1Net.toFixed(1)}v Net Śubha`;
+                    lgNetColor = '#15803d';
+                } else if (c1Net < 0) {
+                    lgNetText = `${c1Net.toFixed(1)}v Net Aśubha`;
+                    lgNetColor = '#dc2626';
+                } else {
+                    lgNetText = `0.0v Neutral`;
+                    lgNetColor = '#64748b';
+                }
+
+                let lgLine1Occ = '';
+                if (lagnaConj && lagnaConj.length > 0) {
+                    const occChips = lagnaConj.map(cp => {
+                        const tip = `Occupant in H1 (Ascendant): ${cp} • Directly influences body, perspective and horizon expression`;
+                        return `<span class="conjunction-item tooltip-target" style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap; cursor:help;" data-tooltip="${escapeTooltipAttr(tip)}"><span class="conjunct-symbol">☌</span> ${renderPlanetGlyphWithColor(cp)}</span>`;
+                    });
+                    lgLine1Occ = occChips.join(' ');
+                } else {
+                    lgLine1Occ = `<span style="color:#64748b; font-weight:600; font-size:12px;">Clean Horizon</span>`;
+                }
+                const lgLine1Tip = `Ascendant Horizon Cusp 1 • Net Aspect: ${c1Net >= 0 ? '+' : ''}${c1Net.toFixed(1)}v (Benefic: +${c1Plus.toFixed(1)}v, Malefic: -${c1Minus.toFixed(1)}v) • ${lagnaConj.length > 0 ? 'Occupants in H1: ' + lagnaConj.join(', ') : 'Clean Horizon (No occupants)'}${kartariType !== 'Neutral' ? ' • ' + kartariType : ''}`;
+                const lgCol6Line1Html = `<div class="tooltip-target" style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; font-size:12px; white-space:normal; line-height:1.35; cursor:help;" data-tooltip="${escapeTooltipAttr(lgLine1Tip)}"><span style="color:${lgNetColor}; font-weight:700; font-size:12px; font-variant-numeric:tabular-nums;">${lgNetText}</span> <span style="color:#94a3b8; font-weight:700; user-select:none;">•</span> ${lgLine1Occ}</div>`;
+
+                let lgIncomingChips = cusp1Rays.filter(r => r.virupas >= 10.0).map(r => {
+                    const aPlanet = r.planet;
+                    const aVir = Math.round(r.virupas);
+                    const isSub = aVir < 30.0;
+                    const aTip = `Horizon Aspect (Cusp 1): ${aPlanet} (${aVir} Virūpas) • ${r.tag_text}`;
+                    return `<span class="incoming-aspect-item tooltip-target" style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap; cursor:help; ${isSub ? 'opacity:0.75;' : ''}" data-tooltip="${escapeTooltipAttr(aTip)}">${renderPlanetGlyphWithColor(aPlanet)} <span class="virupa-val" style="color:${r.color}; font-weight:700; font-size:12px;">${aVir}v</span></span>`;
+                });
+
+                let lgCol6Line2Html = '';
+                if (lgIncomingChips.length > 0) {
+                    lgCol6Line2Html = `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; white-space:normal; line-height:1.35;">${lgIncomingChips.join(' ')}</div>`;
+                } else {
+                    lgCol6Line2Html = `<div style="color:#94a3b8; font-size:12px; line-height:1.35;">—</div>`;
+                }
+
+                // Card 3 Single-line summary & Aspect Rays list
+                let netHorizonRayText = '';
+                let netHorizonRayColor = '#64748b';
+                if (c1Net > 0) {
+                    netHorizonRayText = `+${c1Net.toFixed(1)}v Net Śubha Dṛṣṭi`;
+                    netHorizonRayColor = '#15803d';
+                } else if (c1Net < 0) {
+                    netHorizonRayText = `${c1Net.toFixed(1)}v Net Aśubha Dṛṣṭi`;
+                    netHorizonRayColor = '#dc2626';
+                } else {
+                    netHorizonRayText = `0.0v Net Neutral Dṛṣṭi`;
+                    netHorizonRayColor = '#64748b';
+                }
+
+                const lgGlanceChipsHtml = cusp1Rays.map(r => {
+                    return `<span style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap;">${renderPlanetGlyphWithColor(r.planet, '', '1.05rem')} <span class="virupa-val" style="color:${r.color}; font-weight:700; font-size:12px;">${Math.round(r.virupas)}v</span></span>`;
+                }).join('&nbsp;&nbsp;');
+
+                let cusp1AspectRaysHtml = '';
+                if (cusp1Rays.length > 0) {
+                    cusp1AspectRaysHtml = cusp1Rays.map(r => {
+                        return `
+                            <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; padding:3px 0; border-bottom:1px solid var(--border-subtle); flex-wrap:wrap; gap:4px;">
+                                <div style="display:flex; align-items:center; gap:5px;">
+                                    ${renderPlanetGlyphWithColor(r.planet, '', '1.1rem')}
+                                    <strong style="color:var(--text-heading); font-size:12px;">${r.planet}</strong>
+                                    <span style="font-variant-numeric:tabular-nums; font-weight:700; color:${r.color}; font-size:12px;">(${r.virupas.toFixed(1)}v)</span>
+                                </div>
+                                <div>
+                                    <span class="micro-tag" style="${r.tag_style}; font-size:12px; font-weight:700; padding:1px 6px; border-radius:3px;">${r.tag_text}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    cusp1AspectRaysHtml = `<div style="color:#94a3b8; font-style:italic; font-size:12px; padding:4px 0;">No inflowing aspects onto Cusp 1.</div>`;
+                }
 
                 let lagnaAspectGraphsHtml = '';
                 if (lagnaAspList && lagnaAspList.length > 0) {
@@ -1966,8 +2304,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         decisiveLg.forEach(asp => {
                             const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
                             const aspG = asp.from_planet;
-                            const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                            const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
+                            const isNaturalBen = asp.is_protective;
+                            const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? '#16a34a' : '#dc2626'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
                             const optANote = asp.is_distorted ? ' (Option A: Dampened 50%)' : '';
                             const aspStrengthPct = Math.round((rawV / 60.0) * 100);
 
@@ -1985,8 +2323,8 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 const incGraph = buildAspectGraphData(aspG, aspGLon, aspectedTargets);
                                 if (incGraph) {
                                     cards.push(`
-                                        <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff;">
-                                            <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 12px;">
+                                        <div class="incoming-aspect-graph-card" style="margin-top: 6px; border: 1px solid #e2e8f0; border-radius: 6px; overflow: hidden; background: #ffffff; max-width: 100%;">
+                                            <div style="background: #f8fafc; padding: 4px 8px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; font-size: 12px; flex-wrap: wrap; gap: 4px;">
                                                 <div>
                                                     <span>${dotHtml}<strong>${aspG}</strong> Aspect on Horizon</span>
                                                     <span style="color: #64748b; font-size: 12px; margin-left: 4px;">(${rawV} Virūpas • ${aspStrengthPct}% strength)</span>
@@ -2032,7 +2370,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#4a3325;">
-                                    <span class="graha-glyph">Asc</span>
+                                    ${renderPlanetGlyphWithColor('Lagna', '', '1.15rem')}
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(lagnaTip)}" style="cursor:help;">Lagna</span>
                                 </div>
                                 <div>
@@ -2077,12 +2415,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                 </div>
                             </div>
                         </td>
-                        <td style="padding: 4px 6px;">
-                            <div class="diagnostic-table-cell-2line">
-                                <div>${cuspDrishtiBadge}</div>
-                                <div style="font-size: 12px; color:#64748b; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
-                                    ${kartariBadge || (lagnaConj.length > 0 ? 'Yuti: ' + lagnaConj.join(', ') : 'Clean Horizon')}
-                                </div>
+                        <td style="padding: 4px 6px; min-width: 160px; white-space: normal; overflow-wrap: break-word;">
+                            <div class="diagnostic-table-cell-2line" style="display:flex; flex-direction:column; gap:4px; font-size:12px; line-height:1.35; white-space:normal; overflow-wrap:break-word;">
+                                ${lgCol6Line1Html}
+                                ${lgCol6Line2Html}
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">
@@ -2110,20 +2446,35 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                         </td>
                     </tr>
                     <tr id="drawer-Lagna" class="diagnostic-drawer-row" style="display:none;">
-                        <td colspan="9">
+                        <td colspan="9" style="padding: 10px 14px; background: var(--bg-app, #f7f3eb);">
                             <div class="drawer-container">
-                                <div class="drawer-view-bar">
-                                    <div class="drawer-tabs-group">
-                                        <button type="button" class="drawer-tab-btn active" data-tab="all" onclick="switchDrawerTab(this, 'all')">All Side-by-Side</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="dignity" onclick="switchDrawerTab(this, 'dignity')">Dignity</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="house" onclick="switchDrawerTab(this, 'house')">House</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="aspect-weather" onclick="switchDrawerTab(this, 'aspect-weather')">Aspect Waves</button>
-                                        <button type="button" class="drawer-tab-btn" data-tab="avasthas" onclick="switchDrawerTab(this, 'avasthas')">Avasthas</button>
+                                <!-- TOP STRIP: IDENTITY + CAPTAIN KINETIC MUSCLE + VITALITY SCORE -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 6px; padding: 10px 14px; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                                    <div style="font-size: 15px; font-weight: 800; color: var(--text-heading); display: flex; align-items: center; gap: 5px;">
+                                        ${renderPlanetGlyphWithColor('Lagna', 'margin-right: 4px;', '1.25rem')} Ascendant (Lagna) in ${lgSign} ${lgDeg}
                                     </div>
-                                    <div class="drawer-actions-group">
-                                        <button type="button" class="drawer-action-btn expand-aspects-btn" onclick="toggleExpandAspects(this)">⛶ Expand Aspect Waves</button>
+                                    
+                                    <!-- Captain Kinetic Muscle Bar -->
+                                    <div style="display: flex; align-items: center; gap: 10px; min-width: 290px; flex: 1; max-width: 440px;">
+                                        <div style="font-size: 12px; font-weight: 700; color: var(--text-heading); white-space: nowrap;">
+                                            Captain (${lgLord}): ${sbVir}v / ${sbReq}v (${sbPct !== null ? sbPct : '--'}%)
+                                        </div>
+                                        <div style="flex: 1; height: 8px; background: #eee5d3; border-radius: 4px; overflow: hidden;">
+                                            <div style="width: ${Math.min(100, Math.max(0, sbPct !== null ? sbPct : 0))}%; height: 100%; background: ${(sbPct || 0) >= 100 ? '#16a34a' : '#dc2626'}; border-radius: 4px;"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Final Vitality Score Pill -->
+                                    <div style="display: flex; align-items: center; gap: 8px; flex-shrink: 0;">
+                                        <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--accent-primary); letter-spacing: 0.5px;">
+                                            ${lagnaArchetype}
+                                        </span>
+                                        <span style="font-size: 13px; font-weight: 900; background: #eee5d3; color: var(--text-heading); padding: 3px 8px; border-radius: 4px; border: 1px solid var(--border-strong); white-space: nowrap;">
+                                            ★ ${lagnaVitScore.toFixed(1)} / 10
+                                        </span>
                                     </div>
                                 </div>
+
                                 <div class="drawer-grid">
                                     <div class="drawer-card" data-card="dignity">
                                         <div class="drawer-card-title">
@@ -2155,10 +2506,21 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                             <span style="font-size:12px; color:#78716c; font-weight:normal;">Dṛṣṭi on Cusp 1</span>
                                         </div>
                                         <div class="drawer-card-body">
-                                            <div><strong>Net Vision on Cusp 1:</strong> ${cuspDrishtiBadge} (Benefic: +${c1Plus.toFixed(1)}v, Malefic: -${c1Minus.toFixed(1)}v)</div>
-                                            <div style="margin-top:4px;"><strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lgConjBadges : 'None (clean horizon)'}</div>
-                                            <div style="margin-top:4px;"><strong>Aspect Rays:</strong></div>
-                                            <div style="margin-top:2px;">${lagnaDrishtiHtml}</div>
+                                            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-size:12px; padding:5px 0; border-bottom:1px solid var(--border-subtle);">
+                                                <div style="display:flex; align-items:center; gap:6px;">
+                                                    <strong style="color:var(--text-heading); font-size:12px;">Net Horizon Ray:</strong>
+                                                    <span style="color:${netHorizonRayColor}; font-weight:700; font-size:12px; font-variant-numeric:tabular-nums;">${netHorizonRayText}</span>
+                                                </div>
+                                                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                                                    <span style="color:#64748b; font-size:12px;">👁</span>
+                                                    ${lgGlanceChipsHtml || '<span style="color:#94a3b8; font-size:12px;">None</span>'}
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:6px; font-size:12px;"><strong>Occupants in H1:</strong> ${lagnaConj.length > 0 ? lgConjBadges : '<span style="color:#64748b;">None (clean horizon)</span>'}</div>
+                                            <div style="margin-top:6px; font-size:12px; font-weight:700; color:var(--text-heading);">Aspect Rays:</div>
+                                            <div style="margin-top:2px; display:flex; flex-direction:column; gap:2px;">
+                                                ${cusp1AspectRaysHtml}
+                                            </div>
                                             ${lagnaAspectGraphsHtml}
                                         </div>
                                     </div>
@@ -2171,7 +2533,7 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                                             <div><strong>Biological Age:</strong> ${lgBaladi.state} (${lgBaladi.efficiency_pct}% operational efficiency)</div>
                                             <div style="font-size:12px; color:#64748b; font-style:italic;">${lgBaladi.sanskrit_term}</div>
                                             <div style="margin-top:4px;"><strong>Ascendant Archetype:</strong> <span class="micro-tag" style="background:${lagnaTierBg}; color:${lagnaTierColor}; border-color:${lagnaTierBorder}; font-weight:bold;">${lagnaArchetype}</span></div>
-                                            <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px;">${lagnaVerdict}</div>
+                                            <div style="margin-top:4px; font-style:italic; line-height:1.4; background:#fffdfa; padding:6px 8px; border-left:3px solid #dcb594; border-radius:3px; overflow:hidden; text-overflow:ellipsis; word-break:break-word; overflow-wrap:break-word;">${lagnaVerdict}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -2832,13 +3194,13 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                                     ? `background:#ffffff; border:1px solid ${borderCol}; color:#1e293b; font-weight:700; font-size: 12px;`
                                     : `background:rgba(255,255,255,0.65); border:1px dashed #94a3b8; color:#64748b; font-weight:500; font-size: 12px;`;
                                 const titleStr = `${inf.planet}: ${inf.mechanism} (${inf.virupas.toFixed(1)}v) • Alertness: ${inf.alertness_state} (${inf.alertness_pct}% force)`;
-                                return `<span style="${chipStyle} padding:1px 3px; border-radius:3px; display:inline-flex; align-items:center; gap:2px;" title="${titleStr}">${inf.glyph} ${inf.symbol} ${inf.virupas.toFixed(0)}v <span style="font-size: 12px; opacity:0.85;">(${inf.alertness_state.split(' ')[0]})</span></span>`;
+                                return `<span style="${chipStyle} padding:1px 3px; border-radius:3px; display:inline-flex; align-items:center; gap:2px;" title="${titleStr}">${renderPlanetGlyphWithColor(inf.planet, '', '1.05rem')} ${inf.symbol} ${inf.virupas.toFixed(0)}v <span style="font-size: 12px; opacity:0.85;">(${inf.alertness_state.split(' ')[0]})</span></span>`;
                             }).join('');
                             influencerChipsHtml = `<div style="display:flex; flex-wrap:wrap; gap:2px; margin-top:2px;">${chips}</div>`;
 
                             infLines = '<br>• <strong>Influencing Grahas &amp; Force:</strong><br>' + cItem.influencing_planets.map(inf => {
                                 const tierBadge = inf.is_major ? '<strong>[MAJOR DRIVER ≥ 30v]</strong>' : '<span style="color:#94a3b8;">[Minor Aspect &lt; 30v]</span>';
-                                return `&nbsp;&nbsp;• <strong>${inf.glyph} ${inf.planet}:</strong> ${inf.mechanism} (${inf.symbol} ${inf.virupas.toFixed(1)} / 60.0 Virupas) ${tierBadge}<br>` +
+                                return `&nbsp;&nbsp;• <strong>${renderPlanetGlyphWithColor(inf.planet, '', '1.05rem')} ${inf.planet}:</strong> ${inf.mechanism} (${inf.symbol} ${inf.virupas.toFixed(1)} / 60.0 Virupas) ${tierBadge}<br>` +
                                        `&nbsp;&nbsp;&nbsp;&nbsp;Alertness: <em>${inf.alertness_state}</em> (${inf.alertness_pct}% force) ➔ Effective Force: <strong>${inf.combined_pct}%</strong>`;
                             }).join('<br>');
                         } else if (cItem.base_state === 'Garvita') {
@@ -3035,100 +3397,124 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                     expressionBadgeHtml = `<span class="micro-tag tag-neutral">Neutral Expression</span>`;
                 }
 
-                // Peer shift for Col 3
-                let peerShiftVal = 0.0;
-                let peerShiftLeader = '';
-                if (pEval.functional_dignity && pEval.functional_dignity.peer_shift !== undefined) {
-                    peerShiftVal = Number(pEval.functional_dignity.peer_shift);
-                } else {
-                    peerShiftVal = effDig - dignityPct;
+                // Column 6: Drishti & Yuti (Compact Stacked Glyphs & Mutual Circuits per Classical Audit)
+                const mdRows = (currentChartData.master_diagnostic && currentChartData.master_diagnostic.rows) ? currentChartData.master_diagnostic.rows : null;
+                const mdRow = mdRows ? mdRows.find(r => r.planet === graha) : null;
+                const col6Data = (mdRow && mdRow.drishti_yuti) ? mdRow.drishti_yuti : (pEval.drishti_yuti || null);
+
+                // Line 1: Conjunctions & Solar Combustion (Yuti & Astangata)
+                const col6ConjList = (col6Data && col6Data.conjunctions && col6Data.conjunctions.length > 0)
+                    ? col6Data.conjunctions
+                    : conjDetails;
+
+                let col6CombustHtml = '';
+                if (isCombust) {
+                    const sunDistVal = (gData.sun_distance !== undefined && gData.sun_distance !== null)
+                        ? Number(gData.sun_distance)
+                        : (pEval.sun_distance !== undefined ? Number(pEval.sun_distance) : null);
+                    const isDeep = (sunDistVal !== null && sunDistVal < 3.0);
+                    const cTip = `Astangata (Solar Combustion) • Distance to Sun: ${sunDistVal !== null ? sunDistVal.toFixed(1) + '°' : '--'}${isDeep ? ' (Deep Combustion)' : ''}`;
+                    const sepStr = sunDistVal !== null ? sunDistVal.toFixed(1) + '°' : '';
+                    col6CombustHtml = `<span class="combust-indicator tooltip-target" style="color:#dc2626; font-weight:700; font-size:12px; white-space:nowrap; cursor:help; margin-left:3px;" data-tooltip="${escapeTooltipAttr(cTip)}">🔥 ${sepStr}</span>`;
                 }
-                if (pEval.step3_aspects && pEval.step3_aspects.details && pEval.step3_aspects.details.length > 0) {
-                    let maxShift = 0.0;
-                    pEval.step3_aspects.details.forEach(d => {
-                        if (Math.abs(d.shift) > Math.abs(maxShift)) {
-                            maxShift = d.shift;
-                            const srcGlyph = (typeof TableBuilder !== 'undefined' && TableBuilder.renderPlanetGlyph) ? TableBuilder.renderPlanetGlyph(d.source) : (grahaGlyphs[d.source] || d.source);
-                            if (d.shift > 0) {
-                                peerShiftLeader = `Delighted by ${srcGlyph}`;
-                            } else {
-                                peerShiftLeader = `Starved by ${srcGlyph}`;
-                            }
+
+                let combustAttached = false;
+                let col6ConjItems = [];
+                if (col6ConjList && col6ConjList.length > 0) {
+                    col6ConjItems = col6ConjList.map(c => {
+                        const cpName = c.planet;
+                        const isCross = Boolean(c.cross_border);
+                        const orbStr = c.formatted_orb || (c.degree_diff !== undefined ? Number(c.degree_diff).toFixed(1) + '°' : '');
+                        const crossTag = isCross ? ' <span style="color:#b45309; font-weight:600; font-size:12px;">[Cross]</span>' : '';
+                        const cTip = `Conjunction (Yuti) with ${cpName} • Orb: ${orbStr}${isCross ? ' [Cross-Border: 75% Attenuation]' : ' (Same Sign)'}`;
+                        let chip = `<span class="conjunction-item tooltip-target" style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap; cursor:help;" data-tooltip="${escapeTooltipAttr(cTip)}"><span class="conjunct-symbol">☌</span> ${renderPlanetGlyphWithColor(cpName)} <span style="color:var(--text-heading); font-weight:600; font-size:12px;">(${orbStr})</span>${crossTag}</span>`;
+                        if (cpName === 'Sun' && col6CombustHtml) {
+                            chip += ` ${col6CombustHtml}`;
+                            combustAttached = true;
                         }
+                        return chip;
                     });
                 }
-                if (!peerShiftLeader) {
-                    peerShiftLeader = peerShiftVal > 0 ? 'Supported' : (peerShiftVal < 0 ? 'Pressure' : '');
+
+                if (col6CombustHtml && !combustAttached) {
+                    col6ConjItems.unshift(col6CombustHtml);
                 }
 
-                let peerShiftHtml = '';
-                if (peerShiftVal > 0.5) {
-                    peerShiftHtml = `<span style="color:#15803d; font-size: 12px; font-weight:600;">&rarr; +${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
-                } else if (peerShiftVal < -0.5) {
-                    peerShiftHtml = `<span style="color:#b91c1c; font-size: 12px; font-weight:600;">&rarr; ${peerShiftVal.toFixed(0)}% (${peerShiftLeader})</span>`;
-                } else {
-                    peerShiftHtml = `<span style="color:#64748b; font-size: 12px;">&rarr; Balanced (&plusmn;0%)</span>`;
+                let col6Line1Html = '';
+                if (col6ConjItems.length > 0) {
+                    col6Line1Html = `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; white-space:normal; line-height:1.35;">${col6ConjItems.join(' ')}</div>`;
                 }
 
-                // Decisive Aspect for Col 6 Line 2 (>= 45v) and Background Aspects (20-44v)
-                let decisiveAspectBadge = '';
-                let bgBadgeHtml = '';
-                const decisiveAsps = allAspList.filter(asp => {
-                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                    return rawV >= 45;
+                // Line 2: Bidirectional Mutual Aspects & Received / Incoming Aspects
+                const selfNatureColor = getGrahaNatureColor(graha);
+
+                const mutualAspects = (col6Data && col6Data.mutual_aspects && col6Data.mutual_aspects.length > 0)
+                    ? col6Data.mutual_aspects
+                    : [];
+                const mutualPlanetsSet = new Set(mutualAspects.map(m => m.planet));
+
+                let mutualChips = mutualAspects.map(m => {
+                    const mPlanet = m.planet;
+                    const mNatureColor = getGrahaNatureColor(mPlanet);
+                    const outV = Math.round(Number(m.outgoing_virupas || 0));
+                    const inV = Math.round(Number(m.incoming_virupas || 0));
+                    const mTip = `⇄ Mutual Aspect Circuit: ${graha} (${outV}v) ⇄ ${mPlanet} (${inV}v) — Closed-circuit glance functioning as conjunction (Phaladīpikā 15.30)`;
+                    return `<span class="mutual-circuit tooltip-target" style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap; cursor:help;" data-tooltip="${escapeTooltipAttr(mTip)}">${renderPlanetGlyphWithColor(graha)} <span class="virupa-val" style="color:${selfNatureColor}; font-weight:700; font-size:12px;">${outV}v</span> <span style="font-weight:700; color:#475569; margin:0 1px;">⇄</span> ${renderPlanetGlyphWithColor(mPlanet)} <span class="virupa-val" style="color:${mNatureColor}; font-weight:700; font-size:12px;">${inV}v</span></span>`;
                 });
-                const bgAsps = allAspList.filter(asp => {
-                    const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                    return rawV >= 20 && rawV < 45;
-                });
 
-                let tier2Tip = '';
-                if (bgAsps.length > 0) {
-                    const t2Lines = bgAsps.map(asp => {
-                        const aspG = asp.from_planet;
-                        const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                        const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
-                        const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
-                        return `• ${dotHtml}<strong>${aspG}:</strong> ${rawV} Virūpas (${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
-                    }).join('<br>');
-                    tier2Tip = `<strong>Subtle Background Vision (20–44 Virūpas)</strong><br>${t2Lines}<br>• <em>Secondary background vision influencing environmental temperament without decisive dominance.</em>`;
-                    bgBadgeHtml = `<span class="tooltip-target" style="color:#64748b; font-size: 12px; margin-left:3px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">+${bgAsps.length} bg</span>`;
-                }
+                let col6IncomingList = (col6Data && col6Data.incoming_aspects && col6Data.incoming_aspects.length > 0)
+                    ? col6Data.incoming_aspects
+                    : null;
 
-                if (decisiveAsps.length > 0) {
-                    decisiveAsps.sort((a, b) => {
-                        const vA = Math.abs(a.raw_virupas !== undefined ? a.raw_virupas : (a.virupas || 0));
-                        const vB = Math.abs(b.raw_virupas !== undefined ? b.raw_virupas : (b.virupas || 0));
-                        return vB - vA;
-                    });
-                    const topAsp = decisiveAsps[0];
-                    const aspG = topAsp.from_planet;
-                    const rawV = Math.abs(Math.round(topAsp.raw_virupas !== undefined ? topAsp.raw_virupas : (topAsp.virupas || 0)));
-                    const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
-                    const dotHtml = `<span class="indicator-dot" style="background:${isNaturalBen ? 'var(--status-benefic)' : 'var(--status-malefic)'}; width:6px; height:6px; border-radius:50%; display:inline-block; margin-right:4px;"></span>`;
-                    const dName = (topAsp.from_dignity_name || '').toLowerCase();
-                    const isExaltedOrMoola = dName.includes('exalt') || dName.includes('uccha') || dName.includes('moola');
-                    const isOwnOrFriend = dName.includes('own') || dName.includes('svastha') || dName.includes('friend') || dName.includes('mitra');
-                    const isDebilitated = dName.includes('debilit') || dName.includes('neecha') || Boolean(topAsp.is_debilitated) || Boolean(topAsp.is_distorted);
-                    const isEnemy = dName.includes('enemy') || dName.includes('shatru');
-                    let synth = '';
-                    if (isNaturalBen) {
-                        if (isDebilitated || isEnemy) synth = 'Compromised Support';
-                        else if (isExaltedOrMoola) synth = 'Pure Grace';
-                        else synth = 'Strong Support';
+                if (!col6IncomingList) {
+                    const sortedAsps = allAspList.map(a => ({
+                        planet: a.from_planet || a.source,
+                        virupas: Math.abs(Math.round(a.raw_virupas !== undefined ? a.raw_virupas : (a.virupas || 0)))
+                    })).filter(a => a.virupas >= 10.0).sort((a, b) => b.virupas - a.virupas);
+
+                    if (sortedAsps.length > 0) {
+                        const maxV = sortedAsps[0].virupas;
+                        if (maxV >= 30.0) {
+                            col6IncomingList = sortedAsps.filter(a => a.virupas >= 30.0).map(a => ({ ...a, is_subtle: false }));
+                        } else {
+                            col6IncomingList = sortedAsps.filter(a => a.virupas >= 10.0).map(a => ({ ...a, is_subtle: true }));
+                        }
                     } else {
-                        if (isDebilitated) synth = 'Toxic Friction';
-                        else if (isEnemy) synth = 'Destructive Pressure';
-                        else if (isExaltedOrMoola || isOwnOrFriend) synth = 'Constructive Pressure';
-                        else synth = 'Harsh Demand';
+                        col6IncomingList = [];
                     }
-                    decisiveAspectBadge = `<span class="aspect-badge-main" style="color:${isNaturalBen ? '#15803d' : '#991b1b'}; font-weight:600; font-size: 12px; display:inline-flex; align-items:center;">${dotHtml}${aspG} (${rawV}v) &rarr; ${synth}</span>`;
-                } else if (bgAsps.length > 0) {
-                    decisiveAspectBadge = `<span class="tooltip-target" style="color:#64748b; font-style:italic; font-size: 12px; cursor:help;" data-tooltip="${escapeTooltipAttr(tier2Tip)}">${bgAsps.length} background aspect${bgAsps.length > 1 ? 's' : ''} (20–44v)</span>`;
-                    bgBadgeHtml = '';
+                }
+
+                // Filter out incoming rays already accounted for in mutual circuits
+                const nonMutualIncoming = col6IncomingList.filter(asp => {
+                    const aPlanet = asp.planet || asp.from_planet || asp.source;
+                    return !mutualPlanetsSet.has(aPlanet);
+                });
+
+                let incomingChips = nonMutualIncoming.map(asp => {
+                    const aPlanet = asp.planet || asp.from_planet || asp.source;
+                    const aNatureColor = getGrahaNatureColor(aPlanet);
+                    const aVir = Math.abs(Math.round(asp.virupas !== undefined ? asp.virupas : (asp.raw_virupas || 0)));
+                    const isSub = Boolean(asp.is_subtle) || (aVir < 30.0);
+                    const isBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aPlanet);
+                    const aTip = isSub
+                        ? `Subtle Aspect in Quiet Field: ${aPlanet} (${aVir} Virūpas) — Sole primary active environmental ray`
+                        : `${isBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Demanding Vision)'}: ${aPlanet} (${aVir} Virūpas)`;
+                    return `<span class="incoming-aspect-item tooltip-target" style="display:inline-flex; align-items:center; gap:2px; font-size:12px; white-space:nowrap; cursor:help; ${isSub ? 'opacity:0.7;' : ''}" data-tooltip="${escapeTooltipAttr(aTip)}">${renderPlanetGlyphWithColor(aPlanet)} <span class="virupa-val" style="color:${aNatureColor}; font-weight:700; font-size:12px;">${aVir}v</span></span>`;
+                });
+
+                let col6Line2Html = '';
+                const sepBullet = '<span style="color:#94a3b8; font-weight:700; margin:0 3px; user-select:none;">•</span>';
+                let line2Parts = [];
+                if (mutualChips.length > 0) {
+                    line2Parts.push(mutualChips.join(sepBullet));
+                }
+                if (incomingChips.length > 0) {
+                    line2Parts.push(incomingChips.join(' '));
+                }
+                if (line2Parts.length > 0) {
+                    col6Line2Html = `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; white-space:normal; line-height:1.35;">${line2Parts.join(sepBullet)}</div>`;
                 } else {
-                    decisiveAspectBadge = `<span style="color:#94a3b8; font-style:italic; font-size: 12px;">No decisive gaze (drawer)</span>`;
+                    col6Line2Html = `<div style="color:#94a3b8; font-size:12px; line-height:1.35;">—</div>`;
                 }
 
                 // Primary Lajjitadi mood for Col 8 Line 2
@@ -3201,28 +3587,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                     shadvargaHtml = `<div><strong>D1 Dignity:</strong> ${cleanDig} (${dignityPct.toFixed(0)}%)</div>`;
                 }
 
-                // Itemized peer shifts for Box 1
-                let peerShiftsDetailHtml = '';
-                if (pEval.step3_aspects && pEval.step3_aspects.details && pEval.step3_aspects.details.length > 0) {
-                    const pItems = pEval.step3_aspects.details.map(d => {
-                        const shiftNum = (typeof d.shift === 'number') ? d.shift : Number(d.shift || 0);
-                        const signChar = shiftNum >= 0 ? '+' : '';
-                        const color = shiftNum > 0 ? '#15803d' : (shiftNum < 0 ? '#b91c1c' : '#64748b');
-                        return `<div style="display:flex; justify-content:space-between; font-size: 12px; padding:1px 0;">
-                            <span>${d.source || '--'} (${d.type || '--'}):</span>
-                            <strong style="color:${color};">${signChar}${shiftNum.toFixed(1)}% (${d.sambhanda || ''})</strong>
-                        </div>`;
-                    }).join('');
-                    peerShiftsDetailHtml = `
-                        <div style="margin-top:4px; border-top:1px dashed #e2d7c3; padding-top:4px;">
-                            <div style="font-size: 12px; font-weight:700; color:#4a3325; margin-bottom:2px;">Peer Sambandha Shifts:</div>
-                            ${pItems}
-                            <div style="margin-top:3px; font-weight:700; color:#1e293b; font-size: 12px;">
-                                ➔ Final Functional Dignity: ${(typeof effDig === 'number' ? effDig : 50).toFixed(1)}%
-                            </div>
-                        </div>
-                    `;
-                }
+
 
                 // Box 2: House Placement & Lordship Agenda
                 const houseType = (pEval.step4_house_field && pEval.step4_house_field.house_type) || `House ${wHouse}`;
@@ -3389,7 +3754,7 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                         <td style="padding: 4px 6px;">
                             <div class="diagnostic-table-cell-2line">
                                 <div style="display:flex; align-items:center; gap:4px; font-weight:700; font-size: 13.5px; color:#1e293b;">
-                                    <span>${glyph}</span>
+                                    ${renderPlanetGlyphWithColor(graha, '', '1.15rem')}
                                     <span class="tooltip-target" data-tooltip="${escapeTooltipAttr(grahaTip)}" style="cursor:help;">${graha}</span>
                                 </div>
                                 <div style="display:flex; align-items:center; gap:2px; flex-wrap:nowrap; overflow:hidden;">
@@ -3424,8 +3789,8 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                         </td>
                         <td style="padding: 4px 6px; text-align: center;">
                             <div class="diagnostic-table-cell-2line" style="align-items:center;">
-                                <div style="font-weight:700; font-size: 12px; color:#1e293b; white-space:nowrap;">
-                                    Host: <strong>${signLord}</strong>
+                                <div style="font-weight:700; font-size: 12px; color:#1e293b; white-space:nowrap; display:flex; align-items:center; justify-content:center; gap:3px;">
+                                    Host: ${renderPlanetGlyphWithColor(signLord, 'margin-right:2px;')} <strong>${signLord}</strong>
                                 </div>
                                 <div>
                                     <span class="micro-tag ${hostTagClass} tooltip-target" style="cursor:help;" data-tooltip="${escapeTooltipAttr(hostTooltip)}">${rescueBadge}</span>
@@ -3451,14 +3816,10 @@ Final Vitality:      ${lagnaVitScore.toFixed(1)} / 10 (${lagnaTier})
                                 `}
                             </div>
                         </td>
-                        <td style="padding: 4px 6px;">
-                            <div class="diagnostic-table-cell-2line">
-                                <div>
-                                    ${netDrishtiBadge}
-                                </div>
-                                <div style="font-size: 12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:145px;">
-                                    ${decisiveAspectBadge}${bgBadgeHtml}
-                                </div>
+                        <td style="padding: 4px 6px; min-width: 160px; white-space: normal; overflow-wrap: break-word;">
+                            <div class="diagnostic-table-cell-2line" style="display:flex; flex-direction:column; gap:4px; font-size:12px; line-height:1.35; white-space:normal; overflow-wrap:break-word;">
+                                ${col6Line1Html}
+                                ${col6Line2Html}
                             </div>
                         </td>
                         <td style="padding: 4px 6px;">

@@ -190,9 +190,9 @@ Planetary functional rulership grants explicit percentage adjustments to base di
 ### 4.3 Decoupled 5-Tier Architecture: Layer 2 Functional Dignity vs. Layer 4 Expression Mode (ADR-006 & ADR-009)
 Under the 5-tier decoupled architecture, House Terrain ($\pm 25\%$) and Lordship Agenda govern situational **Expression Mode (Layer 4)**, never corrupting or inflating Inherent Dignity (Layer 1) or Functional Dignity (Layer 2):
 
-1. **Layer 2: Functional Dignity (Psychological Quality & Peer Alliance):**
-   $$\text{Functional Dignity} = \text{clamp}\big(\text{Base Dignity} + \text{Vargottama Bonus} + \text{Host Dispositor Bonus} + \Delta_{\text{aspect\_net}},\, 10.0\%,\, 100.0\%\big)$$
-   *(where $\Delta_{\text{aspect\_net}}$ is clamped to $[-25.0\%, +25.0\%]$ per Ruleset 9)*.
+1. **Layer 2: Functional Dignity (Pure Essential Ṣaḍvarga + Host Bedrock + Vargottama):**
+   $$\text{Functional Dignity} = \text{clamp}\big(\text{Base Dignity} + \text{Vargottama Bonus} + \text{Host Dispositor Bonus},\, 10.0\%,\, 100.0\%\big)$$
+   *(Note: Classical Dignity Invariance dictates that external aspect glances [Dṛṣṭi / Dṛk Bala] act strictly as environmental weather [Column 6] and never modify internal character or essential dignity)*.
 
 2. **Layer 4: Expression Mode (Situational Arena & Lordship Agenda):**
    $$\text{Expression Mode Score} = \sum \text{Lordship Mods}$$
@@ -258,7 +258,7 @@ $$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMo
 
 ### 7.1 Integration of Functional Dignity & Expression Mode into Vitality & Archetypes
 Under ADR-006 and ADR-009, Functional Dignity (Layer 2) sets the core psychological quality, while House Field & Lordship (Layer 4) govern situational expression rather than altering Effective Dignity:
-* **Effective Dignity:** Driven purely by Layer 2 Functional Dignity (Base Shadvarga + Dispositor Host + Clamped Peer Aspects):
+* **Effective Dignity:** Driven purely by Layer 2 Functional Dignity (Base Shadvarga + Dispositor Host + Vargottama Bedrock):
   $$\text{Effective Dignity} = \text{Functional Dignity}$$
 * **Base Vitality Calculation:**
   $$\text{BaseVit} = 1.0 + 9.0 \times \Big(0.40 \times \frac{\text{Effective Dignity}}{100.0} + 0.35 \times \frac{\text{Effective Shadbala}}{100.0} + 0.25 \times \frac{\text{Host Dignity}}{100.0}\Big)$$

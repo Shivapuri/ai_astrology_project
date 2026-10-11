@@ -18,6 +18,7 @@ from typing import Dict, List, Any, Optional, Tuple
 import math
 import jyotish.relationships.relationships as rel
 import jyotish.aspects.aspects as aspects
+from jyotish.baseline_tables import COMBUSTION_ORBS, COMBUSTION_ORBS_RETROGRADE
 from jyotish.planetary_evaluation.lagna_evaluation import evaluate_lagna_vitality
 from jyotish.karakas import calculate_functional_roles
 from jyotish.nakshatra_metadata import get_nakshatra_metadata
@@ -726,7 +727,15 @@ def assemble_unified_graha_cockpit(
                 "bonus_pct": step2_info.get("bonus_pct", 0.0)
             },
             "peer_influences": peer_influences,
-            "functional_dignity_pct": functional_dignity_pct
+            "functional_dignity_pct": functional_dignity_pct,
+            "aspects": step3_info.get("aspects", []),
+            "conjunctions": step3_info.get("conjunctions", []),
+            "combustion": {
+                "is_combust": bool(d1_grahas.get(p, {}).get("is_combust", False)),
+                "sun_distance": d1_grahas.get(p, {}).get("sun_distance"),
+                "combustion_orb": d1_grahas.get(p, {}).get("combustion_orb"),
+                "severity": d1_grahas.get(p, {}).get("combustion_severity", "None")
+            }
         },
         "stage3_kinetic_muscle": {
             "total_virupas": tot_vir,
@@ -2045,19 +2054,14 @@ def calculate_graha_vitality(
     env_mod = clamp(conj_mod, -1.2, 1.2)
 
     # 6. Motional & Light Modifiers: Classical Sūrya Siddhānta Combustion (Ruleset 3)
-    SS_COMBUSTION_ORBS = {
-        "Mars": 17.0,
-        "Jupiter": 11.0,
-        "Saturn": 15.0,
-        "Moon": 12.0,
-        "Mercury": 12.0 if is_retrograde else 14.0,
-        "Venus": 8.0 if is_retrograde else 10.0
-    }
     is_budhaditya = False
     budhaditya_badge = None
 
     if sun_distance is not None and planet not in ("Sun", "Rahu", "Ketu"):
-        orb_limit = SS_COMBUSTION_ORBS.get(planet, 8.0)
+        if is_retrograde and planet in COMBUSTION_ORBS_RETROGRADE:
+            orb_limit = COMBUSTION_ORBS_RETROGRADE[planet]
+        else:
+            orb_limit = COMBUSTION_ORBS.get(planet, 8.0)
         if sun_distance < orb_limit:
             is_combust = True
             if sun_distance < 3.0:
@@ -2676,7 +2680,15 @@ def calculate_planetary_evaluation(
         is_debilitated_d1 = (p in TRUE_DEBILITATION_MAP and d1_sign == TRUE_DEBILITATION_MAP[p]) or \
                             ("debilit" in d1_dignity_name.lower()) or ("neecha" in d1_dignity_name.lower())
         
-        sun_dist_val = min(abs(sun_lon_val - p_lon), 360.0 - abs(sun_lon_val - p_lon)) if p not in ("Sun", "Rahu", "Ketu") else 999.0
+        # Fetch combustion and sun distance directly from baseline if provided
+        if baseline and hasattr(baseline, "combustion_status"):
+            c_info = baseline.combustion_status.get(p, {})
+            is_combust_val = bool(c_info.get("is_combust", False))
+            sun_dist_val = float(c_info.get("sun_distance", 999.0))
+        else:
+            sun_dist_val = min(abs(sun_lon_val - p_lon), 360.0 - abs(sun_lon_val - p_lon)) if p not in ("Sun", "Rahu", "Ketu") else 999.0
+            is_combust_val = bool(p_d1.get("is_combust", False))
+
         is_deeply_combust = (p not in ("Sun", "Rahu", "Ketu") and sun_dist_val < 3.0)
 
         vargottama_bonus = 0.0
@@ -2877,7 +2889,7 @@ def calculate_planetary_evaluation(
         }
 
         # Calculate Layer 2: Functional Dignity %
-        raw_func_dig = base_dignity + vargottama_bonus + host_bonus + clamped_aspect_net
+        raw_func_dig = base_dignity + vargottama_bonus + host_bonus
         if vargottama_floor is not None:
             raw_func_dig = max(raw_func_dig, vargottama_floor)
         functional_dignity_pct = clamp(round(raw_func_dig, 1), 10.0, 100.0)
@@ -3103,7 +3115,7 @@ def calculate_planetary_evaluation(
         motional_factors = []
         if p_d1.get("is_retrograde"):
             motional_factors.append("Retrograde (Vakra - Maximum Kinetic Muscle)")
-        if p_d1.get("is_combust"):
+        if is_combust_val:
             motional_factors.append("Combust (Astangata - Stripped of Light)")
         if p == "Moon":
             if moon_paksha_ratio >= 0.6:
@@ -3192,7 +3204,7 @@ def calculate_planetary_evaluation(
             sign=p_sign,
             dignity_name=d1_dignity_name,
             is_retrograde=bool(p_d1.get("is_retrograde")),
-            is_combust=bool(p_d1.get("is_combust")),
+            is_combust=is_combust_val,
             is_war_loser=is_war_loser,
             war_opponent=war_opponent
         )
@@ -3231,7 +3243,7 @@ def calculate_planetary_evaluation(
             conjunctions=[c.get("planet", c.get("source", "")) for c in step3_info.get("conjunctions", [])],
             lajjitadi_states=raw_lajjitadi,
             is_retrograde=bool(p_d1.get("is_retrograde")),
-            is_combust=bool(p_d1.get("is_combust")),
+            is_combust=is_combust_val,
             is_node=(p in ["Rahu", "Ketu"]),
             lagna_sign=lagna_sign,
             lagna_lord=rel.SIGN_LORDS.get(lagna_sign, "Mars"),
@@ -3532,6 +3544,150 @@ def calculate_planetary_evaluation(
 
 
 # =============================================================================
+# ADAPTIVE ASPECTS & GEOMETRIC CONJUNCTIONS (Phaladipika & Parashara Standards)
+# =============================================================================
+
+def filter_adaptive_aspects(aspect_dict: Optional[Dict[str, float]]) -> List[Dict[str, Any]]:
+    """
+    Evaluates aspects using an adaptive signal-to-noise ratio:
+    - If strong aspects (>= 30.0 Virūpas) exist: returns only strong aspects (>= 30.0v).
+    - If no strong aspects exist: adaptively lowers threshold to show active aspects
+      (>= 10.0 Virūpas) labeled as 'Quiet Field / Subtle Glance'.
+    - Returns aspects sorted descending by Virūpa strength.
+    """
+    if not aspect_dict:
+        return []
+
+    sorted_aspects = sorted(
+        [{"planet": p, "virupas": round(float(v), 1)} for p, v in aspect_dict.items() if float(v) > 0.5],
+        key=lambda x: x["virupas"],
+        reverse=True
+    )
+    if not sorted_aspects:
+        return []
+
+    max_v = sorted_aspects[0]["virupas"]
+
+    if max_v >= 30.0:
+        # Dominant field: show all aspects >= 30.0v (suppressing weak noise)
+        return [
+            {**a, "tier": "Dominant" if a["virupas"] >= 45.0 else "Strong", "is_subtle": False}
+            for a in sorted_aspects if a["virupas"] >= 30.0
+        ]
+    elif max_v >= 10.0:
+        # Quiet field: the highest available glance is the primary active lens
+        return [
+            {**a, "tier": "Subtle Glance (Quiet Field)", "is_subtle": True}
+            for a in sorted_aspects if a["virupas"] >= 10.0
+        ]
+    else:
+        return []
+
+
+def evaluate_bidirectional_and_mutual_aspects(
+    target_planet: str,
+    aspect_matrices: Optional[Dict[str, Any]],
+    planets_order: List[str]
+) -> Dict[str, Any]:
+    """
+    Evaluates incoming, outgoing, and mutual aspects (Sambandha circuit).
+    """
+    incoming_raw = (aspect_matrices or {}).get("graha_drishti", {}).get("incoming", {}).get(target_planet, {})
+    outgoing_raw = (aspect_matrices or {}).get("graha_drishti", {}).get("outgoing", {}).get(target_planet, {})
+
+    filtered_incoming = filter_adaptive_aspects(incoming_raw)
+    filtered_outgoing = filter_adaptive_aspects(outgoing_raw)
+
+    # Detect Mutual Aspects (Anyonya Dṛṣṭi): functioning as a conjunction
+    mutual_aspects = []
+    for other_p in planets_order:
+        if other_p == target_planet:
+            continue
+        in_v = float(incoming_raw.get(other_p, 0.0))
+        out_v = float(outgoing_raw.get(other_p, 0.0))
+        
+        # Both planets must cast an active aspect onto each other
+        if in_v >= 10.0 and out_v >= 10.0:
+            mutual_aspects.append({
+                "planet": other_p,
+                "incoming_virupas": round(in_v, 1),
+                "outgoing_virupas": round(out_v, 1),
+                "is_full_opposition": bool(in_v >= 55.0 and out_v >= 55.0),
+                "label": f"Mutual Aspect ({in_v:.0f}v ⇄ {out_v:.0f}v)"
+            })
+
+    return {
+        "incoming": filtered_incoming,
+        "outgoing": filtered_outgoing,
+        "mutual": mutual_aspects
+    }
+
+
+def evaluate_detailed_conjunctions(
+    target_planet: str,
+    v_grahas: Dict[str, Any],
+    combustion_map: Optional[Dict[str, Any]],
+    planets_order: List[str]
+) -> List[Dict[str, Any]]:
+    """
+    Builds rich conjunction structures: physical sign/house co-presence,
+    exact angular separation, 3-band Navamsha classification, and combustion.
+    """
+    p_info = v_grahas.get(target_planet, {})
+    p_sign = p_info.get("sign", "")
+    p_lon = float(p_info.get("longitude", 0.0))
+    p_s_idx = p_info.get("sign_index", int(p_lon // 30.0))
+
+    conjunctions = []
+
+    for other_p in planets_order:
+        if other_p == target_planet or other_p not in v_grahas:
+            continue
+
+        o_info = v_grahas[other_p]
+        o_sign = o_info.get("sign", "")
+        o_lon = float(o_info.get("longitude", 0.0))
+        o_s_idx = o_info.get("sign_index", int(o_lon // 30.0))
+
+        diff = abs(p_lon - o_lon) % 360.0
+        sep = min(diff, 360.0 - diff)
+        same_sign = (p_s_idx == o_s_idx)
+
+        # Classical conjunction: sharing the same sign OR within 10° across border
+        if same_sign or sep <= 10.0:
+            one_navamsha = 10.0 / 3.0  # 3°20'
+            if sep <= one_navamsha:
+                band = "Exact (Intimate)"
+                power_pct = 100.0
+            elif sep <= 10.0:
+                band = "Moderate"
+                power_pct = 60.0
+            else:
+                band = "Wide (Co-present)"
+                power_pct = 25.0
+
+            deg_part = int(sep)
+            min_part = int(round((sep % 1.0) * 60.0))
+            if min_part >= 60:
+                deg_part += 1
+                min_part = 0
+
+            conjunctions.append({
+                "planet": other_p,
+                "same_house": same_sign,
+                "cross_border": not same_sign,
+                "separation_degrees": round(sep, 2),
+                "formatted_orb": f"{deg_part}°{min_part:02d}'",
+                "orb_band": band,
+                "power_pct": power_pct,
+                "is_combust_with_sun": (other_p == "Sun" and bool((combustion_map or {}).get(target_planet, {}).get("is_combust", False))),
+                "display": f"{other_p} ({band}, {deg_part}°{min_part:02d}'{' [Cross-Border]' if not same_sign else ''})"
+            })
+
+    return conjunctions
+
+
+# =============================================================================
 # MASTER DIAGNOSTIC COCKPIT PAYLOAD (Hemisphere B: Interpretive Synthesis & Diagnostics)
 # =============================================================================
 
@@ -3632,7 +3788,10 @@ def generate_master_diagnostic_payload(
 
         # Motion & Combustion
         is_retro = bool(g.get("is_retrograde", False))
-        is_combust = bool(combustion_map.get(p, {}).get("is_combust", False))
+        c_map_entry = combustion_map.get(p, {}) if combustion_map else {}
+        is_combust = bool(c_map_entry.get("is_combust", False))
+        sun_dist = c_map_entry.get("sun_distance")
+        comb_orb = c_map_entry.get("combustion_orb")
 
         # Col 1: Graha & Karaka
         c_karaka = chara_map.get(p, "Shadow Node" if p in ("Rahu", "Ketu") else "--")
@@ -3720,19 +3879,33 @@ def generate_master_diagnostic_payload(
         }
 
         # Col 6: Drishti & Yuti (Aspects)
-        yuti = [op for op in planets_order if op != p and v_grahas.get(op, {}).get("sign") == p_sign]
-        inc_drishti = aspect_matrices.get("graha_drishti", {}).get("incoming", {}).get(p, {}) if aspect_matrices else {}
-        strong_aspects = [f"{op} ({val:.1f}v)" for op, val in inc_drishti.items() if float(val) >= 20.0]
+        aspect_data = evaluate_bidirectional_and_mutual_aspects(p, aspect_matrices, planets_order)
+        conjunction_data = evaluate_detailed_conjunctions(p, v_grahas, combustion_map, planets_order)
+
+        # Build descriptive diagnostic summary for UI
+        yuti_str = ", ".join([c["display"] for c in conjunction_data]) if conjunction_data else "None"
+        in_asp_str = ", ".join([f"{a['planet']} ({a['virupas']:.0f}v)" for a in aspect_data["incoming"]]) if aspect_data["incoming"] else "None"
+        out_asp_str = ", ".join([f"{a['planet']} ({a['virupas']:.0f}v)" for a in aspect_data["outgoing"]]) if aspect_data["outgoing"] else "None"
+        mutual_str = ", ".join([m["label"] for m in aspect_data["mutual"]]) if aspect_data["mutual"] else "None"
+
+        summary_parts = [f"Yuti: {yuti_str}"]
+        if aspect_data["mutual"]:
+            summary_parts.append(f"Mutual: {mutual_str}")
+        summary_parts.append(f"Incoming: {in_asp_str}")
+        summary_parts.append(f"Outgoing: {out_asp_str}")
 
         in_war = p in wars
         war_detail = wars.get(p)
         col6 = {
-            "conjunctions": yuti,
-            "incoming_aspects": strong_aspects,
+            "conjunctions": conjunction_data,
+            "incoming_aspects": aspect_data["incoming"],
+            "outgoing_aspects": aspect_data["outgoing"],
+            "mutual_aspects": aspect_data["mutual"],
+            "has_mutual_aspect": bool(aspect_data["mutual"]),
             "in_war": in_war,
             "war_winner": (war_detail.get("winner") == p) if war_detail else False,
             "war_loser": (war_detail.get("loser") == p) if war_detail else False,
-            "summary": f"Yuti: {', '.join(yuti) if yuti else 'None'} | Aspects: {', '.join(strong_aspects[:2]) if strong_aspects else 'None'}"
+            "summary": " | ".join(summary_parts)
         }
 
         # Col 7: Nakshatra & Pada
@@ -3751,7 +3924,8 @@ def generate_master_diagnostic_payload(
         # Col 8: Avasthas
         bal = calculate_baladi_state(p_sign, p_deg)
         jag = get_jagrat_avastha(nat)
-        deep = get_deeptadi_avastha(dignity_str, is_retro, is_combust, yuti)
+        same_sign_yuti = [c["planet"] for c in conjunction_data if c["same_house"]]
+        deep = get_deeptadi_avastha(dignity_str, is_retro, is_combust, same_sign_yuti)
         raw_lajj = g.get("avasthas", {}).get("lajjitadi", [])
 
         if pe_p:
@@ -3825,6 +3999,20 @@ def generate_master_diagnostic_payload(
                 "receipt": f"Base {base_vit:.1f} scaled by biological efficiency {eff:.2f} -> {vit_score:.1f}/10"
             }
 
+        row_cockpit = pe_p.get("unified_cockpit")
+        if row_cockpit and "stage2_environment" in row_cockpit:
+            row_cockpit["stage2_environment"]["conjunctions"] = conjunction_data
+            row_cockpit["stage2_environment"]["incoming_aspects"] = aspect_data["incoming"]
+            row_cockpit["stage2_environment"]["aspects"] = aspect_data["incoming"]
+            row_cockpit["stage2_environment"]["outgoing_aspects"] = aspect_data["outgoing"]
+            row_cockpit["stage2_environment"]["mutual_aspects"] = aspect_data["mutual"]
+            row_cockpit["stage2_environment"]["combustion"] = {
+                "is_combust": is_combust,
+                "sun_distance": sun_dist,
+                "combustion_orb": comb_orb,
+                "severity": "Deep" if (sun_dist is not None and sun_dist < 3.0) else ("Moderate" if is_combust else "None")
+            }
+
         rows.append({
             "planet": p,
             "glyph": PLANET_GLYPHS.get(p, p[:2]),
@@ -3836,7 +4024,8 @@ def generate_master_diagnostic_payload(
             "drishti_yuti": col6,
             "nakshatra_pada": col7,
             "avasthas": col8,
-            "archetype_vitality": col9
+            "archetype_vitality": col9,
+            "unified_cockpit": row_cockpit
         })
 
     return {

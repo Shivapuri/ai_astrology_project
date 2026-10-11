@@ -710,11 +710,11 @@ def test_parashari_lordship_modifiers():
     # Taurus Lagna: Jupiter rules 8th (Sagittarius MT: -15%) and 11th (Pisces secondary: -5%) -> -20.0%
     assert s4_jup["lordship_mod_pct"] == -20.0
     assert s4_jup["expression_score"] == -20.0
-    assert fd_jup["functional_dignity_pct"] == 81.7
+    assert fd_jup["functional_dignity_pct"] == 82.5
     assert "Base Dignity: 100.0%" in fd_jup["math_steps"][0]
     assert "House Placement: House 3" in fd_jup["math_steps"][1]
     assert "-20.0%" in fd_jup["math_steps"][2]
-    assert "Layer 2 Functional Dignity = 81.7%" in fd_jup["math_formula"]
+    assert "Layer 2 Functional Dignity = 82.5%" in fd_jup["math_formula"]
 
     # Test Case 2: Saturn in Aries in 10th House (Cancer Lagna)
     vargas_case2 = {
@@ -745,8 +745,8 @@ def test_parashari_lordship_modifiers():
     # Cancer Lagna: Saturn rules 7th (Capricorn: +2.5%) and 8th (Aquarius MT: -15.0%) -> -12.5%
     assert s4_sat["lordship_mod_pct"] == -12.5
     assert s4_sat["expression_score"] == -12.5
-    assert fd_sat["functional_dignity_pct"] == 52.6
-    assert "Layer 2 Functional Dignity = 52.6%" in fd_sat["math_formula"]
+    assert fd_sat["functional_dignity_pct"] == 53.8
+    assert "Layer 2 Functional Dignity = 53.8%" in fd_sat["math_formula"]
 
     # Test Case 3: Saturn in Aries in 8th House (Virgo Lagna) - Viparita Loophole
     vargas_case3 = {
@@ -779,8 +779,8 @@ def test_parashari_lordship_modifiers():
     assert s4_sat3["lordship_mod_pct"] == 32.5
     assert s4_sat3["viparita_yoga"] is not None
     assert s4_sat3["expression_score"] == 32.5
-    assert fd_sat3["functional_dignity_pct"] == 52.6
-    assert "Layer 2 Functional Dignity = 52.6%" in fd_sat3["math_formula"]
+    assert fd_sat3["functional_dignity_pct"] == 53.8
+    assert "Layer 2 Functional Dignity = 53.8%" in fd_sat3["math_formula"]
 
 
 def test_moon_phase_and_illumination_spectrum():
@@ -994,7 +994,7 @@ def test_mars_in_scorpio_12th_house_dignity():
     # 3. Lordship: H5 Trine (+15%) + H12 Own Dusthana (0%) = +15% total
     assert f_dig["lordship_mod_pct"] == 15.0
     # 4. Decoupled 5-tier architecture: Layer 2 Functional Dignity & Layer 4 Expression
-    assert f_dig["functional_dignity_pct"] == 64.6
+    assert f_dig["functional_dignity_pct"] == 67.5
     assert s4_mars["expression_score"] == 15.0
     assert "House 12" in f_dig["math_steps"][1]
 
@@ -2057,5 +2057,311 @@ def test_priyanka_chopra_shadvarga_weighted_dignity_parity():
     for p, v_data in priyanka_vargas.items():
         score = calculate_shadvarga_dignity(v_data, p)
         assert round(score) == expected_rounded[p], f"{p} expected {expected_rounded[p]}, got {score} (round: {round(score)})"
+
+
+# =============================================================================
+# CLASSICAL ASTROLOGICAL AUDIT TESTS (Phaladipika & Parashara)
+# =============================================================================
+
+def test_filter_adaptive_aspects_signal_to_noise():
+    """
+    Verifies adaptive signal-to-noise ratio:
+    - Dominant aspect (>= 45v) suppresses weak noise (< 30v)
+    - Strong aspect (>= 30v) returned as 'Strong'
+    - Quiet field (max < 30v, >= 10v): active glance labeled as 'Subtle Glance (Quiet Field)'
+    - Silent field (< 10v): returns empty
+    """
+    from jyotish.planetary_evaluation import filter_adaptive_aspects
+
+    # 1. Dominant field with noise: 58v dominant, 35v strong, 15v noise
+    noisy_field = {"Mars": 58.2, "Jupiter": 35.0, "Saturn": 15.4, "Venus": 0.2}
+    filtered_noisy = filter_adaptive_aspects(noisy_field)
+    assert len(filtered_noisy) == 2
+    assert filtered_noisy[0]["planet"] == "Mars"
+    assert filtered_noisy[0]["tier"] == "Dominant"
+    assert not filtered_noisy[0]["is_subtle"]
+    assert filtered_noisy[1]["planet"] == "Jupiter"
+    assert filtered_noisy[1]["tier"] == "Strong"
+    # Saturn at 15.4v is suppressed because Mars/Jupiter command the field
+    assert not any(a["planet"] == "Saturn" for a in filtered_noisy)
+
+    # 2. Quiet field: strongest is 18.5v, no aspect >= 30v
+    quiet_field = {"Mercury": 18.5, "Venus": 12.0, "Mars": 5.0}
+    filtered_quiet = filter_adaptive_aspects(quiet_field)
+    assert len(filtered_quiet) == 2
+    assert filtered_quiet[0]["planet"] == "Mercury"
+    assert filtered_quiet[0]["tier"] == "Subtle Glance (Quiet Field)"
+    assert filtered_quiet[0]["is_subtle"] is True
+    assert filtered_quiet[1]["planet"] == "Venus"
+    assert filtered_quiet[1]["is_subtle"] is True
+    assert not any(a["planet"] == "Mars" for a in filtered_quiet)
+
+    # 3. Silent field: max < 10v
+    silent_field = {"Moon": 8.0, "Sun": 4.5}
+    assert filter_adaptive_aspects(silent_field) == []
+
+    # 4. Empty field
+    assert filter_adaptive_aspects({}) == []
+
+
+def test_evaluate_bidirectional_and_mutual_aspects():
+    """
+    Verifies bidirectional ray tracing and Mutual Aspects (Anyonya Drishti / Sambandha):
+    - Closed circuit oppositions (both >= 55v) flagged as is_full_opposition
+    - Two-way active glances (both >= 10v) flagged as mutual aspect
+    - One-way glances do NOT trigger mutual aspect
+    """
+    from jyotish.planetary_evaluation import evaluate_bidirectional_and_mutual_aspects
+
+    planets_order = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+    mock_aspects = {
+        "graha_drishti": {
+            "incoming": {
+                "Sun": {"Saturn": 60.0, "Jupiter": 15.0},
+                "Saturn": {"Sun": 60.0, "Mars": 32.0}
+            },
+            "outgoing": {
+                "Sun": {"Saturn": 60.0},
+                "Saturn": {"Sun": 60.0}
+            }
+        }
+    }
+
+    sun_aspects = evaluate_bidirectional_and_mutual_aspects("Sun", mock_aspects, planets_order)
+
+    # Incoming
+    assert len(sun_aspects["incoming"]) == 1
+    assert sun_aspects["incoming"][0]["planet"] == "Saturn"
+    assert sun_aspects["incoming"][0]["virupas"] == 60.0
+
+    # Outgoing
+    assert len(sun_aspects["outgoing"]) == 1
+    assert sun_aspects["outgoing"][0]["planet"] == "Saturn"
+
+    # Mutual (Anyonya Drishti)
+    assert len(sun_aspects["mutual"]) == 1
+    sat_mutual = sun_aspects["mutual"][0]
+    assert sat_mutual["planet"] == "Saturn"
+    assert sat_mutual["incoming_virupas"] == 60.0
+    assert sat_mutual["outgoing_virupas"] == 60.0
+    assert sat_mutual["is_full_opposition"] is True
+    assert "Mutual Aspect (60v ⇄ 60v)" in sat_mutual["label"]
+
+
+def test_evaluate_detailed_conjunctions():
+    """
+    Verifies 3-band Navamsha geometric classification, cross-border conjunctions,
+    and combustion status.
+    """
+    from jyotish.planetary_evaluation import evaluate_detailed_conjunctions
+
+    planets_order = ["Sun", "Moon", "Mars", "Saturn", "Jupiter"]
+    v_grahas = {
+        "Sun": {"sign": "Aries", "longitude": 10.0, "sign_index": 0},
+        "Moon": {"sign": "Aries", "longitude": 12.0, "sign_index": 0},          # Exact 2°00' (<= 3°20')
+        "Mars": {"sign": "Aries", "longitude": 18.0, "sign_index": 0},          # Moderate 8°00'
+        "Saturn": {"sign": "Aries", "longitude": 25.0, "sign_index": 0},        # Wide 15°00' (> 10°)
+        "Jupiter": {"sign": "Pisces", "longitude": 358.5, "sign_index": 11}     # Cross-border 11.5° diff -> sep = 11.5° (outside 10°)
+    }
+    combustion_map = {
+        "Moon": {"is_combust": True},
+        "Mars": {"is_combust": False}
+    }
+
+    # Sun's perspective
+    sun_conjs = evaluate_detailed_conjunctions("Sun", v_grahas, combustion_map, planets_order)
+    sun_conj_planets = {c["planet"]: c for c in sun_conjs}
+
+    # Moon: Exact (Intimate)
+    assert "Moon" in sun_conj_planets
+    moon_c = sun_conj_planets["Moon"]
+    assert moon_c["orb_band"] == "Exact (Intimate)"
+    assert moon_c["power_pct"] == 100.0
+    assert moon_c["same_house"] is True
+    assert moon_c["cross_border"] is False
+    assert moon_c["separation_degrees"] == 2.0
+    assert moon_c["formatted_orb"] == "2°00'"
+
+    # Mars: Moderate
+    assert "Mars" in sun_conj_planets
+    mars_c = sun_conj_planets["Mars"]
+    assert mars_c["orb_band"] == "Moderate"
+    assert mars_c["power_pct"] == 60.0
+    assert mars_c["separation_degrees"] == 8.0
+
+    # Saturn: Wide (Co-present)
+    assert "Saturn" in sun_conj_planets
+    sat_c = sun_conj_planets["Saturn"]
+    assert sat_c["orb_band"] == "Wide (Co-present)"
+    assert sat_c["power_pct"] == 25.0
+    assert sat_c["separation_degrees"] == 15.0
+
+    # Cross-border test: Planet at 0°30' Aries and Planet at 28°30' Pisces (sep = 2.0°)
+    v_grahas_cb = {
+        "Mars": {"sign": "Aries", "longitude": 0.5, "sign_index": 0},
+        "Venus": {"sign": "Pisces", "longitude": 358.5, "sign_index": 11}
+    }
+    mars_conjs = evaluate_detailed_conjunctions("Mars", v_grahas_cb, {}, ["Mars", "Venus"])
+    assert len(mars_conjs) == 1
+    ven_c = mars_conjs[0]
+    assert ven_c["planet"] == "Venus"
+    assert ven_c["cross_border"] is True
+    assert ven_c["same_house"] is False
+    assert ven_c["orb_band"] == "Exact (Intimate)"
+    assert ven_c["power_pct"] == 100.0
+    assert "[Cross-Border]" in ven_c["display"]
+
+
+def test_dignity_invariance_from_aspects():
+    """
+    Classical Dignity Law: Aspects (Drishti) must NOT alter essential Functional Dignity.
+    Dignity represents internal character (Sthana Bala / Shadvarga + Host Bedrock),
+    while Aspects represent external environmental weather (Drk Bala).
+    """
+    from jyotish.planetary_evaluation import calculate_planetary_evaluation
+
+    # Base chart with Sun in Aries (Exalted)
+    base_chart = {
+        "D1": {
+            "lagna": {"sign": "Leo", "degree_0_to_30": 15.0},
+            "grahas": {
+                "Sun": {"sign": "Aries", "degree_0_to_30": 10.0, "longitude": 10.0, "dignity": "Exalted"},
+                "Moon": {"sign": "Taurus", "degree_0_to_30": 10.0, "longitude": 40.0, "dignity": "Exalted"},
+                "Mars": {"sign": "Capricorn", "degree_0_to_30": 20.0, "longitude": 290.0, "dignity": "Exalted"},
+                "Mercury": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Own Sign"},
+                "Jupiter": {"sign": "Sagittarius", "degree_0_to_30": 10.0, "longitude": 250.0, "dignity": "Own Sign"},
+                "Venus": {"sign": "Pisces", "degree_0_to_30": 20.0, "longitude": 350.0, "dignity": "Exalted"},
+                "Saturn": {"sign": "Libra", "degree_0_to_30": 10.0, "longitude": 190.0, "dignity": "Exalted"},  # Exactly 180° opposite Sun
+                "Rahu": {"sign": "Gemini", "degree_0_to_30": 15.0, "longitude": 75.0, "dignity": "Exalted"},
+                "Ketu": {"sign": "Sagittarius", "degree_0_to_30": 15.0, "longitude": 255.0, "dignity": "Exalted"}
+            }
+        }
+    }
+
+    eval_res = calculate_planetary_evaluation(base_chart)
+    sun_eval = eval_res["planets"]["Sun"]
+
+    # Sun's essential dignity is 100% Exalted in D1
+    # Saturn casts full opposition aspect (60 virupas) onto Sun
+    assert sun_eval["step3_aspects"]["net_aspect_pct"] != 0.0
+    # But functional_dignity_pct MUST reflect pure essential dignity (Shadvarga + Vargottama + Host):
+    base_dig = sun_eval["step1_shadvarga"]["weighted_dignity_pct"]
+    varg_bonus = sun_eval["functional_dignity"]["vargottama_bonus"]
+    host_bonus = sun_eval["step2_host_rescue"]["bonus_pct"]
+    expected_pure_dignity = round(base_dig + varg_bonus + host_bonus, 1)
+
+    assert sun_eval["functional_dignity"]["functional_dignity_pct"] == expected_pure_dignity
+
+    # Modify chart so Saturn is moved to Taurus (no aspect ray onto Sun)
+    import copy
+    base_chart_no_aspect = copy.deepcopy(base_chart)
+    base_chart_no_aspect["D1"]["grahas"]["Saturn"] = {
+        "sign": "Taurus", "degree_0_to_30": 20.0, "longitude": 50.0, "dignity": "Great Friend's Sign"
+    }
+    eval_no_aspect = calculate_planetary_evaluation(base_chart_no_aspect)
+    sun_no_aspect = eval_no_aspect["planets"]["Sun"]
+
+    # Aspect net changes, but functional dignity remains strictly invariant:
+    assert sun_no_aspect["step3_aspects"]["net_aspect_pct"] != sun_eval["step3_aspects"]["net_aspect_pct"]
+    assert sun_no_aspect["functional_dignity"]["functional_dignity_pct"] == sun_eval["functional_dignity"]["functional_dignity_pct"]
+
+
+def test_master_diagnostic_col6_bidirectional_and_geometry():
+    """
+    Verifies that generate_master_diagnostic_payload populates Col 6 (Drishti & Yuti)
+    with bidirectional aspects, mutual aspect detection, and rich conjunction geometry.
+    """
+    from jyotish.baseline import ChartBaseline
+    from jyotish.planetary_evaluation import generate_master_diagnostic_payload
+
+    baseline = ChartBaseline(
+        name="Angelina Jolie",
+        year=1975,
+        month=6,
+        day=4,
+        hour=9,
+        minute=9,
+        second=0,
+        latitude=34.0522,
+        longitude=-118.2437,
+        timezone_offset=-7.0
+    )
+    payload = generate_master_diagnostic_payload(baseline, varga="D1")
+    rows = payload["rows"]
+    assert len(rows) == 9
+
+    for row in rows:
+        col6 = row["drishti_yuti"]
+        assert "conjunctions" in col6
+        assert "incoming_aspects" in col6
+        assert "outgoing_aspects" in col6
+        assert "mutual_aspects" in col6
+        assert "has_mutual_aspect" in col6
+        assert "summary" in col6
+        assert isinstance(col6["conjunctions"], list)
+        assert isinstance(col6["incoming_aspects"], list)
+        assert isinstance(col6["outgoing_aspects"], list)
+        assert isinstance(col6["mutual_aspects"], list)
+
+        if col6["conjunctions"]:
+            c0 = col6["conjunctions"][0]
+            assert "planet" in c0
+            assert "orb_band" in c0
+            assert "separation_degrees" in c0
+            assert "formatted_orb" in c0
+            assert "display" in c0
+
+        # Col 6 summary must always explicitly present Yuti first
+        assert col6["summary"].startswith("Yuti: ")
+
+        # Unified Cockpit Stage 2 Environment verification
+        cockpit = row.get("unified_cockpit")
+        if cockpit:
+            s2 = cockpit["stage2_environment"]
+            assert "conjunctions" in s2
+            assert "aspects" in s2
+            assert "mutual_aspects" in s2
+            assert "combustion" in s2
+            assert "is_combust" in s2["combustion"]
+
+
+def test_baseline_combustion_sourcing_integration():
+    """
+    Verifies that calculate_planetary_evaluation sources combustion directly from
+    baseline.combustion_status and that DRY baseline_tables constants are respected.
+    """
+    from jyotish.baseline import ChartBaseline
+    from jyotish.planetary_evaluation import calculate_planetary_evaluation
+    from jyotish.baseline_tables import COMBUSTION_ORBS, COMBUSTION_ORBS_RETROGRADE
+
+    baseline = ChartBaseline(
+        name="Angelina Jolie",
+        year=1975,
+        month=6,
+        day=4,
+        hour=9,
+        minute=9,
+        second=0,
+        latitude=34.0522,
+        longitude=-118.2437,
+        timezone_offset=-7.0
+    )
+
+    eval_res = calculate_planetary_evaluation(
+        vargas_data=baseline.vargas,
+        baseline=baseline
+    )
+
+    for p, c_info in baseline.combustion_status.items():
+        if p in ("Sun", "Rahu", "Ketu"):
+            continue
+        p_eval = eval_res["planets"][p]
+        if c_info["is_combust"]:
+            assert "Combust (Astangata - Stripped of Light)" in p_eval["strength"]["motional_factors"]
+            assert p_eval["deepthaadi"]["sanskrit"] == "Vikala"
+            assert p_eval["vitality"]["calculation_receipt"]["combust_mod"] < 0.0
+
+
+
 
 
