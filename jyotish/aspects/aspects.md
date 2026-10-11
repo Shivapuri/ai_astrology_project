@@ -107,7 +107,7 @@ The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[
 ## 4. Multi-Varga Aspect Adapter (`calculate_varga_aspects`)
 `calculate_varga_aspects(baseline, varga="D1") -> Dict[str, Any]` provides a clean, unified adapter that consumes `baseline.vargas[varga]` directly without requiring callers to unpack longitude lists, cusps, and ascendant coordinates.
 
-In the legacy helper `calculate_advanced_graha_aspects`, Yutis (same-sign conjunctions) are bidirectional between all planets and shadow nodes (Rāhu and Ketu), excluding only mathematical sensitive points (`Lagna`, `MC`).
+In the helper `calculate_advanced_graha_aspects`, Yutis are harmonized with degree proximity (`CONJUNCTION_MAX_ORB = 10.0°`) and cross-border boundaries (`CROSS_BORDER_ATTENUATION = 0.75`) while retaining same-sign conjunction recognition. Conjunctions are bidirectional between all planets and shadow nodes (Rāhu and Ketu), excluding only mathematical sensitive points (`Lagna`, `MC`). The function returns a backwards-compatible list of strings by default, or an enriched dictionary format when requested (`yuti_format='dict'` or `as_dict=True`), with structured conjunction metadata always available under `results['yuti_details']`.
 
 ---
 

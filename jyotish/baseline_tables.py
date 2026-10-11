@@ -54,6 +54,10 @@ PLANET_SYMBOLS: Dict[str, str] = {
     "Lagna": "Asc", "MC": "MC"
 }
 
+# Longitudinal conjunction thresholds (Yuti proximity)
+CONJUNCTION_MAX_ORB: float = 10.0
+CROSS_BORDER_ATTENUATION: float = 0.75
+
 COMBUSTION_ORBS: Dict[str, float] = {
     "Moon": 12.0,
     "Mars": 17.0,
@@ -61,6 +65,11 @@ COMBUSTION_ORBS: Dict[str, float] = {
     "Saturn": 15.0,
     "Venus": 10.0,       # 8.0° if retrograde
     "Mercury": 14.0      # 12.0° if retrograde
+}
+
+COMBUSTION_ORBS_RETROGRADE: Dict[str, float] = {
+    "Venus": 8.0,
+    "Mercury": 12.0
 }
 
 VARGAS_LIST: List[str] = [

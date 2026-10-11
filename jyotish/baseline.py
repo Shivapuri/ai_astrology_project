@@ -36,6 +36,9 @@ from jyotish.baseline_tables import (
     VIMSHOTTARI_SEQUENCE,
     VIMSHOTTARI_YEARS,
     COMBUSTION_ORBS,
+    COMBUSTION_ORBS_RETROGRADE,
+    CONJUNCTION_MAX_ORB,
+    CROSS_BORDER_ATTENUATION,
     VARGAS_LIST,
     PLANET_SYMBOLS,
     SHASTIAMSA_DEITIES,
@@ -1183,12 +1186,12 @@ class ChartBaseline:
                 checked_pairs.add(pair)
 
                 separation = dist[b1][b2]
-                if separation <= 10.0:
+                if separation <= CONJUNCTION_MAX_ORB:
                     same_sign = (coords[b1]["sign_index"] == coords[b2]["sign_index"])
-                    boundary_factor = 1.0 if same_sign else 0.75
-                    proximity_ratio = max(0.0, 1.0 - (separation / 10.0))
+                    boundary_factor = 1.0 if same_sign else CROSS_BORDER_ATTENUATION
+                    proximity_ratio = max(0.0, 1.0 - (separation / CONJUNCTION_MAX_ORB))
                     effective_potency = round(proximity_ratio * boundary_factor, 4)
-                    band = "Exact (Intimate)" if separation <= (10.0 / 3.0) else ("Moderate" if separation <= 7.0 else "Wide")
+                    band = "Exact (Intimate)" if separation <= (CONJUNCTION_MAX_ORB / 3.0) else ("Moderate" if separation <= 7.0 else "Wide")
 
                     active_conjunctions.append({
                         "body1": b1,
@@ -1217,12 +1220,54 @@ class ChartBaseline:
 
     @cached_property
     def combustion_status(self) -> Dict[str, Dict[str, Any]]:
-        """Evaluates Surya Siddhanta combustion and orb severity."""
+        """Evaluates Surya Siddhanta combustion, continuous degradation gradient, and absorption."""
         dist = self.shortest_distance_matrix
         status = {
-            "Sun": {"is_combust": False, "separation": 0.0, "sun_distance": 0.0, "orb_limit": 0.0, "combustion_orb": 0.0, "severity": "None", "combustion_severity": "None", "combustion_range": "None"},
-            "Rahu": {"is_combust": False, "separation": 0.0, "sun_distance": 0.0, "orb_limit": 0.0, "combustion_orb": 0.0, "severity": "None", "combustion_severity": "None", "combustion_range": "None"},
-            "Ketu": {"is_combust": False, "separation": 0.0, "sun_distance": 0.0, "orb_limit": 0.0, "combustion_orb": 0.0, "severity": "None", "combustion_severity": "None", "combustion_range": "None"}
+            "Sun": {
+                "is_combust": False,
+                "separation": 0.0,
+                "sun_distance": 0.0,
+                "orb_limit": 0.0,
+                "combustion_orb": 0.0,
+                "combustion_ratio": 0.0,
+                "potency_loss_pct": 0.0,
+                "sun_absorption_factor": 0.0,
+                "severity": "None",
+                "combustion_severity": "None",
+                "combustion_range": "None",
+                "same_sign": False,
+                "cross_border": False
+            },
+            "Rahu": {
+                "is_combust": False,
+                "separation": 0.0,
+                "sun_distance": 0.0,
+                "orb_limit": 0.0,
+                "combustion_orb": 0.0,
+                "combustion_ratio": 0.0,
+                "potency_loss_pct": 0.0,
+                "sun_absorption_factor": 0.0,
+                "severity": "None",
+                "combustion_severity": "None",
+                "combustion_range": "None",
+                "same_sign": False,
+                "cross_border": False
+            },
+            "Ketu": {
+                "is_combust": False,
+                "separation": 0.0,
+                "sun_distance": 0.0,
+                "orb_limit": 0.0,
+                "combustion_orb": 0.0,
+                "combustion_ratio": 0.0,
+                "potency_loss_pct": 0.0,
+                "sun_absorption_factor": 0.0,
+                "severity": "None",
+                "combustion_severity": "None",
+                "combustion_range": "None",
+                "same_sign": False,
+                "cross_border": False
+            }
         }
 
         comb_ranges = {
@@ -1230,16 +1275,24 @@ class ChartBaseline:
             "Jupiter": "8° - 11°", "Venus": "4° - 10°", "Saturn": "8° - 15°"
         }
 
+        sun_sign_idx = self.coordinates["Sun"]["sign_index"]
+
         for p in ["Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
             sep = dist["Sun"][p]
             is_retro = self.coordinates[p]["is_retrograde"]
             orb = COMBUSTION_ORBS[p]
             if p == "Venus" and is_retro:
-                orb = 8.0
+                orb = COMBUSTION_ORBS_RETROGRADE.get("Venus", 8.0)
             elif p == "Mercury" and is_retro:
-                orb = 12.0
+                orb = COMBUSTION_ORBS_RETROGRADE.get("Mercury", 12.0)
 
             is_combust = bool(sep <= orb)
+            combustion_ratio = max(0.0, min(1.0, 1.0 - (sep / orb))) if is_combust else 0.0
+
+            p_sign_idx = self.coordinates[p]["sign_index"]
+            same_sign = (sun_sign_idx == p_sign_idx)
+            cross_border = bool(is_combust and not same_sign)
+
             severity = "Deep (< 3°)" if (is_combust and sep < 3.0) else ("Moderate" if is_combust else "None")
 
             status[p] = {
@@ -1248,9 +1301,14 @@ class ChartBaseline:
                 "sun_distance": round(sep, 4),
                 "orb_limit": orb,
                 "combustion_orb": orb,
+                "combustion_ratio": round(combustion_ratio, 4),
+                "potency_loss_pct": round(combustion_ratio * 100.0, 2),
+                "sun_absorption_factor": round(combustion_ratio, 4),
                 "severity": severity,
                 "combustion_severity": severity,
-                "combustion_range": comb_ranges.get(p, f"{orb}°")
+                "combustion_range": comb_ranges.get(p, f"{orb}°"),
+                "same_sign": same_sign,
+                "cross_border": cross_border
             }
         return status
 
@@ -1334,6 +1392,9 @@ __all__ = [
     "VIMSHOTTARI_SEQUENCE",
     "VIMSHOTTARI_YEARS",
     "COMBUSTION_ORBS",
+    "COMBUSTION_ORBS_RETROGRADE",
+    "CONJUNCTION_MAX_ORB",
+    "CROSS_BORDER_ATTENUATION",
     "VARGAS_LIST",
     "PLANET_SYMBOLS",
     "SHASTIAMSA_DEITIES",

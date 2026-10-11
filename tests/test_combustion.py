@@ -35,6 +35,11 @@ def test_angelina_jolie_mercury_combustion():
     assert 8.8 < merc["sun_distance"] < 9.0
     assert merc["combustion_severity"] == "Moderate"
     assert merc["combustion_range"] == "2° - 14°"
+    assert 0.25 < merc["combustion_ratio"] < 0.27
+    assert 25.0 < merc["potency_loss_pct"] < 27.0
+    assert 0.25 < merc["sun_absorption_factor"] < 0.27
+    assert merc["same_sign"] is True
+    assert merc["cross_border"] is False
     
     # Ruled houses for Cancer Lagna: Mercury rules Gemini (H12) and Virgo (H3)
     assert set(merc["ruled_houses"]) == {3, 12}
@@ -55,6 +60,11 @@ def test_combustion_orbs_and_fields():
         assert g["sun_distance"] is not None
         assert g["combustion_orb"] is not None
         assert g["combustion_range"] is not None
+        assert "combustion_ratio" in g
+        assert "potency_loss_pct" in g
+        assert "sun_absorption_factor" in g
+        assert "same_sign" in g
+        assert "cross_border" in g
         assert "ruled_houses" in g
         assert len(g["ruled_houses"]) in (1, 2)
         

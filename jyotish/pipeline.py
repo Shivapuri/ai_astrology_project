@@ -461,6 +461,11 @@ class ChartPipeline:
                     p_data["combustion_orb"] = None
                     p_data["combustion_severity"] = "None"
                     p_data["combustion_range"] = "None"
+                    p_data["combustion_ratio"] = 0.0
+                    p_data["potency_loss_pct"] = 0.0
+                    p_data["sun_absorption_factor"] = 0.0
+                    p_data["same_sign"] = False
+                    p_data["cross_border"] = False
                 else:
                     c_info = comb_status.get(p_name, {})
                     is_combust = c_info.get("is_combust", False)
@@ -469,6 +474,11 @@ class ChartPipeline:
                     p_data["combustion_orb"] = c_info.get("combustion_orb")
                     p_data["combustion_severity"] = c_info.get("combustion_severity")
                     p_data["combustion_range"] = c_info.get("combustion_range")
+                    p_data["combustion_ratio"] = c_info.get("combustion_ratio", 0.0)
+                    p_data["potency_loss_pct"] = c_info.get("potency_loss_pct", 0.0)
+                    p_data["sun_absorption_factor"] = c_info.get("sun_absorption_factor", 0.0)
+                    p_data["same_sign"] = c_info.get("same_sign", False)
+                    p_data["cross_border"] = c_info.get("cross_border", False)
                 
                 lagna_sign = v_data["lagna"]["sign"]
                 lagna_idx = ZODIAC_SIGNS.index(lagna_sign)

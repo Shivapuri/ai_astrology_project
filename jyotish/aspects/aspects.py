@@ -22,6 +22,8 @@ from jyotish.baseline import (
     ZODIAC_SIGNS,
     PLANETS_ORDER,
     SIGN_LORDS,
+    CONJUNCTION_MAX_ORB,
+    CROSS_BORDER_ATTENUATION,
 )
 
 PHYSICAL_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
@@ -240,22 +242,38 @@ def get_all_rasi_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, 
                     
     return results
 
-def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, house_cusps: list = None, ascendant_lon: float = None) -> dict:
+def calculate_advanced_graha_aspects(
+    planets_data: dict,
+    shadbala_data: dict,
+    house_cusps: list = None,
+    ascendant_lon: float = None,
+    yuti_format: str = "list",
+    as_dict: bool = False,
+    detailed_yutis: bool = False,
+    **kwargs
+) -> dict:
     """
-    Calculates the advanced +/- Graha Aspects.
-    Returns:
-    {
-        "planets": { aspected_planet: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
-        "cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
-        "equal_cusps": { house_num: { aspecting_planet: {"raw": val, "plus": val, "minus": val, "net": val} } },
-        "totals": {
-            "planets": { aspected_planet: {"plus": val, "minus": val, "net": val} },
-            "cusps": { house_num: {"plus": val, "minus": val, "net": val} },
-            "equal_cusps": { house_num: {"plus": val, "minus": val, "net": val} }
-        }
+    Calculates the advanced +/- Graha Aspects and Yutis (Conjunctions).
+    Supports backward-compatible list of strings format for yutis, or structured
+    dictionary format if requested (via yuti_format='dict', as_dict=True, or detailed_yutis=True).
+    Always provides structured conjunction metadata under results['yuti_details'].
+
+    Semantic Conjunction Distinctions:
+    - Tight Degree Conjunction (sep <= 10.0°): has is_orb_conjunction=True and effective_potency > 0.
+    - Wide Same-Sign Co-presence (sep > 10.0°, same sign): has same_sign=True (Rāśi Yuti bond),
+      is_orb_conjunction=False, and effective_potency=0.0.
+    - Cross-Border Conjunction (sep <= 10.0°, different signs): has cross_border=True,
+      same_sign=False, is_orb_conjunction=True, and boundary_factor=0.75.
+    """
+    is_dict_mode = (yuti_format == "dict" or as_dict or detailed_yutis or kwargs.get("yuti_as_dict", False))
+    results = {
+        "planets": {},
+        "cusps": {},
+        "equal_cusps": {},
+        "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}},
+        "yutis": {},
+        "yuti_details": {}
     }
-    """
-    results = {"planets": {}, "cusps": {}, "equal_cusps": {}, "totals": {"planets": {}, "cusps": {}, "equal_cusps": {}}, "yutis": {}}
     
     # Helper to determine if planet is benefic or malefic for Drishti
     def is_benefic(p_name, moon_lon, sun_lon, aspecting_sign=None):
@@ -332,16 +350,48 @@ def calculate_advanced_graha_aspects(planets_data: dict, shadbala_data: dict, ho
     # 1. Aspects to Planets and Yutis
     for aspected, aspected_info in planets_data.items():
         # Rahu and Ketu cannot cast Graha Drishti, but they DO receive aspects
-        # and form Yutis (conjunctions) with planets in the same sign.
+        # and form Yutis (conjunctions) with planets.
         
-        # Calculate Yutis (Conjunctions in same sign)
-        results["yutis"][aspected] = []
+        # Calculate Yutis (Harmonized with degree proximity and cross-border boundaries)
+        results["yutis"][aspected] = {} if is_dict_mode else []
+        results["yuti_details"][aspected] = {}
         aspected_sign = aspected_info.get("sign")
-        for other, other_info in planets_data.items():
-            if other != aspected and other not in ["Lagna", "MC"] and aspected_sign and other_info.get("sign") == aspected_sign:
-                results["yutis"][aspected].append(other)
-                
         aspected_lon = aspected_info.get("longitude", 0.0)
+
+        for other, other_info in planets_data.items():
+            if other != aspected and other not in ["Lagna", "MC"]:
+                other_sign = other_info.get("sign")
+                other_lon = other_info.get("longitude", 0.0)
+                diff = abs(aspected_lon - other_lon) % 360.0
+                sep = min(diff, 360.0 - diff)
+                same_sign = bool(aspected_sign and other_sign and aspected_sign == other_sign)
+                is_yuti = bool(same_sign or sep <= CONJUNCTION_MAX_ORB)
+
+                if is_yuti:
+                    boundary_factor = 1.0 if same_sign else CROSS_BORDER_ATTENUATION
+                    proximity_ratio = max(0.0, 1.0 - (sep / CONJUNCTION_MAX_ORB))
+                    effective_potency = round(proximity_ratio * boundary_factor, 4)
+                    band = "Exact (Intimate)" if sep <= (CONJUNCTION_MAX_ORB / 3.0) else ("Moderate" if sep <= 7.0 else "Wide")
+
+                    detail = {
+                        "planet": other,
+                        "separation": round(sep, 4),
+                        "separation_degrees": round(sep, 4),
+                        "orb_band": band,
+                        "same_sign": same_sign,
+                        "cross_border": not same_sign,
+                        "is_orb_conjunction": bool(sep <= CONJUNCTION_MAX_ORB),
+                        "boundary_factor": boundary_factor,
+                        "effective_potency": effective_potency,
+                        "sign": other_sign
+                    }
+                    results["yuti_details"][aspected][other] = detail
+
+                    if is_dict_mode:
+                        results["yutis"][aspected][other] = detail
+                    else:
+                        results["yutis"][aspected].append(other)
+                
         calc_aspects(aspected, aspected_lon, results["planets"], results["totals"]["planets"])
 
     # 2. Aspects to Bhava Chalita Cusps
