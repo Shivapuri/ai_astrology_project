@@ -204,6 +204,8 @@ def test_vimshottari_timeline_and_16_varga_matrix(sample_chart):
     assert "★ CURRENT" in html
     # Check 16-Varga matrix with Rahu & Ketu and dignity counts
     assert "16-Varga Viṃśopaka Strength &amp; Dignity Matrix" in html or "16-Varga Viṃśopaka Strength & Dignity Matrix" in html
+    assert "Vic DiCara Ṣaḍvarga Weighted Dignity Matrix" in html
+    assert "shadvarga-weighted-table" in html
     assert "Dignified / Afflicted" in html
     assert "Rahu" in html
     assert "Ketu" in html

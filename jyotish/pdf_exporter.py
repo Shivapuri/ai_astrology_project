@@ -677,11 +677,88 @@ def render_classical_yogas_section(yogas_data: Dict[str, Any], notation: str = "
 
 
 SIGNS_LIST = ["Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"]
-GRAHA_GLYPHS_MAP = {
-    'Lagna': 'Asc', 'Sun': '☉', 'Moon': '☽', 'Mars': '♂',
-    'Mercury': '☿', 'Jupiter': '♃', 'Venus': '♀', 'Saturn': '♄',
-    'Rahu': '☊', 'Ketu': '☋'
+
+GRAHA_COLORS = {
+    'Sun': '#ea580c',
+    'Moon': '#475569',
+    'Mars': '#dc2626',
+    'Mercury': '#16a34a',
+    'Jupiter': '#d97706',
+    'Venus': '#db2777',
+    'Saturn': '#334155',
+    'Rahu': '#4f46e5',
+    'Ketu': '#78716c',
+    'Lagna': '#0284c7',
+    'Asc': '#0284c7'
 }
+
+GRAHA_GLYPHS_MAP = {
+    'Lagna': 'Asc\uFE0E',
+    'Asc': 'Asc\uFE0E',
+    'Sun': '☉\uFE0E',
+    'Moon': '☽\uFE0E',
+    'Mars': '♂\uFE0E',
+    'Mercury': '☿\uFE0E',
+    'Jupiter': '♃\uFE0E',
+    'Venus': '♀\uFE0E',
+    'Saturn': '♄\uFE0E',
+    'Rahu': '☊\uFE0E',
+    'Ketu': '☋\uFE0E'
+}
+
+
+def get_graha_nature_color(planet_name: str) -> str:
+    """Returns emerald green for benefics and crimson red for malefics matching UI."""
+    malefics = ["Saturn", "Mars", "Sun", "Rahu", "Ketu"]
+    return "#dc2626" if planet_name in malefics else "#16a34a"
+
+
+def get_dignity_text_color(score: float) -> str:
+    """Calibrated dignity color palette matching master_diagnostic.js."""
+    val = float(score)
+    if val >= 90:
+        return '#166534'  # Deep Forest Green (Exalted 100, Moolatrikona 95, Own Sign 90)
+    if val >= 75:
+        return '#15803d'  # Rich Green (Great Friend 80)
+    if val > 50.5:
+        return '#16a34a'  # Vibrant Leaf Green (Friend 60 and all composite averages > 50)
+    if 49.5 <= val <= 50.5:
+        return '#475569'  # Balanced Slate Gray (Neutral 50)
+    if val >= 30:
+        return '#ea580c'  # Clear Vibrant Orange (Enemy 40 and composite averages < 50)
+    if val > 5:
+        return '#dc2626'  # Vivid Red (Great Enemy 20)
+    return '#991b1b'      # Deep Maroon Red (Debilitation 0)
+
+
+def get_shadvarga_dig_code(dig_str: str) -> str:
+    """Returns 2-letter dignity abbreviation matching varga_dignities.js."""
+    d = (dig_str or "").lower()
+    if "exalt" in d or "uccha" in d:
+        return "EX"
+    if "moola" in d or "mul" in d:
+        return "MT"
+    if "own" in d or "swak" in d or "svastha" in d:
+        return "OH"
+    if "great friend" in d or "adhi mitra" in d or "adhi-mitra" in d:
+        return "GF"
+    if "great enemy" in d or "adhi shatru" in d or "adhi-shatru" in d:
+        return "GE"
+    if "friend" in d or "mitra" in d:
+        return "F"
+    if "enemy" in d or "shatru" in d:
+        return "E"
+    if "debilit" in d or "neecha" in d:
+        return "DB"
+    return "N"
+
+
+def render_planet_glyph_html(planet_name: str, custom_size: str = "7.5pt") -> str:
+    """Renders Unicode Variation Selector 15 monochrome line glyph with CSS color token."""
+    glyph = GRAHA_GLYPHS_MAP.get(planet_name, planet_name[:2] if planet_name else "")
+    color = GRAHA_COLORS.get(planet_name, "#1e293b")
+    return f'<span class="planet-glyph" style="color:{color}; font-size:{custom_size}; line-height:1;">{glyph}</span>'
+
 
 
 def get_campanus_house_num(planet_name: str, default_house: int, bhavas: list) -> int:
@@ -1147,6 +1224,14 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
     adv_aspects = chart_data.get("varga_advanced_aspects", {}).get(varga, chart_data.get("advanced_aspects", {}))
     pe = chart_data.get("planetary_evaluation", {})
 
+    master_lords = pe.get("summary", {}).get("master_lords", {})
+    lagna_lord_p = master_lords.get("lagna_lord", {}).get("planet", "")
+    drekkana_lord_p = master_lords.get("drekkana_lord", {}).get("planet", "")
+    navamsha_lord_p = master_lords.get("navamsha_lord", {}).get("planet", "")
+
+    md_rows = chart_data.get("master_diagnostic", {}).get("rows", [])
+    md_rows_by_planet = {r.get("planet"): r for r in md_rows} if md_rows else {}
+
     tbody_rows = []
 
     # 1. LAGNA ROW
@@ -1159,7 +1244,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         lg_nak_str = f"{lg_nak_data.get('nakshatra', '-')} ({lg_nak_data.get('pada', '-')})" if lg_nak_data else "-"
         lg_lord = SIGN_LORDS.get(lg_sign, v_lagna.get("lord", "-"))
         lord_graha = v_grahas.get(lg_lord, {})
-        
+
         # Lord placement
         lagna_idx = SIGNS_LIST.index(lg_sign) if lg_sign in SIGNS_LIST else 0
         lord_sign = lord_graha.get("sign", "")
@@ -1167,13 +1252,19 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         lord_sign_idx = SIGNS_LIST.index(lord_sign) if lord_sign in SIGNS_LIST else 0
         lord_w_house = ((lord_sign_idx - lagna_idx + 12) % 12 + 1) if (lg_sign in SIGNS_LIST and lord_sign in SIGNS_LIST) else 1
         lord_c_house = get_campanus_house_num(lg_lord, lord_w_house, bhavas)
-        shift_html = f"<span class='badge' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5.5pt;'>→ B{lord_c_house}</span>" if lord_c_house != lord_w_house else ""
+        shift_html = f"<span class='micro-tag' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5pt;'>→ B{lord_c_house}</span>" if lord_c_house != lord_w_house else ""
 
         # Lord dignity
         d_break = lord_graha.get("dignity_breakdown", {})
         lord_dig_raw = d_break.get("final_dignity", lord_graha.get("dignity", "Neutral"))
         clean_lord_dig = lord_dig_raw.replace("'s Sign", "").replace(" Sign", "").strip()
         lord_dig_pct = get_dignity_score(clean_lord_dig, planet=lg_lord, sign=lord_sign, degree=lord_deg_val)
+
+        # Lord shadvarga dignity
+        lord_pe = pe.get("planets", {}).get(lg_lord, {})
+        lord_shadvarga_pct = float(lord_pe.get("step1_shadvarga", {}).get("weighted_dignity_pct", lord_dig_pct))
+        lord_rashi_col = get_dignity_text_color(lord_dig_pct)
+        lord_shadvarga_col = get_dignity_text_color(lord_shadvarga_pct)
 
         # Lord Host (Dispositor of the Lagnesha)
         lord_host = SIGN_LORDS.get(lord_sign, lg_lord)
@@ -1184,69 +1275,53 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         lord_host_dig = get_dignity_score(lord_host_dig_raw, planet=lord_host, sign=lord_host_sign, degree=lord_host_deg_val)
         lord_host_sb_entry = shadbala.get(lord_host, {})
         lord_host_sb = float(lord_host_sb_entry.get("Pct_Required_Total", 100.0))
-        
+
         if lord_host == lg_lord:
-            lord_rescue_badge = '<span class="badge own" style="font-size:5.5pt;">Self-Hosted</span>'
+            lord_rescue_badge = '<span class="micro-tag tag-neutral" style="font-size:5.2pt;">Self-Hosted</span>'
         elif lord_host_dig >= 70.0:
-            lord_rescue_badge = '<span class="badge exalt" style="font-size:5.5pt;">Fortified Host</span>'
+            lord_rescue_badge = '<span class="micro-tag tag-benefic" style="font-size:5.2pt;">Fortified Host</span>'
         elif lord_host_dig < 40.0:
-            lord_rescue_badge = '<span class="badge debil" style="font-size:5.5pt;">Strained Host</span>'
+            lord_rescue_badge = '<span class="micro-tag tag-malefic" style="font-size:5.2pt;">Strained Host</span>'
         else:
-            lord_rescue_badge = '<span class="badge neutral" style="font-size:5.5pt;">Neutral Host</span>'
+            lord_rescue_badge = '<span class="micro-tag tag-neutral" style="font-size:5.2pt;">Neutral Host</span>'
 
         # Lord Shadbala
         sb_lord = shadbala.get(lg_lord, {})
         sb_vir = f"{sb_lord.get('Total_Virupas', 0.0):.1f}" if "Total_Virupas" in sb_lord else "-"
         sb_pct = int(round(sb_lord.get("Pct_Required_Total", 0.0))) if "Pct_Required_Total" in sb_lord else None
         sb_rank = sb_lord.get("Relative_Rank", "-")
-        ishta = f"{sb_lord.get('Ishta_Phala', 0.0):.1f}" if "Ishta_Phala" in sb_lord else "-"
-        kashta = f"{sb_lord.get('Kashta_Phala', 0.0):.1f}" if "Kashta_Phala" in sb_lord else "-"
 
         # Cusp 1 Aspects
         cusp_totals = adv_aspects.get("totals", {}).get("cusps", {}).get(1, adv_aspects.get("totals", {}).get("cusps", {}).get("1", {}))
         c1_net = float(cusp_totals.get("net", 0.0))
         c1_indiv = adv_aspects.get("cusps", {}).get(1, adv_aspects.get("cusps", {}).get("1", {}))
-        jup_aspect = float(c1_indiv.get("Jupiter", {}).get("net", c1_indiv.get("Jupiter", {}).get("plus", 0.0)))
-        lord_aspect = float(c1_indiv.get(lg_lord, {}).get("net", c1_indiv.get(lg_lord, {}).get("plus", 0.0)))
-        
+
         # Occupants in H1
         h1_occupants = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == lg_sign]
-        occ_spans = []
-        for p in h1_occupants:
-            glyph = GRAHA_GLYPHS_MAP.get(p, "")
-            is_ben = p in ["Jupiter", "Venus", "Mercury", "Moon"]
-            col = "#15803d" if is_ben else "#b91c1c"
-            occ_spans.append(f"<span style='color:{col}; font-weight:600;'>{glyph} {p}</span>")
-        occ_html = ", ".join(occ_spans) if occ_spans else "<span style='color:#94a3b8;'>Clean Horizon</span>"
-        
-        # Flanking Kartari
-        h2_sign = SIGNS_LIST[(lagna_idx + 1) % 12]
-        h12_sign = SIGNS_LIST[(lagna_idx + 11) % 12]
-        h2_occ = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == h2_sign and p not in ["Rahu", "Ketu"]]
-        h12_occ = [p for p in PLANETS_ORDER if v_grahas.get(p, {}).get("sign") == h12_sign and p not in ["Rahu", "Ketu"]]
-        h2_ben = [p for p in h2_occ if p in ["Jupiter", "Venus", "Mercury", "Moon"]]
-        h2_mal = [p for p in h2_occ if p in ["Saturn", "Mars", "Sun"]]
-        h12_ben = [p for p in h12_occ if p in ["Jupiter", "Venus", "Mercury", "Moon"]]
-        h12_mal = [p for p in h12_occ if p in ["Saturn", "Mars", "Sun"]]
-        
-        kartari_badge = ""
-        if h2_ben and h12_ben and not h2_mal and not h12_mal:
-            kartari_badge = '<span class="badge exalt" style="font-size:5.5pt; margin-left:2px;">Śubha Kartarī</span>'
-        elif h2_mal and h12_mal and not h2_ben and not h12_ben:
-            kartari_badge = '<span class="badge debil" style="font-size:5.5pt; margin-left:2px;">Pāpa Kartarī</span>'
-            
-        # Cusp net badge
-        if c1_net >= 15.0:
-            c1_badge = f'<span class="badge exalt">+{c1_net:.1f}v Net Light</span>'
-        elif c1_net <= -15.0:
-            c1_badge = f'<span class="badge debil">{c1_net:.1f}v Net Pressure</span>'
-        else:
-            c1_badge = f'<span class="badge neutral">{"+" if c1_net >= 0 else ""}{c1_net:.1f}v Neutral</span>'
-        if jup_aspect > 15.0:
-            c1_badge += ' <span class="badge exalt" style="font-size:5.5pt;">Guru Dṛṣṭi</span>'
-        if lord_aspect > 15.0:
-            c1_badge += ' <span class="badge own" style="font-size:5.5pt;">Lagneśa Dṛṣṭi</span>'
-            
+        lg_line1_occ = " ".join([
+            f'<span class="conjunction-item"><span class="conjunct-symbol">☌</span> {render_planet_glyph_html(cp, "6.5pt")}</span>'
+            for cp in h1_occupants
+        ]) if h1_occupants else '<span style="color:#64748b; font-weight:600; font-size:5.5pt;">Clean Horizon</span>'
+
+        lg_net_col = "#15803d" if c1_net > 0 else ("#dc2626" if c1_net < 0 else "#64748b")
+        lg_net_text = f"+{c1_net:.1f}v Net Śubha" if c1_net > 0 else (f"{c1_net:.1f}v Net Aśubha" if c1_net < 0 else "0.0v Neutral")
+
+        # Inflowing aspect rays on Cusp 1
+        physical_pls = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']
+        cusp1_rays = []
+        for p_name in physical_pls:
+            raw_v = float(c1_indiv.get(p_name, {}).get("net", c1_indiv.get(p_name, {}).get("plus", 0.0)))
+            if abs(raw_v) < 1.0 and p_name in c1_indiv:
+                raw_v = float(c1_indiv[p_name].get("minus", 0.0))
+            raw_v = abs(raw_v)
+            if raw_v >= 10.0:
+                is_lord = (p_name == lg_lord)
+                is_ben = is_lord or (p_name in ['Jupiter', 'Venus', 'Mercury', 'Moon'])
+                r_col = "#15803d" if is_ben else "#dc2626"
+                cusp1_rays.append(f'<span class="incoming-aspect-item">{render_planet_glyph_html(p_name, "6.2pt")} <span class="virupa-val" style="color:{r_col}; font-weight:700; font-size:5.5pt;">{int(round(raw_v))}v</span></span>')
+
+        lg_col6_line2 = " ".join(cusp1_rays) if cusp1_rays else '<span style="color:#94a3b8; font-size:5.5pt;">—</span>'
+
         # Lagna Nakshatra Subconscious Drive
         lg_nak_name = lg_nak_data.get('nakshatra', '-') if lg_nak_data else "-"
         if (not lg_nak_name or lg_nak_name == "-") and v_lagna.get("nakshatra"):
@@ -1298,7 +1373,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             lagna_vit = round(lord_dig_pct / 10.0, 1)
             lagna_tier = "Varga Center"
             lagna_arch = f"{varga} Operational Axis"
-        
+
         if lagna_vit >= 8.8:
             l_t_bg = "#ecfdf5"; l_t_col = "#065f46"
         elif lagna_vit >= 7.0:
@@ -1314,56 +1389,58 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         <tr style="background:#faf7f2; border-bottom:2px solid #dcb594; font-weight:500;">
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
                 <div style="display:flex; align-items:center; gap:3px;">
-                    <span style="font-size:7pt; font-weight:bold; color:#b86829; background:#eee5d3; padding:1px 3px; border-radius:3px;">ASC</span>
+                    {render_planet_glyph_html('Lagna', '8.5pt')}
                     <div>
                         <strong style="color:#4a3325; font-size:7.5pt;">{lg_title}</strong>
-                        <div style="font-size:5.8pt; color:#64748b;">{lg_sub}</div>
+                        <div style="margin-top:1px;"><span class="micro-tag tag-neutral" style="font-size:5pt;">{lg_sub}</span></div>
                     </div>
                 </div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
                 <strong style="color:#1e293b; font-size:7.2pt;">{lg_sign} {lg_deg}</strong>
-                <div style="font-size:5.8pt; color:#64748b;">House 1 (Ascendant)</div>
-                <div style="font-size:5.8pt; color:#475569;">Lord: <strong>{lg_lord}</strong></div>
-                <div style="font-size:5.5pt; color:#78716c;">{lg_nak_str}</div>
+                <div style="font-size:5.5pt; color:#64748b; margin-top:1px;">House 1 • <span class="micro-tag tag-benefic" style="font-size:5pt;">High Expression (+25%)</span></div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594; text-align:center;">
-                <div>{dignity_badge(clean_lord_dig)}</div>
-                <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:1px;">{lord_dig_pct:.0f}% Dignity</div>
-                <div style="font-size:5.2pt; color:#64748b;">Captain: {lg_lord}</div>
+                <div style="font-size:6.8pt; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums;">
+                    <span style="color:{lord_rashi_col};">{clean_lord_dig} {lord_dig_pct:.0f}</span>
+                    <span style="color:#94a3b8; font-weight:400; margin:0 2px;">/</span>
+                    <span style="color:{lord_shadvarga_col};">{lord_shadvarga_pct:.1f}</span>
+                </div>
+                <div style="font-size:5.5pt; color:#64748b; margin-top:1px;">Captain: <strong>{lg_lord}</strong></div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594; text-align:center;">
-                <div style="font-weight:600; font-size:6.5pt; color:#1e293b;">Host: {lord_host}</div>
-                <div style="font-size:5.5pt; color:#64748b;">{lord_host_dig:.0f}% Dignity • {lord_host_sb:.0f}% Musc</div>
-                <div style="margin-top:1.5px;">{lord_rescue_badge}</div>
+                <div style="font-weight:600; font-size:6.5pt; color:#1e293b;">Host: {render_planet_glyph_html(lord_host, '6.5pt')} <strong>{lord_host}</strong></div>
+                <div style="margin-top:1px;">{lord_rescue_badge}</div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
-                <div style="font-size:7pt; font-weight:bold;">{sb_vir} Vir <span style="font-size:6pt; color:{'#15803d' if (sb_pct or 0) >= 100 else '#b91c1c'}; font-weight:600;">({sb_pct}% req)</span></div>
-                <div style="font-size:5.8pt; color:#64748b;">Rank #{sb_rank} • Captain stamina</div>
-                <div style="font-size:5.5pt; color:#475569; margin-top:1px;">I: {ishta} / K: {kashta}</div>
+                <div style="font-size:6.8pt; font-weight:bold; font-variant-numeric:tabular-nums;">{sb_vir}v <span style="font-size:5.8pt; color:{'#15803d' if (sb_pct or 0) >= 100 else '#b91c1c'}; font-weight:600;">({sb_pct}% req)</span></div>
+                <div style="font-size:5.5pt; color:#64748b;">Rank #{sb_rank} • Captain Stamina</div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
-                <div style="font-size:6pt; margin-bottom:1.5px;"><strong>YUTI:</strong> {occ_html}</div>
-                <div style="display:flex; flex-wrap:wrap; gap:2px;">{c1_badge} {kartari_badge}</div>
+                <div style="display:flex; align-items:center; gap:3px; font-size:5.6pt; line-height:1.2;">
+                    <span style="color:{lg_net_col}; font-weight:700;">{lg_net_text}</span>
+                    <span style="color:#94a3b8;">•</span>
+                    {lg_line1_occ}
+                </div>
+                <div style="margin-top:1.5px; font-size:5.5pt; line-height:1.2;">
+                    {lg_col6_line2}
+                </div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
                 {lg_nak_cell_html}
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594;">
-                <div style="font-size:6pt; font-weight:bold; color:#475569;">
-                    Age: <span class="badge" style="background:#f1f5f9; color:#334155; font-size:5.5pt;">{lg_baladi['state']} ({lg_baladi['efficiency_pct']}%)</span>
-                </div>
-                <div style="font-size:5.2pt; color:#64748b; margin-bottom:2px;">{lg_baladi['sanskrit_term'][:18]}</div>
-                <div style="font-size:5.8pt; color:#3730a3; font-weight:600;">Lord in H{lord_w_house} {shift_html}</div>
+                <div>Age: <span class="micro-tag tag-neutral" style="font-size:5pt;">{lg_baladi['state']} ({lg_baladi['efficiency_pct']}%)</span></div>
+                <div style="font-size:5.5pt; color:#3730a3; font-weight:600; margin-top:1.5px;">Lord in H{lord_w_house} {shift_html}</div>
             </td>
             <td style="padding:2.5px 3px; border:1px solid #dcb594; text-align:center;">
-                <span style="display:inline-block; background:{l_t_bg}; color:{l_t_col}; border:1px solid {l_t_col}44; font-size:6.8pt; font-weight:bold; padding:1.5px 4px; border-radius:3px;">
-                    {lagna_vit:.1f} • {lagna_tier}
+                <span class="micro-tag" style="background:{l_t_bg}; color:{l_t_col}; border:1px solid {l_t_col}44; font-size:6pt; font-weight:bold; padding:1px 3px;">
+                    {lagna_tier}
                 </span>
-                <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:2px;">
-                    Score: {lagna_vit:.1f} / 10
+                <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:1.5px;">
+                    ★ {lagna_vit:.1f} / 10
                 </div>
-                <div style="font-size:5.2pt; color:#64748b;">{lagna_arch}</div>
+                <div style="font-size:5pt; color:#64748b;">{lagna_arch}</div>
             </td>
         </tr>
         """)
@@ -1375,84 +1452,106 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         if p not in v_grahas:
             continue
         g = v_grahas[p]
-        glyph = GRAHA_GLYPHS_MAP.get(p, get_planet_glyph(p, notation))
+        is_node = p in ["Rahu", "Ketu"]
+        pe_p = pe.get("planets", {}).get(p, {})
+        md_r = md_rows_by_planet.get(p, {})
+
         sign = g.get("sign", "-")
         deg_val = float(g.get("degree_0_to_30", 0.0))
         deg = format_deg_short(deg_val)
         baladi = calculate_baladi_avastha(sign, deg_val)
-        
+
         # Whole sign house
         lg_idx = SIGNS_LIST.index(v_lagna.get("sign", "Aries")) if v_lagna.get("sign") in SIGNS_LIST else 0
         p_idx = SIGNS_LIST.index(sign) if sign in SIGNS_LIST else 0
         w_house = ((p_idx - lg_idx + 12) % 12 + 1) if (v_lagna.get("sign") in SIGNS_LIST and sign in SIGNS_LIST) else 1
         c_house = get_campanus_house_num(p, w_house, bhavas)
-        shift_badge = f"<span class='badge' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5.5pt;'>→ B{c_house}</span>" if c_house != w_house else ""
-        
+        shift_badge = f"<span class='micro-tag' style='background:#fef3c7; color:#b45309; border:1px solid #fde68a; font-size:5pt;'>→ B{c_house}</span>" if c_house != w_house else ""
+
         # Chara Karaka
         ck_data = g.get("chara_karaka") or chart_data.get("karakas", {}).get("chara", {}).get(p, {})
         ck_tag = ck_data.get("karaka", "—")
-        ck_badge = ""
-        if ck_tag and ck_tag != "—":
-            ck_badge = f"<span class='badge' style='background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:5.8pt; font-weight:bold;'>{ck_tag}</span>"
-            
+        ck_badge = f"<span class='micro-tag' style='background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:5pt; font-weight:bold;'>{ck_tag}</span>" if (ck_tag and ck_tag != "—") else ""
+
+        # Master Lord tags
+        master_lord_tags = []
+        if p == lagna_lord_p:
+            master_lord_tags.append('<span class="micro-tag" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:4.8pt; font-weight:800;" title="Lagneśa (D1 Lagna Lord)">L</span>')
+        if p == drekkana_lord_p:
+            master_lord_tags.append('<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; border:1px solid #bae6fd; font-size:4.8pt; font-weight:800;" title="Drekkāṇa Lord (D3 Lagna Lord)">D</span>')
+        if p == navamsha_lord_p:
+            master_lord_tags.append('<span class="micro-tag" style="background:#f3e8ff; color:#6b21a8; border:1px solid #d8b4fe; font-size:4.8pt; font-weight:800;" title="Navāṃśa Lord (D9 Lagna Lord)">N</span>')
+        master_lord_tags_html = " ".join(master_lord_tags)
+
         # Motional Badges
         mot_badges = []
         if g.get("is_retrograde"):
-            mot_badges.append("<span class='badge debil' style='font-size:5.5pt;'>[R] Vakra (Ret.)</span>")
+            mot_badges.append("<span class='micro-tag tag-malefic' style='font-size:5pt;'>[R]</span>")
         if g.get("is_combust"):
-            s_dist = g.get("sun_distance")
-            s_dist_str = f" {s_dist:.1f}°" if s_dist is not None else ""
-            mot_badges.append(f"<span class='badge' style='background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:5.5pt;'>[C] Asta{s_dist_str}</span>")
+            mot_badges.append("<span class='micro-tag tag-alert' style='font-size:5pt;'>[C]</span>")
         mot_html = " ".join(mot_badges)
-        
-        # Functional Role
-        fn_role = g.get("functional_role") or chart_data.get("karakas", {}).get("functional", {}).get(p, {})
-        ruled_str = fn_role.get("ruled_houses_str", "")
-        ruled_html = f"<div style='font-size:5.8pt; color:#475569;'>Rules: <strong>{ruled_str}</strong></div>" if ruled_str else ""
-        
-        fn_badges = []
-        if fn_role.get("is_yogakaraka"):
-            fn_badges.append("<span class='badge' style='background:#fef3c7; color:#92400e; border:1px solid #fcd34d; font-size:5.5pt; font-weight:bold;'>Yogakāraka</span>")
-        elif fn_role.get("is_lagnesha"):
-            fn_badges.append("<span class='badge own' style='font-size:5.5pt; font-weight:bold;'>Lagneśa</span>")
-        if fn_role.get("is_maraka") and not fn_role.get("is_yogakaraka"):
-            fn_badges.append("<span class='badge neutral' style='font-size:5.5pt;'>Māraka</span>")
-        if fn_role.get("is_badhaka") and not fn_role.get("is_yogakaraka") and not fn_role.get("is_lagnesha"):
-            fn_badges.append("<span class='badge' style='background:#ffedd5; color:#9a3412; border:1px solid #fed7aa; font-size:5.5pt;'>Bādhaka</span>")
-        fn_badges_html = f"<div style='display:flex; flex-wrap:wrap; gap:1.5px; margin-top:1px;'>{''.join(fn_badges)}</div>" if fn_badges else ""
-        
-        # Nakshatra
-        p_nak_data = naks.get(p, {})
-        nak_str = f"{p_nak_data.get('nakshatra', '-')} ({p_nak_data.get('pada', '-')})" if p_nak_data else "-"
-        
-        # Subconscious Drive Nakshatra
-        p_nak_name = p_nak_data.get("nakshatra", "-")
-        if (not p_nak_name or p_nak_name == "-") and p in pe.get("planets", {}):
-            p_nak_name = pe["planets"][p].get("nakshatra", {}).get("name", "-")
-        p_nak_meta = get_nakshatra_metadata(p_nak_name)
-        p_deity = p_nak_meta.get("deity", "—")
-        p_ruler = p_nak_data.get("nakshatra_lord") or p_nak_meta.get("ruler", "—")
-        p_drive = p_nak_meta.get("core_drive", "Subconscious motivation and cosmic trajectory.")
-        nak_cell_html = f"""
-        <div>
-            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:5.8pt;">{p_nak_name} ({p_deity})</span>
-        </div>
-        <div style="font-size:5.5pt; color:#64748b; margin-top:1.5px;">
-            ↳ Overlord: <strong style="color:#475569;">{p_ruler}</strong>
-        </div>
-        <div style="font-size:5.2pt; color:#78716c; margin-top:1px; line-height:1.15;">
-            {p_drive}
+
+        col1_html = f"""
+        <div style="display:flex; align-items:center; gap:3px;">
+            {render_planet_glyph_html(p, '8.5pt')}
+            <div>
+                <div style="display:flex; align-items:center; gap:2px;">
+                    <strong style="color:#1e293b; font-size:7.2pt;">{p}</strong>
+                    {ck_badge}
+                </div>
+                <div style="display:flex; align-items:center; gap:2px; margin-top:1px;">
+                    {mot_html} {master_lord_tags_html}
+                </div>
+            </div>
         </div>
         """
-        
-        # Dignity (5-fold)
-        is_node = p in ["Rahu", "Ketu"]
+
+        # Col 2: Longitude & Bhāva
+        expr_mode = pe_p.get("expression_mode", "")
+        expr_score = pe_p.get("step4_house_field", {}).get("expression_score", 0.0)
+        expr_score_str = f"+{int(round(expr_score))}%" if expr_score >= 0 else f"{int(round(expr_score))}%"
+        if "High" in expr_mode or expr_score >= 15.0:
+            expr_badge_html = f'<span class="micro-tag tag-benefic" style="font-size:5pt;">High Expression ({expr_score_str})</span>'
+        elif "Mixed" in expr_mode:
+            expr_badge_html = f'<span class="micro-tag tag-neutral" style="font-size:5pt;">Mixed Expression ({expr_score_str})</span>'
+        elif "Low" in expr_mode or expr_score <= -15.0:
+            expr_badge_html = f'<span class="micro-tag tag-malefic" style="font-size:5pt;">Low Expression ({expr_score_str})</span>'
+        else:
+            expr_badge_html = '<span class="micro-tag tag-neutral" style="font-size:5pt;">Neutral Expression</span>'
+
+        col2_html = f"""
+        <strong style="color:#1e293b; font-size:7pt;">{sign} {deg}</strong>
+        <div style="font-size:5.5pt; color:#64748b; margin-top:0.5px;">House {w_house} {shift_badge}</div>
+        <div style="margin-top:1px;">{expr_badge_html}</div>
+        """
+
+        # Dignity & Sambandha
         d_break = g.get("dignity_breakdown", {})
         sign_lord = d_break.get("sign_lord", SIGN_LORDS.get(sign, "-"))
         raw_dig = d_break.get("final_dignity", g.get("dignity", "Neutral"))
         clean_dig = raw_dig.replace("'s Sign", "").replace(" Sign", "").strip()
         dignity_pct = get_dignity_score(clean_dig, planet=p, sign=sign, degree=deg_val)
-        
+
+        base_shadvarga_pct = float(pe_p.get("step1_shadvarga", {}).get("weighted_dignity_pct", dignity_pct))
+        rashi_col = get_dignity_text_color(dignity_pct)
+        shadvarga_col = get_dignity_text_color(base_shadvarga_pct)
+        dig_label = f"Proxy ({sign_lord})" if is_node else clean_dig
+
+        nat_rel = d_break.get("natural_relationship", "-")
+        temp_rel = d_break.get("temporary_relationship", "-")
+        col3_sub = f"Nat: {nat_rel[:3]} • Tmp: {temp_rel[:3]}" if not is_node else f"via {sign_lord}"
+
+        col3_html = f"""
+        <div style="text-align:center;">
+            <div style="font-size:6.8pt; font-weight:700; white-space:nowrap; font-variant-numeric:tabular-nums;">
+                <span style="color:{rashi_col};">{dig_label} {dignity_pct:.0f}</span>
+                <span style="color:#94a3b8; font-weight:400; margin:0 2px;">/</span>
+                <span style="color:{shadvarga_col};">{base_shadvarga_pct:.1f}</span>
+            </div>
+            <div style="font-size:5.2pt; color:#64748b; margin-top:1px;">{col3_sub}</div>
+        </div>
+        """
+
         # Host (Dispositor) Metrics
         host_graha = v_grahas.get(sign_lord, {})
         host_sign = host_graha.get("sign", "")
@@ -1462,25 +1561,24 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
         host_sb_data = shadbala.get(sign_lord, {})
         host_sb = float(host_sb_data.get("Pct_Required_Total", 100.0))
         host_vir = float(host_sb_data.get("Total_Virupas", 360.0))
-        
+
         # Planet Shadbala
         sb = shadbala.get(p, {})
         sb_pct_val = float(sb.get("Pct_Required_Total", 100.0)) if sb else 100.0
-        
+
         # Conjunctions & Drishti
         conjuncts = [other for other in PLANETS_ORDER if other != p and v_grahas.get(other, {}).get("sign") == sign]
         asp_rec = adv_aspects.get("planets", {}).get(p, {})
         tot_rec = adv_aspects.get("totals", {}).get("planets", {}).get(p, {})
         net_val = float(tot_rec.get("net", 0.0))
-        
-        # Conjunction details with exact orbs & precedence
+
         conj_details = []
         for cp in conjuncts:
             cp_g = v_grahas.get(cp, {})
             cp_deg = float(cp_g.get("degree_0_to_30", 0.0))
             deg_diff = abs(deg_val - cp_deg)
             cp_sb = float(shadbala.get(cp, {}).get("Pct_Required_Total", 100.0))
-            band = "Exact (Intimate)" if deg_diff <= (10.0 / 3.0) else ("Moderate" if deg_diff <= 10.0 else "Wide")
+            band = "Exact" if deg_diff <= 3.33 else ("Moderate" if deg_diff <= 10.0 else "Wide")
             commands = (cp_sb > sb_pct_val)
             conj_details.append({
                 "planet": cp,
@@ -1490,7 +1588,6 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
                 "commands": commands
             })
 
-        # Aspect details with Option A debilitated benefic dampening
         asp_details = []
         for asp_p in PLANETS_ORDER:
             if asp_p != p and asp_p in asp_rec and asp_rec[asp_p].get("raw", 0.0) > 4.0:
@@ -1520,7 +1617,7 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
 
         # Lajjitadi Avasthas
         av_list = g.get("avasthas", {}).get("lajjitadi", [])
-        
+
         # Calibrated Functional Vitality and Archetype Diagnosis
         lagna_sign_val = v_lagna.get("sign", "")
         lagna_lord_val = SIGN_LORDS.get(lagna_sign_val, "")
@@ -1548,258 +1645,205 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             war_badge=war_badge,
             conjunction_details=conj_details,
             aspect_details=asp_details,
-            functional_role=fn_role
+            functional_role=g.get("functional_role")
         )
         quad = vit_res["quadrant"]
         net_vitality = vit_res["vitality_score"]
         rescue_badge = vit_res["rescue_badge"]
         effective_dignity = vit_res["effective_dignity_pct"]
-        
-        # Cell 3: Essential Dignity
-        if is_node:
-            dig_cell_html = f"""
-            <div style="text-align:center;">
-                <span class="badge neutral" style="font-weight:600; font-size:6.2pt;">Proxy ({sign_lord})</span>
-                <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:1px;">{effective_dignity:.0f}% Dignity</div>
-                <div style="font-size:5.2pt; color:#64748b;">Chhāyā Reflection</div>
-            </div>
-            """
-        else:
-            nat_rel = d_break.get("natural_relationship", "-")
-            temp_rel = d_break.get("temporary_relationship", "-")
-            dig_cell_html = f"""
-            <div style="text-align:center;">
-                {dignity_badge(clean_dig)}
-                <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:1px;">{dignity_pct:.0f}% Dignity</div>
-                <div style="font-size:5pt; color:#78716c;">Nat: {nat_rel[:3]} • Tmp: {temp_rel[:3]}</div>
-            </div>
-            """
 
-        # Cell 4: Host Dispositor
-        rescue_badge_class = "exalt" if "Rescued" in rescue_badge else ("own" if "Self" in rescue_badge or "Fortified" in rescue_badge else ("debil" if "Strained" in rescue_badge else "neutral"))
-        rescue_badge_html = f'<span class="badge {rescue_badge_class}" style="font-size:5.5pt;">{rescue_badge}</span>'
-        host_cell_html = f"""
+        # Col 4: Host Dispositor
+        rescue_badge_cls = "tag-benefic" if "Rescued" in rescue_badge or "Fortified" in rescue_badge else ("tag-neutral" if "Self" in rescue_badge else ("tag-malefic" if "Strained" in rescue_badge else "tag-neutral"))
+        col4_html = f"""
         <div style="text-align:center;">
-            <div style="font-weight:600; font-size:6.5pt; color:#1e293b;">Host: {sign_lord}</div>
-            <div style="font-size:5.5pt; color:#64748b;">{host_dig:.0f}% Dignity • {host_sb:.0f}% Musc</div>
-            <div style="margin-top:1.5px;">{rescue_badge_html}</div>
+            <div style="font-weight:600; font-size:6.5pt; color:#1e293b;">
+                Host: {render_planet_glyph_html(sign_lord, '6.5pt')} <strong>{sign_lord}</strong>
+            </div>
+            <div style="margin-top:1.5px;">
+                <span class="micro-tag {rescue_badge_cls}" style="font-size:5.2pt;">{rescue_badge}</span>
+            </div>
         </div>
         """
 
-        # Cell 5: Shadbala Power
+        # Col 5: Shadbala Power
         if is_node:
-            nodal_sb_pct = vit_res["effective_shadbala_pct"]
-            power_cell_html = f"""
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-size:6.8pt;">{nodal_sb_pct:.0f}%</strong>
-                    <span class="badge neutral" style="font-size:5.5pt; font-weight:600;">Proxy</span>
-                </div>
-                <div style="font-size:5.8pt; color:#15803d; font-weight:bold;">via {sign_lord} ({host_vir:.0f}v)</div>
-                <div style="font-size:5.2pt; color:#64748b;">Chhāyā Proxy Muscle</div>
+            nodal_sb_pct = vit_res.get("effective_shadbala_pct", 100.0)
+            col5_html = f"""
+            <div style="font-variant-numeric:tabular-nums;">
+                <div style="font-size:6.8pt; font-weight:700; color:#1e293b;">Proxy {nodal_sb_pct:.0f}%</div>
+                <div style="font-size:5.5pt; color:#15803d; font-weight:600;">via {sign_lord} ({host_vir:.0f}v)</div>
             </div>
             """
         elif sb:
-            rupas = f"{sb.get('Total_Rupas', 0.0):.2f} R" if "Total_Rupas" in sb else "-"
             virupas = f"{sb.get('Total_Virupas', 0.0):.1f}v" if "Total_Virupas" in sb else "-"
-            req_vir = f"{sb.get('Required_Total', 0.0):.0f}v" if "Required_Total" in sb else "-"
             pct_val = float(sb.get("Pct_Required_Total", 0.0))
             rank = sb.get("Relative_Rank", "-")
-            
-            pct_col = "#15803d" if pct_val >= 100.0 else "#b91c1c"
-            rank_badge = f"<span class='badge {'exalt' if rank == 1 else 'neutral'}' style='font-size:5.5pt; font-weight:bold;'>#{rank}</span>"
+            pct_col = "#15803d" if pct_val >= 115.0 else ("#b91c1c" if pct_val < 100.0 else "#0369a1")
             cap_desc = "Abundant" if pct_val >= 125 else ("Capable" if pct_val >= 100 else ("Mild Deficit" if pct_val >= 85 else "Deficit"))
-            ishta_str = f"I:{float(sb.get('Ishta_Phala', 0.0)):.1f}" if "Ishta_Phala" in sb else ""
-            kashta_str = f"K:{float(sb.get('Kashta_Phala', 0.0)):.1f}" if "Kashta_Phala" in sb else ""
-            fruit_sub = f" • <span style='font-size:5.2pt;'>{ishta_str}/{kashta_str}</span>" if ishta_str else ""
-
-            power_cell_html = f"""
-            <div>
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="font-size:6.8pt;">{virupas}</strong>
-                    {rank_badge}
+            col5_html = f"""
+            <div style="font-variant-numeric:tabular-nums;">
+                <div style="font-size:6.8pt; font-weight:700; color:#1e293b;">
+                    <strong>{virupas}</strong> <span style="font-size:5.8pt; color:{pct_col}; font-weight:600;">({pct_val:.0f}%)</span>
                 </div>
-                <div style="font-size:5.8pt; color:{pct_col}; font-weight:bold;">{pct_val:.0f}% of {req_vir}</div>
-                <div style="font-size:5.2pt; color:#64748b;">{cap_desc}{fruit_sub}</div>
+                <div style="font-size:5.5pt; color:#64748b; font-weight:600;">
+                    {f'Rank #{rank} • ' if rank and rank != '-' else ''}{cap_desc}
+                </div>
             </div>
             """
         else:
-            power_cell_html = "<div style='color:#94a3b8; font-size:6pt;'>-</div>"
+            col5_html = "<div style='color:#94a3b8; font-size:6pt;'>—</div>"
 
-        # Cell 6: Influences & Net Drishti
-        if net_val >= 12.0:
-            net_pill = f"<span class='badge exalt' style='font-size:5.5pt; font-weight:bold;'>Net Support (+{net_val:.0f}v)</span>"
-        elif net_val <= -12.0:
-            net_pill = f"<span class='badge debil' style='font-size:5.5pt; font-weight:bold;'>Net Pressure ({net_val:.0f}v)</span>"
-        else:
-            net_pill = f"<span class='badge neutral' style='font-size:5.5pt; font-weight:600;'>Balanced ({'+' if net_val >= 0 else ''}{net_val:.0f}v)</span>"
+        # Col 6: Dṛṣṭi & Yuti (Aspects)
+        dy_data = md_r.get("drishti_yuti", {})
+        conj_list = dy_data.get("conjunctions") or conj_details
+        mutual_list = dy_data.get("mutual_aspects") or []
+        incoming_list = dy_data.get("incoming_aspects") or []
 
-        conj_spans = []
-        for c_item in conj_details:
-            cp = c_item["planet"]
-            c_glyph = GRAHA_GLYPHS_MAP.get(cp, "")
-            is_b = cp in ["Jupiter", "Venus"]
-            is_m = cp in ["Saturn", "Mars", "Rahu", "Ketu"]
-            c_col = "#15803d" if is_b else ("#b91c1c" if is_m else "#475569")
-            cmd_note = " [Cmd]" if c_item["commands"] else ""
-            conj_spans.append(f"<span style='color:{c_col}; font-weight:600;'>{c_glyph} {cp[:2]}{cmd_note}</span>")
-        yuti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>YUTI:</strong> {' '.join(conj_spans)}</div>" if conj_spans else ""
+        col6_conj_items = []
+        is_c = bool(g.get("is_combust"))
+        sun_dist = g.get("sun_distance")
+        sun_dist_str = f"{sun_dist:.1f}°" if sun_dist is not None else ""
+        combust_attached = False
 
-        asp_spans = []
-        for asp_info in vit_res.get("aspect_details", []):
-            asp_p = asp_info.get("from_planet")
-            raw_v = int(round(abs(asp_info.get("raw_virupas", 0.0))))
-            if raw_v <= 4:
+        for c_item in conj_list:
+            cp_name = c_item.get("planet")
+            is_cross = bool(c_item.get("cross_border"))
+            orb_str = c_item.get("formatted_orb") or (f"{c_item.get('degree_diff', 0):.1f}°" if c_item.get("degree_diff") is not None else "")
+            cross_tag = ' <span style="color:#b45309; font-weight:600; font-size:5pt;">[Cross]</span>' if is_cross else ""
+            chip = f'<span class="conjunction-item"><span class="conjunct-symbol">☌</span> {render_planet_glyph_html(cp_name, "6.2pt")} <span style="font-weight:600; font-size:5.5pt;">({orb_str})</span>{cross_tag}</span>'
+            if cp_name == "Sun" and is_c:
+                chip += f' <span style="color:#dc2626; font-weight:700; font-size:5.5pt;">🔥 {sun_dist_str}</span>'
+                combust_attached = True
+            col6_conj_items.append(chip)
+
+        if is_c and not combust_attached:
+            col6_conj_items.insert(0, f'<span style="color:#dc2626; font-weight:700; font-size:5.5pt;">🔥 {sun_dist_str}</span>')
+
+        col6_line1 = " ".join(col6_conj_items) if col6_conj_items else ""
+
+        mutual_planets = {m.get("planet") for m in mutual_list}
+        self_nat_col = get_graha_nature_color(p)
+
+        line2_chips = []
+        for m in mutual_list:
+            m_p = m.get("planet")
+            m_nat_col = get_graha_nature_color(m_p)
+            out_v = int(round(float(m.get("outgoing_virupas", 0))))
+            in_v = int(round(float(m.get("incoming_virupas", 0))))
+            line2_chips.append(f'<span class="mutual-circuit">{render_planet_glyph_html(p, "6pt")}<span class="virupa-val" style="color:{self_nat_col}; font-size:5.5pt;">{out_v}v</span>⇄{render_planet_glyph_html(m_p, "6pt")}<span class="virupa-val" style="color:{m_nat_col}; font-size:5.5pt;">{in_v}v</span></span>')
+
+        for inc in incoming_list:
+            inc_p = inc.get("planet") or inc.get("from_planet") or inc.get("source")
+            if inc_p in mutual_planets:
                 continue
-            is_p = asp_info.get("raw_virupas", 0.0) > 0
-            sign_ch = "+" if is_p else "-"
-            a_col = "#15803d" if is_p else "#b91c1c"
-            a_glyph = GRAHA_GLYPHS_MAP.get(asp_p, asp_p[:2])
-            distort_tag = " [Dist]" if asp_info.get("is_distorted") else ""
-            dig_abbr = get_dignity_abbr(asp_info.get("from_dignity_name", ""))
-            asp_spans.append(f"<span style='color:{a_col}; font-weight:600;'>{sign_ch}{raw_v}v ({a_glyph} {dig_abbr}){distort_tag}</span>")
-        drishti_html = f"<div style='font-size:5.5pt; color:#64748b;'><strong>DRISHTI:</strong> {' '.join(asp_spans[:3])}</div>" if asp_spans else ""
+            inc_nat_col = get_graha_nature_color(inc_p)
+            raw_v = int(round(abs(float(inc.get("virupas", inc.get("raw_virupas", 0))))))
+            if raw_v >= 10:
+                line2_chips.append(f'<span class="incoming-aspect-item">{render_planet_glyph_html(inc_p, "6.2pt")}<span class="virupa-val" style="color:{inc_nat_col}; font-size:5.5pt;">{raw_v}v</span></span>')
 
-        influences_cell_html = f"""
-        <div style="display:flex; flex-direction:column; gap:1.5px;">
-            <div>{net_pill}</div>
-            {yuti_html}
-            {drishti_html}
+        sep_bullet = ' <span style="color:#94a3b8; font-weight:700;">•</span> '
+        col6_line2 = sep_bullet.join(line2_chips) if line2_chips else '<span style="color:#94a3b8; font-size:5.5pt;">—</span>'
+
+        col6_html = f"""
+        <div style="font-size:5.6pt; line-height:1.2;">
+            {f'<div style="margin-bottom:1.5px;">{col6_line1}</div>' if col6_line1 else ''}
+            <div>{col6_line2}</div>
         </div>
         """
 
-        # Cell 7: Avasthas (State & Age)
-        lajjita_badges = []
-        for item in av_list:
-            st = item.get("state", "") if isinstance(item, dict) else str(item)
-            cond = item.get("condition", "") if isinstance(item, dict) else ""
-            cause_note = ""
-            for cp in CLASSICAL_PLANETS + ["Rahu", "Ketu"]:
-                if cp in cond:
-                    glyph_c = GRAHA_GLYPHS_MAP.get(cp, cp[:2])
-                    cause_note = f" ({glyph_c})"
-                    break
-            if not cause_note:
-                if "Enemy sign" in cond: cause_note = " (Enm. sign)"
-                elif "Friend's sign" in cond: cause_note = " (Frn. sign)"
-            s_lower = st.lower()
-            if "mudita" in s_lower or "delight" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-delighted' style='font-size:5.5pt;'>Mudita{cause_note}</span>")
-            elif "garvita" in s_lower or "proud" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-proud' style='font-size:5.5pt;'>Garvita{cause_note}</span>")
-            elif "kshudhita" in s_lower or "starv" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-starved' style='font-size:5.5pt;'>Kshudhita{cause_note}</span>")
-            elif "kshobhita" in s_lower or "agitat" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-agitated' style='font-size:5.5pt;'>Kshobhita{cause_note}</span>")
-            elif "lajjita" in s_lower or "ashamed" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-ashamed' style='font-size:5.5pt;'>Lajjita{cause_note}</span>")
-            elif "trushita" in s_lower or "thirst" in s_lower:
-                lajjita_badges.append(f"<span class='badge state-thirsty' style='font-size:5.5pt;'>Trushita{cause_note}</span>")
+        # Col 7: Nakshatra
+        p_nak_data = naks.get(p, {})
+        p_nak_name = p_nak_data.get("nakshatra", "-")
+        if (not p_nak_name or p_nak_name == "-") and p in pe.get("planets", {}):
+            p_nak_name = pe["planets"][p].get("nakshatra", {}).get("name", "-")
+        p_nak_meta = get_nakshatra_metadata(p_nak_name)
+        p_deity = p_nak_meta.get("deity", "—")
+        p_ruler = p_nak_data.get("nakshatra_lord") or p_nak_meta.get("ruler", "—")
+        p_drive = p_nak_meta.get("core_drive", "Subconscious motivation and cosmic trajectory.")
+        nak_cell_html = f"""
+        <div>
+            <span class="badge" style="background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; font-weight:600; font-size:5.8pt;">{p_nak_name} ({p_deity})</span>
+        </div>
+        <div style="font-size:5.5pt; color:#64748b; margin-top:1.5px;">
+            ↳ Overlord: <strong style="color:#475569;">{p_ruler}</strong>
+        </div>
+        <div style="font-size:5.2pt; color:#78716c; margin-top:1px; line-height:1.15;">
+            {p_drive}
+        </div>
+        """
 
-        if is_node:
-            avasthas_cell_html = f"""
-            <div>
-                <div style="font-size:6pt; font-weight:bold; color:#475569;">
-                    Age: <span class="badge" style="background:#f1f5f9; color:#334155; font-size:5.5pt;">{baladi['state']} ({baladi['efficiency_pct']}%)</span>
-                </div>
-                <div style="font-size:5.2pt; color:#64748b; margin-bottom:2px;">{baladi['sanskrit_term'][:18]}</div>
-                <span style="color:#94a3b8; font-size:5.5pt;">— (Chhāyā Catalyst)</span>
-            </div>
-            """
+        # Col 8: Avasthās
+        calib_lajj = pe_p.get("calibrated_lajjitadi", [])
+        if calib_lajj and isinstance(calib_lajj, list) and len(calib_lajj) > 0:
+            top_mood_st = calib_lajj[0].get("base_state", "") if isinstance(calib_lajj[0], dict) else str(calib_lajj[0])
+            m_cls = "tag-benefic" if top_mood_st in ["Mudita", "Garvita"] else ("tag-malefic" if top_mood_st == "Kshudhita" else ("tag-alert" if top_mood_st == "Kshobhita" else "tag-neutral"))
+            primary_mood_html = f'<span class="micro-tag {m_cls}" style="font-size:5pt;">{top_mood_st}</span>'
+        elif av_list:
+            st0 = av_list[0].get("state", "") if isinstance(av_list[0], dict) else str(av_list[0])
+            top_mood_st = st0.split()[0]
+            m_cls = "tag-benefic" if top_mood_st in ["Mudita", "Garvita"] else ("tag-malefic" if top_mood_st == "Kshudhita" else ("tag-alert" if top_mood_st == "Kshobhita" else "tag-neutral"))
+            primary_mood_html = f'<span class="micro-tag {m_cls}" style="font-size:5pt;">{top_mood_st}</span>'
         else:
-            badges_html = " ".join(lajjita_badges) if lajjita_badges else "<span style='color:#a8a29e; font-size:5.2pt; font-style:italic;'>Neutral (Unstirred)</span>"
-            avasthas_cell_html = f"""
-            <div>
-                <div style="font-size:6pt; font-weight:bold; color:#475569;">
-                    Age: <span class="badge" style="background:#f1f5f9; color:#334155; font-size:5.5pt;">{baladi['state']} ({baladi['efficiency_pct']}%)</span>
-                </div>
-                <div style="font-size:5.2pt; color:#64748b; margin-bottom:2px;">{baladi['sanskrit_term'][:18]}</div>
-                <div style="display:flex; flex-direction:column; gap:1.5px;">{badges_html}</div>
-            </div>
-            """
+            primary_mood_html = '<span style="color:#94a3b8; font-style:italic; font-size:5pt;">Neutral (Unstirred)</span>'
 
-        # Cell 8: Functional Archetype & Diagnosis
+        col8_html = f"""
+        <div>
+            <div style="font-size:5.8pt; color:#475569;">
+                Age: <span class="micro-tag tag-neutral" style="font-size:5pt;">{baladi['state']} ({baladi['efficiency_pct']}%)</span>
+            </div>
+            <div style="margin-top:1.5px;">{primary_mood_html}</div>
+        </div>
+        """
+
+        # Col 9: Functional Archetype & Diagnosis
         war_badge_html = ""
         if war_badge:
             w_bg = "#fee2e2" if is_war_loser else "#eff6ff"
             w_col = "#991b1b" if is_war_loser else "#1d4ed8"
             w_border = "#fca5a5" if is_war_loser else "#93c5fd"
             clean_war = strip_emojis(war_badge)
-            war_badge_html = f"<div style='margin-top:2px;'><span class='badge' style='background:{w_bg}; color:{w_col}; border:1px solid {w_border}; font-size:5.2pt; font-weight:bold;'>{clean_war}</span></div>"
+            war_badge_html = f"<div style='margin-top:1px;'><span class='micro-tag' style='background:{w_bg}; color:{w_col}; border:1px solid {w_border}; font-size:5pt; font-weight:bold;'>{clean_war}</span></div>"
 
-        raw_tier = vit_res.get("vitality_tier", quad["tier"])
-        v_tier_text = strip_emojis(raw_tier)
-        v_col = vit_res.get("vitality_col", "#1e293b")
         gc_badge = strip_emojis(vit_res.get("guru_chandal_badge"))
         gk_badge = strip_emojis(vit_res.get("guru_ketu_badge"))
         vk_badge = strip_emojis(vit_res.get("vikala_badge"))
         afflictions = []
         if gc_badge:
-            afflictions.append(f"<span class='badge' style='background:#fef2f2; color:#991b1b; border:1px solid #fecaca; font-size:5.2pt; font-weight:bold;'>{gc_badge}</span>")
+            afflictions.append(f"<span class='micro-tag tag-malefic' style='font-size:5pt;'>{gc_badge}</span>")
         if gk_badge:
-            afflictions.append(f"<span class='badge' style='background:#f0fdf4; color:#166534; border:1px solid #bbf7d0; font-size:5.2pt; font-weight:bold;'>{gk_badge}</span>")
+            afflictions.append(f"<span class='micro-tag tag-benefic' style='font-size:5pt;'>{gk_badge}</span>")
         if vk_badge:
-            afflictions.append(f"<span class='badge' style='background:#fff1f2; color:#be123c; border:1px solid #fecdd3; font-size:5.2pt; font-weight:bold;'>{vk_badge}</span>")
-        affliction_badges_html = f"<div style='display:flex; flex-direction:column; gap:1.5px; margin-top:2px;'>{''.join(afflictions)}</div>" if afflictions else ""
+            afflictions.append(f"<span class='micro-tag tag-alert' style='font-size:5pt;'>{vk_badge}</span>")
+        affliction_badges_html = f"<div style='display:flex; flex-direction:column; gap:1px; margin-top:1px;'>{''.join(afflictions)}</div>" if afflictions else ""
 
         clean_quad_badge = strip_emojis(quad.get('badge', quad.get('archetype', '')))
+        subcaption_text = pe_p.get("subcaption_text") or f"Intent: {effective_dignity:.0f}% | Power: {sb_pct_val:.0f}%"
 
-        diag_cell_html = f"""
+        col9_html = f"""
         <div style="text-align:center;">
-            <span style="display:inline-block; background:{quad['bg']}; color:{quad['color']}; border:1px solid {quad['color']}44; font-size:6.5pt; font-weight:bold; padding:1.5px 4px; border-radius:3px;">
+            <span class="micro-tag" style="background:{quad['bg']}; color:{quad['color']}; border:1px solid {quad['color']}44; font-size:5.8pt; font-weight:bold; padding:1px 3px;">
                 {clean_quad_badge}
             </span>
             {war_badge_html}
             {affliction_badges_html}
-            <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:2px;">
-                Score: {net_vitality:.1f} / 10
+            <div style="font-size:6pt; font-weight:bold; color:#1e293b; margin-top:1.5px;">
+                ★ {net_vitality:.1f} <span style="font-size:5.2pt; color:#64748b;">/ 10</span>
             </div>
-            <div style="font-size:5.2pt; font-weight:bold; color:{v_col};">{v_tier_text}</div>
+            <div style="font-size:5pt; color:#64748b; margin-top:0.5px;">{subcaption_text}</div>
         </div>
         """
 
         tbody_rows.append(f"""
         <tr>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                <div style="display:flex; align-items:center; gap:3px;">
-                    <span style="font-size:9.5pt; color:#1e293b;">{glyph}</span>
-                    <div>
-                        <div style="display:flex; align-items:center; gap:2px;">
-                            <strong style="color:#1e293b; font-size:7.2pt;">{p}</strong>
-                            {ck_badge}
-                        </div>
-                        <div>{mot_html}</div>
-                    </div>
-                </div>
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                <strong style="color:#1e293b; font-size:7pt;">{sign} {deg}</strong>
-                <div style="font-size:5.8pt; color:#64748b;">House {w_house} {shift_badge}</div>
-                {ruled_html}
-                {fn_badges_html}
-                <div style="font-size:5.5pt; color:#78716c; margin-top:1px;">{nak_str}</div>
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {dig_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {host_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {power_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {influences_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {nak_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {avasthas_cell_html}
-            </td>
-            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">
-                {diag_cell_html}
-            </td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col1_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col2_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col3_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col4_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col5_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col6_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{nak_cell_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col8_html}</td>
+            <td style="padding:2px 3px; border:1px solid #e5dccb; background:#fffdfa;">{col9_html}</td>
         </tr>
         """)
 
@@ -1831,21 +1875,163 @@ def render_master_graha_diagnostics_table(chart_data: Dict[str, Any], varga: str
             <table class="data-table" style="width:100%; border-collapse:collapse; font-size:6.5pt; line-height:1.2;">
                 <thead>
                     <tr>
-                        <th style="width:10%;">Graha &amp; Soul</th>
-                        <th style="width:12%;">Placement &amp; Role</th>
-                        <th style="width:10%;">Intent &amp; Dignity</th>
-                        <th style="width:11%;">Host Dispositor</th>
-                        <th style="width:11%;">Ṣaḍbala Power</th>
-                        <th style="width:12%;">Aspect Weather</th>
+                        <th style="width:10%;">Graha &amp; Kāraka</th>
+                        <th style="width:12%;">Longitude &amp; Bhāva</th>
+                        <th style="width:11%;">Dignity &amp; Sambandha</th>
+                        <th style="width:11%;">Dispositor (Rāśi Lord)</th>
+                        <th style="width:11%;">Ṣaḍbala Strength</th>
+                        <th style="width:15%;">Dṛṣṭi &amp; Yuti (Aspects)</th>
                         <th style="width:13%;">Subconscious Drive (Nakshatra)</th>
-                        <th style="width:10%;">Avastha &amp; Age</th>
-                        <th style="width:11%;">Functional Archetype</th>
+                        <th style="width:8%;">Avasthās</th>
+                        <th style="width:9%;">Archetype &amp; Vitality</th>
                     </tr>
                 </thead>
                 <tbody>
                     {''.join(tbody_rows)}
                 </tbody>
             </table>
+        </div>
+    </div>
+    """
+
+
+def render_shadvarga_weighted_table(chart_data: Dict[str, Any], notation: str = "symbol") -> str:
+    """
+    Renders the Vic DiCara Ṣaḍvarga Weighted Dignity Matrix (Phaladīpikā 3.1–4)
+    matching the front-end Varga Dignities widget (tmpl_dignities.html & varga_dignities.js).
+    6 Divisional charts: D1 (2x), D2 (1x), D3 (1x), D30/D5 (1x), D9 (2x), D12 (1x).
+    """
+    planets = ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn']
+    pe = chart_data.get("planetary_evaluation", {})
+    master_lords = pe.get("summary", {}).get("master_lords", {})
+
+    lagna_lord_p = master_lords.get("lagna_lord", {}).get("planet", "")
+    drekkana_lord_p = master_lords.get("drekkana_lord", {}).get("planet", "")
+    navamsha_lord_p = master_lords.get("navamsha_lord", {}).get("planet", "")
+
+    rows_def = [
+        {"code": "D1", "label": "D1", "title": "Rāśi (Physical Baseline)", "weight": 2.0, "is_pillar": True},
+        {"code": "D2", "label": "D2", "title": "Horā (Solar & Lunar Wealth Chambers)", "weight": 1.0, "is_pillar": False},
+        {"code": "D3", "label": "D3", "title": "Drekkāṇa (Decanate Initiative)", "weight": 1.0, "is_pillar": False},
+        {"code": "D30", "label": "D30 (D5)", "title": "Triṁśāṁśa (5 Planetary Bounds / D30)", "weight": 1.0, "is_pillar": False},
+        {"code": "D9", "label": "D9", "title": "Navāṃśa (Soul Essence & Destiny)", "weight": 2.0, "is_pillar": True},
+        {"code": "D12", "label": "D12", "title": "Dvādaśāṁśa (Ancestral Lineage)", "weight": 1.0, "is_pillar": False},
+    ]
+
+    planet_scores = {p: {} for p in planets}
+    planet_weighted_pct = {}
+
+    for p in planets:
+        pe_p = pe.get("planets", {}).get(p, {})
+        vb = pe_p.get("step1_shadvarga", {}).get("varga_breakdown", {})
+        w_sum = 0.0
+        for r in rows_def:
+            code = r["code"]
+            entry = vb.get(code, {})
+            score = float(entry.get("score", 50.0))
+            sign = entry.get("sign", "--")
+            dig = entry.get("dignity", "--")
+            planet_scores[p][code] = {"score": score, "sign": sign, "dignity": dig}
+            w_sum += score * r["weight"]
+        planet_weighted_pct[p] = float(pe_p.get("step1_shadvarga", {}).get("weighted_dignity_pct", w_sum / 8.0))
+
+    table_rows = []
+    for r in rows_def:
+        code = r["code"]
+        is_pillar = r["is_pillar"]
+        row_bg = "background:#f8fafc;" if is_pillar else "background:#fffdfa;"
+        v_label = r["label"]
+        pillar_badge = '<span class="micro-tag" style="background:#e0f2fe; color:#0369a1; font-weight:800; font-size:4.8pt; margin-left:2px;">2× Pillar</span>' if is_pillar else ''
+
+        cells = []
+        for p in planets:
+            p_data = planet_scores[p].get(code, {})
+            score = p_data.get("score", 50.0)
+            sign = p_data.get("sign", "--")
+            dig = p_data.get("dignity", "--")
+            col = get_dignity_text_color(score)
+            abbr = get_shadvarga_dig_code(dig)
+            cells.append(f"""
+            <td style="padding:2px 3px; border:1px solid #e5dccb;">
+                <div style="font-weight:{'800' if is_pillar else '700'}; color:{col}; font-size:6.2pt;">{abbr} {score:.0f}</div>
+                <div style="font-size:5.2pt; color:#64748b;">{sign[:3]}</div>
+            </td>
+            """)
+
+        table_rows.append(f"""
+        <tr style="{row_bg}">
+            <td style="font-weight:{'800' if is_pillar else '600'}; color:{'#0284c7' if is_pillar else '#64748b'}; font-size:6pt; border:1px solid #e5dccb;">{int(r['weight'])}×</td>
+            <td style="font-weight:{'800' if is_pillar else '600'}; color:{'#0284c7' if is_pillar else '#1e293b'}; text-align:left; font-size:6.2pt; border:1px solid #e5dccb;">
+                {v_label} {pillar_badge}
+            </td>
+            {''.join(cells)}
+        </tr>
+        """)
+
+    total_cells = []
+    for p in planets:
+        w_val = planet_weighted_pct[p]
+        is_high = w_val >= 50.0
+        badge_cls = "high" if is_high else "low"
+
+        lord_tags = []
+        if p == lagna_lord_p:
+            lord_tags.append('<span class="shadvarga-lord-badge lord-l" title="Lagneśa (D1 Lagna Lord)">L</span>')
+        if p == drekkana_lord_p:
+            lord_tags.append('<span class="shadvarga-lord-badge lord-d" title="Drekkāṇa Lord (D3 Lagna Lord)">D</span>')
+        if p == navamsha_lord_p:
+            lord_tags.append('<span class="shadvarga-lord-badge lord-n" title="Navāṁśa Lord (D9 Lagna Lord)">N</span>')
+        lord_tags_html = f'<div style="display:flex; gap:1.5px; justify-content:center; align-items:center; margin-top:1.5px;">{"".join(lord_tags)}</div>' if lord_tags else ""
+
+        total_cells.append(f"""
+        <td style="padding:3px 3px; border:1px solid #dcb594; background:#faf7f2;">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1px;">
+                <span class="shadvarga-score-badge {badge_cls}">{w_val:.1f}%</span>
+                {lord_tags_html}
+            </div>
+        </td>
+        """)
+
+    th_planets = "".join([f'<th style="padding:2.5px 3px;">{render_planet_glyph_html(p, "7pt")} {p[:2]}</th>' for p in planets])
+
+    return f"""
+    <div class="card full-width" style="margin-bottom:8px; border:1px solid #dcb594;">
+        <div class="card-header" style="background:#eee5d3; padding:4px 8px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #dcb594;">
+            <div style="display:flex; align-items:center; gap:6px;">
+                <h3 style="font-size:8pt; font-weight:700; color:#4a3325; margin:0;">Vic DiCara Ṣaḍvarga Weighted Dignity Matrix (Phaladīpikā 3.1–4)</h3>
+            </div>
+            <span class="card-sub" style="font-size:6.2pt; color:#7c6853;">
+                D1 &amp; D9 (2× Sovereign Pillars) • D2, D3, D30 (D5), D12 (1× Ancillary Fields) • Total Weight: 8.0
+            </span>
+        </div>
+        <div class="card-body" style="padding:3px;">
+            <table class="data-table shadvarga-weighted-table" style="width:100%; border-collapse:collapse; font-size:6.2pt;">
+                <thead>
+                    <tr>
+                        <th style="width:5%;">W</th>
+                        <th style="width:15%; text-align:left;">Varga Harmonic</th>
+                        {th_planets}
+                    </tr>
+                </thead>
+                <tbody>
+                    {''.join(table_rows)}
+                    <tr style="background:#f5ece0; font-weight:bold; border-top:2px solid #dcb594;">
+                        <td style="border:1px solid #dcb594; color:#78716c;">∑/8</td>
+                        <td style="text-align:left; color:#4a3325; border:1px solid #dcb594; font-size:6.2pt;">Weighted Ṣaḍvarga</td>
+                        {''.join(total_cells)}
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top:3px; display:flex; justify-content:space-between; align-items:center; background:#f0fdf4; border:1px solid #bbf7d0; border-left:3px solid #166534; padding:3px 6px; font-size:5.5pt; color:#166534; border-radius:3px;">
+                <div>
+                    <strong>Vic DiCara Host Principle:</strong> Even when a planet shows lower divisional dignity, fortified host dispositors grant extraordinary endurance, executive power, and "kingship"!
+                </div>
+                <div style="display:flex; align-items:center; gap:6px; font-weight:600;">
+                    <span><span class="shadvarga-lord-badge lord-l">L</span> Lagneśa (D1)</span>
+                    <span><span class="shadvarga-lord-badge lord-d">D</span> Drekkāṇa (D3)</span>
+                    <span><span class="shadvarga-lord-badge lord-n">N</span> Navāṃśa (D9)</span>
+                </div>
+            </div>
         </div>
     </div>
     """
@@ -3388,7 +3574,8 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
 
     vargas_cards_html = "".join(vargas_cards)
 
-    # 10. Build 16-Varga Vimshopaka Dignity Matrix (All 9 Grahas with Auspicious / Inauspicious Counts)
+    # 10. Build 16-Varga Vimshopaka Dignity Matrix & Vic DiCara Ṣaḍvarga Weighted Table
+    shadvarga_weighted_table_html = render_shadvarga_weighted_table(chart_data, notation) if include_vimshopaka else ""
     vimshopaka_matrix_html = ""
     if include_vimshopaka:
         v_scores = chart_data.get("varga_vimshopaka", {}).get("scores", {}).get("Shodasavarga", {})
@@ -3562,7 +3749,7 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
     else:
         p_compact_vargas_num = 0
 
-    p_vimshopaka_num = cur_p if (include_vimshopaka and vimshopaka_matrix_html) else 0
+    p_vimshopaka_num = cur_p if (include_vimshopaka and (vimshopaka_matrix_html or shadvarga_weighted_table_html)) else 0
     if p_vimshopaka_num: cur_p += 1
     
     p_timeline_num = cur_p if (include_timeline and timeline_section_html) else 0
@@ -4066,10 +4253,147 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
   }}
   .micro-tag {{
     display: inline-block;
-    padding: 1px 5px;
+    padding: 1px 4px;
     border-radius: 3px;
-    font-size: 6.8pt;
+    font-size: 5.5pt;
     font-weight: 600;
+    line-height: 1.1;
+    border: 1px solid #dcb594;
+    white-space: nowrap;
+    vertical-align: middle;
+  }}
+  .micro-tag.tag-benefic {{
+    background: #dcfce7;
+    color: #15803d;
+    border-color: #86efac;
+  }}
+  .micro-tag.tag-malefic {{
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #f87171;
+  }}
+  .micro-tag.tag-neutral {{
+    background: #fef3c7;
+    color: #92400e;
+    border-color: #fde68a;
+  }}
+  .micro-tag.tag-alert {{
+    background: #ffedd5;
+    color: #ea580c;
+    border-color: #fdba74;
+  }}
+
+  .planet-glyph {{
+    font-family: var(--font-astro-glyphs, "STIX Two Math", "Cambria Math", "DejaVu Sans", sans-serif);
+    font-variant-emoji: text;
+    display: inline-block;
+    vertical-align: middle;
+  }}
+  .conjunct-symbol {{
+    font-family: var(--font-astro-glyphs, "STIX Two Math", "Cambria Math", "DejaVu Sans", sans-serif) !important;
+    font-size: 6.8pt !important;
+    font-weight: 700 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    color: #4a3325 !important;
+  }}
+  .conjunction-item {{
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    padding: 0.5px 2px;
+    white-space: nowrap;
+  }}
+  .mutual-circuit {{
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    padding: 0.5px 2.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }}
+  .incoming-aspect-item {{
+    display: inline-flex;
+    align-items: center;
+    gap: 1.5px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px;
+    padding: 0.5px 2px;
+    white-space: nowrap;
+  }}
+  .virupa-val {{
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+  }}
+
+  /* Ṣaḍvarga Weighted Table Styles */
+  .shadvarga-weighted-table th {{
+    background: #f3ede2;
+    color: #4a3325;
+    font-weight: 700;
+    border-bottom: 2px solid #cbd5e1;
+    border-right: 1px solid #e2d7c3;
+    padding: 2.5px 3px;
+    text-align: center;
+  }}
+  .shadvarga-weighted-table td {{
+    padding: 2px 3px;
+    border-bottom: 1px solid #e2d7c3;
+    border-right: 1px solid #e2d7c3;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+  }}
+  .shadvarga-score-badge {{
+    display: inline-block;
+    padding: 1px 4px;
+    border-radius: 3px;
+    font-weight: 800;
+    font-size: 5.8pt;
+    font-variant-numeric: tabular-nums;
+  }}
+  .shadvarga-score-badge.high {{
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #7dd3fc;
+  }}
+  .shadvarga-score-badge.low {{
+    background: #ffe4e6;
+    color: #be123c;
+    border: 1px solid #fda4af;
+  }}
+  .shadvarga-lord-badge {{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4.8pt;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0.5px 2.5px;
+    border-radius: 2px;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }}
+  .shadvarga-lord-badge.lord-l {{
+    background: #ede9fe;
+    color: #5b21b6;
+    border: 1px solid #c4b5fd;
+  }}
+  .shadvarga-lord-badge.lord-d {{
+    background: #fef3c7;
+    color: #92400e;
+    border: 1px solid #fcd34d;
+  }}
+  .shadvarga-lord-badge.lord-n {{
+    background: #fdf4ff;
+    color: #86198f;
+    border: 1px solid #f0abfc;
   }}
   .prog-bar {{
     background: #e2e8f0;
@@ -4413,29 +4737,30 @@ def generate_report_html(chart_data: Dict[str, Any], options: Optional[Dict[str,
   {dual_vargas_pages_rendered}
 
   {f'''
-  <!-- 16-VARGA VIMSHOPAKA DIGNITY MATRIX -->
+  <!-- 16-VARGA VIMSHOPAKA & SHADVARGA DIGNITY MATRIX -->
   <div class="page-container page-break avoid-break">
     <div class="master-header">
       <div class="header-left">
         <div class="native-title">{name} • 16-Varga Viṃśopaka Strength &amp; Dignity Matrix</div>
         <div class="native-meta">
           <span>Complete Shodashavarga (D1–D60)</span>
-          <span>All 9 Grahas (with Rāhu &amp; Ketu)</span>
+          <span>Vic DiCara Weighted Ṣaḍvarga Matrix</span>
           <span>Auspicious vs Inauspicious Counts</span>
           <span>Vaiśeṣikāṃśa Classifications</span>
         </div>
       </div>
       <div class="header-right">
         <span style="font-size: 7.5pt; color: #e5a03b; font-weight:600;">20-Point Total Parāśari Scoring</span>
-        <span style="font-size: 6.5pt; color: #e5dccb;">BPHS Chapter 45 Alignment</span>
+        <span style="font-size: 6.5pt; color: #e5dccb;">Phaladīpikā 3.1–4 &amp; BPHS Ch. 45</span>
       </div>
     </div>
+    {shadvarga_weighted_table_html}
     {vimshopaka_matrix_html}
     <div class="footer-note">
       Astra Precision Astrological Computation • Page {p_vimshopaka_num}: 16-Varga Viṃśopaka Matrix &amp; Dignity Breakdown • Report Generated for {name}
     </div>
   </div>
-  ''' if (include_vimshopaka and vimshopaka_matrix_html) else ''}
+  ''' if (include_vimshopaka and (vimshopaka_matrix_html or shadvarga_weighted_table_html)) else ''}
 
   {f'''
   <!-- VIMŚOTTARĪ DAŚĀ 120-YEAR CHRONOLOGICAL TIMELINE -->
