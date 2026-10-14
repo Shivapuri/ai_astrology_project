@@ -122,9 +122,52 @@ def calculate_uccha_bala(planet_name: str, planet_lon: float) -> float:
     return max(0.0, min(60.0, round(virupas, 2)))
 
 
-def get_saptavarga_points(planet: str, sign: str, compound_rel: str, is_d1: bool = False) -> float:
+def is_moolatrikona_d1(planet: str, sign: str, deg_in_sign: float, mode: str = "kala") -> bool:
+    """
+    Evaluates whether a planet occupies its Moolatrikona degree bounds in D1.
+    Per BPHS 3.51-54 and Phaladeepika 1.7:
+      - Sun in Leo: 0° <= deg < 20° (20°-30° is Own Sign)
+      - Moon in Taurus: 3° <= deg < 30° (0°-3° is Exalted / evaluated per compound friendship)
+      - Mars in Aries: 0° <= deg < 12° (12°-30° is Own Sign)
+      - Mercury in Virgo: 15° <= deg < 20° (0°-15° Exalted, 20°-30° Own Sign)
+      - Jupiter in Sagittarius: 0° <= deg < 10° (10°-30° is Own Sign)
+      - Venus in Libra: 0° <= deg < 15° (15°-30° is Own Sign)
+      - Saturn in Aquarius: 0° <= deg < 20° (20°-30° is Own Sign)
+    When mode == "kala", preserves Whole Sign Moolatrikona sign membership.
+    """
+    if MOOLATRIKONA_SIGNS.get(planet) != sign:
+        return False
+    if mode == "kala":
+        return True
+
+    deg = deg_in_sign % 30.0
+    if planet == "Sun":
+        return 0.0 <= deg < 20.0
+    elif planet == "Moon":
+        return 3.0 <= deg <= 30.0
+    elif planet == "Mars":
+        return 0.0 <= deg < 12.0
+    elif planet == "Mercury":
+        return 15.0 <= deg < 20.0
+    elif planet == "Jupiter":
+        return 0.0 <= deg < 10.0
+    elif planet == "Venus":
+        return 0.0 <= deg < 15.0
+    elif planet == "Saturn":
+        return 0.0 <= deg < 20.0
+    return False
+
+
+def get_saptavarga_points(
+    planet: str,
+    sign: str,
+    compound_rel: str,
+    is_d1: bool = False,
+    deg_in_sign: float = 0.0,
+    saptavarga_mode: str = "kala"
+) -> float:
     """Virūpa allocations for Saptavarga Bala."""
-    if is_d1 and MOOLATRIKONA_SIGNS.get(planet) == sign:
+    if is_d1 and is_moolatrikona_d1(planet, sign, deg_in_sign, mode=saptavarga_mode):
         return 45.0
     if sign in OWN_SIGNS.get(planet, []):
         return 30.0
@@ -216,7 +259,10 @@ def calculate_saptavarga_bala(
             sign_lord = SIGN_LORDS[varga_sign_name]
 
         if sign_lord == planet:
-            total_virupas += get_saptavarga_points(planet, varga_sign_name, "", is_d1=is_d1)
+            total_virupas += get_saptavarga_points(
+                planet, varga_sign_name, "",
+                is_d1=is_d1, deg_in_sign=p1_d1_lon % 30.0, saptavarga_mode=saptavarga_mode
+            )
             continue
 
         if saptavarga_mode == "kala" and not is_d1 and planet == "Venus" and varga_sign_name == "Pisces":
@@ -238,7 +284,10 @@ def calculate_saptavarga_bala(
             temporary = get_temporary_relationship(p1_d1_idx, lord_d1_idx)
             compound = get_compound_relationship(natural, temporary)
 
-        total_virupas += get_saptavarga_points(planet, varga_sign_name, compound, is_d1=is_d1)
+        total_virupas += get_saptavarga_points(
+            planet, varga_sign_name, compound,
+            is_d1=is_d1, deg_in_sign=p1_d1_lon % 30.0, saptavarga_mode=saptavarga_mode
+        )
 
     return total_virupas
 
@@ -282,6 +331,11 @@ def calculate_kendra_bala(
         Kendras: 1st = 60.0, 10th = 45.0, 7th = 30.0, 4th = 15.0
         Panaparas: 2nd = 30.0, 11th = 22.5, 8th = 15.0, 5th = 7.5
         Apoklimas: 3rd = 15.0, 12th = 11.25, 9th = 7.5, 6th = 3.75
+      - 'phaladeepika_exact': Exact literal Sanskrit sequence per Phaladeepika 4.8
+        (सुखे नभस्यस्तगृहे विलग्ने):
+        Kendras: 4th = 15.0, 10th = 30.0, 7th = 45.0, 1st = 60.0
+        Panaparas: 2nd, 5th, 8th, 11th = 30.0 Virūpas
+        Apoklimas: 3rd, 6th, 9th, 12th = 15.0 Virūpas
     """
     planet_sign = int((planet_lon % 360.0) / 30.0)
     asc_sign = int((ascendant_lon % 360.0) / 30.0)
@@ -294,6 +348,14 @@ def calculate_kendra_bala(
             3: 15.0, 12: 11.25, 9: 7.5, 6: 3.75         # Apoklimas (max 15)
         }
         return tapered_table.get(house_num, 15.0)
+
+    if mode == "phaladeepika_exact":
+        phaladeepika_table = {
+            1: 60.0, 7: 45.0, 10: 30.0, 4: 15.0,
+            2: 30.0, 5: 30.0, 8: 30.0, 11: 30.0,
+            3: 15.0, 6: 15.0, 9: 15.0, 12: 15.0
+        }
+        return phaladeepika_table.get(house_num, 15.0)
 
     # Standard Flat Parāśarī / Kala Mode
     if house_num in [1, 4, 7, 10]:
@@ -442,7 +504,8 @@ def calculate_nathonnatha_bala(
     *args,
     mc_lon: Optional[float] = None,
     ascendant_lon: Optional[float] = None,
-    asc_lon: Optional[float] = None
+    asc_lon: Optional[float] = None,
+    mode: str = "whole_sign"
 ) -> float:
     """
     Diurnal / Nocturnal Strength (Nathonnatha Bala: 0 to 60 Virūpas per BPHS 28.8-9).
@@ -465,14 +528,29 @@ def calculate_nathonnatha_bala(
     if args and mc is None and asc is None:
         asc = float(args[0])
 
-    if asc is not None and mc is None:
-        ic_lon = (asc + 90.0) % 360.0
-    elif mc is not None:
-        ic_lon = (mc + 180.0) % 360.0
-    elif asc is not None:
-        ic_lon = (asc + 90.0) % 360.0
+    if mode == "whole_sign":
+        if asc is not None:
+            ic_lon = (asc + 90.0) % 360.0
+        elif mc is not None:
+            ic_lon = (mc + 180.0) % 360.0
+        else:
+            ic_lon = 0.0
+    elif mode in ["campanus", "quadrant_mc"]:
+        if mc is not None:
+            ic_lon = (mc + 180.0) % 360.0
+        elif asc is not None:
+            ic_lon = (asc + 90.0) % 360.0
+        else:
+            ic_lon = 0.0
     else:
-        ic_lon = 0.0
+        if asc is not None and mc is None:
+            ic_lon = (asc + 90.0) % 360.0
+        elif mc is not None:
+            ic_lon = (mc + 180.0) % 360.0
+        elif asc is not None:
+            ic_lon = (asc + 90.0) % 360.0
+        else:
+            ic_lon = 0.0
 
     dist_from_ic = abs(sun_lon - ic_lon) % 360.0
     if dist_from_ic > 180.0:
@@ -509,14 +587,17 @@ def calculate_tribhaga_bala(planet: str, sun_lon: float, asc_lon: float) -> floa
     is_day = time_elapsed <= 180.0
     fraction = (time_elapsed / 180.0) if is_day else ((time_elapsed - 180.0) / 180.0)
 
+    one_third = 1.0 / 3.0
+    two_thirds = 2.0 / 3.0
+
     if is_day:
-        if fraction <= 0.3333 and planet == "Mercury": return 60.0
-        if 0.3333 < fraction <= 0.6666 and planet == "Sun": return 60.0
-        if fraction > 0.6666 and planet == "Saturn": return 60.0
+        if fraction <= one_third and planet == "Mercury": return 60.0
+        if one_third < fraction <= two_thirds and planet == "Sun": return 60.0
+        if fraction > two_thirds and planet == "Saturn": return 60.0
     else:
-        if fraction <= 0.3333 and planet == "Moon": return 60.0
-        if 0.3333 < fraction <= 0.6666 and planet == "Venus": return 60.0
-        if fraction > 0.6666 and planet == "Mars": return 60.0
+        if fraction <= one_third and planet == "Moon": return 60.0
+        if one_third < fraction <= two_thirds and planet == "Venus": return 60.0
+        if fraction > two_thirds and planet == "Mars": return 60.0
     return 0.0
 
 
@@ -530,7 +611,8 @@ def calculate_ahargana_lords(birth_time_jd: float, lon: float = 0.0, lat: float 
         hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 
         lmt_jd = birth_time_jd + (lon / 360.0)
-        vara_idx = int(lmt_jd + 1.5) % 7
+        sunrise_jd = lmt_jd - 0.25
+        vara_idx = int(sunrise_jd + 1.5) % 7
         vara_lord = planets_by_weekday[vara_idx]
 
         local_time_frac = (lmt_jd + 0.5) % 1.0
@@ -538,16 +620,16 @@ def calculate_ahargana_lords(birth_time_jd: float, lon: float = 0.0, lat: float 
         start_hora_idx = hora_sequence.index(vara_lord)
         hora_lord = hora_sequence[(start_hora_idx + int(hours_since_sunrise)) % 7]
 
-        T = (birth_time_jd - 2451545.0) / 36525.0
+        T = (sunrise_jd - 2451545.0) / 36525.0
         mean_sun = (280.466457 + 36000.7698278 * T) % 360.0
         days_since_aries = (mean_sun / 360.0) * 365.25
-        jd_aries = birth_time_jd - days_since_aries
+        jd_aries = sunrise_jd - days_since_aries
         varsha_idx = int(jd_aries + 1.5) % 7
         abda_lord = planets_by_weekday[varsha_idx]
 
         sign_deg = mean_sun % 30.0
         days_since_sankranti = (sign_deg / 30.0) * 30.4375
-        jd_sankranti = birth_time_jd - days_since_sankranti
+        jd_sankranti = sunrise_jd - days_since_sankranti
         masa_idx = int(jd_sankranti + 1.5) % 7
         masa_lord = planets_by_weekday[masa_idx]
 
@@ -572,11 +654,15 @@ def calculate_yuddha_bala(
     pre_war_balas: Dict[str, float],
     planet_longitudes: Dict[str, float],
     planet_latitudes: Optional[Dict[str, float]] = None,
-    use_latitude: bool = True
+    use_latitude: bool = True,
+    war_mode: str = "sripati_kala"
 ) -> Dict[str, float]:
     """
     Planetary War Strength (Yuddha Bala) per BPHS 28.19-20.
-    Evaluates Mars, Mercury, Jupiter, Venus, Saturn within <= 1°00'00" in the SAME sign.
+    Evaluates Mars, Mercury, Jupiter, Venus, Saturn within <= 1°00'00".
+    Modes:
+      - 'sripati_kala' (DEFAULT): Divides bala_diff by bimba_diff (disc diameter difference).
+      - 'parashara': Direct transfer of raw bala_diff per BPHS 27.20.
     """
     eligible = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
     adjustments = {p: 0.0 for p in pre_war_balas}
@@ -588,11 +674,6 @@ def calculate_yuddha_bala(
         for j in range(i + 1, len(eligible)):
             p2 = eligible[j]
             if p2 not in planet_longitudes:
-                continue
-
-            s1 = int((planet_longitudes[p1] % 360.0) / 30.0)
-            s2 = int((planet_longitudes[p2] % 360.0) / 30.0)
-            if s1 != s2:
                 continue
 
             diff = abs(planet_longitudes[p1] - planet_longitudes[p2]) % 360.0
@@ -619,12 +700,14 @@ def calculate_yuddha_bala(
                     winner = p1 if planet_longitudes[p1] < planet_longitudes[p2] else p2
                     loser = p2 if winner == p1 else p1
 
-                bimba_diff = abs(BIMBA_PARIMANAS[winner] - BIMBA_PARIMANAS[loser])
-                if bimba_diff < 1.0:
-                    bimba_diff = 1.0
-
                 bala_diff = abs(pre_war_balas[winner] - pre_war_balas[loser])
-                war_pts = round(bala_diff / bimba_diff, 2)
+                if war_mode == "parashara":
+                    war_pts = round(bala_diff, 2)
+                else:
+                    bimba_diff = abs(BIMBA_PARIMANAS[winner] - BIMBA_PARIMANAS[loser])
+                    if bimba_diff < 1.0:
+                        bimba_diff = 1.0
+                    war_pts = round(bala_diff / bimba_diff, 2)
 
                 # Ensure war deduction does not drive pre-war score below zero
                 war_pts = min(war_pts, max(0.0, pre_war_balas[loser]))
@@ -766,9 +849,24 @@ def calculate_cheshta_bala_analytical(
     return max(0.0, min(60.0, round(virupas, 2)))
 
 
-def calculate_cheshta_bala(planet: str, birth_time_jd: float, planet_geo_lon: float, sun_geo_lon: float = 0.0) -> float:
-    """Legacy wrapper for Cheshta Bala."""
-    return calculate_cheshta_bala_analytical(planet, birth_time_jd, planet_geo_lon)
+def calculate_cheshta_bala(
+    planet: str,
+    birth_time_jd: float,
+    planet_geo_lon: float,
+    sun_geo_lon: float = 0.0,
+    seeghrocca: Optional[float] = None
+) -> float:
+    """
+    Standalone wrapper for Cheshta Bala (satisfies BPHS 27.18 / 28.18).
+    - Sun inherits Cheshta Bala from Ayana Bala.
+    - Moon inherits Cheshta Bala from Paksha Bala.
+    - Mars, Mercury, Jupiter, Venus, Saturn evaluate motional anomaly (Cheshta Kendra).
+    """
+    if planet == "Sun":
+        return calculate_ayana_bala("Sun", planet_lon=planet_geo_lon)
+    if planet == "Moon":
+        return calculate_paksha_bala("Moon", planet_geo_lon, sun_geo_lon)
+    return calculate_cheshta_bala_analytical(planet, birth_time_jd, planet_geo_lon, seeghrocca=seeghrocca)
 
 
 # ==============================================================================
@@ -914,15 +1012,32 @@ def calculate_subha_phala(
                 d_entry = v_dignities.get(v, {}).get(planet, {})
                 d_str = d_entry.get("dignity", "Neutral") if isinstance(d_entry, dict) else str(d_entry)
 
-            if "Exalted" in d_str: pts = 60.0
-            elif "Moolatrikona" in d_str: pts = 45.0 if v == "D1" else 30.0
-            elif "Own Sign" in d_str: pts = 30.0
-            elif "Great Friend" in d_str: pts = 22.5
-            elif "Friend" in d_str: pts = 15.0
-            elif "Neutral" in d_str: pts = 7.5
-            elif "Great Enemy" in d_str: pts = 1.875
-            elif "Enemy" in d_str: pts = 3.75
-            else: pts = 0.0  # Debilitated
+            if saptavarga_mode == "parashara":
+                if "Exalted" in d_str: pts = 60.0
+                elif "Moolatrikona" in d_str:
+                    if v == "D1":
+                        s_name = SIGNS[int((planet_positions[planet] % 360.0) / 30.0)]
+                        deg_in_sign = planet_positions[planet] % 30.0
+                        pts = 45.0 if is_moolatrikona_d1(planet, s_name, deg_in_sign, mode="parashara") else 30.0
+                    else:
+                        pts = 30.0
+                elif "Own Sign" in d_str: pts = 30.0
+                elif "Great Friend" in d_str: pts = 22.0
+                elif "Friend" in d_str: pts = 15.0
+                elif "Neutral" in d_str: pts = 8.0
+                elif "Great Enemy" in d_str: pts = 2.0
+                elif "Enemy" in d_str: pts = 4.0
+                else: pts = 0.0  # Debilitated
+            else:
+                if "Exalted" in d_str: pts = 60.0
+                elif "Moolatrikona" in d_str: pts = 45.0 if v == "D1" else 30.0
+                elif "Own Sign" in d_str: pts = 30.0
+                elif "Great Friend" in d_str: pts = 22.5
+                elif "Friend" in d_str: pts = 15.0
+                elif "Neutral" in d_str: pts = 7.5
+                elif "Great Enemy" in d_str: pts = 1.875
+                elif "Enemy" in d_str: pts = 3.75
+                else: pts = 0.0  # Debilitated
 
             if v != "D1":
                 pts /= 2.0
@@ -973,16 +1088,34 @@ def calculate_subha_phala(
 
         dignity = get_dignity(planet, varga_sign_name, compound, deg_in_sign, debilitation_mode=debilitation_mode)
 
-        if "Exalted" in dignity: pts = 60.0
-        elif "Moolatrikona" in dignity: pts = 45.0 if is_rasi else 30.0
-        elif "Own Sign" in dignity: pts = 30.0
-        elif "Great Friend" in dignity: pts = 22.5
-        elif "Friend" in dignity: pts = 15.0
-        elif "Neutral" in dignity: pts = 7.5
-        elif "Great Enemy" in dignity: pts = 1.875
-        elif "Enemy" in dignity: pts = 3.75
-        elif "Debilitated" in dignity: pts = 0.0
-        else: pts = 7.5
+        if saptavarga_mode == "parashara":
+            if "Exalted" in dignity: pts = 60.0
+            elif "Moolatrikona" in dignity:
+                if is_rasi:
+                    s_name = SIGNS[int((planet_positions[planet] % 360.0) / 30.0)]
+                    deg_in_sign = planet_positions[planet] % 30.0
+                    pts = 45.0 if is_moolatrikona_d1(planet, s_name, deg_in_sign, mode="parashara") else 30.0
+                else:
+                    pts = 30.0
+            elif "Own Sign" in dignity: pts = 30.0
+            elif "Great Friend" in dignity: pts = 22.0
+            elif "Friend" in dignity: pts = 15.0
+            elif "Neutral" in dignity: pts = 8.0
+            elif "Great Enemy" in dignity: pts = 2.0
+            elif "Enemy" in dignity: pts = 4.0
+            elif "Debilitated" in dignity: pts = 0.0
+            else: pts = 8.0
+        else:
+            if "Exalted" in dignity: pts = 60.0
+            elif "Moolatrikona" in dignity: pts = 45.0 if is_rasi else 30.0
+            elif "Own Sign" in dignity: pts = 30.0
+            elif "Great Friend" in dignity: pts = 22.5
+            elif "Friend" in dignity: pts = 15.0
+            elif "Neutral" in dignity: pts = 7.5
+            elif "Great Enemy" in dignity: pts = 1.875
+            elif "Enemy" in dignity: pts = 3.75
+            elif "Debilitated" in dignity: pts = 0.0
+            else: pts = 7.5
 
         if not is_rasi:
             pts /= 2.0
@@ -1048,6 +1181,13 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         phala_mode = phala_mode_arg
     else:
         phala_mode = "parashara_geometric" if pillar_mode == "canonical_parashara" else "arithmetic"
+
+    war_mode_arg = kwargs.get("war_mode", None)
+    if war_mode_arg is not None:
+        war_mode = war_mode_arg
+    else:
+        war_mode = "parashara" if pillar_mode == "canonical_parashara" else "sripati_kala"
+
     lon = kwargs.get("lon", kwargs.get("longitude", 0.0))
     lat = kwargs.get("lat", kwargs.get("latitude", 0.0))
 
@@ -1182,7 +1322,9 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         )
 
         # 3. Kāla Bala (Preliminary)
-        nathonnatha = calculate_nathonnatha_bala(p, sun_lon, mc_lon=mc_lon, ascendant_lon=ascendant_lon)
+        nathonnatha = calculate_nathonnatha_bala(
+            p, sun_lon, mc_lon=mc_lon, ascendant_lon=ascendant_lon, mode=dig_bala_mode
+        )
         paksha = calculate_paksha_bala(p, moon_lon, sun_lon)
         tribhaga = calculate_tribhaga_bala(p, sun_lon, ascendant_lon)
         ayana = calculate_ayana_bala(p, planet_lon=pl_lon, tradition=ayana_tradition)
@@ -1218,7 +1360,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
 
     # Planetary War (Yuddha Bala)
     yuddha_adjustments = calculate_yuddha_bala(
-        pre_war_scores, planet_positions, planet_lats, use_latitude=True
+        pre_war_scores, planet_positions, planet_lats, use_latitude=True, war_mode=war_mode
     )
 
     # --------------------------------------------------------------------------
@@ -1318,6 +1460,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
         req_ayana = REQUIRED_AYANA.get(p, 30.0)
         req_cheshta = REQUIRED_CHESHTA.get(p, 40.0)
         req_total = REQUIRED_TOTAL.get(p, 300.0)
+        req_kaala_canonical = req_kaala + req_ayana
 
         results[p] = {
             # Pillar 1: Sthāna Bala
@@ -1345,9 +1488,10 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
             "Masa_Bala": round(masa, 1),
             "Dina_Bala": round(vara, 1),
             "Hora_Bala": round(hora, 1),
-            "Required_Kaala": req_kaala,
-            "Pct_Required_Kaala": round(((kaala_canonical if pillar_mode == "canonical_parashara" else kaala) / req_kaala) * 100.0, 1),
-            "Pct_Required_Kaala_Canonical": round((kaala_canonical / req_kaala) * 100.0, 1),
+            "Required_Kaala": req_kaala_canonical if pillar_mode == "canonical_parashara" else req_kaala,
+            "Required_Kaala_Canonical": req_kaala_canonical,
+            "Pct_Required_Kaala": round((kaala_canonical / req_kaala_canonical) * 100.0, 1) if pillar_mode == "canonical_parashara" else round((kaala / req_kaala) * 100.0, 1),
+            "Pct_Required_Kaala_Canonical": round((kaala_canonical / req_kaala_canonical) * 100.0, 1),
 
             # Pillar 4: Ayana Bala
             "Ayana_Bala": round(ayana, 2),
@@ -1385,7 +1529,7 @@ def calculate_shadbala(*args, **kwargs) -> Dict[str, Any]:
                 total_virupas >= req_total and
                 sthana >= req_sthana and
                 dig >= req_dig and
-                kaala_canonical >= req_kaala and
+                kaala >= req_kaala and
                 cheshta >= req_cheshta and
                 ayana >= req_ayana
             ),

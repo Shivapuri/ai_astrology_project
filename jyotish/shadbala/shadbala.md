@@ -84,7 +84,7 @@ The exact Deep Exaltation points are:
 Venus and Moon naturally thrive in Even (female) signs and Even Navamsas. They gain 15 Virupas in an Even Rasi and an additional 15 Virupas in an Even Navamsa. The other planets (Sun, Mars, Jupiter, Mercury, Saturn) gain 15 Virupas in an Odd (male) Rasi and an additional 15 Virupas in an Odd Navamsa. Maximum possible points: 30 Virupas.
 
 ### Phase 3: Sthana Bala - Component 3: Kendra Bala (Angular Strength)
-Planets derive strength from their house quadrant placement relative to the Ascendant. The engine supports two configurable modes via `kendra_bala_mode`:
+Planets derive strength from their house quadrant placement relative to the Ascendant. The engine supports three configurable modes via `kendra_bala_mode`:
 
 #### 1. Flat Parāśarī Mode (`kendra_bala_mode="flat_parashara"`, DEFAULT)
 The classical standard from *Brihat Parashara Hora Shastra* and Ernst Wilhelm's *Kala*:
@@ -93,10 +93,20 @@ The classical standard from *Brihat Parashara Hora Shastra* and Ernst Wilhelm's 
 - **Apoklimas (Cadent: 3, 6, 9, 12):** 15.0 Virūpas (0.25 Rūpa)
 
 #### 2. Tapered Phaladeepika Mode (`kendra_bala_mode="tapered_phaladeepika"`)
-Mantreśvara's nuanced model (*Phaladeepika* Ch. 4, Text 8) where angular strength scales down by one-quarter ($1/4$) starting from the Ascendant across each square:
+Mantreśvara's nuanced model (*Phaladeepika* Ch. 4, Text 8 / Vic DiCara) where angular strength scales down by one-quarter ($1/4$) starting from the Ascendant across each square:
 - **Kendras:** 1st = 60.0 Virūpas, 10th = 45.0 Virūpas, 7th = 30.0 Virūpas, 4th = 15.0 Virūpas.
 - **Panaparas:** 2nd = 30.0 Virūpas, 11th = 22.5 Virūpas, 8th = 15.0 Virūpas, 5th = 7.5 Virūpas.
 - **Apoklimas:** 3rd = 15.0 Virūpas, 12th = 11.25 Virūpas, 9th = 7.5 Virūpas, 6th = 3.75 Virūpas.
+
+#### 3. Exact Phaladeepika Mode (`kendra_bala_mode="phaladeepika_exact"`)
+Exact literal Kendra sequence per Mantreśvara (*Phaladeepika* Ch. 4, Text 8: `सुखे नभस्यस्तगृहे विलग्ने । उपर्युपर्युक्तपदक्रमेण बलाभिवृद्धिं हि विकल्पयन्ति ॥ ८॥` — *sukhe nabhasyastagṛhe vilagne | uparyuparyuktapadakrameṇa balābhivṛddhiṁ hi vikalpayanti || 8||*):
+- **Kendras (Ascending order of strength):**
+  - 4th House (`सुखे` - Sukhe): 15.0 Virūpas (0.25 Rūpa)
+  - 10th House (`नभसि` - Nabhasi): 30.0 Virūpas (0.50 Rūpa)
+  - 7th House (`अस्तगृहे` - Astagṛhe): 45.0 Virūpas (0.75 Rūpa)
+  - 1st House (`विलग्ने` - Vilagne): 60.0 Virūpas (1.00 Rūpa)
+- **Panaparas (Succedent: 2, 5, 8, 11):** 30.0 Virūpas (0.5 Rūpa per Phaladeepika 4.3)
+- **Apoklimas (Cadent: 3, 6, 9, 12):** 15.0 Virūpas (0.25 Rūpa per Phaladeepika 4.3)
 
 
 ### Phase 3: Sthana Bala - Component 4: Drekkana Bala (Decanate Strength)
@@ -122,8 +132,8 @@ Planets are evaluated not just in the main birth chart (D1), but across 7 differ
      - Even Signs: 0°–5° Venus, 5°–12° Mercury, 12°–20° Jupiter, 20°–25° Saturn, 25°–30° Mars.
    - `'harmonic_kala'`: Equal 1° harmonic Trimsamsa ($30 \times \lambda \pmod{360^\circ}$) calibrated against Ernst Wilhelm's *Kala* software tables.
 2. `saptavarga_mode`:
-   - `'parashara'` (**DEFAULT** for standalone & canonical mode): Dynamic compound relationship evaluation across all divisional charts without ad-hoc overrides.
-   - `'kala'`: Preserves exact parity with Kala software tables where Venus in Pisces across higher vargas yields 10.0 Virūpas (Neutral).
+   - `'parashara'` (**DEFAULT** for standalone & canonical mode): Dynamic compound relationship evaluation across all divisional charts without ad-hoc overrides. Enforces classical D1 Moolatrikona degree boundaries per BPHS 3.51–54 (`is_moolatrikona_d1`), falling back to Own Sign (30.0 Virūpas) outside Moolatrikona degrees.
+   - `'kala'`: Preserves exact parity with Kala software tables where 45.0 Virūpas are awarded across the entire Moolatrikona Rasi in D1, and Venus in Pisces across higher vargas yields 10.0 Virūpas (Neutral).
 
 ---
 
@@ -151,8 +161,8 @@ The rules in this file are directly grounded in the ancient texts retrieved from
 > *— Brihat Parashara Hora Shastra Chapter 3:49-50*
 
 ### Ojayugmarasyamsa, Kendra, and Drekkana Rules
-> "Venus and the Moon gain 15 virupas in an even rasi and 15 virupas in an even navamsa, the other planets gain this odd rasis and navamsas. A planet in an angle (Kendra) gains 60 virupas, in a panapara 30, and in apoklimas 15. Male planets gain 15 virupas in the first drekkana of a rasi, female planets gain 15 in the second drekkana of a rasi, and neuter planets gain 15 in the third drekkana."
-> *— Ernst Wilhelm, Vault of the Heavens (Translating classical Parashari principles)*
+> "Venus and the Moon gain 15 virupas in an even rasi and 15 virupas in an even navamsa, the other planets gain this in odd rasis and navamsas. A planet in an angle (Kendra) gains 60 virupas, in a panapara 30, and in apoklimas 15. Per BPHS 27.6 (*puṁnapuṁsakayoṣākhyā*) and Phaladeepika 4.3 (*madhyādyantakaṣaṇḍamartyavanitāḥ*): male planets gain 15 virupas in the first drekkana of a rasi (0°–10°), neuter planets gain 15 in the second drekkana (10°–20°), and female planets gain 15 in the third drekkana (20°–30°)."
+> *— Brihat Parashara Hora Shastra 27.6 & Phaladeepika 4.3*
 
 ### Saptavarga Bala (7-Divisional Strength) Rules
 > एवं होरादृकाणाद्रिभागांकद्वादशांशजम्।ह् । त्रिंशांशजं तदैक्यञ्च सप्तवर्गसमुद्।ह्भवम्।ह् ॥ ४॥
@@ -195,7 +205,6 @@ Divides the Day (when Sun is above horizon) and Night into three equal portions.
 
 #### 4. Ayana Bala (Equatorial Declination Strength)
 Measures the planet's Kranti (Declination) from the celestial equator. Sun, Mars, Jupiter, and Venus gain strength when they have Northern declination (up to 60 Virupas at +24°). Moon and Saturn gain strength when they have Southern declination (up to 60 Virupas at -24°). Mercury operates at maximum strength (60 Virupas) at both extreme poles and drops to 30 Virupas precisely at the equator.
-*(Note: Yuddha Bala [Planetary War] and Calendar Lords [Year, Month, Day, Hour] are advanced extensions of Kala Bala remaining to be integrated into the total Shadbala loop).*
 
 ### Ayana Bala Rules (Declination)
 > पञ्चाब्धयः सुराः सूर्याः खण्डकांशाः क्रमादमी । सायनग्रहदोराशितुल्यखण्डयुतिश्च स ॥ १५॥
@@ -255,7 +264,7 @@ Drik Bala evaluates the strength a planet receives from the aspects (Drishti) of
 - Aspects from Malefics (Sun, Mars, Saturn) decrease strength.
 
 #### Execution Modes
-1. `'kala_weighted'` (**DEFAULT**): Ernst Wilhelm / Kala software standard where Jupiter and Mercury cast full aspect ($100\%$, $+1.0$), while Venus and waxing Moon cast one-quarter aspect ($+0.25$). Malefics deduct one-quarter aspect ($-0.25$).
+1. `'kala_weighted'` (**DEFAULT**): Ernst Wilhelm / Kala software standard where Jupiter and Mercury cast full aspect ($100\%$, $+1.0$), while Venus and waxing Moon cast one-quarter aspect ($+0.25$). Malefics deduct one-quarter aspect ($-0.25$). Note that granting full aspectual weight ($100\%$) to Mercury and Jupiter is explicitly grounded in BPHS 27.19 (`पापदृक्पादहीनं तच्छुभदृक्पादयुक् तथा । बलैक्यं ज्ञेज्यदृक्युक्तमेवं खेटबलं भवेत्` — *pāpadṛkpādahīnaṁ tacchubhadṛkpādayuk tathā | balaikyaṁ jñejyadṛgyuktamevaṁ kheṭabalaṁ bhavet*), which specifically adds the aspects of Mercury (*jñā*) and Jupiter (*ijya*) without the $1/4$ reduction applied to other planets.
 2. `'symmetric_parashara'`: Classical Parāśarī formula (BPHS 28.29–31) where all benefics add one-quarter aspect ($+0.25$) and all malefics subtract one-quarter aspect ($-0.25$).
 
 The aspect value is a mathematically precise piecewise function that awards 60 Virupas at direct opposition (180°), 30 Virupas at a trine (120°), and scales geometrically across the zodiac.
@@ -274,11 +283,11 @@ The aspect value is a mathematically precise piecewise function that awards 60 V
 Beyond standard strength (Bala), the exact measure of a planet's tendency to give good (Ishta) or evil (Kashta) results during its Dasa (planetary period) is calculated mathematically.
 
 #### Execution Modes
-1. `'arithmetic'` (**DEFAULT**): Ernst Wilhelm's *Kala* software standardizes on the balanced arithmetic mean:
-   $$\text{Ishta Phala} = \frac{U + C}{2}, \quad \text{Kashta Phala} = \frac{(60 - U) + (60 - C)}{2}$$
+1. `'arithmetic'` (**DEFAULT**): Directly taught in BPHS 28.6 (`उच्चचेष्टाकरान् व्येकान् दिग्भिर्हत्वा तु योजयेत् । तदर्धमिष्टसंज्ञं स्यात् कष्टं तत्षष्टितश्च्युतम्` — *uccaceṣṭākarān vyekān digbhirhatvā tu yojayet | tadardhamiṣṭasaṁjñaṁ syāt kaṣṭaṁ tatṣaṣṭitaścyutam*), which explicitly prescribes taking half the sum (the arithmetic mean) of Uccha and Cheshta for Ishta, and subtracting Ishta from 60 for Kashta:
+   $$\text{Ishta Phala} = \frac{U + C}{2}, \quad \text{Kashta Phala} = 60.0 - \text{Ishta Phala} = \frac{(60 - U) + (60 - C)}{2}$$
    where $U$ is the clamped Uccha Bala ($0 \le U \le 60$) and $C$ is the clamped Cheshta Bala ($0 \le C \le 60$).
    This enforces the mathematical conservation law $\text{Ishta} + \text{Kashta} = 60.0\text{ Virūpas}$ across all reporting tables.
-2. `'parashara_geometric'` / `'geometric'`: Classical Parāśarī formula per BPHS 29.5:
+2. `'parashara_geometric'` / `'geometric'`: The geometric mean formulation derived from the *Śrīpati Paddhati* tradition:
    $$\text{Ishta Phala} = \sqrt{\text{Uccha Bala} \times \text{Cheṣṭā Bala}}$$
    $$\text{Kaṣṭa Phala} = \sqrt{(60.0 - \text{Uccha Bala}) \times (60.0 - \text{Cheṣṭā Bala})}$$
 
@@ -288,6 +297,10 @@ Both geometric and arithmetic values are always exported in the engine result di
 Śubha Phala quantifies the aggregate positive fruit a planet yields based on its dignity evaluated across the Saptavargas ($D_1, D_2, D_3, D_7, D_9, D_{12}, D_{30}$):
 $$\text{Śubha Phala} = \frac{\text{Points}_{D1} + \sum_{v \in \{D_2..D_{30}\}} \frac{\text{Points}_v}{2}}{4.0}$$
 $$\text{Aśubha Phala} = 60.0 - \text{Śubha Phala}$$
+
+#### Point Scales by Dignity
+- **Parāśarī Scale (`saptavarga_mode='parashara'`, BPHS 28.8 Bhūta-saṅkhyā integers):** Exalted = 60.0, Moolatrikona = 45.0 (D1 within MT degrees; 30.0 outside MT or in vargas), Own Sign = 30.0, Great Friend = 22.0, Friend = 15.0, Neutral = 8.0, Enemy = 4.0, Great Enemy = 2.0, Debilitated = 0.0.
+- **Kala Scale (`saptavarga_mode='kala'`, Halving subdivisions):** Exalted = 60.0, Moolatrikona = 45.0 (D1 full sign; 30.0 in vargas), Own Sign = 30.0, Great Friend = 22.5, Friend = 15.0, Neutral = 7.5, Enemy = 3.75, Great Enemy = 1.875, Debilitated = 0.0.
 
 #### Trimsamsa Harmonization
 `calculate_subha_phala` accepts `trimsamsa_mode` and strictly harmonizes with Saptavarga Bala:
@@ -307,12 +320,19 @@ $$\text{Aśubha Phala} = 60.0 - \text{Śubha Phala}$$
 ---
 
 ### Phase 8: Yuddha Bala (Planetary War Strength)
-When two of the five star planets (Mars, Mercury, Jupiter, Venus, Saturn) are in the same zodiac sign and within $1^\circ00'00"$ of each other, they engage in **Graha Yuddha** (Planetary War) per BPHS 28.19–20.
+When two of the five star planets (Mars, Mercury, Jupiter, Venus, Saturn) are within $1^\circ00'00"$ of each other (including across sign boundaries), they engage in **Graha Yuddha** (Planetary War) per BPHS 28.19–20.
 
 #### Victor Determination
 1. **Venus Invariance Rule (Bahula-Ruchi):** Venus never loses a planetary war.
 2. **Celestial Latitude:** The planet with greater northern celestial latitude wins (per Surya Siddhanta / Kala).
 3. **Longitude Fallback:** The planet with lower longitude wins if latitudes are virtually identical.
+
+#### Planetary War Modes (`war_mode`)
+- `'sripati_kala'` (**DEFAULT**): Classical Śrīpati Paddhati / Kala software method using disc diameter (*Bimba*) difference:
+  $$\text{Raw War Points} = \frac{|\text{Pre-War Winner} - \text{Pre-War Loser}|}{\max(1.0, |\text{Bimba Winner} - \text{Bimba Loser}|)}$$
+- `'parashara'`: Direct point transfer without diameter scaling per literal Parāśara verses:
+  $$\text{Raw War Points} = |\text{Pre-War Winner} - \text{Pre-War Loser}|$$
+In both modes, the loser's deduction is floored so physical strength cannot drop below $0.0$ Virūpas.
 
 #### War Point Formula & Defensive Floor
 $$\text{Bala Difference} = |\text{Pre-War Winner} - \text{Pre-War Loser}|$$
@@ -328,7 +348,7 @@ Standard planetary disc diameters (*Bimba Parimanas* in arcminutes/angulas per B
 ### Phase 9: Pillar Architecture Modes (Canonical 6 Pillars vs. Kala Breakdown)
 The engine provides two configurable aggregation models via `pillar_mode`:
 1. `'kala_breakdown'` (**DEFAULT**): Preserves exact parity with Ernst Wilhelm's *Kala* software 25-row breakdown tables and ground-truth benchmark CSVs (`angelina_jolie_shadbala_breakdown.csv`). Ayana Bala and Kala Bala are displayed as separate metrics with distinct Parāśarī threshold benchmarks (`Required_Kaala` and `Required_Ayana`).
-2. `'canonical_parashara'`: Implements the classical 6-pillar architecture of BPHS Chapters 27–28 and Phaladīpikā Chapter 4, where Ayana Bala is intrinsically nested inside Kāla Bala. Both modes produce mathematically consistent Total Virūpas sums. The engine also exports a dedicated `Canonical_6_Pillars` dictionary across all runs.
+2. `'canonical_parashara'`: Implements the classical 6-pillar architecture of BPHS Chapters 27–28 and Phaladīpikā Chapter 4, where Ayana Bala is intrinsically nested inside Kāla Bala. In this mode, `Required_Kaala` and `Required_Kaala_Canonical` use the combined threshold (`REQUIRED_KAALA + REQUIRED_AYANA`: 142.0 for Sun/Mer/Jup, 140.0 for Moon/Ven, 87.0 for Mars/Sat) to eliminate Ayana double-counting. Both modes produce mathematically consistent Total Virūpas sums. The engine also exports a dedicated `Canonical_6_Pillars` dictionary across all runs.
 
 ## 4. Bhava Bala Subsystem (House Strength)
 Bhava Bala measures the strength of each of the 12 astrological houses (*Bhavas*) to manifest auspicious results. Calibrated to BPHS Chapters 28–30 and Ernst Wilhelm's Kala methodology, each house's total strength is composed of three foundational pillars:

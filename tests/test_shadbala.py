@@ -485,5 +485,269 @@ def test_subha_phala_trimsamsa_modes():
     assert isinstance(subha_harmonic, float)
 
 
+# =============================================================================
+# AUDIT REMEDIATION TESTS (BPHS & PHALADEEPIKA CALIBRATION)
+# =============================================================================
+
+def test_canonical_kaala_bala_minimum_requirements():
+    """
+    Fix 1.1: Verify Required_Kaala_Canonical uses REQUIRED_KAALA + REQUIRED_AYANA
+    and is_strong_all_pillars does not pass deficient kaala due to high ayana.
+    """
+    from jyotish.shadbala.shadbala import (
+        calculate_shadbala, REQUIRED_KAALA, REQUIRED_AYANA
+    )
+    # Sun threshold: Kaala 112 + Ayana 30 = 142
+    assert REQUIRED_KAALA["Sun"] + REQUIRED_AYANA["Sun"] == 142.0
+    # Moon/Ven threshold: 100 + 40 = 140
+    assert REQUIRED_KAALA["Moon"] + REQUIRED_AYANA["Moon"] == 140.0
+    # Mars/Sat threshold: 67 + 20 = 87
+    assert REQUIRED_KAALA["Mars"] + REQUIRED_AYANA["Mars"] == 87.0
+
+    positions = {
+        "Sun": 45.0, "Moon": 120.0, "Mars": 200.0, "Mercury": 60.0,
+        "Jupiter": 150.0, "Venus": 90.0, "Saturn": 280.0
+    }
+    sb_canonical = calculate_shadbala(
+        planet_positions=positions, ascendant_lon=0.0, mc_lon=270.0,
+        birth_time_jd=2451545.0, pillar_mode="canonical_parashara"
+    )
+    sun = sb_canonical["Sun"]
+    assert sun["Required_Kaala"] == 142.0
+    assert sun["Required_Kaala_Canonical"] == 142.0
+    expected_pct = round((sun["Kala_Bala_Canonical"] / 142.0) * 100.0, 1)
+    assert sun["Pct_Required_Kaala"] == expected_pct
+    assert sun["Pct_Required_Kaala_Canonical"] == expected_pct
+
+    sb_kala = calculate_shadbala(
+        planet_positions=positions, ascendant_lon=0.0, mc_lon=270.0,
+        birth_time_jd=2451545.0, pillar_mode="kala_breakdown"
+    )
+    assert sb_kala["Sun"]["Required_Kaala"] == 112.0
+    assert sb_kala["Sun"]["Required_Kaala_Canonical"] == 142.0
+
+
+def test_is_strong_all_pillars_deficient_kaala():
+    """
+    Fix 1.1: is_strong_all_pillars must check kaala >= req_kaala directly,
+    preventing deficient kaala from being masked by high ayana.
+    """
+    from jyotish.shadbala.shadbala import calculate_shadbala
+    # Test chart positions where kaala < required
+    positions = {
+        "Sun": 0.0, "Moon": 0.0, "Mars": 0.0, "Mercury": 0.0,
+        "Jupiter": 0.0, "Venus": 0.0, "Saturn": 0.0
+    }
+    sb = calculate_shadbala(
+        planet_positions=positions, ascendant_lon=0.0, mc_lon=270.0,
+        birth_time_jd=2451545.0, pillar_mode="canonical_parashara"
+    )
+    # For each planet where kaala < req_kaala, is_strong_all_pillars must be False
+    for p, data in sb.items():
+        if p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
+            kaala = data["Kala_Bala_Canonical"] - data["Ayana_Bala"]
+            req_kaala = 112.0 if p in ["Sun", "Mercury", "Jupiter"] else (100.0 if p in ["Moon", "Venus"] else 67.0)
+            if kaala < req_kaala:
+                assert not data["is_strong_all_pillars"]
+
+
+def test_saptavarga_bala_d1_moolatrikona_degree_bounds():
+    """
+    Fix 1.2: Enforce D1 Moolatrikona Degree Boundaries in calculate_saptavarga_bala.
+    Sun at 10° Leo is Moolatrikona (45.0). Sun at 25° Leo is Own Sign (30.0).
+    """
+    from jyotish.shadbala.shadbala import calculate_saptavarga_bala, is_moolatrikona_d1
+
+    # Direct helper verification
+    assert is_moolatrikona_d1("Sun", "Leo", 10.0, mode="parashara") is True
+    assert is_moolatrikona_d1("Sun", "Leo", 25.0, mode="parashara") is False
+    assert is_moolatrikona_d1("Sun", "Leo", 25.0, mode="kala") is True
+
+    assert is_moolatrikona_d1("Moon", "Taurus", 15.0, mode="parashara") is True
+    assert is_moolatrikona_d1("Moon", "Taurus", 2.0, mode="parashara") is False
+
+    assert is_moolatrikona_d1("Mars", "Aries", 8.0, mode="parashara") is True
+    assert is_moolatrikona_d1("Mars", "Aries", 15.0, mode="parashara") is False
+
+    # Sun in Leo D1 test
+    positions_mt = {"Sun": 130.0}   # 10° Leo
+    positions_own = {"Sun": 145.0}  # 25° Leo
+
+    sb_mt = calculate_saptavarga_bala("Sun", positions_mt, saptavarga_mode="parashara")
+    sb_own = calculate_saptavarga_bala("Sun", positions_own, saptavarga_mode="parashara")
+    # In D1, MT gets 45.0, Own Sign gets 30.0 -> exact difference is 15.0
+    # Higher vargas for 130° vs 145° may differ, but D1 delta is exactly 15.0
+    from jyotish.shadbala.shadbala import get_saptavarga_points
+    pts_mt = get_saptavarga_points("Sun", "Leo", "", is_d1=True, deg_in_sign=10.0, saptavarga_mode="parashara")
+    pts_own = get_saptavarga_points("Sun", "Leo", "", is_d1=True, deg_in_sign=25.0, saptavarga_mode="parashara")
+    pts_kala = get_saptavarga_points("Sun", "Leo", "", is_d1=True, deg_in_sign=25.0, saptavarga_mode="kala")
+    assert pts_mt == 45.0
+    assert pts_own == 30.0
+    assert pts_kala == 45.0
+
+
+def test_nathonnatha_bala_whole_sign_ic_precedence():
+    """
+    Fix 1.3: Whole Sign Nadir (ic_lon) Precedence in calculate_nathonnatha_bala.
+    In mode="whole_sign", uses (ascendant_lon + 90°) even when mc_lon is passed.
+    """
+    from jyotish.shadbala.shadbala import calculate_nathonnatha_bala
+
+    # Ascendant = 0° -> IC = 90°. Sun at 90° is at Midnight.
+    # Sun (daytime planet) at Midnight gets 0.0 Virūpas.
+    # If MC=90° had taken precedence, IC would be 270°, making Sun at 90° Midday (60.0).
+    val_ws = calculate_nathonnatha_bala("Sun", sun_lon=90.0, ascendant_lon=0.0, mc_lon=90.0, mode="whole_sign")
+    assert val_ws == 0.0
+
+    val_camp = calculate_nathonnatha_bala("Sun", sun_lon=90.0, ascendant_lon=0.0, mc_lon=90.0, mode="campanus")
+    assert val_camp == 60.0
+
+
+def test_ahargana_lords_sunrise_rollover():
+    """
+    Fix 1.4: Fix Midnight vs. Sunrise Rollover in calculate_ahargana_lords.
+    Births between 00:00 and 06:00 LMT must retain the previous sunrise's weekday lord.
+    """
+    from jyotish.shadbala.shadbala import calculate_ahargana_lords
+
+    # Monday Jan 3, 2000:
+    # 00:00 UTC is JD 2451546.5
+    # 03:00 UTC is JD 2451546.625 (before 06:00 sunrise: Vara Lord must still be Sunday / Sun)
+    lords_night = calculate_ahargana_lords(birth_time_jd=2451546.625, lon=0.0)
+    assert lords_night["Vara"] == "Sun"
+
+    # 07:00 UTC is JD 2451546.7917 (after 06:00 sunrise: Vara Lord rolls over to Monday / Moon)
+    lords_day = calculate_ahargana_lords(birth_time_jd=2451546.7917, lon=0.0)
+    assert lords_day["Vara"] == "Moon"
+
+
+def test_yuddha_bala_cross_sign_boundary():
+    """
+    Fix 1.5: Remove Artificial Sign-Cusp Barrier & Support Classical Yuddha_Bala.
+    Triggers war when diff <= 1.0° across sign boundary (e.g., 29.9° Aries and 0.2° Taurus).
+    """
+    from jyotish.shadbala.shadbala import calculate_yuddha_bala
+
+    longitudes = {
+        "Mars": 29.9,     # 29°54' Aries
+        "Mercury": 30.2   # 0°12' Taurus
+    }
+    pre_war = {"Mars": 100.0, "Mercury": 150.0}
+
+    # Sripati / Kala mode
+    adj_sripati = calculate_yuddha_bala(pre_war, longitudes, war_mode="sripati_kala")
+    assert adj_sripati["Mars"] != 0.0
+    assert adj_sripati["Mercury"] != 0.0
+    assert adj_sripati["Mars"] + adj_sripati["Mercury"] == 0.0
+
+    # Parashara raw mode: diff = 50.0, war_pts = 50.0
+    adj_parashara = calculate_yuddha_bala(pre_war, longitudes, war_mode="parashara")
+    # Mercury wins (higher longitude in absence of lat) or Mars wins:
+    bala_diff = abs(pre_war["Mars"] - pre_war["Mercury"])
+    assert abs(adj_parashara["Mars"]) == bala_diff
+    assert abs(adj_parashara["Mercury"]) == bala_diff
+
+
+def test_kendra_bala_phaladeepika_exact():
+    """
+    Fix 1.6: Correct Phaladeepika 4.8 Kendra House Sequence.
+    4th = 15, 10th = 30, 7th = 45, 1st = 60.
+    """
+    from jyotish.shadbala.shadbala import calculate_kendra_bala
+
+    # Ascendant at 0° (House 1: 0°-30°, H4: 90°-120°, H7: 180°-210°, H10: 270°-300°)
+    asc = 0.0
+    assert calculate_kendra_bala(15.0, asc, mode="phaladeepika_exact") == 60.0   # H1
+    assert calculate_kendra_bala(195.0, asc, mode="phaladeepika_exact") == 45.0  # H7
+    assert calculate_kendra_bala(285.0, asc, mode="phaladeepika_exact") == 30.0  # H10
+    assert calculate_kendra_bala(105.0, asc, mode="phaladeepika_exact") == 15.0  # H4
+
+    # Panapara = 30.0, Apoklima = 15.0
+    assert calculate_kendra_bala(45.0, asc, mode="phaladeepika_exact") == 30.0   # H2
+    assert calculate_kendra_bala(75.0, asc, mode="phaladeepika_exact") == 15.0   # H3
+
+
+def test_standalone_cheshta_bala_sun_moon():
+    """
+    Fix 1.7: calculate_cheshta_bala Standalone Wrapper for Sun and Moon per BPHS 27.18.
+    """
+    from jyotish.shadbala.shadbala import calculate_cheshta_bala, calculate_ayana_bala, calculate_paksha_bala
+
+    sun_cheshta = calculate_cheshta_bala("Sun", birth_time_jd=2451545.0, planet_geo_lon=60.0)
+    expected_sun = calculate_ayana_bala("Sun", planet_lon=60.0)
+    assert sun_cheshta == expected_sun
+    assert sun_cheshta > 0.0
+
+    moon_cheshta = calculate_cheshta_bala("Moon", birth_time_jd=2451545.0, planet_geo_lon=180.0, sun_geo_lon=0.0)
+    expected_moon = calculate_paksha_bala("Moon", 180.0, 0.0)
+    assert moon_cheshta == expected_moon
+    assert moon_cheshta == 60.0
+
+
+def test_subha_phala_parashara_bhuta_sankhya():
+    """
+    Fix 1.7 & Remediation: calculate_subha_phala BPHS 28.8 Point Table.
+    Uses [60, 45, 30, 22, 15, 8, 4, 2, 0] in saptavarga_mode="parashara".
+    Verifies that "Great Enemy" yields 2.0 (and not 4.0 via substring bug),
+    and enforces D1 Moolatrikona degree bounds.
+    """
+    from jyotish.shadbala.shadbala import calculate_subha_phala
+
+    positions = {
+        "Sun": 10.0, "Moon": 45.0, "Mars": 12.0, "Mercury": 60.0,
+        "Jupiter": 120.0, "Venus": 30.0, "Saturn": 200.0
+    }
+    subha_parashara = calculate_subha_phala("Sun", positions, saptavarga_mode="parashara")
+    subha_kala = calculate_subha_phala("Sun", positions, saptavarga_mode="kala")
+    assert subha_parashara > 0.0
+    assert subha_kala > 0.0
+    # Kala and Parashara differ due to 22.5/7.5/3.75/1.875 vs 22/8/4/2
+    assert isinstance(subha_parashara, float)
+    assert isinstance(subha_kala, float)
+
+    # Explicit substring bug verification: "Great Enemy" (2.0) vs "Enemy" (4.0)
+    dignities_ge = {
+        "varga_dignities": {
+            "D1": {"Sun": {"dignity": "Great Enemy"}},
+            "D2": {"Sun": {"dignity": "Debilitated"}},
+            "D3": {"Sun": {"dignity": "Debilitated"}},
+            "D7": {"Sun": {"dignity": "Debilitated"}},
+            "D9": {"Sun": {"dignity": "Debilitated"}},
+            "D12": {"Sun": {"dignity": "Debilitated"}},
+        }
+    }
+    dignities_enemy = {
+        "varga_dignities": {
+            "D1": {"Sun": {"dignity": "Enemy"}},
+            "D2": {"Sun": {"dignity": "Debilitated"}},
+            "D3": {"Sun": {"dignity": "Debilitated"}},
+            "D7": {"Sun": {"dignity": "Debilitated"}},
+            "D9": {"Sun": {"dignity": "Debilitated"}},
+            "D12": {"Sun": {"dignity": "Debilitated"}},
+        }
+    }
+    res_ge = calculate_subha_phala("Sun", positions, dignities_map=dignities_ge, saptavarga_mode="parashara")
+    res_enemy = calculate_subha_phala("Sun", positions, dignities_map=dignities_enemy, saptavarga_mode="parashara")
+    # In Parashara mode, D1 Great Enemy = 2.0, Enemy = 4.0 -> delta in Subha Phala is (4.0 - 2.0) / 4.0 = 0.50
+    assert round(res_enemy - res_ge, 4) == 0.50
+
+    # Also verify D1 Moolatrikona degree boundary in Subha Phala
+    pos_in = {"Sun": 130.0}   # 10° Leo (within MT 0°-20°)
+    pos_out = {"Sun": 145.0}  # 25° Leo (outside MT -> falls back to Own Sign 30.0)
+    dig_mt = {"varga_dignities": {"D1": {"Sun": {"dignity": "Moolatrikona"}}}}
+    dig_own = {"varga_dignities": {"D1": {"Sun": {"dignity": "Own Sign"}}}}
+
+    # Inside MT degrees (10° Leo): MT (45.0) vs Own Sign (30.0) -> delta = (45.0 - 30.0) / 4.0 = 3.75
+    res_mt_in = calculate_subha_phala("Sun", pos_in, dignities_map=dig_mt, saptavarga_mode="parashara")
+    res_own_in = calculate_subha_phala("Sun", pos_in, dignities_map=dig_own, saptavarga_mode="parashara")
+    assert round(res_mt_in - res_own_in, 4) == 3.75
+
+    # Outside MT degrees (25° Leo): Parashara mode downgrades MT to Own Sign (30.0) -> delta = 0.0
+    res_mt_out = calculate_subha_phala("Sun", pos_out, dignities_map=dig_mt, saptavarga_mode="parashara")
+    res_own_out = calculate_subha_phala("Sun", pos_out, dignities_map=dig_own, saptavarga_mode="parashara")
+    assert round(res_mt_out - res_own_out, 4) == 0.0
+
+
+
 
 

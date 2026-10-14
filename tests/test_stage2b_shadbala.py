@@ -79,9 +79,13 @@ def test_angelina_jolie_whole_sign_tropical(angelina_baseline):
 
     # 1. Verify all 5 non-spatial balas are strictly identical
     for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]:
-        for pillar in ["Sthana_Bala", "Kala_Bala", "Ayana_Bala", "Cheshta_Bala", "Naisargika_Bala", "Drik_Bala"]:
+        for pillar in ["Sthana_Bala", "Ayana_Bala", "Cheshta_Bala", "Naisargika_Bala", "Drik_Bala"]:
             diff = abs(results_camp[p][pillar] - results_ws[p][pillar])
             assert diff < 0.01, f"{p} {pillar} differed between Campanus and Whole Sign: diff={diff}"
+
+    # 1b. Kala Bala (Nathonnatha) reflects Whole Sign Nadir (Asc + 90°) vs Campanus Spatial IC (MC + 180°)
+    assert abs(results_camp["Sun"]["Kala_Bala"] - 81.4) < 0.1
+    assert abs(results_ws["Sun"]["Kala_Bala"] - 85.0) < 0.1
 
     # 2. Verify Whole Sign Dig Bala values
     # Venus at ~28° Cancer is ~90° from the 4th cusp (28° Libra) -> ~30 Virūpas
