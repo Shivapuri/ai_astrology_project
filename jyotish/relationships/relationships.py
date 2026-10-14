@@ -19,7 +19,7 @@ from jyotish.baseline import (
     NAISARGIKA_SAMBANDHA,
 )
 
-# Canonical 9 Diptadi Avastha Categorization (Phaladipika Ch. 3 v. 18-19)
+# Canonical 9 Diptadi Avastha Categorization (Phaladipika Ch. 3 v. 18-19 / BPHS / Saravali synthesis)
 DIPTADI_AVASTHA_MAP = {
     "Exalted": "Pradipta",
     "Moolatrikona": "Sukhita",
@@ -47,7 +47,7 @@ VAISESIKAMSA_NAMES = {
     10: "Brahmapada",
 }
 
-# Phaladipika Ch. 8 & 20 Nodal Alliances (Asura Coalition)
+# Phaladipika Ch. 2 v. 23 Nodal Alliances (Asura Coalition)
 PHALADIPIKA_NODE_RELATIONSHIPS = {
     "Friends": ["Mercury", "Venus", "Saturn"],
     "Neutrals": ["Mars"],
