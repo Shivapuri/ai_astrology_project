@@ -1111,7 +1111,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                     const t2Lines = tier2BackgroundAsps.map(asp => {
                         const aspG = asp.from_planet;
                         const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                        const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                        const cData = (typeof currentChartData !== 'undefined' && currentChartData) ? currentChartData : (typeof window !== 'undefined' ? window.currentChartData : null);
+                        const isNaturalBen = asp.is_benefic !== undefined
+                            ? Boolean(asp.is_benefic)
+                            : (cData?.aspect_matrices?.benefic_malefic_totals?.classification?.[aspG] ?? ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG));
                         const visionType = isNaturalBen ? 'Śubha Dṛṣṭi (Supportive Vision)' : 'Pāpa Dṛṣṭi (Confrontational Vision)';
                         return `• <strong>${aspG}:</strong> ${rawV} Virūpas (${asp.from_dignity_name || 'Neutral'}) — <em>${visionType}</em>`;
                     }).join('<br>');
@@ -1121,7 +1124,10 @@ function openFloatingMasterDiagnostic(varga = 'D1') {
                 const badgeElements = tier3DecisiveAsps.map(asp => {
                     const aspG = asp.from_planet;
                     const rawV = Math.abs(Math.round(asp.raw_virupas !== undefined ? asp.raw_virupas : (asp.virupas || 0)));
-                    const isNaturalBen = ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG);
+                    const cData = (typeof currentChartData !== 'undefined' && currentChartData) ? currentChartData : (typeof window !== 'undefined' ? window.currentChartData : null);
+                    const isNaturalBen = asp.is_benefic !== undefined
+                        ? Boolean(asp.is_benefic)
+                        : (cData?.aspect_matrices?.benefic_malefic_totals?.classification?.[aspG] ?? ['Jupiter', 'Venus', 'Mercury', 'Moon'].includes(aspG));
 
                     const dName = (asp.from_dignity_name || '').toLowerCase();
                     const dPct = Number(asp.from_dignity_pct !== undefined ? asp.from_dignity_pct : 50);

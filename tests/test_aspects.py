@@ -211,9 +211,9 @@ def test_mercury_dynamic_malefic_conjunction_and_cross_border_combustion():
     """
     # 1. Mercury conjoined with dark/waning Moon in the same sign (Sun is distant so Mercury is not combust)
     planets_dark_moon = {
-        "Sun": {"longitude": 60.0, "sign": "Gemini"},
-        "Moon": {"longitude": 320.0, "sign": "Aquarius"},   # diff from Sun = (320 - 60)%360 = 260° (waning Krishna paksha, <50% illumination)
-        "Mercury": {"longitude": 315.0, "sign": "Aquarius"},# in Aquarius with dark Moon! (distance from Sun is 105° -> not combust)
+        "Sun": {"longitude": 0.0, "sign": "Aries"},
+        "Moon": {"longitude": 320.0, "sign": "Aquarius"},   # diff from Sun = (320 - 0)%360 = 320° (waning Krishna paksha, 22.2% illumination)
+        "Mercury": {"longitude": 315.0, "sign": "Aquarius"},# in Aquarius with dark Moon! (distance from Sun is 45° -> not combust)
         "Jupiter": {"longitude": 135.0, "sign": "Leo"},     # receives 180° opposition from Mercury
     }
     res_dark_moon = calculate_advanced_graha_aspects(planets_dark_moon)

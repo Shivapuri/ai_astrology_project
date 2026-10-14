@@ -1567,6 +1567,26 @@
             font-weight: bold;
         }
 
+        /* Qualitative Benefic (Green) & Malefic (Red) Drishti Aspectual Styling */
+        .kala-matrix td.aspect-benefic,
+        .kala-matrix td.text-benefic {
+            color: var(--status-benefic, #16a34a) !important;
+            background-color: var(--status-benefic-bg-subtle, #f0fdf4) !important;
+            font-weight: 600;
+        }
+        .kala-matrix td.aspect-malefic,
+        .kala-matrix td.text-malefic {
+            color: var(--status-malefic, #dc2626) !important;
+            background-color: var(--status-malefic-bg-subtle, #fef2f2) !important;
+            font-weight: 600;
+        }
+        .kala-matrix tbody tr:hover td.aspect-benefic {
+            background-color: var(--status-benefic-bg, #dcfce7) !important;
+        }
+        .kala-matrix tbody tr:hover td.aspect-malefic {
+            background-color: var(--status-malefic-bg, #fee2e2) !important;
+        }
+
         /* Unified Astra styling for Shad Bala Breakdown Grid */
         .shadbala-breakdown-grid {
             width: 100%;

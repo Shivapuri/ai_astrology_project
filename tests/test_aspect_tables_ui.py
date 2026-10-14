@@ -164,3 +164,49 @@ class TestAspectTableRendering:
                 v = int(m.group(1))
                 assert v >= 30, f"Table row aspect badge has {v}v (< 30v): {text}"
 
+    def test_benefic_and_malefic_aspect_coloring(self, page):
+        """Planetary aspect table must color benefic aspects green and malefic aspects red."""
+        color_info = page.evaluate(
+            """(() => {
+                const t = document.getElementById('kalaAspectsPlanetsTable');
+                if (!t) return { error: 'table not found' };
+
+                const beneficCells = t.querySelectorAll('tbody td.aspect-benefic');
+                const maleficCells = t.querySelectorAll('tbody td.aspect-malefic');
+                
+                let sampleBeneficColor = null;
+                if (beneficCells.length > 0) {
+                    sampleBeneficColor = window.getComputedStyle(beneficCells[0]).color;
+                }
+
+                let sampleMaleficColor = null;
+                if (maleficCells.length > 0) {
+                    sampleMaleficColor = window.getComputedStyle(maleficCells[0]).color;
+                }
+
+                return {
+                    beneficCount: beneficCells.length,
+                    maleficCount: maleficCells.length,
+                    sampleBeneficColor,
+                    sampleMaleficColor
+                };
+            })()"""
+        )
+
+        assert color_info.get("beneficCount", 0) > 0, "No cells with .aspect-benefic found in planets table."
+        assert color_info.get("maleficCount", 0) > 0, "No cells with .aspect-malefic found in planets table."
+        
+        # Verify RGB colors match tokens: #16a34a is rgb(22, 163, 74), #dc2626 is rgb(220, 38, 38)
+        assert color_info["sampleBeneficColor"] == "rgb(22, 163, 74)", (
+            f"Benefic cell color is {color_info['sampleBeneficColor']}, expected rgb(22, 163, 74)"
+        )
+        assert color_info["sampleMaleficColor"] == "rgb(220, 38, 38)", (
+            f"Malefic cell color is {color_info['sampleMaleficColor']}, expected rgb(220, 38, 38)"
+        )
+
+        # Capture visual screenshot of the planetary aspects table
+        table_el = page.locator("#kalaAspectsPlanetsTable")
+        if table_el.count() > 0:
+            table_el.first.screenshot(path="screenshot_aspects_planetary.png")
+            print("Captured screenshot_aspects_planetary.png")
+

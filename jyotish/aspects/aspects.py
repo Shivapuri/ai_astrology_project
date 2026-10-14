@@ -454,6 +454,12 @@ def calculate_advanced_graha_aspects(
             equal_lon = (ascendant_lon + (h_num - 1) * 30.0) % 360.0
             calc_aspects(h_num, equal_lon, results["equal_cusps"], results["totals"]["equal_cusps"])
 
+    results["classification"] = {
+        p: is_benefic(p, moon_lon, sun_lon, planets_data.get(p, {}).get("sign"))
+        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+        if p in planets_data
+    }
+
     return results
 
 def calculate_varga_aspects(baseline: Any, varga: str = "D1") -> Dict[str, Any]:

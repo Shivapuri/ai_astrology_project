@@ -6,6 +6,11 @@
  */
 
 (function() {
+    function escapeTooltipAttr(str) {
+        if (!str) return '';
+        return String(str).replace(/"/g, '&quot;');
+    }
+
     function renderKalaAspectTable(target, dataKey, columnsList, isHouse = false, customAspects = null) {
         let tables = [];
         if (typeof target === 'string') {
@@ -48,6 +53,10 @@
             }).join('');
             thead.appendChild(trHead);
             
+            // Classification map for planets
+            const classification = (adv && adv.classification) ||
+                (currentData && currentData.aspect_matrices && currentData.aspect_matrices.benefic_malefic_totals && currentData.aspect_matrices.benefic_malefic_totals.classification) || {};
+
             // Data Rows (Aspecting Planets)
             aspectingPlanets.forEach(p => {
                 const tr = document.createElement('tr');
@@ -61,7 +70,24 @@
                 const pLon = pData ? pData.longitude : 0;
                 const pDegStr = pDeg !== null ? `${Math.floor(pDeg)}°${Math.round((pDeg - Math.floor(pDeg)) * 60)}'` : '';
                 
-                let html = `<td class="tooltip-target" data-tooltip="<strong>${p} (${pSign} ${pDegStr})</strong><br>Aspecting planet casting sight (Graha Drishti)."><strong>${p.substring(0, 2)}</strong></td>`;
+                let isPlanetBenefic = false;
+                if (classification[p] !== undefined) {
+                    isPlanetBenefic = Boolean(classification[p]);
+                } else if (p === 'Jupiter' || p === 'Venus') {
+                    isPlanetBenefic = true;
+                } else if (p === 'Sun' || p === 'Mars' || p === 'Saturn' || p === 'Rahu' || p === 'Ketu') {
+                    isPlanetBenefic = false;
+                } else if (p === 'Moon') {
+                    const moonIllum = currentData?.baseline?.lunar_phase?.illumination_pct ?? 50.0;
+                    isPlanetBenefic = currentData?.baseline?.lunar_phase?.is_benefic ?? (moonIllum >= 50.0);
+                } else if (p === 'Mercury') {
+                    isPlanetBenefic = !(currentData?.combustion_status?.Mercury?.is_combust);
+                }
+
+                const pColor = isPlanetBenefic ? 'var(--status-benefic)' : 'var(--status-malefic)';
+                const pType = isPlanetBenefic ? 'Benefic (Śubha)' : 'Malefic (Aśubha / Krūra)';
+                const pTip = `<strong>${p} (${pSign} ${pDegStr}) — <span style="color:${pColor}; font-weight:600;">${pType}</span></strong><br>Aspecting planet casting sight (Graha Drishti).`;
+                let html = `<td class="tooltip-target" data-tooltip="${escapeTooltipAttr(pTip)}"><strong style="color:${pColor} !important;">${p.substring(0, 2)}</strong></td>`;
                 
                 columnsList.forEach(c => {
                     const cKey = c.toString();
@@ -70,7 +96,11 @@
                     } else if (!isHouse && yutis[p] && yutis[p].includes(c)) {
                         const cData = currentData.vargas.D1.grahas && currentData.vargas.D1.grahas[c];
                         const cSign = cData ? cData.sign : pSign;
-                        html += `<td class="tooltip-target" data-tooltip="<strong>Conjunction (Yuti): ${p} & ${c}</strong><br>• Both planets occupy <strong>${cSign}</strong>.<br>• In Vedic astrology, sharing a sign creates direct synthesis and intense mutual exchange of energies." style="color:var(--status-malefic); font-weight:bold; cursor:help;">Y</td>`;
+                        const yutiColor = isPlanetBenefic ? 'var(--status-benefic)' : 'var(--status-malefic)';
+                        const yutiClass = isPlanetBenefic ? 'aspect-benefic' : 'aspect-malefic';
+                        const yutiLabel = isPlanetBenefic ? 'Benefic Conjunction (+)' : 'Malefic Conjunction (-)';
+                        const yutiTip = `<strong>Conjunction (Yuti): ${p} & ${c} — <span style="color:${yutiColor}; font-weight:600;">${yutiLabel}</span></strong><br>• Both planets occupy <strong>${cSign}</strong>.<br>• In Vedic astrology, sharing a sign creates direct synthesis and intense mutual exchange of energies.`;
+                        html += `<td class="tooltip-target ${yutiClass}" data-tooltip="${escapeTooltipAttr(yutiTip)}" style="color:${yutiColor} !important; font-weight:bold; cursor:help;">Y</td>`;
                     } else {
                         let entry = aspects && aspects[cKey] && aspects[cKey][p] ? aspects[cKey][p] : null;
                         if (!entry && currentData && currentData.aspect_matrices) {
@@ -99,8 +129,12 @@
                                 }
                             }
                         }
-                    if (entry && entry.raw > 0) {
-                        const rawRounded = Math.round(entry.raw);
+                        if (entry && entry.raw > 0) {
+                            const rawRounded = Math.round(entry.raw);
+                            const isAspectBenefic = entry.plus > 0;
+                            const isAspectMalefic = entry.minus > 0;
+                            const aspectClass = isAspectBenefic ? 'aspect-benefic' : (isAspectMalefic ? 'aspect-malefic' : '');
+                            const aspectColor = isAspectBenefic ? 'var(--status-benefic)' : (isAspectMalefic ? 'var(--status-malefic)' : 'inherit');
                             
                             let cLon = 0;
                             let targetName = '';
@@ -149,17 +183,17 @@
                             }
                             
                             let effectDesc = '';
-                            if (entry.plus > 0) {
-                                effectDesc = `Contributes +${Math.round(entry.plus)} Virūpas of auspicious, protective light.`;
-                            } else if (entry.minus > 0) {
-                                effectDesc = `Imposes -${Math.round(entry.minus)} Virūpas of challenging or frictional tension.`;
+                            if (isAspectBenefic) {
+                                effectDesc = `<span style="color:var(--status-benefic); font-weight:600;">Contributes +${Math.round(entry.plus)} Virūpas of auspicious, protective light.</span>`;
+                            } else if (isAspectMalefic) {
+                                effectDesc = `<span style="color:var(--status-malefic); font-weight:600;">Imposes -${Math.round(entry.minus)} Virūpas of challenging or frictional tension.</span>`;
                             } else {
                                 effectDesc = `Aspect strength: ${rawRounded} Virūpas out of 60.`;
                             }
                             
                             const cellTooltip = `<strong>${p} → ${targetName}: ${rawRounded} Virūpas</strong><br>• <strong>Target:</strong> ${targetDesc}<br>• <strong>Separation:</strong> ${degSep}° (${housesAway} houses away from ${p})<br>• <strong>Rule:</strong> ${ruleDesc}<br>• <strong>Effect:</strong> ${effectDesc}`;
                             
-                            html += `<td class="tooltip-target" data-tooltip="${cellTooltip}" style="cursor:help;">${rawRounded}</td>`;
+                            html += `<td class="tooltip-target ${aspectClass}" data-tooltip="${escapeTooltipAttr(cellTooltip)}" style="cursor:help; color:${aspectColor} !important; font-weight:600; font-variant-numeric: tabular-nums;">${rawRounded}</td>`;
                         } else {
                             html += `<td></td>`;
                         }
@@ -172,7 +206,7 @@
             // Totals Row (+)
             const trPlus = document.createElement('tr');
             trPlus.className = 'total-row';
-            let plusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Benefic Aspect (+)</strong><br>Sum of supportive, harmonious aspectual rays received from benefics."><strong style="color: var(--status-benefic);">+</strong></td>`;
+            let plusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Benefic Aspect (+)</strong><br>Sum of supportive, harmonious aspectual rays received from benefics."><strong style="color: var(--status-benefic) !important;">+</strong></td>`;
             columnsList.forEach(c => {
                 const cKey = c.toString();
                 let v = totals && totals[cKey] ? Math.round(totals[cKey].plus) : 0;
@@ -182,7 +216,7 @@
                 }
                 const tgt = isHouse ? `House ${c}` : c;
                 const tip = `<strong>${tgt} — Total Benefic Aspect (+)</strong><br>Receives a total of <strong>+${v} Virūpas</strong> of auspicious, protective aspectual rays from benefics.`;
-                plusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: var(--status-benefic); font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
+                plusHtml += `<td class="tooltip-target aspect-benefic text-benefic" data-tooltip="${escapeTooltipAttr(tip)}" style="color: var(--status-benefic) !important; font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
             });
             trPlus.innerHTML = plusHtml;
             tbody.appendChild(trPlus);
@@ -190,7 +224,7 @@
             // Totals Row (-)
             const trMinus = document.createElement('tr');
             trMinus.className = 'total-row';
-            let minusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Malefic Aspect (-)</strong><br>Sum of stressful or frictional aspectual tension received from malefics."><strong style="color: var(--status-malefic);">-</strong></td>`;
+            let minusHtml = `<td class="tooltip-target" data-tooltip="<strong>Total Malefic Aspect (-)</strong><br>Sum of stressful or frictional aspectual tension received from malefics."><strong style="color: var(--status-malefic) !important;">-</strong></td>`;
             columnsList.forEach(c => {
                 const cKey = c.toString();
                 let v = totals && totals[cKey] ? Math.round(totals[cKey].minus) : 0;
@@ -200,7 +234,7 @@
                 }
                 const tgt = isHouse ? `House ${c}` : c;
                 const tip = `<strong>${tgt} — Total Malefic Aspect (-)</strong><br>Receives a total of <strong>-${v} Virūpas</strong> of challenging, frictional aspectual pressure from malefics.`;
-                minusHtml += `<td class="tooltip-target" data-tooltip="${tip}" style="color: var(--status-malefic); font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
+                minusHtml += `<td class="tooltip-target aspect-malefic text-malefic" data-tooltip="${escapeTooltipAttr(tip)}" style="color: var(--status-malefic) !important; font-weight: bold; cursor:help;">${v > 0 ? v : ''}</td>`;
             });
             trMinus.innerHTML = minusHtml;
             tbody.appendChild(trMinus);
