@@ -22,12 +22,29 @@ from jyotish.baseline import (
     ZODIAC_SIGNS,
     PLANETS_ORDER,
     SIGN_LORDS,
+    DEBILITATION_SIGNS,
+    EXALTATION_SIGNS,
+    NAISARGIKA_SAMBANDHA,
     CONJUNCTION_MAX_ORB,
     CROSS_BORDER_ATTENUATION,
 )
 
 PHYSICAL_PLANETS = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
 NON_CASTING_BODIES = ["Rahu", "Ketu", "Lagna", "MC"]
+
+
+def _is_in_enemy_sign(planet: str, sign_name: str) -> bool:
+    """
+    Checks if a planet is placed in an enemy sign per BPHS 3.55 and Phaladīpikā 2.21–22.
+    A planet is in an enemy sign if the sign ruler is a natural enemy and not its own or exaltation sign.
+    """
+    sign_lord = SIGN_LORDS.get(sign_name)
+    if not sign_lord or sign_lord == planet:
+        return False
+    if EXALTATION_SIGNS.get(planet) == sign_name:
+        return False
+    enemies = NAISARGIKA_SAMBANDHA.get(planet, {}).get("Enemies", [])
+    return sign_lord in enemies
 
 
 def get_rasi_drishti(sign: str) -> List[str]:
@@ -244,7 +261,7 @@ def get_all_rasi_drishtis(planets_data: Dict[str, Dict[str, Any]]) -> Dict[str, 
 
 def calculate_advanced_graha_aspects(
     planets_data: dict,
-    shadbala_data: dict,
+    shadbala_data: dict = None,
     house_cusps: list = None,
     ascendant_lon: float = None,
     yuti_format: str = "list",
@@ -259,7 +276,7 @@ def calculate_advanced_graha_aspects(
     Always provides structured conjunction metadata under results['yuti_details'].
 
     Semantic Conjunction Distinctions:
-    - Tight Degree Conjunction (sep <= 10.0°): has is_orb_conjunction=True and effective_potency > 0.
+    - Tight Degree Conjunction (sep <= 10.0°): has is_orb_conjunction=True and effective_potency > 0 (for sep < 10.0°; 0.0 at exact 10.0° boundary).
     - Wide Same-Sign Co-presence (sep > 10.0°, same sign): has same_sign=True (Rāśi Yuti bond),
       is_orb_conjunction=False, and effective_potency=0.0.
     - Cross-Border Conjunction (sep <= 10.0°, different signs): has cross_border=True,
@@ -275,27 +292,58 @@ def calculate_advanced_graha_aspects(
         "yuti_details": {}
     }
     
+    sun_lon = planets_data.get("Sun", {}).get("longitude", 0.0)
+    moon_lon = planets_data.get("Moon", {}).get("longitude", 0.0)
+
+    # 1. Determine dynamic Moon beneficence (BPHS 3.11 / Phaladīpikā 2.27 / baseline.py parity)
+    moon_info = planets_data.get("Moon", {})
+    if isinstance(moon_info.get("is_benefic"), bool):
+        is_moon_benefic = moon_info["is_benefic"]
+    elif "Sun" in planets_data and "Moon" in planets_data:
+        diff = (moon_lon - sun_lon) % 360.0
+        dist_from_sun = min(diff, 360.0 - diff)
+        is_moon_benefic = bool((dist_from_sun / 180.0) * 100.0 >= 50.0)
+    else:
+        is_moon_benefic = False
+
+    # 2. Determine active malefics for Mercury conjunction check per BPHS 3.11 & DPK 2.27
+    active_malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"] + ([] if is_moon_benefic else ["Moon"])
+
+    # 3. Determine Mercury combustion (BPHS 3.11 / Surya Siddhanta 14° orb in D1)
+    merc_info = planets_data.get("Mercury", {})
+    varga = kwargs.get("varga", "D1")
+    if isinstance(merc_info.get("is_combust"), bool):
+        is_merc_combust = merc_info["is_combust"]
+    elif varga == "D1" and "Mercury" in planets_data and "Sun" in planets_data:
+        merc_lon = merc_info.get("longitude", 0.0)
+        diff = abs(merc_lon - sun_lon) % 360.0
+        sep = min(diff, 360.0 - diff)
+        is_merc_combust = bool(sep <= 14.0)
+    else:
+        is_merc_combust = False
+
     # Helper to determine if planet is benefic or malefic for Drishti
     def is_benefic(p_name, moon_lon, sun_lon, aspecting_sign=None):
         if p_name in ["Jupiter", "Venus"]:
             return True
         if p_name == "Mercury":
-            if aspecting_sign:
+            if is_merc_combust:
+                return False
+            merc_sign = aspecting_sign or merc_info.get("sign")
+            if not merc_sign and "longitude" in merc_info:
+                merc_sign = ZODIAC_SIGNS[int((merc_info["longitude"] % 360.0) // 30)]
+            if merc_sign:
                 has_mal = any(
-                    other_info.get("sign") == aspecting_sign
+                    (other_info.get("sign") or (ZODIAC_SIGNS[int((other_info.get("longitude", 0.0) % 360.0) // 30)] if "longitude" in other_info else None)) == merc_sign
                     for m_name, other_info in planets_data.items()
-                    if m_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+                    if m_name != "Mercury" and m_name in active_malefics
                 )
                 if has_mal:
                     return False
             return True
         if p_name == "Moon":
-            diff = (moon_lon - sun_lon) % 360.0
-            return 30.0 <= diff <= 330.0
+            return is_moon_benefic
         return False
-
-    sun_lon = planets_data.get("Sun", {}).get("longitude", 0.0)
-    moon_lon = planets_data.get("Moon", {}).get("longitude", 0.0)
 
     # Helper to calculate and store aspect
     def calc_aspects(aspected_key, aspected_lon, target_dict, totals_dict):
@@ -317,11 +365,10 @@ def calculate_advanced_graha_aspects(
                 plus = 0.0
                 minus = 0.0
                 
-                # Check house lord protection on cusp evaluation
+                # Check house lord protection on cusp evaluation (Phaladīpikā Ch. 15, v. 1)
                 target_lord = None
-                if isinstance(aspected_key, int) and ascendant_lon is not None:
-                    asc_sign_idx = int(ascendant_lon // 30) % 12
-                    target_sign_idx = (asc_sign_idx + aspected_key - 1) % 12
+                if isinstance(aspected_key, int):
+                    target_sign_idx = int((aspected_lon % 360.0) // 30) % 12
                     target_lord = SIGN_LORDS[ZODIAC_SIGNS[target_sign_idx]]
 
                 if aspecting == target_lord or is_benefic(aspecting, moon_lon, sun_lon, sign1):
@@ -438,11 +485,15 @@ def calculate_varga_aspects(baseline: Any, varga: str = "D1") -> Dict[str, Any]:
         planets_data=planets_data,
         shadbala_data={},
         house_cusps=house_cusps,
-        ascendant_lon=ascendant_lon
+        ascendant_lon=ascendant_lon,
+        varga=varga,
     )
 
 
-def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
+def calculate_aspect_matrices(
+    baseline: "ChartBaseline",
+    enforce_dpk_lord_qualifications: bool = False
+) -> Dict[str, Any]:
     """
     Master Stage 2A Aspect Orchestrator.
     Consumes ChartBaseline directly to generate:
@@ -519,17 +570,19 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
     # 4. Benefic / Malefic Qualitative Totals (+ / - Net Virupas)
     # Natural Benefics: Jupiter, Venus
     # Dynamic Benefics:
-    #   Mercury: Benefic if not combust and not conjoined with natural malefics (BPHS Ch. 3 / Phaladeepika Ch. 2.27)
+    #   Mercury: Benefic if not combust and not conjoined with natural/active malefics (BPHS Ch. 3.11 / Phaladīpikā Ch. 2.27)
     #   Moon: Benefic if bright/waxing (lunar_phase["is_benefic"] is True)
     # Natural Malefics: Sun, Mars, Saturn, Rahu, Ketu
+    is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)
+    active_malefics = ["Sun", "Mars", "Saturn", "Rahu", "Ketu"] + ([] if is_moon_benefic else ["Moon"])
+
     is_merc_combust = baseline.combustion_status.get("Mercury", {}).get("is_combust", False)
     merc_sign_idx = coords["Mercury"]["sign_index"]
     merc_with_malefic = any(
         m in coords and coords[m]["sign_index"] == merc_sign_idx
-        for m in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]
+        for m in active_malefics
     )
     is_merc_benefic = (not is_merc_combust) and (not merc_with_malefic)
-    is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)
 
     benefic_classification = {
         "Jupiter": True,
@@ -565,11 +618,13 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
         }
 
     totals_cusps = {}
+    totals_cusps_dpk_qualified = {}
     for h in range(1, 13):
         target_sign_idx = (asc_sign_idx + h - 1) % 12
         h_sign = ZODIAC_SIGNS[target_sign_idx]
         h_lord = SIGN_LORDS[h_sign]
 
+        # 1. Unattenuated envelope (Phaladeepika 15.1-3 default)
         ben_v = 0.0
         mal_v = 0.0
         for p in PHYSICAL_PLANETS:
@@ -588,6 +643,35 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
             "net": round(ben_v - mal_v, 4),
         }
 
+        # 2. DPK 15.1 Qualified envelope (नीचमूढारिहीनैः)
+        # Malefic house lord protects ONLY IF free from debilitation, combustion, and enemy sign
+        ben_v_dpk = 0.0
+        mal_v_dpk = 0.0
+        for p in PHYSICAL_PLANETS:
+            aspect_val = cusp_by_house[h][p]
+            if benefic_classification[p]:
+                ben_v_dpk += aspect_val
+            elif p == h_lord:
+                is_deb = (coords[p]["sign"] == DEBILITATION_SIGNS.get(p))
+                is_comb = baseline.combustion_status.get(p, {}).get("is_combust", False)
+                is_enemy = _is_in_enemy_sign(p, coords[p]["sign"])
+                if not (is_deb or is_comb or is_enemy):
+                    ben_v_dpk += aspect_val
+                else:
+                    mal_v_dpk += aspect_val
+            else:
+                mal_v_dpk += aspect_val
+        totals_cusps_dpk_qualified[h] = {
+            "benefic_virupas": round(ben_v_dpk, 4),
+            "malefic_virupas": round(mal_v_dpk, 4),
+            "net_virupas": round(ben_v_dpk - mal_v_dpk, 4),
+            "plus": round(ben_v_dpk, 4),
+            "minus": round(mal_v_dpk, 4),
+            "net": round(ben_v_dpk - mal_v_dpk, 4),
+        }
+
+    effective_totals_cusps = totals_cusps_dpk_qualified if enforce_dpk_lord_qualifications else totals_cusps
+
     return {
         "graha_drishti": {
             "outgoing": outgoing,
@@ -605,7 +689,8 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
         },
         "benefic_malefic_totals": {
             "planets": totals_planets,
-            "cusps": totals_cusps,
+            "cusps": effective_totals_cusps,
+            "cusps_dpk_qualified": totals_cusps_dpk_qualified,
             "classification": benefic_classification,
         },
         # Backwards compatibility aliases
@@ -613,11 +698,11 @@ def calculate_aspect_matrices(baseline: "ChartBaseline") -> Dict[str, Any]:
         "planet_to_cusp": cusp_by_planet,
         "totals": {
             "planets": totals_planets,
-            "cusps": totals_cusps,
+            "cusps": effective_totals_cusps,
         },
         "benefic_malefic_breakdown": {
             "planets": totals_planets,
-            "cusps": totals_cusps,
+            "cusps": effective_totals_cusps,
         },
     }
 

@@ -339,3 +339,350 @@ def test_audit_shadbala_muscle_robustness():
     assert breakers[0].penalty == 15.0
     assert len(notes) == 1
     assert "Jupiter is muscular in Shadbala" in notes[0]
+
+
+# =============================================================================
+# 7. Batch 1 Audit Regression Tests: pancha_mahapurusha.py & neechabhanga.py
+# =============================================================================
+
+from jyotish.yogas.pancha_mahapurusha import detect_pancha_mahapurusha_yogas
+from jyotish.yogas.neechabhanga import audit_neecha_bhanga_details, detect_neechabhanga_yogas
+
+
+def test_pancha_mahapurusha_missing_lagna_rulers_safety():
+    """Verify empty/missing lagna rulers dictionary does not raise IndexError."""
+    # Chart with no lagna sign, leading get_house_rulers to return {1: []}
+    chart_empty = {
+        "ascendant": {"sign": ""},
+        "planets": {
+            "Mars": {"sign": "Capricorn", "longitude": 280.0},
+            "Moon": {"sign": "Aries", "longitude": 15.0}
+        }
+    }
+    # Should safely return without IndexError
+    yogas = detect_pancha_mahapurusha_yogas(chart_empty)
+    assert isinstance(yogas, list)
+
+
+def test_pancha_mahapurusha_lagna_vs_chandra_scoring_and_confluence():
+    """Verify primary Lagna Kendra scores higher than secondary Chandra-only Kendra, and labels are accurate."""
+    # Chart 1: Mars in Capricorn in H4 for Libra Lagna, Moon in Gemini (H9).
+    # Angular from Lagna (H4), but NOT from Moon (diff = (4 - 9) % 12 + 1 = 8).
+    chart_lagna = {
+        "ascendant": {"sign": "Libra"},
+        "planets": {
+            "Mars": {"sign": "Capricorn", "longitude": 280.0},
+            "Moon": {"sign": "Gemini", "longitude": 75.0}
+        }
+    }
+    yogas_lagna = detect_pancha_mahapurusha_yogas(chart_lagna)
+    ruchaka_lagna = next(y for y in yogas_lagna if y.id == "ruchaka_yoga")
+    # Base 80.0 + 10.0 (exalted) = 90.0
+    assert ruchaka_lagna.plausibility_score == 90.0
+    assert any("Angular prominence: Situated in Kendra House 4" in f for f in ruchaka_lagna.positive_factors)
+    assert not any("Also angular from the Moon" in f for f in ruchaka_lagna.positive_factors)
+
+    # Chart 2: Mars in Capricorn in H2 for Sagittarius Lagna, Moon in Libra (H11).
+    # Mars is in H2 from Lagna (non-Kendra), but H4 from Moon (Chandra Kendra).
+    # Mars is not Lagna lord (Sagittarius is ruled by Jupiter).
+    chart_chandra_only = {
+        "ascendant": {"sign": "Sagittarius"},
+        "planets": {
+            "Mars": {"sign": "Capricorn", "longitude": 280.0},
+            "Moon": {"sign": "Libra", "longitude": 200.0}
+        }
+    }
+    yogas_chandra = detect_pancha_mahapurusha_yogas(chart_chandra_only)
+    ruchaka_chandra = next(y for y in yogas_chandra if y.id == "ruchaka_yoga")
+    # Base 70.0 + 10.0 (exalted) = 80.0
+    # Lagna Kendra (90.0) strictly scores higher than Chandra-only (80.0)!
+    assert ruchaka_chandra.plausibility_score == 80.0
+    assert ruchaka_lagna.plausibility_score > ruchaka_chandra.plausibility_score
+    assert any("Lunar angularity (indāvapi): Situated in Kendra H4 from the Moon" in f for f in ruchaka_chandra.positive_factors)
+    assert not any("Also angular from the Moon" in f for f in ruchaka_chandra.positive_factors)
+
+    # Chart 3: Mars in Capricorn in H1 for Capricorn Lagna, Moon in Aries (H4).
+    # Confluence: Angular from BOTH Lagna (H1) and Moon (H10).
+    chart_both = {
+        "ascendant": {"sign": "Capricorn"},
+        "planets": {
+            "Mars": {"sign": "Capricorn", "longitude": 280.0},
+            "Moon": {"sign": "Aries", "longitude": 15.0}
+        }
+    }
+    yogas_both = detect_pancha_mahapurusha_yogas(chart_both)
+    ruchaka_both = next(y for y in yogas_both if y.id == "ruchaka_yoga")
+    assert any("Confluence: Also angular from the Moon" in f for f in ruchaka_both.positive_factors)
+
+
+def test_pancha_mahapurusha_chandra_kendra_in_dusthana_penalized():
+    """Verify a Chandra-Kendra Mahapurusha planet trapped in Lagna Dusthana (6, 8, 12) is penalized."""
+    # Leo Lagna: Moon in Sagittarius (H5), exalted Venus in Pisces (H8).
+    # Venus is in H4 from Moon (Chandra Kendra), but in H8 from Lagna (Dusthana).
+    chart = {
+        "ascendant": {"sign": "Leo"},
+        "planets": {
+            "Venus": {"sign": "Pisces", "longitude": 345.0},
+            "Moon": {"sign": "Sagittarius", "longitude": 255.0}
+        }
+    }
+    yogas = detect_pancha_mahapurusha_yogas(chart)
+    malavya = next((y for y in yogas if y.id == "malavya_yoga"), None)
+    assert malavya is not None
+    # Dusthana breaker must be flagged
+    dusthana_b = next((b for b in malavya.breakers if "Dusthana" in b.factor), None)
+    assert dusthana_b is not None
+    assert dusthana_b.penalty == 25.0
+    # Must NOT be PURE
+    assert malavya.status != YogaStatus.PURE
+    assert malavya.plausibility_score == 55.0  # 70 (base) + 10 (exalted) - 25 (dusthana)
+
+
+def test_neechabhanga_moon_tautology_guard():
+    """Verify Moon is not considered in Kendra H1 from itself when evaluating dispositor or exaltation lord."""
+    # 1. Fallen Mars in Cancer: Dispositor of Cancer is Moon. Moon in Scorpio (H8 for Aries Lagna).
+    # Moon in H8 is non-Kendra from Lagna. It must NOT trigger Condition 1 as "in Kendra H1 from Moon".
+    chart_mars = {
+        "ascendant": {"sign": "Aries"},
+        "planets": {
+            "Mars": {"sign": "Cancer", "longitude": 105.0},
+            "Moon": {"sign": "Scorpio", "longitude": 225.0}  # In H8
+        }
+    }
+    is_rescued, reasons, bonus, meta = audit_neecha_bhanga_details("Mars", chart_mars)
+    assert not any("Dispositor in Chandra Kendra" in r for r in reasons)
+    assert meta["conditions_met"]["c1"] is False
+
+    # Also verify breakers.audit_neecha_bhanga is synchronized
+    is_rescued_b, reasons_b, _ = audit_neecha_bhanga("Mars", chart_mars)
+    assert not any("Dispositor in Kendra from Moon" in r for r in reasons_b)
+
+    # 2. Fallen Jupiter in Capricorn: Exaltation sign Cancer, lord Moon. Moon in Scorpio (H8).
+    # Moon must NOT trigger Condition 2 as "in Kendra H1 from Moon".
+    chart_jup = {
+        "ascendant": {"sign": "Aries"},
+        "planets": {
+            "Jupiter": {"sign": "Capricorn", "longitude": 285.0},
+            "Moon": {"sign": "Scorpio", "longitude": 225.0}  # In H8
+        }
+    }
+    is_rescued_j, reasons_j, bonus_j, meta_j = audit_neecha_bhanga_details("Jupiter", chart_jup)
+    assert not any("Exaltation Lord in Kendra" in r and "from Moon" in r for r in reasons_j)
+    assert meta_j["conditions_met"]["c2"] is False
+
+    # 3. Fallen Moon in Scorpio: Moon in Scorpio in H8 (Aries Lagna).
+    # Moon must NOT trigger Condition 6 as "in Kendra H1 from Chandra".
+    chart_moon = {
+        "ascendant": {"sign": "Aries"},
+        "planets": {
+            "Moon": {"sign": "Scorpio", "longitude": 225.0}  # In H8
+        }
+    }
+    is_rescued_m, reasons_m, bonus_m, meta_m = audit_neecha_bhanga_details("Moon", chart_moon)
+    assert not any("Kendra" in r and "Chandra" in r for r in reasons_m)
+    assert meta_m["conditions_met"]["c6"] is False
+
+
+def test_neechabhanga_venus_virgo_anti_triple_counting():
+    """Verify fallen Venus in Virgo is not triple-counted when Mercury is dispositor and exalted in Virgo."""
+    # Virgo Lagna: Venus in Virgo (H1). Dispositor Mercury in Sagittarius (H4 Kendra).
+    # Jupiter (exaltation lord of Pisces) is in Capricorn (H5, non-Kendra from Lagna and H6 from Moon).
+    # Moon in Leo (H12).
+    chart = {
+        "ascendant": {"sign": "Virgo"},
+        "planets": {
+            "Venus": {"sign": "Virgo", "longitude": 165.0},      # H1 (Kendra)
+            "Mercury": {"sign": "Sagittarius", "longitude": 255.0}, # H4 (Kendra)
+            "Jupiter": {"sign": "Capricorn", "longitude": 285.0},  # H5 (non-Kendra from Lagna and Moon)
+            "Moon": {"sign": "Leo", "longitude": 135.0}          # H12
+        }
+    }
+    is_rescued, reasons, bonus, meta = audit_neecha_bhanga_details("Venus", chart)
+    # Mercury satisfies Condition 1 (+30.0).
+    # Mercury must NOT also satisfy Condition 2 as exalted guest (+0).
+    # Condition 3 (Dual Lord) must NOT trigger (+0).
+    # Venus in H1 satisfies Condition 6 (Angular Fallen Planet, +20.0).
+    # Total bonus should be 30 + 20 = 50.0%, NOT 75.0% PURE!
+    assert meta["conditions_met"]["c1"] is True
+    assert meta["conditions_met"]["c2"] is False
+    assert meta["conditions_met"]["c3"] is False
+    assert bonus == 50.0
+
+
+def test_neechabhanga_mercury_pisces_no_self_conjunction():
+    """Verify fallen Mercury in Pisces does not treat itself as conjoined with its own exaltation lord."""
+    # Sagittarius Lagna: Mercury in Pisces (H4 Kendra). Exaltation lord is Mercury (lord of Virgo).
+    # No other planets in H4.
+    chart = {
+        "ascendant": {"sign": "Sagittarius"},
+        "planets": {
+            "Mercury": {"sign": "Pisces", "longitude": 345.0},   # H4
+            "Jupiter": {"sign": "Taurus", "longitude": 45.0},     # H6
+            "Moon": {"sign": "Aries", "longitude": 15.0}         # H5
+        }
+    }
+    is_rescued, reasons, bonus, meta = audit_neecha_bhanga_details("Mercury", chart)
+    # Condition 6 should NOT say "alongside its ruler/exaltation lord"
+    assert not any("alongside its ruler/exaltation lord" in r for r in reasons)
+    # Exaltation lord Mercury already counted under Condition 2A via self; Condition 6 angular bonus skipped
+    assert not any("Angular Fallen Planet" in r for r in reasons)
+    assert bonus == 30.0
+
+
+def test_neechabhanga_condition_6_label_from_moon():
+    """Verify Condition 6 correctly labels Kendra from Moon when not in Kendra from Lagna."""
+    # Scorpio Lagna: Saturn in Aries (H6). Moon in Capricorn (H3).
+    # Saturn from Moon: (6 - 3) % 12 + 1 = 4 (Kendra H4 from Chandra).
+    chart = {
+        "ascendant": {"sign": "Scorpio"},
+        "planets": {
+            "Saturn": {"sign": "Aries", "longitude": 15.0},       # H6 from Lagna, H4 from Moon
+            "Moon": {"sign": "Capricorn", "longitude": 285.0},    # H3
+            "Mars": {"sign": "Cancer", "longitude": 105.0}       # H9
+        }
+    }
+    is_rescued, reasons, bonus, meta = audit_neecha_bhanga_details("Saturn", chart)
+    c6_reasons = [r for r in reasons if "Condition 6" in r]
+    assert len(c6_reasons) == 1
+    # Label must reflect Kendra from Chandra (H6), not misleading "Kendra H6 from Lagna"
+    assert "Kendra H4 from Chandra (H6)" in c6_reasons[0]
+
+
+def test_neechabhanga_secondary_breakers_and_rescuing_planets():
+    """Verify detect_neechabhanga_yogas applies secondary breakers (combustion) and includes rescuing planets/houses."""
+    # Pisces Lagna: Fallen Mercury in Pisces (H1). Dispositor Jupiter in Gemini (H4 Kendra).
+    # Mercury is deeply combust with Sun in Pisces (diff = 1.0°).
+    chart = {
+        "ascendant": {"sign": "Pisces"},
+        "planets": {
+            "Mercury": {"sign": "Pisces", "longitude": 345.0},
+            "Sun": {"sign": "Pisces", "longitude": 346.0},
+            "Jupiter": {"sign": "Gemini", "longitude": 75.0},
+            "Moon": {"sign": "Aries", "longitude": 15.0}
+        }
+    }
+    yogas = detect_neechabhanga_yogas(chart)
+    nb = next((y for y in yogas if "mercury" in y.id), None)
+    assert nb is not None
+    # Combustion breaker must be recorded
+    comb_b = next((b for b in nb.breakers if "Combustion" in b.factor), None)
+    assert comb_b is not None
+    assert comb_b.penalty == 40.0
+    # Must NOT be PURE despite being in Kendra H1
+    assert nb.status != YogaStatus.PURE
+    # Rescuing planet Jupiter and its house H4 must be in participating lists
+    assert "Jupiter" in nb.participating_planets
+    assert 4 in nb.participating_houses
+
+
+def test_neechabhanga_mercury_pisces_dual_lord_requires_distinct_planet():
+    """Verify Mercury in Pisces does not trigger Condition 3 Dual Lord Prominence via self-lordship."""
+    # Chart A: Pisces Lagna, Mercury in Pisces (H1), Jupiter in Gemini (H4). Venus in Taurus (H3, non-Kendra).
+    # Mercury satisfies C2 via self, Jupiter satisfies C1.
+    # C3 Dual Lord must NOT trigger because C2 is not satisfied by a distinct planet.
+    chart_a = {
+        "ascendant": {"sign": "Pisces"},
+        "planets": {
+            "Mercury": {"sign": "Pisces", "longitude": 345.0},   # H1 (Kendra)
+            "Jupiter": {"sign": "Gemini", "longitude": 75.0},     # H4 (Kendra)
+            "Venus": {"sign": "Taurus", "longitude": 45.0},       # H3 (non-Kendra)
+            "Moon": {"sign": "Aries", "longitude": 15.0}         # H2
+        }
+    }
+    is_rescued_a, reasons_a, bonus_a, meta_a = audit_neecha_bhanga_details("Mercury", chart_a)
+    assert meta_a["conditions_met"]["c1"] is True
+    assert meta_a["conditions_met"]["c2"] is True
+    assert meta_a["conditions_met"]["c3"] is False  # NOT met via self!
+    assert not any("Dual Lord Prominence" in r for r in reasons_a)
+
+    # Chart B: Move Venus (exalted in Pisces) to Sagittarius (H10 Kendra, not co-occupying H1).
+    # Now Venus is distinct from dispositor Jupiter and fallen Mercury, occupying Kendra.
+    # Condition 3 MUST trigger!
+    chart_b = {
+        "ascendant": {"sign": "Pisces"},
+        "planets": {
+            "Mercury": {"sign": "Pisces", "longitude": 345.0},      # H1 (Kendra)
+            "Jupiter": {"sign": "Gemini", "longitude": 75.0},        # H4 (Kendra)
+            "Venus": {"sign": "Sagittarius", "longitude": 255.0},   # H10 (Kendra)
+            "Moon": {"sign": "Aries", "longitude": 15.0}            # H2
+        }
+    }
+    is_rescued_b, reasons_b, bonus_b, meta_b = audit_neecha_bhanga_details("Mercury", chart_b)
+    assert meta_b["conditions_met"]["c1"] is True
+    assert meta_b["conditions_met"]["c2"] is True
+    assert meta_b["conditions_met"]["c3"] is True   # Met via distinct Venus!
+    assert any("Dual Lord Prominence" in r for r in reasons_b)
+
+
+def test_neechabhanga_exalted_co_occupant_anti_triple_counting():
+    """Verify exalted Sun sharing Aries with fallen Saturn is scored under C5, not also C2B and C6 alongside lord."""
+    # Aries Lagna: Saturn in Aries (H1), Sun in Aries (H1, exalted).
+    # Moon in Leo (H5).
+    # Mars in Gemini (H3 -> H11 from Moon, non-Kendra from both).
+    # Venus in Sagittarius (H9 -> H5 from Moon, non-Kendra from both).
+    chart = {
+        "ascendant": {"sign": "Aries"},
+        "planets": {
+            "Saturn": {"sign": "Aries", "longitude": 15.0},
+            "Sun": {"sign": "Aries", "longitude": 10.0},          # Exalted co-occupant in H1
+            "Mars": {"sign": "Gemini", "longitude": 75.0},        # H3 (non-Kendra from Lagna and Moon)
+            "Venus": {"sign": "Sagittarius", "longitude": 255.0}, # H9 (non-Kendra from Lagna and Moon)
+            "Moon": {"sign": "Leo", "longitude": 135.0}           # H5
+        }
+    }
+    is_rescued, reasons, bonus, meta = audit_neecha_bhanga_details("Saturn", chart)
+    # Sun is scored under Condition 5 (+35.0)
+    assert meta["conditions_met"]["c5"] is True
+    # Sun must NOT also be scored under Condition 2B (+0)
+    assert meta["conditions_met"]["c2"] is False
+    # Saturn in H1 gets Condition 6 angular bonus (+20.0), NOT +30.0 alongside lord
+    assert meta["conditions_met"]["c6"] is True
+    assert not any("alongside its ruler/exaltation lord" in r for r in reasons)
+    # Total bonus must be 35.0 (C5) + 20.0 (C6) = 55.0%, NOT 95.0%!
+    assert bonus == 55.0
+
+
+def test_neechabhanga_conjoined_with_moon_in_non_lagna_kendra():
+    """Verify fallen Mars in Cancer conjoined with Moon in H3 is rescued in both neechabhanga and breakers."""
+    # Taurus Lagna: fallen Mars in Cancer (H3), Moon in Cancer (H3).
+    # Mars is in Kendra H1 from Chandra alongside dispositor Moon.
+    chart = {
+        "ascendant": {"sign": "Taurus"},
+        "planets": {
+            "Mars": {"sign": "Cancer", "longitude": 105.0},
+            "Moon": {"sign": "Cancer", "longitude": 108.0}
+        }
+    }
+    # 1. Check neechabhanga.audit_neecha_bhanga_details
+    is_rescued_nb, reasons_nb, bonus_nb, _ = audit_neecha_bhanga_details("Mars", chart)
+    assert is_rescued_nb is True
+    assert bonus_nb >= 30.0
+
+    # 2. Check breakers.audit_neecha_bhanga
+    is_rescued_br, reasons_br, bonus_br = audit_neecha_bhanga("Mars", chart)
+    assert is_rescued_br is True
+    assert bonus_br >= 30.0
+    assert any("from Moon" in r for r in reasons_br)
+
+
+def test_pancha_mahapurusha_capped_pre_breaker_score_major_breaker_not_pure():
+    """Verify pre-breaker score is capped at 100.0, and major breakers (penalty >= 20.0) prevent PURE status."""
+    # Scorpio Lagna: Mars in Scorpio (H1).
+    # Base 80 + own sign 10 + Kendra H1 5 + Kendra from Moon 5 + Lagna lord 10 = 110.0 pre-breaker!
+    # Sun is in Scorpio at 214.0° (Mars is at 210.0°, diff = 4.0° -> Moderate combustion, penalty = 20.0).
+    chart = {
+        "ascendant": {"sign": "Scorpio"},
+        "planets": {
+            "Mars": {"sign": "Scorpio", "longitude": 210.0},
+            "Sun": {"sign": "Scorpio", "longitude": 214.0},     # 4° apart -> Moderate combustion
+            "Moon": {"sign": "Taurus", "longitude": 45.0}       # H7 Kendra from Lagna and Moon
+        }
+    }
+    yogas = detect_pancha_mahapurusha_yogas(chart)
+    ruchaka = next(y for y in yogas if y.id == "ruchaka_yoga")
+    # Score capped at min(100.0, 110.0) - 20.0 = 80.0
+    assert ruchaka.plausibility_score == 80.0
+    # Because combustion breaker has penalty 20.0, status must NOT be PURE
+    assert ruchaka.status == YogaStatus.STAINED
+
+

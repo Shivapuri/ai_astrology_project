@@ -12,7 +12,7 @@ from jyotish.yogas.breakers import (
     EXALTATION_SIGNS, OWN_SIGNS,
     get_house_of_planet, get_sign_of_planet, get_planets_data, get_house_rulers,
     audit_trishadaya_interference, audit_combustion,
-    audit_dispositor_vitality, audit_shadbala_muscle
+    audit_dispositor_vitality, audit_shadbala_muscle, audit_dusthana_placement
 )
 
 MAHAPURUSHA_CONFIGS = {
@@ -78,7 +78,9 @@ def detect_pancha_mahapurusha_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
     detected = []
     planets_data = get_planets_data(chart)
     moon_house = get_house_of_planet(chart, "Moon")
-    lagna_lord = get_house_rulers(chart).get(1, [""])[0]
+    house_rulers = get_house_rulers(chart)
+    lagna_rulers = house_rulers.get(1) or []
+    lagna_lord = lagna_rulers[0] if lagna_rulers else ""
     
     for p, config in MAHAPURUSHA_CONFIGS.items():
         if p not in planets_data:
@@ -97,6 +99,7 @@ def detect_pancha_mahapurusha_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
         is_kendra_lagna = p_house in (1, 4, 7, 10)
         
         # Check angularity from Moon
+        moon_diff = 0
         is_kendra_moon = False
         if moon_house > 0 and p_house > 0:
             moon_diff = (p_house - moon_house) % 12 + 1
@@ -105,8 +108,8 @@ def detect_pancha_mahapurusha_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
         if not (is_kendra_lagna or is_kendra_moon):
             continue
             
-        # Start plausibility scoring
-        score = 80.0
+        # Base plausibility: 80.0 for primary Lagna Kendra, 70.0 for secondary Chandra-only Kendra (indāvapi)
+        score = 80.0 if is_kendra_lagna else 70.0
         positive_factors = []
         
         if is_exalted:
@@ -120,10 +123,15 @@ def detect_pancha_mahapurusha_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
             positive_factors.append(f"Angular prominence: Situated in Kendra House {p_house} from the Ascendant.")
             if p_house in (1, 10):
                 score += 5.0  # Extra prominence on Lagna/Midheaven
-                
-        if is_kendra_moon:
-            positive_factors.append(f"Confluence: Also angular from the Moon (Chandra Kendra), reinforcing experiential manifestation.")
-            score += 5.0
+            if is_kendra_moon:
+                positive_factors.append(
+                    f"Confluence: Also angular from the Moon (Kendra H{moon_diff} from Chandra), reinforcing experiential manifestation."
+                )
+                score += 5.0
+        else:
+            positive_factors.append(
+                f"Lunar angularity (indāvapi): Situated in Kendra H{moon_diff} from the Moon (occupies House {p_house} from Lagna)."
+            )
             
         if p == lagna_lord:
             positive_factors.append(f"Ascendant Lord merger: {p} rules the Lagna, identifying the native's core vitality with the archetype.")
@@ -133,30 +141,34 @@ def detect_pancha_mahapurusha_yogas(chart: Dict[str, Any]) -> List[YogaInstance]
         breakers = []
         
         # 1. Trishadaya intrusion
-        trish_breakers = audit_trishadaya_interference([p], chart)
-        breakers.extend(trish_breakers)
+        breakers.extend(audit_trishadaya_interference([p], chart))
         
         # 2. Combustion
-        comb_breakers = audit_combustion([p], chart)
-        breakers.extend(comb_breakers)
+        breakers.extend(audit_combustion([p], chart))
         
         # 3. Dispositor condition (if exalted, check dispositor)
         if is_exalted:
-            disp_breakers = audit_dispositor_vitality([p], chart)
-            breakers.extend(disp_breakers)
+            breakers.extend(audit_dispositor_vitality([p], chart))
             
-        # 4. Shadbala muscle
+        # 4. Dusthana placement from Lagna (applies when formed only from Chandra Kendra in H6, H8, or H12)
+        dusthana_breaker = audit_dusthana_placement([p_house], YogaCategory.MAHAPURUSHA.value)
+        if dusthana_breaker is not None:
+            breakers.append(dusthana_breaker)
+
+        # 5. Shadbala muscle
         shad_breakers, shad_pos = audit_shadbala_muscle([p], chart)
         breakers.extend(shad_breakers)
         positive_factors.extend(shad_pos)
         
-        # Calculate net score
+        # Cap positive confluence score at 100.0 before deducting breakers
+        score = min(100.0, score)
         for b in breakers:
             score -= b.penalty
             
         score = max(5.0, min(100.0, score))
         
-        if score >= 75.0:
+        has_major_breaker = any(b.penalty >= 20.0 for b in breakers)
+        if score >= 75.0 and not has_major_breaker:
             status = YogaStatus.PURE
         elif score >= 50.0:
             status = YogaStatus.STAINED

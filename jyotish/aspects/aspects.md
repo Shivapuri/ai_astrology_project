@@ -9,6 +9,15 @@ In Jyotish (Vedic Astrology), *Drishti* literally means "glance" or "sight." It 
 
 ## 1. Rasi Drishti (Sign-to-Sign Aspects)
 
+### Scriptural Citation
+***Bṛhat Parāśara Horā Śāstra* (BPHS Ch. 8, v. 1–5 — *Rāśi-Dṛṣṭi-Kathanādhyāyaḥ*):**
+> राशयोऽभिमुखं विप्र तथा पश्यन्ति पार्श्वभे ।  
+> यथा चरः स्थिरानेवं स्थिरः पश्यति वै चरान् ॥ २॥  
+> द्विस्वभावो विनाऽऽत्मानां द्विस्वभावान् प्रपश्यति ।  
+> समीपस्थं परित्यज्य खेटास्तत्र गतास्तथा ॥ ३॥  
+> 
+> *"O Brahmin, the signs aspect each other frontally, except the adjacent sign. A Moveable (Cardinal) sign aspects all Fixed signs except the adjacent one; a Fixed sign aspects all Moveable signs except the adjacent one; and a Dual (Mutable) sign aspects all other Dual signs except itself. The planets situated in these signs also aspect similarly."*
+
 ### The Simple Explanation
 Imagine the zodiac signs are rooms in a house. Some rooms have windows that look directly into other rooms. If a planet is sitting in one room, it can clearly see (and be seen by) anyone in the rooms connected by windows. 
 - **Binary:** The window is either open or closed. You either aspect the sign 100%, or 0%. There is no halfway.
@@ -30,6 +39,20 @@ Rasi Drishtis form the structural bedrock of the chart. They are used to detect 
 
 ## 2. Graha Drishti (Planetary Longitude Aspects)
 
+### Scriptural Citations
+- **BPHS Ch. 26, v. 1–13 (*Graha-Sphuṭa-Dṛṣṭi-Kathanādhyāyaḥ*):** Parāśara outlines the exact piecewise angular longitudinal aspect curve (*Dṛṣṭi Kendra*) and special planetary additions (*Viśeṣa Dṛṣṭi*).
+- ***Phaladīpikā* Ch. 2, v. 23 & Ch. 4, v. 9:**
+  > शौर्याज्ञे रविजो गुरुर्गुरुसुतौ भौमश्चतुर्थाष्टमौ  
+  > पूर्णं पश्यति सप्तमं च सकलास्तेष्वंघ्रिवृद्ध्या क्रमात् ॥  
+  > 
+  > *"Saturn fully aspects the 3rd and 10th houses; Jupiter fully aspects the 5th and 9th houses; Mars fully aspects the 4th and 8th houses; all planets fully aspect the 7th house (opposition), while their aspects on other houses increase by quarters respectively."*
+
+### Algebraic Equivalence of Continuous *Sphuṭa Dṛṣṭi* and Triangle-Wave Bonus
+In `get_graha_drishti`, the triangle-wave special aspect bonus (`apply_special_bonus`) is the exact algebraic equivalent of Parāśara's continuous *Sphuṭa Dṛṣṭi* equations across **BPHS Ch. 26, v. 10–12**:
+1. **Saturn (BPHS 26.10):** `एकभे नवभे भागा...` — Saturn's base aspect is augmented by a triangle wave peaking at 45.0 additional Virūpas at 60° (3rd glance) and 270° (10th glance), yielding exactly 60.0 Virūpas at those milestones.
+2. **Mars (BPHS 26.11):** `त्रिसप्तभे तु भौमस्य... रूपं सदाऽङ्गभे` — Mars is augmented by 15.0 Virūpas peaking at 90° (4th glance) and 210° (8th glance), yielding 60.0 Virūpas at 90° and maintaining a full 1 *Rūpa* (60.0 Virūpas) continuously across the entire 180°–210° span (`सदाऽङ्गभे रूपं`).
+3. **Jupiter (BPHS 26.12):** `त्रिसप्तभे तु जीवस्य...` — Jupiter is augmented by 30.0 Virūpas peaking at 120° (5th glance) and 240° (9th glance), yielding exactly 60.0 Virūpas at those milestones.
+
 ### The Simple Explanation
 If Rasi Drishti is like rooms with windows, Graha Drishti is like a person shining a flashlight. The flashlight is brightest exactly where it is pointed, but the light gently fades the further away you get from the center of the beam. 
 - **Continuous (Fractional):** The strength of the aspect is measured on a scale from 0 to 60 *Virupas* (points). 60 is a full, blinding aspect; 0 is no aspect at all.
@@ -37,20 +60,23 @@ If Rasi Drishti is like rooms with windows, Graha Drishti is like a person shini
 - **Degrees Matter:** It is calculated based on the exact mathematical degrees of the planets, not just the signs they occupy.
 
 ### The Technical Rules
-By default, every planet "looks" directly across the sky (180 degrees) with full strength (60 Virupas). As you move away from 180 degrees, the strength of the glance fades mathematically. 
-*Note: In this strict system, the shadow nodes Rahu and Ketu do **not** cast Graha Drishti (they do not aspect other planets), but they **do receive** aspects from the classical planets and form conjunctions (Yutis) with planets sharing the same sign.*
+By default, every planet "looks" directly across the sky (180 degrees) with full strength (60 Virupas). As you move away from 180 degrees, the strength of the glance fades mathematically per the Parāśarī piecewise function:
+- $0^\circ \le \Delta \le 30^\circ$: $0.0$ Virūpas
+- $30^\circ < \Delta \le 60^\circ$: $(\Delta - 30^\circ) / 2$
+- $60^\circ < \Delta \le 90^\circ$: $(\Delta - 60^\circ) + 15$
+- $90^\circ < \Delta \le 120^\circ$: $(120^\circ - \Delta) / 2 + 30$
+- $120^\circ < \Delta \le 150^\circ$: $(150^\circ - \Delta)$
+- $150^\circ < \Delta \le 180^\circ$: $(\Delta - 150^\circ) \times 2$
+- $180^\circ < \Delta \le 300^\circ$: $(300^\circ - \Delta) / 2$
+- $300^\circ < \Delta < 360^\circ$: $0.0$ Virūpas
 
-**Special Planetary Glances:**
-Three planets have "special" glances that are added on top of the base calculation:
-1. **Mars (Kuja):** As the warrior, Mars is highly protective of its inner territory (4th house / ~90°) and highly alert to external threats (8th house / ~210°). It gets a massive strength boost at these angles.
-2. **Jupiter (Guru):** As the wise counselor, Jupiter looks upon the houses of future creativity (5th / ~120°) and higher purpose (9th / ~240°) with supreme grace. It gets a strength boost here.
-3. **Saturn (Shani):** As the stern worker, Saturn keeps a watchful eye on its immediate efforts (3rd / ~60°) and its heavy burdens/career (10th / ~270°). It gets a strength boost at these angles.
+*Note: In this strict system, the shadow nodes Rahu and Ketu do **not** cast Graha Drishti (they do not aspect other planets), but they **do receive** aspects from the classical planets and form conjunctions (Yutis) with planets sharing the same sign or within degree orb.*
 
 ### How it is Used
 Graha Drishti reveals the psychological and qualitative influence planets have on one another. It is used heavily in *Shadbala* (the 6-fold strength calculation) and for timing events using planetary periods (like Vimshottari Dasha).
 
 ### Sphuṭa Dṛṣṭi Milestone Proximity Labeling (`get_aspect_explanation`)
-To preserve pure degree-based continuous longitudinal glancing without sign or house binning distortion, aspect labels and classical rules are identified via angular proximity to exact Parāśarī milestones rather than integer sign/house bins:
+`get_aspect_explanation` is a certified legacy bridge specifically retained for SVG ray rendering and visual chart readouts. To preserve pure degree-based continuous longitudinal glancing without sign or house binning distortion, aspect labels and classical rules are identified via angular proximity to exact Parāśarī milestones:
 - **Opposition:** Peak at 180° ($\pm 15^\circ$ orb)
 - **Mars Special 4th / Caturasra:** Peak at 90° ($\pm 30^\circ$ orb)
 - **Mars Special 8th / Randhra:** Peak at 210° ($\pm 30^\circ$ orb)
@@ -63,13 +89,17 @@ To preserve pure degree-based continuous longitudinal glancing without sign or h
 #### Engine Contracts & Zero-State Rules
 1. **Non-Casting Bodies Guard:** Non-physical points and shadow nodes (`Rahu`, `Ketu`, `Lagna`, `MC`) do not cast Graha Dṛṣṭi rays. Evaluated rays yield $0.0$ Virūpas with `line_style: "none"` and `nature_label: "Non-Casting Point"`.
 2. **Zero-Virūpa Ray Neutrality:** Angular separations with $0.0$ Virūpas yield `line_style: "none"`, `nature_label: "No Aspect (0 Virūpas)"`, and `rule_name: "No Aspect / Blind Angle"`, preventing spurious malefic tension lines in frontend SVG charts.
-3. **Natural Benefic Ray Invariance (*BPHS* Ch. 3.21):** Jupiter and Venus unconditionally cast Śubha (benefic continuous) rays. Dignity affects their strength/manifestation, not their intrinsic benefic glance.
-4. **Mercury Malefic Affliction (*BPHS* Ch. 3.21 / *Phaladīpikā* Ch. 2.27):** The Sun is an inherent natural malefic (*Krūra*). Mercury conjoined with the Sun (even outside combustion orb) or with Mars, Saturn, Rahu, or Ketu becomes functionally malefic.
+3. **Natural Benefic Ray Invariance (*BPHS* Ch. 3, v. 11 & *Phaladīpikā* Ch. 2, v. 27):** Jupiter and Venus unconditionally cast Śubha (benefic continuous) rays. Dignity affects their strength/manifestation, not their intrinsic benefic glance.
+4. **Mercury Malefic Affliction (*BPHS* Ch. 3, v. 11 & *Phaladīpikā* Ch. 2, v. 27):**
+   > तत्रार्कशनिभूपुत्राः क्षीणेन्दुराहुकेतवः । क्रूराः शेषग्रहा सौम्याः क्रूरः क्रूरयुतो बुधः ॥ ११॥  
+   > क्षीणेन्द्वर्ककुजाहिकेतुरविजाः पापाः सपापश्च वित्  
+   
+   The Sun, Mars, Saturn, Rahu, Ketu, and waning/dark Moon (*Kṣīṇendu*) are natural malefics (*Krūra* / *Pāpa*). Mercury conjoined with any active malefic (or combust within 14° of the Sun) becomes functionally malefic.
 
 ---
 
 ## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)
-The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[str, Any]` connects `ChartBaseline` directly to the aspect engine in a single pass:
+The master function `calculate_aspect_matrices(baseline: ChartBaseline, enforce_dpk_lord_qualifications: bool = False) -> Dict[str, Any]` connects `ChartBaseline` directly to the aspect engine in a single pass:
 
 1. **Graha Dṛṣṭi — Planet-to-Planet ($11 \times 11$ Matrix):**
    - Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
@@ -95,12 +125,15 @@ The master function `calculate_aspect_matrices(baseline: ChartBaseline) -> Dict[
 4. **Benefic / Malefic Qualitative Totals (+ / - Net Virūpas):**
    - **Natural Benefics:** Jupiter, Venus.
    - **Dynamic Benefics:**
-     - Mercury: Benefic if not combust (`baseline.combustion_status["Mercury"]["is_combust"]` is False) and not conjoined in the same sign with natural malefics (*BPHS* Ch. 3 / *Phaladeepika* Ch. 2.27).
-     - Moon: Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True).
+     - **Mercury:** Benefic if not combust (`baseline.combustion_status["Mercury"]["is_combust"]` is False) and not conjoined in the same sign with any active malefic (`Sun`, `Mars`, `Saturn`, `Rahu`, `Ketu`, or dark/waning `Moon` [`क्षीणेन्दु`]) per *BPHS* Ch. 3, v. 11 and *Phaladīpikā* Ch. 2, v. 27.
+     - **Moon:** Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True, corresponding to Paksha Bala $\ge 30$ Virūpas / elongation $\ge 90^\circ$).
    - **Natural Malefics:** Sun, Mars, Saturn, Rahu, Ketu.
-   - **House Lord Protection Rule (*Phaladeepika* Ch. 15.1–3):** When scoring aspects striking whole-sign house cusps, a house lord's aspect on its own sign is always classified as positive/protective, preserving and defending the house regardless of whether that ruler is a natural malefic (such as Mars or Saturn).
+   - **House Lord Protection Rule (*Phaladīpikā* Ch. 15, v. 1–3):**
+     > पापाः सर्वे भवनपतयश्चेदिहाहुस्तथैव खेटैः सर्वैः शुभफलमिदं नीचमूढारिहीनैः ॥ १॥  
+     > *"Even if the lords of the houses be malefics, they produce auspicious results for their own houses, provided they are free from debilitation (`नीच`), combustion (`मूढ`), and enemy sign (`अरि`)."*
+     - **Unattenuated Envelope (`totals_cusps`):** By default, when scoring aspects striking whole-sign house cusps, a house lord's aspect on its own sign is classified as positive/protective, preserving and defending the house regardless of whether that ruler is a natural malefic (such as Mars or Saturn).
+     - **Qualified Envelope (`cusps_dpk_qualified`):** When `enforce_dpk_lord_qualifications=True` (or inspected via `benefic_malefic_totals["cusps_dpk_qualified"]`), a natural malefic house lord receives positive protection credit only if it is free from debilitation, combustion, and enemy sign (*Nīca-Mūḍha-Ari-Hīnaiḥ*).
    - Net balance: $\text{Net Virūpas} = \text{Benefic Virūpas} - \text{Malefic Virūpas}$ precomputed for all planets and all 12 house cusps.
-
 
 ---
 
@@ -111,13 +144,11 @@ In the helper `calculate_advanced_graha_aspects`, Yutis are harmonized with degr
 
 ---
 
-## 5. Downstream Pipeline Contract (Stage 2A $\rightarrow$ Stage 3)
+## 5. Downstream Pipeline Contract (Stage 2A $\rightarrow$ Stage 3 `bhava_bala.py`)
 In `calculate_aspect_matrices`, `totals_cusps` calculates the qualitative balance by summing raw Virūpa values directly ($1.0 \times \text{Ray}$), representing the **unattenuated qualitative envelope**.
 
-When Stage 3 (`bhava_bala.py`) calculates canonical **Bhāva Dṛṣṭi Bala** under Maharishi Parāśara (*BPHS* Ch. 27), it consumes `cusp_drishti["by_house"][h][p]` and applies scriptural fractional multipliers:
-- **Jupiter and Benefic Mercury:** Full positive value ($\times +1.0$, scaled to $/2.0$ if combust or debilitated).
-- **Venus and Bright Moon:** Quarter positive value ($\times +0.25$).
-- **Natural Malefics (Sun, Mars, Saturn, Dark Moon, Afflicted Mercury):** Negative quarter value ($\times -0.25$).
-- **House Lord on its own house cusp (*Phaladīpikā* Ch. 15.1–3):** Full positive value ($\times +1.0$, reduced to $+0.25$ if combust or debilitated), defending its own house even if a natural malefic.
-
-
+When Stage 3 (`bhava_bala.py`) calculates canonical **Bhāva Dṛṣṭi Bala** under Maharishi Parāśara (*BPHS* Ch. 27, v. 28–29: `सद्दृष्टिपादयुक्पापपापदृष्टिपादविवर्जितम् । ज्ञेज्यदृष्टियुतं तच्च`) and Mantreśvara (*Phaladīpikā* Ch. 15, v. 1–3), it consumes `cusp_drishti["by_house"][h][p]` and applies scriptural fractional multipliers:
+- **Jupiter and Mercury (`ज्ञेज्यदृष्टियुतं`):** Always positive full benefic ray ($\times +1.0$ in pure Parāśarī / `sripati_raman` mode; scaled to $\times +0.5$ in `dpk_qualified` mode if combust, debilitated, or in an enemy sign per *Phaladīpikā* 15.1 & 15.3—never $\times -0.25$).
+- **Venus and Bright/Waxing Moon (`सद्दृष्टिपादयुक्`):** Quarter positive value ($\times +0.25$).
+- **Natural Malefics (Sun, Mars, Saturn) and Dark/Waning Moon (`पापदृष्टिपादविवर्जितम्`):** Negative quarter value ($\times -0.25$).
+- **House Lord on its own house cusp (*Phaladīpikā* Ch. 15, v. 1–3):** In `dpk_qualified` mode, full positive value ($\times +1.0$ when free from debilitation, combustion, and enemy sign per `नीचमूढारिहीनैः`, or $\times +0.25$ if impaired), defending its own house even if a natural malefic.

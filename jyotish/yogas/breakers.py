@@ -314,7 +314,7 @@ def audit_neecha_bhanga_condition_3(
     exalt_lord = SIGN_LORDS.get(exalt_sign)
     if exalt_lord:
         lord_house = get_house_of_planet(chart, exalt_lord)
-        lord_from_moon = ((lord_house - moon_house) % 12 + 1) if (lord_house > 0 and moon_house > 0) else 0
+        lord_from_moon = ((lord_house - moon_house) % 12 + 1) if (exalt_lord != "Moon" and lord_house > 0 and moon_house > 0) else 0
         if lord_house in (1, 4, 7, 10):
             matched_descriptions.append(
                 f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_house} from Lagna."
@@ -328,7 +328,7 @@ def audit_neecha_bhanga_condition_3(
     exalted_guest = PLANET_EXALTED_IN_SIGN.get(debilitation_sign)
     if exalted_guest and exalted_guest != debilitated_planet and exalted_guest != dispositor:
         guest_house = get_house_of_planet(chart, exalted_guest)
-        guest_from_moon = ((guest_house - moon_house) % 12 + 1) if (guest_house > 0 and moon_house > 0) else 0
+        guest_from_moon = ((guest_house - moon_house) % 12 + 1) if (exalted_guest != "Moon" and guest_house > 0 and moon_house > 0) else 0
         if guest_house in (1, 4, 7, 10):
             matched_descriptions.append(
                 f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_house} from Lagna."
@@ -376,7 +376,7 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
     # Condition 2: Dispositor of debilitation sign in Kendra from Lagna (1,4,7,10) or Moon
     if dispositor:
         disp_house = get_house_of_planet(chart, dispositor)
-        disp_from_moon = ((disp_house - moon_house) % 12 + 1) if (disp_house > 0 and moon_house > 0) else 0
+        disp_from_moon = ((disp_house - moon_house) % 12 + 1) if (dispositor != "Moon" and disp_house > 0 and moon_house > 0) else 0
         if disp_house in (1, 4, 7, 10):
             reasons.append(f"Dispositor in Kendra from Lagna: {dispositor} (lord of {debilitation_sign}) occupies Kendra H{disp_house}.")
             bonus += 30.0
@@ -407,19 +407,25 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
             reasons.append(f"Dispositor aspect (marginal): {dispositor} aspects fallen {planet} with faint {aspect_score:.0f} Virupas.")
             bonus += 15.0
 
-    # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon (supportive, < 30.0 alone)
-    # If the planet rules its own exaltation sign (Mercury) and already received Condition 3A,
-    # skip Condition 6 to avoid double-counting the same angular placement.
+    # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon
     exalt_sign = EXALTATION_SIGNS.get(planet)
     exalt_lord = SIGN_LORDS.get(exalt_sign)
     if not (c3_met and exalt_lord == planet):
-        p_from_moon = ((p_house - moon_house) % 12 + 1) if (p_house > 0 and moon_house > 0) else 0
+        p_from_moon = ((p_house - moon_house) % 12 + 1) if (planet != "Moon" and p_house > 0 and moon_house > 0) else 0
+        disp_house = get_house_of_planet(chart, dispositor) if dispositor else 0
+        exalt_lord_house = get_house_of_planet(chart, exalt_lord) if exalt_lord else 0
+        conjoined_lord = (
+            (dispositor and dispositor != planet and p_house > 0 and p_house == disp_house) or
+            (exalt_lord and exalt_lord != planet and p_house > 0 and p_house == exalt_lord_house)
+        )
         if p_house in (1, 4, 7, 10):
+            pts = 30.0 if (conjoined_lord and bonus < 30.0) else 20.0
             reasons.append(f"Angular fallen planet: {planet} is in Kendra H{p_house} from Lagna, forcing public engagement.")
-            bonus += 20.0
+            bonus += pts
         elif p_from_moon in (1, 4, 7, 10):
+            pts = 30.0 if (conjoined_lord and bonus < 30.0) else 15.0
             reasons.append(f"Angular fallen planet from Moon: {planet} is in Kendra H{p_from_moon} from Chandra.")
-            bonus += 15.0
+            bonus += pts
 
     is_rescued = len(reasons) >= 1 and bonus >= 30.0
     if is_rescued:
