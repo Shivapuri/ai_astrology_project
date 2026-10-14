@@ -58,8 +58,26 @@ class YogaInstance:
     breakers: List[YogaBreakerDetail] = field(default_factory=list) # Disruptive factors
 
     def to_dict(self) -> Dict[str, Any]:
-        d = asdict(self)
-        d["category"] = self.category.value
-        d["status"] = self.status.value
-        d["breakers"] = [b.to_dict() for b in self.breakers]
-        return d
+        serialized_breakers = []
+        for b in (self.breakers or []):
+            if b is None:
+                continue
+            if hasattr(b, "to_dict") and callable(b.to_dict):
+                serialized_breakers.append(b.to_dict())
+            elif isinstance(b, dict):
+                serialized_breakers.append(dict(b))
+
+        return {
+            "id": self.id,
+            "name": self.name,
+            "category": self.category.value if isinstance(self.category, Enum) else str(self.category or ""),
+            "status": self.status.value if isinstance(self.status, Enum) else str(self.status or ""),
+            "plausibility_score": max(0.0, min(100.0, float(self.plausibility_score or 0.0))),
+            "participating_planets": list(self.participating_planets or []),
+            "participating_houses": list(self.participating_houses or []),
+            "scripture_ref": self.scripture_ref or "",
+            "archetype": self.archetype or "",
+            "manifestation_effects": list(self.manifestation_effects or []),
+            "positive_factors": list(self.positive_factors or []),
+            "breakers": serialized_breakers,
+        }

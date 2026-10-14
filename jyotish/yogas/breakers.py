@@ -48,22 +48,33 @@ ASPECT_PALPABLE_THRESHOLD = 45.0
 ASPECT_MARGINAL_THRESHOLD = 30.0
 
 def get_lagna_sign(chart: Dict[str, Any]) -> str:
-    """Returns the Ascendant (Lagna) sign name."""
-    sign = chart.get("vargas", {}).get("D1", {}).get("lagna", {}).get("sign")
+    """Returns the Ascendant (Lagna) sign name, or empty string if missing."""
+    if not isinstance(chart, dict):
+        return ""
+    d1 = (chart.get("vargas") or {}).get("D1") or {}
+    sign = (d1.get("lagna") or {}).get("sign") if isinstance(d1, dict) else None
     if not sign:
-        sign = chart.get("ascendant", {}).get("sign", "Aries")
-    return sign
+        asc = chart.get("ascendant") or {}
+        sign = asc.get("sign", "") if isinstance(asc, dict) else ""
+    return sign if isinstance(sign, str) else ""
 
 def get_planets_data(chart: Dict[str, Any]) -> Dict[str, Any]:
     """Returns the D1 grahas dictionary."""
-    grahas = chart.get("vargas", {}).get("D1", {}).get("grahas")
+    if not isinstance(chart, dict):
+        return {}
+    vargas = chart.get("vargas") or {}
+    d1 = vargas.get("D1") if isinstance(vargas, dict) else {}
+    grahas = d1.get("grahas") if isinstance(d1, dict) else None
     if not grahas:
-        grahas = chart.get("planets", {})
-    return grahas
+        grahas = chart.get("planets") or {}
+    return grahas if isinstance(grahas, dict) else {}
 
 def get_sign_of_planet(chart: Dict[str, Any], planet: str) -> str:
     """Returns the zodiac sign of a planet."""
-    return get_planets_data(chart).get(planet, {}).get("sign", "")
+    p_data = get_planets_data(chart).get(planet) or {}
+    if isinstance(p_data, dict):
+        return p_data.get("sign", "")
+    return ""
 
 def get_house_of_planet(chart: Dict[str, Any], planet: str) -> int:
     """Returns the Whole Sign House (1-12) of a planet relative to Lagna."""
@@ -75,47 +86,53 @@ def get_house_of_planet(chart: Dict[str, Any], planet: str) -> int:
     p_idx = ZODIAC_SIGNS.index(p_sign)
     return (p_idx - l_idx) % 12 + 1
 
+def _extract_virupas(val: Any) -> float:
+    """Safely extracts and clamps aspect score to [0.0, 60.0] Virupas."""
+    if val is None:
+        return 0.0
+    if isinstance(val, dict):
+        for key in ("raw", "net", "plus", "virupas", "score"):
+            if val.get(key) is not None:
+                try:
+                    return max(0.0, min(60.0, float(val[key])))
+                except (ValueError, TypeError):
+                    return 0.0
+        return 0.0
+    try:
+        return max(0.0, min(60.0, float(val)))
+    except (ValueError, TypeError):
+        return 0.0
+
 def get_aspect_score(chart: Dict[str, Any], giver: str, receiver: str) -> float:
     """Returns Graha Drishti aspect value (0-60 Virupas) from giver to receiver."""
-    adv = chart.get("advanced_aspects", {})
-    aspects = adv.get("planets", {})
+    if not isinstance(chart, dict) or not giver or not receiver or giver == receiver:
+        return 0.0
+
+    adv = chart.get("advanced_aspects") or {}
+    aspects = adv.get("planets") or {}
+
     # 1. Direct planet receiver check
-    if receiver in aspects and giver in aspects[receiver]:
-        val = aspects[receiver][giver]
-        if isinstance(val, dict):
-            return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
-        return float(val)
+    recv_dict = aspects.get(receiver)
+    if isinstance(recv_dict, dict) and giver in recv_dict:
+        return _extract_virupas(recv_dict[giver])
 
     # 2. Lagna / Ascendant receiver check across cusps and lagna dictionaries
     if receiver in ("Lagna", "Ascendant", "1"):
         for l_key in ("Lagna", "Ascendant"):
-            if l_key in aspects and giver in aspects[l_key]:
-                val = aspects[l_key][giver]
-                if isinstance(val, dict):
-                    return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
-                return float(val)
+            l_dict = aspects.get(l_key)
+            if isinstance(l_dict, dict) and giver in l_dict:
+                return _extract_virupas(l_dict[giver])
 
-        if "lagna" in adv and giver in adv["lagna"]:
-            val = adv["lagna"][giver]
-            if isinstance(val, dict):
-                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
-            return float(val)
+        lagna_adv = adv.get("lagna")
+        if isinstance(lagna_adv, dict) and giver in lagna_adv:
+            return _extract_virupas(lagna_adv[giver])
 
-        cusps = adv.get("cusps", {})
-        c1 = cusps.get(1) or cusps.get("1") or {}
-        if giver in c1:
-            val = c1[giver]
-            if isinstance(val, dict):
-                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
-            return float(val)
-
-        eq_cusps = adv.get("equal_cusps", {})
-        eq1 = eq_cusps.get(1) or eq_cusps.get("1") or {}
-        if giver in eq1:
-            val = eq1[giver]
-            if isinstance(val, dict):
-                return float(val.get("raw", val.get("net", val.get("plus", 0.0))))
-            return float(val)
+        for cusp_group in ("cusps", "equal_cusps"):
+            cusps = adv.get(cusp_group) or {}
+            if isinstance(cusps, dict):
+                c1 = cusps.get(1) or cusps.get("1") or {}
+                if isinstance(c1, dict) and giver in c1:
+                    return _extract_virupas(c1[giver])
 
     return 0.0
 
@@ -133,6 +150,11 @@ def get_house_rulers(chart: Dict[str, Any]) -> Dict[int, List[str]]:
         house_rulers[h] = [lord] if lord else []
     return house_rulers
 
+def _first_ruler(house_rulers: Dict[int, List[str]], house: int) -> Optional[str]:
+    rulers = house_rulers.get(house) or []
+    return rulers[0] if rulers else None
+
+
 def audit_trishadaya_interference(
     yoga_planets: List[str],
     chart: Dict[str, Any],
@@ -140,18 +162,17 @@ def audit_trishadaya_interference(
 ) -> List[YogaBreakerDetail]:
     """
     Audits intrusion of the Trishadaya lords (3rd, 6th, and 11th).
-    11th Lord: Strongest saboteur (-40%): vanity, prestige obsession, greed.
-    6th Lord: Moderate saboteur (-25%): litigation, debts, acute disputes.
-    3rd Lord: Weakest saboteur (-15%): hobbies, distraction, restless ego.
+    Deduplicates dual-Trishadaya rulers (e.g., Mars in Gemini, Venus in Sagittarius,
+    Jupiter in Libra) and selects the strongest interference across yoga_planets.
     """
     breakers = []
     house_rulers = get_house_rulers(chart)
-    lagna_lord = house_rulers.get(1, [None])[0]
-    
-    lord_11 = house_rulers.get(11, [None])[0]
-    lord_6 = house_rulers.get(6, [None])[0]
-    lord_3 = house_rulers.get(3, [None])[0]
-    
+    lagna_lord = _first_ruler(house_rulers, 1)
+
+    lord_11 = _first_ruler(house_rulers, 11)
+    lord_6 = _first_ruler(house_rulers, 6)
+    lord_3 = _first_ruler(house_rulers, 3)
+
     saboteurs = [
         (lord_11, 11, 40.0, "11th Lord Intrusion (Primary Saboteur)",
          "Rules Labha (desires/gains). Corrupts higher purpose (Dharma) into vanity, applause-seeking, and social distraction."),
@@ -160,83 +181,102 @@ def audit_trishadaya_interference(
         (lord_3, 3, 15.0, "3rd Lord Intrusion",
          "Rules Sahaja/Bhratri. Dissipates focus into petty hobbies, sibling drama, and restless, unfocused effort.")
     ]
-    
+
+    seen_saboteurs = set()
+
     for saboteur, house_num, base_penalty, title, desc in saboteurs:
-        if not saboteur or saboteur in yoga_planets:
+        if not saboteur or saboteur in yoga_planets or saboteur in seen_saboteurs:
             continue
         # Lagnesha exemption: Ascendant lord never destroys the native's yoga
         if saboteur == lagna_lord:
             continue
-            
+
         penalty = base_penalty
         if is_supreme_pairing and house_num == 3:
-            penalty = 7.5  # Supreme 9th+10th alliance easily resists minor 3rd lord distraction
-            
+            penalty = 7.5
+
         saboteur_house = get_house_of_planet(chart, saboteur)
-        
+        best_breaker: Optional[YogaBreakerDetail] = None
+
         for yp in yoga_planets:
             yp_house = get_house_of_planet(chart, yp)
-            
-            # 1. Conjunction in same house
-            if saboteur_house == yp_house and yp_house != 0:
-                breakers.append(YogaBreakerDetail(
+            candidate: Optional[YogaBreakerDetail] = None
+
+            # 1. Conjunction in same house (strongest interference)
+            if saboteur_house == yp_house and yp_house > 0:
+                candidate = YogaBreakerDetail(
                     factor=title,
                     culprit_planet=saboteur,
                     description=f"{saboteur} (rules H{house_num}) conjoins {yp} in House {yp_house}. {desc}",
                     penalty=penalty
-                ))
-                break
-                
-            # 2. Graha Drishti aspect (Palpable >= 45 Virupas, Marginal >= 30 Virupas)
-            aspect_score = get_aspect_score(chart, saboteur, yp)
-            if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
-                breakers.append(YogaBreakerDetail(
-                    factor=f"{title} (Palpable Aspect)",
-                    culprit_planet=saboteur,
-                    description=f"{saboteur} (rules H{house_num}) casts strong {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
-                    penalty=penalty * (aspect_score / 60.0)
-                ))
-                break
-            elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
-                breakers.append(YogaBreakerDetail(
-                    factor=f"{title} (Marginal Aspect)",
-                    culprit_planet=saboteur,
-                    description=f"{saboteur} (rules H{house_num}) casts marginal {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
-                    penalty=(penalty * 0.5) * (aspect_score / 60.0)
-                ))
-                break
-                
+                )
+            else:
+                # 2. Graha Drishti aspect (Palpable >= 45 Virupas, Marginal >= 30 Virupas)
+                aspect_score = min(60.0, max(0.0, get_aspect_score(chart, saboteur, yp)))
+                if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
+                    candidate = YogaBreakerDetail(
+                        factor=f"{title} (Palpable Aspect)",
+                        culprit_planet=saboteur,
+                        description=f"{saboteur} (rules H{house_num}) casts strong {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
+                        penalty=penalty * (aspect_score / 60.0)
+                    )
+                elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
+                    candidate = YogaBreakerDetail(
+                        factor=f"{title} (Marginal Aspect)",
+                        culprit_planet=saboteur,
+                        description=f"{saboteur} (rules H{house_num}) casts marginal {aspect_score:.0f}-Virupa aspect on {yp}. {desc}",
+                        penalty=(penalty * 0.5) * (aspect_score / 60.0)
+                    )
+
+            if candidate and (best_breaker is None or candidate.penalty > best_breaker.penalty):
+                best_breaker = candidate
+
+        if best_breaker is not None:
+            breakers.append(best_breaker)
+            seen_saboteurs.add(saboteur)
+
     return breakers
 
 def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[YogaBreakerDetail]:
     """
     Audits whether participating planets are combust (< 8° from Sun).
     Deep combustion (< 3°) burns independent manifestation capacity.
-    Consumes pre-calculated combustion status from Stage 1/pipeline when available.
     """
     breakers = []
-    comb_status = chart.get("combustion_status") or getattr(getattr(chart, "baseline", None), "combustion_status", {})
+    comb_status = (
+        chart.get("combustion_status")
+        if isinstance(chart, dict)
+        else getattr(getattr(chart, "baseline", None), "combustion_status", {})
+    ) or {}
     planets_data = get_planets_data(chart)
 
     for p in yoga_planets:
-        if p in ("Sun", "Rahu", "Ketu"):
+        if p in ("Sun", "Rahu", "Ketu", "Lagna", "Ascendant"):
             continue
-        p_entry = planets_data.get(p, {})
-        diff = None
+        p_entry = planets_data.get(p) or {}
+        if not isinstance(p_entry, dict):
+            continue
 
-        if isinstance(comb_status, dict) and p in comb_status:
-            diff = comb_status[p].get("sun_separation")
-        elif "sun_distance" in p_entry and p_entry["sun_distance"] is not None:
-            diff = p_entry["sun_distance"]
+        raw_diff = None
+        if isinstance(comb_status, dict) and isinstance(comb_status.get(p), dict):
+            raw_diff = comb_status[p].get("sun_separation")
+        if raw_diff is None and p_entry.get("sun_distance") is not None:
+            raw_diff = p_entry.get("sun_distance")
 
-        if diff is None:
-            sun_lon = planets_data.get("Sun", {}).get("longitude")
+        if raw_diff is None:
+            sun_entry = planets_data.get("Sun") or {}
+            sun_lon = sun_entry.get("longitude") if isinstance(sun_entry, dict) else None
             p_lon = p_entry.get("longitude")
             if sun_lon is None or p_lon is None:
                 continue
-            diff = abs(p_lon - sun_lon) % 360.0
-            if diff > 180.0:
-                diff = 360.0 - diff
+            raw_diff = p_lon - sun_lon
+
+        try:
+            diff = abs(float(raw_diff)) % 360.0
+        except (ValueError, TypeError):
+            continue
+        if diff > 180.0:
+            diff = 360.0 - diff
 
         if diff < 3.0:
             breakers.append(YogaBreakerDetail(
@@ -256,39 +296,50 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
     return breakers
 
 def audit_neecha_bhanga_condition_3(
-    debilitated_planet: str, 
-    debilitation_sign: str, 
+    debilitated_planet: str,
+    debilitation_sign: str,
     chart: Dict[str, Any]
 ) -> Tuple[bool, str]:
     """
     Evaluates Condition 3 (Phaladipika 7.26) checking both:
-    - 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha)
-    - 3B: Planet that exalts in the debilitation sign
-    Evaluated in Kendra from both Lagna and Moon with safe non-zero checks.
+    - 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha), excluding self-lordship
+    - 3B: Planet that exalts in the debilitation sign, excluding the dispositor already counted in Cond 2
     """
     moon_house = get_house_of_planet(chart, "Moon")
-    
+    dispositor = SIGN_LORDS.get(debilitation_sign)
+    matched_descriptions = []
+
     # Condition 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha)
     exalt_sign = EXALTATION_SIGNS.get(debilitated_planet)
     exalt_lord = SIGN_LORDS.get(exalt_sign)
-    if exalt_lord:
+    if exalt_lord and exalt_lord != debilitated_planet:
         lord_house = get_house_of_planet(chart, exalt_lord)
         lord_from_moon = ((lord_house - moon_house) % 12 + 1) if (lord_house > 0 and moon_house > 0) else 0
         if lord_house in (1, 4, 7, 10):
-            return True, f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_house} from Lagna."
-        if lord_from_moon in (1, 4, 7, 10):
-            return True, f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_from_moon} from Chandra."
+            matched_descriptions.append(
+                f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_house} from Lagna."
+            )
+        elif lord_from_moon in (1, 4, 7, 10):
+            matched_descriptions.append(
+                f"Lord of exaltation sign ({exalt_lord}) is in Kendra H{lord_from_moon} from Chandra."
+            )
 
-    # Condition 3B: Planet that exalts in the debilitation sign
+    # Condition 3B: Planet that exalts in this sign (if distinct from dispositor)
     exalted_guest = PLANET_EXALTED_IN_SIGN.get(debilitation_sign)
-    if exalted_guest:
+    if exalted_guest and exalted_guest != debilitated_planet and exalted_guest != dispositor:
         guest_house = get_house_of_planet(chart, exalted_guest)
         guest_from_moon = ((guest_house - moon_house) % 12 + 1) if (guest_house > 0 and moon_house > 0) else 0
         if guest_house in (1, 4, 7, 10):
-            return True, f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_house} from Lagna."
-        if guest_from_moon in (1, 4, 7, 10):
-            return True, f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_from_moon} from Chandra."
-            
+            matched_descriptions.append(
+                f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_house} from Lagna."
+            )
+        elif guest_from_moon in (1, 4, 7, 10):
+            matched_descriptions.append(
+                f"Planet exalted in this sign ({exalted_guest}) is in Kendra H{guest_from_moon} from Chandra."
+            )
+
+    if matched_descriptions:
+        return True, " ".join(matched_descriptions)
     return False, ""
 
 def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[str], float]:
@@ -298,72 +349,73 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
     Returns: (is_rescued, reasons, redemption_bonus_percentage)
     """
     planets_data = get_planets_data(chart)
-    p_info = planets_data.get(planet, {})
-    p_sign = p_info.get("sign", "")
-    
-    if p_sign != DEBILITATION_SIGNS.get(planet):
-        return False, [], 0.0  # Planet is not debilitated
-        
+    p_info = planets_data.get(planet) or {}
+    p_sign = p_info.get("sign", "") if isinstance(p_info, dict) else ""
+
+    if not p_sign or p_sign != DEBILITATION_SIGNS.get(planet):
+        return False, [], 0.0
+
     reasons = []
     bonus = 0.0
-    
+
     debilitation_sign = p_sign
     dispositor = SIGN_LORDS.get(debilitation_sign)
-    exaltation_sign = EXALTATION_SIGNS.get(planet)
-    exaltation_lord = SIGN_LORDS.get(exaltation_sign)
-    
     moon_house = get_house_of_planet(chart, "Moon")
     p_house = get_house_of_planet(chart, planet)
-    
-    # Condition 1: Exalted Co-occupant in same sign (e.g. Einstein Mercury + exalted Venus)
+
+    # Condition 1: Exalted Co-occupant in same sign
     for other_p, data in planets_data.items():
+        if not isinstance(data, dict):
+            continue
         if other_p != planet and data.get("sign") == debilitation_sign:
             if data.get("sign") == EXALTATION_SIGNS.get(other_p):
                 reasons.append(f"Exalted co-occupant: {other_p} is exalted in {debilitation_sign} sharing the sign with fallen {planet}.")
                 bonus += 35.0
                 break
-                
+
     # Condition 2: Dispositor of debilitation sign in Kendra from Lagna (1,4,7,10) or Moon
     if dispositor:
         disp_house = get_house_of_planet(chart, dispositor)
+        disp_from_moon = ((disp_house - moon_house) % 12 + 1) if (disp_house > 0 and moon_house > 0) else 0
         if disp_house in (1, 4, 7, 10):
             reasons.append(f"Dispositor in Kendra from Lagna: {dispositor} (lord of {debilitation_sign}) occupies Kendra H{disp_house}.")
             bonus += 30.0
-        elif moon_house > 0 and ((disp_house - moon_house) % 12 + 1) in (1, 4, 7, 10):
-            reasons.append(f"Dispositor in Kendra from Moon: {dispositor} is in an angle from Chandra.")
-            bonus += 25.0
-            
+        elif disp_from_moon in (1, 4, 7, 10):
+            reasons.append(f"Dispositor in Kendra from Moon: {dispositor} is in Kendra H{disp_from_moon} from Chandra.")
+            bonus += 30.0
+
     # Condition 3: Planet that exalts in this sign or lord of exaltation sign is in Kendra from Lagna or Moon
     c3_met, c3_desc = audit_neecha_bhanga_condition_3(planet, debilitation_sign, chart)
     if c3_met:
         reasons.append(f"Condition 3 (Exaltation Alignment): {c3_desc}")
-        bonus += 25.0
-            
+        bonus += 30.0
+
     # Condition 4: Dispositor of debilitation sign is itself exalted
     if dispositor:
         disp_sign = get_sign_of_planet(chart, dispositor)
         if disp_sign == EXALTATION_SIGNS.get(dispositor):
             reasons.append(f"Exalted dispositor: {dispositor} (ruler of {debilitation_sign}) is exalted in {disp_sign}.")
             bonus += 30.0
-            
+
     # Condition 5: Dispositor aspects the fallen planet
     if dispositor:
         aspect_score = get_aspect_score(chart, dispositor, planet)
         if aspect_score >= ASPECT_PALPABLE_THRESHOLD:
             reasons.append(f"Dispositor aspect: {dispositor} directly aspects fallen {planet} with palpable {aspect_score:.0f} Virupas (>= 45).")
-            bonus += 25.0
+            bonus += 30.0
         elif aspect_score >= ASPECT_MARGINAL_THRESHOLD:
             reasons.append(f"Dispositor aspect (marginal): {dispositor} aspects fallen {planet} with faint {aspect_score:.0f} Virupas.")
-            bonus += 12.5
-            
-    # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon
+            bonus += 15.0
+
+    # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon (supportive, < 30.0 alone)
+    p_from_moon = ((p_house - moon_house) % 12 + 1) if (p_house > 0 and moon_house > 0) else 0
     if p_house in (1, 4, 7, 10):
         reasons.append(f"Angular fallen planet: {planet} is in Kendra H{p_house} from Lagna, forcing public engagement.")
         bonus += 20.0
-    elif moon_house > 0 and ((p_house - moon_house) % 12 + 1) in (1, 4, 7, 10):
-        reasons.append(f"Angular fallen planet from Moon: {planet} is in Kendra from Chandra.")
+    elif p_from_moon in (1, 4, 7, 10):
+        reasons.append(f"Angular fallen planet from Moon: {planet} is in Kendra H{p_from_moon} from Chandra.")
         bonus += 15.0
-        
+
     is_rescued = len(reasons) >= 1 and bonus >= 30.0
     if is_rescued:
         if p_house in (1, 4, 7, 10, 5, 9):
