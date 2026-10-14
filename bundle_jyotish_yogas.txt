@@ -1,10 +1,10 @@
 # ==============================================================================
 # ASTRA CODEBASE FOLDER BUNDLE
 # FOLDER: /Users/hajnaljanos/PycharmProjects/astra/jyotish/yogas
-# GENERATED: 2026-10-02 09:24:33
+# GENERATED: 2026-10-14 19:05:06
 # TOTAL FILES: 22
-# TOTAL LINES: 6,489
-# TOTAL SIZE: 347.9 KB
+# TOTAL LINES: 6,500
+# TOTAL SIZE: 348.5 KB
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
@@ -12,7 +12,7 @@
 # ------------------------------------------------------------------------------
 #  1. __init__.py (22 lines | 0.6 KB | Python Source)
 #  2. bhava_yogas.py (265 lines | 12.7 KB | Python Source)
-#  3. breakers.py (447 lines | 19.6 KB | Python Source)
+#  3. breakers.py (455 lines | 20.1 KB | Python Source)
 #  4. chandal_yogas.py (261 lines | 13.3 KB | Python Source)
 #  5. character_growth_yogas.py (311 lines | 14.8 KB | Python Source)
 #  6. contextual_yogas.md (68 lines | 4.2 KB | Markdown Document)
@@ -20,7 +20,7 @@
 #  8. deity_yogas.py (332 lines | 15.3 KB | Python Source)
 #  9. dhana_daridrya.py (183 lines | 8.4 KB | Python Source)
 # 10. dispositor_root_yogas.py (215 lines | 11.1 KB | Python Source)
-# 11. evaluator.py (168 lines | 6.9 KB | Python Source)
+# 11. evaluator.py (171 lines | 7.1 KB | Python Source)
 # 12. kartari.py (89 lines | 4.2 KB | Python Source)
 # 13. lunar_solar_yogas.py (614 lines | 32.7 KB | Python Source)
 # 14. models.py (65 lines | 2.5 KB | Python Source)
@@ -335,7 +335,7 @@ def detect_bhava_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
 
 ================================================================================
 FILE: breakers.py
-TYPE: Python Source | LINES: 447 | SIZE: 19.6 KB
+TYPE: Python Source | LINES: 455 | SIZE: 20.1 KB
 ================================================================================
 """
 jyotish/yogas/breakers.py
@@ -551,24 +551,32 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
     """
     Audits whether participating planets are combust (< 8° from Sun).
     Deep combustion (< 3°) burns independent manifestation capacity.
+    Consumes pre-calculated combustion status from Stage 1/pipeline when available.
     """
     breakers = []
+    comb_status = chart.get("combustion_status") or getattr(getattr(chart, "baseline", None), "combustion_status", {})
     planets_data = get_planets_data(chart)
-    sun_lon = planets_data.get("Sun", {}).get("longitude")
-    if sun_lon is None:
-        return breakers
-        
+
     for p in yoga_planets:
         if p in ("Sun", "Rahu", "Ketu"):
             continue
-        p_lon = planets_data.get(p, {}).get("longitude")
-        if p_lon is None:
-            continue
-            
-        diff = abs(p_lon - sun_lon) % 360.0
-        if diff > 180.0:
-            diff = 360.0 - diff
-            
+        p_entry = planets_data.get(p, {})
+        diff = None
+
+        if isinstance(comb_status, dict) and p in comb_status:
+            diff = comb_status[p].get("sun_separation")
+        elif "sun_distance" in p_entry and p_entry["sun_distance"] is not None:
+            diff = p_entry["sun_distance"]
+
+        if diff is None:
+            sun_lon = planets_data.get("Sun", {}).get("longitude")
+            p_lon = p_entry.get("longitude")
+            if sun_lon is None or p_lon is None:
+                continue
+            diff = abs(p_lon - sun_lon) % 360.0
+            if diff > 180.0:
+                diff = 360.0 - diff
+
         if diff < 3.0:
             breakers.append(YogaBreakerDetail(
                 factor="Deep Planetary Combustion (Astangata)",
@@ -583,7 +591,7 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
                 description=f"{p} is combust within {diff:.1f}° of the Sun. May produce internal egoic conflict or diminished visibility.",
                 penalty=20.0
             ))
-            
+
     return breakers
 
 def audit_neecha_bhanga_condition_3(
@@ -2978,7 +2986,7 @@ def detect_dispositor_root_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
 
 ================================================================================
 FILE: evaluator.py
-TYPE: Python Source | LINES: 168 | SIZE: 6.9 KB
+TYPE: Python Source | LINES: 171 | SIZE: 7.1 KB
 ================================================================================
 """
 jyotish/yogas/evaluator.py
@@ -3039,12 +3047,15 @@ CANONICAL_DUPLICATE_GROUPS = {
 }
 
 
-def detect_all_yogas(chart: Dict[str, Any]) -> Dict[str, Any]:
+def detect_all_yogas(chart: Any) -> Dict[str, Any]:
     """
     Master entry point for Classical Yoga Detection in Astra.
     Scans the chart across all classical categories, audits Yoga Breakers,
     deduplicates overlapping definitions, and returns a structured, categorized payload.
+    Supports either ChartPipeline or standard chart dict.
     """
+    if hasattr(chart, "to_dict") and not isinstance(chart, dict):
+        chart = chart.to_dict()
     raw_yogas: List[YogaInstance] = []
 
     # 1. Pancha Mahapurusha Yogas

@@ -1,79 +1,8 @@
-Title: Live Content
-
-Description: Fetched live
-
-Source: https://sanskritdocuments.org/doc_z_misc_sociology_astrology/par4650.html
-
----
-
- 
- 
- 
- 
- 
- 
- 
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-66145208-1', 'auto');
-ga('send', 'pageview');
- 
- 
- 
- 
- 
- 
- 
-  bRihatpArAsharahorAshAstramh 46-50  
- 
- 
- 
- 
- 
- 
- 
- 
- 
-  
-
-  
-<script type="text/javascript" src="//translate.google.com/trans    
-    
-function googleTranslateElementInit()    
-  new google.translate.TranslateElement(pageLanguage: 'sa', 'google_translate_element');
-   
-    
-
- 
- 
- 
-   
-  बृहत्पाराशरहोराशास्त्रम् ४६-५०  
-   
- 
- 
- Home 
- sociology_astrology 
- ITX 
- Devanagari PDF 
- Tamil PDF 
- Telugu PDF 
- Kananda PDF 
- Gujarati PDF 
- PRINT 
-  
-  bRihatpArAsharahorAshAstramh 46-50  
- 
- 
- 
- 
- 
-  बृहत्पाराशरहोराशास्त्रम् ४६-५०  
+बृहत्पाराशरहोराशास्त्रम् ४६-५०
 
 
- 
+--------------------------------------------------------------------------------
+
 
              अथ दशाध्याय ॥ ४६॥
 
@@ -707,7 +636,9 @@ function googleTranslateElementInit()
 इति ते कथिता विप्र दश भेदा अनेकधा ।
 एतदन्तर्दशाभेदान् कथयिष्यामि चाग्रतः ॥ २१०॥
 
- 
+
+--------------------------------------------------------------------------------
+
 
             अथ दशाफलाद्यायः ॥ ४७॥
 
@@ -978,7 +909,9 @@ function googleTranslateElementInit()
 तद्दोषपरिहारार्थं रुद्रं वा त्र्यम्बकं जपेत् ।
 स्वेतां गां महिषीं दव्यादारोग्यं च ततो भवेत् ॥ ८९॥
 
- 
+
+--------------------------------------------------------------------------------
+
 
         अथ विशेषनक्षत्रदशाफलाध्यायः ॥ ४८॥
 
@@ -1042,7 +975,9 @@ function googleTranslateElementInit()
 रन्ध्रस्थानगतानां च दशाऽनिष्टफलप्रदा ।
 एवं भावेशसम्बन्धादूरनीयं दशाफलम् ॥ २०॥
 
- 
+
+--------------------------------------------------------------------------------
+
 
         अथ कालचक्रदशाफलाध्यायः ॥ ४९॥
 
@@ -1158,7 +1093,9 @@ function googleTranslateElementInit()
 तत्सर्वं चत्रकाले हि सुबुद्ध्या योजयेद् बुधः ।
 इति संक्षेपतः प्रोक्तं कालचक्रदशाफलम् ॥ ३७॥
 
- 
+
+--------------------------------------------------------------------------------
+
 
          अथ चरादिदशाफलाध्यायः ॥ ५०॥
 
@@ -1452,17 +1389,18 @@ function googleTranslateElementInit()
 स्वराशितो राशिभुक्तिं प्रकल्प्य फलमीरयेत् ।
 अन्तरन्तर्दशां स्वीयां विभज्यैवं पुनः पुनः ॥ ९७॥
 
- 
 
- 
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
 
 Encoded and proofread by ajarve at fms30.cca.rockwell.com (Ahto Jarve)
 
- 
-   
- 
- 
- 
+================================================================================
+DOCUMENT INFORMATION
+================================================================================
 % Text title            : bRihatpArAsharahorAshAstram.h 46-50
 % File name             : par4650.itx
 % itxtitle              : bRihatpArAsharahorAshAstram 46-50
@@ -1476,45 +1414,7 @@ Encoded and proofread by ajarve at fms30.cca.rockwell.com (Ahto Jarve)
 % Subject               : philosophy/hinduism/religion
 % Transliterated by     : Ahto Jarve ajarve at fms30.cca.rockwell.com
 % Proofread by          : Ahto Jarve ajarve at fms30.cca.rockwell.com
-% Indexextra            : (Scans  1 ,  2 ,  3 , English  1 ,  2 , Hindi  1 ,  2 )
+% Indexextra            : (Scans 1, 2, 3, English 1, 2, Hindi 1, 2)
 % Latest update         : February 2, 2024
 % Send corrections to   : sanskrit at cheerful dot c om
 % Site access           : https://sanskritdocuments.org
- 
- 
- 
- This text is prepared by volunteers and is to be used for personal study 
-and research.  The file is not to be copied or reposted for promotion of 
-any website or individuals or for commercial purpose without permission.
-Please help to maintain respect for volunteer spirit.  
- 
- 
- 
- 
- 
-   Home 
- Sitemap 
- Blog 
- Contributors 
- Volunteering 
- GuestBook 
- FAQ 
- Search 
- 
- 
- 
- 
- 
-  sanskritdocuments.org  
- 
-  Last updated on Thu 19 Jun 2025 11:43:19 AM MST  
- 
- 
- 
- BACK TO TOP 
- 
- 
- sanskritdocuments.org 
-  
- 
-

@@ -1,68 +1,5 @@
-<!doctype html>
-<html itemscope itemtype="http://schema.org/WebPage">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
-<!-- Google Analytics -->
-<script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-ga('create', 'UA-66145208-1', 'auto');
-ga('send', 'pageview');
-</script>
-<!-- End Google Analytics -->
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<link rel="shortcut icon" href="/favicon.ico">
-<meta name="ROBOTS" content="ALL">
-<link rel="canonical" href="/doc_z_misc_sociology_astrology/par0110.html">
-<title itemprop="name"> Brihat Parashara Horashastram 1-10 </title>
-<meta itemprop="alternateName" content=" बृहत्पाराशरहोराशास्त्रम् १-१० ">
-<meta itemprop="description" content=" Brihat Parashara Horashastram 1-10 ,   ,  बृहत्पाराशरहोराशास्त्रम् १-१० ">
-<meta name="keywords" content=" बृहत्पाराशरहोराशास्त्रम् १-१० ,  Brihat Parashara Horashastram 1-10 , par0110">
-<meta itemprop="publisher" content="https://sanskritdocuments.org/">
-<meta itemprop="editor" content="sanskrit@cheerful.com">
-<base href="https://sanskritdocuments.org/">
-<link rel="stylesheet" href="https://sanskritdocuments.org/css/sandocs.css" type="text/css">
-<link rel="stylesheet" href="https://sanskritdocuments.org/css/footer.css">
-<link rel="stylesheet" href="https://sanskritdocuments.org/css/print.css" media="print" type="text/css">
-<script src="https://cdn.jsdelivr.net/gh/virtualvinodh/aksharamukha-web-plugin/aksharamukha-v3.js?source=Devanagari&class=convertdeva&prelist=sansktradall"></script>
+बृहत्पाराशरहोराशास्त्रम् १-१०
 
-<div id="google_translate_element"></div>
-<script type="text/javascript" src="//translate.google.com/trans  <!--google_translate_element-->late_a/element.js?cb=googleTranslateElementInit"></script>
-<script type="text/javascript">  <!--google_translate_element-->
-function googleTranslateElementInit()   <!--google_translate_element-->
-  new google.translate.TranslateElement(pageLanguage: 'sa', 'google_translate_element');
-  <!--google_translate_element-->
-</script>  <!--google_translate_element-->
-
-</head>
-<body>
-<div id="wrapper">
-<div class="convertdeva"><div id="brand"><div id="sitename">
-<span  title=" Brihat Parashara Horashastram 1-10 "> बृहत्पाराशरहोराशास्त्रम् १-१० </span>
-</div></div></div>
-<div id="header">
-<div id="breadcrumb" itemprop="breadcrumb">
-<a href="/" itemprop="url">Home</a>
-<a href="/sanskrit/sociology_astrology/" itemprop="url">sociology_astrology</a>
-<a href="/doc_z_misc_sociology_astrology/par0110.itx" itemprop="url" target="_itx">ITX</a>
-<a href="/doc_z_misc_sociology_astrology/par0110.pdf" itemprop="url" target="_pdf">Devanagari PDF</a>
-<a href="/doc_z_misc_sociology_astrology/par0110-ta.pdf" itemprop="url" target="_pdf">Tamil PDF</a>
-<a href="/doc_z_misc_sociology_astrology/par0110-te.pdf" itemprop="url" target="_pdf">Telugu PDF</a>
-<a href="/doc_z_misc_sociology_astrology/par0110-kn.pdf" itemprop="url" target="_pdf">Kananda PDF</a>
-<a href="/doc_z_misc_sociology_astrology/par0110-gu.pdf" itemprop="url" target="_pdf">Gujarati PDF</a>
-<a href="javascript:window.print()">PRINT</a>
-</div> 
-<h1 itemprop="headline"> Brihat Parashara Horashastram 1-10 </h1>
-</div>
-<div class="convertdeva">
-<div id="BodyHref">
-<div id="article"  itemscope itemprop="mainEntity"  itemType="https://schema.org/TextDigitalDocument">
-<PRE  itemprop="text" class="stotra" id="content" lang="sa">
-<h2 itemprop="name"> बृहत्पाराशरहोराशास्त्रम् १-१० </h2>
 
                       ॥  ॐ ॥
 
@@ -73,7 +10,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 गजाननं भूतगणादिसेवितं कपित्थजम्बूफलसारभक्षणम् ।
 उमासुतं शोकविनाशकारणं नमामि विघ्नेश्वरपादपङ्कजम् ॥
 
-<h2 itemprop="headline">सृष्टिक्रमकथनाध्यायः ॥ १॥</h2>
+
+सृष्टिक्रमकथनाध्यायः ॥ १॥
+
 
 अथैकदा मुनिश्रेष्ठं त्रिकलज्ञं पराशरम् ।
 पप्रच्छोपेत्य मैत्रेयः प्रणिपत्य कृताञ्जलिः ॥ १॥
@@ -147,7 +86,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 शक्तयश्च तथैतेषामधिकांशाः श्रियादयः ।
 स्वस्वशक्तिषु चान्यासु ज्ञेया जीवांशकाधिकाः ॥ २४॥
 
-<h2 itemprop="headline">अथावतारकथनाध्यायः ॥ २॥</h2>
+
+अथावतारकथनाध्यायः ॥ २॥
+
 
 रामकृष्णादयो ये च ह्यवतारा रमापतेः ।
 तेऽपि जीवांशसंयुक्ताः किंवा ब्रूहि मुनीश्वर ॥ १॥
@@ -188,7 +129,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 यो नरः शास्त्रमज्ञात्वा ज्यौतिषं खलु निन्दति ।
 रौरवं नरकं भुक्त्वा चान्धत्वं चान्यजन्मनि ॥ १३॥
 
-<h2 itemprop="headline">अथ ग्रहगुणस्वरूपाध्यायः ॥ ३॥</h2>
+
+अथ ग्रहगुणस्वरूपाध्यायः ॥ ३॥
+
 
 कथितं भवता प्रेम्णा ग्रहावतरणं मुने ।
 तेषां गुणस्वरूपाद्यं कृपया कथ्यतां पुनः ॥ १॥
@@ -412,7 +355,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 शुभं जन्म विजानीयात्तथैवैकादशेऽपि च ।
 अन्यस्थाने स्थितं चेत् स्यात् तदा जन्माशुभं वदेत् ॥ ७४॥
 
-<h2 itemprop="headline">अथ राशिस्वरूपाध्यायः ॥ ४॥</h2>
+
+अथ राशिस्वरूपाध्यायः ॥ ४॥
+
 
 अहोरात्रस्य पूर्वान्त्यलोपाद् होराऽवशिष्यते ।
 तस्य विज्ञानमात्रेण जातकर्मफलं वदेत् ॥ १॥
@@ -504,7 +449,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 शुभाशुभं वदेत् पित्रोर्जीवनं मरणं तथा ।
 एवं निषेकलग्नेन सम्यग् ज्ञेयं स्वकल्पनात् ॥ ३०॥
 
-<h2 itemprop="headline">अथ विशेषलग्नाध्यायः ॥ ५॥</h2>
+
+अथ विशेषलग्नाध्यायः ॥ ५॥
+
 
 अथाहं सम्प्रवक्ष्यामि तवाग्रे द्विजसत्तम ।
 भावहोराघटीसञ्ज्ञलग्नानीति पृथक् पृथक् ॥ १॥
@@ -579,7 +526,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 स्वस्वदेशोद्भवं लग्नं जन्मलग्नमिहोच्यते ।
 भावहोरादिलग्नानां सर्वत्रैव समक्रिया ॥ २४॥
 
-<h2 itemprop="headline">अथ षोडशवर्गाध्यायः ॥ ६॥</h2>
+
+अथ षोडशवर्गाध्यायः ॥ ६॥
+
 
 श्रुता ग्रहगुणास्त्वत्तस्तथा राशिगुण मुने ।
 श्रोतुमिच्छामि भावानां भेदांस्तान् कृपया वद ॥ १॥
@@ -743,7 +692,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 अस्तङ्गता ग्रहजिता नीचगा दुर्बलाश्च ये ।
 शयनादिगतास्तेभ्य उत्पन्ना योगनाशकाः ॥ ५३॥
 
-<h2 itemprop="headline">अथ वर्गविवेकाध्यायः ॥ ७॥</h2>
+
+अथ वर्गविवेकाध्यायः ॥ ७॥
+
 
 अथ षोडशवर्गेषु विवेकं च वदाम्यहम् ।
 लग्ने देहस्य विज्ञानं होरायां सम्पदादिकम् ॥ १॥
@@ -874,7 +825,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 यद्भावाद्यत्फलं चिन्त्यं तदीशात्तत्फलं विदुः ।
 ज्ञेयं तस्य फलं तद्धि तत्र चिन्त्यं शुभाऽशुभम् ॥ ४३॥
 
-<h2 itemprop="headline">अथ राशिदृष्टिकथनाध्यायः ॥ ८॥</h2>
+
+अथ राशिदृष्टिकथनाध्यायः ॥ ८॥
+
 
 अथ मेषादिराशीनां चरादीनां पृथक् पृथक् ।
 दृष्टिभेदं प्रवक्ष्यामि श‍ृणु त्वं द्विजसत्तम ॥ १॥
@@ -903,7 +856,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 एवं चतुर्भुजाकारं वृत्ताकारमथापि वा ।
 दृष्टिचक्रं प्रविन्यस्यैवं ततो दृष्टिं विचारयेत् ॥ ९॥
 
-<h2 itemprop="headline">अथारिष्टाध्यायः ॥ ९॥</h2>
+
+अथारिष्टाध्यायः ॥ ९॥
+
 
 आदौ जन्माङ्गतो विप्र रिष्टाऽरिष्टं विचारयेत् ।
 ततस्तन्वादिभावानां जातकस्य फलं वदेत् ॥ १॥
@@ -1041,7 +996,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 एवं चन्द्रात् स्थितैः पापैर्मातु कष्टं विचारयेत् ।
 बलाऽबलविवेकेन कष्टं वा मृत्युमादिशेत् ॥ ४५॥
 
-<h2 itemprop="headline">अथाऽरिष्टभङ्गाध्यायः ॥ १०॥</h2>
+
+अथाऽरिष्टभङ्गाध्यायः ॥ १०॥
+
 
 इत्यरिष्टं मया प्रोक्तं तद्भङ्गश्चापि कथ्यते ।
 यत् समालोक्यं जातानां रिष्टाऽरिष्टं वदेद्बुधः ॥ १॥
@@ -1074,11 +1031,9 @@ function googleTranslateElementInit()   <!--google_translate_element-->
 Encoded and proofread by ajarve at fms30.cca.rockwell.com (Ahto Jarve)
 Proofread by Ahto Jarve, Ginda Lass, Abhisyanta Tejaswi
 
-</PRE>
-</div></div></div>
-<div id="BodyHref">
-<div   itemprop="mainContentOfPage" id="docinfo">
-<pre class="inf">
+================================================================================
+DOCUMENT INFORMATION
+================================================================================
 % Text title            : bRihatpArAsharahorAshAstram.h 1-10
 % File name             : par0110.itx
 % itxtitle              : bRihatpArAsharahorAshAstram 1-10
@@ -1092,45 +1047,7 @@ Proofread by Ahto Jarve, Ginda Lass, Abhisyanta Tejaswi
 % Subject               : philosophy/hinduism/religion
 % Transliterated by     : Ahto Jarve ajarve at fms30.cca.rockwell.com
 % Proofread by          : Ahto Jarve, Ginda Lass, Abhisyanta Tejaswi
-% Indexextra            : (Scans <a href="https://archive.org/details/BPHSEnglish/BPHS - 1 RSanthanam/">1</a>, <a href="https://archive.org/details/brihat-parashar-hora-shastra-vol-2">2</a>, <a href="https://archive.org/details/brihat-parashar-hora-shastra-vol-1">3</a>, English <a href="https://archive.org/details/brihatparasarahorasastrawithenglishtranslationgirishchandsharmavolume1_547_G">1</a>, <a href="https://archive.org/details/brihatparasarahorasastrawithenglishtranslationgirishchandsharmavolume2_433_w">2</a>, Hindi <a href="https://archive.org/details/bmmv_brihat-parashar-hora-shastra-of-parashar-muni-with-sudha-commentary-by-pt.-dev-c">1</a>, <a href="https://archive.org/details/wg873">2</a>)
+% Indexextra            : (Scans 1, 2, 3, English 1, 2, Hindi 1, 2)
 % Latest update         : December 22, 2023
 % Send corrections to   : sanskrit at cheerful dot c om
 % Site access           : https://sanskritdocuments.org
-</pre>
-</div>
-<div id="comment">
-<p>This text is prepared by volunteers and is to be used for personal study 
-and research.  The file is not to be copied or reposted for promotion of 
-any website or individuals or for commercial purpose without permission.
-Please help to maintain respect for volunteer spirit. </p>
-</div>
-<footer>
-<!-- Begin Footer Menu - PHP include is not working on this page -->
-<hr>
-<div id="footermenu" style="text-align:center;">
-<a href="/" title="Sanskrit Documents Home" class="btn"><img src="favicon.ico" alt="Sanskrit Documents Icon" height="12" width="12" style="margin: 0px 0px 0px 0px"> Home</a>
-<a href="/sitemap/" class="btn">Sitemap</a>
-<a href="https://sanskritlinks.blogspot.in/" title="Sanskrit Studies - Links and Information" class="btn">Blog</a>
-<a href="/contrib_list/" title="List of Contributors" class="btn">Contributors</a>
-<a href="/doc_projects/volunteering.php" title="Volunteering" class="btn">Volunteering</a>
-<a href="https://pub47.bravenet.com/guestbook/show.php?usernum=4020790271&amp;cpv=1" 	 title="GuestBook & Feedback"  class="btn">GuestBook</a>
-<a href="/faq/" title="Frequently Asked Questions" class="btn">FAQ</a>
-<a href="/search/" class="btn">Search</a>
-</div>
-<hr>
-<!-- End Footer Menu -->
-<section>
-<div  id="footer" itemprop="isPartOf" itemscope itemtype="http://schema.org/WebSite">
-<a itemprop="url" href="https://sanskritdocuments.org/"><span itemprop="name">sanskritdocuments.org</span></a>
-<meta itemprop="description" content="Sanskrit Documents Collection in various Indian language scripts and roman transliteration">
-<br><small>Last updated on Thu 19 Jun 2025 11:34:29 AM MST<small></br>
-</div>
-</section>
-</footer>
-<a href="javascript:void(0)" onclick="parent.window.scrollTo(0,0);"
-style="font-weight:bold; background:Chocolate; color:maroon; position: fixed; bottom:15px;right:15px;" title="Back to Top">BACK TO TOP</a>
-</div>
-</div>
-<div class="printfooter" style="font-weight:bold;  color:maroon; position: fixed; bottom:10px;left:20px;">sanskritdocuments.org</div>
-</body> 
-</html>
