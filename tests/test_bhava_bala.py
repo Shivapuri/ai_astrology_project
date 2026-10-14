@@ -16,6 +16,9 @@ from jyotish.bhavas.bhava_bala import (
     _evaluate_sandhi_leakage,
     _evaluate_three_focal_points,
     _evaluate_dpk_triad,
+    _calculate_fallback_drishti_ray,
+    _is_in_enemy_sign,
+    _resolve_planet_house,
     get_sign_genus
 )
 from jyotish.generate_jyotish import generate_kala_chart
@@ -237,12 +240,33 @@ def test_malefic_in_own_sign_not_penalized_in_atmosphere(calibrated_shadbala):
 
 
 def test_karako_bhava_nasaya_living_vs_non_living():
-    """Verify Jupiter in 5th triggers affliction, but Jupiter solitary in 11th does NOT."""
+    """
+    Verify living relationship houses (Jīva-Bhavas: 3, 4, 5, 7, 9, 11) trigger affliction,
+    while non-living houses (e.g. House 2 for wealth) do NOT.
+    Also verify malefic co-occupancy does NOT rescue, but benefic co-occupancy DOES rescue.
+    """
+    # Living houses: H5 (children), H11 (elder siblings), H4 (mother)
     res_h5 = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}])
     assert res_h5["is_afflicted"] is True
 
     res_h11 = _evaluate_karako_bhava_nasaya(11, [{"name": "Jupiter"}])
-    assert res_h11["is_afflicted"] is False
+    assert res_h11["is_afflicted"] is True
+
+    res_h4 = _evaluate_karako_bhava_nasaya(4, [{"name": "Moon"}])
+    assert res_h4["is_afflicted"] is True
+
+    # Non-living house: H2 (wealth - Jupiter)
+    res_h2 = _evaluate_karako_bhava_nasaya(2, [{"name": "Jupiter"}])
+    assert res_h2["is_afflicted"] is False
+
+    # Malefic co-occupancy does NOT rescue: Jupiter + Saturn in H5
+    res_h5_mal = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}, {"name": "Saturn"}])
+    assert res_h5_mal["is_afflicted"] is True
+
+    # Benefic co-occupancy DOES rescue: Jupiter + Venus in H5
+    res_h5_ben = _evaluate_karako_bhava_nasaya(5, [{"name": "Jupiter"}, {"name": "Venus"}])
+    assert res_h5_ben["is_afflicted"] is False
+    assert "relieved" in res_h5_ben["details"].lower()
 
 
 def test_saturn_in_8th_longevity_exception():
@@ -905,6 +929,289 @@ def test_swami_shivapuri_5th_house_benchmark():
     assert bb[5]["classification"] == "Miśra"
     assert "Hīna" not in atm_shiv["classification"]
     assert "Tempered & Resilient" in atm_shiv["environmental_weather"]
+
+
+# =============================================================================
+# AUDIT REMEDIATION TARGETED TESTS (BPHS, PHALADEEPIKA & BV RAMAN CALIBRATION)
+# =============================================================================
+
+def test_fallback_aspect_curve_parashari_slope():
+    """
+    Certifies Fix 1.1 (*Graha and Bhava Balas* Art. 114 & Example 59):
+    For a non-Jupiter planet (e.g., Sun or Venus):
+    - Aspect at 90° is 45.0 Virūpas.
+    - Aspect at 120° is 30.0 Virūpas (NOT 60.0).
+    - Aspect at 135° is 15.0 Virūpas.
+    - Aspect at 150° is 0.0 Virūpas.
+    For Jupiter:
+    - 5th aspect trinal peak at 120° remains properly peaked at 60.0 Virūpas.
+    """
+    p_lon = 0.0
+
+    # Non-Jupiter planet: Sun
+    # 90° separation
+    sun_90 = _calculate_fallback_drishti_ray("Sun", p_lon, 90.0)
+    assert abs(sun_90 - 45.0) < 1e-4
+
+    # 120° separation: standard Parashari base is 30.0 Virūpas, NOT 60.0!
+    sun_120 = _calculate_fallback_drishti_ray("Sun", p_lon, 120.0)
+    assert abs(sun_120 - 30.0) < 1e-4
+
+    # 135° separation: decreases linearly to 15.0 Virūpas
+    sun_135 = _calculate_fallback_drishti_ray("Sun", p_lon, 135.0)
+    assert abs(sun_135 - 15.0) < 1e-4
+
+    # 150° separation: decreases to 0.0 Virūpas
+    sun_150 = _calculate_fallback_drishti_ray("Sun", p_lon, 150.0)
+    assert abs(sun_150 - 0.0) < 1e-4
+
+    # Non-Jupiter planet: Venus
+    assert abs(_calculate_fallback_drishti_ray("Venus", p_lon, 120.0) - 30.0) < 1e-4
+
+    # Jupiter trinal special aspect peak at 120°
+    jup_120 = _calculate_fallback_drishti_ray("Jupiter", p_lon, 120.0)
+    assert abs(jup_120 - 60.0) < 1e-4
+
+
+def test_mercury_full_benefic_bhava_drishti_bala():
+    """
+    Certifies Fix 1.2 (*Graha and Bhava Balas* Art. 132 & Example 59 Footnote):
+    Mercury and Jupiter are always evaluated as full benefics for Bhava Drishti Bala
+    ('Gurugnabhyam tu yuktasya poornamekam tu yojayet'), even when Mercury is within
+    14° of the Sun (combust) or conjoined with a malefic.
+    - In dpk_qualified mode: combust Mercury scaled down to +0.5 * Ray (never -0.25).
+    - In sripati_raman mode: Mercury unconditionally +1.0 * Ray.
+    """
+    # Place Mercury at 0.0° and Sun at 5.0° (Mercury within 5° of Sun, combust)
+    # Target Bhava Madhya at 180.0° (7th house aspect, raw_aspect = 60.0 Virūpas)
+    planet_positions = {"Mercury": 0.0, "Sun": 5.0}
+    combustion_map = {"Mercury": {"is_combust": True}}
+
+    # Case A: dpk_qualified mode (default)
+    # Combust Mercury gets +0.5 * Ray = +30.0 Virūpas, NEVER -15.0 (-0.25 * Ray)
+    val_dpk = calculate_bhava_drishti_bala(
+        bhava_madhya_lon=180.0,
+        planet_positions=planet_positions,
+        house_num=7,
+        is_mercury_malefic=True,
+        combustion_map=combustion_map,
+        drishti_mode="dpk_qualified"
+    )
+    # Mercury casts 60.0 * 0.5 = +30.0; Sun casts 60.0 * (-0.25) = -15.0. Net = +15.0.
+    # Isolate Mercury alone:
+    val_merc_only_dpk = calculate_bhava_drishti_bala(
+        bhava_madhya_lon=180.0,
+        planet_positions={"Mercury": 0.0},
+        house_num=7,
+        is_mercury_malefic=True,
+        combustion_map=combustion_map,
+        drishti_mode="dpk_qualified"
+    )
+    assert val_merc_only_dpk == 30.0  # +0.5 * 60.0, positive!
+
+    # Case B: sripati_raman mode
+    # Unconditionally +1.0 * Ray = +60.0 Virūpas
+    val_merc_only_raman = calculate_bhava_drishti_bala(
+        bhava_madhya_lon=180.0,
+        planet_positions={"Mercury": 0.0},
+        house_num=7,
+        is_mercury_malefic=True,
+        combustion_map=combustion_map,
+        drishti_mode="sripati_raman"
+    )
+    assert val_merc_only_raman == 60.0  # +1.0 * 60.0, full benefic!
+
+
+def test_dpk_15_1_enemy_sign_and_dpk_15_5_lagna_dusthana(calibrated_shadbala):
+    """
+    Certifies Fix 1.3 & Fix 1.4 (Phaladeepika 15.1, 15.3, 15.5 & 15.29):
+    1. A house lord placed in an enemy sign (Ari-kṣetra) sets is_in_enemy_sign=True,
+       is_strong=False, and receives -10.0 penalty in Atmosphere.
+    2. When the 2nd lord is in the 8th house from Lagna (bhavat_dist == 7),
+       it incurs the -15.0 Lagna Dusthana penalty.
+    3. When a Dusthana lord occupies another house in its own sign (DPK 15.29),
+       it incurs 0 Dusthana-lord penalty.
+    """
+    # 1. Lord in enemy sign:
+    # Aries Lagna (0.0°). House 5 is Leo (lord Sun).
+    # Place Sun in Taurus (40.0°), ruled by Venus (natural enemy of Sun).
+    baseline_enemy = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Sun": {"lon": 40.0, "is_combust": False}}
+    )
+    bhavas_enemy = calculate_bhava_bala(baseline_enemy, calibrated_shadbala, house_system="whole_sign")
+    h5_status = bhavas_enemy[5]["lord_status"]
+    assert h5_status["is_in_enemy_sign"] is True
+    assert h5_status["is_strong"] is False
+
+    h5_atm = bhavas_enemy[5]["atmosphere"]
+    inauspicious_h5 = " ".join(h5_atm["inauspicious_influences"])
+    assert "Ari-kṣetra per DPK 15.1" in inauspicious_h5
+
+    # 2. 2nd lord in 8th house from Lagna:
+    # Aries Lagna (0.0°). House 2 is Taurus (ruled by Venus).
+    # Place Venus in Scorpio (220.0°, House 8 from Lagna).
+    # Distance from H2 to H8 is (8 - 2) % 12 + 1 = 7 (bhavat_dist == 7, NOT in {6, 8, 12}!).
+    baseline_h2_in_h8 = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Venus": {"lon": 220.0, "is_combust": False}}
+    )
+    bhavas_h2 = calculate_bhava_bala(baseline_h2_in_h8, calibrated_shadbala, house_system="whole_sign")
+    h2_status = bhavas_h2[2]["lord_status"]
+    assert h2_status["placed_house"] == 8
+    assert h2_status["bhavat_bhavam_distance"] == 7
+    assert h2_status["is_in_dusthana"] is True
+
+    h2_atm = bhavas_h2[2]["atmosphere"]
+    inauspicious_h2 = " ".join(h2_atm["inauspicious_influences"])
+    assert "Lord Venus placed in Lagna Dusthāna H8 (DPK 15.5)" in inauspicious_h2
+
+    # 3. Dusthana lord occupying another house in its own sign (DPK 15.29 exemption):
+    # Virgo Lagna (160.0°): H5 is Capricorn, H6 is Aquarius (both ruled by Saturn).
+    # Saturn is placed in Capricorn in House 5.
+    # Saturn rules Dusthana H6, but occupies H5 in its OWN sign!
+    baseline_dpk29 = MockChartBaseline(
+        ascendant=160.0,
+        planets={"Saturn": {"lon": 285.0, "is_combust": False}}
+    )
+    bhavas_dpk29 = calculate_bhava_bala(baseline_dpk29, calibrated_shadbala, house_system="whole_sign")
+    occ_diag_h5 = bhavas_dpk29[5]["occupant_diagnostics"]
+    assert "Saturn" not in occ_diag_h5["dusthana_lords_occupying"]
+    inauspicious_h5_dpk29 = " ".join(bhavas_dpk29[5]["atmosphere"]["inauspicious_influences"])
+    assert "Dusthāna lord Saturn occupying H5" not in inauspicious_h5_dpk29
+
+    # 4. Unexempted Dusthana lord occupying another house:
+    # Aries Lagna (0.0°): H6 is Virgo (Mercury). Place Mercury in Taurus in H2.
+    baseline_h6_occ = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Mercury": {"lon": 45.0, "is_combust": False}}
+    )
+    bhavas_h6_occ = calculate_bhava_bala(baseline_h6_occ, calibrated_shadbala, house_system="whole_sign")
+    occ_diag_h2 = bhavas_h6_occ[2]["occupant_diagnostics"]
+    assert "Mercury" in occ_diag_h2["dusthana_lords_occupying"]
+    inauspicious_h2_occ = " ".join(bhavas_h6_occ[2]["atmosphere"]["inauspicious_influences"])
+    assert "Dusthāna lord Mercury occupying H2 (DPK 15.5)" in inauspicious_h2_occ
+
+
+def test_whole_sign_sandhi_isolation_and_wall_leakage(calibrated_shadbala):
+    """
+    Certifies Fix 1.7 (*Graha and Bhava Balas* Art. 14–16):
+    - When ascendant_lon = 0.5° in whole_sign mode, cusp_in_sandhi is True ONLY for
+      House 1 and False for Houses 2–12.
+    - An occupant planet at 29.5° triggers wall_leakages penalty in calculate_house_atmosphere.
+    """
+    baseline_sandhi = MockChartBaseline(
+        ascendant=0.5,
+        planets={"Mars": {"lon": 29.5, "is_combust": False}}  # In H1 at 29.5° Aries (wall leakage!)
+    )
+    bhavas = calculate_bhava_bala(baseline_sandhi, calibrated_shadbala, house_system="whole_sign")
+
+    # House 1 has cusp in Sandhi
+    assert bhavas[1]["sandhi_analysis"]["cusp_in_sandhi"] is True
+
+    # Houses 2 to 12 do NOT have cusp in Sandhi (no blanket whole-sign penalty!)
+    for h in range(2, 13):
+        assert bhavas[h]["sandhi_analysis"]["cusp_in_sandhi"] is False
+
+    # Check residential strength
+    res_strengths = bhavas[1]["sandhi_analysis"]["residential_strengths"]
+    assert "Mars" in res_strengths
+    # Mars at 29.5° has distance 14.5° from 15.0°: 1.0 - 14.5/15 = 0.033
+    assert abs(res_strengths["Mars"] - 0.033) < 0.01
+
+    # Check wall leakage penalty in Atmosphere for House 1
+    h1_atm = bhavas[1]["atmosphere"]
+    inauspicious_h1 = " ".join(h1_atm["inauspicious_influences"])
+    assert "Wall leakage: planet(s) within 1° of boundary" in inauspicious_h1
+
+
+def test_calculate_harsha_bala_missing_planet_and_object_safety():
+    """
+    Certifies Fix 1.9 (Documentation contract & Object safety):
+    - Passing planet_positions missing 'Saturn' does not create a 'Saturn' entry at 0.0° Aries.
+    - Handles objects with .lon / .longitude safely.
+    """
+    class PlanetObj:
+        def __init__(self, lon):
+            self.lon = lon
+
+    class MockBaselineWithObjs:
+        def __init__(self):
+            self.astronomical_anchors = {"asc_longitude": 0.0, "is_day_birth": True}
+            self.planets = {
+                "Sun": PlanetObj(250.0),      # H9 Joy house
+                "Mars": PlanetObj(160.0),     # H6 Joy house
+                # "Saturn" omitted entirely!
+            }
+
+    harsha = calculate_harsha_bala(MockBaselineWithObjs())
+    planets_harsha = harsha["planets"]
+
+    # Sun and Mars exist and are correctly resolved
+    assert "Sun" in planets_harsha
+    assert planets_harsha["Sun"]["is_in_joy_house"] is True
+    assert "Mars" in planets_harsha
+    assert planets_harsha["Mars"]["is_in_joy_house"] is True
+
+    # Saturn was omitted and must NOT exist or default to 0.0° Aries
+    assert "Saturn" not in planets_harsha
+
+
+def test_campanus_unequal_occupant_resolution():
+    """
+    Certifies Fix 1.10: _resolve_planet_house correctly resolves unequal / Campanus
+    houses via circular midpoints (Arambha and Virama Sandhis).
+    """
+    # Unequal house midpoints (e.g. high latitude)
+    bhava_madhyas = [
+        10.0, 35.0, 65.0, 100.0, 135.0, 165.0,
+        190.0, 215.0, 245.0, 280.0, 315.0, 345.0
+    ]
+    # House 1 mid is 10.0°, prev mid is 345.0°. Midpoint start = (345 + 25/2) = 357.5°
+    # House 1 next mid is 35.0°. Midpoint end = (10 + 25/2) = 22.5°
+    # Lon = 5.0° is inside House 1 (357.5° to 22.5°)
+    assert _resolve_planet_house(5.0, asc_sign_idx=0, bhava_madhyas=bhava_madhyas, house_system="campanus") == 1
+    # Lon = 30.0° is inside House 2 (22.5° to 50.0°)
+    assert _resolve_planet_house(30.0, asc_sign_idx=0, bhava_madhyas=bhava_madhyas, house_system="campanus") == 2
+
+
+def test_dpk_triad_house_9_multi_karaka_averaging(calibrated_shadbala):
+    """
+    Certifies Fix 1.6: House 9 multi-karakas (BHAVA_KARAKAS[9] = ["Jupiter", "Sun"])
+    evaluates and averages potencies of both Jupiter and Sun.
+    """
+    triad = _evaluate_dpk_triad(
+        house_num=9,
+        asc_sign_idx=0,
+        chandra_sign_idx=0,
+        planet_positions={"Jupiter": 250.0, "Sun": 10.0},
+        shadbala_results=calibrated_shadbala
+    )
+    # Jupiter potency = 485.0 / 390.0 = 1.2436
+    # Sun potency = 395.2 / 390.0 = 1.0133
+    # Average karaka graha potency = (1.2436 + 1.0133) / 2 = 1.13
+    karaka_part = triad["from_karaka_lagna"]
+    assert abs(karaka_part["karaka_graha_potency"] - 1.13) < 0.05
+
+
+def test_upacaya_malefic_lord_constructive_bonus(calibrated_shadbala):
+    """
+    Certifies Fix 1.8: A constructive malefic lord occupying its own Upacaya house
+    (3, 6, 10, 11) gets both the +15 resident lord bonus AND the +10 Upacaya growth bonus.
+    """
+    # Scorpio Lagna (210.0°). House 6 is Aries (ruled by Mars).
+    # Place Mars in Aries in House 6 (10.0°).
+    baseline = MockChartBaseline(
+        ascendant=210.0,
+        planets={"Mars": {"lon": 10.0, "is_combust": False}}
+    )
+    bhavas = calculate_bhava_bala(baseline, calibrated_shadbala, house_system="whole_sign")
+    h6_atm = bhavas[6]["atmosphere"]
+    auspicious = " ".join(h6_atm["auspicious_influences"])
+
+    assert "House lord Mars resident in own sign Aries" in auspicious
+    assert "Constructive malefic lord Mars in Upacaya H6 (Śatruhantā active)" in auspicious
+
 
 
 

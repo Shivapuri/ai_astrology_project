@@ -99,10 +99,11 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
 - **Phaladeepika 15.1–3 House Lord Protection Rule (Conditioned by Combustion & Debilitation):**
   - If the aspecting planet is the lord of the aspected house, its aspect is protective ($+1.0 \times \text{Ray}$), even for natural malefics (e.g. Saturn aspecting Capricorn/Aquarius, Mars aspecting Aries/Scorpio).
   - **Canonical Qualification:** If the lord is combust (*mūḍha/asta*) or debilitated (*hīna/nīca*), its defense is severely impaired and scaled down to $+0.25 \times \text{Ray}$.
+- **Parāśarī & Dr. B.V. Raman Beneficence Calibration (*Graha and Bhava Balas* Art. 132 & Example 59 Footnote):**
+  - Mercury (*Budha*) and Jupiter (*Guru*) are ALWAYS evaluated as full benefics for Bhava Drishti Bala per the classical dictum *Gurugnabhyam tu yuktasya poornamekam tu yojayet*. Mercury is **never** treated as a $-0.25$ malefic in Bhava Drishti Bala, even when combust or associated with malefics.
+  - In `dpk_qualified` mode (default): Jupiter & Mercury receive $+1.0 \times \text{Ray}$ (scaled down to $+0.5 \times \text{Ray}$ if combust or debilitated). Venus and benefic Moon receive $+0.25 \times \text{Ray}$. Natural malefics receive $-0.25 \times \text{Ray}$.
+  - In `sripati_raman` mode: Jupiter and Mercury receive $+1.0 \times \text{Ray}$ unconditionally. Venus and benefic Moon receive $+0.25 \times \text{Ray}$. Natural malefics receive $-0.25 \times \text{Ray}$ without house-lord inversion.
 - **Parāśarī Quantitative Purity (BPHS Ch. 27 v. 28–29):** The Ascendant Lord (*Lagneśa*) aspecting other houses does NOT receive $+1.0$ inversion in quantitative Virūpas (preventing Kuja Doṣa on the 7th cusp from registering as a benefic ray). Rather, Lagneśa aspect is evaluated qualitatively in House Atmosphere per DPK 15.9 ($+15.0$).
-- **Jupiter & Benefic Mercury:** $+1.0 \times \text{Ray}$ (scaled down to $+0.5 \times \text{Ray}$ if combust or debilitated).
-- **Venus & Benefic Moon ($\text{Paksha Bala} \ge 30$):** $+0.25 \times \text{Ray}$.
-- **Natural Malefics (Sun, Mars, Saturn, Dark Moon, Afflicted Mercury):** $-0.25 \times \text{Ray}$ (unless aspecting own house).
 
 ---
 
@@ -112,15 +113,18 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
 2. **Sign Gender vs. Diurnal Sect (DPK Ch. 4):**
    - Day birth + Odd (masculine) sign: $+15$ Virūpas.
    - Night birth + Even (feminine) sign: $+15$ Virūpas.
-3. **Bhāva Sandhi & Wall Leakage (DPK Ch. 14):**
-   - Cusps or occupants within $1.0^\circ$ of a sign border ($<1^\circ$ or $>29^\circ$) exhibit cross-border energy leakage with a directional transfer ratio. Non-planetary points (Lagna, MC) are excluded from occupant calculations.
+3. **Bhāva Sandhi, Residential Strength & Wall Leakage (*Graha and Bhava Balas* Ch. II & DPK Ch. 14):**
+   - **Residential Strength:** Evaluated for all occupants from $0.0$ at sign/bhava borders (*Arambha/Virama Sandhi*) to $1.0$ at the house midpoint (*Bhavamadhya* at $15^\circ$) per Dr. B.V. Raman Art. 14–16.
+   - **Wall Leakage:** Occupants within $1.0^\circ$ of a sign border ($<1^\circ$ or $>29^\circ$) exhibit cross-border energy leakage with a proportional leakage ratio, penalizing the house in Atmosphere.
+   - **Whole-Sign Cusp Isolation:** In `whole_sign` mode, an Ascendant degree near borders ($<1^\circ$ or $>29^\circ$) isolates `cusp_in_sandhi` strictly to House 1 rather than broadcasting a blanket penalty across all 12 houses.
 4. **Neutralization of Malefics in Own Sign & Upacaya Dynamics (DPK 15.1, 4.23):** 
    - When a natural malefic occupies its own sign (*svakṣetra*), it functions as a supportive house lord (*svakṣetre śubhakṛt*), routing to benefics and receiving $+15.0$ atmospheric bonus rather than malefic non-upacaya penalties.
-   - In Upacaya houses (3, 6, 11), a malefic lord in its own sign also empowers growth and activates the `satruhanta_active` flag in House 6 (conqueror of enemies/obstacles).
+   - In Upacaya houses (3, 6, 10, 11), a malefic lord in its own sign also empowers growth ($+10.0$) and activates the `satruhanta_active` flag in House 6 (conqueror of enemies/obstacles).
    - When any house lord occupies an Upacaya house (3, 6, 10, 11) from Janma Lagna without dusthāna corruption, it experiences steady expansion and growth per DPK 4.23 (`is_in_upacaya_from_lagna`).
 5. **Ambient Room Flanking (Kartarī) & Resident Lord Dampening:**
    - **Śubhakartarī:** House flanked by benefics on both sides ($+20.0$).
    - **Pāpakartarī:** House besieged between malefics ($-20.0$).
+   - Dynamic classification of Moon (by Paksha Bala) and Mercury (combustion/malefic conjunction) is strictly unified across Kartari and Focal Point diagnostics.
    - **50% Dampening Rule:** When `lord_resident_unblemished` is True, the scissor siege constricts worldly ease but cannot demolish the internal room; the penalty is dampened by 50% (from $-20.0$ to $-10.0$).
 6. **Context-Sensitive Dispositor Modulation for Lunar Nodes (*Yad Yad Bhāvagatāvapi...*):**
    - In *Phaladīpikā* Ch. 14 & 20, Rahu and Ketu reflect their dispositor and conjunctions.
@@ -128,29 +132,36 @@ Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
 7. **Lagneśa Flourishing Rule & Major Ray Threshold (DPK 15.9):** 
    - Presence of the Ascendant lord in houses $h \neq 1$ confers an automatic $+15.0$ flourishing bonus (in House 1, the bonus is cleanly awarded once under resident lord).
    - An aspect from the Ascendant lord must carry at least a palpable half-glance ($\ge 30.0$ Virūpas) to trigger the $+15.0$ flourishing bonus, preventing sub-perceptual non-zero aspects from artificially inflating the chart.
-8. **Bhavāt Bhavam Upacayas vs. Trika Dusthāna Displacement:**
-   - Uncorrupted growth from the evaluated house is fostered strictly by Upacayas **3, 10, and 11** from that house.
-   - Displacement into the **6th, 8th, or 12th from its home sign** is a Trika dusthāna displacement causing house decay (*bhāva-nāśa* per DPK 15.2–3) and receives a $-15.0$ penalty without simultaneous Upacaya reward. This penalty applies strictly to non-dusthāna houses ($h \notin \{6, 8, 12\}$); dusthāna houses are governed by lord viability and Upacaya growth dynamics.
-9. **Kārakobhāvanāśāya (Restricted to Living Significations / Jīva-Kārakas):**
-   Solitary occupancy by the primary natural significator impairs living relationships:
+8. **Bhavāt Bhavam Upacayas vs. Lagna Dusthāna & Displaced Lord Penalties (DPK 15.1, 15.3, 15.5 & 15.29):**
+   - **Enemy Sign (Ari-kṣetra):** Per DPK 15.1 (*nīcamūḍhārihīnaiḥ*) and DPK 15.3 (*nīcārātigṛhaṃ gato*), a house lord in an enemy sign cannot be classified as strong (`is_strong = False`) and incurs a $-10.0$ penalty in Atmosphere.
+   - **Lagna Dusthāna Placement (DPK 15.5):** When a house lord is placed in the 6th, 8th, or 12th from Lagna without own-sign or exaltation status, it suffers dusthāna corruption ($-15.0$ in Atmosphere), even if its Bhavāt Bhavam distance is not 6, 8, or 12.
+   - **Incoming Dusthāna Lords (DPK 15.5 & 15.29):** An incoming 6th, 8th, or 12th lord occupying another house incurs $-10.0$ per unexempted lord. Per DPK 15.29 (*duḥsthānapastaditarasvagṛhasthitaścet*), if a dusthāna lord occupies its own other sign, it produces only the auspicious results of its own sign and incurs zero dusthāna blemish.
+   - **Bhavāt Bhavam Upacayas:** Uncorrupted growth from the evaluated house is fostered strictly by Upacayas **3, 10, and 11** from that house ($+10.0$).
+9. **Kārakobhāvanāśāya (Restricted to Living Significations / Jīva-Kārakas per BPHS & DPK Ch. 15–16):**
+   Evaluated strictly across the six living relationship houses:
    - House 3: Mars (Younger siblings)
+   - House 4: Moon (Mother)
    - House 5: Jupiter (Progeny)
    - House 7: Venus (Spouse/Partner)
    - House 9: Sun (Father)
-   - **Canonical Exceptions:** 
-     - House 8 with solitary Saturn is explicitly protected (*Āyuṣkāraka* promotes longevity).
-     - **DPK 16.1–3 Exemption:** A solitary kāraka occupying its own sign (*svabhavana*) or sign of exaltation (*svoccha*) is fortified and exempt from Kārakobhāvanāśāya.
-   - Non-living houses (2, 4, 10, 11, 12) never trigger Kārakobhāvanāśāya.
+   - House 11: Jupiter (Elder siblings)
+   - **Affliction & Relief Rules:**
+     - The affliction triggers when the natural significator occupies the house without another dynamic benefic.
+     - Co-occupancy by another dynamic benefic relieves the affliction.
+     - **Canonical Exceptions:**
+       - House 8 with solitary Saturn is explicitly protected (*Āyuṣkāraka* promotes longevity).
+       - **DPK 16.1–3 Exemption:** A kāraka occupying its own sign (*svabhavana*) or sign of exaltation (*svoccha*) is fortified and exempt from Kārakobhāvanāśāya.
+   - Non-living houses (1, 2, 6, 10, 12) never trigger Kārakobhāvanāśāya.
 10. **Normalized DPK Triad Triangulation (DPK Ch. 15 Text 6):**
     Evaluated from Janma Lagna (Weight 1.0), Chandra Lagna (Weight 0.5), and Kāraka Lagna (Weight 0.25), normalized by total weight ($1.75$):
-    Per DPK 15.6, the Kāraka Lagna evaluation averages both the potency of the house dispositor counted from the Kāraka and the natural Kāraka planet itself:
+    Per DPK 15.6, the Kāraka Lagna evaluation averages both the potency of the house dispositor counted from the Kāraka and the natural Kāraka planet(s) (averaging all primary karakas for multi-karaka houses like House 9):
     $$p_{\text{karaka}} = \frac{p_{\text{karaka\_house\_lord}} + p_{\text{karaka\_graha}}}{2.0}$$
     $$\text{composite\_potency} = \frac{(1.0 \times p_{\text{asc}}) + (0.5 \times p_{\text{chandra}}) + (0.25 \times p_{\text{karaka}})}{1.75}$$
-11. **3-Focal-Point Rule (DPK Ch. 15 Texts 1–3, 18) & Sva-kṣetra Veto Floor:**
+11. **3-Focal-Point Rule (DPK Ch. 15 Texts 1–3, 6, 18) & Sva-kṣetra Veto Floor:**
     - **Point 1 (The Bhāva):** Afflicted if strictly besieged between malefics (*Pāpakartarī* without benefic relief) or occupied by $\ge 2$ malefics (excluding its lord). Dusthāna houses (6, 8, 12) are not self-ruining.
-    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign (except own-dusthāna lords residing in dusthānas), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), or combust (*Mūḍha* per DPK 15.1).
+    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign or in Lagna Dusthāna (without own/exaltation sign), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), combust (*Mūḍha*), or in enemy sign (*Ari-kṣetra* per DPK 15.1/15.3).
     - **Point 3 (The Kāraka):** Afflicted if placed in a dusthāna from Lagna (except Saturn in the 8th), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated, or combust. Missing kārakas are safely handled without defaulting to $0.0^\circ$ Aries.
-    - **Ruination Verdict & Sva-kṣetra Veto Floor:** Total ruin (*vad-bhāva*) requires $\ge 2$ focal points afflicted. When an unblemished house lord is resident at home (`lord_resident_unblemished`), Bhāva and Bhāveśa are anchored:
+    - **Ruination Verdict & Sva-kṣetra Veto Floor:** Total ruin (*vad-bhāva*) requires $\ge 2$ focal points afflicted per DPK 15.6 (*dvitrisaṃvādabhāvāt*). When an unblemished house lord is resident at home (`lord_resident_unblemished`), Bhāva and Bhāveśa are anchored:
       - Vad-Bhāva ruination penalty is vetoed.
       - An unconditional mathematical floor is enforced: house score cannot drop below $-10.0$.
       - The house CANNOT be classified as `Hīna` under any circumstances.
@@ -191,17 +202,22 @@ Synthesizes the net constructive vs friction forces acting on each house into a 
   - Net supportive drishti rays ($\text{drishti} > 10.0$v): up to $+25.0$.
   - Śubhakartarī (flanked by benefics): $+20.0$.
   - Lord in Lagna Upacaya growth (DPK 4.23): $+10.0$.
+  - Constructive malefic lord in own Upacaya sign (3, 6, 10, 11) (Śatruhantā active in H6): $+10.0$.
   - Constructive malefic in Upacaya (3, 6, 10, 11): $+10.0$.
   - Exceptional Triad concordance: $+10.0$.
 - **Negative Forces:**
   - Debilitated lord (DPK 15.1 *Hīna*): $-20.0$.
   - Combust lord (DPK 15.1 *Mūḍha*): $-20.0$.
   - Defeated lord in planetary war (*Nīpīḍita*): $-15.0$.
+  - Lord in enemy sign (Ari-kṣetra per DPK 15.1/15.3): $-10.0$.
+  - Lord in Lagna Dusthāna (6, 8, 12 per DPK 15.5): $-15.0$ (when not already penalized by Bhavat Bhavam).
+  - Incoming Dusthāna lord occupying (DPK 15.5, excluding Lagna lord and own-sign per DPK 15.29): $-10.0$.
   - Proportional Ṣaḍbala deficit ($Ratio < 0.95$): up to $-10.0$ gradient ($0.0$ penalty if $Ratio \ge 0.95$).
   - Dynamic malefic occupants in non-upacaya houses: $-15.0$.
   - Net confronting drishti rays ($\text{drishti} < -10.0$v): up to $-25.0$.
   - Pāpakartarī siege: $-20.0$ (dampened to $-10.0$ if lord is resident unblemished).
   - Bhāva Sandhi border leakage ($<1^\circ$ or $>29^\circ$): $-15.0$.
+  - Wall leakage: up to $-10.0$ (scaled to occupant boundary proximity ratio $\text{round}(10.0 \times \text{max\_ratio}, 1)$).
   - Bhavāt Bhavam dusthāna displacement ($+6, +8, +12$ for non-dusthāna houses): $-15.0$.
   - Afflicted Kārakobhāvanāśāya (living significations only): $-15.0$.
   - Latent Triad concordance: $-10.0$.
@@ -215,16 +231,142 @@ Synthesizes the net constructive vs friction forces acting on each house into a 
 
 ---
 
-### E. Master Diagnostic Cockpit Payload (9-Column Architecture)
+### E. Hemisphere A Pure Return Schemas & Dictionary Signatures
 
-Stage 3 produces the authoritative backend payload matching ADR-006 design standards:
-1. `Graha & Kāraka`: Motion state ([R], [C]), Chara Karaka soul role, and Master Lords.
-2. `Longitude & Bhāva`: Formatted tropical coordinates, Whole Sign house, and expression.
-3. `Dignity & Sambandha`: Synthesized Natural + Temporary (Pañcadhā Maitrī) dignity.
-4. `Dispositor (Rāśi Lord)`: Host lord placement and cancellation rescue status.
-5. `Ṣaḍbala Strength`: Virūpas, Rūpas, % of required minimum threshold, chart rank, and Ishta/Kashta.
-6. `Dṛṣṭi & Yuti`: Conjunctions, palpable incoming aspects ($>20$v), and planetary war status.
-7. `Nakṣatra & Pada`: Dhruva sidereal nakshatra, quarter pada, lords, deity, and Navatara.
-8. `Avasthās`: Bālādi (age), Jāgradādi (alertness %), Dīptādi (mood), and Lajjitādi social states.
-9. `Archetype & Vitality`: 9-Tier behavioral archetype, real-world manifesting vitality score ($1.0\text{--}10.0$), and hover receipt.
+In strict accordance with the Two-Hemisphere Architectural Law in `GEMINI.md`, `jyotish/bhavas/bhava_bala.py` is certified Hemisphere A (Foundational Calculus). It produces pure mathematical primitives (floats, ints, bools, string enums) and zero UI HTML or Hemisphere B psychological archetypes:
+
+#### 1. `calculate_bhava_bala` Return Schema (`Dict[int, Dict[str, Any]]`)
+For each house $h \in [1..12]$:
+```python
+{
+    "house": int,                     # 1 to 12
+    "lord": str,                      # Sanskrit planet name (e.g., "Mars", "Jupiter")
+    "bhava_madhya": float,            # Cusp longitude in degrees [0.0, 360.0)
+    "bhavadhipathi_bala": float,      # Total Shadbala Virupas of house lord
+    "bhava_digbala": float,           # Directional Virupas (0.0 to 60.0)
+    "bhava_drishti_bala": float,      # Net aspect rays on cusp (Virupas)
+    "total_virupas": float,           # Adhipati + Digbala + Drishti
+    "total_rupas": float,             # total_virupas / 60.0
+    "augmented_virupas": float,       # Virupas + Lord Digbala + Sect bonus
+    "lord_dig_bala_bonus": float,     # DPK Ch. 4 Lord Digbala Virupas
+    "sect_bonus": float,              # DPK Ch. 4 Day/Night Sign Sect Virupas (0.0 or 15.0)
+    "sign": str,                      # Zodiac sign name (e.g., "Aries")
+    "sign_genus": str,                # "nara", "chathushpada", "jalachara", "keeta"
+    "occupants": list,                # Raw list of occupant records
+    "occupant_diagnostics": {
+        "benefics": list[str],
+        "malefics": list[str],
+        "is_upacaya": bool,
+        "upacaya_empowered": bool,
+        "satruhanta_active": bool,
+        "lagnesha_present": bool,
+        "dusthana_lords_occupying": list[str]
+    },
+    "sandhi_analysis": {
+        "cusp_in_sandhi": bool,
+        "cusp_dist_to_border": float,
+        "wall_leakages": list[dict],
+        "residential_strengths": dict[str, float]
+    },
+    "kartari_yoga": {
+        "type": str,                  # "neutral", "shubhakartari", "papakartari", "mixed"
+        "flanking_12th": dict,
+        "flanking_2nd": dict
+    },
+    "lord_status": {
+        "placed_sign": str,
+        "placed_house": int,
+        "bhavat_bhavam_distance": int,
+        "is_in_upacaya_from_house": bool,
+        "is_in_upacaya_from_lagna": bool,
+        "is_resident": bool,
+        "is_combust": bool,
+        "is_in_war": bool,
+        "is_debilitated": bool,
+        "is_in_enemy_sign": bool,
+        "is_in_dusthana": bool,
+        "is_strong": bool,
+        "potency_ratio": float
+    },
+    "karaka_analysis": {
+        "karaka": str,
+        "is_living": bool,
+        "triggers_nasaya": bool,
+        "is_relieved": bool,
+        "note": str
+    },
+    "dpk_triad": {
+        "janma_lagna": dict,
+        "chandra_lagna": dict,
+        "karaka_lagna": dict,
+        "composite_potency": float,
+        "concordance_tier": str
+    },
+    "three_focal_points": {
+        "afflicted_points_count": int,
+        "is_ruined": bool,
+        "details": str
+    },
+    "lagnesha_aspecting": bool,
+    "classification": str,            # "Puṣṭa", "Miśra", or "Hīna" (synchronized with Atmosphere)
+    "summary_verdict": str,
+    "harsha_bala": dict,              # Dusthana joy diagnostic entry for this house
+    "atmosphere": dict                # Complete House Atmosphere payload
+}
+```
+
+#### 2. `calculate_harsha_bala` Return Schema (`Dict[str, Any]`)
+```python
+{
+    "planets": {
+        "<PlanetName>": {
+            "planet": str,
+            "placed_house": int,
+            "placed_sign": str,
+            "sthana_bala_units": float,       # 0.0 or 5.0
+            "uccha_swakshetra_units": float,  # 0.0 or 5.0
+            "stree_purusha_units": float,     # 0.0 or 5.0
+            "dina_ratri_units": float,        # 0.0 or 5.0
+            "total_units": float,             # 0.0 to 20.0
+            "max_units": 20.0,
+            "strength_category": str,         # Sanskrit classification
+            "is_in_joy_house": bool
+        }
+    },
+    "dusthana_joy": {
+        6: {
+            "house": 6,
+            "yoga_name": "Harsha",
+            "is_active": bool,
+            "lord_in_house": bool,
+            "viparita_active": bool,
+            "karaka_joy_in_house": bool,
+            "planetary_joy_active": bool,
+            "bonus_units": float,
+            "effect": str
+        },
+        8: { ... },
+        12: { ... }
+    }
+}
+```
+
+#### 3. `calculate_house_atmosphere` Return Schema (`Dict[int, Dict[str, Any]]`)
+```python
+{
+    "house": int,
+    "sign": str,
+    "lord": str,
+    "net_atmosphere_score": float,       # Continuous score between -100.0 and +100.0
+    "base_virupas": float,
+    "augmented_virupas": float,
+    "classification": str,               # "Puṣṭa (Fortified / Flourishing)", "Miśra (Mixed / Dynamic / Resilient)", or "Hīna (Deficient / Afflicted)"
+    "environmental_weather": str,        # "Radiant & Unopposed", "Supportive & Productive", "Tempered & Resilient", "Frictional & Demanding", or "Turbulent & Obstructed"
+    "auspicious_influences": list[str],  # Itemized positive factors
+    "inauspicious_influences": list[str],# Itemized negative factors
+    "harsha_bala_active": bool,
+    "verdict": str
+}
+```
+
 
