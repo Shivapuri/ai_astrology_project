@@ -17,7 +17,8 @@ from jyotish.yogas.breakers import (
     audit_combustion,
     get_lagna_sign, audit_neecha_bhanga_condition_3, audit_neecha_bhanga,
     audit_trishadaya_interference, _first_ruler,
-    get_house_of_planet
+    get_house_of_planet,
+    audit_dispositor_vitality, audit_shadbala_muscle
 )
 
 
@@ -155,7 +156,7 @@ def test_audit_neecha_bhanga_missing_dispositor_house_safety():
 
 
 def test_audit_neecha_bhanga_condition_3_self_lordship():
-    """Verify Mercury in Pisces does not count Mercury itself as exaltation lord in Condition 3A."""
+    """Verify Mercury in Pisces (House 1) rescues itself via Condition 3A without double-counting Condition 6."""
     # Pisces Lagna: Mercury in Pisces (House 1, fallen). Exaltation sign Virgo, lord Mercury.
     # Dispositor of Pisces is Jupiter, placed in House 3 (Taurus, non-Kendra).
     # Moon placed in House 2 (Aries).
@@ -168,8 +169,16 @@ def test_audit_neecha_bhanga_condition_3_self_lordship():
         }
     }
     met, desc = audit_neecha_bhanga_condition_3("Mercury", "Pisces", chart)
-    # Mercury itself shouldn't trigger Condition 3A
-    assert not met or "Mercury" not in desc
+    assert met is True
+    assert "Mercury" in desc
+    assert "Kendra H1" in desc
+
+    # In audit_neecha_bhanga, Mercury is rescued with exactly 30.0 bonus (Condition 6 skipped)
+    is_rescued, reasons, bonus = audit_neecha_bhanga("Mercury", chart)
+    assert is_rescued is True
+    assert bonus == 30.0
+    assert any("Condition 3" in r for r in reasons)
+    assert not any("Angular fallen planet" in r for r in reasons)
 
 
 def test_audit_neecha_bhanga_condition_3_standalone_rescue():
@@ -280,3 +289,53 @@ def test_yoga_instance_to_dict_robustness():
     assert len(d["breakers"]) == 2
     assert d["breakers"][0]["factor"] == "Manual Breaker"
     assert d["breakers"][1]["factor"] == "Typed Breaker"
+
+
+# =============================================================================
+# 6. Dispositor Vitality & Shadbala Muscle Polish Tests
+# =============================================================================
+
+def test_audit_dispositor_vitality_deduplication():
+    """Verify conjoined yoga planets sharing a debilitated/dusthana dispositor are penalized only once."""
+    # Leo Lagna: Sun (H1 lord) and Mars (H9 lord) conjoined in Taurus (H10).
+    # Dispositor of Taurus is Venus.
+    # Venus is in Virgo (H2, debilitated) without cancellation.
+    chart = {
+        "ascendant": {"sign": "Leo"},
+        "planets": {
+            "Sun": {"sign": "Taurus"},
+            "Mars": {"sign": "Taurus"},
+            "Venus": {"sign": "Virgo"},  # Debilitated dispositor in 2nd
+            "Moon": {"sign": "Aries"}
+        }
+    }
+    breakers = audit_dispositor_vitality(["Sun", "Mars"], chart)
+    venus_breakers = [b for b in breakers if b.culprit_planet == "Venus"]
+    # Shared host Venus must be penalized once (-25.0), not twice (-50.0)
+    assert len(venus_breakers) == 1
+    assert venus_breakers[0].penalty == 25.0
+    assert "Debilitated Host Dispositor" in venus_breakers[0].factor
+
+
+def test_audit_shadbala_muscle_robustness():
+    """Verify audit_shadbala_muscle handles None shadbala and None/string inner keys safely."""
+    # 1. chart["shadbala"] is None
+    breakers_none, notes_none = audit_shadbala_muscle(["Sun", "Moon"], {"shadbala": None})
+    assert breakers_none == []
+    assert notes_none == []
+
+    # 2. inner keys are None or malformed
+    chart_malformed = {
+        "shadbala": {
+            "Sun": {"Rupas": None, "Ratio_to_Req": None},
+            "Moon": {"Rupas": "invalid", "Ratio_to_Req": "invalid"},
+            "Mars": {"Rupas": 0.70, "Ratio_to_Req": 0.70},  # Low muscle (< 0.85)
+            "Jupiter": {"Rupas": 1.40, "Ratio_to_Req": 1.30}  # Muscular (>= 1.25)
+        }
+    }
+    breakers, notes = audit_shadbala_muscle(["Sun", "Moon", "Mars", "Jupiter"], chart_malformed)
+    assert len(breakers) == 1
+    assert breakers[0].culprit_planet == "Mars"
+    assert breakers[0].penalty == 15.0
+    assert len(notes) == 1
+    assert "Jupiter is muscular in Shadbala" in notes[0]

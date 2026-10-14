@@ -312,7 +312,7 @@ def audit_neecha_bhanga_condition_3(
     # Condition 3A: Lord of the planet's exaltation sign (tad-uccāṃśa-nātha)
     exalt_sign = EXALTATION_SIGNS.get(debilitated_planet)
     exalt_lord = SIGN_LORDS.get(exalt_sign)
-    if exalt_lord and exalt_lord != debilitated_planet:
+    if exalt_lord:
         lord_house = get_house_of_planet(chart, exalt_lord)
         lord_from_moon = ((lord_house - moon_house) % 12 + 1) if (lord_house > 0 and moon_house > 0) else 0
         if lord_house in (1, 4, 7, 10):
@@ -408,13 +408,18 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
             bonus += 15.0
 
     # Condition 6: Fallen planet itself is in Kendra from Lagna or Moon (supportive, < 30.0 alone)
-    p_from_moon = ((p_house - moon_house) % 12 + 1) if (p_house > 0 and moon_house > 0) else 0
-    if p_house in (1, 4, 7, 10):
-        reasons.append(f"Angular fallen planet: {planet} is in Kendra H{p_house} from Lagna, forcing public engagement.")
-        bonus += 20.0
-    elif p_from_moon in (1, 4, 7, 10):
-        reasons.append(f"Angular fallen planet from Moon: {planet} is in Kendra H{p_from_moon} from Chandra.")
-        bonus += 15.0
+    # If the planet rules its own exaltation sign (Mercury) and already received Condition 3A,
+    # skip Condition 6 to avoid double-counting the same angular placement.
+    exalt_sign = EXALTATION_SIGNS.get(planet)
+    exalt_lord = SIGN_LORDS.get(exalt_sign)
+    if not (c3_met and exalt_lord == planet):
+        p_from_moon = ((p_house - moon_house) % 12 + 1) if (p_house > 0 and moon_house > 0) else 0
+        if p_house in (1, 4, 7, 10):
+            reasons.append(f"Angular fallen planet: {planet} is in Kendra H{p_house} from Lagna, forcing public engagement.")
+            bonus += 20.0
+        elif p_from_moon in (1, 4, 7, 10):
+            reasons.append(f"Angular fallen planet from Moon: {planet} is in Kendra H{p_from_moon} from Chandra.")
+            bonus += 15.0
 
     is_rescued = len(reasons) >= 1 and bonus >= 30.0
     if is_rescued:
@@ -427,19 +432,21 @@ def audit_neecha_bhanga(planet: str, chart: Dict[str, Any]) -> Tuple[bool, List[
 def audit_dispositor_vitality(yoga_planets: List[str], chart: Dict[str, Any]) -> List[YogaBreakerDetail]:
     """
     Audits the condition of the dispositor (host) for the yoga-forming planets.
-    If the host is ruined, the foundation of the yoga is hollow.
+    Deduplicates shared dispositors so conjoined yoga planets are not penalized twice.
     """
     breakers = []
-    
+    seen_dispositors = set()
+
     for p in yoga_planets:
         sign = get_sign_of_planet(chart, p)
         dispositor = SIGN_LORDS.get(sign)
-        if not dispositor or dispositor == p:
+        if not dispositor or dispositor == p or dispositor in seen_dispositors:
             continue
-            
+        seen_dispositors.add(dispositor)
+
         disp_sign = get_sign_of_planet(chart, dispositor)
         disp_house = get_house_of_planet(chart, dispositor)
-        
+
         # Dispositor debilitated without Neecha Bhanga
         if disp_sign == DEBILITATION_SIGNS.get(dispositor):
             is_rescued, _, _ = audit_neecha_bhanga(dispositor, chart)
@@ -450,7 +457,7 @@ def audit_dispositor_vitality(yoga_planets: List[str], chart: Dict[str, Any]) ->
                     description=f"{p}'s dispositor {dispositor} is in fall in {disp_sign} without cancellation. The guest lacks institutional backing.",
                     penalty=25.0
                 ))
-                
+
         # Dispositor trapped in Dusthana (6, 8, 12)
         if disp_house in (6, 8, 12):
             breakers.append(YogaBreakerDetail(
@@ -459,7 +466,7 @@ def audit_dispositor_vitality(yoga_planets: List[str], chart: Dict[str, Any]) ->
                 description=f"{p}'s dispositor {dispositor} resides in difficult House {disp_house}. Energy leaks into friction or isolation.",
                 penalty=15.0
             ))
-            
+
     return breakers
 
 def audit_dusthana_placement(
@@ -487,13 +494,20 @@ def audit_shadbala_muscle(yoga_planets: List[str], chart: Dict[str, Any]) -> Tup
     """
     breakers = []
     positive_notes = []
-    shadbala = chart.get("shadbala", {})
-    
+    shadbala = (chart.get("shadbala") if isinstance(chart, dict) else None) or {}
+    if not isinstance(shadbala, dict):
+        return breakers, positive_notes
+
     for p in yoga_planets:
-        p_bala = shadbala.get(p, {})
-        rupas = p_bala.get("Rupas", 1.0)
-        ratio = p_bala.get("Ratio_to_Req", 1.0)
-        
+        p_bala = shadbala.get(p) or {}
+        if not isinstance(p_bala, dict):
+            continue
+        try:
+            rupas = float(p_bala.get("Rupas") if p_bala.get("Rupas") is not None else 1.0)
+            ratio = float(p_bala.get("Ratio_to_Req") if p_bala.get("Ratio_to_Req") is not None else 1.0)
+        except (ValueError, TypeError):
+            continue
+
         if ratio < 0.85:
             breakers.append(YogaBreakerDetail(
                 factor="Low Kinetic Horsepower (Shadbala)",
@@ -503,5 +517,5 @@ def audit_shadbala_muscle(yoga_planets: List[str], chart: Dict[str, Any]) -> Tup
             ))
         elif ratio >= 1.25:
             positive_notes.append(f"{p} is muscular in Shadbala ({rupas:.2f} Rupas / {ratio*100:.0f}% of requirement).")
-            
+
     return breakers, positive_notes
