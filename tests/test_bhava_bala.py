@@ -1213,6 +1213,26 @@ def test_upacaya_malefic_lord_constructive_bonus(calibrated_shadbala):
     assert "Constructive malefic lord Mars in Upacaya H6 (Śatruhantā active)" in auspicious
 
 
+def test_calculate_bhava_bala_drishti_mode_forwarding(calibrated_shadbala):
+    """
+    Certifies that calculate_bhava_bala forwards drishti_mode parameter to calculate_bhava_drishti_bala.
+    """
+    # Aries Lagna (0.0°). House 10 is Capricorn (270.0°). Lord is Saturn.
+    # Place Saturn at 90.0° (Cancer), casting a direct 180° opposition aspect (60 Virūpas) on Capricorn (270.0°).
+    baseline = MockChartBaseline(
+        ascendant=0.0,
+        planets={"Saturn": {"lon": 90.0, "is_combust": False}}
+    )
+    bhavas_dpk = calculate_bhava_bala(baseline, calibrated_shadbala, drishti_mode="dpk_qualified")
+    bhavas_sr = calculate_bhava_bala(baseline, calibrated_shadbala, drishti_mode="sripati_raman")
+
+    # In dpk_qualified: Saturn is the lord of H10 (Capricorn), so its aspect is protective (+60.0 Virūpas)
+    # In sripati_raman: Natural malefics unconditionally subtract 0.25 * 60 = -15.0 Virūpas
+    assert bhavas_dpk[10]["bhava_drishti_bala"] == 60.0
+    assert bhavas_sr[10]["bhava_drishti_bala"] == -15.0
+
+
+
 
 
 

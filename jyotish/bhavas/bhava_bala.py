@@ -843,12 +843,14 @@ def calculate_bhava_bala(
     shadbala_results: Dict[str, Any],
     aspect_matrices: Optional[Dict[str, Any]] = None,
     house_system: str = "whole_sign",
+    drishti_mode: str = "dpk_qualified",
     **kwargs
 ) -> Dict[int, Any]:
     """
     Synthesizes complete 12-House Bhāva Bala and Phaladeepika diagnostics.
     Supports both Modern ChartBaseline pipeline and Legacy Calling parity.
     """
+    drishti_mode = kwargs.get("drishti_mode", drishti_mode)
     # ---------------------------------------------------------
     # 1. Pipeline Normalization
     # ---------------------------------------------------------
@@ -1024,7 +1026,8 @@ def calculate_bhava_bala(
             is_moon_benefic=is_moon_benefic,
             is_mercury_malefic=is_mercury_malefic,
             lagna_lord=lagna_lord,
-            combustion_map=is_combust_map
+            combustion_map=is_combust_map,
+            drishti_mode=drishti_mode
         )
 
         # Phaladeepika Ch. 4 Modifiers

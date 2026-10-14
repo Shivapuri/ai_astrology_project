@@ -251,7 +251,7 @@ For each house $h \in [1..12]$:
     "lord_dig_bala_bonus": float,     # DPK Ch. 4 Lord Digbala Virupas
     "sect_bonus": float,              # DPK Ch. 4 Day/Night Sign Sect Virupas (0.0 or 15.0)
     "sign": str,                      # Zodiac sign name (e.g., "Aries")
-    "sign_genus": str,                # "nara", "chathushpada", "jalachara", "keeta"
+    "sign_genus": str,                # "Nara", "Chathushpada", "Jalachara", "Keeta"
     "occupants": list,                # Raw list of occupant records
     "occupant_diagnostics": {
         "benefics": list[str],
@@ -274,33 +274,35 @@ For each house $h \in [1..12]$:
         "flanking_2nd": dict
     },
     "lord_status": {
-        "placed_sign": str,
+        "lord": str,
         "placed_house": int,
+        "placed_sign": str,
         "bhavat_bhavam_distance": int,
-        "is_in_upacaya_from_house": bool,
-        "is_in_upacaya_from_lagna": bool,
-        "is_resident": bool,
-        "is_combust": bool,
-        "is_in_war": bool,
-        "is_debilitated": bool,
-        "is_in_enemy_sign": bool,
+        "is_in_kendra": bool,
+        "is_in_trikona": bool,
         "is_in_dusthana": bool,
+        "is_in_upacaya_from_bhava": bool,
+        "is_in_upacaya_from_lagna": bool,
+        "is_debilitated": bool,
+        "is_combust": bool,
+        "in_war": bool,
+        "is_defeated": bool,
+        "is_in_enemy_sign": bool,
         "is_strong": bool,
         "potency_ratio": float
     },
     "karaka_analysis": {
-        "karaka": str,
-        "is_living": bool,
-        "triggers_nasaya": bool,
-        "is_relieved": bool,
-        "note": str
+        "primary_karakas": list[str],
+        "is_afflicted": bool,
+        "details": str
     },
     "dpk_triad": {
-        "janma_lagna": dict,
-        "chandra_lagna": dict,
-        "karaka_lagna": dict,
-        "composite_potency": float,
-        "concordance_tier": str
+        "from_janma_lagna": dict,
+        "from_chandra_lagna": dict,
+        "from_karaka_lagna": dict,
+        "concordance": str,
+        "concordance_score": float,
+        "weighted_triad_potency": float
     },
     "three_focal_points": {
         "afflicted_points_count": int,
