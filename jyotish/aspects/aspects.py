@@ -142,6 +142,11 @@ def get_aspect_explanation(
     including exact angular separation, Virūpa potency, Parāśara rule name,
     whether the aspect is Benefic (Śubha) or Malefic (Aśubha), and suggested line style.
     Anchored to exact angular milestone proximity (Sphuṭa Dṛṣṭi).
+
+    Under pure BPHS Ch. 27, v. 19 & 28–29 (ज्ञेज्यदृक्युक्तम् / ज्ञेज्यदृष्टियुतं),
+    Mercury's distant aspect ray (Dṛṣṭi) is unconditionally benefic (Śubha),
+    so is_mercury_afflicted defaults to False. Callers or legacy tests testing
+    conditional Śrīpati aspect rays can explicitly pass is_mercury_afflicted=True.
     """
     if aspecting_planet in NON_CASTING_BODIES:
         return {
@@ -267,6 +272,7 @@ def calculate_advanced_graha_aspects(
     yuti_format: str = "list",
     as_dict: bool = False,
     detailed_yutis: bool = False,
+    mercury_drishti_always_benefic: bool = True,
     **kwargs
 ) -> dict:
     """
@@ -322,25 +328,48 @@ def calculate_advanced_graha_aspects(
     else:
         is_merc_combust = False
 
-    # Helper to determine if planet is benefic or malefic for Drishti
+    merc_sign = merc_info.get("sign")
+    if not merc_sign and "longitude" in merc_info:
+        merc_sign = ZODIAC_SIGNS[int((merc_info["longitude"] % 360.0) // 30)]
+    merc_with_malefic = False
+    if merc_sign:
+        merc_with_malefic = any(
+            (other_info.get("sign") or (ZODIAC_SIGNS[int((other_info.get("longitude", 0.0) % 360.0) // 30)] if "longitude" in other_info else None)) == merc_sign
+            for m_name, other_info in planets_data.items()
+            if m_name != "Mercury" and m_name in active_malefics
+        )
+    is_merc_yuti_benefic = (not is_merc_combust) and (not merc_with_malefic)
+    is_merc_drishti_benefic = True if mercury_drishti_always_benefic else is_merc_yuti_benefic
+
+    # Helper to determine if planet is benefic or malefic for Drishti (BPHS 27.19 & 27.28–29)
     def is_benefic(p_name, moon_lon, sun_lon, aspecting_sign=None):
         if p_name in ["Jupiter", "Venus"]:
             return True
         if p_name == "Mercury":
+            if mercury_drishti_always_benefic:
+                return True
             if is_merc_combust:
                 return False
-            merc_sign = aspecting_sign or merc_info.get("sign")
-            if not merc_sign and "longitude" in merc_info:
-                merc_sign = ZODIAC_SIGNS[int((merc_info["longitude"] % 360.0) // 30)]
-            if merc_sign:
+            m_sign = aspecting_sign or merc_sign
+            if m_sign:
                 has_mal = any(
-                    (other_info.get("sign") or (ZODIAC_SIGNS[int((other_info.get("longitude", 0.0) % 360.0) // 30)] if "longitude" in other_info else None)) == merc_sign
+                    (other_info.get("sign") or (ZODIAC_SIGNS[int((other_info.get("longitude", 0.0) % 360.0) // 30)] if "longitude" in other_info else None)) == m_sign
                     for m_name, other_info in planets_data.items()
                     if m_name != "Mercury" and m_name in active_malefics
                 )
                 if has_mal:
                     return False
             return True
+        if p_name == "Moon":
+            return is_moon_benefic
+        return False
+
+    # Helper to determine if planet is benefic for Yuti / conjunction (BPHS 3.11 & DPK 2.27)
+    def is_yuti_benefic(p_name: str) -> bool:
+        if p_name in ["Jupiter", "Venus"]:
+            return True
+        if p_name == "Mercury":
+            return is_merc_yuti_benefic
         if p_name == "Moon":
             return is_moon_benefic
         return False

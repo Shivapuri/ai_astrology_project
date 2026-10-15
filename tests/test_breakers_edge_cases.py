@@ -18,7 +18,8 @@ from jyotish.yogas.breakers import (
     get_lagna_sign, audit_neecha_bhanga_condition_3, audit_neecha_bhanga,
     audit_trishadaya_interference, _first_ruler,
     get_house_of_planet,
-    audit_dispositor_vitality, audit_shadbala_muscle
+    audit_dispositor_vitality, audit_shadbala_muscle,
+    audit_dusthana_placement, resolve_yoga_score_and_status
 )
 
 
@@ -684,5 +685,111 @@ def test_pancha_mahapurusha_capped_pre_breaker_score_major_breaker_not_pure():
     assert ruchaka.plausibility_score == 80.0
     # Because combustion breaker has penalty 20.0, status must NOT be PURE
     assert ruchaka.status == YogaStatus.STAINED
+
+
+def test_audit_trishadaya_interference_exclude_houses():
+    # Aries Lagna: 11th lord is Saturn (rules Aquarius H11)
+    chart = {
+        "ascendant": {"sign": "Aries"},
+        "planets": {
+            "Jupiter": {"sign": "Aquarius", "longitude": 310.0},
+            "Saturn": {"sign": "Aquarius", "longitude": 315.0},
+            "Sun": {"sign": "Leo", "longitude": 140.0}
+        }
+    }
+    # Without exclusion: 11th lord intrusion should be flagged (-40.0)
+    b_normal = audit_trishadaya_interference(["Jupiter"], chart)
+    assert any(b.factor.startswith("11th Lord Intrusion") for b in b_normal)
+
+    # With exclude_houses=(11,): 11th lord intrusion must NOT be flagged
+    b_excluded = audit_trishadaya_interference(["Jupiter"], chart, exclude_houses=(11,))
+    assert not any(b.factor.startswith("11th Lord Intrusion") for b in b_excluded)
+
+
+def test_audit_combustion_deep_only():
+    # Mercury 4 degrees from Sun: moderate combustion (< 8.0, >= 3.0)
+    chart = {
+        "planets": {
+            "Sun": {"longitude": 100.0, "sign": "Cancer"},
+            "Mercury": {"longitude": 104.0, "sign": "Cancer"}
+        }
+    }
+    # Default deep_only=False flags moderate combustion
+    b_default = audit_combustion(["Mercury"], chart, deep_only=False)
+    assert len(b_default) == 1
+    assert "Moderate Planetary Combustion" in b_default[0].factor
+
+    # deep_only=True ignores moderate combustion (3.0 - 8.0)
+    b_deep = audit_combustion(["Mercury"], chart, deep_only=True)
+    assert len(b_deep) == 0
+
+    # Deep combustion (< 3.0) is flagged under both
+    chart_deep = {
+        "planets": {
+            "Sun": {"longitude": 100.0, "sign": "Cancer"},
+            "Mercury": {"longitude": 101.5, "sign": "Cancer"}
+        }
+    }
+    b_deep_flagged = audit_combustion(["Mercury"], chart_deep, deep_only=True)
+    assert len(b_deep_flagged) == 1
+    assert "Deep Planetary Combustion" in b_deep_flagged[0].factor
+
+
+def test_audit_dusthana_placement_exempt_categories():
+    houses = [6]
+
+    # Non-exempt category should be penalized
+    b_raja = audit_dusthana_placement(houses, "Raja Yoga")
+    assert b_raja is not None
+    assert b_raja.penalty == 25.0
+
+    # Exempt categories: Viparita, Daridrya, Chandal
+    assert audit_dusthana_placement(houses, "Viparita Raja (Reversal)") is None
+    assert audit_dusthana_placement(houses, "VIPARITA") is None
+    assert audit_dusthana_placement(houses, "Daridrya (Poverty)") is None
+    assert audit_dusthana_placement(houses, "DARIDRYA") is None
+    assert audit_dusthana_placement(houses, "Chāṇḍāla & Doṣa (Afflictions)") is None
+    assert audit_dusthana_placement(houses, "CHANDAL") is None
+    assert audit_dusthana_placement(houses, YogaCategory.VIPARITA) is None
+    assert audit_dusthana_placement(houses, YogaCategory.DARIDRYA) is None
+    assert audit_dusthana_placement(houses, YogaCategory.CHANDAL) is None
+
+
+def test_resolve_yoga_score_and_status():
+    # 1. Pre-breaker score capped at 100.0
+    score, status = resolve_yoga_score_and_status(120.0, [])
+    assert score == 100.0
+    assert status == YogaStatus.PURE
+
+    # 2. Major breaker (penalty >= 20.0) gates PURE status
+    major_breaker = YogaBreakerDetail("Combustion", "Sun", "Burned", 20.0)
+    # 100.0 - 20.0 = 80.0; score >= 75.0, but major breaker blocks PURE -> STAINED
+    score, status = resolve_yoga_score_and_status(100.0, [major_breaker])
+    assert score == 80.0
+    assert status == YogaStatus.STAINED
+
+    # 3. Minor breaker (< 20.0) allows PURE if score >= 75.0
+    minor_breaker = YogaBreakerDetail("Minor flaw", "Moon", "Slight", 10.0)
+    score, status = resolve_yoga_score_and_status(90.0, [minor_breaker])
+    assert score == 80.0
+    assert status == YogaStatus.PURE
+
+    # 4. Status gradient: RESCUED (30.0 - 49.9) and BROKEN (< 30.0)
+    b_heavy = YogaBreakerDetail("Heavy", "Saturn", "Afflicted", 60.0)
+    score, status = resolve_yoga_score_and_status(100.0, [b_heavy])
+    assert score == 40.0
+    assert status == YogaStatus.RESCUED
+
+    b_devastating = YogaBreakerDetail("Fatal", "Saturn", "Ruined", 85.0)
+    score, status = resolve_yoga_score_and_status(100.0, [b_devastating])
+    assert score == 15.0
+    assert status == YogaStatus.BROKEN
+
+    # 5. Floor clamp at 5.0
+    b_extreme = YogaBreakerDetail("Extreme", "Rahu", "Nullified", 150.0)
+    score, status = resolve_yoga_score_and_status(50.0, [b_extreme])
+    assert score == 5.0
+    assert status == YogaStatus.BROKEN
+
 
 

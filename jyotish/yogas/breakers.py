@@ -158,12 +158,14 @@ def _first_ruler(house_rulers: Dict[int, List[str]], house: int) -> Optional[str
 def audit_trishadaya_interference(
     yoga_planets: List[str],
     chart: Dict[str, Any],
-    is_supreme_pairing: bool = False
+    is_supreme_pairing: bool = False,
+    exclude_houses: Tuple[int, ...] = ()
 ) -> List[YogaBreakerDetail]:
     """
     Audits intrusion of the Trishadaya lords (3rd, 6th, and 11th).
-    Deduplicates dual-Trishadaya rulers (e.g., Mars in Gemini, Venus in Sagittarius,
-    Jupiter in Libra) and selects the strongest interference across yoga_planets.
+    - Deduplicates dual-Trishadaya rulers (e.g., Mars in Gemini, Venus in Sagittarius,
+      Jupiter in Libra) and selects the strongest interference across yoga_planets.
+    - Use `exclude_houses=(11,)` for Dhana/wealth yogas where the 11th lord is a co-producer.
     """
     breakers = []
     house_rulers = get_house_rulers(chart)
@@ -185,6 +187,8 @@ def audit_trishadaya_interference(
     seen_saboteurs = set()
 
     for saboteur, house_num, base_penalty, title, desc in saboteurs:
+        if house_num in exclude_houses:
+            continue
         if not saboteur or saboteur in yoga_planets or saboteur in seen_saboteurs:
             continue
         # Lagnesha exemption: Ascendant lord never destroys the native's yoga
@@ -237,10 +241,16 @@ def audit_trishadaya_interference(
 
     return breakers
 
-def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[YogaBreakerDetail]:
+def audit_combustion(
+    yoga_planets: List[str],
+    chart: Dict[str, Any],
+    deep_only: bool = False
+) -> List[YogaBreakerDetail]:
     """
     Audits whether participating planets are combust (< 8° from Sun).
     Deep combustion (< 3°) burns independent manifestation capacity.
+    Set `deep_only=True` for Solar combinations (e.g., Budhaditya) where moderate
+    proximity (3°–8°) is astronomically expected.
     """
     breakers = []
     comb_status = (
@@ -285,7 +295,7 @@ def audit_combustion(yoga_planets: List[str], chart: Dict[str, Any]) -> List[Yog
                 description=f"{p} is deeply combust within {diff:.1f}° of the Sun. Its independent rays and tangible manifestation power are burned.",
                 penalty=40.0
             ))
-        elif diff < 8.0:
+        elif diff < 8.0 and not deep_only:
             breakers.append(YogaBreakerDetail(
                 factor="Moderate Planetary Combustion (Astangata)",
                 culprit_planet="Sun",
@@ -475,6 +485,16 @@ def audit_dispositor_vitality(yoga_planets: List[str], chart: Dict[str, Any]) ->
 
     return breakers
 
+# Categories that inherently operate in or require Dusthana houses (6, 8, 12)
+DUSTHANA_EXEMPT_CATEGORIES = {
+    "Viparita Raja (Reversal)",
+    "VIPARITA",
+    "Daridrya (Poverty)",
+    "DARIDRYA",
+    "Chāṇḍāla & Doṣa (Afflictions)",
+    "CHANDAL",
+}
+
 def audit_dusthana_placement(
     yoga_houses: List[int],
     category_name: str
@@ -482,7 +502,15 @@ def audit_dusthana_placement(
     """
     Auspicious worldly yogas (Raja, Dhana, Mahapurusha) placed in 6, 8, 12
     dissipate public authority into internal struggle, health issues, or seclusion.
+    Automatically exempts Viparita, Daridrya, and Chandal categories.
     """
+    cat_str = category_name.value if hasattr(category_name, "value") else str(category_name)
+    if (
+        str(category_name) in DUSTHANA_EXEMPT_CATEGORIES
+        or cat_str in DUSTHANA_EXEMPT_CATEGORIES
+        or getattr(category_name, "name", "") in DUSTHANA_EXEMPT_CATEGORIES
+    ):
+        return None
     dusthana_count = sum(1 for h in yoga_houses if h in (6, 8, 12))
     if dusthana_count > 0:
         return YogaBreakerDetail(
@@ -525,3 +553,33 @@ def audit_shadbala_muscle(yoga_planets: List[str], chart: Dict[str, Any]) -> Tup
             positive_notes.append(f"{p} is muscular in Shadbala ({rupas:.2f} Rupas / {ratio*100:.0f}% of requirement).")
 
     return breakers, positive_notes
+
+
+def resolve_yoga_score_and_status(
+    pre_breaker_score: float,
+    breakers: List[YogaBreakerDetail],
+    score_cap: float = 100.0
+) -> Tuple[float, YogaStatus]:
+    """
+    Standardized score and status resolver for auspicious yogas:
+    1. Caps pre-breaker positive confluence at `score_cap` (default 100.0).
+    2. Deducts all breaker penalties and clamps net score to [5.0, 100.0].
+    3. Blocks `YogaStatus.PURE` if any major breaker (penalty >= 20.0) is present.
+    """
+    net_score = min(score_cap, float(pre_breaker_score))
+    for b in (breakers or []):
+        if b is not None:
+            net_score -= float(b.penalty)
+    net_score = round(max(5.0, min(score_cap, net_score)), 1)
+
+    has_major_breaker = any(b.penalty >= 20.0 for b in (breakers or []) if b is not None)
+    if net_score >= 75.0 and not has_major_breaker:
+        status = YogaStatus.PURE
+    elif net_score >= 50.0:
+        status = YogaStatus.STAINED
+    elif net_score >= 30.0:
+        status = YogaStatus.RESCUED
+    else:
+        status = YogaStatus.BROKEN
+
+    return net_score, status
