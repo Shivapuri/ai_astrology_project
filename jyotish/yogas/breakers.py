@@ -54,8 +54,8 @@ def get_lagna_sign(chart: Dict[str, Any]) -> str:
     d1 = (chart.get("vargas") or {}).get("D1") or {}
     sign = (d1.get("lagna") or {}).get("sign") if isinstance(d1, dict) else None
     if not sign:
-        asc = chart.get("ascendant") or {}
-        sign = asc.get("sign", "") if isinstance(asc, dict) else ""
+        asc = chart.get("ascendant") or chart.get("lagna") or {}
+        sign = asc.get("sign", "") if isinstance(asc, dict) else (asc if isinstance(asc, str) else "")
     return sign if isinstance(sign, str) else ""
 
 def get_planets_data(chart: Dict[str, Any]) -> Dict[str, Any]:

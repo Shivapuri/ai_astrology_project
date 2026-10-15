@@ -728,33 +728,46 @@ def test_chapter7_power_yogas():
 
 def test_sun_moon_quadrant_adhama_madhya_varishtha():
     """Verify Kendra=Adhama (0.75 toning), Panaphara=Madhya (1.0 baseline), Apoklima=Variṣṭha (1.25 boost)."""
-    # Sun in Aries (idx 1)
-    # Moon in Cancer (idx 4) -> 4th from Sun (Kendra) -> Adhama Yoga
-    chart_kendra = make_mock_chart("Aries", {
+    from jyotish.yogas.contextual_yogas import detect_general_scope_yogas
+
+    # 1. Kendra with Lagna Kendra anchor -> Adhama Yoga (Rescued/Channeled)
+    # Sun in Aries (idx 1, H1), Moon in Cancer (idx 4, H4) -> 4th from Sun
+    chart_kendra_rescued = make_mock_chart("Aries", {
         "Sun": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},
         "Moon": {"sign": "Cancer", "longitude": 105.0, "degree_0_to_30": 15.0}
     })
-    y_k = detect_lunar_and_solar_yogas(chart_kendra)
-    adhama = next((y for y in y_k if y.id == "adhama_yoga"), None)
-    assert adhama is not None, "Moon in Kendra from Sun must be Adhama Yoga"
-    assert adhama.status == YogaStatus.STAINED
+    y_k_res = detect_general_scope_yogas(chart_kendra_rescued)
+    adhama_res = next((y for y in y_k_res if y.id == "adhama_yoga"), None)
+    assert adhama_res is not None, "Moon in Kendra from Sun must be Adhama Yoga"
+    assert adhama_res.status == YogaStatus.RESCUED, "Anchored in Lagna Kendra, Adhama is mitigated/rescued"
 
-    # Moon in Taurus (idx 2) -> 2nd from Sun (Panaphara) -> Madhya Yoga
+    # 2. Kendra without Lagna Kendra anchor -> Adhama Yoga (Unmitigated Stained)
+    # Sun in Taurus (H2), Moon in Leo (H5) -> 4th from Sun (Kendra), neither in Lagna Kendra
+    chart_kendra_stained = make_mock_chart("Aries", {
+        "Sun": {"sign": "Taurus", "longitude": 45.0, "degree_0_to_30": 15.0},
+        "Moon": {"sign": "Leo", "longitude": 135.0, "degree_0_to_30": 15.0}
+    })
+    y_k_stn = detect_general_scope_yogas(chart_kendra_stained)
+    adhama_stn = next((y for y in y_k_stn if y.id == "adhama_yoga"), None)
+    assert adhama_stn is not None, "Moon in Kendra from Sun must be Adhama Yoga"
+    assert adhama_stn.status == YogaStatus.STAINED, "Without Lagna Kendra anchor, Adhama remains Stained"
+
+    # 3. Moon in Taurus (idx 2) -> 2nd from Sun (Panaphara) -> Sama (Madhya) Yoga
     chart_pana = make_mock_chart("Aries", {
         "Sun": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},
         "Moon": {"sign": "Taurus", "longitude": 45.0, "degree_0_to_30": 15.0}
     })
-    y_p = detect_lunar_and_solar_yogas(chart_pana)
-    madhya = next((y for y in y_p if y.id == "madhya_yoga"), None)
-    assert madhya is not None, "Moon in Panaphara from Sun must be Madhya Yoga"
-    assert madhya.status == YogaStatus.PURE
+    y_p = detect_general_scope_yogas(chart_pana)
+    sama = next((y for y in y_p if y.id in ("madhya_yoga", "sama_yoga")), None)
+    assert sama is not None, "Moon in Panaphara from Sun must be Sama (Madhya) Yoga"
+    assert sama.status == YogaStatus.PURE
 
-    # Moon in Gemini (idx 3) -> 3rd from Sun (Apoklima) -> Variṣṭha Yoga
+    # 4. Moon in Gemini (idx 3) -> 3rd from Sun (Apoklima) -> Variṣṭha Yoga
     chart_apok = make_mock_chart("Aries", {
         "Sun": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},
         "Moon": {"sign": "Gemini", "longitude": 75.0, "degree_0_to_30": 15.0}
     })
-    y_a = detect_lunar_and_solar_yogas(chart_apok)
+    y_a = detect_general_scope_yogas(chart_apok)
     varishtha = next((y for y in y_a if y.id == "varishtha_yoga"), None)
     assert varishtha is not None, "Moon in Apoklima from Sun must be Variṣṭha Yoga"
     assert varishtha.status == YogaStatus.PURE

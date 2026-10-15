@@ -88,24 +88,24 @@ def test_sankhya_veena_yoga():
 # =============================================================================
 
 def test_general_scope_kendra():
-    """Sun in Aries (1st), Moon in Cancer (4th from Sun) -> Kendra Scope."""
+    """Sun in Aries (1st), Moon in Cancer (4th from Sun) -> Adhama Scope."""
     chart = make_chart(lagna_sign="Aries", graha_signs={"Sun": "Aries", "Moon": "Cancer"})
     yogas = detect_general_scope_yogas(chart)
-    assert any(y.id == "kendra_scope_yoga" for y in yogas)
+    assert any(y.id == "adhama_yoga" for y in yogas)
 
 
 def test_general_scope_panaphara():
-    """Sun in Aries (1st), Moon in Taurus (2nd from Sun) -> Panaphara Scope."""
+    """Sun in Aries (1st), Moon in Taurus (2nd from Sun) -> Sama Scope."""
     chart = make_chart(lagna_sign="Aries", graha_signs={"Sun": "Aries", "Moon": "Taurus"})
     yogas = detect_general_scope_yogas(chart)
-    assert any(y.id == "panaphara_scope_yoga" for y in yogas)
+    assert any(y.id == "sama_yoga" for y in yogas)
 
 
 def test_general_scope_apoklima():
-    """Sun in Aries (1st), Moon in Gemini (3rd from Sun) -> Apoklima Scope."""
+    """Sun in Aries (1st), Moon in Gemini (3rd from Sun) -> Variṣṭha Scope."""
     chart = make_chart(lagna_sign="Aries", graha_signs={"Sun": "Aries", "Moon": "Gemini"})
     yogas = detect_general_scope_yogas(chart)
-    assert any(y.id == "apoklima_scope_yoga" for y in yogas)
+    assert any(y.id == "varishtha_yoga" for y in yogas)
 
 
 # =============================================================================
@@ -166,26 +166,28 @@ def test_solitary_jupiter_tanu():
 
 def test_shubhakartari_lagna():
     """Benefics in 2nd and 12th houses from Lagna -> Śubhakartari of Lagna."""
+    from jyotish.yogas.kartari import detect_kartari_yogas
     grahas = {
         "Jupiter": "Taurus",  # 2nd from Aries
         "Venus": "Pisces",    # 12th from Aries
         "Sun": "Leo", "Moon": "Cancer"
     }
     chart = make_chart(lagna_sign="Aries", graha_signs=grahas)
-    yogas = detect_solitary_first_house_yogas(chart)
-    assert any(y.id == "shubhakartari_lagna_yoga" for y in yogas)
+    yogas = detect_kartari_yogas(chart)
+    assert any(y.id == "shubha_kartari_lagna" for y in yogas)
 
 
 def test_papakartari_lagna():
     """Malefics in 2nd and 12th houses from Lagna -> Pāpakartari of Lagna."""
+    from jyotish.yogas.kartari import detect_kartari_yogas
     grahas = {
         "Saturn": "Taurus",  # 2nd from Aries
         "Mars": "Pisces",    # 12th from Aries
         "Moon": "Cancer"
     }
     chart = make_chart(lagna_sign="Aries", graha_signs=grahas)
-    yogas = detect_solitary_first_house_yogas(chart)
-    assert any(y.id == "papakartari_lagna_yoga" for y in yogas)
+    yogas = detect_kartari_yogas(chart)
+    assert any(y.id == "papa_kartari_lagna" for y in yogas)
 
 
 # =============================================================================
@@ -224,7 +226,7 @@ def test_kemadruma_bhanga_moon_in_kendra():
     }
     chart = make_chart(lagna_sign="Aries", graha_signs=grahas)
     yogas = detect_kemadruma_yoga(chart)
-    assert any(y.id == "kemadruma_bhanga_yoga" and y.status == YogaStatus.RESCUED for y in yogas)
+    assert any(y.id == "kemadruma_yoga" and y.status == YogaStatus.RESCUED for y in yogas)
 
 
 def test_kemadruma_bhanga_planet_in_moon_kendra():
@@ -239,7 +241,7 @@ def test_kemadruma_bhanga_planet_in_moon_kendra():
     }
     chart = make_chart(lagna_sign="Aries", graha_signs=grahas)
     yogas = detect_kemadruma_yoga(chart)
-    assert any(y.id == "kemadruma_bhanga_yoga" and y.status == YogaStatus.RESCUED for y in yogas)
+    assert any(y.id == "kemadruma_yoga" and y.status == YogaStatus.RESCUED for y in yogas)
 
 
 # =============================================================================
