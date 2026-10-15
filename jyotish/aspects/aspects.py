@@ -540,7 +540,8 @@ def calculate_varga_aspects(
 
 def calculate_aspect_matrices(
     baseline: "ChartBaseline",
-    enforce_dpk_lord_qualifications: bool = False
+    enforce_dpk_lord_qualifications: bool = False,
+    mercury_drishti_always_benefic: bool = True,
 ) -> Dict[str, Any]:
     """
     Master Stage 2A Aspect Orchestrator.
@@ -618,7 +619,9 @@ def calculate_aspect_matrices(
     # 4. Benefic / Malefic Qualitative Totals (+ / - Net Virupas)
     # Natural Benefics: Jupiter, Venus
     # Dynamic Benefics:
-    #   Mercury: Benefic if not combust and not conjoined with natural/active malefics (BPHS Ch. 3.11 / Phaladīpikā Ch. 2.27)
+    #   Mercury:
+    #     - Drishti (BPHS 27.19 & 27.28–29): Always benefic ray (mercury_drishti_always_benefic=True).
+    #     - Yuti (BPHS 3.11 & DPK 2.27): Conditionally malefic if combust or conjoined with active malefics.
     #   Moon: Benefic if bright/waxing (lunar_phase["is_benefic"] is True)
     # Natural Malefics: Sun, Mars, Saturn, Rahu, Ketu
     is_moon_benefic = baseline.lunar_phase.get("is_benefic", False)
@@ -630,12 +633,25 @@ def calculate_aspect_matrices(
         m in coords and coords[m]["sign_index"] == merc_sign_idx
         for m in active_malefics
     )
-    is_merc_benefic = (not is_merc_combust) and (not merc_with_malefic)
+    is_merc_yuti_benefic = (not is_merc_combust) and (not merc_with_malefic)
+    is_merc_drishti_benefic = True if mercury_drishti_always_benefic else is_merc_yuti_benefic
 
     benefic_classification = {
         "Jupiter": True,
         "Venus": True,
-        "Mercury": is_merc_benefic,
+        "Mercury": is_merc_drishti_benefic,
+        "Moon": is_moon_benefic,
+        "Sun": False,
+        "Mars": False,
+        "Saturn": False,
+        "Rahu": False,
+        "Ketu": False,
+    }
+
+    yuti_benefic_classification = {
+        "Jupiter": True,
+        "Venus": True,
+        "Mercury": is_merc_yuti_benefic,
         "Moon": is_moon_benefic,
         "Sun": False,
         "Mars": False,
@@ -740,6 +756,7 @@ def calculate_aspect_matrices(
             "cusps": effective_totals_cusps,
             "cusps_dpk_qualified": totals_cusps_dpk_qualified,
             "classification": benefic_classification,
+            "yuti_classification": yuti_benefic_classification,
         },
         # Backwards compatibility aliases
         "planet_to_planet": outgoing,

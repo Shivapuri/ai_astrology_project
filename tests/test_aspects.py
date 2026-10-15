@@ -205,9 +205,12 @@ def test_moon_dynamic_benefic_malefic_parity():
 
 def test_mercury_dynamic_malefic_conjunction_and_cross_border_combustion():
     """
-    Verifies that Mercury becomes a functional malefic per BPHS 3.11 & Phaladīpikā 2.27 when:
-    1. Conjoined in the same sign with a dark/waning Moon (Kṣīṇendu).
-    2. Combust across a sign border (e.g. Sun at 29° Aries, Mercury at 4° Taurus within 14° orb).
+    Verifies BPHS calibration for Mercury's dual nature:
+    1. By Aspect (Dṛṣṭi — BPHS 27.19 & 27.28–29): Mercury's distant glance is ALWAYS benefic
+       (plus / True) by default.
+    2. By Conjunction (Yuti — BPHS 3.11 & DPK 2.27): Mercury becomes functionally malefic
+       (yuti_classification is False) when combust or conjoined with an active malefic.
+    3. Optional Śrīpati Mode (mercury_drishti_always_benefic=False): Aspect rays flip to malefic (minus / False).
     """
     # 1. Mercury conjoined with dark/waning Moon in the same sign (Sun is distant so Mercury is not combust)
     planets_dark_moon = {
@@ -216,12 +219,26 @@ def test_mercury_dynamic_malefic_conjunction_and_cross_border_combustion():
         "Mercury": {"longitude": 315.0, "sign": "Aquarius"},# in Aquarius with dark Moon! (distance from Sun is 45° -> not combust)
         "Jupiter": {"longitude": 135.0, "sign": "Leo"},     # receives 180° opposition from Mercury
     }
+    # 1a. Pure BPHS Default Mode (mercury_drishti_always_benefic=True)
     res_dark_moon = calculate_advanced_graha_aspects(planets_dark_moon)
     jup_from_merc = res_dark_moon["planets"]["Jupiter"]["Mercury"]
     assert jup_from_merc["raw"] == 60.0
-    assert jup_from_merc["plus"] == 0.0
-    assert jup_from_merc["minus"] == 60.0
-    assert jup_from_merc["net"] == -60.0
+    assert jup_from_merc["plus"] == 60.0
+    assert jup_from_merc["minus"] == 0.0
+    assert jup_from_merc["net"] == 60.0
+    assert res_dark_moon["classification"]["Mercury"] is True
+    assert res_dark_moon["yuti_classification"]["Mercury"] is False
+    assert res_dark_moon["yuti_details"]["Mercury"]["Moon"]["is_benefic_partner"] is False
+
+    # 1b. Optional Śrīpati Mode (mercury_drishti_always_benefic=False)
+    res_dark_moon_sripati = calculate_advanced_graha_aspects(planets_dark_moon, mercury_drishti_always_benefic=False)
+    jup_from_merc_sripati = res_dark_moon_sripati["planets"]["Jupiter"]["Mercury"]
+    assert jup_from_merc_sripati["raw"] == 60.0
+    assert jup_from_merc_sripati["plus"] == 0.0
+    assert jup_from_merc_sripati["minus"] == 60.0
+    assert jup_from_merc_sripati["net"] == -60.0
+    assert res_dark_moon_sripati["classification"]["Mercury"] is False
+    assert res_dark_moon_sripati["yuti_classification"]["Mercury"] is False
 
     # 2. Cross-border combustion: Sun at 29.0° (Aries), Mercury at 34.0° (4° Taurus) -> separation 5.0° <= 14.0°
     planets_combust_cross_border = {
@@ -230,21 +247,38 @@ def test_mercury_dynamic_malefic_conjunction_and_cross_border_combustion():
         "Mercury": {"longitude": 34.0, "sign": "Taurus"},     # 4° Taurus, combust across border from Sun at 29° Aries
         "Jupiter": {"longitude": 214.0, "sign": "Scorpio"},   # receives 180° opposition from Mercury
     }
+    # 2a. Pure BPHS Default Mode
     res_combust = calculate_advanced_graha_aspects(planets_combust_cross_border)
     jup_from_merc_comb = res_combust["planets"]["Jupiter"]["Mercury"]
     assert jup_from_merc_comb["raw"] == 60.0
-    assert jup_from_merc_comb["plus"] == 0.0
-    assert jup_from_merc_comb["minus"] == 60.0
-    assert jup_from_merc_comb["net"] == -60.0
+    assert jup_from_merc_comb["plus"] == 60.0
+    assert jup_from_merc_comb["minus"] == 0.0
+    assert jup_from_merc_comb["net"] == 60.0
+    assert res_combust["classification"]["Mercury"] is True
+    assert res_combust["yuti_classification"]["Mercury"] is False
 
-    # Verify cross-border combustion in calculate_aspect_matrices via real baseline (2021-04-19):
-    # Sun is in Aries (29.65°), Mercury is in Taurus (30.13°)
+    # 2b. Optional Śrīpati Mode
+    res_combust_sripati = calculate_advanced_graha_aspects(planets_combust_cross_border, mercury_drishti_always_benefic=False)
+    jup_from_merc_comb_sripati = res_combust_sripati["planets"]["Jupiter"]["Mercury"]
+    assert jup_from_merc_comb_sripati["raw"] == 60.0
+    assert jup_from_merc_comb_sripati["plus"] == 0.0
+    assert jup_from_merc_comb_sripati["minus"] == 60.0
+    assert jup_from_merc_comb_sripati["net"] == -60.0
+    assert res_combust_sripati["classification"]["Mercury"] is False
+
+    # 3. Verify cross-border combustion in calculate_aspect_matrices via real baseline (2021-04-19):
     b_combust = ChartBaseline("CrossBorderCombust", 2021, 4, 19, 12, 0, 0, 0.0, 0.0, 0.0)
     mat_combust = calculate_aspect_matrices(b_combust)
     assert b_combust.coordinates["Sun"]["sign"] == "Aries"
     assert b_combust.coordinates["Mercury"]["sign"] == "Taurus"
     assert b_combust.combustion_status["Mercury"]["is_combust"] is True
-    assert mat_combust["benefic_malefic_totals"]["classification"]["Mercury"] is False
+    # BPHS Default: Drishti classification remains True, Yuti classification is False
+    assert mat_combust["benefic_malefic_totals"]["classification"]["Mercury"] is True
+    assert mat_combust["benefic_malefic_totals"]["yuti_classification"]["Mercury"] is False
+    # Optional Śrīpati Mode: Drishti classification flips to False
+    mat_combust_sripati = calculate_aspect_matrices(b_combust, mercury_drishti_always_benefic=False)
+    assert mat_combust_sripati["benefic_malefic_totals"]["classification"]["Mercury"] is False
+    assert mat_combust_sripati["benefic_malefic_totals"]["yuti_classification"]["Mercury"] is False
 
 
 def test_unequal_cusp_sign_lord_protection():
@@ -277,6 +311,7 @@ def test_phaladipika_15_1_qualification():
     """
     Verifies that in calculate_aspect_matrices:
     - Default unattenuated envelope (totals_cusps) counts a malefic house lord's aspect on its own cusp as plus.
+    - Under pure BPHS 27.28-29, Mercury's distant glance on House 9 (14.99 Virupas) is benefic.
     - DPK 15.1 qualified envelope (cusps_dpk_qualified via नीचमूढारिहीनैः) classifies a natural malefic
       house lord's aspect on its own cusp as benefic_virupas ONLY when unafflicted, but as malefic_virupas
       when that lord is debilitated, combust, or in an enemy sign.
@@ -293,13 +328,21 @@ def test_phaladipika_15_1_qualification():
     h9_default = aspects["benefic_malefic_totals"]["cusps"][9]
     h9_dpk = aspects["benefic_malefic_totals"]["cusps_dpk_qualified"][9]
 
-    # Under default unattenuated rule: Mars (60.0) is added to benefic_virupas (173.51)
-    assert pytest.approx(h9_default["benefic_virupas"], abs=0.01) == 173.51
+    # Under pure BPHS default: Jupiter (57.56) + Venus (55.95) + Mercury (14.99) + Mars (60.0) = 188.50
+    assert pytest.approx(h9_default["benefic_virupas"], abs=0.01) == 188.50
     assert h9_default["malefic_virupas"] < 60.0
 
     # Under DPK 15.1 qualified rule: Mars in Virgo is in enemy sign, so 60.0 is transferred to malefic_virupas
-    assert pytest.approx(h9_dpk["benefic_virupas"], abs=0.01) == 113.51
-    assert pytest.approx(h9_dpk["malefic_virupas"], abs=0.01) == 111.48
+    assert pytest.approx(h9_dpk["benefic_virupas"], abs=0.01) == 128.50
+    assert pytest.approx(h9_dpk["malefic_virupas"], abs=0.01) == 96.50
+
+    # Under optional Śrīpati mode (mercury_drishti_always_benefic=False): Mercury in Libra with Saturn is malefic
+    aspects_sripati = calculate_aspect_matrices(shivapuri, mercury_drishti_always_benefic=False)
+    h9_sripati = aspects_sripati["benefic_malefic_totals"]["cusps"][9]
+    h9_dpk_sripati = aspects_sripati["benefic_malefic_totals"]["cusps_dpk_qualified"][9]
+    assert pytest.approx(h9_sripati["benefic_virupas"], abs=0.01) == 173.51
+    assert pytest.approx(h9_dpk_sripati["benefic_virupas"], abs=0.01) == 113.51
+    assert pytest.approx(h9_dpk_sripati["malefic_virupas"], abs=0.01) == 111.48
 
     # When enforce_dpk_lord_qualifications=True, cusps uses the qualified envelope directly
     aspects_enforced = calculate_aspect_matrices(shivapuri, enforce_dpk_lord_qualifications=True)

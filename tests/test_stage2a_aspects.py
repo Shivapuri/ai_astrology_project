@@ -297,8 +297,8 @@ def test_mercury_malefic_conjunction_rule():
     """
     Verifies that Mercury becomes a functional malefic when conjoined with natural malefics
     (Sun, Mars, Saturn, Rahu, Ketu) per BPHS Ch. 3.21 and Phaladeepika Ch. 2.27.
-    - Kailash: Mercury in Scorpio with Sun (natural malefic) -> Malefic (False)
-    - Native Shivapuri: Mercury in Libra with Saturn (natural malefic) -> Malefic (False)
+    - Kailash: Mercury in Scorpio with Sun (natural malefic) -> Malefic (False) by Yuti
+    - Native Shivapuri: Mercury in Libra with Saturn (natural malefic) -> Malefic (False) by Yuti
     - Unafflicted Chart (1990-05-21): Mercury in Taurus free from all natural malefics -> Benefic (True)
     """
     kailash = ChartBaseline(
@@ -307,8 +307,13 @@ def test_mercury_malefic_conjunction_rule():
         latitude=52.20296, longitude=8.0448, timezone_offset=1.0
     )
     kailash_aspects = calculate_aspect_matrices(kailash)
-    # Sun in Scorpio conjoins Mercury in Scorpio -> Mercury is Malefic per BPHS Ch. 3.21
-    assert kailash_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is False
+    # Sun in Scorpio conjoins Mercury in Scorpio -> Mercury is Malefic by Yuti per BPHS Ch. 3.11
+    assert kailash_aspects["benefic_malefic_totals"]["yuti_classification"]["Mercury"] is False
+    # By Drishti (BPHS 27.19), aspect ray is unconditionally benefic
+    assert kailash_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
+    # Under optional Śrīpati mode, aspect ray flips to False
+    kailash_sripati = calculate_aspect_matrices(kailash, mercury_drishti_always_benefic=False)
+    assert kailash_sripati["benefic_malefic_totals"]["classification"]["Mercury"] is False
 
     shivapuri = ChartBaseline(
         name="Shivapuri",
@@ -317,8 +322,13 @@ def test_mercury_malefic_conjunction_rule():
         nakshatra_system="ERNST_DHRUVA"
     )
     shiv_aspects = calculate_aspect_matrices(shivapuri)
-    # Saturn in Libra conjoins Mercury in Libra -> Mercury is Malefic
-    assert shiv_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is False
+    # Saturn in Libra conjoins Mercury in Libra -> Mercury is Malefic by Yuti
+    assert shiv_aspects["benefic_malefic_totals"]["yuti_classification"]["Mercury"] is False
+    # By Drishti (BPHS 27.19), aspect ray is unconditionally benefic
+    assert shiv_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
+    # Under optional Śrīpati mode, aspect ray flips to False
+    shiv_sripati = calculate_aspect_matrices(shivapuri, mercury_drishti_always_benefic=False)
+    assert shiv_sripati["benefic_malefic_totals"]["classification"]["Mercury"] is False
 
     # Unafflicted Mercury: Mercury in Taurus, Sun in Gemini, Mars in Pisces, Saturn in Capricorn, Rahu in Aquarius, Ketu in Leo
     unafflicted = ChartBaseline(
@@ -328,6 +338,7 @@ def test_mercury_malefic_conjunction_rule():
     )
     unafflicted_aspects = calculate_aspect_matrices(unafflicted)
     assert unafflicted_aspects["benefic_malefic_totals"]["classification"]["Mercury"] is True
+    assert unafflicted_aspects["benefic_malefic_totals"]["yuti_classification"]["Mercury"] is True
 
 
 def test_house_lord_protection_rule():
@@ -354,8 +365,13 @@ def test_house_lord_protection_rule():
     # Mars casts full 60.0 Virupas on House 9
     assert h9_cusp["Mars"] == 60.0
 
-    # Benefics: Jupiter (57.5631) + Venus (55.9469) + Mars (60.0, protective lord) = 173.51
-    assert pytest.approx(h9_totals["benefic_virupas"], abs=0.01) == 173.51
+    # Benefics under pure BPHS 27.28-29:
+    # Jupiter (57.5631) + Venus (55.9469) + Mercury (14.9882) + Mars (60.0, protective lord) = 188.50
+    assert pytest.approx(h9_totals["benefic_virupas"], abs=0.01) == 188.50
     # Verify Mars is NOT counted in malefic virupas
     assert h9_totals["malefic_virupas"] < 60.0
+
+    # Under optional Śrīpati mode: Jupiter (57.56) + Venus (55.95) + Mars (60.0) = 173.51
+    aspects_sripati = calculate_aspect_matrices(shivapuri, mercury_drishti_always_benefic=False)
+    assert pytest.approx(aspects_sripati["benefic_malefic_totals"]["cusps"][9]["benefic_virupas"], abs=0.01) == 173.51
 

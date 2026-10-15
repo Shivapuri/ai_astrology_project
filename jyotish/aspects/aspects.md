@@ -89,54 +89,54 @@ Graha Drishti reveals the psychological and qualitative influence planets have o
 #### Engine Contracts & Zero-State Rules
 1. **Non-Casting Bodies Guard:** Non-physical points and shadow nodes (`Rahu`, `Ketu`, `Lagna`, `MC`) do not cast Graha Dṛṣṭi rays. Evaluated rays yield $0.0$ Virūpas with `line_style: "none"` and `nature_label: "Non-Casting Point"`.
 2. **Zero-Virūpa Ray Neutrality:** Angular separations with $0.0$ Virūpas yield `line_style: "none"`, `nature_label: "No Aspect (0 Virūpas)"`, and `rule_name: "No Aspect / Blind Angle"`, preventing spurious malefic tension lines in frontend SVG charts.
-92: 3. **Natural Benefic Ray Invariance (*BPHS* Ch. 27, v. 19 & 28–29):** Jupiter (`इज्य`), Mercury (`ज्ञ`), and Venus (`शुक्र`) unconditionally cast *Śubha* (benefic continuous) *Dṛṣṭi* rays (`ज्ञेज्यदृक्युक्तम्` / `ज्ञेज्यदृष्टियुतं`). Dignity affects their strength/manifestation, not their intrinsic benefic glance.
-93: 4. **Mercury *Yuti* Affliction vs. *Dṛṣṭi* Invariance (*BPHS* Ch. 3, v. 11 vs. Ch. 27, v. 19 & 29):**
-94:    > तत्रार्कशनिभूपुत्राः क्षीणेन्दुराहुकेतवः । क्रूराः शेषग्रहा सौम्याः क्रूरः क्रूरयुतो बुधः ॥ ११॥ (*BPHS* 3.11)  
-95:    > पापदृक्पादहीनं तच्छुभदृक्पादयुक् तथा । बलैक्यं ज्ञेज्यदृक्युक्तमेवं खेटबलं भवेत् ॥ १९॥ (*BPHS* 27.19)  
-96:    > सद्दृष्टिपादयुक्पापपापदृष्टिपादविवर्जितम् । ज्ञेज्यदृष्टियुतं तच्च स्वस्वस्वामिबलान्वितम् ॥ २८–२९॥ (*BPHS* 27.28–29)  
-97:    
-98:    In Parāśarī Jyotish, Mercury becomes functionally malefic **only by conjunction/co-presence (*क्रूरयुतो बुधः* / *सपापश्च वित्*)** when combust or occupying the same sign as an active malefic (`Sun`, `Mars`, `Saturn`, `Rahu`, `Ketu`, or dark/waning `Moon` [`क्षीणेन्दु`]). Its **distant aspect ray (*Dṛṣṭi*)** remains unconditionally benefic (*Śubha*) in both planetary aspects (*BPHS* 27.19) and house aspects (*BPHS* 27.28–29). Across both scopes, Parāśara pairs Mercury (`ज्ञ`) with Jupiter (`इज्य`) as casting an unconditionally benefic ray. (An optional toggle `mercury_drishti_always_benefic=False` is provided for *Śrīpati* conditional aspect mode).
-99: 
-100: ---
-101: 
-102: ## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)
-103: The master function `calculate_aspect_matrices(baseline: ChartBaseline, enforce_dpk_lord_qualifications: bool = False, mercury_drishti_always_benefic: bool = True) -> Dict[str, Any]` connects `ChartBaseline` directly to the aspect engine in a single pass:
-104: 
-105: 1. **Graha Dṛṣṭi — Planet-to-Planet ($11 \times 11$ Matrix):**
-106:    - Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
-107:    - Rahu, Ketu, Lagna, and MC cast 0 Virūpas, but receive incoming aspects from the 7 physical planets.
-108:    - Dual-indexed for $O(1)$ lookups without matrix transpositions:
-109:      - `graha_drishti["outgoing"][aspecting][aspected]`: Virūpas cast (used for planetary expression & yoga detection).
-110:      - `graha_drishti["incoming"][aspected][aspecting]`: Virūpas received (used for Dṛk Bala in Shadbala).
-111: 
-112: 2. **Graha Dṛṣṭi — Planet-to-Cusp ($7 \times 12$ Matrix):**
-113:    - Evaluates Graha Dṛṣṭi cast by the 7 physical planets onto the 12 Whole-Sign sensitive cusps ($D_{\text{asc}}$ projected from the natal Ascendant's sign):
-114:      $$\text{Target Sign Index}_h = (\text{asc\_sign\_idx} + h - 1) \pmod{12}$$
-115:      $$\text{Cusp Longitude}_h = (\text{Target Sign Index}_h \times 30^\circ + \text{sensitive\_cusp\_degree}) \pmod{360^\circ}$$
-116:    - Dual-indexed:
-117:      - `cusp_drishti["by_planet"][planet][house_num]`: Virūpas cast on house $h$.
-118:      - `cusp_drishti["by_house"][house_num][planet]`: Virūpas received by house $h$.
-119: 
-120: 3. **Rāśi Dṛṣṭi (Sign & Planetary Mutual Glances):**
-121:    - Sign aspects: Moveable aspects Fixed (except adjacent); Fixed aspects Moveable (except adjacent); Dual aspects Dual.
-122:    - Binary mutual glance between bodies and whole-sign houses:
-123:      - `rasi_drishti["planet_to_planet"][p1]`: List of planets aspected by $p1$.
-124:      - `rasi_drishti["house_to_planets"][h]`: List of planets aspecting whole-sign house $h$ (used for House Atmosphere scoring).
-125: 
-126: 4. **Benefic / Malefic Qualitative Totals (+ / - Net Virūpas):**
-127:    - **Natural Benefics:** Jupiter, Venus.
-128:    - **Dynamic Benefics:**
-129:      - **Mercury:**
-130:        - **Dṛṣṭi Rays (`benefic_malefic_totals["classification"]`):** Benefic (`True`) by default per *BPHS* Ch. 27, v. 19 & 28–29 (`ज्ञेज्यदृक्युक्तम्` / `ज्ञेज्यदृष्टियुतं`). If `mercury_drishti_always_benefic=False`, follows conditional Yuti status.
-131:        - **Yuti / Co-presence (`benefic_malefic_totals["yuti_classification"]`):** Conditionally malefic (`False`) if combust (`baseline.combustion_status["Mercury"]["is_combust"]` is True) or conjoined in the same sign with any active malefic (`Sun`, `Mars`, `Saturn`, `Rahu`, `Ketu`, or dark/waning `Moon` [`क्षीणेन्दु`]) per *BPHS* Ch. 3, v. 11 and *Phaladīpikā* Ch. 2, v. 27.
-132:      - **Moon:** Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True, corresponding to Paksha Bala $\ge 30$ Virūpas / elongation $\ge 90^\circ$).
-133:    - **Natural Malefics:** Sun, Mars, Saturn, Rahu, Ketu.
-134:    - **House Lord Protection Rule (*Phaladīpikā* Ch. 15, v. 1–3):**
-135:      > पापाः सर्वे भवनपतयश्चेदिहाहुस्तथैव खेटैः सर्वैः शुभफलमिदं नीचमूढारिहीनैः ॥ १॥  
-136:      > *"Even if the lords of the houses be malefics, they produce auspicious results for their own houses, provided they are free from debilitation (`नीच`), combustion (`मूढ`), and enemy sign (`अरि`)."*
-137:      - **Unattenuated Envelope (`totals_cusps`):** By default, when scoring aspects striking whole-sign house cusps, a house lord's aspect on its own sign is classified as positive/protective, preserving and defending the house regardless of whether that ruler is a natural malefic (such as Mars or Saturn).
-138:      - **Qualified Envelope (`cusps_dpk_qualified`):** When `enforce_dpk_lord_qualifications=True` (or inspected via `benefic_malefic_totals["cusps_dpk_qualified"]`), a natural malefic house lord receives positive protection credit only if it is free from debilitation, combustion, and enemy sign (*Nīca-Mūḍha-Ari-Hīnaiḥ*).
-139:    - Net balance: $\text{Net Virūpas} = \text{Benefic Virūpas} - \text{Malefic Virūpas}$ precomputed for all planets and all 12 house cusps.
+3. **Natural Benefic Ray Invariance (*BPHS* Ch. 27, v. 19 & 28–29):** Jupiter (`इज्य`), Mercury (`ज्ञ`), and Venus (`शुक्र`) unconditionally cast *Śubha* (benefic continuous) *Dṛṣṭi* rays (`ज्ञेज्यदृक्युक्तम्` / `ज्ञेज्यदृष्टियुतं`). Dignity affects their strength/manifestation, not their intrinsic benefic glance.
+4. **Mercury *Yuti* Affliction vs. *Dṛṣṭi* Invariance (*BPHS* Ch. 3, v. 11 vs. Ch. 27, v. 19 & 29):**
+   > तत्रार्कशनिभूपुत्राः क्षीणेन्दुराहुकेतवः । क्रूराः शेषग्रहा सौम्याः क्रूरः क्रूरयुतो बुधः ॥ ११॥ (*BPHS* 3.11)  
+   > पापदृक्पादहीनं तच्छुभदृक्पादयुक् तथा । बलैक्यं ज्ञेज्यदृक्युक्तमेवं खेटबलं भवेत् ॥ १९॥ (*BPHS* 27.19)  
+   > सद्दृष्टिपादयुक्पापपापदृष्टिपादविवर्जितम् । ज्ञेज्यदृष्टियुतं तच्च स्वस्वस्वामिबलान्वितम् ॥ २८–२९॥ (*BPHS* 27.28–29)  
+   
+   In Parāśarī Jyotish, Mercury becomes functionally malefic **only by conjunction/co-presence (*क्रूरयुतो बुधः* / *सपापश्च वित्*)** when combust or occupying the same sign as an active malefic (`Sun`, `Mars`, `Saturn`, `Rahu`, `Ketu`, or dark/waning `Moon` [`क्षीणेन्दु`]). Its **distant aspect ray (*Dṛṣṭi*)** remains unconditionally benefic (*Śubha*) in both planetary aspects (*BPHS* 27.19) and house aspects (*BPHS* 27.28–29). Across both scopes, Parāśara pairs Mercury (`ज्ञ`) with Jupiter (`इज्य`) as casting an unconditionally benefic ray. (An optional toggle `mercury_drishti_always_benefic=False` is provided for *Śrīpati* conditional aspect mode).
+
+---
+
+## 3. Stage 2A Master Aspect Orchestrator (`calculate_aspect_matrices`)
+The master function `calculate_aspect_matrices(baseline: ChartBaseline, enforce_dpk_lord_qualifications: bool = False, mercury_drishti_always_benefic: bool = True) -> Dict[str, Any]` connects `ChartBaseline` directly to the aspect engine in a single pass:
+
+1. **Graha Dṛṣṭi — Planet-to-Planet ($11 \times 11$ Matrix):**
+   - Evaluates Graha Dṛṣṭi (0–60 Virūpas) between all 11 bodies in `ALL_BODIES` using the precomputed angular distances in `baseline.separation_matrix`.
+   - Rahu, Ketu, Lagna, and MC cast 0 Virūpas, but receive incoming aspects from the 7 physical planets.
+   - Dual-indexed for $O(1)$ lookups without matrix transpositions:
+     - `graha_drishti["outgoing"][aspecting][aspected]`: Virūpas cast (used for planetary expression & yoga detection).
+     - `graha_drishti["incoming"][aspected][aspecting]`: Virūpas received (used for Dṛk Bala in Shadbala).
+
+2. **Graha Dṛṣṭi — Planet-to-Cusp ($7 \times 12$ Matrix):**
+   - Evaluates Graha Dṛṣṭi cast by the 7 physical planets onto the 12 Whole-Sign sensitive cusps ($D_{\text{asc}}$ projected from the natal Ascendant's sign):
+     $$\text{Target Sign Index}_h = (\text{asc\_sign\_idx} + h - 1) \pmod{12}$$
+     $$\text{Cusp Longitude}_h = (\text{Target Sign Index}_h \times 30^\circ + \text{sensitive\_cusp\_degree}) \pmod{360^\circ}$$
+   - Dual-indexed:
+     - `cusp_drishti["by_planet"][planet][house_num]`: Virūpas cast on house $h$.
+     - `cusp_drishti["by_house"][house_num][planet]`: Virūpas received by house $h$.
+
+3. **Rāśi Dṛṣṭi (Sign & Planetary Mutual Glances):**
+   - Sign aspects: Moveable aspects Fixed (except adjacent); Fixed aspects Moveable (except adjacent); Dual aspects Dual.
+   - Binary mutual glance between bodies and whole-sign houses:
+     - `rasi_drishti["planet_to_planet"][p1]`: List of planets aspected by $p1$.
+     - `rasi_drishti["house_to_planets"][h]`: List of planets aspecting whole-sign house $h$ (used for House Atmosphere scoring).
+
+4. **Benefic / Malefic Qualitative Totals (+ / - Net Virūpas):**
+   - **Natural Benefics:** Jupiter, Venus.
+   - **Dynamic Benefics:**
+     - **Mercury:**
+       - **Dṛṣṭi Rays (`benefic_malefic_totals["classification"]`):** Benefic (`True`) by default per *BPHS* Ch. 27, v. 19 & 28–29 (`ज्ञेज्यदृक्युक्तम्` / `ज्ञेज्यदृष्टियुतं`). If `mercury_drishti_always_benefic=False`, follows conditional Yuti status.
+       - **Yuti / Co-presence (`benefic_malefic_totals["yuti_classification"]`):** Conditionally malefic (`False`) if combust (`baseline.combustion_status["Mercury"]["is_combust"]` is True) or conjoined in the same sign with any active malefic (`Sun`, `Mars`, `Saturn`, `Rahu`, `Ketu`, or dark/waning `Moon` [`क्षीणेन्दु`]) per *BPHS* Ch. 3, v. 11 and *Phaladīpikā* Ch. 2, v. 27.
+     - **Moon:** Benefic if bright/waxing (`baseline.lunar_phase["is_benefic"]` is True, corresponding to Paksha Bala $\ge 30$ Virūpas / elongation $\ge 90^\circ$).
+   - **Natural Malefics:** Sun, Mars, Saturn, Rahu, Ketu.
+   - **House Lord Protection Rule (*Phaladīpikā* Ch. 15, v. 1–3):**
+     > पापाः सर्वे भवनपतयश्चेदिहाहुस्तथैव खेटैः सर्वैः शुभफलमिदं नीचमूढारिहीनैः ॥ १॥  
+     > *"Even if the lords of the houses be malefics, they produce auspicious results for their own houses, provided they are free from debilitation (`नीच`), combustion (`मूढ`), and enemy sign (`अरि`)."*
+     - **Unattenuated Envelope (`totals_cusps`):** By default, when scoring aspects striking whole-sign house cusps, a house lord's aspect on its own sign is classified as positive/protective, preserving and defending the house regardless of whether that ruler is a natural malefic (such as Mars or Saturn).
+     - **Qualified Envelope (`cusps_dpk_qualified`):** When `enforce_dpk_lord_qualifications=True` (or inspected via `benefic_malefic_totals["cusps_dpk_qualified"]`), a natural malefic house lord receives positive protection credit only if it is free from debilitation, combustion, and enemy sign (*Nīca-Mūḍha-Ari-Hīnaiḥ*).
+   - Net balance: $\text{Net Virūpas} = \text{Benefic Virūpas} - \text{Malefic Virūpas}$ precomputed for all planets and all 12 house cusps.
 
 ---
 
