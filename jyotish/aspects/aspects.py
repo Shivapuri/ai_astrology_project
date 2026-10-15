@@ -459,7 +459,8 @@ def calculate_advanced_graha_aspects(
                         "is_orb_conjunction": bool(sep <= CONJUNCTION_MAX_ORB),
                         "boundary_factor": boundary_factor,
                         "effective_potency": effective_potency,
-                        "sign": other_sign
+                        "sign": other_sign,
+                        "is_benefic_partner": is_yuti_benefic(other),
                     }
                     results["yuti_details"][aspected][other] = detail
 
@@ -488,10 +489,20 @@ def calculate_advanced_graha_aspects(
         for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
         if p in planets_data
     }
+    results["yuti_classification"] = {
+        p: is_yuti_benefic(p)
+        for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+        if p in planets_data
+    }
 
     return results
 
-def calculate_varga_aspects(baseline: Any, varga: str = "D1") -> Dict[str, Any]:
+def calculate_varga_aspects(
+    baseline: Any,
+    varga: str = "D1",
+    mercury_drishti_always_benefic: bool = True,
+    **kwargs
+) -> Dict[str, Any]:
     """
     High-Level Multi-Varga Aspect Helper.
     Directly accepts either a ChartBaseline instance and varga name,
@@ -522,6 +533,8 @@ def calculate_varga_aspects(baseline: Any, varga: str = "D1") -> Dict[str, Any]:
         house_cusps=house_cusps,
         ascendant_lon=ascendant_lon,
         varga=varga,
+        mercury_drishti_always_benefic=mercury_drishti_always_benefic,
+        **kwargs
     )
 
 
