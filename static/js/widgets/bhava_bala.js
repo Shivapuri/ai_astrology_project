@@ -111,5 +111,39 @@
         });
     }
 
+    function openFloatingBhavaBala() {
+        if (typeof closeKalaMenu === 'function') closeKalaMenu();
+        const modal = document.getElementById('widgetMaximizeModal');
+        const card = document.getElementById('widgetMaximizeCard');
+        const titleEl = document.getElementById('widgetMaximizeModalTitle');
+        const container = document.getElementById('widgetMaximizeContainer');
+        const currentData = window.currentChartData;
+        if (!modal || !titleEl || !container || !currentData) return;
+
+        if (card) {
+            const w = Math.min(1200, window.innerWidth - 40);
+            const h = Math.min(800, window.innerHeight - 60);
+            card.style.width = w + 'px';
+            card.style.height = h + 'px';
+            card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+            card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+        }
+
+        if (typeof setActiveFloatingNav === 'function') setActiveFloatingNav(null);
+        const name = currentData.subject_info ? currentData.subject_info.name : 'Chart';
+        titleEl.textContent = name + " — Bhāva Bala (House Strength & Functional Capacity)";
+
+        const tmpl = document.getElementById('tmpl-bhava-bala');
+        if (tmpl) {
+            container.innerHTML = '';
+            container.appendChild(tmpl.content.cloneNode(true));
+            updateBhavaBalaWidget(container, currentData);
+        }
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.openFloatingBhavaBala = openFloatingBhavaBala;
     window.updateBhavaBalaWidget = updateBhavaBalaWidget;
 })();

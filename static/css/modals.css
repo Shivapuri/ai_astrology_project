@@ -524,8 +524,10 @@
             flex-direction: column;
             gap: 2px;
         }
-        .kala-column-list.vargas-scroll {
-            max-height: 380px;
+        .kala-column-list.vargas-scroll,
+        .kala-column-list.tables-scroll,
+        .kala-column-list.popups-list {
+            max-height: 420px;
             overflow-y: auto;
             padding-right: 4px;
         }

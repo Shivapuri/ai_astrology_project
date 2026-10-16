@@ -93,3 +93,33 @@ def test_houses_of_life_receipt_prev_next(page: Page):
     page.locator(".hol-receipt-prev-btn").first.click()
     page.wait_for_timeout(300)
     assert "H1" in page.locator(".hol-selected-house-badge").first.inner_text()
+
+def test_houses_of_life_right_click_menu_and_popup(page: Page):
+    init_page(page)
+    cell = page.locator(".grid-cell").first
+    cell.click(button="right")
+    page.wait_for_timeout(400)
+
+    # Verify right-click Kala menu opens
+    assert page.locator("#kalaMenuModal").is_visible()
+
+    # Click Houses of Life in Column 3 (Tables)
+    hol_item = page.locator(".kala-item:has-text('Houses of Life')")
+    assert hol_item.count() > 0
+    hol_item.click()
+    page.wait_for_timeout(400)
+
+    # Verify widget is rendered in cell
+    assert page.locator(".widget-houses-of-life").count() > 0
+
+    # Right click again and launch floating popup
+    cell.click(button="right")
+    page.wait_for_timeout(400)
+    popup_btn = page.locator(".btn-kala-popup:has-text('Houses of Life Cockpit')")
+    assert popup_btn.count() > 0
+    popup_btn.click()
+    page.wait_for_timeout(400)
+
+    # Verify floating modal opened
+    assert page.locator("#widgetMaximizeModal").is_visible()
+
