@@ -23,6 +23,7 @@ from jyotish.report.houses_of_life import (
     evaluate_house_walls_kartari,
     evaluate_house_yogas_hol,
     evaluate_houses_of_life,
+    ZODIAC_SIGNS,
 )
 
 
@@ -408,3 +409,67 @@ class TestHousesOfLifeMathematicalAuditFixes:
         # Because Mars is 1st lord, its 8th ownership is immune and does NOT trigger Daridra with Sun!
         daridra_yogas = [y for h in range(1, 13) for y in yogas[h]["active_yogas"] if y["type"] == "Daridra Yoga"]
         assert len(daridra_yogas) == 0
+
+    def test_phase6_neutral_negative_dignity_no_double_negation(self):
+        """Ensures a functionally neutral planet (F=0) with negative dignity (-0.4) yields a negative house impact."""
+        geometry = {
+            "houses": {
+                1: {"cusp_longitude": 10.0, "lord": "Mars", "sign": "Aries", "occupants": ["Mercury"]}
+            }
+        }
+        func_natures = {p: {"score": 0} for p in CLASSICAL_PLANETS}
+        d1_grahas = {
+            p: {"longitude": 190.0, "sign": "Libra", "dignity": "Neutral"}
+            for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Mercury"] = {"longitude": 10.0, "sign": "Aries", "dignity": "Enemy"}  # d_p = -0.4
+        influences = {
+            "planet_to_cusp": {p: {1: 100.0 if p == "Mercury" else 0.0} for p in CLASSICAL_PLANETS}
+        }
+        res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        # 100 * (1 + 0.4) * -1 = -140.0
+        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=1e-2) == -140.0
+
+    def test_phase7_neutral_planet_dignity_fallback(self):
+        """Ensures a relative neutral planet (raw F=0) uses its dignity as its relative functional nature."""
+        geometry = {
+            "houses": {
+                h: {"sign": ZODIAC_SIGNS[h - 1], "lord": "Mars"} for h in range(1, 13)
+            }
+        }
+        d1_grahas = {
+            p: {"sign": "Scorpio", "longitude": 220.0, "dignity": "Neutral"}
+            for p in CLASSICAL_PLANETS
+        }
+        # Relative to House 8 (Scorpio), Gemini is 8th house (Dusthana) and Sun owns Leo (10th = raw 0)
+        d1_grahas["Sun"] = {"sign": "Gemini", "longitude": 70.0, "dignity": "Enemy"}  # d_p = -0.4 -> pts = -20 -> scaled = -28
+        influences = {
+            "planet_to_planet": {p: {q: 0.0 for q in CLASSICAL_PLANETS if q != p} for p in CLASSICAL_PLANETS}
+        }
+        rel = evaluate_relative_houses_bhavat_bhavam(geometry, d1_grahas, influences)
+        assert pytest.approx(rel[8]["relative_functional_natures"]["Sun"], abs=1e-2) == -20.0
+        assert pytest.approx(rel[8]["dusthana_raw_points"], abs=1e-2) == -28.0
+
+    def test_raja_yoga_hosting_deduplication_vs_ownership(self):
+        """
+        Ensures two planets conjoined in H10 forming a Raja Yoga award +100 once
+        to the hosting house H10, and separately award +100 to each owned house.
+        """
+        geometry = {"houses": {h: {"lord": f"Lord{h}", "sign": f"Sign{h}"} for h in range(1, 13)}}
+        d1_grahas = {p: {"sign": f"Sign{i}", "longitude": i * 30.0, "ruled_houses": []} for i, p in enumerate(CLASSICAL_PLANETS, 1)}
+        # Moon rules H1 (Cancer for Cancer Lagna), Mars rules H5 and H10
+        # Moon and Mars conjoined in H10 (Sign 10)
+        d1_grahas["Moon"] = {"sign": "Sign10", "longitude": 280.0, "ruled_houses": [1]}
+        d1_grahas["Mars"] = {"sign": "Sign10", "longitude": 282.0, "ruled_houses": [5, 10]}
+
+        yogas = evaluate_house_yogas_hol(geometry, d1_grahas)
+        # H10 gets:
+        # +100 for hosting the Raja Yoga (occupied by Moon & Mars)
+        # +100 for being owned by participating planet Mars
+        # Total = 200.0 (NOT 300.0 from double-counting hosting)
+        assert yogas[10]["raja_yoga_score"] == 200.0
+        # H1 gets +100 for being owned by Moon
+        assert yogas[1]["raja_yoga_score"] == 100.0
+        # H5 gets +100 for being owned by Mars
+        assert yogas[5]["raja_yoga_score"] == 100.0
+

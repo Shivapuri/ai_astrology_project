@@ -916,17 +916,18 @@ def evaluate_house_yogas_hol(
 
             if is_raja:
                 checked_raja_pairs.add(pair_key)
-                # Credit occupied and owned houses per participating body (no deduplication)
+                # 1. Credit hosting/occupied house(s) (+100 per hosted yoga)
+                occ_houses = {planet_house_map[b] for b in [b1, b2] if b in planet_house_map}
+                for h_occ in occ_houses:
+                    house_yoga_data[h_occ]["raja_yoga_score"] += 100.0
+                    house_yoga_data[h_occ]["active_yogas"].append({
+                        "type": "Rāja Yoga",
+                        "role": "Occupied by participating planet",
+                        "planets": [b1, b2],
+                        "points": 100.0
+                    })
+                # 2. Separately credit all houses owned by participating planets (+100 per yoga)
                 for b in [b1, b2]:
-                    if b in planet_house_map:
-                        h_occ = planet_house_map[b]
-                        house_yoga_data[h_occ]["raja_yoga_score"] += 100.0
-                        house_yoga_data[h_occ]["active_yogas"].append({
-                            "type": "Rāja Yoga",
-                            "role": "Occupied by participating planet",
-                            "planets": [b1, b2],
-                            "points": 100.0
-                        })
                     if b in CLASSICAL_PLANETS:
                         for h_own in d1_grahas[b].get("ruled_houses", []):
                             house_yoga_data[h_own]["raja_yoga_score"] += 100.0

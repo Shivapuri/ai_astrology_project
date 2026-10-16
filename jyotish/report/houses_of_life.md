@@ -175,7 +175,7 @@ Treats each target house $H$ as House 1:
    * $\frac{\text{Val}(X) + \text{Val}(Y)}{2.0}$ credited to occupied houses $X$ and $Y$ (or $+150$ each if same category).
 2. **Rāja Yoga:**
    * Trine + Trine, Trine + Kendra, or Nodal Kendra/Trine combinations. Conjunction requires same Whole Sign house; mutual aspect threshold is $\ge 36.0$ Virūpas ($60\%$).
-   * $+100$ points credited per participating body to occupied house and each owned house (without set deduplication).
+   * $+100$ points credited to each occupied hosting house (once per yoga), and $+100$ points credited to each house owned by participating planets.
 3. **Mahāpuruṣa (and Inverse Mahāpuruṣa):**
    * Any physical planet in Kendra $1, 4, 7, 10$ awards its $D_{\text{pct}, P}$ to occupied Kendra and to each owned house.
 4. **Daridra Yoga (and Dusthāna Reversal):**
