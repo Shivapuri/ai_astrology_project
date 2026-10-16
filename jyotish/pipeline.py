@@ -41,6 +41,7 @@ import jyotish.karakas as karakas
 import jyotish.sign_attributes as sign_attributes
 import jyotish.planetary_evaluation as planetary_evaluation
 import jyotish.report.report_engine as report_engine
+from jyotish.report.houses_of_life import evaluate_houses_of_life
 
 
 DASHA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
@@ -781,6 +782,20 @@ class ChartPipeline:
             baseline=self.baseline
         )
 
+    @cached_property
+    def houses_of_life(self) -> Dict[str, Any]:
+        """
+        Stage 4 Report Engine: Vic DiCara's Houses of Life (Phaladīpikā Ch. 15).
+        """
+        chart_input = {
+            "vargas": self.vargas,
+            "advanced_aspects": self.varga_aspects.get("D1", {}),
+            "yogas": self.yogas,
+            "dignities": self.dignities,
+            "planetary_evaluation": self.planetary_evaluation,
+        }
+        return evaluate_houses_of_life(chart_input)
+
     # =========================================================================
     # SERIALIZATION TO FULL VEDIC CONTEXT DICTIONARY
     # =========================================================================
@@ -873,4 +888,5 @@ class ChartPipeline:
 
         # Stage 4 Synthesis Report
         vedic_context["report"] = report_engine.generate_report_payload(vedic_context)
+        vedic_context["houses_of_life"] = self.houses_of_life
         return vedic_context
