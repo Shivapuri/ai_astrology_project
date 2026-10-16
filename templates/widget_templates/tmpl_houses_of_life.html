@@ -1,0 +1,233 @@
+<template id="tmpl-houses-of-life">
+    <div class="widget-content widget-houses-of-life" style="display: flex; flex-direction: column; height: 100%; width: 100%; background: var(--bg-surface, #fffdfa); font-family: var(--font-sans); color: var(--text-primary, #3d312a); font-size: 13px;">
+        <!-- Top Toolbar -->
+        <div class="chart-toolbar hol-toolbar" style="height: auto; min-height: 38px; padding: 4px 10px; background: var(--bg-app, #f7f3eb); border-bottom: 1px solid var(--border-subtle, #e5dccb); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px; position: relative; z-index: 5;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-weight: 700; font-size: 13.5px; color: var(--text-heading, #4a3325); letter-spacing: -0.2px;">Houses of Life</span>
+                <span class="micro-tag" style="font-size: 12px; background: var(--bg-surface-muted, #eee5d3); color: var(--text-heading, #4a3325);">Phaladīpikā Ch. 15</span>
+            </div>
+
+            <!-- View Switcher -->
+            <div class="hol-view-switcher" style="display: flex; align-items: center; gap: 4px; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px; padding: 2px;">
+                <button type="button" class="hol-tab-btn active" data-view="matrix" style="border: none; background: var(--bg-surface-muted, #eee5d3); color: var(--text-heading, #4a3325); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 3px; cursor: pointer;">12-House Matrix</button>
+                <button type="button" class="hol-tab-btn hol-tab-receipt" data-view="receipt" style="border: none; background: transparent; color: var(--text-muted, #6b5a4b); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 3px; cursor: pointer;">
+                    Audit Receipt <span class="hol-tab-house-badge micro-tag" style="font-size: 12px; margin-left: 2px;">H1</span>
+                </button>
+                <button type="button" class="hol-tab-btn" data-view="planets" style="border: none; background: transparent; color: var(--text-muted, #6b5a4b); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 3px; cursor: pointer;">7-Graha Ledger</button>
+                <button type="button" class="hol-tab-btn" data-view="concordance" style="border: none; background: transparent; color: var(--text-muted, #6b5a4b); font-size: 12px; font-weight: 600; padding: 3px 8px; border-radius: 3px; cursor: pointer;">Concordance</button>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <button type="button" class="btn-widget-maximize" title="Maximize Houses of Life" onclick="maximizeTableFromWidget(this)">⛶</button>
+            </div>
+        </div>
+
+        <!-- ZONE 1: Executive Summary Horizon Ribbon -->
+        <div class="hol-horizon-ribbon" style="padding: 8px 12px; background: var(--bg-surface-alt, #fcfaf5); border-bottom: 1px solid var(--border-subtle, #e5dccb); display: flex; flex-direction: column; gap: 6px;">
+            <!-- Executive Readout Line -->
+            <div class="hol-readout-line" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px 12px; font-size: 12px;">
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                    <div class="hol-stat-pill" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px;">
+                        <span style="color: var(--text-muted); font-size: 12px;">Ascendant Anchor:</span>
+                        <strong class="hol-asc-anchor" style="font-family: var(--font-mono); font-size: 12px; color: var(--text-heading);">--</strong>
+                    </div>
+                    <div class="hol-stat-pill" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px;">
+                        <span style="color: var(--text-muted); font-size: 12px;">Top Flourishing:</span>
+                        <span class="hol-top-flourishing" style="font-weight: 600; color: var(--status-benefic-dark); font-size: 12px;">--</span>
+                    </div>
+                    <div class="hol-stat-pill" style="display: inline-flex; align-items: center; gap: 5px; padding: 2px 7px; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px;">
+                        <span style="color: var(--text-muted); font-size: 12px;">Most Challenged:</span>
+                        <span class="hol-most-challenged" style="font-weight: 600; color: var(--status-malefic-dark); font-size: 12px;">--</span>
+                    </div>
+                </div>
+                <div style="color: var(--text-subtle); font-size: 12px;">
+                    Whole Sign Rasi Bhavas · Campanus Overlay
+                </div>
+            </div>
+
+            <!-- Diverging Bar Chart Horizon -->
+            <div class="hol-bars-container" style="display: flex; flex-direction: column; gap: 2px; margin-top: 2px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; font-family: var(--font-mono); color: var(--text-subtle); padding: 0 4px;">
+                    <span>−150</span>
+                    <span>−100</span>
+                    <span>−50</span>
+                    <span style="font-weight: bold; color: var(--text-muted);">0.0</span>
+                    <span>+50</span>
+                    <span>+100</span>
+                    <span>+150</span>
+                </div>
+                <div class="hol-bars-grid" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; min-height: 48px; height: auto; align-items: center; background: var(--bg-surface-muted, #eee5d3); border-radius: 4px; padding: 4px 6px;">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Scrollable Workspace Desk -->
+        <div class="hol-body" style="flex: 1; overflow-y: auto; overflow-x: hidden; padding: 10px; display: flex; flex-direction: column; gap: 12px;">
+            <!-- VIEW 1: 12-House Quantitative Matrix & Receipt Inspector (Dual-Mode Responsive) -->
+            <div class="hol-view-panel hol-matrix-panel" style="display: flex; gap: 12px; height: 100%; min-height: 480px; width: 100%;">
+                <!-- Left Pane: 12-House Quantitative Matrix -->
+                <div class="hol-matrix-left" style="flex: 3; min-width: 0; display: flex; flex-direction: column; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 6px; overflow: hidden;">
+                    <div style="padding: 8px 12px; background: var(--bg-surface-alt, #fcfaf5); border-bottom: 1px solid var(--border-subtle, #e5dccb); font-weight: 700; font-size: 13px; color: var(--text-heading); display: flex; justify-content: space-between; align-items: center;">
+                        <span>12-Bhāva Quantitative Synthesis Matrix</span>
+                        <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Click any row to inspect receipt →</span>
+                    </div>
+                    <div class="responsive-table-container" style="flex: 1; overflow: auto;">
+                        <table class="hol-matrix-table" style="width: 100%; min-width: 580px; border-collapse: collapse; font-size: 12.5px;">
+                            <thead>
+                                <tr style="background: var(--bg-app, #f7f3eb); border-bottom: 1px solid var(--border-medium, #d5c8b2); color: var(--text-heading); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px;">
+                                    <th style="padding: 6px 8px; text-align: center; width: 36px;">Bhāva</th>
+                                    <th style="padding: 6px 8px; text-align: left;">Rāśi</th>
+                                    <th style="padding: 6px 8px; text-align: left;">Lord</th>
+                                    <th style="padding: 6px 8px; text-align: right;" title="Phase 6: Direct aspects and conjunction rays onto sensitive house cusp">Basic</th>
+                                    <th style="padding: 6px 8px; text-align: right;" title="Phase 5: Lord condition score + co-occupants average">Lord/Occ</th>
+                                    <th style="padding: 6px 8px; text-align: right;" title="Phase 7: Bhavāt Bhavam relative house score (KK vs Dusthāna mitigation)">Bhavāt</th>
+                                    <th style="padding: 6px 8px; text-align: right;" title="Phase 8: 30° bracketing Kartarī house walls">Kartarī</th>
+                                    <th style="padding: 6px 8px; text-align: right;" title="Phase 9: Parivartana, Rāja, Mahāpuruṣa &amp; Daridra Yogas">Yogas</th>
+                                    <th style="padding: 6px 8px; text-align: right; width: 80px;" title="Composite mean of all 5 layers">Composite</th>
+                                    <th style="padding: 6px 8px; text-align: center; width: 85px;">Health Tier</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rendered dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Pane: Interactive Live Receipt Inspector -->
+                <div class="hol-receipt-right" style="flex: 2; min-width: 0; background: var(--bg-surface-alt, #fcfaf5); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 6px; display: flex; flex-direction: column; overflow: hidden;">
+                    <!-- Receipt Sub-Toolbar -->
+                    <div style="padding: 6px 10px; background: var(--bg-surface-muted, #eee5d3); border-bottom: 1px solid var(--border-subtle, #e5dccb); display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <button type="button" class="hol-btn-back-to-matrix" title="Return to 12-House Matrix table" style="display: none; padding: 2px 7px; font-size: 12px; font-weight: 600; background: var(--bg-surface); border: 1px solid var(--border-medium, #d5c8b2); border-radius: 3px; cursor: pointer; color: var(--text-heading);">← Back</button>
+                            <span style="font-weight: 700; font-size: 13px; color: var(--text-heading);">Mathematical Audit Receipt</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <button type="button" class="hol-receipt-prev-btn" title="Previous House" style="padding: 1px 6px; font-size: 12px; border: 1px solid var(--border-subtle, #e5dccb); background: var(--bg-surface); border-radius: 3px; cursor: pointer;">◀</button>
+                            <span class="hol-selected-house-badge micro-tag" style="font-size: 12px; background: var(--bg-surface); font-weight: 700;">H1</span>
+                            <button type="button" class="hol-receipt-next-btn" title="Next House" style="padding: 1px 6px; font-size: 12px; border: 1px solid var(--border-subtle, #e5dccb); background: var(--bg-surface); border-radius: 3px; cursor: pointer;">▶</button>
+                        </div>
+                    </div>
+
+                    <div class="hol-receipt-content" style="flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 12px; font-size: 12px;">
+                        <!-- Selected House Header Card -->
+                        <div class="hol-receipt-header-card" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="hol-receipt-title" style="font-size: 13.5px; font-weight: 700; color: var(--text-heading);">House 1 (Leo ♌︎&#xFE0E;)</div>
+                                <div class="hol-receipt-subtitle" style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">Cusp Door: 13°22' · Ruled by Sun ☉&#xFE0E;</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div class="hol-receipt-composite-val" style="font-size: 16px; font-weight: 700; font-family: var(--font-mono); color: var(--text-heading);">+21.98</div>
+                                <div class="hol-receipt-tier-tag" style="margin-top: 2px;">● Miśra (Mixed)</div>
+                            </div>
+                        </div>
+
+                        <!-- 1. Direct Cusp Rays Breakdown -->
+                        <div class="hol-receipt-box" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px;">
+                            <div style="font-weight: 700; font-size: 12px; color: var(--text-heading); margin-bottom: 6px;">1. Direct Cusp Rays (Basic: <span class="hol-val-basic font-mono">0.0</span>)</div>
+                            <div class="hol-cusp-rays-breakdown" style="display: flex; flex-direction: column; gap: 3px; font-size: 12px; font-family: var(--font-mono);">
+                                <!-- Dynamic breakdown -->
+                            </div>
+                        </div>
+
+                        <!-- 2. 30° Cusp Wall Strip Visualizer -->
+                        <div class="hol-receipt-box" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                <span style="font-weight: 700; font-size: 12px; color: var(--text-heading);">2. 30° Cusp Bracket &amp; Wall (Score: <span class="hol-val-wall font-mono">0.0</span>)</span>
+                                <span class="hol-wall-type-tag micro-tag" style="font-size: 12px;">None</span>
+                            </div>
+                            <div class="hol-wall-strip-visualizer" style="height: 48px; position: relative; background: var(--bg-surface-muted); border-radius: 4px; overflow: hidden; margin-top: 4px;">
+                                <!-- SVG Strip -->
+                            </div>
+                            <div class="hol-wall-text-desc" style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+                                <!-- Wall textual description -->
+                            </div>
+                        </div>
+
+                        <!-- 3. Bhavāt Bhavam Relative House Mirror -->
+                        <div class="hol-receipt-box" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px;">
+                            <div style="font-weight: 700; font-size: 12px; color: var(--text-heading); margin-bottom: 6px;">3. Bhavāt Bhavam Neighborhood (Score: <span class="hol-val-bhavat font-mono">0.0</span>)</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 12px; font-family: var(--font-mono);">
+                                <div>KK Group Points: <strong class="hol-val-kk">0.0</strong></div>
+                                <div>Raw Dusthāna: <strong class="hol-val-dust-raw">0.0</strong></div>
+                                <div>Benefic Mitigation: <strong class="hol-val-mit-pct">0.0%</strong></div>
+                                <div>Mitigated Dusthāna: <strong class="hol-val-dust-net">0.0</strong></div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Structural House Yogas -->
+                        <div class="hol-receipt-box" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px;">
+                            <div style="font-weight: 700; font-size: 12px; color: var(--text-heading); margin-bottom: 6px;">4. Active Structural Yogas (Score: <span class="hol-val-yoga font-mono">0.0</span>)</div>
+                            <div class="hol-active-yogas-list" style="display: flex; flex-direction: column; gap: 4px; font-size: 12px;">
+                                <!-- Active Yogas -->
+                            </div>
+                        </div>
+
+                        <!-- 5. Dominant Drivers -->
+                        <div class="hol-receipt-box" style="padding: 10px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 4px;">
+                            <div style="font-weight: 700; font-size: 12px; color: var(--text-heading); margin-bottom: 6px;">5. Dominant Drivers &amp; Synthesis</div>
+                            <ul class="hol-dominant-drivers-list" style="margin: 0; padding-left: 16px; font-size: 12px; color: var(--text-primary); line-height: 1.4;">
+                                <!-- Drivers -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW 2: 7-Graha Operational Ledger (Phase 5 Planetary Condition) -->
+            <div class="hol-view-panel hol-planets-panel" style="display: none; flex-direction: column; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 6px; overflow: hidden;">
+                <div style="padding: 8px 12px; background: var(--bg-surface-alt, #fcfaf5); border-bottom: 1px solid var(--border-subtle, #e5dccb); font-weight: 700; font-size: 13px; color: var(--text-heading);">
+                    7-Graha Operational Ledger (Phaladīpikā Ch. 15 Planetary Condition Table)
+                </div>
+                <div class="responsive-table-container" style="flex: 1; overflow: auto;">
+                    <table class="hol-planets-table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                        <thead>
+                            <tr style="background: var(--bg-app, #f7f3eb); border-bottom: 1px solid var(--border-medium, #d5c8b2); color: var(--text-heading); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px;">
+                                <th style="padding: 6px 8px; text-align: left;">Graha</th>
+                                <th style="padding: 6px 8px; text-align: left;">Placement</th>
+                                <th style="padding: 6px 8px; text-align: left;">Functional Nature ($F_P$)</th>
+                                <th style="padding: 6px 8px; text-align: right;">D1 Dignity</th>
+                                <th style="padding: 6px 8px; text-align: right;" title="Sum of aspect and conjunction rays cast by other planets">Combined Inf.</th>
+                                <th style="padding: 6px 8px; text-align: right;" title="Cusp alignment scaled by prominent/hidden multipliers">Cusp Align</th>
+                                <th style="padding: 6px 8px; text-align: right;">Base Avg</th>
+                                <th style="padding: 6px 8px; text-align: right;">Sandhi &amp; Combust</th>
+                                <th style="padding: 6px 8px; text-align: right; width: 90px; font-weight: bold;">Final Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW 3: Side-by-Side Concordance (Stage 3 vs Stage 4) -->
+            <div class="hol-view-panel hol-concordance-panel" style="display: none; flex-direction: column; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 6px; overflow: hidden;">
+                <div style="padding: 8px 12px; background: var(--bg-surface-alt, #fcfaf5); border-bottom: 1px solid var(--border-subtle, #e5dccb); font-weight: 700; font-size: 13px; color: var(--text-heading); display: flex; justify-content: space-between; align-items: center;">
+                    <span>Cross-System Concordance: Stage 3 Bhāva Bala vs. Stage 4 Houses of Life</span>
+                    <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Comparative capacity and environmental health</span>
+                </div>
+                <div class="responsive-table-container" style="flex: 1; overflow: auto;">
+                    <table class="hol-concordance-table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
+                        <thead>
+                            <tr style="background: var(--bg-app, #f7f3eb); border-bottom: 1px solid var(--border-medium, #d5c8b2); color: var(--text-heading); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px;">
+                                <th style="padding: 6px 8px; text-align: center; width: 36px;">Bhāva</th>
+                                <th style="padding: 6px 8px; text-align: left;">Rāśi &amp; Lord</th>
+                                <th style="padding: 6px 8px; text-align: right;" title="Stage 3 Parāśarī Virūpas">Stage 3 Virūpas</th>
+                                <th style="padding: 6px 8px; text-align: right;" title="Stage 3 Parāśarī Rūpas">Stage 3 Rūpas</th>
+                                <th style="padding: 6px 8px; text-align: center;">Stage 3 Tier</th>
+                                <th style="padding: 6px 8px; text-align: right;" title="Stage 4 DiCara Composite Score">Stage 4 Score</th>
+                                <th style="padding: 6px 8px; text-align: center;">Stage 4 Tier</th>
+                                <th style="padding: 6px 8px; text-align: left;">System Concordance Diagnosis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rendered dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

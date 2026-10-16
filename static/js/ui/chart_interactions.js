@@ -662,7 +662,7 @@
         resetFloatingWindowPosition();
 
         if (card) {
-            const isWide = ['master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'bhava-bala', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita', 'report'].includes(widgetType);
+            const isWide = ['houses-of-life', 'master-diagnostic', 'planetary-evaluation', 'quant-matrices', 'shadbala-table', 'bhava-bala', 'dignities', 'aspects-planets', 'aspects-equal-houses', 'aspects-bhava-chalita', 'report'].includes(widgetType);
             const w = isWide ? Math.min(1480, window.innerWidth - 40) : Math.min(1000, window.innerWidth - 40);
             const h = Math.min(840, window.innerHeight - 60);
             card.style.width = w + 'px';
