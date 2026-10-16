@@ -139,7 +139,8 @@ For each house $H \in \{1, \dots, 12\}$:
    * If $P$ rules House $H$: $F_{P, H} = +2$ (House Lord override).
    * Otherwise: $F_{P, H} = F_P$.
 3. Scaled Signed Impact:
-   $$\text{Impact}_{P \to H} = \text{scale\_by\_dignity}(I_{P \to H}, d_P, F_{P, H}) \times F_{P, H}$$
+   $$\text{Impact}_{P \to H} = \begin{cases} \text{scale\_by\_dignity}(I_{P \to H}, d_P, F_{P, H}) \times F_{P, H} & \text{if } F_{P, H} \neq 0 \\ \text{scale\_by\_dignity}(I_{P \to H}, d_P, 0) & \text{if } F_{P, H} = 0 \end{cases}$$
+   *(Note: `scale_by_dignity` already incorporates the sign of $d_P$ when $F = 0$, preventing double negation).*
 4. House Average:
    $$\text{BasicHouseScore}_H = \frac{1}{7} \sum_{P=1}^{7} \text{Impact}_{P \to H}$$
 
@@ -152,9 +153,9 @@ Treats each target house $H$ as House 1:
    * **Kendra-Koṇa + 2nd (KK Group):** Relative houses $2, 4, 5, 7, 9, 10$.
    * **Dusthāna Group:** Relative houses $6, 8, 12$.
    * Houses $1, 3, 11$ are skipped.
-2. Relative Functional Nature $F_{P \mid H}$: Re-computed with House $H$ as 1st house, scaled by $50.0$ points per unit.
+2. Relative Functional Nature $F_{P \mid H}$: Re-computed with House $H$ as 1st house. If a planet has a raw relative functional score of $0$ (neutral), its dignity unit $d_P$ serves as its functional nature, scaled by $50.0$ points per unit.
 3. KK planets contribute their dignity-scaled score.
-4. Dusthāna relative malefics generate negative points; mitigated by average aspect percentage cast onto them by relative benefics ($\overline{\text{Mit}}$).
+4. Dusthāna relative malefics generate negative points; mitigated by average aspect percentage cast onto them by relative benefics ($\overline{\text{Mit}}$). Relative benefics in Dusthānas contribute $0$ and do not increment $N_{\text{active}}$.
 5. Divided by active planet count $N_{\text{active}}$.
 
 ---
@@ -173,12 +174,13 @@ Treats each target house $H$ as House 1:
 1. **Parivartana Yoga (House Exchange):**
    * $\frac{\text{Val}(X) + \text{Val}(Y)}{2.0}$ credited to occupied houses $X$ and $Y$ (or $+150$ each if same category).
 2. **Rāja Yoga:**
-   * Trine + Trine, Trine + Kendra, or Nodal Kendra/Trine combinations.
-   * $+100$ points credited to occupied and owned houses.
+   * Trine + Trine, Trine + Kendra, or Nodal Kendra/Trine combinations. Conjunction requires same Whole Sign house; mutual aspect threshold is $\ge 36.0$ Virūpas ($60\%$).
+   * $+100$ points credited per participating body to occupied house and each owned house (without set deduplication).
 3. **Mahāpuruṣa (and Inverse Mahāpuruṣa):**
-   * Any physical planet in Kendra $1, 4, 7, 10$ awards its $D_{\text{pct}, P}$ to occupied Kendra and owned houses.
+   * Any physical planet in Kendra $1, 4, 7, 10$ awards its $D_{\text{pct}, P}$ to occupied Kendra and to each owned house.
 4. **Daridra Yoga (and Dusthāna Reversal):**
-   * House lord combined with Dusthāna lord ($6, 8, 12$): $-100$ points to involved houses.
+   * House lord combined with Dusthāna lord ($6, 8, 12$). 1st House Lord possesses immunity (its secondary Dusthāna ownership is unblemished and does not trigger Daridra).
+   * $-100$ points per participating planet to occupied house and owned houses.
    * *Reversal:* If two Dusthāna lords combine, or combine in a Dusthāna, $+100$ points to Dusthāna houses, $-100$ to non-Dusthāna houses.
 
 ---

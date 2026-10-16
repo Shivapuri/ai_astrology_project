@@ -329,3 +329,82 @@ class TestHousesOfLifePipelineIntegration:
         assert "planets" in hol
         assert "houses" in hol
         assert "summary_rankings" in hol
+
+
+class TestHousesOfLifeMathematicalAuditFixes:
+    """Verifies the 4 subtle mathematical fixes identified during audit."""
+
+    def test_basic_house_condition_neutral_planet_negative_dignity(self):
+        # A neutral planet with negative dignity should have negative signed impact
+        # without double negation flipping it to positive.
+        geometry = {"houses": {1: {"lord": "Mars", "sign": "Aries"}}}
+        func_natures = {"Mercury": {"score": 0}}
+        for p in CLASSICAL_PLANETS:
+            if p not in func_natures:
+                func_natures[p] = {"score": 1}
+
+        d1_grahas = {p: {"dignity": "Own Sign"} for p in CLASSICAL_PLANETS}
+        # Mercury neutral with Enemy dignity (-0.4)
+        d1_grahas["Mercury"]["dignity"] = "Enemy's Sign"
+
+        influences = {
+            "planet_to_cusp": {p: {1: 0.0} for p in CLASSICAL_PLANETS}
+        }
+        influences["planet_to_cusp"]["Mercury"][1] = 50.0  # 50% impact
+
+        res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        # Mercury contribution should be strictly negative: -50 * 1.4 = -70.0
+        assert res[1]["planet_contributions"]["Mercury"] == -70.0
+
+    def test_bhavat_bhavam_neutral_planet_dignity_fallback(self):
+        # When evaluating relative houses, a planet with raw relative score 0
+        # adopts its dignity unit as effective functional nature.
+        # Leo Ascendant -> House 4 is Scorpio (sign_index 7)
+        signs = ["Leo", "Virgo", "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces", "Aries", "Taurus", "Gemini", "Cancer"]
+        geometry = {"houses": {h: {"sign": signs[h - 1], "lord": "Mars"} for h in range(1, 13)}}
+
+        # Sun rules Leo (10th from Scorpio -> raw relative functional score = 0)
+        # Sun has -0.4 dignity -> eff_f = -0.4, base pts = -20.0, scaled = -28.0
+        # Sun is in Aries (House 9 from Leo, which is 6th relative to Scorpio -> Dusthana!)
+        d1_grahas = {p: {"sign": "Leo", "longitude": 0.0, "dignity": "Own Sign"} for p in CLASSICAL_PLANETS}
+        d1_grahas["Sun"]["dignity"] = "Enemy's Sign"  # -0.4
+        d1_grahas["Sun"]["sign"] = "Aries"  # Relative house from Scorpio is 6 (Dusthana)
+
+        # Benefic relative planet in KK house: Jupiter in Pisces (House 8 from Leo -> 5th from Scorpio)
+        d1_grahas["Jupiter"]["sign"] = "Pisces"
+        d1_grahas["Jupiter"]["dignity"] = "Own Sign"
+
+        influences = {
+            "planet_to_planet": {p1: {p2: 0.0 for p2 in CLASSICAL_PLANETS} for p1 in CLASSICAL_PLANETS}
+        }
+        res = evaluate_relative_houses_bhavat_bhavam(geometry, d1_grahas, influences)
+        # Sun should be in m_dust and active_planets_count should include Sun
+        assert res[4]["active_planets_count"] >= 1
+        assert res[4]["dusthana_raw_points"] < 0.0
+
+    def test_cross_sign_yoga_rejection(self):
+        # Two planets in adjacent signs within 24 deg should NOT combine for yoga
+        geometry = {"houses": {h: {"lord": f"Lord{h}", "sign": f"Sign{h}"} for h in range(1, 13)}}
+        d1_grahas = {p: {"sign": f"Sign{i}", "longitude": i * 30.0, "ruled_houses": []} for i, p in enumerate(CLASSICAL_PLANETS, 1)}
+        # Jupiter at 27 deg sign 7, Mars at 21 deg sign 8 (diff = 24 deg, but different signs)
+        d1_grahas["Jupiter"] = {"sign": "Sign7", "longitude": 207.0, "ruled_houses": [5, 8]}
+        d1_grahas["Mars"] = {"sign": "Sign8", "longitude": 231.0, "ruled_houses": [4, 9]}
+
+        yogas = evaluate_house_yogas_hol(geometry, d1_grahas)
+        # Should not form Raja Yoga across sign boundaries without mutual aspect or exchange
+        active_raja = [y for h in range(1, 13) for y in yogas[h]["active_yogas"] if y["type"] == "Rāja Yoga"]
+        assert len(active_raja) == 0
+
+    def test_first_lord_immunity_and_double_occupancy_daridra(self):
+        # 1st Lord immunity: Mars ruling H1 and H8 does not trigger Daridra as Dusthana lord
+        geometry = {"houses": {h: {"lord": f"Lord{h}", "sign": f"Sign{h}"} for h in range(1, 13)}}
+        d1_grahas = {p: {"sign": f"Sign{i}", "longitude": i * 30.0, "ruled_houses": []} for i, p in enumerate(CLASSICAL_PLANETS, 1)}
+        # Mars rules H1 and H8
+        d1_grahas["Mars"] = {"sign": "Sign1", "longitude": 10.0, "ruled_houses": [1, 8]}
+        # Sun rules H5, conjunct Mars in Sign1
+        d1_grahas["Sun"] = {"sign": "Sign1", "longitude": 15.0, "ruled_houses": [5]}
+
+        yogas = evaluate_house_yogas_hol(geometry, d1_grahas)
+        # Because Mars is 1st lord, its 8th ownership is immune and does NOT trigger Daridra with Sun!
+        daridra_yogas = [y for h in range(1, 13) for y in yogas[h]["active_yogas"] if y["type"] == "Daridra Yoga"]
+        assert len(daridra_yogas) == 0

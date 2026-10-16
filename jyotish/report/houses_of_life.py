@@ -570,11 +570,11 @@ def evaluate_basic_house_conditions(
 
             scaled_i = scale_by_dignity(i_val, d_p, f_eff)
 
+            # Note: scale_by_dignity already incorporates sgn(d_p) when f_eff == 0
             if f_eff != 0:
                 signed_impact = scaled_i * f_eff
             else:
-                sgn = 1.0 if d_p > 0 else (-1.0 if d_p < 0 else 0.0)
-                signed_impact = scaled_i * sgn
+                signed_impact = scaled_i
 
             contributions[p] = round(signed_impact, 2)
             total_signed += signed_impact
@@ -609,27 +609,37 @@ def evaluate_relative_houses_bhavat_bhavam(
 
     for h, h_data in geometry["houses"].items():
         rel_func = calculate_functional_nature(h_data["sign"])
-        rel_func_pts: Dict[str, float] = {p: rel_func[p]["score"] * 50.0 for p in CLASSICAL_PLANETS}
+        eff_rel_scores: Dict[str, float] = {}
+        rel_func_pts: Dict[str, float] = {}
+
+        for p in CLASSICAL_PLANETS:
+            p_status = d1_grahas[p].get("dignity") or d1_grahas[p].get("dignity_breakdown", {}).get("final_dignity", "Neutral")
+            d_p = DICARA_D1_DIGNITY_MAP.get(p_status, 0.0)
+            raw_f = float(rel_func[p]["score"])
+            # If neutral (0), use dignity unit as functional nature per Episode 4 & 5
+            eff_f = raw_f if raw_f != 0.0 else d_p
+            eff_rel_scores[p] = eff_f
+            rel_func_pts[p] = eff_f * 50.0
 
         kk_points = 0.0
         dusthana_raw = 0.0
         m_dust: List[str] = []
-        b_rel = [p for p in CLASSICAL_PLANETS if rel_func[p]["score"] > 0]
+        b_rel = [p for p in CLASSICAL_PLANETS if eff_rel_scores[p] > 0]
         active_planets_count = 0
 
         for p in CLASSICAL_PLANETS:
-            p_house = planet_houses[p]
+            p_house = planet_houses.get(p)
+            if p_house is None:
+                continue
             r_ph = ((p_house - h) % 12) + 1
-            f_rel = rel_func[p]["score"]
+            f_rel = eff_rel_scores[p]
             pts = rel_func_pts[p]
 
-            p_status = d1_grahas[p].get("dignity")
-            if not p_status:
-                p_status = d1_grahas[p].get("dignity_breakdown", {}).get("final_dignity", "Neutral")
+            p_status = d1_grahas[p].get("dignity") or d1_grahas[p].get("dignity_breakdown", {}).get("final_dignity", "Neutral")
             d_p = DICARA_D1_DIGNITY_MAP.get(p_status, 0.0)
 
             # KK Group: 2, 4, 5, 7, 9, 10
-            if r_ph in [2, 4, 5, 7, 9, 10]:
+            if r_ph in [2, 4, 5, 7, 9, 10] and f_rel != 0:
                 active_planets_count += 1
                 scaled_pts = scale_by_dignity(abs(pts), d_p, f_rel)
                 if f_rel < 0:
@@ -638,13 +648,12 @@ def evaluate_relative_houses_bhavat_bhavam(
                     kk_points += scaled_pts
 
             # Dusthana Group: 6, 8, 12
-            elif r_ph in [6, 8, 12]:
+            # Only relative malefics are active here; benefics contribute 0 and do not increment active_planets_count
+            elif r_ph in [6, 8, 12] and f_rel < 0:
                 active_planets_count += 1
-                if f_rel < 0:
-                    m_dust.append(p)
-                    # Raw negative score
-                    scaled_pts = scale_by_dignity(abs(pts), d_p, f_rel)
-                    dusthana_raw -= scaled_pts
+                m_dust.append(p)
+                scaled_pts = scale_by_dignity(abs(pts), d_p, f_rel)
+                dusthana_raw -= scaled_pts
 
         # Benefic Aspect Mitigation on Dusthana Malefics
         if m_dust and b_rel:
@@ -839,23 +848,20 @@ def evaluate_house_yogas_hol(
     def bodies_combine(b1: str, b2: str) -> bool:
         if b1 not in d1_grahas or b2 not in d1_grahas:
             return False
-        # Conjunction in same sign
+        # Conjunction requires occupying the same sign per Episode 6
         if d1_grahas[b1]["sign"] == d1_grahas[b2]["sign"]:
             return True
-        # Within 30 deg
         lon1 = float(d1_grahas[b1]["longitude"])
         lon2 = float(d1_grahas[b2]["longitude"])
-        if _shortest_distance(lon1, lon2) < 30.0:
-            return True
-        # Mutual aspect >= 45 Virupas
+        # Mutual aspect >= 36.0 Virupas (60%)
         asp1 = aspects.get_graha_drishti(b1, lon1, lon2)
         asp2 = aspects.get_graha_drishti(b2, lon2, lon1)
-        if asp1 >= 45.0 and asp2 >= 45.0:
+        if asp1 >= 36.0 and asp2 >= 36.0:
             return True
         # Node aspect reception
-        if b1 in ["Rahu", "Ketu"] and asp2 >= 45.0:
+        if b1 in ["Rahu", "Ketu"] and asp2 >= 36.0:
             return True
-        if b2 in ["Rahu", "Ketu"] and asp1 >= 45.0:
+        if b2 in ["Rahu", "Ketu"] and asp1 >= 36.0:
             return True
         # Exchange
         if b1 in CLASSICAL_PLANETS and b2 in CLASSICAL_PLANETS:
@@ -910,27 +916,26 @@ def evaluate_house_yogas_hol(
 
             if is_raja:
                 checked_raja_pairs.add(pair_key)
-                occ_houses = set()
-                if b1 in planet_house_map:
-                    occ_houses.add(planet_house_map[b1])
-                if b2 in planet_house_map:
-                    occ_houses.add(planet_house_map[b2])
-
-                owned_houses = set()
-                if b1 in CLASSICAL_PLANETS:
-                    owned_houses.update(d1_grahas[b1].get("ruled_houses", []))
-                if b2 in CLASSICAL_PLANETS:
-                    owned_houses.update(d1_grahas[b2].get("ruled_houses", []))
-
-                for h_rec in occ_houses.union(owned_houses):
-                    role_str = "Occupied by participating planet" if h_rec in occ_houses else "Owned by participating planet"
-                    house_yoga_data[h_rec]["raja_yoga_score"] += 100.0
-                    house_yoga_data[h_rec]["active_yogas"].append({
-                        "type": "Rāja Yoga",
-                        "role": role_str,
-                        "planets": [b1, b2],
-                        "points": 100.0
-                    })
+                # Credit occupied and owned houses per participating body (no deduplication)
+                for b in [b1, b2]:
+                    if b in planet_house_map:
+                        h_occ = planet_house_map[b]
+                        house_yoga_data[h_occ]["raja_yoga_score"] += 100.0
+                        house_yoga_data[h_occ]["active_yogas"].append({
+                            "type": "Rāja Yoga",
+                            "role": "Occupied by participating planet",
+                            "planets": [b1, b2],
+                            "points": 100.0
+                        })
+                    if b in CLASSICAL_PLANETS:
+                        for h_own in d1_grahas[b].get("ruled_houses", []):
+                            house_yoga_data[h_own]["raja_yoga_score"] += 100.0
+                            house_yoga_data[h_own]["active_yogas"].append({
+                                "type": "Rāja Yoga",
+                                "role": "Owned by participating planet",
+                                "planets": [b1, b2],
+                                "points": 100.0
+                            })
 
     # 3. Mahāpuruṣa Yoga (and Inverse Mahāpuruṣa)
     for p in CLASSICAL_PLANETS:
@@ -942,13 +947,21 @@ def evaluate_house_yogas_hol(
             d_p = DICARA_D1_DIGNITY_MAP.get(p_status, 0.0)
             pts = d_p * 100.0
 
-            target_houses = {p_house}.union(d1_grahas[p].get("ruled_houses", []))
-            for h_rec in target_houses:
-                role_str = "Occupied Kendra" if h_rec == p_house else "Owned by Kendra planet"
-                house_yoga_data[h_rec]["mahapurusha_score"] += pts
-                house_yoga_data[h_rec]["active_yogas"].append({
+            # Occupied Kendra
+            house_yoga_data[p_house]["mahapurusha_score"] += pts
+            house_yoga_data[p_house]["active_yogas"].append({
+                "type": "Mahāpuruṣa Yoga",
+                "role": "Occupied Kendra",
+                "planets": [p],
+                "points": round(pts, 2)
+            })
+
+            # Owned houses
+            for h_own in d1_grahas[p].get("ruled_houses", []):
+                house_yoga_data[h_own]["mahapurusha_score"] += pts
+                house_yoga_data[h_own]["active_yogas"].append({
                     "type": "Mahāpuruṣa Yoga",
-                    "role": role_str,
+                    "role": "Owned by Kendra planet",
                     "planets": [p],
                     "points": round(pts, 2)
                 })
@@ -970,8 +983,10 @@ def evaluate_house_yogas_hol(
 
             r1 = set(d1_grahas[p1].get("ruled_houses", []))
             r2 = set(d1_grahas[p2].get("ruled_houses", []))
-            d1_dust = r1.intersection({6, 8, 12})
-            d2_dust = r2.intersection({6, 8, 12})
+
+            # 1st-Lord Immunity: If a planet rules House 1, its secondary Dusthana ownership is unblemished
+            d1_dust = r1.intersection({6, 8, 12}) if 1 not in r1 else set()
+            d2_dust = r2.intersection({6, 8, 12}) if 1 not in r2 else set()
 
             # Requires at least one to rule a Dusthana
             if not (d1_dust or d2_dust):
@@ -979,27 +994,33 @@ def evaluate_house_yogas_hol(
 
             checked_daridra_pairs.add(pair_key)
 
-            occ_houses = {planet_house_map[p1], planet_house_map[p2]}
-            all_involved = occ_houses.union(r1).union(r2)
+            occ_houses = [planet_house_map[p1], planet_house_map[p2]]
 
             # Dusthana Reversal Exception:
             # When two Dusthana lords combine, or combination occurs inside a Dusthana (6, 8, 12)
             is_reversal = bool((d1_dust and d2_dust) or any(h in [6, 8, 12] for h in occ_houses))
 
-            for h_rec in all_involved:
-                role_str = "Occupied house" if h_rec in occ_houses else "Owned by participating planet"
-                if is_reversal:
-                    pts = 100.0 if h_rec in [6, 8, 12] else -100.0
-                else:
-                    pts = -100.0
-
-                house_yoga_data[h_rec]["daridra_yoga_score"] += pts
-                house_yoga_data[h_rec]["active_yogas"].append({
+            # Credit points per participating planet (no deduplication)
+            for p in [p1, p2]:
+                h_occ = planet_house_map[p]
+                pts_occ = 100.0 if (is_reversal and h_occ in [6, 8, 12]) else -100.0
+                house_yoga_data[h_occ]["daridra_yoga_score"] += pts_occ
+                house_yoga_data[h_occ]["active_yogas"].append({
                     "type": "Daridra Yoga",
-                    "role": role_str,
+                    "role": "Occupied house",
                     "planets": [p1, p2],
-                    "points": pts
+                    "points": pts_occ
                 })
+
+                for h_own in d1_grahas[p].get("ruled_houses", []):
+                    pts_own = 100.0 if (is_reversal and h_own in [6, 8, 12]) else -100.0
+                    house_yoga_data[h_own]["daridra_yoga_score"] += pts_own
+                    house_yoga_data[h_own]["active_yogas"].append({
+                        "type": "Daridra Yoga",
+                        "role": "Owned by participating planet",
+                        "planets": [p1, p2],
+                        "points": pts_own
+                    })
 
     # Compute total yoga scores
     for h in range(1, 13):
