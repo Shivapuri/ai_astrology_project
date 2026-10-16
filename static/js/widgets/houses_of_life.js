@@ -388,7 +388,7 @@
             const lGlyph = getPlanetGlyph(lord);
 
             const basicScore = comps.basic_house_condition ? comps.basic_house_condition.score : 0.0;
-            const lordScore = comps.lord_assessment ? comps.lord_assessment.lord_final_score : 0.0;
+            const lordScore = comps.lord_assessment ? (comps.lord_assessment.combined_score ?? comps.lord_assessment.lord_final_score) : 0.0;
             const bhavatScore = comps.relative_house_bhavat_bhavam ? comps.relative_house_bhavat_bhavam.score : 0.0;
             const wallScore = comps.house_walls_kartari ? comps.house_walls_kartari.score : 0.0;
             const yogaScore = comps.house_yogas ? comps.house_yogas.total_yoga_score : 0.0;

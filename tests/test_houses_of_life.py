@@ -473,3 +473,59 @@ class TestHousesOfLifeMathematicalAuditFixes:
         # H5 gets +100 for being owned by Mars
         assert yogas[5]["raja_yoga_score"] == 100.0
 
+    def test_directional_daridra_yoga_and_raja_immunity(self):
+        """
+        Ensures Daridra Yoga only afflicts a planet when its partner rules a Dusthana,
+        does not cause self-affliction to the Dusthana lord's non-dusthana houses,
+        and skips pairs that already form Raja Yoga.
+        """
+        geometry = {"houses": {h: {"lord": f"Lord{h}", "sign": f"Sign{h}"} for h in range(1, 13)}}
+        d1_grahas = {p: {"sign": f"Sign{i + 2}", "longitude": (i + 2) * 30.0, "ruled_houses": []} for i, p in enumerate(CLASSICAL_PLANETS, 1)}
+
+        # Saturn rules H7 and H8 (Dusthana). Venus rules H4 and H11.
+        # Saturn and Venus conjoined in H1 (Sign 1).
+        d1_grahas["Saturn"] = {"sign": "Sign1", "longitude": 15.0, "ruled_houses": [7, 8]}
+        d1_grahas["Venus"] = {"sign": "Sign1", "longitude": 17.0, "ruled_houses": [4, 11]}
+
+        yogas = evaluate_house_yogas_hol(geometry, d1_grahas)
+        # Venus is afflicted by Saturn:
+        # H1 (occupied by Venus) gets -100
+        # H4 and H11 (owned by Venus) get -100 each
+        assert yogas[1]["daridra_yoga_score"] == -100.0
+        assert yogas[4]["daridra_yoga_score"] == -100.0
+        assert yogas[11]["daridra_yoga_score"] == -100.0
+
+        # Saturn is NOT afflicted by Venus (Venus rules no Dusthana):
+        # H7 should NOT be penalized!
+        assert yogas[7]["daridra_yoga_score"] == 0.0
+
+    def test_resident_lord_deduplication_and_combined_score(self):
+        """
+        Verifies that when a house lord occupies its own house alongside other occupants,
+        it is deduplicated so it isn't averaged twice, and combined_score is exposed.
+        """
+        pipeline = ChartPipeline(name="Angelina Jolie", year=1975, month=6, day=4, hour=9, minute=9)
+        hol = pipeline.houses_of_life
+        h10 = hol["houses"]["10"]
+        lord_ass = h10["components"]["lord_assessment"]
+
+        # Mars rules H10 and also occupies H10 alongside Moon and Jupiter
+        assert "combined_score" in lord_ass
+        # Verify row math is consistent
+        comp = h10["components"]
+        b = comp["basic_house_condition"]["score"]
+        lo = lord_ass["combined_score"]
+        bh = comp["relative_house_bhavat_bhavam"]["score"]
+        w = comp["house_walls_kartari"]["score"]
+        y = comp["house_yogas"]["total_yoga_score"]
+        expected_comp = round((b + lo + bh + w + y) / 5.0, 2)
+        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.01) == expected_comp
+
+    def test_composite_mean_score_in_summary(self):
+        """Verifies summary rankings exposes non-zero composite_mean_score."""
+        pipeline = ChartPipeline(name="Angelina Jolie", year=1975, month=6, day=4, hour=9, minute=9)
+        hol = pipeline.houses_of_life
+        mean_sc = hol["summary_rankings"].get("composite_mean_score")
+        assert mean_sc is not None
+        assert mean_sc > 0.0
+

@@ -876,6 +876,7 @@ def evaluate_house_yogas_hol(
     # 2. Rāja Yoga
     all_yoga_bodies = CLASSICAL_PLANETS + ["Rahu", "Ketu"]
     checked_raja_pairs = set()
+    raja_pairs_list: List[Tuple[str, str]] = []
 
     for i in range(len(all_yoga_bodies)):
         for j in range(i + 1, len(all_yoga_bodies)):
@@ -916,27 +917,53 @@ def evaluate_house_yogas_hol(
 
             if is_raja:
                 checked_raja_pairs.add(pair_key)
-                # 1. Credit hosting/occupied house(s) (+100 per hosted yoga)
-                occ_houses = {planet_house_map[b] for b in [b1, b2] if b in planet_house_map}
-                for h_occ in occ_houses:
-                    house_yoga_data[h_occ]["raja_yoga_score"] += 100.0
-                    house_yoga_data[h_occ]["active_yogas"].append({
+                raja_pairs_list.append((b1, b2))
+
+    # Conjunction counts per house for hosting resolution
+    conj_counts: Dict[int, int] = {}
+    for b1, b2 in raja_pairs_list:
+        h1 = planet_house_map.get(b1)
+        h2 = planet_house_map.get(b2)
+        if h1 == h2 and h1 is not None:
+            conj_counts[h1] = conj_counts.get(h1, 0) + 1
+
+    for b1, b2 in raja_pairs_list:
+        h1 = planet_house_map.get(b1)
+        h2 = planet_house_map.get(b2)
+        # 1. Credit hosting/occupied house(s) (+100 per hosted yoga)
+        if h1 == h2 and h1 is not None:
+            house_yoga_data[h1]["raja_yoga_score"] += 100.0
+            house_yoga_data[h1]["active_yogas"].append({
+                "type": "Rāja Yoga",
+                "role": "Occupied by participating planet",
+                "planets": [b1, b2],
+                "points": 100.0
+            })
+        elif h1 != h2 and h1 is not None and h2 is not None:
+            # Aspect yoga across different houses: credit hosting to the house without a multi-planet conjunction cluster
+            target_h = h1 if conj_counts.get(h1, 0) < conj_counts.get(h2, 0) else (h2 if conj_counts.get(h2, 0) < conj_counts.get(h1, 0) else min(h1, h2))
+            house_yoga_data[target_h]["raja_yoga_score"] += 100.0
+            house_yoga_data[target_h]["active_yogas"].append({
+                "type": "Rāja Yoga",
+                "role": "Occupied by participating planet",
+                "planets": [b1, b2],
+                "points": 100.0
+            })
+
+        # 2. Separately credit all houses owned by participating planets (+100 per yoga)
+        for b in [b1, b2]:
+            if b in CLASSICAL_PLANETS:
+                for h_own in d1_grahas[b].get("ruled_houses", []):
+                    # In an aspect yoga across houses, avoid double-crediting if this house already hosted the other planet's aspect
+                    if h1 != h2 and h_own == (h1 if b == b2 else h2):
+                        continue
+                    house_yoga_data[h_own]["raja_yoga_score"] += 100.0
+                    house_yoga_data[h_own]["active_yogas"].append({
                         "type": "Rāja Yoga",
-                        "role": "Occupied by participating planet",
+                        "role": "Owned by participating planet",
                         "planets": [b1, b2],
                         "points": 100.0
                     })
-                # 2. Separately credit all houses owned by participating planets (+100 per yoga)
-                for b in [b1, b2]:
-                    if b in CLASSICAL_PLANETS:
-                        for h_own in d1_grahas[b].get("ruled_houses", []):
-                            house_yoga_data[h_own]["raja_yoga_score"] += 100.0
-                            house_yoga_data[h_own]["active_yogas"].append({
-                                "type": "Rāja Yoga",
-                                "role": "Owned by participating planet",
-                                "planets": [b1, b2],
-                                "points": 100.0
-                            })
 
     # 3. Mahāpuruṣa Yoga (and Inverse Mahāpuruṣa)
     for p in CLASSICAL_PLANETS:
@@ -979,7 +1006,8 @@ def evaluate_house_yogas_hol(
                 continue
 
             pair_key = tuple(sorted([p1, p2]))
-            if pair_key in checked_daridra_pairs:
+            # Do not overwrite/cancel a pair that already forms a Raja Yoga
+            if pair_key in checked_daridra_pairs or pair_key in checked_raja_pairs:
                 continue
 
             r1 = set(d1_grahas[p1].get("ruled_houses", []))
@@ -1001,9 +1029,11 @@ def evaluate_house_yogas_hol(
             # When two Dusthana lords combine, or combination occurs inside a Dusthana (6, 8, 12)
             is_reversal = bool((d1_dust and d2_dust) or any(h in [6, 8, 12] for h in occ_houses))
 
-            # Credit points per participating planet (no deduplication)
-            for p in [p1, p2]:
-                h_occ = planet_house_map[p]
+            # Directional Daridra: p_target is afflicted if p_partner rules a Dusthana
+            for p_target, other_dust in [(p1, d2_dust), (p2, d1_dust)]:
+                if not other_dust:
+                    continue
+                h_occ = planet_house_map[p_target]
                 pts_occ = 100.0 if (is_reversal and h_occ in [6, 8, 12]) else -100.0
                 house_yoga_data[h_occ]["daridra_yoga_score"] += pts_occ
                 house_yoga_data[h_occ]["active_yogas"].append({
@@ -1013,7 +1043,7 @@ def evaluate_house_yogas_hol(
                     "points": pts_occ
                 })
 
-                for h_own in d1_grahas[p].get("ruled_houses", []):
+                for h_own in d1_grahas[p_target].get("ruled_houses", []):
                     pts_own = 100.0 if (is_reversal and h_own in [6, 8, 12]) else -100.0
                     house_yoga_data[h_own]["daridra_yoga_score"] += pts_own
                     house_yoga_data[h_own]["active_yogas"].append({
@@ -1084,8 +1114,10 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
         lord_score = planets_eval[lord]["final_assessment_score"]
         occ_scores = {occ: planets_eval[occ]["final_assessment_score"] for occ in occupants}
 
-        if occ_scores:
-            lord_and_occ_avg = (lord_score + sum(occ_scores.values())) / (1.0 + len(occ_scores))
+        # Deduplicate lord if resident in its own house
+        non_lord_occ_scores = [score for occ, score in occ_scores.items() if occ != lord]
+        if non_lord_occ_scores:
+            lord_and_occ_avg = (lord_score + sum(non_lord_occ_scores)) / (1.0 + len(non_lord_occ_scores))
         else:
             lord_and_occ_avg = lord_score
 
@@ -1132,8 +1164,7 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
         if abs(y_score) >= 50.0:
             active_yogas = yoga_houses[h]["active_yogas"]
             if active_yogas:
-                top_y = max(active_yogas, key=lambda y: abs(y["points"]))
-                drivers.append(f"{top_y['type']} ({top_y['points']:+.1f})")
+                drivers.append(f"Net Structural Yogas ({y_score:+.1f})")
 
         # Wall driver
         if wall_houses[h]["is_walled"]:
@@ -1154,7 +1185,8 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
                 "lord_assessment": {
                     "lord": lord,
                     "lord_final_score": lord_score,
-                    "occupants_final_scores": occ_scores
+                    "occupants_final_scores": occ_scores,
+                    "combined_score": round(lord_and_occ_avg, 2)
                 },
                 "relative_house_bhavat_bhavam": rel_houses[h],
                 "house_walls_kartari": wall_houses[h],
@@ -1180,11 +1212,14 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
         reverse=True
     )
 
+    comp_mean = round(sum(final_houses[str(h)]["synthesis"]["composite_score"] for h in range(1, 13)) / 12.0, 2)
+
     summary_rankings = {
         "houses_by_composite_score": sorted_houses,
         "planets_by_final_score": sorted_planets,
         "top_flourishing_houses": sorted_houses[:3],
-        "most_challenged_houses": sorted_houses[-3:]
+        "most_challenged_houses": sorted_houses[-3:],
+        "composite_mean_score": comp_mean
     }
 
     return {
