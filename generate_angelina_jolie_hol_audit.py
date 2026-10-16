@@ -150,13 +150,17 @@ def generate_audit_report():
             lines.append("       * No direct planetary rays on cusp")
 
         lines.append("")
-        lines.append("  2. Lord & Occupant Condition (Phase 5):")
+        lines.append("  2. Lord & Occupant Condition (Phase 5 & 10):")
         la = c["lord_assessment"]
         lord_sc = la["lord_final_score"]
+        final_disp = la.get("final_dispositor", h_info['lord'])
+        eff_lord_sc = la.get("effective_lord_score", lord_sc)
         occ_scs = la.get("occupants_final_scores", {})
         occ_avg = sum(occ_scs.values()) / len(occ_scs) if occ_scs else 0.0
-        comb_sc = (lord_sc + sum(occ_scs.values())) / (1.0 + len(occ_scs)) if occ_scs else lord_sc
+        comb_sc = la.get("combined_score", eff_lord_sc)
         lines.append(f"     Lord ({h_info['lord']}) Final Score:       {lord_sc:+.2f}")
+        lines.append(f"     Final Dispositor:         {final_disp}")
+        lines.append(f"     Effective Lord Score:     {eff_lord_sc:+.2f}")
         if occ_scs:
             occ_str = ", ".join([f"{p} ({sc:+.2f})" for p, sc in occ_scs.items()])
             lines.append(f"     Occupants Final Scores:   {occ_str}")

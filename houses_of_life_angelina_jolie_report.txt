@@ -17,9 +17,9 @@ Nakshatra System:     Sidereal Equatorial Dhruva Galactic Center Anchor
 Ascendant (Lagna):    Cancer at 28.8932° (Sensitive Cusp Degree in Sign: 28.8932°)
 
 EXECUTIVE SUMMARY RANKINGS:
-  Top Flourishing Houses:  H10, H1, H7
-  Most Challenged Houses:  H4, H11, H2
-  Composite House Mean:    +62.08 points
+  Top Flourishing Houses:  H1, H5, H10
+  Most Challenged Houses:  H8, H11, H2
+  Composite House Mean:    +41.92 points
 
 ==========================================================================================
 2. PHASE 1: WHOLE SIGN GEOMETRY & SENSITIVE HOUSE CUSPS
@@ -51,7 +51,7 @@ Graha     | F_P Score  | Classification  | Rules Triggered & Proof
 ------------------------------------------------------------------------------------------
 Sun       |        +0 | Neutral         | Neutral (no trine/dusthana)                       
 Moon      |        +3 | Benefic         | Rule 1: 1st Lord (+3)                             
-Mars      |        +0 | Neutral         | Rule 2: Trine (+1), Rule 4: Inherent (-1)         
+Mars      |        +2 | Benefic         | Rule 2: Trine (+1), Rule 4: Inherent (+1)         
 Mercury   |        -1 | Malefic         | Rule 3: Dusthāna (-1)                             
 Jupiter   |        +0 | Neutral         | Rule 2: Trine (+1), Rule 3: Dusthāna (-2), Rule 4: Inherent (+1)
 Venus     |        +1 | Benefic         | Rule 4: Inherent (+1)                             
@@ -62,64 +62,66 @@ Saturn    |        -3 | Malefic         | Rule 3: Dusthāna (-2), Rule 4: Inhere
 ------------------------------------------------------------------------------------------
 Graha    | Sign (House)       | D1 Dignity      | Comb Inf   | Cusp Align    | Base Avg   | Sandhi x Comb  | Final Score 
 ------------------------------------------------------------------------------------------
-Sun      | Gemini (H12)       | -40% (Enemy's ) |     -112.9 |   -19 (-1.0x) |      -57.1 |  1.00x · 1.26x |       -71.87
-Moon     | Aries (H10)        | -40% (Enemy's ) |      +57.5 |    +31 (1.5x) |      +16.1 |  1.00x · 1.00x |       +16.07
-Mars     | Aries (H10)        | +90% (Moolatri) |      -30.8 |    +18 (1.5x) |      +25.8 |  1.00x · 1.00x |       +25.78
-Mercury  | Gemini (H12)       | +80% (Own Sign) |      -72.7 |   +100 (1.0x) |      +35.8 |  1.00x · 0.74x |       +26.56
-Jupiter  | Aries (H10)        | +0% (Neutral')  |     +186.2 |   +150 (1.5x) |     +112.1 |  1.00x · 1.00x |      +112.06
-Venus    | Cancer (H1)        | +0% (Neutral')  |      +37.7 |   +150 (1.5x) |      +62.6 |  0.46x · 1.00x |       +28.85
-Saturn   | Cancer (H1)        | +0% (Neutral')  |     +343.5 |    +36 (1.5x) |     +126.4 |  1.00x · 1.00x |      +126.43
+Sun      | Gemini (H12)       | -40% (Enemy's ) |      -11.6 |   -18 (-0.5x) |      -23.2 |  1.00x · 1.06x |       -22.61
+Moon     | Aries (H10)        | -40% (Enemy's ) |      +44.9 |    +42 (1.5x) |      +15.8 |  1.00x · 1.00x |       +15.78
+Mars     | Aries (H10)        | +90% (Moolatri) |      -10.9 |    +39 (1.5x) |      +39.4 |  1.00x · 1.00x |       +39.41
+Mercury  | Gemini (H12)       | +80% (Own Sign) |      -29.8 |    +90 (1.0x) |      +46.8 |  1.00x · 0.74x |       +37.77
+Jupiter  | Aries (H10)        | +0% (Neutral')  |      +80.6 |   +141 (1.5x) |      +73.9 |  1.00x · 1.00x |       +73.92
+Venus    | Cancer (H1)        | +0% (Neutral')  |       +8.9 |   +150 (1.5x) |      +53.0 |  0.46x · 1.00x |       +38.71
+Saturn   | Cancer (H1)        | +0% (Neutral')  |     +144.4 |    +76 (1.5x) |      +73.7 |  1.00x · 1.00x |       +73.65
 
 ==========================================================================================
 5. 12-BHĀVA QUANTITATIVE SYNTHESIS MATRIX (ALL 5 LAYERS & COMPOSITE)
 ------------------------------------------------------------------------------------------
 Bhāva  | Rāśi        | Lord     | Basic    | Lord/Occ  | Bhavāt   | Kartarī  | Yogas    | Composite  | Health Tier           
 ------------------------------------------------------------------------------------------
-H1     | Cancer      | Moon     |   +39.1 |    +57.1 |   +37.8 |    +0.0 |  +360.0 |    +98.80 | Puṣṭa (Flourishing / Fortified)
-H2     | Leo         | Sun      |    +5.6 |    -71.9 |   +19.5 |    +0.0 |  -100.0 |    -29.35 | Hīna (Strained / Challenged)
-H3     | Virgo       | Mercury  |   +22.9 |    +26.6 |   +36.1 |    +0.0 |    +0.0 |    +17.10 | Miśra (Mixed / Resilient)
-H4     | Libra       | Venus    |   +41.9 |    +28.9 |    -4.2 |    +0.0 |  -100.0 |     -6.69 | Miśra (Mixed / Resilient)
-H5     | Scorpio     | Mars     |   +40.6 |    +25.8 |   -38.4 |    +0.0 |  +390.0 |    +83.60 | Puṣṭa (Flourishing / Fortified)
-H6     | Sagittarius | Jupiter  |    +0.8 |   +112.1 |   +37.1 |    +0.0 |  +300.0 |    +90.00 | Puṣṭa (Flourishing / Fortified)
-H7     | Capricorn   | Saturn   |   +28.4 |   +126.4 |   +23.8 |    +0.0 |  +300.0 |    +95.72 | Puṣṭa (Flourishing / Fortified)
-H8     | Aquarius    | Saturn   |   +18.1 |   +126.4 |   -29.0 |    +0.0 |  +300.0 |    +83.10 | Puṣṭa (Flourishing / Fortified)
-H9     | Pisces      | Jupiter  |    -4.0 |   +112.1 |    +1.1 |    +0.0 |  +300.0 |    +81.83 | Puṣṭa (Flourishing / Fortified)
-H10    | Aries       | Mars     |    -9.3 |    +51.3 |    +0.0 |    +0.0 |  +740.0 |   +156.40 | Puṣṭa (Exceptional / Off the Chart)
-H11    | Taurus      | Venus    |    +2.5 |    +28.9 |   +16.8 |    +0.0 |  -100.0 |    -10.37 | Miśra (Mixed / Resilient)
-H12    | Gemini      | Mercury  |   +80.5 |    -22.7 |  +100.0 |  +166.2 |  +100.0 |    +84.80 | Puṣṭa (Flourishing / Fortified)
+H1     | Cancer      | Moon     |   +49.9 |    +32.0 |   +48.2 |    +0.0 |  +149.9 |    +72.53 | Puṣṭa (Flourishing / Fortified)
+H2     | Leo         | Sun      |   +13.6 |     -7.5 |   +64.7 |    +0.0 |   +10.9 |    +12.68 | Miśra (Mixed / Resilient)
+H3     | Virgo       | Mercury  |   +35.0 |    +57.8 |   +23.5 |    +0.0 |   +13.0 |    +33.91 | Puṣṭa (Flourishing / Fortified)
+H4     | Libra       | Venus    |   +60.6 |    +38.9 |    +5.4 |    +0.0 |   +53.0 |    +46.32 | Puṣṭa (Flourishing / Fortified)
+H5     | Scorpio     | Mars     |   +36.4 |    +59.4 |   -36.9 |    +0.0 |  +149.9 |    +66.19 | Puṣṭa (Flourishing / Fortified)
+H6     | Sagittarius | Jupiter  |    +5.5 |    +65.3 |   +41.7 |    +0.0 |    +0.0 |    +24.60 | Miśra (Mixed / Resilient)
+H7     | Capricorn   | Saturn   |   +35.8 |    +65.1 |   +35.6 |    +0.0 |   +27.4 |    +41.56 | Puṣṭa (Flourishing / Fortified)
+H8     | Aquarius    | Saturn   |   +25.9 |    +65.1 |   -25.0 |    +0.0 |    +0.0 |    +23.94 | Miśra (Mixed / Resilient)
+H9     | Pisces      | Jupiter  |    +8.3 |    +65.3 |    +5.0 |    +0.0 |   +53.0 |    +36.19 | Puṣṭa (Flourishing / Fortified)
+H10    | Aries       | Mars     |    +4.1 |    +55.0 |   +48.1 |    +0.0 |  +150.0 |    +63.67 | Puṣṭa (Flourishing / Fortified)
+H11    | Taurus      | Venus    |    +7.3 |    +38.9 |    +7.6 |    +0.0 |   +27.4 |    +21.67 | Miśra (Mixed / Resilient)
+H12    | Gemini      | Mercury  |   +93.5 |    +33.7 |   +32.5 |   +16.9 |   +73.5 |    +59.77 | Puṣṭa (Flourishing / Fortified)
 
 ==========================================================================================
 6. DEEP DIVE: HOUSE-BY-HOUSE DETAILED MATHEMATICAL AUDIT RECEIPTS
 ==========================================================================================
 
 --- [ HOUSE 1: CANCER (RULED BY MOON) ] ---
-Composite Score: +98.80 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Composite Score: +72.53 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
 Sensitive Cusp Degree: 118.8932° (Cancer 28.89°)
 Occupants: Venus, Saturn
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +39.10
+     Direct Basic Score: +49.87
        * Sun      :  -18.05 pts
-       * Moon     :  +98.92 pts [HOUSE LORD]
-       * Mars     : +132.41 pts
+       * Moon     :  +81.61 pts [HOUSE LORD]
+       * Mars     : +218.48 pts
        * Mercury  :   -3.28 pts
        * Jupiter  :   +0.00 pts
-       * Venus    : +135.31 pts
-       * Saturn   :  -71.62 pts
+       * Venus    : +108.20 pts
+       * Saturn   : -117.28 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Moon) Final Score:       +16.07
-     Occupants Final Scores:   Venus (+28.85), Saturn (+126.43)
-     Occupants Average Score:  +77.64
-     Combined Lord/Occ Score:  +57.12
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Moon) Final Score:       +15.78
+     Final Dispositor:         Mars
+     Effective Lord Score:     +21.69
+     Occupants Final Scores:   Venus (+38.71), Saturn (+73.65)
+     Occupants Average Score:  +56.18
+     Combined Lord/Occ Score:  +32.04
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +37.77
-     KK Group Points:          +205.50
-     Raw Dusthāna Points:      -58.00
+     Relative Score:           +48.24
+     KK Group Points:          +335.00
+     Raw Dusthāna Points:      -100.00
      Benefic Mitigation Pct:   6.2%
-     Mitigated Dusthāna:       -54.42
-     Active Planets Count:     4
+     Mitigated Dusthāna:       -93.82
+     Active Planets Count:     5
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
      Wall Type:                None
@@ -127,52 +129,207 @@ Occupants: Venus, Saturn
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +360.00
+     Total Yoga Score:         +149.95
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +500.00
-       - Mahāpuruṣa Points:    -40.00
-       - Daridra Points:       -100.00
+       - Rāja Yoga Points:     +662.49
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       -8.00
      Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
-       * Rāja Yoga [Occupied by participating planet] (Moon + Saturn): +100 pts
-       * Rāja Yoga [Occupied by participating planet] (Mars + Saturn): +100 pts
-       * Rāja Yoga [Occupied by participating planet] (Jupiter + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Moon): -40 pts
-       * Mahāpuruṣa Yoga [Occupied Kendra] (Venus): +0 pts
-       * Mahāpuruṣa Yoga [Occupied Kendra] (Saturn): +0 pts
-       * Daridra Yoga [Occupied house] (Venus + Saturn): -100 pts
+       * Ubhayalagna Rāja Yoga (Jupiter + Moon) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Jupiter + Moon): +64 pts
+       * Śūla Yoga (Trident Resolve) [Occupied by participating planet (PURE & EMINENT)] (Sun + Moon + Mars + Mercury + Jupiter + Venus + Saturn): +40 pts
+       * Dhana Yoga (Jupiter + Venus) [Occupied by participating planet (PURE & EMINENT)] (Jupiter + Venus): +79 pts
+       * Dhana Yoga (Moon + Jupiter) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Moon + Jupiter): +57 pts
+       * Cāmara Yoga (Royal Fly-Whisk) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Moon): +28 pts
+       * Jaladhi Yoga (The Ocean Estate) [Occupied by participating planet (PURE & EMINENT)] (Venus): +74 pts
+       * Kāma Yoga (The Beloved) [Occupied by participating planet (PURE & EMINENT)] (Saturn): +37 pts
+       * Pārijāta Yoga (The Wish-Fulfilling Tree) [Occupied by participating planet (PURE & EMINENT)] (Venus): +37 pts
+       * Śaṅkha Yoga (Moon + Jupiter) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Moon + Jupiter): +54 pts
+       * Śaṅkha Yoga (Moon + Mars) [Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)] (Moon + Mars): +25 pts
+       * Puṣkala Yoga [Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)] (Moon + Mars): +12 pts
+       * Ubhayalagna Rāja Yoga (Mars + Moon) [Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)] (Mars + Moon): +24 pts
+       * Miśra-Veśi Yoga [Occupied by participating planet (STAINED / CHALLENGED)] (Sun + Venus + Saturn): +16 pts
+       * Asura Yoga (The Titanic Ambition) [Occupied by participating planet (STAINED / CHALLENGED)] (Saturn): +15 pts
+       * Dhana Yoga (Moon + Mars) [Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)] (Moon + Mars): +21 pts
+       * Kāhala Yoga (Variant A: Mutual Kendra Alliance) [Occupied by participating planet (STAINED / CHALLENGED)] (Venus + Mars + Moon): +14 pts
+       * Dhana Yoga (Mars + Venus) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Venus): +25 pts
+       * Kemadruma Yoga (Rescued / Bhaṅga) [Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))] (Moon + Mars + Jupiter + Venus + Saturn + Mercury): -8 pts
+       * Dhana Yoga (Moon + Venus) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Moon + Venus): +22 pts
+       * Ubhayalagna Rāja Yoga (Mars + Saturn) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Saturn): +19 pts
 
   6. Synthesis & Dominant Drivers:
-     • Significant aspectual support from Venus on Cusp (+135.3)
-     • Net Structural Yogas (+360.0)
+     • Significant aspectual support from Mars on Cusp (+218.5)
+     • Net Structural Yogas (+149.9)
 
 --- [ HOUSE 2: LEO (RULED BY SUN) ] ---
-Composite Score: -29.35 | Classical Tier: Hīna | Rating: Strained / Challenged
+Composite Score: +12.68 | Classical Tier: Miśra | Rating: Mixed / Resilient
 Sensitive Cusp Degree: 148.8932° (Leo 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +5.63
-       * Sun      :  +81.26 pts [HOUSE LORD]
-       * Moon     :  +56.76 pts
-       * Mars     :  +37.41 pts
+     Direct Basic Score: +13.64
+       * Sun      :  +67.04 pts [HOUSE LORD]
+       * Moon     :  +43.52 pts
+       * Mars     :  +61.73 pts
        * Mercury  :  -21.57 pts
        * Jupiter  :   +0.00 pts
        * Venus    :   +0.61 pts
-       * Saturn   : -115.06 pts
+       * Saturn   :  -88.21 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Sun) Final Score:       -71.87
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Sun) Final Score:       -22.61
+     Final Dispositor:         Mercury
+     Effective Lord Score:     -7.51
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  -71.87
+     Combined Lord/Occ Score:  -7.51
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +19.47
-     KK Group Points:          +125.00
+     Relative Score:           +64.65
+     KK Group Points:          +420.00
      Raw Dusthāna Points:      -100.00
-     Benefic Mitigation Pct:   52.9%
-     Mitigated Dusthāna:       -47.12
+     Benefic Mitigation Pct:   67.9%
+     Mitigated Dusthāna:       -32.12
+     Active Planets Count:     6
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +10.95
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +10.97
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Niḥsva Yoga (Depleted Treasury) [Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)] (Sun): +11 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual pressure from Saturn on Cusp (-88.2)
+
+--- [ HOUSE 3: VIRGO (RULED BY MERCURY) ] ---
+Composite Score: +33.91 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 178.8932° (Virgo 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +34.95
+       * Sun      :  -86.95 pts
+       * Moon     :  +96.96 pts
+       * Mars     : +190.04 pts
+       * Mercury  : +206.50 pts [HOUSE LORD]
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +26.23 pts
+       * Saturn   : -207.95 pts
+
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Mercury) Final Score:       +37.77
+     Final Dispositor:         Mercury
+     Effective Lord Score:     +57.77
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +57.77
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +23.52
+     KK Group Points:          +130.00
+     Raw Dusthāna Points:      -82.50
+     Benefic Mitigation Pct:   85.0%
+     Mitigated Dusthāna:       -12.38
+     Active Planets Count:     5
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +12.96
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +12.99
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Mṛti Yoga (Broken Initiatives) [Primary yoga / dispositor-traversed house (RESCUED (NEECHA BHANGA / REVERSAL))] (Mercury): +13 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual pressure from Saturn on Cusp (-207.9)
+
+--- [ HOUSE 4: LIBRA (RULED BY VENUS) ] ---
+Composite Score: +46.32 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 208.8932° (Libra 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +60.60
+       * Sun      :  -33.90 pts
+       * Moon     : +159.76 pts
+       * Mars     : +313.50 pts
+       * Mercury  :  -23.43 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    : +122.74 pts [HOUSE LORD]
+       * Saturn   : -150.45 pts
+
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Venus) Final Score:       +38.71
+     Final Dispositor:         Mars
+     Effective Lord Score:     +38.88
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +38.88
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +5.42
+     KK Group Points:          +32.50
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     6
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +52.97
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +55.35
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Jaladhi Yoga (The Ocean Estate) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Venus): +55 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual support from Mars on Cusp (+313.5)
+     • Net Structural Yogas (+53.0)
+
+--- [ HOUSE 5: SCORPIO (RULED BY MARS) ] ---
+Composite Score: +66.19 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 238.8932° (Scorpio 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +36.42
+       * Sun      :  -72.20 pts
+       * Moon     : +113.76 pts
+       * Mars     : +218.48 pts [HOUSE LORD]
+       * Mercury  :  -13.13 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +48.77 pts
+       * Saturn   :  -70.89 pts
+
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Mars) Final Score:       +39.41
+     Final Dispositor:         Mars
+     Effective Lord Score:     +59.41
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +59.41
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           -36.85
+     KK Group Points:          -100.00
+     Raw Dusthāna Points:      -100.00
+     Benefic Mitigation Pct:   52.6%
+     Mitigated Dusthāna:       -47.39
      Active Planets Count:     4
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
@@ -181,46 +338,65 @@ Occupants: None
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         -100.00
+     Total Yoga Score:         +149.92
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +0.00
-       - Mahāpuruṣa Points:    +0.00
-       - Daridra Points:       -100.00
+       - Rāja Yoga Points:     +588.74
+       - Mahāpuruṣa Points:    +25.31
+       - Daridra Points:       +0.00
      Active Structural Yogas:
-       * Daridra Yoga [Owned by participating planet] (Sun + Mercury): -100 pts
+       * Dharma-Karma Adhipati Rāja Yoga [Owned by Final Dispositor (PURE & EMINENT)] (Mars + Jupiter): +54 pts
+       * Ubhayalagna Rāja Yoga (Jupiter + Mars) [Owned by Final Dispositor (PURE & EMINENT)] (Jupiter + Mars): +51 pts
+       * Ubhayalagna Rāja Yoga (Jupiter + Moon) [Owned by Final Dispositor (PURE & EMINENT)] (Jupiter + Moon): +51 pts
+       * Dhana Yoga (Mars + Jupiter) [Owned by Final Dispositor (PURE & EMINENT)] (Mars + Jupiter): +50 pts
+       * Chatra Yoga (The Royal Canopy) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Mars): +30 pts
+       * Dhana Yoga (Jupiter + Venus) [Owned by Final Dispositor (PURE & EMINENT)] (Jupiter + Venus): +48 pts
+       * Dhana Yoga (Moon + Jupiter) [Owned by Final Dispositor (PURE & EMINENT)] (Moon + Jupiter): +46 pts
+       * Bhāgya Yoga (Divine Grace) [Owned by Final Dispositor (PURE & EMINENT)] (Jupiter): +44 pts
+       * Jaladhi Yoga (The Ocean Estate) [Owned by Final Dispositor (PURE & EMINENT)] (Venus): +44 pts
+       * Śaṅkha Yoga (Moon + Jupiter) [Owned by Final Dispositor (PURE & EMINENT)] (Moon + Jupiter): +43 pts
+       * Rucaka Mahāpuruṣa Yoga [Owned by Mahāpuruṣa planet (STAINED / CHALLENGED)] (Mars): +25 pts
+       * Śaṅkha Yoga (Moon + Mars) [Owned by Final Dispositor (STAINED / CHALLENGED)] (Moon + Mars): +20 pts
+       * Ubhayalagna Rāja Yoga (Mars + Moon) [Owned by Final Dispositor (STAINED / CHALLENGED)] (Mars + Moon): +19 pts
+       * Rāja Yogakāraka (Mars) [Owned by Final Dispositor (STAINED / CHALLENGED)] (Mars): +18 pts
+       * Dhana Yoga (Moon + Mars) [Owned by Final Dispositor (STAINED / CHALLENGED)] (Moon + Mars): +17 pts
+       * Amalā Yoga (from Lagna) [Owned by Final Dispositor (STAINED / CHALLENGED)] (Jupiter): +14 pts
+       * Dhana Yoga (Mars + Venus) [Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Venus): +15 pts
+       * Dhana Yoga (Moon + Venus) [Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))] (Moon + Venus): +13 pts
+       * Ubhayalagna Rāja Yoga (Mars + Saturn) [Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Saturn): +11 pts
 
   6. Synthesis & Dominant Drivers:
-     • House Lord Sun is strained (-71.9)
-     • Significant aspectual pressure from Saturn on Cusp (-115.1)
-     • Net Structural Yogas (-100.0)
+     • Significant aspectual support from Mars on Cusp (+218.5)
+     • Net Structural Yogas (+149.9)
 
---- [ HOUSE 3: VIRGO (RULED BY MERCURY) ] ---
-Composite Score: +17.10 | Classical Tier: Miśra | Rating: Mixed / Resilient
-Sensitive Cusp Degree: 178.8932° (Virgo 28.89°)
+--- [ HOUSE 6: SAGITTARIUS (RULED BY JUPITER) ] ---
+Composite Score: +24.60 | Classical Tier: Miśra | Rating: Mixed / Resilient
+Sensitive Cusp Degree: 268.8932° (Sagittarius 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +22.86
-       * Sun      :  -86.95 pts
-       * Moon     : +126.47 pts
-       * Mars     : +115.18 pts
-       * Mercury  : +250.30 pts [HOUSE LORD]
-       * Jupiter  :   +0.00 pts
-       * Venus    :  +26.23 pts
-       * Saturn   : -271.23 pts
+     Direct Basic Score: +5.50
+       * Sun      : -121.95 pts
+       * Moon     :  +67.76 pts
+       * Mars     : +109.24 pts
+       * Mercury  :  -56.72 pts
+       * Jupiter  : +117.69 pts [HOUSE LORD]
+       * Venus    :   +2.46 pts
+       * Saturn   :  -88.21 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Mercury) Final Score:       +26.56
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Jupiter) Final Score:       +73.92
+     Final Dispositor:         Mars
+     Effective Lord Score:     +65.29
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +26.56
+     Combined Lord/Occ Score:  +65.29
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +36.09
-     KK Group Points:          +130.00
-     Raw Dusthāna Points:      -82.50
-     Benefic Mitigation Pct:   73.7%
-     Mitigated Dusthāna:       -21.73
-     Active Planets Count:     3
+     Relative Score:           +41.67
+     KK Group Points:          +275.00
+     Raw Dusthāna Points:      -50.00
+     Benefic Mitigation Pct:   50.1%
+     Mitigated Dusthāna:       -24.97
+     Active Planets Count:     6
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
      Wall Type:                None
@@ -236,180 +412,37 @@ Occupants: None
      Active Structural Yogas: None
 
   6. Synthesis & Dominant Drivers:
-     • Significant aspectual pressure from Saturn on Cusp (-271.2)
-
---- [ HOUSE 4: LIBRA (RULED BY VENUS) ] ---
-Composite Score: -6.69 | Classical Tier: Miśra | Rating: Mixed / Resilient
-Sensitive Cusp Degree: 208.8932° (Libra 28.89°)
-Occupants: None
-
-  1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +41.94
-       * Sun      :  -33.90 pts
-       * Moon     : +208.38 pts
-       * Mars     : +190.00 pts
-       * Mercury  :  -23.43 pts
-       * Jupiter  :   +0.00 pts
-       * Venus    : +148.77 pts [HOUSE LORD]
-       * Saturn   : -196.23 pts
-
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Venus) Final Score:       +28.85
-     Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +28.85
-
-  3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           -4.25
-     KK Group Points:          -25.50
-     Raw Dusthāna Points:      +0.00
-     Benefic Mitigation Pct:   0.0%
-     Mitigated Dusthāna:       +0.00
-     Active Planets Count:     6
-
-  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
-     Wall Type:                None
-     Wall Score:               +0.00
-     Is Flanked/Walled:        False
-
-  5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         -100.00
-       - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +0.00
-       - Mahāpuruṣa Points:    +0.00
-       - Daridra Points:       -100.00
-     Active Structural Yogas:
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Venus): +0 pts
-       * Daridra Yoga [Owned by participating planet] (Venus + Saturn): -100 pts
-
-  6. Synthesis & Dominant Drivers:
-     • Significant aspectual support from Moon on Cusp (+208.4)
-     • Net Structural Yogas (-100.0)
-
---- [ HOUSE 5: SCORPIO (RULED BY MARS) ] ---
-Composite Score: +83.60 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
-Sensitive Cusp Degree: 238.8932° (Scorpio 28.89°)
-Occupants: None
-
-  1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +40.60
-       * Sun      :  -72.20 pts
-       * Moon     : +148.38 pts
-       * Mars     : +264.82 pts [HOUSE LORD]
-       * Mercury  :  -13.13 pts
-       * Jupiter  :   +0.00 pts
-       * Venus    :  +48.77 pts
-       * Saturn   :  -92.47 pts
-
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Mars) Final Score:       +25.78
-     Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +25.78
-
-  3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           -38.40
-     KK Group Points:          -100.00
-     Raw Dusthāna Points:      -58.00
-     Benefic Mitigation Pct:   7.6%
-     Mitigated Dusthāna:       -53.58
-     Active Planets Count:     4
-
-  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
-     Wall Type:                None
-     Wall Score:               +0.00
-     Is Flanked/Walled:        False
-
-  5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +390.00
-       - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +300.00
-       - Mahāpuruṣa Points:    +90.00
-       - Daridra Points:       +0.00
-     Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Mars): +90 pts
-
-  6. Synthesis & Dominant Drivers:
-     • Significant aspectual support from Mars on Cusp (+264.8)
-     • Net Structural Yogas (+390.0)
-
---- [ HOUSE 6: SAGITTARIUS (RULED BY JUPITER) ] ---
-Composite Score: +90.00 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
-Sensitive Cusp Degree: 268.8932° (Sagittarius 28.89°)
-Occupants: None
-
-  1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +0.85
-       * Sun      : -121.95 pts
-       * Moon     :  +88.38 pts
-       * Mars     :  +66.21 pts
-       * Mercury  :  -56.72 pts
-       * Jupiter  : +142.66 pts [HOUSE LORD]
-       * Venus    :   +2.46 pts
-       * Saturn   : -115.06 pts
-
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Jupiter) Final Score:       +112.06
-     Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +112.06
-
-  3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +37.09
-     KK Group Points:          +247.50
-     Raw Dusthāna Points:      -50.00
-     Benefic Mitigation Pct:   50.1%
-     Mitigated Dusthāna:       -24.97
-     Active Planets Count:     6
-
-  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
-     Wall Type:                None
-     Wall Score:               +0.00
-     Is Flanked/Walled:        False
-
-  5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +300.00
-       - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +300.00
-       - Mahāpuruṣa Points:    +0.00
-       - Daridra Points:       +0.00
-     Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Jupiter): +0 pts
-
-  6. Synthesis & Dominant Drivers:
-     • House Lord Jupiter is fortified (+112.1)
-     • Significant aspectual support from Jupiter on Cusp (+142.7)
-     • Net Structural Yogas (+300.0)
+     • House Lord Jupiter is fortified (+73.9)
+     • Significant aspectual pressure from Sun on Cusp (-122.0)
 
 --- [ HOUSE 7: CAPRICORN (RULED BY SATURN) ] ---
-Composite Score: +95.72 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Composite Score: +41.56 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
 Sensitive Cusp Degree: 298.8932° (Capricorn 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +28.38
+     Direct Basic Score: +35.76
        * Sun      :  -86.95 pts
-       * Moon     :  +28.38 pts
-       * Mars     :  +18.71 pts
+       * Moon     :  +21.76 pts
+       * Mars     :  +30.86 pts
        * Mercury  :  -41.72 pts
        * Jupiter  :   +0.00 pts
        * Venus    :  +99.39 pts
-       * Saturn   : +180.82 pts [HOUSE LORD]
+       * Saturn   : +149.18 pts [HOUSE LORD]
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Saturn) Final Score:       +126.43
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Saturn) Final Score:       +73.65
+     Final Dispositor:         Mars
+     Effective Lord Score:     +65.09
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +126.43
+     Combined Lord/Occ Score:  +65.09
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +23.78
-     KK Group Points:          +252.50
+     Relative Score:           +35.61
+     KK Group Points:          +302.50
      Raw Dusthāna Points:      -140.00
-     Benefic Mitigation Pct:   21.6%
-     Mitigated Dusthāna:       -109.84
+     Benefic Mitigation Pct:   36.5%
+     Mitigated Dusthāna:       -88.84
      Active Planets Count:     6
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
@@ -418,45 +451,43 @@ Occupants: None
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +300.00
+     Total Yoga Score:         +27.36
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +300.00
+       - Rāja Yoga Points:     +27.67
        - Mahāpuruṣa Points:    +0.00
        - Daridra Points:       +0.00
      Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Saturn): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Saturn): +0 pts
+       * Kāma Yoga (The Beloved) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Saturn): +28 pts
 
   6. Synthesis & Dominant Drivers:
-     • House Lord Saturn is fortified (+126.4)
-     • Significant aspectual support from Saturn on Cusp (+180.8)
-     • Net Structural Yogas (+300.0)
+     • House Lord Saturn is fortified (+73.7)
+     • Significant aspectual support from Saturn on Cusp (+149.2)
 
 --- [ HOUSE 8: AQUARIUS (RULED BY SATURN) ] ---
-Composite Score: +83.10 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Composite Score: +23.94 | Classical Tier: Miśra | Rating: Mixed / Resilient
 Sensitive Cusp Degree: 328.8932° (Aquarius 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +18.08
+     Direct Basic Score: +25.91
        * Sun      :  -51.95 pts
        * Moon     :   +0.00 pts
        * Mars     :   +0.00 pts
        * Mercury  :  -26.72 pts
        * Jupiter  :   +0.00 pts
        * Venus    :  +74.39 pts
-       * Saturn   : +130.82 pts [HOUSE LORD]
+       * Saturn   : +107.93 pts [HOUSE LORD]
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Saturn) Final Score:       +126.43
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Saturn) Final Score:       +73.65
+     Final Dispositor:         Mars
+     Effective Lord Score:     +65.09
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +126.43
+     Combined Lord/Occ Score:  +65.09
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           -29.00
-     KK Group Points:          -58.00
+     Relative Score:           -25.00
+     KK Group Points:          -100.00
      Raw Dusthāna Points:      +0.00
      Benefic Mitigation Pct:   0.0%
      Mitigated Dusthāna:       +0.00
@@ -468,45 +499,42 @@ Occupants: None
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +300.00
+     Total Yoga Score:         +0.00
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +300.00
+       - Rāja Yoga Points:     +0.00
        - Mahāpuruṣa Points:    +0.00
        - Daridra Points:       +0.00
-     Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Saturn): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Saturn): +0 pts
+     Active Structural Yogas: None
 
   6. Synthesis & Dominant Drivers:
-     • House Lord Saturn is fortified (+126.4)
-     • Significant aspectual support from Saturn on Cusp (+130.8)
-     • Net Structural Yogas (+300.0)
+     • House Lord Saturn is fortified (+73.7)
+     • Significant aspectual support from Saturn on Cusp (+107.9)
 
 --- [ HOUSE 9: PISCES (RULED BY JUPITER) ] ---
-Composite Score: +81.83 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Composite Score: +36.19 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
 Sensitive Cusp Degree: 358.8932° (Pisces 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: -3.97
+     Direct Basic Score: +8.35
        * Sun      :  -16.95 pts
-       * Moon     :  +63.24 pts
-       * Mars     :  +57.59 pts
+       * Moon     :  +48.48 pts
+       * Mars     :  +95.02 pts
        * Mercury  :  -11.72 pts
-       * Jupiter  :  +38.23 pts [HOUSE LORD]
+       * Jupiter  :  +31.54 pts [HOUSE LORD]
        * Venus    :  +49.39 pts
-       * Saturn   : -207.53 pts
+       * Saturn   : -159.11 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Jupiter) Final Score:       +112.06
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Jupiter) Final Score:       +73.92
+     Final Dispositor:         Mars
+     Effective Lord Score:     +65.29
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +112.06
+     Combined Lord/Occ Score:  +65.29
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +1.07
-     KK Group Points:          +7.50
+     Relative Score:           +5.00
+     KK Group Points:          +35.00
      Raw Dusthāna Points:      +0.00
      Benefic Mitigation Pct:   0.0%
      Mitigated Dusthāna:       +0.00
@@ -518,50 +546,49 @@ Occupants: None
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +300.00
+     Total Yoga Score:         +52.97
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +300.00
+       - Rāja Yoga Points:     +55.35
        - Mahāpuruṣa Points:    +0.00
        - Daridra Points:       +0.00
      Active Structural Yogas:
-       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Jupiter): +0 pts
+       * Bhāgya Yoga (Divine Grace) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Jupiter): +55 pts
 
   6. Synthesis & Dominant Drivers:
-     • House Lord Jupiter is fortified (+112.1)
-     • Significant aspectual pressure from Saturn on Cusp (-207.5)
-     • Net Structural Yogas (+300.0)
+     • House Lord Jupiter is fortified (+73.9)
+     • Significant aspectual pressure from Saturn on Cusp (-159.1)
+     • Net Structural Yogas (+53.0)
 
 --- [ HOUSE 10: ARIES (RULED BY MARS) ] ---
-Composite Score: +156.40 | Classical Tier: Puṣṭa | Rating: Exceptional / Off the Chart
+Composite Score: +63.67 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
 Sensitive Cusp Degree: 28.8932° (Aries 28.89°)
 Occupants: Moon, Mars, Jupiter
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: -9.32
+     Direct Basic Score: +4.11
        * Sun      :   -0.00 pts
-       * Moon     :  +49.24 pts
-       * Mars     :  +46.06 pts [HOUSE LORD]
+       * Moon     :  +52.01 pts
+       * Mars     :  +81.83 pts [HOUSE LORD]
        * Mercury  :   -0.00 pts
        * Jupiter  :   +0.00 pts
        * Venus    :  +24.39 pts
-       * Saturn   : -184.94 pts
+       * Saturn   : -141.79 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Mars) Final Score:       +25.78
-     Occupants Final Scores:   Moon (+16.07), Mars (+25.78), Jupiter (+112.06)
-     Occupants Average Score:  +51.30
-     Combined Lord/Occ Score:  +44.92
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Mars) Final Score:       +39.41
+     Final Dispositor:         Mars
+     Effective Lord Score:     +59.41
+     Occupants Final Scores:   Moon (+15.78), Mars (+39.41), Jupiter (+73.92)
+     Occupants Average Score:  +43.04
+     Combined Lord/Occ Score:  +55.04
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +0.00
-     KK Group Points:          +0.00
+     Relative Score:           +48.12
+     KK Group Points:          +192.50
      Raw Dusthāna Points:      +0.00
      Benefic Mitigation Pct:   0.0%
      Mitigated Dusthāna:       +0.00
-     Active Planets Count:     2
+     Active Planets Count:     4
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
      Wall Type:                None
@@ -569,53 +596,75 @@ Occupants: Moon, Mars, Jupiter
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +740.00
+     Total Yoga Score:         +150.00
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +600.00
-       - Mahāpuruṣa Points:    +140.00
-       - Daridra Points:       +0.00
+       - Rāja Yoga Points:     +1237.95
+       - Mahāpuruṣa Points:    +33.75
+       - Daridra Points:       -8.00
      Active Structural Yogas:
-       * Rāja Yoga [Occupied by participating planet] (Moon + Mars): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
-       * Rāja Yoga [Occupied by participating planet] (Moon + Jupiter): +100 pts
-       * Rāja Yoga [Occupied by participating planet] (Mars + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
-       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
-       * Mahāpuruṣa Yoga [Occupied Kendra] (Moon): -40 pts
-       * Mahāpuruṣa Yoga [Occupied Kendra] (Mars): +90 pts
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Mars): +90 pts
-       * Mahāpuruṣa Yoga [Occupied Kendra] (Jupiter): +0 pts
+       * Dharma-Karma Adhipati Rāja Yoga [Occupied by participating planet (PURE & EMINENT)] (Mars + Jupiter): +90 pts
+       * Ubhayalagna Rāja Yoga (Jupiter + Mars) [Occupied by participating planet (PURE & EMINENT)] (Jupiter + Mars): +86 pts
+       * Ubhayalagna Rāja Yoga (Jupiter + Moon) [Occupied by participating planet (PURE & EMINENT)] (Jupiter + Moon): +86 pts
+       * Dhana Yoga (Mars + Jupiter) [Occupied by participating planet (PURE & EMINENT)] (Mars + Jupiter): +83 pts
+       * Chatra Yoga (The Royal Canopy) [Occupied by participating planet (PURE & EMINENT)] (Mars): +40 pts
+       * Gaja Kesarī Yoga [Occupied by participating planet (PURE & EMINENT)] (Moon + Jupiter): +40 pts
+       * Khyāti Yoga (World Renown) [Occupied by participating planet (PURE & EMINENT)] (Mars): +40 pts
+       * Śūla Yoga (Trident Resolve) [Occupied by participating planet (PURE & EMINENT)] (Sun + Moon + Mars + Mercury + Jupiter + Venus + Saturn): +40 pts
+       * Dhana Yoga (Jupiter + Venus) [Occupied by participating planet (PURE & EMINENT)] (Jupiter + Venus): +79 pts
+       * Dhana Yoga (Moon + Jupiter) [Occupied by participating planet (PURE & EMINENT)] (Moon + Jupiter): +76 pts
+       * Astra Yoga (The Weapon) [Occupied by participating planet (PURE & EMINENT)] (Jupiter): +37 pts
+       * Bhāgya Yoga (Divine Grace) [Occupied by participating planet (PURE & EMINENT)] (Jupiter): +74 pts
+       * Cāmara Yoga (Royal Fly-Whisk) [Occupied by participating planet (PURE & EMINENT)] (Moon): +37 pts
+       * Jaladhi Yoga (The Ocean Estate) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Venus): +55 pts
+       * Śaṅkha Yoga (Moon + Jupiter) [Occupied by participating planet (PURE & EMINENT)] (Moon + Jupiter): +72 pts
+       * Rucaka Mahāpuruṣa Yoga [Occupied Kendra (STAINED / CHALLENGED)] (Mars): +34 pts
+       * Sama (Madhya) Yoga (Paṇaphara Solar-Lunar Scope) [Occupied by participating planet (PURE & EMINENT)] (Sun + Moon): +34 pts
+       * Śaṅkha Yoga (Moon + Mars) [Occupied by participating planet (STAINED / CHALLENGED)] (Moon + Mars): +34 pts
+       * Puṣkala Yoga [Occupied by participating planet (STAINED / CHALLENGED)] (Moon + Mars): +16 pts
+       * Ubhayalagna Rāja Yoga (Mars + Moon) [Occupied by participating planet (STAINED / CHALLENGED)] (Mars + Moon): +32 pts
+       * Kāhala Yoga (Variant B: Dispositor Root Chain) [Occupied by participating planet (STAINED / CHALLENGED)] (Moon + Mars): +15 pts
+       * Rāja Yogakāraka (Mars) [Occupied by participating planet (STAINED / CHALLENGED)] (Mars): +29 pts
+       * Dhana Yoga (Moon + Mars) [Occupied by participating planet (STAINED / CHALLENGED)] (Moon + Mars): +28 pts
+       * Kāhala Yoga (Variant A: Mutual Kendra Alliance) [Occupied by participating planet (STAINED / CHALLENGED)] (Venus + Mars + Moon): +14 pts
+       * Candra-Maṅgala Yoga [Occupied by participating planet (STAINED / CHALLENGED)] (Moon + Mars): +12 pts
+       * Amalā Yoga (from Lagna) [Occupied by participating planet (STAINED / CHALLENGED)] (Jupiter): +22 pts
+       * Dhana Yoga (Mars + Venus) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Venus): +25 pts
+       * Kemadruma Yoga (Rescued / Bhaṅga) [Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))] (Moon + Mars + Jupiter + Venus + Saturn + Mercury): -8 pts
+       * Dhana Yoga (Moon + Venus) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Moon + Venus): +22 pts
+       * Ubhayalagna Rāja Yoga (Mars + Saturn) [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] (Mars + Saturn): +19 pts
 
   6. Synthesis & Dominant Drivers:
-     • Significant aspectual pressure from Saturn on Cusp (-184.9)
-     • Net Structural Yogas (+740.0)
+     • Significant aspectual pressure from Saturn on Cusp (-141.8)
+     • Net Structural Yogas (+150.0)
 
 --- [ HOUSE 11: TAURUS (RULED BY VENUS) ] ---
-Composite Score: -10.37 | Classical Tier: Miśra | Rating: Mixed / Resilient
+Composite Score: +21.67 | Classical Tier: Miśra | Rating: Mixed / Resilient
 Sensitive Cusp Degree: 58.8932° (Taurus 28.89°)
 Occupants: None
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +2.54
+     Direct Basic Score: +7.27
        * Sun      :  -36.10 pts
-       * Moon     :  +31.62 pts
-       * Mars     :  +28.79 pts
+       * Moon     :  +24.24 pts
+       * Mars     :  +47.51 pts
        * Mercury  :   -6.57 pts
        * Jupiter  :   +0.00 pts
        * Venus    :   +0.00 pts [HOUSE LORD]
        * Saturn   :   -0.00 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Venus) Final Score:       +28.85
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Venus) Final Score:       +38.71
+     Final Dispositor:         Mars
+     Effective Lord Score:     +38.88
      Occupants Final Scores:   None
-     Combined Lord/Occ Score:  +28.85
+     Combined Lord/Occ Score:  +38.88
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +16.75
-     KK Group Points:          +152.00
-     Raw Dusthāna Points:      -160.50
-     Benefic Mitigation Pct:   57.5%
-     Mitigated Dusthāna:       -68.23
+     Relative Score:           +7.61
+     KK Group Points:          +110.00
+     Raw Dusthāna Points:      -202.50
+     Benefic Mitigation Pct:   64.5%
+     Mitigated Dusthāna:       -71.97
      Active Planets Count:     5
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
@@ -624,85 +673,93 @@ Occupants: None
      Is Flanked/Walled:        False
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         -100.00
+     Total Yoga Score:         +27.36
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +0.00
+       - Rāja Yoga Points:     +27.67
        - Mahāpuruṣa Points:    +0.00
-       - Daridra Points:       -100.00
+       - Daridra Points:       +0.00
      Active Structural Yogas:
-       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Venus): +0 pts
-       * Daridra Yoga [Owned by participating planet] (Venus + Saturn): -100 pts
+       * Pārijāta Yoga (The Wish-Fulfilling Tree) [Primary yoga / dispositor-traversed house (PURE & EMINENT)] (Venus): +28 pts
 
   6. Synthesis & Dominant Drivers:
-     • Net Structural Yogas (-100.0)
+     • Significant aspectual support from Mars on Cusp (+47.5)
 
 --- [ HOUSE 12: GEMINI (RULED BY MERCURY) ] ---
-Composite Score: +84.80 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Composite Score: +59.77 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
 Sensitive Cusp Degree: 88.8932° (Gemini 28.89°)
 Occupants: Sun, Mercury
 
   1. Direct Cusp Rays (Phase 6):
-     Direct Basic Score: +80.53
-       * Sun      :  -25.95 pts
-       * Moon     : +123.24 pts
-       * Mars     : +133.88 pts
-       * Mercury  : +388.84 pts [HOUSE LORD]
+     Direct Basic Score: +93.47
+       * Sun      :  -50.80 pts
+       * Moon     :  +94.48 pts
+       * Mars     : +220.91 pts
+       * Mercury  : +268.08 pts [HOUSE LORD]
        * Jupiter  :   +0.00 pts
        * Venus    :   +1.23 pts
-       * Saturn   :  -57.53 pts
+       * Saturn   :  -44.11 pts
 
-  2. Lord & Occupant Condition (Phase 5):
-     Lord (Mercury) Final Score:       +26.56
-     Occupants Final Scores:   Sun (-71.87), Mercury (+26.56)
-     Occupants Average Score:  -22.66
-     Combined Lord/Occ Score:  -6.25
+  2. Lord & Occupant Condition (Phase 5 & 10):
+     Lord (Mercury) Final Score:       +37.77
+     Final Dispositor:         Mercury
+     Effective Lord Score:     +57.77
+     Occupants Final Scores:   Sun (-22.61), Mercury (+37.77)
+     Occupants Average Score:  +7.58
+     Combined Lord/Occ Score:  +33.66
 
   3. Bhavāt Bhavam Neighborhood (Phase 7):
-     Relative Score:           +100.00
-     KK Group Points:          +100.00
+     Relative Score:           +32.50
+     KK Group Points:          +162.50
      Raw Dusthāna Points:      +0.00
      Benefic Mitigation Pct:   0.0%
      Mitigated Dusthāna:       +0.00
-     Active Planets Count:     1
+     Active Planets Count:     5
 
   4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
      Wall Type:                Mishra Kartari
-     Wall Score:               +166.15
+     Wall Score:               +16.92
      Is Flanked/Walled:        True
      Planet Before Cusp:       Mercury
      Planet After Cusp:        Saturn
 
   5. Structural House Yogas (Phase 9):
-     Total Yoga Score:         +100.00
+     Total Yoga Score:         +73.51
        - Parivartana Points:   +0.00
-       - Rāja Yoga Points:     +0.00
+       - Rāja Yoga Points:     +95.30
        - Mahāpuruṣa Points:    +0.00
-       - Daridra Points:       +100.00
+       - Daridra Points:       -14.88
      Active Structural Yogas:
-       * Daridra Yoga [Occupied house] (Sun + Mercury): +100 pts
+       * Śūla Yoga (Trident Resolve) [Occupied Dusthāna spillover (PURE & EMINENT)] (Sun + Moon + Mars + Mercury + Jupiter + Venus + Saturn): +10 pts
+       * Vimala Viparīta Rāja Yoga [Occupied by participating planet (PURE & EMINENT)] (Mercury): +62 pts
+       * Sama (Madhya) Yoga (Paṇaphara Solar-Lunar Scope) [Occupied Dusthāna spillover (PURE & EMINENT)] (Sun + Moon): +8 pts
+       * Miśra-Veśi Yoga [Occupied Dusthāna spillover (STAINED / CHALLENGED)] (Sun + Venus + Saturn): +4 pts
+       * Niḥsva Yoga (Depleted Treasury) [Occupied Dusthāna spillover (STAINED / CHALLENGED)] (Sun): +4 pts
+       * Dāridrya Yoga (H2 Lord Sun in H12) [Occupied house (STAINED / CHALLENGED)] (Sun): -15 pts
+       * Mṛti Yoga (Broken Initiatives) [Occupied Dusthāna spillover (RESCUED (NEECHA BHANGA / REVERSAL))] (Mercury): +4 pts
+       * Budhāditya Yoga [Occupied Dusthāna spillover (STAINED / CHALLENGED)] (Sun + Mercury): +3 pts
 
   6. Synthesis & Dominant Drivers:
-     • Significant aspectual support from Mercury on Cusp (+388.8)
-     • Net Structural Yogas (+100.0)
-     • Mishra Kartari (+166.2)
+     • Significant aspectual support from Mercury on Cusp (+268.1)
+     • Net Structural Yogas (+73.5)
+     • Mishra Kartari (+16.9)
 
 ==========================================================================================
 7. CROSS-SYSTEM CONCORDANCE: STAGE 3 BHĀVA BALA VS. STAGE 4 HOUSES OF LIFE
 ------------------------------------------------------------------------------------------
 Bhāva  | Rāśi (Lord)        | Stage 3 Virūpas  | Stage 3 Rūpas  | Stage 3 Tier  | Stage 4 Score  | Stage 4 Tier  | Diagnosis
 ------------------------------------------------------------------------------------------
-H1     | Cancer (Moon)      |          490.6v |         8.18R | Puṣṭa         |       +98.80 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H2     | Leo (Sun)          |          536.9v |         8.95R | Puṣṭa         |       -29.35 | Hīna          | Divergent: Stage 4 Strained by Cusp Pressure / Daridra
-H3     | Virgo (Mercury)    |          675.9v |        11.27R | Puṣṭa         |       +17.10 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
-H4     | Libra (Venus)      |          575.4v |         9.59R | Puṣṭa         |        -6.69 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
-H5     | Scorpio (Mars)     |          579.4v |         9.66R | Puṣṭa         |       +83.60 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H6     | Sagittarius (Jupiter) |          528.1v |         8.80R | Puṣṭa         |       +90.00 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H7     | Capricorn (Saturn) |          461.2v |         7.69R | Puṣṭa         |       +95.72 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H8     | Aquarius (Saturn)  |          412.7v |         6.88R | Puṣṭa         |       +83.10 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H9     | Pisces (Jupiter)   |          477.3v |         7.95R | Puṣṭa         |       +81.83 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H10    | Aries (Mars)       |          509.0v |         8.48R | Puṣṭa         |      +156.40 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
-H11    | Taurus (Venus)     |          527.7v |         8.79R | Puṣṭa         |       -10.37 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
-H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |       +84.80 | Puṣṭa         | Divergent: Stage 4 Elevated by Yogas / Kartarī Wall
+H1     | Cancer (Moon)      |          490.6v |         8.18R | Puṣṭa         |       +72.53 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H2     | Leo (Sun)          |          536.9v |         8.95R | Puṣṭa         |       +12.68 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H3     | Virgo (Mercury)    |          675.9v |        11.27R | Puṣṭa         |       +33.91 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H4     | Libra (Venus)      |          575.4v |         9.59R | Puṣṭa         |       +46.32 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H5     | Scorpio (Mars)     |          579.4v |         9.66R | Puṣṭa         |       +66.19 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H6     | Sagittarius (Jupiter) |          528.1v |         8.80R | Puṣṭa         |       +24.60 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H7     | Capricorn (Saturn) |          461.2v |         7.69R | Puṣṭa         |       +41.56 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H8     | Aquarius (Saturn)  |          412.7v |         6.88R | Puṣṭa         |       +23.94 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H9     | Pisces (Jupiter)   |          477.3v |         7.95R | Puṣṭa         |       +36.19 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H10    | Aries (Mars)       |          509.0v |         8.48R | Puṣṭa         |       +63.67 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H11    | Taurus (Venus)     |          527.7v |         8.79R | Puṣṭa         |       +21.67 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |       +59.77 | Puṣṭa         | Divergent: Stage 4 Elevated by Yogas / Kartarī Wall
 
 ==========================================================================================
 8. COMPLETE MACHINE-READABLE JSON DUMP (HOUSES OF LIFE ENGINE)
@@ -739,23 +796,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": -40.0
       },
       "combined_influences": {
-        "net_score": -112.88,
+        "net_score": -11.62,
         "incoming_breakdown": {
-          "Moon": 0.4,
-          "Mars": 4.31,
-          "Mercury": -126.57,
+          "Moon": 0.32,
+          "Mars": 5.17,
+          "Mercury": -42.19,
           "Jupiter": 0.0,
           "Venus": 12.28,
-          "Saturn": -3.3
+          "Saturn": -4.62
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 48.43,
-        "dominance_adjusted_pct": 18.53,
-        "capped_base_pct": 18.53,
+        "dominance_adjusted_pct": 36.28,
+        "capped_base_pct": 36.28,
         "house_category": "Hidden",
-        "house_multiplier": -1.0,
-        "alignment_score": -18.53
+        "house_multiplier": -0.5,
+        "alignment_score": -18.14
       },
       "bhava_sandhi": {
         "distance_to_border": 13.42,
@@ -768,11 +825,11 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "distance_to_sun": 0.0,
         "tolerance_orb": null,
         "loss_ratio": 0.0,
-        "solar_gain_ratio": 0.2579,
-        "combustion_multiplier": 1.2579
+        "solar_gain_ratio": 0.0645,
+        "combustion_multiplier": 1.0645
       },
-      "base_average_score": -57.14,
-      "final_assessment_score": -71.87
+      "base_average_score": -23.25,
+      "final_assessment_score": -22.61
     },
     "Moon": {
       "sign": "Aries",
@@ -797,23 +854,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": -40.0
       },
       "combined_influences": {
-        "net_score": 57.45,
+        "net_score": 44.94,
         "incoming_breakdown": {
           "Sun": -35.79,
-          "Mars": 174.94,
-          "Mercury": -72.72,
+          "Mars": 209.93,
+          "Mercury": -24.24,
           "Jupiter": 0.0,
           "Venus": 62.43,
-          "Saturn": -71.42
+          "Saturn": -99.98
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 47.3,
-        "dominance_adjusted_pct": 20.51,
-        "capped_base_pct": 20.51,
+        "dominance_adjusted_pct": 28.27,
+        "capped_base_pct": 28.27,
         "house_category": "Prominent",
         "house_multiplier": 1.5,
-        "alignment_score": 30.77
+        "alignment_score": 42.4
       },
       "bhava_sandhi": {
         "distance_to_border": 13.08,
@@ -829,8 +886,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 1.0
       },
-      "base_average_score": 16.07,
-      "final_assessment_score": 16.07
+      "base_average_score": 15.78,
+      "final_assessment_score": 15.78
     },
     "Mars": {
       "sign": "Aries",
@@ -841,13 +898,13 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         5
       ],
       "functional_nature": {
-        "score": 0,
-        "classification": "Neutral",
+        "score": 2,
+        "classification": "Benefic",
         "rule_breakdown": {
           "is_first_lord": false,
           "trine_score": 1,
           "dusthana_score": 0,
-          "inherent_score": -1
+          "inherent_score": 1
         }
       },
       "dignity": {
@@ -856,23 +913,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": 90.0
       },
       "combined_influences": {
-        "net_score": -30.83,
+        "net_score": -10.92,
         "incoming_breakdown": {
           "Sun": -44.5,
-          "Moon": 128.91,
-          "Mercury": -97.29,
+          "Moon": 103.13,
+          "Mercury": -32.43,
           "Jupiter": 0.0,
           "Venus": 70.92,
-          "Saturn": -88.87
+          "Saturn": -124.41
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 39.38,
-        "dominance_adjusted_pct": 12.12,
-        "capped_base_pct": 12.12,
+        "dominance_adjusted_pct": 26.1,
+        "capped_base_pct": 26.1,
         "house_category": "Prominent",
         "house_multiplier": 1.5,
-        "alignment_score": 18.18
+        "alignment_score": 39.15
       },
       "bhava_sandhi": {
         "distance_to_border": 10.71,
@@ -888,8 +945,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 1.0
       },
-      "base_average_score": 25.78,
-      "final_assessment_score": 25.78
+      "base_average_score": 39.41,
+      "final_assessment_score": 39.41
     },
     "Mercury": {
       "sign": "Gemini",
@@ -915,23 +972,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": 80.0
       },
       "combined_influences": {
-        "net_score": -72.65,
+        "net_score": -29.77,
         "incoming_breakdown": {
           "Sun": -98.44,
-          "Moon": 10.78,
-          "Mars": 18.4,
+          "Moon": 8.62,
+          "Mars": 22.08,
           "Jupiter": 0.0,
           "Venus": 4.85,
-          "Saturn": -8.23
+          "Saturn": -11.53
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 78.11,
-        "dominance_adjusted_pct": 108.01,
-        "capped_base_pct": 100.0,
+        "dominance_adjusted_pct": 90.26,
+        "capped_base_pct": 90.26,
         "house_category": "Hidden",
         "house_multiplier": 1.0,
-        "alignment_score": 100.0
+        "alignment_score": 90.26
       },
       "bhava_sandhi": {
         "distance_to_border": 7.67,
@@ -947,8 +1004,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 0.7421
       },
-      "base_average_score": 35.78,
-      "final_assessment_score": 26.56
+      "base_average_score": 46.83,
+      "final_assessment_score": 37.77
     },
     "Jupiter": {
       "sign": "Aries",
@@ -974,23 +1031,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": 0.0
       },
       "combined_influences": {
-        "net_score": 186.19,
+        "net_score": 80.62,
         "incoming_breakdown": {
           "Sun": -30.33,
-          "Moon": 119.75,
-          "Mars": 147.46,
-          "Mercury": -59.7,
+          "Moon": 95.8,
+          "Mars": 176.95,
+          "Mercury": -19.9,
           "Venus": 83.95,
-          "Saturn": -74.93
+          "Saturn": -104.91
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 61.77,
-        "dominance_adjusted_pct": 115.82,
-        "capped_base_pct": 100.0,
+        "dominance_adjusted_pct": 94.09,
+        "capped_base_pct": 94.09,
         "house_category": "Prominent",
         "house_multiplier": 1.5,
-        "alignment_score": 150.0
+        "alignment_score": 141.13
       },
       "bhava_sandhi": {
         "distance_to_border": 12.58,
@@ -1006,8 +1063,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 1.0
       },
-      "base_average_score": 112.06,
-      "final_assessment_score": 112.06
+      "base_average_score": 73.92,
+      "final_assessment_score": 73.92
     },
     "Venus": {
       "sign": "Cancer",
@@ -1033,19 +1090,19 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": 0.0
       },
       "combined_influences": {
-        "net_score": 37.67,
+        "net_score": 8.94,
         "incoming_breakdown": {
           "Sun": -17.19,
-          "Moon": 52.59,
-          "Mars": 75.11,
-          "Mercury": -8.74,
+          "Moon": 42.07,
+          "Mars": 90.14,
+          "Mercury": -2.91,
           "Jupiter": 0.0,
-          "Saturn": -64.1
+          "Saturn": -89.75
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 97.54,
-        "dominance_adjusted_pct": 135.31,
+        "dominance_adjusted_pct": 108.2,
         "capped_base_pct": 100.0,
         "house_category": "Prominent",
         "house_multiplier": 1.5,
@@ -1065,8 +1122,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 1.0
       },
-      "base_average_score": 62.56,
-      "final_assessment_score": 28.85
+      "base_average_score": 52.98,
+      "final_assessment_score": 38.71
     },
     "Saturn": {
       "sign": "Cancer",
@@ -1092,23 +1149,23 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "pct_score": 0.0
       },
       "combined_influences": {
-        "net_score": 343.47,
+        "net_score": 144.45,
         "incoming_breakdown": {
           "Sun": -4.63,
-          "Moon": 129.97,
-          "Mars": 168.85,
-          "Mercury": -14.82,
+          "Moon": 103.97,
+          "Mars": 202.62,
+          "Mercury": -4.94,
           "Jupiter": 0.0,
           "Venus": 64.1
         }
       },
       "cusp_alignment": {
         "raw_conjunction_pct": 61.65,
-        "dominance_adjusted_pct": 23.87,
-        "capped_base_pct": 23.87,
+        "dominance_adjusted_pct": 50.99,
+        "capped_base_pct": 50.99,
         "house_category": "Prominent",
         "house_multiplier": 1.5,
-        "alignment_score": 35.81
+        "alignment_score": 76.49
       },
       "bhava_sandhi": {
         "distance_to_border": 12.61,
@@ -1124,8 +1181,8 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "solar_gain_ratio": 0.0,
         "combustion_multiplier": 1.0
       },
-      "base_average_score": 126.43,
-      "final_assessment_score": 126.43
+      "base_average_score": 73.65,
+      "final_assessment_score": 73.65
     }
   },
   "houses": {
@@ -1141,37 +1198,39 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       ],
       "components": {
         "basic_house_condition": {
-          "score": 39.1,
+          "score": 49.87,
           "planet_contributions": {
             "Sun": -18.05,
-            "Moon": 98.92,
-            "Mars": 132.41,
+            "Moon": 81.61,
+            "Mars": 218.48,
             "Mercury": -3.28,
             "Jupiter": 0.0,
-            "Venus": 135.31,
-            "Saturn": -71.62
+            "Venus": 108.2,
+            "Saturn": -117.28
           }
         },
         "lord_assessment": {
           "lord": "Moon",
-          "lord_final_score": 16.07,
+          "lord_final_score": 15.78,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 21.69,
           "occupants_final_scores": {
-            "Venus": 28.85,
-            "Saturn": 126.43
+            "Venus": 38.71,
+            "Saturn": 73.65
           },
-          "combined_score": 57.12
+          "combined_score": 32.04
         },
         "relative_house_bhavat_bhavam": {
-          "score": 37.77,
-          "kk_group_points": 205.5,
-          "dusthana_raw_points": -58.0,
+          "score": 48.24,
+          "kk_group_points": 335.0,
+          "dusthana_raw_points": -100.0,
           "benefic_mitigation_pct": 6.18,
-          "dusthana_mitigated_points": -54.42,
-          "active_planets_count": 4,
+          "dusthana_mitigated_points": -93.82,
+          "active_planets_count": 5,
           "relative_functional_natures": {
             "Sun": -20.0,
             "Moon": 150.0,
-            "Mars": 45.0,
+            "Mars": 100.0,
             "Mercury": -50.0,
             "Jupiter": 0.0,
             "Venus": 50.0,
@@ -1186,100 +1245,208 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 360.0,
+          "total_yoga_score": 149.95,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 500.0,
-          "mahapurusha_score": -40.0,
-          "daridra_yoga_score": -100.0,
+          "raja_yoga_score": 662.49,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": -8.0,
           "active_yogas": [
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "Ubhayalagna R\u0101ja Yoga (Jupiter + Moon)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
-                "Moon",
-                "Mars"
+                "Jupiter",
+                "Moon"
               ],
-              "points": 100.0
+              "points": 64.12
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "\u015a\u016bla Yoga (Trident Resolve)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Sun",
+                "Moon",
+                "Mars",
+                "Mercury",
+                "Jupiter",
+                "Venus",
+                "Saturn"
+              ],
+              "points": 40.5
+            },
+            {
+              "type": "Dhana Yoga (Jupiter + Venus)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Venus"
+              ],
+              "points": 79.2
+            },
+            {
+              "type": "Dhana Yoga (Moon + Jupiter)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
                 "Moon",
                 "Jupiter"
               ],
-              "points": 100.0
+              "points": 57.38
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
+              "type": "C\u0101mara Yoga (Royal Fly-Whisk)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
-                "Moon",
+                "Moon"
+              ],
+              "points": 27.67
+            },
+            {
+              "type": "Jaladhi Yoga (The Ocean Estate)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Venus"
+              ],
+              "points": 73.8
+            },
+            {
+              "type": "K\u0101ma Yoga (The Beloved)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
                 "Saturn"
               ],
-              "points": 100.0
+              "points": 36.9
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
+              "type": "P\u0101rij\u0101ta Yoga (The Wish-Fulfilling Tree)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Venus"
+              ],
+              "points": 36.9
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Jupiter)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 54.0
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Mars)",
+              "role": "Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 25.31
+            },
+            {
+              "type": "Pu\u1e63kala Yoga",
+              "role": "Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 11.81
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Moon)",
+              "role": "Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars",
+                "Moon"
+              ],
+              "points": 23.62
+            },
+            {
+              "type": "Mi\u015bra-Ve\u015bi Yoga",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Sun",
+                "Venus",
+                "Saturn"
+              ],
+              "points": 15.75
+            },
+            {
+              "type": "Asura Yoga (The Titanic Ambition)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Saturn"
+              ],
+              "points": 14.62
+            },
+            {
+              "type": "Dhana Yoga (Moon + Mars)",
+              "role": "Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 21.26
+            },
+            {
+              "type": "K\u0101hala Yoga (Variant A: Mutual Kendra Alliance)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Venus",
+                "Mars",
+                "Moon"
+              ],
+              "points": 13.5
+            },
+            {
+              "type": "Dhana Yoga (Mars + Venus)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Mars",
+                "Venus"
+              ],
+              "points": 25.2
+            },
+            {
+              "type": "Kemadruma Yoga (Rescued / Bha\u1e45ga)",
+              "role": "Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Moon",
+                "Mars",
+                "Jupiter",
+                "Venus",
+                "Saturn",
+                "Mercury"
+              ],
+              "points": -8.0
+            },
+            {
+              "type": "Dhana Yoga (Moon + Venus)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Moon",
+                "Venus"
+              ],
+              "points": 22.05
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Saturn)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
               "planets": [
                 "Mars",
                 "Saturn"
               ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
-              "planets": [
-                "Jupiter",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
-              "planets": [
-                "Moon"
-              ],
-              "points": -40.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Occupied Kendra",
-              "planets": [
-                "Venus"
-              ],
-              "points": 0.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Occupied Kendra",
-              "planets": [
-                "Saturn"
-              ],
-              "points": 0.0
-            },
-            {
-              "type": "Daridra Yoga",
-              "role": "Occupied house",
-              "planets": [
-                "Venus",
-                "Saturn"
-              ],
-              "points": -100.0
+              "points": 18.9
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 98.8,
+        "composite_score": 72.53,
         "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual support from Venus on Cusp (+135.3)",
-          "Net Structural Yogas (+360.0)"
+          "Significant aspectual support from Mars on Cusp (+218.5)",
+          "Net Structural Yogas (+149.9)"
         ]
       }
     },
@@ -1292,34 +1459,36 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 5.63,
+          "score": 13.64,
           "planet_contributions": {
-            "Sun": 81.26,
-            "Moon": 56.76,
-            "Mars": 37.41,
+            "Sun": 67.04,
+            "Moon": 43.52,
+            "Mars": 61.73,
             "Mercury": -21.57,
             "Jupiter": 0.0,
             "Venus": 0.61,
-            "Saturn": -115.06
+            "Saturn": -88.21
           }
         },
         "lord_assessment": {
           "lord": "Sun",
-          "lord_final_score": -71.87,
+          "lord_final_score": -22.61,
+          "final_dispositor": "Mercury",
+          "effective_lord_score": -7.51,
           "occupants_final_scores": {},
-          "combined_score": -71.87
+          "combined_score": -7.51
         },
         "relative_house_bhavat_bhavam": {
-          "score": 19.47,
-          "kk_group_points": 125.0,
+          "score": 64.65,
+          "kk_group_points": 420.0,
           "dusthana_raw_points": -100.0,
-          "benefic_mitigation_pct": 52.88,
-          "dusthana_mitigated_points": -47.12,
-          "active_planets_count": 4,
+          "benefic_mitigation_pct": 67.88,
+          "dusthana_mitigated_points": -32.12,
+          "active_planets_count": 6,
           "relative_functional_natures": {
             "Sun": 150.0,
             "Moon": -50.0,
-            "Mars": 50.0,
+            "Mars": 150.0,
             "Mercury": 40.0,
             "Jupiter": 100.0,
             "Venus": 50.0,
@@ -1334,32 +1503,29 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": -100.0,
+          "total_yoga_score": 10.95,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 0.0,
+          "raja_yoga_score": 10.97,
           "mahapurusha_score": 0.0,
-          "daridra_yoga_score": -100.0,
+          "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "Daridra Yoga",
-              "role": "Owned by participating planet",
+              "type": "Ni\u1e25sva Yoga (Depleted Treasury)",
+              "role": "Primary yoga / dispositor-traversed house (STAINED / CHALLENGED)",
               "planets": [
-                "Sun",
-                "Mercury"
+                "Sun"
               ],
-              "points": -100.0
+              "points": 10.97
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": -29.35,
-        "health_rating": "Strained / Challenged",
-        "classical_tier": "H\u012bna",
+        "composite_score": 12.68,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
         "dominant_drivers": [
-          "House Lord Sun is strained (-71.9)",
-          "Significant aspectual pressure from Saturn on Cusp (-115.1)",
-          "Net Structural Yogas (-100.0)"
+          "Significant aspectual pressure from Saturn on Cusp (-88.2)"
         ]
       }
     },
@@ -1372,30 +1538,32 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 22.86,
+          "score": 34.95,
           "planet_contributions": {
             "Sun": -86.95,
-            "Moon": 126.47,
-            "Mars": 115.18,
-            "Mercury": 250.3,
+            "Moon": 96.96,
+            "Mars": 190.04,
+            "Mercury": 206.5,
             "Jupiter": 0.0,
             "Venus": 26.23,
-            "Saturn": -271.23
+            "Saturn": -207.95
           }
         },
         "lord_assessment": {
           "lord": "Mercury",
-          "lord_final_score": 26.56,
+          "lord_final_score": 37.77,
+          "final_dispositor": "Mercury",
+          "effective_lord_score": 57.77,
           "occupants_final_scores": {},
-          "combined_score": 26.56
+          "combined_score": 57.77
         },
         "relative_house_bhavat_bhavam": {
-          "score": 36.09,
+          "score": 23.52,
           "kk_group_points": 130.0,
           "dusthana_raw_points": -82.5,
-          "benefic_mitigation_pct": 73.66,
-          "dusthana_mitigated_points": -21.73,
-          "active_planets_count": 3,
+          "benefic_mitigation_pct": 85.0,
+          "dusthana_mitigated_points": -12.38,
+          "active_planets_count": 5,
           "relative_functional_natures": {
             "Sun": -100.0,
             "Moon": 100.0,
@@ -1414,20 +1582,29 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 0.0,
+          "total_yoga_score": 12.96,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 0.0,
+          "raja_yoga_score": 12.99,
           "mahapurusha_score": 0.0,
           "daridra_yoga_score": 0.0,
-          "active_yogas": []
+          "active_yogas": [
+            {
+              "type": "M\u1e5bti Yoga (Broken Initiatives)",
+              "role": "Primary yoga / dispositor-traversed house (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Mercury"
+              ],
+              "points": 12.99
+            }
+          ]
         }
       },
       "synthesis": {
-        "composite_score": 17.1,
-        "health_rating": "Mixed / Resilient",
-        "classical_tier": "Mi\u015bra",
+        "composite_score": 33.91,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual pressure from Saturn on Cusp (-271.2)"
+          "Significant aspectual pressure from Saturn on Cusp (-207.9)"
         ]
       }
     },
@@ -1440,26 +1617,28 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 41.94,
+          "score": 60.6,
           "planet_contributions": {
             "Sun": -33.9,
-            "Moon": 208.38,
-            "Mars": 190.0,
+            "Moon": 159.76,
+            "Mars": 313.5,
             "Mercury": -23.43,
             "Jupiter": 0.0,
-            "Venus": 148.77,
-            "Saturn": -196.23
+            "Venus": 122.74,
+            "Saturn": -150.45
           }
         },
         "lord_assessment": {
           "lord": "Venus",
-          "lord_final_score": 28.85,
+          "lord_final_score": 38.71,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 38.88,
           "occupants_final_scores": {},
-          "combined_score": 28.85
+          "combined_score": 38.88
         },
         "relative_house_bhavat_bhavam": {
-          "score": -4.25,
-          "kk_group_points": -25.5,
+          "score": 5.42,
+          "kk_group_points": 32.5,
           "dusthana_raw_points": 0.0,
           "benefic_mitigation_pct": 0.0,
           "dusthana_mitigated_points": 0.0,
@@ -1471,7 +1650,7 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
             "Mercury": -50.0,
             "Jupiter": 0.0,
             "Venus": 150.0,
-            "Saturn": 50.0
+            "Saturn": 150.0
           }
         },
         "house_walls_kartari": {
@@ -1482,39 +1661,30 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": -100.0,
+          "total_yoga_score": 52.97,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 0.0,
+          "raja_yoga_score": 55.35,
           "mahapurusha_score": 0.0,
-          "daridra_yoga_score": -100.0,
+          "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
+              "type": "Jaladhi Yoga (The Ocean Estate)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
                 "Venus"
               ],
-              "points": 0.0
-            },
-            {
-              "type": "Daridra Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Venus",
-                "Saturn"
-              ],
-              "points": -100.0
+              "points": 55.35
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": -6.69,
-        "health_rating": "Mixed / Resilient",
-        "classical_tier": "Mi\u015bra",
+        "composite_score": 46.32,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual support from Moon on Cusp (+208.4)",
-          "Net Structural Yogas (-100.0)"
+          "Significant aspectual support from Mars on Cusp (+313.5)",
+          "Net Structural Yogas (+53.0)"
         ]
       }
     },
@@ -1527,29 +1697,31 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 40.6,
+          "score": 36.42,
           "planet_contributions": {
             "Sun": -72.2,
-            "Moon": 148.38,
-            "Mars": 264.82,
+            "Moon": 113.76,
+            "Mars": 218.48,
             "Mercury": -13.13,
             "Jupiter": 0.0,
             "Venus": 48.77,
-            "Saturn": -92.47
+            "Saturn": -70.89
           }
         },
         "lord_assessment": {
           "lord": "Mars",
-          "lord_final_score": 25.78,
+          "lord_final_score": 39.41,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 59.41,
           "occupants_final_scores": {},
-          "combined_score": 25.78
+          "combined_score": 59.41
         },
         "relative_house_bhavat_bhavam": {
-          "score": -38.4,
+          "score": -36.85,
           "kk_group_points": -100.0,
-          "dusthana_raw_points": -58.0,
-          "benefic_mitigation_pct": 7.61,
-          "dusthana_mitigated_points": -53.58,
+          "dusthana_raw_points": -100.0,
+          "benefic_mitigation_pct": 52.61,
+          "dusthana_mitigated_points": -47.39,
           "active_planets_count": 4,
           "relative_functional_natures": {
             "Sun": -20.0,
@@ -1569,57 +1741,187 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 390.0,
+          "total_yoga_score": 149.92,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 300.0,
-          "mahapurusha_score": 90.0,
+          "raja_yoga_score": 588.74,
+          "mahapurusha_score": 25.31,
           "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Mars"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "Dharma-Karma Adhipati R\u0101ja Yoga",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
               "planets": [
                 "Mars",
                 "Jupiter"
               ],
-              "points": 100.0
+              "points": 54.0
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "Ubhayalagna R\u0101ja Yoga (Jupiter + Mars)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Mars"
+              ],
+              "points": 51.3
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Jupiter + Moon)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Moon"
+              ],
+              "points": 51.3
+            },
+            {
+              "type": "Dhana Yoga (Mars + Jupiter)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 49.68
+            },
+            {
+              "type": "Chatra Yoga (The Royal Canopy)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 30.38
+            },
+            {
+              "type": "Dhana Yoga (Jupiter + Venus)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Venus"
+              ],
+              "points": 47.52
+            },
+            {
+              "type": "Dhana Yoga (Moon + Jupiter)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 45.9
+            },
+            {
+              "type": "Bh\u0101gya Yoga (Divine Grace)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 44.28
+            },
+            {
+              "type": "Jaladhi Yoga (The Ocean Estate)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Venus"
+              ],
+              "points": 44.28
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Jupiter)",
+              "role": "Owned by Final Dispositor (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 43.2
+            },
+            {
+              "type": "Rucaka Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Mah\u0101puru\u1e63a planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 25.31
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Mars)",
+              "role": "Owned by Final Dispositor (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 20.25
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Moon)",
+              "role": "Owned by Final Dispositor (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars",
+                "Moon"
+              ],
+              "points": 18.9
+            },
+            {
+              "type": "R\u0101ja Yogak\u0101raka (Mars)",
+              "role": "Owned by Final Dispositor (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 17.55
+            },
+            {
+              "type": "Dhana Yoga (Moon + Mars)",
+              "role": "Owned by Final Dispositor (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 17.01
+            },
+            {
+              "type": "Amal\u0101 Yoga (from Lagna)",
+              "role": "Owned by Final Dispositor (STAINED / CHALLENGED)",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 13.5
+            },
+            {
+              "type": "Dhana Yoga (Mars + Venus)",
+              "role": "Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Mars",
+                "Venus"
+              ],
+              "points": 15.12
+            },
+            {
+              "type": "Dhana Yoga (Moon + Venus)",
+              "role": "Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Moon",
+                "Venus"
+              ],
+              "points": 13.23
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Saturn)",
+              "role": "Owned by Final Dispositor (RESCUED (NEECHA BHANGA / REVERSAL))",
               "planets": [
                 "Mars",
                 "Saturn"
               ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
-              "planets": [
-                "Mars"
-              ],
-              "points": 90.0
+              "points": 11.34
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 83.6,
+        "composite_score": 66.19,
         "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual support from Mars on Cusp (+264.8)",
-          "Net Structural Yogas (+390.0)"
+          "Significant aspectual support from Mars on Cusp (+218.5)",
+          "Net Structural Yogas (+149.9)"
         ]
       }
     },
@@ -1632,26 +1934,28 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 0.85,
+          "score": 5.5,
           "planet_contributions": {
             "Sun": -121.95,
-            "Moon": 88.38,
-            "Mars": 66.21,
+            "Moon": 67.76,
+            "Mars": 109.24,
             "Mercury": -56.72,
-            "Jupiter": 142.66,
+            "Jupiter": 117.69,
             "Venus": 2.46,
-            "Saturn": -115.06
+            "Saturn": -88.21
           }
         },
         "lord_assessment": {
           "lord": "Jupiter",
-          "lord_final_score": 112.06,
+          "lord_final_score": 73.92,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 65.29,
           "occupants_final_scores": {},
-          "combined_score": 112.06
+          "combined_score": 65.29
         },
         "relative_house_bhavat_bhavam": {
-          "score": 37.09,
-          "kk_group_points": 247.5,
+          "score": 41.67,
+          "kk_group_points": 275.0,
           "dusthana_raw_points": -50.0,
           "benefic_mitigation_pct": 50.07,
           "dusthana_mitigated_points": -24.97,
@@ -1674,58 +1978,21 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 300.0,
+          "total_yoga_score": 0.0,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 300.0,
+          "raja_yoga_score": 0.0,
           "mahapurusha_score": 0.0,
           "daridra_yoga_score": 0.0,
-          "active_yogas": [
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Jupiter"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Mars",
-                "Jupiter"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Jupiter",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
-              "planets": [
-                "Jupiter"
-              ],
-              "points": 0.0
-            }
-          ]
+          "active_yogas": []
         }
       },
       "synthesis": {
-        "composite_score": 90.0,
-        "health_rating": "Flourishing / Fortified",
-        "classical_tier": "Pu\u1e63\u1e6da",
+        "composite_score": 24.6,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
         "dominant_drivers": [
-          "House Lord Jupiter is fortified (+112.1)",
-          "Significant aspectual support from Jupiter on Cusp (+142.7)",
-          "Net Structural Yogas (+300.0)"
+          "House Lord Jupiter is fortified (+73.9)",
+          "Significant aspectual pressure from Sun on Cusp (-122.0)"
         ]
       }
     },
@@ -1738,29 +2005,31 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 28.38,
+          "score": 35.76,
           "planet_contributions": {
             "Sun": -86.95,
-            "Moon": 28.38,
-            "Mars": 18.71,
+            "Moon": 21.76,
+            "Mars": 30.86,
             "Mercury": -41.72,
             "Jupiter": 0.0,
             "Venus": 99.39,
-            "Saturn": 180.82
+            "Saturn": 149.18
           }
         },
         "lord_assessment": {
           "lord": "Saturn",
-          "lord_final_score": 126.43,
+          "lord_final_score": 73.65,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 65.09,
           "occupants_final_scores": {},
-          "combined_score": 126.43
+          "combined_score": 65.09
         },
         "relative_house_bhavat_bhavam": {
-          "score": 23.78,
-          "kk_group_points": 252.5,
+          "score": 35.61,
+          "kk_group_points": 302.5,
           "dusthana_raw_points": -140.0,
-          "benefic_mitigation_pct": 21.55,
-          "dusthana_mitigated_points": -109.84,
+          "benefic_mitigation_pct": 36.55,
+          "dusthana_mitigated_points": -88.84,
           "active_planets_count": 6,
           "relative_functional_natures": {
             "Sun": -100.0,
@@ -1768,112 +2037,6 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
             "Mars": -50.0,
             "Mercury": 50.0,
             "Jupiter": -50.0,
-            "Venus": 100.0,
-            "Saturn": 150.0
-          }
-        },
-        "house_walls_kartari": {
-          "is_walled": false,
-          "wall_type": "None",
-          "score": 0.0,
-          "planet_before": null,
-          "planet_after": null
-        },
-        "house_yogas": {
-          "total_yoga_score": 300.0,
-          "parivartana_score": 0.0,
-          "raja_yoga_score": 300.0,
-          "mahapurusha_score": 0.0,
-          "daridra_yoga_score": 0.0,
-          "active_yogas": [
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Mars",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Jupiter",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
-              "planets": [
-                "Saturn"
-              ],
-              "points": 0.0
-            }
-          ]
-        }
-      },
-      "synthesis": {
-        "composite_score": 95.72,
-        "health_rating": "Flourishing / Fortified",
-        "classical_tier": "Pu\u1e63\u1e6da",
-        "dominant_drivers": [
-          "House Lord Saturn is fortified (+126.4)",
-          "Significant aspectual support from Saturn on Cusp (+180.8)",
-          "Net Structural Yogas (+300.0)"
-        ]
-      }
-    },
-    "8": {
-      "house": 8,
-      "sign": "Aquarius",
-      "lord": "Saturn",
-      "cusp_degree": 28.8932,
-      "cusp_longitude": 328.8932,
-      "occupants": [],
-      "components": {
-        "basic_house_condition": {
-          "score": 18.08,
-          "planet_contributions": {
-            "Sun": -51.95,
-            "Moon": 0.0,
-            "Mars": 0.0,
-            "Mercury": -26.72,
-            "Jupiter": 0.0,
-            "Venus": 74.39,
-            "Saturn": 130.82
-          }
-        },
-        "lord_assessment": {
-          "lord": "Saturn",
-          "lord_final_score": 126.43,
-          "occupants_final_scores": {},
-          "combined_score": 126.43
-        },
-        "relative_house_bhavat_bhavam": {
-          "score": -29.0,
-          "kk_group_points": -58.0,
-          "dusthana_raw_points": 0.0,
-          "benefic_mitigation_pct": 0.0,
-          "dusthana_mitigated_points": 0.0,
-          "active_planets_count": 2,
-          "relative_functional_natures": {
-            "Sun": -20.0,
-            "Moon": -50.0,
-            "Mars": -50.0,
-            "Mercury": -50.0,
-            "Jupiter": 50.0,
             "Venus": 150.0,
             "Saturn": 150.0
           }
@@ -1886,58 +2049,101 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 300.0,
+          "total_yoga_score": 27.36,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 300.0,
+          "raja_yoga_score": 27.67,
           "mahapurusha_score": 0.0,
           "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Mars",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Jupiter",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
+              "type": "K\u0101ma Yoga (The Beloved)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
                 "Saturn"
               ],
-              "points": 0.0
+              "points": 27.67
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 83.1,
+        "composite_score": 41.56,
         "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "House Lord Saturn is fortified (+126.4)",
-          "Significant aspectual support from Saturn on Cusp (+130.8)",
-          "Net Structural Yogas (+300.0)"
+          "House Lord Saturn is fortified (+73.7)",
+          "Significant aspectual support from Saturn on Cusp (+149.2)"
+        ]
+      }
+    },
+    "8": {
+      "house": 8,
+      "sign": "Aquarius",
+      "lord": "Saturn",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 328.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 25.91,
+          "planet_contributions": {
+            "Sun": -51.95,
+            "Moon": 0.0,
+            "Mars": 0.0,
+            "Mercury": -26.72,
+            "Jupiter": 0.0,
+            "Venus": 74.39,
+            "Saturn": 107.93
+          }
+        },
+        "lord_assessment": {
+          "lord": "Saturn",
+          "lord_final_score": 73.65,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 65.09,
+          "occupants_final_scores": {},
+          "combined_score": 65.09
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": -25.0,
+          "kk_group_points": -100.0,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 2,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": -50.0,
+            "Mars": -50.0,
+            "Mercury": -50.0,
+            "Jupiter": 50.0,
+            "Venus": 200.0,
+            "Saturn": 150.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 0.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": []
+        }
+      },
+      "synthesis": {
+        "composite_score": 23.94,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
+        "dominant_drivers": [
+          "House Lord Saturn is fortified (+73.7)",
+          "Significant aspectual support from Saturn on Cusp (+107.9)"
         ]
       }
     },
@@ -1950,26 +2156,28 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": -3.97,
+          "score": 8.35,
           "planet_contributions": {
             "Sun": -16.95,
-            "Moon": 63.24,
-            "Mars": 57.59,
+            "Moon": 48.48,
+            "Mars": 95.02,
             "Mercury": -11.72,
-            "Jupiter": 38.23,
+            "Jupiter": 31.54,
             "Venus": 49.39,
-            "Saturn": -207.53
+            "Saturn": -159.11
           }
         },
         "lord_assessment": {
           "lord": "Jupiter",
-          "lord_final_score": 112.06,
+          "lord_final_score": 73.92,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 65.29,
           "occupants_final_scores": {},
-          "combined_score": 112.06
+          "combined_score": 65.29
         },
         "relative_house_bhavat_bhavam": {
-          "score": 1.07,
-          "kk_group_points": 7.5,
+          "score": 5.0,
+          "kk_group_points": 35.0,
           "dusthana_raw_points": 0.0,
           "benefic_mitigation_pct": 0.0,
           "dusthana_mitigated_points": 0.0,
@@ -1992,58 +2200,31 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 300.0,
+          "total_yoga_score": 52.97,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 300.0,
+          "raja_yoga_score": 55.35,
           "mahapurusha_score": 0.0,
           "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Jupiter"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Mars",
-                "Jupiter"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Jupiter",
-                "Saturn"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
+              "type": "Bh\u0101gya Yoga (Divine Grace)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
                 "Jupiter"
               ],
-              "points": 0.0
+              "points": 55.35
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 81.83,
+        "composite_score": 36.19,
         "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "House Lord Jupiter is fortified (+112.1)",
-          "Significant aspectual pressure from Saturn on Cusp (-207.5)",
-          "Net Structural Yogas (+300.0)"
+          "House Lord Jupiter is fortified (+73.9)",
+          "Significant aspectual pressure from Saturn on Cusp (-159.1)",
+          "Net Structural Yogas (+53.0)"
         ]
       }
     },
@@ -2060,34 +2241,36 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       ],
       "components": {
         "basic_house_condition": {
-          "score": -9.32,
+          "score": 4.11,
           "planet_contributions": {
             "Sun": -0.0,
-            "Moon": 49.24,
-            "Mars": 46.06,
+            "Moon": 52.01,
+            "Mars": 81.83,
             "Mercury": -0.0,
             "Jupiter": 0.0,
             "Venus": 24.39,
-            "Saturn": -184.94
+            "Saturn": -141.79
           }
         },
         "lord_assessment": {
           "lord": "Mars",
-          "lord_final_score": 25.78,
+          "lord_final_score": 39.41,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 59.41,
           "occupants_final_scores": {
-            "Moon": 16.07,
-            "Mars": 25.78,
-            "Jupiter": 112.06
+            "Moon": 15.78,
+            "Mars": 39.41,
+            "Jupiter": 73.92
           },
-          "combined_score": 51.3
+          "combined_score": 55.04
         },
         "relative_house_bhavat_bhavam": {
-          "score": 0.0,
-          "kk_group_points": 0.0,
+          "score": 48.12,
+          "kk_group_points": 192.5,
           "dusthana_raw_points": 0.0,
           "benefic_mitigation_pct": 0.0,
           "dusthana_mitigated_points": 0.0,
-          "active_planets_count": 2,
+          "active_planets_count": 4,
           "relative_functional_natures": {
             "Sun": 100.0,
             "Moon": -20.0,
@@ -2106,108 +2289,293 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": 740.0,
+          "total_yoga_score": 150.0,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 600.0,
-          "mahapurusha_score": 140.0,
-          "daridra_yoga_score": 0.0,
+          "raja_yoga_score": 1237.95,
+          "mahapurusha_score": 33.75,
+          "daridra_yoga_score": -8.0,
           "active_yogas": [
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
-              "planets": [
-                "Moon",
-                "Mars"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Moon",
-                "Mars"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
-              "planets": [
-                "Moon",
-                "Jupiter"
-              ],
-              "points": 100.0
-            },
-            {
-              "type": "R\u0101ja Yoga",
-              "role": "Occupied by participating planet",
+              "type": "Dharma-Karma Adhipati R\u0101ja Yoga",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
               "planets": [
                 "Mars",
                 "Jupiter"
               ],
-              "points": 100.0
+              "points": 90.0
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "Ubhayalagna R\u0101ja Yoga (Jupiter + Mars)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Mars"
+              ],
+              "points": 85.5
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Jupiter + Moon)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Moon"
+              ],
+              "points": 85.5
+            },
+            {
+              "type": "Dhana Yoga (Mars + Jupiter)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
               "planets": [
                 "Mars",
                 "Jupiter"
               ],
-              "points": 100.0
+              "points": 82.8
             },
             {
-              "type": "R\u0101ja Yoga",
-              "role": "Owned by participating planet",
+              "type": "Chatra Yoga (The Royal Canopy)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 40.5
+            },
+            {
+              "type": "Gaja Kesar\u012b Yoga",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 40.5
+            },
+            {
+              "type": "Khy\u0101ti Yoga (World Renown)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 40.5
+            },
+            {
+              "type": "\u015a\u016bla Yoga (Trident Resolve)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Sun",
+                "Moon",
+                "Mars",
+                "Mercury",
+                "Jupiter",
+                "Venus",
+                "Saturn"
+              ],
+              "points": 40.5
+            },
+            {
+              "type": "Dhana Yoga (Jupiter + Venus)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter",
+                "Venus"
+              ],
+              "points": 79.2
+            },
+            {
+              "type": "Dhana Yoga (Moon + Jupiter)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 76.5
+            },
+            {
+              "type": "Astra Yoga (The Weapon)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 36.9
+            },
+            {
+              "type": "Bh\u0101gya Yoga (Divine Grace)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 73.8
+            },
+            {
+              "type": "C\u0101mara Yoga (Royal Fly-Whisk)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Moon"
+              ],
+              "points": 36.9
+            },
+            {
+              "type": "Jaladhi Yoga (The Ocean Estate)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
+              "planets": [
+                "Venus"
+              ],
+              "points": 55.35
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Jupiter)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 72.0
+            },
+            {
+              "type": "Rucaka Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 33.75
+            },
+            {
+              "type": "Sama (Madhya) Yoga (Pa\u1e47aphara Solar-Lunar Scope)",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Sun",
+                "Moon"
+              ],
+              "points": 33.75
+            },
+            {
+              "type": "\u015aa\u1e45kha Yoga (Moon + Mars)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 33.75
+            },
+            {
+              "type": "Pu\u1e63kala Yoga",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 15.75
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Moon)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars",
+                "Moon"
+              ],
+              "points": 31.5
+            },
+            {
+              "type": "K\u0101hala Yoga (Variant B: Dispositor Root Chain)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 14.62
+            },
+            {
+              "type": "R\u0101ja Yogak\u0101raka (Mars)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Mars"
+              ],
+              "points": 29.25
+            },
+            {
+              "type": "Dhana Yoga (Moon + Mars)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 28.35
+            },
+            {
+              "type": "K\u0101hala Yoga (Variant A: Mutual Kendra Alliance)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Venus",
+                "Mars",
+                "Moon"
+              ],
+              "points": 13.5
+            },
+            {
+              "type": "Candra-Ma\u1e45gala Yoga",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 12.38
+            },
+            {
+              "type": "Amal\u0101 Yoga (from Lagna)",
+              "role": "Occupied by participating planet (STAINED / CHALLENGED)",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 22.5
+            },
+            {
+              "type": "Dhana Yoga (Mars + Venus)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Mars",
+                "Venus"
+              ],
+              "points": 25.2
+            },
+            {
+              "type": "Kemadruma Yoga (Rescued / Bha\u1e45ga)",
+              "role": "Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Moon",
+                "Mars",
+                "Jupiter",
+                "Venus",
+                "Saturn",
+                "Mercury"
+              ],
+              "points": -8.0
+            },
+            {
+              "type": "Dhana Yoga (Moon + Venus)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Moon",
+                "Venus"
+              ],
+              "points": 22.05
+            },
+            {
+              "type": "Ubhayalagna R\u0101ja Yoga (Mars + Saturn)",
+              "role": "Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))",
               "planets": [
                 "Mars",
                 "Saturn"
               ],
-              "points": 100.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Occupied Kendra",
-              "planets": [
-                "Moon"
-              ],
-              "points": -40.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Occupied Kendra",
-              "planets": [
-                "Mars"
-              ],
-              "points": 90.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
-              "planets": [
-                "Mars"
-              ],
-              "points": 90.0
-            },
-            {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Occupied Kendra",
-              "planets": [
-                "Jupiter"
-              ],
-              "points": 0.0
+              "points": 18.9
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 156.4,
-        "health_rating": "Exceptional / Off the Chart",
+        "composite_score": 63.67,
+        "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual pressure from Saturn on Cusp (-184.9)",
-          "Net Structural Yogas (+740.0)"
+          "Significant aspectual pressure from Saturn on Cusp (-141.8)",
+          "Net Structural Yogas (+150.0)"
         ]
       }
     },
@@ -2220,11 +2588,11 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       "occupants": [],
       "components": {
         "basic_house_condition": {
-          "score": 2.54,
+          "score": 7.27,
           "planet_contributions": {
             "Sun": -36.1,
-            "Moon": 31.62,
-            "Mars": 28.79,
+            "Moon": 24.24,
+            "Mars": 47.51,
             "Mercury": -6.57,
             "Jupiter": 0.0,
             "Venus": 0.0,
@@ -2233,16 +2601,18 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         },
         "lord_assessment": {
           "lord": "Venus",
-          "lord_final_score": 28.85,
+          "lord_final_score": 38.71,
+          "final_dispositor": "Mars",
+          "effective_lord_score": 38.88,
           "occupants_final_scores": {},
-          "combined_score": 28.85
+          "combined_score": 38.88
         },
         "relative_house_bhavat_bhavam": {
-          "score": 16.75,
-          "kk_group_points": 152.0,
-          "dusthana_raw_points": -160.5,
-          "benefic_mitigation_pct": 57.49,
-          "dusthana_mitigated_points": -68.23,
+          "score": 7.61,
+          "kk_group_points": 110.0,
+          "dusthana_raw_points": -202.5,
+          "benefic_mitigation_pct": 64.46,
+          "dusthana_mitigated_points": -71.97,
           "active_planets_count": 5,
           "relative_functional_natures": {
             "Sun": -20.0,
@@ -2251,7 +2621,7 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
             "Mercury": 100.0,
             "Jupiter": -50.0,
             "Venus": 150.0,
-            "Saturn": 0.0
+            "Saturn": 100.0
           }
         },
         "house_walls_kartari": {
@@ -2262,38 +2632,29 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
           "planet_after": null
         },
         "house_yogas": {
-          "total_yoga_score": -100.0,
+          "total_yoga_score": 27.36,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 0.0,
+          "raja_yoga_score": 27.67,
           "mahapurusha_score": 0.0,
-          "daridra_yoga_score": -100.0,
+          "daridra_yoga_score": 0.0,
           "active_yogas": [
             {
-              "type": "Mah\u0101puru\u1e63a Yoga",
-              "role": "Owned by Kendra planet",
+              "type": "P\u0101rij\u0101ta Yoga (The Wish-Fulfilling Tree)",
+              "role": "Primary yoga / dispositor-traversed house (PURE & EMINENT)",
               "planets": [
                 "Venus"
               ],
-              "points": 0.0
-            },
-            {
-              "type": "Daridra Yoga",
-              "role": "Owned by participating planet",
-              "planets": [
-                "Venus",
-                "Saturn"
-              ],
-              "points": -100.0
+              "points": 27.67
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": -10.37,
+        "composite_score": 21.67,
         "health_rating": "Mixed / Resilient",
         "classical_tier": "Mi\u015bra",
         "dominant_drivers": [
-          "Net Structural Yogas (-100.0)"
+          "Significant aspectual support from Mars on Cusp (+47.5)"
         ]
       }
     },
@@ -2309,33 +2670,35 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
       ],
       "components": {
         "basic_house_condition": {
-          "score": 80.53,
+          "score": 93.47,
           "planet_contributions": {
-            "Sun": -25.95,
-            "Moon": 123.24,
-            "Mars": 133.88,
-            "Mercury": 388.84,
+            "Sun": -50.8,
+            "Moon": 94.48,
+            "Mars": 220.91,
+            "Mercury": 268.08,
             "Jupiter": 0.0,
             "Venus": 1.23,
-            "Saturn": -57.53
+            "Saturn": -44.11
           }
         },
         "lord_assessment": {
           "lord": "Mercury",
-          "lord_final_score": 26.56,
+          "lord_final_score": 37.77,
+          "final_dispositor": "Mercury",
+          "effective_lord_score": 57.77,
           "occupants_final_scores": {
-            "Sun": -71.87,
-            "Mercury": 26.56
+            "Sun": -22.61,
+            "Mercury": 37.77
           },
-          "combined_score": -22.66
+          "combined_score": 33.66
         },
         "relative_house_bhavat_bhavam": {
-          "score": 100.0,
-          "kk_group_points": 100.0,
+          "score": 32.5,
+          "kk_group_points": 162.5,
           "dusthana_raw_points": 0.0,
           "benefic_mitigation_pct": 0.0,
           "dusthana_mitigated_points": 0.0,
-          "active_planets_count": 1,
+          "active_planets_count": 5,
           "relative_functional_natures": {
             "Sun": -20.0,
             "Moon": -100.0,
@@ -2349,75 +2712,140 @@ H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |
         "house_walls_kartari": {
           "is_walled": true,
           "wall_type": "Mishra Kartari",
-          "score": 166.15,
+          "score": 16.92,
           "planet_before": "Mercury",
           "planet_after": "Saturn"
         },
         "house_yogas": {
-          "total_yoga_score": 100.0,
+          "total_yoga_score": 73.51,
           "parivartana_score": 0.0,
-          "raja_yoga_score": 0.0,
+          "raja_yoga_score": 95.3,
           "mahapurusha_score": 0.0,
-          "daridra_yoga_score": 100.0,
+          "daridra_yoga_score": -14.88,
           "active_yogas": [
             {
-              "type": "Daridra Yoga",
-              "role": "Occupied house",
+              "type": "\u015a\u016bla Yoga (Trident Resolve)",
+              "role": "Occupied Dusth\u0101na spillover (PURE & EMINENT)",
+              "planets": [
+                "Sun",
+                "Moon",
+                "Mars",
+                "Mercury",
+                "Jupiter",
+                "Venus",
+                "Saturn"
+              ],
+              "points": 10.12
+            },
+            {
+              "type": "Vimala Vipar\u012bta R\u0101ja Yoga",
+              "role": "Occupied by participating planet (PURE & EMINENT)",
+              "planets": [
+                "Mercury"
+              ],
+              "points": 62.0
+            },
+            {
+              "type": "Sama (Madhya) Yoga (Pa\u1e47aphara Solar-Lunar Scope)",
+              "role": "Occupied Dusth\u0101na spillover (PURE & EMINENT)",
+              "planets": [
+                "Sun",
+                "Moon"
+              ],
+              "points": 8.44
+            },
+            {
+              "type": "Mi\u015bra-Ve\u015bi Yoga",
+              "role": "Occupied Dusth\u0101na spillover (STAINED / CHALLENGED)",
+              "planets": [
+                "Sun",
+                "Venus",
+                "Saturn"
+              ],
+              "points": 3.94
+            },
+            {
+              "type": "Ni\u1e25sva Yoga (Depleted Treasury)",
+              "role": "Occupied Dusth\u0101na spillover (STAINED / CHALLENGED)",
+              "planets": [
+                "Sun"
+              ],
+              "points": 3.66
+            },
+            {
+              "type": "D\u0101ridrya Yoga (H2 Lord Sun in H12)",
+              "role": "Occupied house (STAINED / CHALLENGED)",
+              "planets": [
+                "Sun"
+              ],
+              "points": -14.88
+            },
+            {
+              "type": "M\u1e5bti Yoga (Broken Initiatives)",
+              "role": "Occupied Dusth\u0101na spillover (RESCUED (NEECHA BHANGA / REVERSAL))",
+              "planets": [
+                "Mercury"
+              ],
+              "points": 4.33
+            },
+            {
+              "type": "Budh\u0101ditya Yoga",
+              "role": "Occupied Dusth\u0101na spillover (STAINED / CHALLENGED)",
               "planets": [
                 "Sun",
                 "Mercury"
               ],
-              "points": 100.0
+              "points": 2.81
             }
           ]
         }
       },
       "synthesis": {
-        "composite_score": 84.8,
+        "composite_score": 59.77,
         "health_rating": "Flourishing / Fortified",
         "classical_tier": "Pu\u1e63\u1e6da",
         "dominant_drivers": [
-          "Significant aspectual support from Mercury on Cusp (+388.8)",
-          "Net Structural Yogas (+100.0)",
-          "Mishra Kartari (+166.2)"
+          "Significant aspectual support from Mercury on Cusp (+268.1)",
+          "Net Structural Yogas (+73.5)",
+          "Mishra Kartari (+16.9)"
         ]
       }
     }
   },
   "summary_rankings": {
     "houses_by_composite_score": [
-      10,
       1,
-      7,
-      6,
-      12,
       5,
-      8,
+      10,
+      12,
+      4,
+      7,
       9,
       3,
-      4,
+      6,
+      8,
       11,
       2
     ],
     "planets_by_final_score": [
-      "Saturn",
       "Jupiter",
+      "Saturn",
+      "Mars",
       "Venus",
       "Mercury",
-      "Mars",
       "Moon",
       "Sun"
     ],
     "top_flourishing_houses": [
-      10,
       1,
-      7
+      5,
+      10
     ],
     "most_challenged_houses": [
-      4,
+      8,
       11,
       2
     ],
-    "composite_mean_score": 62.08
+    "composite_mean_score": 41.92
   }
 }
