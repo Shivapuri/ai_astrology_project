@@ -1,0 +1,2500 @@
+# AI Agent Instructions for Astra Repository
+
+## Project Context
+Astra is a precision astrological computation project dedicated to Ernst Wilhelm's "Kala" methodology. 
+It utilizes a unified, **Integrated Approach**:
+- **Tropical Rasis (Signs)** for all basic placements and Vargas.
+- **Campanus House System** for all Bhava calculations.
+- **Sidereal Equatorial Nakshatras** anchored to the Dhruva Galactic Center (Middle of Mula).
+- **Calculations are powered exclusively by the Swiss Ephemeris (`swisseph`).**
+
+## Core Development Philosophy & Scriptural Integrity (CRITICAL)
+- **No Hard-Coding**: You must NEVER hard-code specific values or bypass mathematical formulas to "fake" a good result or make a test pass. Every calculation must be dynamically derived from the Swiss Ephemeris base.
+- **Scriptural & Reference Authority**: Never change any core calculation or astrological logic without confirming it aligns with the foundational texts and project references located in `/source-material/software-setup/`.
+- **Sources of Truth for Math & Strengths**:
+  - `Vedic Astrology An Integrated Approach.pdf`: The core source for Shadbala, Lagna Bala, and Avastha calculations.
+  - `Bhava and Graha Balas.pdf`: The absolute source of truth for all planetary and house strengths.
+  - **Brihat Parashara Hora Shastra (BPHS)**: (Chapters 41-50) is used as a foundational cross-reference.
+- **Rationale & Epistemology**:
+  - `The Mystery of the Zodiac.pdf` and `transcript.txt` detail exactly *why* this system uses the Tropical Zodiac, Campanus houses, etc.
+- **System Configuration Baseline**:
+  - The `/source-material/software-setup/software-parameters/` folder dictates the exact settings that must be adhered to (True Node, Dhruva Galactic Center, etc.).
+
+## Architecture & Math Documentation
+- All core chart generation and engine logic resides in the `/jyotish/` directory.
+- The project previously used a dual Western/Vedic engine approach; this has been deprecated. Do not recreate the `/western/` folder.
+- **Twin Markdown Pattern**: EVERY mathematical module in `/jyotish/` has a strict companion `.md` file that you MUST read before touching the Python code. These files contain the exact logical rules and Sanskrit proofs:
+  - `jyotish/generate_jyotish.md` -> Rules for `generate_jyotish.py` (Orchestration, Dashas, Nakshatras, Houses)
+  - `jyotish/baseline_vargas.md` -> Rules for the 16 Divisional Charts (Ṣoḍaśavarga) in `baseline_tables.py`, `baseline_math.py`, and `pipeline.py`
+  - `jyotish/relationships.md` -> Rules for `relationships.py`
+  - `jyotish/shadbala/shadbala.md` -> Rules for `shadbala.py`
+  - `jyotish/avasthas/*.md` -> Rules for all Avastha submodules (`bala.py`, `jagrat.py`, etc.)
+- Before calculating or guessing astrological logic, always read the corresponding `.md` file and verify against BPHS.
+
+### 🔒 FROZEN CORE CALCULUS (STRICTLY READ-ONLY)
+The following foundational calculation modules are certified, scripturally audited, and FROZEN.
+AI agents are strictly forbidden from modifying formulas, signatures, or logic in these files:
+- `jyotish/baseline.py`
+- `jyotish/baseline_math.py`
+- `jyotish/baseline_tables.py`
+- `jyotish/relationships/relationships.py`
+- `jyotish/aspects/aspects.py`
+- `jyotish/shadbala/shadbala.py`
+- `jyotish/bhavas/bhava_bala.py`
+
+Future development (Yogas, Dashas, Transits, Reports, UI) must IMPORT from these files as
+read-only dependencies and NEVER alter their internal math.
+
+
+## Reference & Cache
+- Ephemeris cache and star data are stored in `/cache/` and `/jyotish/cache/`.
+- Astrological reference diagrams, audio transcripts, and Sanskrit texts reside in `/source-material/`.
+
+## UI Development & Verification Protocol (MANDATORY)
+- **Visual Verification Loop**: Never make significant UI/Frontend changes blindly. You must always verify your changes visually before reporting back to the user.
+- **Automated Screenshots**: You must run the local Flask server, execute the Playwright screenshot script (`screenshot.py`), and use your file viewing tools to physically inspect the screenshot image.
+- **Use the Design Subagent**: For major UI/UX overhauls or layout changes, it is mandatory to invoke a specialized "Gemini 3.7" design subagent (using the `pro` model). Delegate the visual iteration loop (edit -> screenshot -> inspect -> refine) completely to this subagent. 
+- **Do Not Interrupt**: Do not come back to the user after every small, untested incremental update. Wait until the design subagent has fully verified the UI is polished and unbroken before responding.
+
+## Frontend Architecture & UI Protocol
+Frontend Architecture & UI rules are strictly governed by `static/GEMINI.md` and `documentations/adr/ADR-006-professional-editorial-design-system.md`:
+- **Strict 12px Font Floor (`static/GEMINI.md` Rule 1)**: NEVER write or generate CSS font sizes below `12px` (equivalent to 9 pt). Sub-pixel text (`10px`, `10.5px`, `11px`, `11.5px`) is strictly prohibited across all tables, captions, micro-tags, and status readouts.
+- **Monochrome Line Glyphs (STIX Two Math Standard)**: Eliminate colored OS emoji boxes for signs/planets by enforcing Unicode Variation Selector 15 (`\uFE0E`), `font-variant-emoji: text;`, and the primary mathematical font stack (`var(--font-astro-glyphs)`).
+- **De-Badging & Anti-Pill Protocol**: Routine tabular data (degrees, coordinates, houses, dispositors, nakshatras) must NOT be wrapped in pill badges. Present clean tabular text (`font-variant-numeric: tabular-nums;`).
+- **Emoji Purge**: Strip consumer emojis (`🔴`, `🟢`, `🟠`, `🟡`, `👑`, `💣`, `✨`, `🔥`, `🛡`, `😴`, `💤`, `⚡`, `⚔`) in favor of semantic CSS micro-dots (`.status-indicator`), subtle square micro-tags (`.micro-tag`), and clean Unicode typographic arrows (`→`, `←`, `↔`).
+- **Exact 9-Column Master Diagnostic Geometry**: Retain all 9 columns in `tmpl_master_diagnostic.html` and `master_diagnostic.js` using authoritative Sanskrit/Jyotish and Western technical terminology.
+
+
+
+## Test-Driven Development & Regression Testing (MANDATORY)
+- **Zero Breakage Policy**: You must never introduce a change that silently breaks existing mathematical calculations, API responses, or UI functionality.
+- **Write Tests for Changes**: Whenever you make significant structural changes to the `/jyotish/` backend engines, Flask API routes, or the frontend layout, you MUST write or update the corresponding tests in the `/tests/` directory.
+- **Targeted Testing First (Fast Iteration Loop)**:
+  - Do NOT run the entire test fleet (`pytest tests/`) for localized, incremental frontend or backend changes. Full Playwright browser suites take several minutes and create unnecessary delays.
+  - Run **only the specific, targeted test file(s)** related to the code or subsystem being changed (e.g. `pytest tests/test_master_diagnostic_ui.py` for Master Diagnostics UI, `pytest tests/test_planetary_evaluation.py` for dignity math).
+  - Run the full test fleet (`pytest tests/`) only for comprehensive pre-release milestones or major architectural overhauls affecting multiple decoupled engines.
+- **Test Categories**:
+  - `test_math_engines.py` & `test_quantitative_avasthas.py`: Verify that Vargas, Avasthas, and Dignities calculate exactly to established baseline JSON/CSV files.
+  - `test_api.py`: Verify that Flask JSON endpoints return 200 OK and expected schemas.
+  - `test_svg_generation.py`: Verify that chart SVGs have correct safe margins (`viewBox`), transparent backgrounds, and labels.
+  - `test_ui_e2e.py`: Playwright tests to verify the UI layout, Split.js, tabs, and hotkeys.
+
+## Anki Flashcard Strategy & Data Structuring (MANDATORY)
+When creating or updating Anki flashcards (especially for broad concepts like Planets, Houses, and Signs), you must **strictly adhere** to the following cognitive rules to avoid cognitive overload and "Anki purgatory":
+
+1. **Atomization (Rule of 4)**: Never put a long list of attributes on a single card. You must consistently break down Planets, Houses, and Signs into **exactly four separate sub-cards** based on their natural astrological categories:
+   - **Card 1: Core/Psychological Themes** (What is the primary nature, behavior, or core area of life? e.g., Wealth, delay, aggression, Dharma).
+   - **Card 2: Physical/Biological** (What specific body parts, organs, or diseases does this govern? e.g., Head, nerves, immune system).
+   - **Card 3: People & Relational** (Which specific family members, societal roles, or relationships are represented? e.g., Mother, enemies, the Guru).
+   - **Card 4: Material & Environmental** (What external objects, places, careers, or environments are signified? e.g., Vehicles, foreign lands, dark forests).
+
+2. **No "Reverse" Guessing**: Avoid creating basic "reverse" cards (e.g., *Front: "Which planet is the wise Guru?" Back: "Jupiter"*). These are too easy because the prompt gives away the answer immediately. Testing should always flow from the astrological concept to its specific manifestation (e.g., *Front: "What specific family members and societal roles does Jupiter represent?" Back: "Children, elder brothers, and teachers/counselors"*).
+
+3. **Mnemonic Isolation**: If a mnemonic is used to remember an entity's core pillars, it must be isolated onto its own specific card (e.g., *Front: "What is the mnemonic phrase for Jupiter?"*). Do not bundle it with the other attributes.
+
+# Jyotish Engine: Master Orchestrator, Nakshatras & Dashas (generate_jyotish.py & pipeline.py)
+
+This file documents the core orchestration script `generate_jyotish.py` and its underlying engine `jyotish/pipeline.py` (`ChartPipeline`), which integrates all subsidiary mathematical stages into a unified, lazy-evaluated Directed Acyclic Graph (DAG) computation pipeline. In particular, it houses the explicit algorithms for the **Campanus House System**, **Sidereal Equatorial Nakshatras**, and **Vimshottari Dashas**.
+
+---
+
+## 1. Simple Description (For the Layperson)
+
+The `generate_jyotish.py` module and `ChartPipeline` are the "Grand Conductor" of the astrology engine. When you provide a birth date, time, and location, the pipeline does the following:
+1. **Finds the Planets (Ecliptic):** Looks up exactly where the planets were in the sky using standard Western (Tropical) signs for the main charts (Stage 1 `ChartBaseline`).
+2. **Calculates the Houses (Campanus):** Divides the sky into 12 "Houses" to see which areas of life the planets affect using the 3D "Campanus" method.
+3. **Calculates the Stars (Nakshatras):** Measures the planets along the Earth's Equator (Right Ascension) rather than the Ecliptic, locking the center of our Galaxy to the middle of the star *Mula*.
+4. **Calculates the Timelines (Vimshottari Dasha):** Using the exact position of the Moon in the Nakshatras, it calculates the lifetime timeline (Dashas) using the exact Saura solar year of 365.2422 days.
+5. **Orchestrates Strengths & Evaluations (Stages 2–4):** Computes Shadbala, Bhava Bala, Harsha Bala, House Atmospheres, Classical Yogas, and Planetary Evaluations in a clean, cached pipeline without recomputing raw ephemeris data.
+
+---
+
+## 2. Technical AI Description (Logic Constraints)
+
+`generate_jyotish.py` is a thin facade that delegates chart computation to `ChartPipeline` (`jyotish/pipeline.py`).
+`ChartPipeline` evaluates the 4-stage DAG lazily via Python's `@cached_property`:
+- **Stage 1 (`ChartBaseline`):** Pure physical coordinates and ephemeris.
+- **Stage 2A (`relationships.py`, `aspects.py`):** Dignities and aspect matrices.
+- **Stage 2B (`shadbala.py`, `avasthas/`):** 6-fold Shadbala and Avasthas.
+- **Stage 3 (`bhava_bala.py`):** Bhava Bala, Harsha Bala, House Atmosphere, and Master Diagnostic payload.
+- **Stage 4 (`yogas/`, `dashas/`, `planetary_evaluation/`, `report/`):** Downstream synthesis.
+
+If you are modifying `generate_jyotish.py` or `jyotish/pipeline.py`, you must strictly observe the following mathematical rules:
+
+### A. House System (Campanus)
+*   **Methodology:** Ernst Wilhelm's Kala software explicitly uses the **Campanus House System** for all Bhava Chalita calculations. Campanus divides the Prime Vertical into equal $30^\circ$ segments and projects them onto the ecliptic.
+*   **Algorithm:** We use the Swiss Ephemeris flag `b'C'` (`swe.houses(jd, lat, lon, b'C')`).
+*   **Rule:** Planets are placed into houses based on whether their Tropical longitude falls between the Start and End points of a Bhava (which often spans across multiple signs, causing intercepted signs at high latitudes).
+
+### B. Sidereal Equatorial Nakshatras (Dhruva Galactic Center)
+*   **Ayanamsa Definition:** The zodiac of Nakshatras is distinct from Rasis. It is anchored to the **Galactic Center** (GC). The GC is locked precisely to the middle of the Nakshatra *Mula* ($246^\circ 40'$, or $246.6667^\circ$).
+*   **Equatorial Projection for Physical Grahas:** Physical bodies (Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn, and the Nodes) are measured along the celestial equator (Right Ascension, RA).
+*   **Ecliptic Ayanamsa for Ascendant (Lagna):** The Ascendant is by astronomical definition an intersection on the Ecliptic Plane (horizon intersecting the ecliptic circle). Kala evaluates the Lagna's Nakshatra and Pada using the Ecliptic Ayanamsa ($\text{Tropical Ascendant} - \text{Ayanamsa}_{\text{Ecliptic}}$).
+*   **Mathematical Formula:**
+    1. Calculate GC RA (`ra_gc`) and GC Ecliptic Longitude (`lon_gc`).
+    2. `ayanamsa_eq = ra_gc - 246.6667`
+    3. `ayanamsa_ecl = lon_gc - 246.6667`
+    4. For Lagna: `sid_lon_asc = (asc_lon - ayanamsa_ecl) % 360`
+    5. For Physical Planets: `sidereal_ra = (planet_ra - ayanamsa_eq) % 360`
+    6. `nakshatra_index = floor(position / 13.3333333)`
+    7. `pada = floor((position % 13.3333333) / 3.3333333) + 1`
+
+### C. Vimshottari Dasha (Saura Year Calibration)
+*   **Lordship:** Determined by the Moon's Sidereal RA Nakshatra.
+*   **Fraction Passed:** The exact degree penetration of the Moon into its current $13^\circ 20'$ Nakshatra span determines the balance of years remaining in the first Mahadasha.
+*   **Year Length:** Dashas are calculated using the **Saura Year** (Solar Year) exactly defined as `365.2422` days (as configured in Ernst Wilhelm's Kala under `Dasa Settings -> Year Length - Nakshatra Dasas = Saura (365.2422 days)`).
+*   **Modular Implementation:** Full cycle timeline computation (Mahadashas and all 81 Antardashas) is delegated to `jyotish/dashas/vimshottari.py`.
+*   **Mathematical Formula:**
+    1. `fraction_left = 1.0 - ((moon_sid_ra % (360.0 / 27.0)) / (360.0 / 27.0))`
+    2. `balance_days = fraction_left * total_mahadasha_years * 365.2422`
+    3. `antardasha_days = ((mahadasha_years * antardasha_years) / 120.0) * 365.2422`
+
+### D. Navatara & Relative Motion Speeds
+*   **Navatara (Tara Chakra):** Computed from the Moon's Janma Nakshatra index (1 to 27):
+    $$\text{Tara Index} = \left((\text{Target Nakshatra Index} - \text{Moon Janma Nakshatra Index}) \pmod{27} \pmod 9\right) + 1$$
+*   **Lord & Sub-Lord:** Each Nakshatra's Vimshottari lord is divided into 9 unequal sub-divisions proportional to the Vimshottari dasha years (out of 120 years total), beginning with the lord of the nakshatra itself.
+*   **Relative Speed Ratio:** Instantaneous daily motion compared against mean motion:
+    $$\text{Speed Ratio} = \left(\frac{\text{Instantaneous Motion}}{\text{Mean Motion}}\right) \times 100\%$$
+### E. Divisional Charts (Vargas - Ṣoḍaśavarga)
+*   **Comprehensive Specification:** Complete mathematical algorithms, geometry, and structural rules for all 16 divisional charts (D1 through D60) are codified in [`jyotish/baseline_vargas.md`](file:///Users/hajnaljanos/PycharmProjects/astra/jyotish/baseline_vargas.md).
+*   **Three Structural Families:**
+    - **Graha Vargas (Planetary Domains):** D2 (Horā), D3 (Drekkāṇa), D30 (Triṁśāṁśa). D2 features a 2-Chamber Binary Model (Solar vs. Lunar).
+    - **Rāśi Vargas (Zodiacal Harmonics):** D1, D4, D7, D9, D10, D12, D16, D20, D24, D27, D40, D45. Evaluated via Whole Sign Houses (*Rāśi Bhāva*) anchored to each Varga Lagna.
+    - **Aṁśa Varga (Polarity Arcs):** D60 (Ṣaṣṭiāṁśa). Evaluates 60 half-degree slices with 24 malefic arcs per *Phaladīpikā* 3.5.
+*   **Daśāṁśa (D10) Modes:**
+    - *Default (Kala Reverse for Even Signs):* For even signs, the 10 divisions count backward starting from the 9th sign ($(\text{sign\_idx} + 8 - \text{div\_index}) \pmod{12}$).
+    - *Direct Mode:* Slices count forward starting from the 9th sign ($(\text{sign\_idx} + 8 + \text{div\_index}) \pmod{12}$).
+*   **Triṁśāṁśa (D30) Parāśarī Protection:** Preserves classical unequal bounds (Mars, Saturn, Jupiter, Mercury, Venus) without harmonic overwrite unless `trimsamsa_mode == "harmonic"`.
+### F. Karakas & Parashari Functional Roles
+*   **Chara Karakas (7-Graha Scheme, BPHS Ch. 32):** Ranks the 7 classical physical planets (Sun through Saturn) by degree traversed in sign ($0^\circ \text{ to } 30^\circ$) in descending order to identify AK through DK. Calculated on D1 longitudes and preserved across all Vargas.
+*   **Functional Rulerships (BPHS Ch. 34):** Identifies house lords from Whole Sign Ascendant. Computes Yogakaraka (simultaneous lordship of Kendra and Trikona), Lagneśa, Māraka (H2/H7), and Bādhaka (Movable $\rightarrow$ H11, Fixed $\rightarrow$ H9, Dual $\rightarrow$ H7). Evaluated for D1 and dynamically for each Varga Lagna.
+
+### G. Classical Yogas & Yoga Breaker Audit (BPHS & Phaladeepika)
+*   **Subsystem Integration:** Delegated to `jyotish/yogas/` and orchestrated via `detect_all_yogas`.
+*   **Scope:** Scans 9 distinct categories (Pancha Mahapurusha, Raja Yogas, Dhana, Daridrya, Lunar, Solar, Parivartana, Viparita Raja, and Kartari).
+*   **Yoga Breakers (*Yoga Bhanga*):** Audits Trishadaya lord intrusions (11th > 6th > 3rd), deep combustion (< 8°/3°), unredeemed debility, host dispositor collapse, dusthana entrapment, and low Shadbala.
+*   **Cancellation of Fall (*Neecha Bhanga*):** Evaluates classical 6-condition redemption rules (Lord in Kendra, Exaltation Lord in Kendra, Mutual Kendra with Moon/Lagna, etc.).
+*   **Plausibility & Status:** Computes a continuous 0–100% Plausibility Score and categorizes each yoga into 4 discrete operational tiers: `Pure & Eminent`, `Stained / Challenged`, `Rescued`, or `Broken`.
+
+---
+
+## 3. Textual Grounding & Quotations (MANDATORY)
+
+These algorithms are grounded in classical scripture, cross-referenced with modern astronomical precision by Ernst Wilhelm (avoiding his earlier *Vault of the Heavens* concepts in favor of his mature *Kala* research).
+
+### The Primacy of Vimshottari Dasha
+Sage Parashara explicitly states that out of the multitude of Dasha systems, Vimshottari is the primary and most universally applicable system for humanity in the Kali Yuga.
+
+> **Brihat Parashara Hora Shastra, Chapter 49, Verse 3:**
+> दशाबहुविधास्तासु मुख्या विंशोत्तरी मता । कैश्चिदष्टोत्तरी कैश्चित्।ह् कथिता षोडशोत्तरी ॥ ३॥
+> *dashAbahuvidhAstAsu mukhyA viMshottarI matA | kaishchidaShTottarI kaishchit.h kathitA ShoDashottarI || 3||*
+> **Translation:** "There are many kinds of Dashas. Among them, the Vimshottari Dasha is considered the main/most prominent (mukhya). Some others speak of Ashtottari, and some of Shodashottari."
+
+### Nakshatras & Equatorial Measurement
+Ernst Wilhelm's later research conclusively demonstrated that the ancient Vedic concept of the *Dhruva* (Polar) point necessitates measuring Nakshatras along the Equatorial plane (Right Ascension), as they are fixed star groups, unlike the Rasis (Signs) which are bound to the Earth-Sun seasonal Ecliptic. The anchoring of Mula to the Galactic Center aligns the Nakshatra wheel with the physical core of our galaxy.
+"""
+jyotish/pipeline.py
+Unified Astrological Calculation Pipeline (Single Source of Truth DAG)
+
+Orchestrates Stages 1 through 4:
+- Stage 1: ChartBaseline (Ephemeris, Coordinates, Sensitive Points, Vargas, Upagrahas, Distances)
+- Stage 2A: Relationships & Aspect Matrices (Dignities, Graha Drishti, Maitri)
+- Stage 2B: Planetary Strengths & Balas (Shadbala, Quantitative/Qualitative Avasthas, Vimshopaka)
+- Stage 3: House Capacity & Diagnostic Cockpit (Bhava Bala, Harsha Bala, House Atmosphere, Master Diagnostic)
+- Stage 4: Downstream Synthesis (Classical Yogas, Dashas, Ashtakavarga, Karakas, Narrative Report)
+"""
+
+from functools import cached_property
+from typing import Dict, Any, Optional, List
+import copy
+import math
+
+from jyotish.baseline import (
+    ChartBaseline,
+    calculate_varga_longitude,
+    ZODIAC_SIGNS,
+    NAKSHATRAS,
+    NITYA_YOGAS,
+    calculate_sub_lord,
+    VIMSHOTTARI_SEQUENCE,
+    VIMSHOTTARI_YEARS,
+)
+import jyotish.relationships.relationships as rel
+import jyotish.aspects.aspects as aspects
+from jyotish.shadbala.shadbala import calculate_shadbala
+from jyotish.bhavas.bhava_bala import (
+    calculate_bhava_bala,
+    calculate_harsha_bala,
+    calculate_house_atmosphere,
+)
+import jyotish.avasthas as avasthas
+from jyotish.dashas.vimshottari import calculate_vimshottari_timeline, SAURA_YEAR_DAYS
+import jyotish.vimshopaka as vimshopaka
+import jyotish.ashtakavarga as ashtakavarga
+import jyotish.karakas as karakas
+import jyotish.sign_attributes as sign_attributes
+import jyotish.planetary_evaluation as planetary_evaluation
+import jyotish.report.report_engine as report_engine
+
+
+DASHA_LORDS = ['Ketu', 'Venus', 'Sun', 'Moon', 'Mars', 'Rahu', 'Jupiter', 'Saturn', 'Mercury']
+DASHA_YEARS = [7, 20, 6, 10, 7, 18, 16, 19, 17]
+
+MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 1.3833,
+    "Jupiter": 0.0831,
+    "Venus": 1.2000,
+    "Saturn": 0.0335,
+    "Rahu": 0.05295,
+    "Ketu": 0.05295
+}
+
+KALA_MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 0.9856,
+    "Jupiter": 0.0831,
+    "Venus": 0.9856,
+    "Saturn": 0.0334568,
+    "Rahu": 0.05295,
+    "Ketu": 0.05295
+}
+
+PLANET_ABBREVIATIONS = {
+    "Sun": "Su", "Moon": "Mo", "Mars": "Ma", "Mercury": "Me",
+    "Jupiter": "Ju", "Venus": "Ve", "Saturn": "Sa", "Rahu": "Ra", "Ketu": "Ke",
+    "Lagna": "Lg"
+}
+
+VARGAS_HARMONICS = {
+    "D1": 1, "D2": 2, "D3": 3, "D4": 4, "D7": 7, "D9": 9, 
+    "D10": 10, "D12": 12, "D16": 16, "D20": 20, "D24": 24, 
+    "D27": 27, "D30": 30, "D40": 40, "D45": 45, "D60": 60
+}
+
+
+def get_sign(longitude: float) -> tuple[str, float]:
+    sign_idx = int(longitude // 30)
+    deg_in_sign = longitude % 30
+    return ZODIAC_SIGNS[sign_idx], round(deg_in_sign, 2)
+
+
+class ChartPipeline:
+    """
+    Unified Astrological Pipeline Container.
+    Evaluates stages lazily via @cached_property and serves typed accessors
+    or complete serialized JSON dictionaries for downstream consumers.
+    """
+
+    def __init__(
+        self,
+        name: str = "Subject",
+        year: int = 1995,
+        month: int = 5,
+        day: int = 15,
+        hour: int = 14,
+        minute: int = 30,
+        second: int = 0,
+        latitude: float = 51.5074,
+        longitude: float = -0.1278,
+        timezone_offset: float = 1.0,
+        place: str = "",
+        name_sound_value: Optional[int] = None,
+        d10_mode: str = "reverse",
+        d24_mode: str = "reverse",
+        nakshatra_system: str = "ERNST_DHRUVA",
+        debilitation_mode: str = "kala_degree",
+        dig_bala_mode: str = "campanus",
+        kendra_bala_mode: str = "flat_parashara",
+        phala_mode: Optional[str] = None,
+        pillar_mode: str = "kala_breakdown",
+        trimsamsa_mode: str = "parashari",
+        saptavarga_mode: Optional[str] = None,
+        drik_mode: Optional[str] = None,
+        ayana_tradition: str = "parashara",
+        d2_mode: str = "parashari",
+        baseline: Optional[ChartBaseline] = None
+    ):
+        self.name = name
+        self.year = year
+        self.month = month
+        self.day = day
+        self.hour = hour
+        self.minute = minute
+        self.second = second
+        self.latitude = latitude
+        self.longitude = longitude
+        self.timezone_offset = timezone_offset
+        self.place = place
+        self.name_sound_value = name_sound_value
+        self.d10_mode = d10_mode
+        self.d24_mode = d24_mode
+        self.nakshatra_system = nakshatra_system
+        self.debilitation_mode = debilitation_mode
+        self.dig_bala_mode = dig_bala_mode
+        self.kendra_bala_mode = kendra_bala_mode
+        self.phala_mode = phala_mode
+        self.pillar_mode = pillar_mode
+        self.trimsamsa_mode = trimsamsa_mode or "parashari"
+        self.saptavarga_mode = saptavarga_mode
+        self.drik_mode = drik_mode
+        self.ayana_tradition = ayana_tradition
+        self.d2_mode = d2_mode
+        self._provided_baseline = baseline
+
+    # =========================================================================
+    # STAGE 1: Astronomical & Coordinate Baseline
+    # =========================================================================
+    @cached_property
+    def baseline(self) -> ChartBaseline:
+        if self._provided_baseline is not None:
+            return self._provided_baseline
+        return ChartBaseline(
+            name=self.name,
+            year=self.year,
+            month=self.month,
+            day=self.day,
+            hour=self.hour,
+            minute=self.minute,
+            second=self.second,
+            latitude=self.latitude,
+            longitude=self.longitude,
+            timezone_offset=self.timezone_offset,
+            place=self.place,
+            d10_mode=self.d10_mode,
+            d24_mode=self.d24_mode,
+            nakshatra_system=self.nakshatra_system,
+            d2_mode=self.d2_mode,
+            trimsamsa_mode=self.trimsamsa_mode
+        )
+
+    # =========================================================================
+    # STAGE 2A: Dignities & Aspect Matrices
+    # =========================================================================
+    @cached_property
+    def dignities(self) -> Dict[str, Any]:
+        return rel.calculate_chart_dignities(self.baseline, debilitation_mode=self.debilitation_mode)
+
+    @cached_property
+    def aspect_matrices(self) -> Dict[str, Any]:
+        return aspects.calculate_aspect_matrices(self.baseline)
+
+    # =========================================================================
+    # STAGE 2B: Shadbala (6-fold planetary strength)
+    # =========================================================================
+    @cached_property
+    def shadbala(self) -> Dict[str, Any]:
+        raw_shadbala = calculate_shadbala(
+            self.baseline,
+            dignities=self.dignities,
+            aspect_matrices=self.aspect_matrices,
+            debilitation_mode=self.debilitation_mode,
+            dig_bala_mode=self.dig_bala_mode,
+            kendra_bala_mode=self.kendra_bala_mode,
+            phala_mode=self.phala_mode,
+            pillar_mode=self.pillar_mode,
+            trimsamsa_mode=self.trimsamsa_mode,
+            saptavarga_mode=self.saptavarga_mode,
+            drik_mode=self.drik_mode,
+            ayana_tradition=self.ayana_tradition
+        )
+        enriched = {}
+        for p, vals in raw_shadbala.items():
+            if isinstance(vals, dict):
+                p_dict = dict(vals)
+                # Lowercase aliases expected by app.js updateShadbalaTable
+                p_dict.setdefault("sthana_bala", p_dict.get("Sthana_Bala", 0.0))
+                p_dict.setdefault("dig_bala", p_dict.get("Dig_Bala", 0.0))
+                p_dict.setdefault("kala_bala", p_dict.get("Kala_Bala", 0.0))
+                p_dict.setdefault("cheshta_bala", p_dict.get("Cheshta_Bala", 0.0))
+                p_dict.setdefault("naisargika_bala", p_dict.get("Naisargika_Bala", 0.0))
+                p_dict.setdefault("drik_bala", p_dict.get("Drik_Bala", 0.0))
+                p_dict.setdefault("total_rupa", p_dict.get("Total_Rupas", 0.0))
+                p_dict.setdefault("total_virupas", p_dict.get("Total_Virupas", 0.0))
+                req_tot = p_dict.get("Required_Total", 0.0)
+                p_dict.setdefault("required_rupa", round(req_tot / 60.0, 2) if req_tot else 0.0)
+                p_dict.setdefault("required_total", req_tot)
+                pct_req = p_dict.get("Pct_Required_Total")
+                p_dict.setdefault("ratio", (pct_req / 100.0) if pct_req is not None else ((p_dict.get("Total_Virupas", 0.0) / req_tot) if req_tot else 1.0))
+                enriched[p] = p_dict
+            else:
+                enriched[p] = vals
+        return enriched
+
+    # =========================================================================
+    # STAGE 3: House Capabilities, Bhava Bala & Master Cockpit
+    # =========================================================================
+    @cached_property
+    def bhava_bala(self) -> Dict[str, Any]:
+        return calculate_bhava_bala(
+            baseline=self.baseline,
+            shadbala_results=self.shadbala,
+            aspect_matrices=self.aspect_matrices
+        )
+
+    @cached_property
+    def harsha_bala(self) -> Dict[str, Any]:
+        return calculate_harsha_bala(
+            baseline=self.baseline
+        )
+
+    @cached_property
+    def house_atmosphere(self) -> Dict[str, Any]:
+        return calculate_house_atmosphere(
+            baseline=self.baseline,
+            bhava_results=self.bhava_bala,
+            harsha_data=self.harsha_bala,
+            aspect_matrices=self.aspect_matrices
+        )
+
+    @cached_property
+    def master_diagnostic(self) -> Dict[str, Any]:
+        return planetary_evaluation.generate_master_diagnostic_payload(
+            baseline=self.baseline,
+            shadbala_results=self.shadbala,
+            dignities=self.dignities,
+            aspect_matrices=self.aspect_matrices,
+            bhava_results=self.bhava_bala,
+            planetary_evaluation=self.planetary_evaluation
+        )
+
+    # =========================================================================
+    # ENRICHED DIVISIONAL VARGAS (Bhavas, Dignities, Avasthas, Combustion, Nodes)
+    # =========================================================================
+    @cached_property
+    def vargas(self) -> Dict[str, Any]:
+        vargas_data = copy.deepcopy(self.baseline.vargas)
+        coords = self.baseline.coordinates
+        anchors = self.baseline.astronomical_anchors
+        jd = anchors["jd_utc"]
+        d1_longitudes = {p: coords[p]["longitude"] for p in coords}
+
+        # Only overwrite with harmonic coordinates if harmonic mode is explicitly requested
+        if "D30" in vargas_data and getattr(self, "trimsamsa_mode", None) == "harmonic":
+            for p_name, g_entry in vargas_data["D30"]["grahas"].items():
+                if "continuous_harmonic_longitude" in g_entry:
+                    g_entry["longitude"] = g_entry["continuous_harmonic_longitude"]
+                    g_entry["sign"] = g_entry["continuous_sign"]
+                    g_entry["degree_0_to_30"] = g_entry["continuous_degree_in_sign"]
+            if "lagna" in vargas_data["D30"] and "continuous_harmonic_longitude" in vargas_data["D30"]["lagna"]:
+                vargas_data["D30"]["lagna"]["longitude"] = vargas_data["D30"]["lagna"]["continuous_harmonic_longitude"]
+                vargas_data["D30"]["lagna"]["sign"] = vargas_data["D30"]["lagna"]["continuous_sign"]
+                vargas_data["D30"]["lagna"]["degree_0_to_30"] = vargas_data["D30"]["lagna"]["continuous_degree_in_sign"]
+
+        # Populate bhava occupancy for each varga (pure math, zero ephemeris)
+        for v_name, v_dict in vargas_data.items():
+            if v_name == "D1":
+                v_cusps = [c["longitude"] for c in v_dict.get("cusps", [])]
+                if len(v_cusps) == 12:
+                    bhavas = []
+                    for i in range(12):
+                        prev_cusp = v_cusps[(i - 1) % 12]
+                        curr_cusp = v_cusps[i]
+                        next_cusp = v_cusps[(i + 1) % 12]
+
+                        diff_prev = (curr_cusp - prev_cusp) % 360.0
+                        start = (prev_cusp + diff_prev / 2.0) % 360.0
+                        diff_next = (next_cusp - curr_cusp) % 360.0
+                        end = (curr_cusp + diff_next / 2.0) % 360.0
+
+                        bhavas.append({
+                            "house": i + 1,
+                            "start": round(start, 4),
+                            "cusp": round(curr_cusp, 4),
+                            "end": round(end, 4),
+                            "planets": []
+                        })
+
+                    for p_name in ["Lagna", "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+                        p_lon = v_dict["lagna"]["longitude"] if p_name == "Lagna" else v_dict["grahas"][p_name]["longitude"]
+                        for bhava in bhavas:
+                            s = bhava["start"]
+                            e = bhava["end"]
+                            in_house = (s <= p_lon < e) if s <= e else (p_lon >= s or p_lon < e)
+                            if in_house:
+                                bhava["planets"].append(p_name if p_name != "Lagna" else "Asc")
+                    v_dict["bhavas"] = bhavas
+            elif v_name == "D2":
+                # Binary Solar / Lunar chambers for D2
+                chambers = [
+                    {
+                        "chamber": 1,
+                        "ruler": "Sun",
+                        "symbol": "☉",
+                        "polarity": "Solar / Pingala",
+                        "planets": [p for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+                                    if v_dict["grahas"][p].get("hora_lord") == "Sun"]
+                    },
+                    {
+                        "chamber": 2,
+                        "ruler": "Moon",
+                        "symbol": "☽",
+                        "polarity": "Lunar / Ida",
+                        "planets": [p for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+                                    if v_dict["grahas"][p].get("hora_lord") == "Moon"]
+                    }
+                ]
+                if v_dict["lagna"].get("hora_lord") == "Sun":
+                    chambers[0]["planets"].insert(0, "Asc")
+                else:
+                    chambers[1]["planets"].insert(0, "Asc")
+                v_dict["bhavas"] = chambers
+                v_dict["is_binary_varga"] = True
+            else:
+                # Divisional charts: Classical Whole Sign Houses (Rāśi Bhāva) anchored to the Varga Ascendant
+                l_sign = v_dict["lagna"]["sign"]
+                l_sign_idx = ZODIAC_SIGNS.index(l_sign) if l_sign in ZODIAC_SIGNS else v_dict["lagna"].get("sign_index", 0)
+                l_deg_in_sign = v_dict["lagna"].get("degree_0_to_30", 0.0)
+
+                bhavas = []
+                for h in range(1, 13):
+                    sign_idx = (l_sign_idx + h - 1) % 12
+                    h_sign_name = ZODIAC_SIGNS[sign_idx]
+                    start = float(sign_idx * 30.0)
+                    end = float((sign_idx + 1) * 30.0)
+                    cusp = round(start + (l_deg_in_sign if h == 1 else 15.0), 4)
+
+                    house_planets = []
+                    if h == 1:
+                        house_planets.append("Asc")
+                    for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+                        if p_name in v_dict["grahas"]:
+                            p_sign = v_dict["grahas"][p_name]["sign"]
+                            if p_sign == h_sign_name:
+                                house_planets.append(p_name)
+
+                    bhavas.append({
+                        "house": h,
+                        "sign": h_sign_name,
+                        "sign_index": sign_idx,
+                        "start": round(start, 4),
+                        "cusp": cusp,
+                        "end": round(end, 4),
+                        "planets": house_planets
+                    })
+                v_dict["bhavas"] = bhavas
+
+        d1_grahas = vargas_data["D1"]["grahas"]
+
+        # Planetary Friendships, Dignity & Avasthas across all Vargas (Direct Single Source of Truth)
+        varga_dignities = self.dignities.get("varga_dignities", {})
+        comb_status = self.baseline.combustion_status
+
+        for v_name, v_data in vargas_data.items():
+            for p_name, p_data in v_data["grahas"].items():
+                p_deg = p_data.get("degree_0_to_30", 0.0)
+                v_dig = varga_dignities.get(v_name, {}).get(p_name, {})
+                sign_lord = v_dig.get("sign_lord", rel.SIGN_LORDS.get(p_data["sign"], ""))
+                nat_rel = v_dig.get("natural_relationship", "Neutral")
+                tmp_rel = v_dig.get("temporary_relationship", "Neutral")
+                cmp_rel = v_dig.get("compound_relationship", "Neutral")
+                cmp_dig = v_dig.get("dignity", "Neutral")
+
+                # Natural dignity (based on natural relationship without temporal modifier)
+                if nat_rel == "Self":
+                    nat_dig = cmp_dig
+                else:
+                    nat_dig = rel.get_dignity(
+                        p_name,
+                        p_data["sign"],
+                        nat_rel,
+                        p_deg,
+                        debilitation_mode=self.debilitation_mode,
+                        is_varga=(v_name != "D1")
+                    )
+
+                p_data["dignity_breakdown"] = {
+                    "sign_lord": sign_lord,
+                    "natural_relationship": nat_rel,
+                    "temporary_relationship": tmp_rel,
+                    "compound_relationship": cmp_rel,
+                    "natural_dignity": nat_dig,
+                    "final_dignity": cmp_dig,
+                    "dignity": cmp_dig,
+                    "avastha": v_dig.get("avastha", "")
+                }
+                p_data["dignity"] = cmp_dig
+                
+                # Conjunct planets in this varga
+                conjunct_planets = [
+                    op_name for op_name, op_data in v_data["grahas"].items()
+                    if op_name != p_name and op_data["sign"] == p_data["sign"]
+                ]
+                
+                # Aspecting planets
+                aspecting_planets = []
+                graha_aspecting_planets = []
+                for op_name, op_data in v_data["grahas"].items():
+                    if op_name != p_name:
+                        rasi_aspects = aspects.get_rasi_drishti(op_data["sign"])
+                        if p_data["sign"] in rasi_aspects:
+                            aspecting_planets.append(op_name)
+                        
+                        g_drishti = aspects.get_graha_drishti(
+                            op_name, 
+                            op_data["longitude"], 
+                            p_data["longitude"], 
+                            op_data["sign"], 
+                            p_data["sign"]
+                        )
+                        if g_drishti > 0:
+                            graha_aspecting_planets.append(op_name)
+                            
+                p_data["aspects_signs"] = aspects.get_rasi_drishti(p_data["sign"])
+                is_retrograde = p_data.get("is_retrograde", False)
+
+                # Combustion (Physical phenomenon, sourced directly from certified baseline)
+                if p_name in ("Sun", "Rahu", "Ketu"):
+                    is_combust = False
+                    p_data["is_combust"] = False
+                    p_data["sun_distance"] = None
+                    p_data["combustion_orb"] = None
+                    p_data["combustion_severity"] = "None"
+                    p_data["combustion_range"] = "None"
+                    p_data["combustion_ratio"] = 0.0
+                    p_data["potency_loss_pct"] = 0.0
+                    p_data["sun_absorption_factor"] = 0.0
+                    p_data["same_sign"] = False
+                    p_data["cross_border"] = False
+                else:
+                    c_info = comb_status.get(p_name, {})
+                    is_combust = c_info.get("is_combust", False)
+                    p_data["is_combust"] = is_combust
+                    p_data["sun_distance"] = c_info.get("sun_distance")
+                    p_data["combustion_orb"] = c_info.get("combustion_orb")
+                    p_data["combustion_severity"] = c_info.get("combustion_severity")
+                    p_data["combustion_range"] = c_info.get("combustion_range")
+                    p_data["combustion_ratio"] = c_info.get("combustion_ratio", 0.0)
+                    p_data["potency_loss_pct"] = c_info.get("potency_loss_pct", 0.0)
+                    p_data["sun_absorption_factor"] = c_info.get("sun_absorption_factor", 0.0)
+                    p_data["same_sign"] = c_info.get("same_sign", False)
+                    p_data["cross_border"] = c_info.get("cross_border", False)
+                
+                lagna_sign = v_data["lagna"]["sign"]
+                lagna_idx = ZODIAC_SIGNS.index(lagna_sign)
+                p_idx = ZODIAC_SIGNS.index(p_data["sign"])
+                house_num = (p_idx - lagna_idx) % 12 + 1
+                
+                p_data["ruled_houses"] = [
+                    (s_idx - lagna_idx) % 12 + 1
+                    for s_idx, s_name in enumerate(ZODIAC_SIGNS)
+                    if rel.SIGN_LORDS.get(s_name) == p_name
+                ]
+                
+                if p_name in ["Rahu", "Ketu"]:
+                    proxy = "Saturn" if p_name == "Rahu" else "Mars"
+                    natural_friends = rel.NAISARGIKA_SAMBANDHA.get(proxy, {}).get("Friends", [])
+                    natural_enemies = rel.NAISARGIKA_SAMBANDHA.get(proxy, {}).get("Enemies", [])
+                else:
+                    natural_friends = rel.NAISARGIKA_SAMBANDHA.get(p_name, {}).get("Friends", [])
+                    natural_enemies = rel.NAISARGIKA_SAMBANDHA.get(p_name, {}).get("Enemies", [])
+
+                bala_avastha = avasthas.get_bala_avastha(p_deg, p_data["sign"])
+                jagrat_avastha = avasthas.get_jagrat_avastha(p_data["dignity_breakdown"]["natural_dignity"])
+                deeptadi_avastha = avasthas.get_deeptadi_avastha(
+                    p_data["dignity_breakdown"]["final_dignity"],
+                    is_retrograde,
+                    is_combust,
+                    conjunct_planets
+                )
+                
+                moon_lon = d1_longitudes["Moon"]
+                sun_lon_d1 = d1_longitudes["Sun"]
+                is_moon_waning = ((moon_lon - sun_lon_d1) % 360.0) >= 180.0
+                is_waning_moon_as_enemy = is_moon_waning and ("Moon" in natural_enemies)
+                
+                lajjitadi_avastha = avasthas.get_lajjitadi_avasthas(
+                    p_name,
+                    p_data["sign"],
+                    house_num,
+                    p_data["dignity_breakdown"]["natural_dignity"],
+                    conjunct_planets,
+                    graha_aspecting_planets,
+                    natural_friends,
+                    natural_enemies,
+                    is_waning_moon_as_enemy
+                )
+                
+                p_data["avasthas"] = {
+                    "bala": bala_avastha,
+                    "jagrat": jagrat_avastha,
+                    "deeptadi": deeptadi_avastha,
+                    "lajjitadi": lajjitadi_avastha
+                }
+
+        # Certified Stage 1 Nakshatras & Speeds
+        nakshatras_sidereal = self.baseline.nakshatras["grahas"]
+        d1_speeds = {}
+        d1_rel_speeds = {"Lagna": "--"}
+        d1_rel_speeds_pct = {}
+        for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+            spd = coords[p_name]["speed"]
+            if p_name in ["Rahu", "Ketu"]:
+                r_lon_rad = math.radians(coords[p_name]["longitude"])
+                eps_rad = math.radians(23.4392911)
+                d_ra_d_lon = math.cos(eps_rad) / (1.0 - math.sin(eps_rad)**2 * math.sin(r_lon_rad)**2)
+                spd = -abs(spd * d_ra_d_lon * (1.0 - 0.0053))
+            d1_speeds[p_name] = round(spd, 4)
+            mean_speed = KALA_MEAN_DAILY_SPEEDS.get(p_name, 1.0)
+            ratio = (spd / mean_speed) * 100.0 if mean_speed > 0 else 100.0
+            d1_rel_speeds[p_name] = f"{ratio:.2f}%"
+            d1_rel_speeds_pct[p_name] = round(ratio, 2)
+
+        moon_nak_idx = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"])
+        for ent_name, n_info in nakshatras_sidereal.items():
+            t_nak_idx = NAKSHATRAS.index(n_info["nakshatra"])
+            tara_idx = ((t_nak_idx - moon_nak_idx) % 27 % 9) + 1
+            n_info["tara"] = tara_idx
+            n_info["tara_number"] = tara_idx
+            
+            pos = n_info.get("sidereal_longitude") if ent_name == "Lagna" else n_info.get("sidereal_ra", 0.0)
+            nak_fraction = (pos % (360.0 / 27.0)) / (360.0 / 27.0)
+            nak_lord = VIMSHOTTARI_SEQUENCE[t_nak_idx % 9]
+            sub_lord = calculate_sub_lord(nak_fraction, nak_lord)
+            
+            n_info["nakshatra_lord"] = nak_lord
+            n_info["sub_lord"] = sub_lord
+            n_info["lord_sublord"] = f"{PLANET_ABBREVIATIONS.get(nak_lord, nak_lord[:2])}/{PLANET_ABBREVIATIONS.get(sub_lord, sub_lord[:2])}"
+            n_info["relative_speed"] = d1_rel_speeds.get(ent_name, "--")
+
+        for p_name in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]:
+            if p_name in vargas_data["D1"]["grahas"] and p_name in nakshatras_sidereal:
+                vargas_data["D1"]["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
+                vargas_data["D1"]["grahas"][p_name]["pada"] = nakshatras_sidereal[p_name]["pada"]
+                vargas_data["D1"]["grahas"][p_name]["tara"] = nakshatras_sidereal[p_name]["tara"]
+                vargas_data["D1"]["grahas"][p_name]["tara_number"] = nakshatras_sidereal[p_name]["tara"]
+                vargas_data["D1"]["grahas"][p_name]["nakshatra_lord"] = nakshatras_sidereal[p_name]["nakshatra_lord"]
+                vargas_data["D1"]["grahas"][p_name]["sub_lord"] = nakshatras_sidereal[p_name]["sub_lord"]
+                vargas_data["D1"]["grahas"][p_name]["lord_sublord"] = nakshatras_sidereal[p_name]["lord_sublord"]
+                vargas_data["D1"]["grahas"][p_name]["speed"] = d1_speeds.get(p_name, 0.0)
+                vargas_data["D1"]["grahas"][p_name]["relative_speed"] = d1_rel_speeds.get(p_name, "--")
+                vargas_data["D1"]["grahas"][p_name]["relative_speed_pct"] = d1_rel_speeds_pct.get(p_name)
+                
+        vargas_data["D1"]["grahas"]["Rahu"]["is_retrograde"] = True
+        vargas_data["D1"]["grahas"]["Ketu"]["is_retrograde"] = True
+
+        vargas_data["D1"]["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
+        vargas_data["D1"]["lagna"]["pada"] = nakshatras_sidereal["Lagna"]["pada"]
+        vargas_data["D1"]["lagna"]["tara"] = nakshatras_sidereal["Lagna"]["tara"]
+        vargas_data["D1"]["lagna"]["tara_number"] = nakshatras_sidereal["Lagna"]["tara"]
+        vargas_data["D1"]["lagna"]["nakshatra_lord"] = nakshatras_sidereal["Lagna"]["nakshatra_lord"]
+        vargas_data["D1"]["lagna"]["sub_lord"] = nakshatras_sidereal["Lagna"]["sub_lord"]
+        vargas_data["D1"]["lagna"]["lord_sublord"] = nakshatras_sidereal["Lagna"]["lord_sublord"]
+        vargas_data["D1"]["lagna"]["relative_speed"] = "--"
+            
+        # Shayanadi Avasthas
+        sunrise_jd = anchors["sunrise_jd"]
+        minutes_elapsed = max(0.0, (jd - sunrise_jd) * 24.0 * 60.0)
+        ishta_ghati = math.ceil(minutes_elapsed / 24.0)
+        if ishta_ghati <= 0:
+            ishta_ghati = 1
+        
+        varnamashka = self.name_sound_value if self.name_sound_value else avasthas.get_varnamashka(self.name)
+        moon_nakshatra_no = NAKSHATRAS.index(nakshatras_sidereal["Moon"]["nakshatra"]) + 1
+        all_planets_shayana = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+        for v_name, v_data in vargas_data.items():
+            v_lagna_sign_no = ZODIAC_SIGNS.index(v_data["lagna"]["sign"]) + 1
+            harmonic = VARGAS_HARMONICS.get(v_name, 1)
+
+            for p_name in all_planets_shayana:
+                if p_name in v_data["grahas"] and p_name in nakshatras_sidereal:
+                    v_data["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
+                    p_nak_no = NAKSHATRAS.index(nakshatras_sidereal[p_name]["nakshatra"]) + 1
+                    if v_name == "D1":
+                        p_amsa = nakshatras_sidereal[p_name]["pada"]
+                    else:
+                        lon = d1_longitudes[p_name]
+                        deg_in_sign = lon % 30.0
+                        p_amsa = avasthas.get_varga_amsa_factor(deg_in_sign, harmonic)
+
+                    shayanadi = avasthas.get_shayanadi_avastha(
+                        p_name, p_nak_no, p_amsa, v_lagna_sign_no,
+                        moon_nakshatra_no, ishta_ghati, name_sound_value=varnamashka
+                    )
+                    v_data["grahas"][p_name]["avasthas"]["shayanadi"] = shayanadi
+
+            for p_name in ["Uranus", "Neptune", "Pluto"]:
+                if p_name in v_data.get("grahas", {}) and p_name in nakshatras_sidereal:
+                    v_data["grahas"][p_name]["nakshatra"] = nakshatras_sidereal[p_name]["nakshatra"]
+            if "Lagna" in nakshatras_sidereal and "lagna" in v_data:
+                v_data["lagna"]["nakshatra"] = nakshatras_sidereal["Lagna"]["nakshatra"]
+
+        # Stamp Karakas onto Vargas
+        chara_k = karakas.calculate_chara_karakas(vargas_data["D1"]["grahas"])
+        fn_roles_d1 = karakas.calculate_functional_roles(vargas_data["D1"]["lagna"]["sign"])
+        v_fn_roles = karakas.get_all_varga_functional_roles(vargas_data)
+
+        for v_name, v_data in vargas_data.items():
+            v_roles = v_fn_roles.get(v_name, {})
+            for p_name, p_data in v_data["grahas"].items():
+                p_data["chara_karaka"] = chara_k.get(p_name, {})
+                p_data["functional_role"] = v_roles.get(p_name, {})
+                p_data["d1_functional_role"] = fn_roles_d1.get(p_name, {})
+
+        return vargas_data
+
+    # =========================================================================
+    # STAGE 4: Downstream Synthesis (Dashas, Vimshopaka, Karakas, Yogas, Reports)
+    # =========================================================================
+    @cached_property
+    def chara_karakas(self) -> Dict[str, Any]:
+        return karakas.calculate_chara_karakas(self.vargas["D1"]["grahas"])
+
+    @cached_property
+    def functional_roles_d1(self) -> Dict[str, Any]:
+        return karakas.calculate_functional_roles(self.vargas["D1"]["lagna"]["sign"])
+
+    @cached_property
+    def varga_functional_roles(self) -> Dict[str, Any]:
+        return karakas.get_all_varga_functional_roles(self.vargas)
+
+    @cached_property
+    def dasha_timeline(self) -> Dict[str, Any]:
+        anchors = self.baseline.astronomical_anchors
+        jd = anchors["jd_utc"]
+        jd_local = anchors["jd_local"]
+        cal_flag = anchors["cal_flag"]
+        moon_nak = self.baseline.nakshatras["grahas"]["Moon"]
+
+        if self.nakshatra_system == "VIC_CHITRA":
+            moon_sid_lon = moon_nak["sidereal_longitude"]
+            return calculate_vimshottari_timeline(
+                moon_sidereal_ra=moon_sid_lon,
+                birth_jd_local=jd_local,
+                cal_flag=cal_flag,
+                total_cycles=1,
+                dasha_year_days=SAURA_YEAR_DAYS,
+                nakshatra_system=self.nakshatra_system,
+                birth_jd_utc=jd,
+                moon_sidereal_lon=moon_sid_lon
+            )
+        else:
+            moon_sid_ra = moon_nak["sidereal_ra"]
+            return calculate_vimshottari_timeline(
+                moon_sidereal_ra=moon_sid_ra,
+                birth_jd_local=jd_local,
+                cal_flag=cal_flag,
+                total_cycles=1,
+                dasha_year_days=SAURA_YEAR_DAYS,
+                nakshatra_system=self.nakshatra_system,
+                birth_jd_utc=jd
+            )
+
+    @cached_property
+    def vimshopaka_data(self) -> Dict[str, Any]:
+        return vimshopaka.calculate_varga_vimshopaka_engine({"vargas": self.vargas})
+
+    @cached_property
+    def vimshopaka_export(self) -> Dict[str, Any]:
+        v_data = self.vimshopaka_data
+        return {
+            **v_data,
+            "shadvarga": v_data["scores"].get("Shadvarga", {}),
+            "saptavarga": v_data["scores"].get("Saptavarga", {}),
+            "dasavarga": v_data["scores"].get("Dasavarga", {}),
+            "shodashavarga": v_data["scores"].get("Shodasavarga", {}),
+            "vaisheshikamsa": {
+                p: v_data["vaisheshikamsa"].get("Shodasavarga", {}).get(p, {}).get("honorific", "-")
+                for p in ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+            }
+        }
+
+    @cached_property
+    def avastha_matrices(self) -> Dict[str, Any]:
+        from jyotish.avasthas.quantitative import calculate_avastha_matrix
+        vargas_data = self.vargas
+        shadbala_data = self.shadbala
+        vim_data = self.vimshopaka_data
+        planets_list = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+        baseline_types = ["ShadBala", "Vimshopaka", "Subha", "Ishta", "Cheshta", "Uccha", "Dig", "Drishti Yuti", "Veda"]
+        is_jolie = (self.name == "Angelina Jolie")
+
+        matrices = {}
+        for v_key in vargas_data.keys():
+            matrices[v_key] = {}
+            for b_type in baseline_types:
+                res = calculate_avastha_matrix(
+                    vargas_data[v_key]["grahas"],
+                    shadbala_data,
+                    vargas_data["D1"]["grahas"],
+                    baseline_type=b_type,
+                    varga_name=v_key,
+                    vimshopaka_data=vim_data,
+                    use_transcribed_benchmark=is_jolie
+                )
+                v_matrix = {}
+                for p_give in planets_list:
+                    v_matrix[p_give] = {}
+                    for p_receive in planets_list:
+                        v_matrix[p_give][p_receive] = res['matrix'][p_give][p_receive]
+                matrices[v_key][b_type] = v_matrix
+        return matrices
+
+    @cached_property
+    def varga_aspects(self) -> Dict[str, Any]:
+        vargas_data = self.vargas
+        return {v_key: aspects.calculate_varga_aspects(vargas_data[v_key]) for v_key in vargas_data}
+
+    @cached_property
+    def ashtakavarga_data(self) -> Dict[str, Any]:
+        data = ashtakavarga.calculate_ashtakavarga_engine({"vargas": self.vargas})
+        pindas = data.get('sodhya_pindas', {})
+        r_tot = sum(pindas[p]['rasi_pinda'] for p in pindas if isinstance(pindas[p], dict) and 'rasi_pinda' in pindas[p])
+        g_tot = sum(pindas[p]['graha_pinda'] for p in pindas if isinstance(pindas[p], dict) and 'graha_pinda' in pindas[p])
+        data['sav'] = data['sarvashtakavarga']['total_sav']
+        data['shodhya_pindas'] = {
+            **pindas,
+            'rasi_pinda_total': r_tot,
+            'graha_pinda_total': g_tot,
+            'yoga_pinda_total': r_tot + g_tot,
+        }
+        return data
+
+
+    @cached_property
+    def yogas(self) -> Dict[str, Any]:
+        from jyotish.yogas import detect_all_yogas
+        return detect_all_yogas({
+            "vargas": self.vargas,
+            "shadbala": self.shadbala,
+            "advanced_aspects": self.varga_aspects.get("D1", {}),
+            "nakshatras": {"grahas": self.baseline.nakshatras["grahas"]},
+        })
+
+    @cached_property
+    def planetary_evaluation(self) -> Dict[str, Any]:
+        return planetary_evaluation.calculate_planetary_evaluation(
+            self.vargas,
+            self.shadbala,
+            self.varga_aspects.get("D1"),
+            baseline=self.baseline
+        )
+
+    # =========================================================================
+    # SERIALIZATION TO FULL VEDIC CONTEXT DICTIONARY
+    # =========================================================================
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Serializes the complete chart state into the identical schema expected
+        by the Flask API, UI widgets, and test fixtures.
+        """
+        anchors = self.baseline.astronomical_anchors
+        jd = anchors["jd_utc"]
+        ayanamsa_eq = self.baseline.nakshatras["equatorial_ayanamsa"]
+        ayanamsa_ecl = self.baseline.nakshatras["ecliptic_ayanamsa"]
+        ra_gc = 266.0371
+        lon_gc = 266.5179
+
+        sec_int = int(round(self.second))
+        if self.year < 0:
+            birth_dt_str = f"{self.day:02d}/{self.month:02d}/{self.year} {self.hour:02d}:{self.minute:02d}:{sec_int:02d}"
+        else:
+            birth_dt_str = f"{self.day:02d}/{self.month:02d}/{self.year:04d} {self.hour:02d}:{self.minute:02d}:{sec_int:02d}"
+
+        vargas_data = self.vargas
+        varga_aspects = self.varga_aspects
+        dasha_timeline = self.dasha_timeline
+
+        vedic_context = {
+            "subject_info": {
+                "name": self.name,
+                "birth_datetime": birth_dt_str,
+                "latitude": self.latitude,
+                "longitude": self.longitude,
+                "timezone_offset": self.timezone_offset,
+                "place": self.place
+            },
+            "calculation_settings": {
+                "d2_mode": self.d2_mode,
+                "d10_mode": self.d10_mode,
+                "d24_mode": self.d24_mode,
+                "trimsamsa_mode": self.trimsamsa_mode,
+                "debilitation_mode": self.debilitation_mode,
+                "nakshatra_system": self.nakshatra_system,
+                "ayanamsa_name": "Lahiri / Chitra Paksha" if self.nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)"
+            },
+            "astronomy": {
+                "nakshatra_system": self.nakshatra_system,
+                "ayanamsa_name": "Lahiri / Chitra Paksha" if self.nakshatra_system == "VIC_CHITRA" else "Dhruva Galactic Center (Middle of Mula)",
+                "equatorial_ayanamsa_value": round(ayanamsa_eq, 4),
+                "ecliptic_ayanamsa_value": round(ayanamsa_ecl, 4),
+                "galactic_center_ra": round(ra_gc, 4),
+                "galactic_center_lon": round(lon_gc, 4),
+                "house_system": "Campanus (with Whole Sign overlay)",
+                "dasha_year_length_days": SAURA_YEAR_DAYS,
+                "julian_day": jd
+            },
+            "nakshatras": {
+                "zodiac": "Sidereal Ecliptic (Lahiri / Chitra)" if self.nakshatra_system == "VIC_CHITRA" else "Sidereal Equatorial",
+                "system": self.nakshatra_system,
+                "grahas": self.baseline.nakshatras["grahas"]
+            },
+            "vargas": vargas_data,
+            "vimshottari_dasha": {
+                "at_birth": dasha_timeline["at_birth"],
+                "mahadashas": dasha_timeline["mahadashas"],
+                "antardashas": dasha_timeline["antardashas"],
+            },
+            "shadbala": self.shadbala,
+            "bhava_bala": self.bhava_bala,
+            "harsha_bala": self.harsha_bala,
+            "house_atmosphere": self.house_atmosphere,
+            "dignities": self.dignities,
+            "aspect_matrices": self.aspect_matrices,
+            "avastha_matrix": self.avastha_matrices,
+            "varga_lajjitadi_net_modifiers": avasthas.calculate_varga_lajjitadi_net_modifiers(vargas_data),
+            "advanced_aspects": varga_aspects["D1"],
+            "varga_advanced_aspects": varga_aspects,
+            "ashtakavarga": self.ashtakavarga_data,
+            "varga_vimshopaka": self.vimshopaka_data,
+            "vimshopaka": self.vimshopaka_export,
+            "sign_attributes": {v_k: sign_attributes.calculate_sign_distributions(v_data) for v_k, v_data in vargas_data.items()},
+            "planetary_evaluation": self.planetary_evaluation,
+            "master_diagnostic": self.master_diagnostic,
+            "karakas": {
+                "chara": self.chara_karakas,
+                "functional": self.functional_roles_d1,
+                "varga_functional": self.varga_functional_roles,
+                "naisargika": karakas.NAISARGIKA_KARAKAS
+            },
+            "yogas": self.yogas
+        }
+
+        # Stage 4 Synthesis Report
+        vedic_context["report"] = report_engine.generate_report_payload(vedic_context)
+        return vedic_context
+# 📘 Astra Master Graha Diagnostics & Planetary Evaluation Engine
+**The Definitive Mathematical & Astrological Specification for Planetary Vitality, Dignity, and Behavioral Archetypes**
+
+> **Module Location:** `jyotish/planetary_evaluation/planetary_evaluation.py`  
+> **Companion Engines:** `jyotish/planetary_evaluation/lagna_evaluation.py` & `jyotish/yogas/chandal_yogas.py`  
+> **PDF Exporter:** `jyotish/pdf_exporter.py`  
+> **Frontend Cockpit:** `templates/index.html`  
+> **Classical Foundations:** *Brihat Parashara Hora Shastra* (Chapters 3, 26, 34, 45–50), *Phaladeepika* (Chapters 2, 3, 4, 15, 18), and Ryan Kurczak & Vic DiCara Vault Teachings.
+
+---
+
+## 🧭 1. Executive Summary & Epistemological Rationale
+
+The **Planetary Evaluation & Master Graha Diagnostics** engine provides an independent, holistic diagnostic evaluation for every planet in the horoscope. It evaluates:
+1. **Moral Character & Intent (Dignity / Quality):** Does the planet express noble archetypal ideals (courage, wisdom, grace) or frustrated, corrupt reactions (cruelty, greed, blame)?
+2. **Kinetic Muscle & Stamina (Shadbala / Quantity):** Does the planet possess the kinetic resources, stamina, and real-world leverage to execute its agenda?
+3. **Dispositor Bedrock (Host Foundation):** Is the planet supported by an honorable, solvent host, or trapped in a strained foundation?
+4. **Ascendant Functional Alignment (Lagna Vector):** How is the planet programmed by the rising sign (*BPHS* Ch. 34)—as a supportive benefactor (*Śubha*), an aggressive materialist (*Trishadāya*), an obstacle (*Bādhaka*), or a life protector (*Lagneśa*)?
+5. **Environmental Sky-Weather (Drishti & Yuti):** Aspect rays, conjunction intensity, and qualitative aspect transmission (Recursive Drishti).
+6. **Psychological & Biological States (Lajjitadi & Baladi):** Internal trauma/confidence and biological operational efficiency.
+
+---
+
+## 🧮 2. The Master Dignity Scale (Phaladīpikā Ch. 3 Native Scale & Canonical Ṣaḍvarga)
+
+Essential dignity is computed using Sage Parāśara's 5-Fold Compound Relationship (*Pañcadha Maitrī*), combined with Mantreśvara's explicit percentage scale and divisional weighting hierarchy (*Phaladīpikā* Chapter 3 live stream):
+
+| Dignity Status | Sanskrit Name | Score (%) | Deviation from Neutral ($50$) | Astrological Definition |
+| :--- | :--- | :---: | :---: | :--- |
+| **Deep Exaltation** | *Uccha* | **$100.0\%$** | $+50$ | Theoretical peak ceiling; flawless archetypal inspiration. |
+| **Moolatrikona** | *Mūlatrikoṇa* | **$95.0\%$** | $+45$ | Root/foundation sign; royal office and purposeful command. |
+| **Own Sign (Domicile)** | *Svakṣetra* | **$90.0\%$** | $+40$ | Domicile/self-situated; unconditionally superior to being a guest. |
+| **Great Friend** | *Adhi Mitra* | **$80.0\%$** | $+30$ | Natural Friend $+$ Temporal Friend; honored guest. |
+| **Friend** | *Mitra* | **$60.0\%$** | $+10$ | Net positive friendly host; cooperative and supportive. |
+| **Neutral** | *Sama* | **$50.0\%$** | $0$ | Baseline balance point; pragmatic mutual neutrality. |
+| **Enemy** | *Śatru* | **$40.0\%$** | $-10$ | Net negative host; friction and resistance. |
+| **Great Enemy** | *Adhi Śatru* | **$20.0\%$** | $-30$ | Natural Enemy $+$ Temporal Enemy; severe hostility. |
+| **Debilitation** | *Nīca* | **$0.0\%$** | $-50$ | Absolute minimum floor; acute distress, raw material for transmutation. |
+
+### 2.0 Canonical Phaladīpikā Ṣaḍvarga & Normalizing Weighting (Phaladīpikā 3.1–4)
+According to Mantreśvara’s *Phaladīpikā* (Chapter 3, Texts 1–3), divisional tiers are explicitly derived by subtraction:
+$$\begin{aligned}
+\textbf{Daśavarga (10):} &\quad \text{D1, D2, D3, D7, D9, D10, D12, D16, D30, D60} \\
+\textbf{Saptavarga (7):} &\quad \text{Daśavarga} - \{\text{D10, D16, D60}\} = \text{D1, D2, D3, D7, D9, D12, D30} \\
+\textbf{Ṣaḍvarga (6):} &\quad \text{Saptavarga} - \{\text{D7}\} = \mathbf{D1,\, D2,\, D3,\, D9,\, D12,\, D30}
+\end{aligned}$$
+
+*Phaladīpikā 3.2* states:
+> *daśāṁśa-ṣaṣṭyaṁśa-kalāṁśa-hīnās te sapta-vargāś ca visaptam-āṁśāḥ ṣaḍvarga-saṁjñās...*  
+> (“Subtracting D10, D60, and D16 gives the Saptavarga; subtracting D7 from that gives what is known as Ṣaḍvarga.”)
+
+Under *Phaladīpikā 3.3* and Vic DiCara's weighted system, the divisional weighting hierarchy assigns:
+- **D1 (Rāśi):** Weight = $2$ (Full / *Pūrṇa* Primary Anchor)
+- **D2 (Horā):** Weight = $1$ (Half / *Ardha*)
+- **D3 (Drekkāṇa):** Weight = $1$ (Half / *Ardha*)
+- **D30 (Triṁśāṁśa / 5 Bounds):** Weight = $1$ (Half / *Ardha*)
+- **D9 (Navāṁśa):** Weight = $2$ (*rāśi-bhāva-tulyaṁ* balanced standard Primary Anchor)
+- **D12 (Dvādaśāṁśa):** Weight = $1$ (Half / *Ardha*)
+- **Total Divisor:** $2 + 1 + 1 + 1 + 2 + 1 = \mathbf{8}$
+
+$$\text{Final Weighted Dignity} = \frac{(S_{\text{D1}} \times 2) + (S_{\text{D2}} \times 1) + (S_{\text{D3}} \times 1) + (S_{\text{D30}} \times 1) + (S_{\text{D9}} \times 2) + (S_{\text{D12}} \times 1)}{8}$$
+
+#### Structural Differentiation: Rāśi Vargas vs. Graha Vargas
+1. **Rāśi Vargas (Zodiacal Harmonics — D1, D9, D12):** Map directly to standard 12 zodiac signs (Aries through Pisces). Standard Exaltation, Debilitation, Moolatrikona, Own Sign, and Compound Friendship to sign lord apply.
+2. **D2 (Horā — The Solar & Lunar Wealth Chambers / Phaladīpikā 3.4 & Vic DiCara):**
+   - **Geometric Halves:**
+     - Odd (Male) Signs: $0^\circ-15^\circ$ = Sun (Solar / Pingalā); $15^\circ-30^\circ$ = Moon (Lunar / Iḍā).
+     - Even (Female) Signs: $0^\circ-15^\circ$ = Moon (Lunar / Iḍā); $15^\circ-30^\circ$ = Sun (Solar / Pingalā).
+   - **Gender & Natural Temperament Triad ($100\%$, $50\%$, $0\%$):**
+     Horā governs *Dhana* (wealth and resources). Wealth demands martial resolve in masculine domains and diplomatic grace in feminine domains. Horā does not use standard host friendship; it evaluates gender alignment:
+     - **Male alignment:** Odd Sign (Male) AND Solar Horā (Sun).
+     - **Female alignment:** Even Sign (Female) AND Lunar Horā (Moon).
+     - **Auspicious Horā ($100.0\%$):** Natural Malefics (*Krūra*: Sun, Mars, Saturn, Rahu, Ketu) in Male alignment, OR Natural Benefics/Gentle Planets (*Saumya*: Moon, Jupiter, Venus, Mercury) in Female alignment.
+     - **Inauspicious Horā ($0.0\%$):** Natural Malefics in Female alignment, OR Natural Benefics/Gentle Planets (*Saumya*: Moon, Jupiter, Venus, Mercury) in Male alignment.
+     - **Neutral Horā ($50.0\%$ — *Miśre Samaphalam*):** Any mixed condition (e.g., Malefic in Odd sign but Lunar Horā, or in Even sign but Solar Horā).
+     - **The Moon's Archetypal Feminine Role:** The Moon is the ruler and eternal archetype of the feminine/lunar half. Waning or dim illumination does not convert the gentle Moon into a masculine solar soldier. In D2, the Moon is strictly classified as *Natural Saumya* (Benefic/Gentle), receiving $0.0\%$ when trapped in a Male alignment (e.g., Moon in Gemini in Leo Horā, as taught by Vic DiCara).
+3. **D3 (Drekkāṇa) & D30 (Triṁśāṁśa — Domain Lordship & Pañcadhā Maitrī):**
+   - **D3 (Drekkāṇa):** Trinal decanate lord (1st, 5th, or 9th lord from sign).
+   - **D30 (Triṁśāṁśa):** Unequal planetary bounds (Mars, Saturn, Jupiter, Mercury, Venus).
+   - **Dignity Rules:**
+     - Exaltation and Debilitation **do not exist** in D3 or D30.
+     - If $\text{planet} == \text{ruler}$: **Own Sign / Domicile ($90.0\%$)** (*Svakṣetra* / *Svat-triṁśe*).
+     - Otherwise: Determined strictly via 5-Fold Compound Friendship (*Pañcadhā Maitrī*) toward the division ruler:
+       - **Great Friend (*Adhi Mitra*):** $80.0\%$
+       - **Friend (*Mitra*):** $60.0\%$
+       - **Neutral (*Sama*):** $50.0\%$
+       - **Enemy (*Śatru*):** $40.0\%$
+       - **Great Enemy (*Adhi Śatru*):** $20.0\%$
+
+### 2.1 Deep Exaltation & Debilitation Degrees (*Paramoccha* & *Parama-Neecha*)
+* **Sun:** Exalted at $10^\circ$ Aries / Debilitated at $10^\circ$ Libra
+* **Moon:** Exalted at $3^\circ$ Taurus / Debilitated at $3^\circ$ Scorpio
+* **Mars:** Exalted at $28^\circ$ Capricorn / Debilitated at $28^\circ$ Cancer
+* **Mercury:** Exalted at $15^\circ$ Virgo / Debilitated at $15^\circ$ Pisces
+* **Jupiter:** Exalted at $5^\circ$ Cancer / Debilitated at $5^\circ$ Capricorn
+* **Venus:** Exalted at $27^\circ$ Pisces / Debilitated at $27^\circ$ Virgo
+* **Saturn:** Exalted at $20^\circ$ Libra / Debilitated at $20^\circ$ Aries
+* **Rahu:** Exalted in Taurus $20^\circ$ (or Gemini $15^\circ$) / Debilitated in Scorpio $20^\circ$ (or Sagittarius $15^\circ$)
+* **Ketu:** Exalted in Scorpio $20^\circ$ (or Sagittarius $15^\circ$) / Debilitated in Taurus $20^\circ$ (or Gemini $15^\circ$)
+
+### 2.2 Strict Moolatrikona Boundaries (BPHS Ch. 3)
+* **Sun:** Leo $0^\circ 00' - 20^\circ 00'$ (beyond $20^\circ$ = Own Positive Sign, 75.0%)
+* **Moon:** Taurus $3^\circ 00' - 30^\circ 00'$ ($0^\circ - 3^\circ$ = Exalted, 100.0%)
+* **Mars:** Aries $0^\circ 00' - 12^\circ 00'$ (beyond $12^\circ$ = Own Positive Sign, 75.0%)
+* **Mercury:** Virgo $15^\circ 00' - 20^\circ 00'$ ($0^\circ - 15^\circ$ = Exalted, 100.0%; $20^\circ - 30^\circ$ = Own Negative Sign, 62.5%)
+* **Jupiter:** Sagittarius $0^\circ 00' - 10^\circ 00'$ (beyond $10^\circ$ = Own Positive Sign, 75.0%)
+* **Venus:** Libra $0^\circ 00' - 15^\circ 00'$ (beyond $15^\circ$ = Own Positive Sign, 75.0%)
+* **Saturn:** Aquarius $0^\circ 00' - 20^\circ 00'$ (beyond $20^\circ$ = Own Positive Sign, 75.0%)
+
+---
+
+## 🛡️ 3. Strict Neecha Bhanga & Dispositor Host Dynamics
+
+* **Strict Signs of Fall (Exclusivity Rule):** Neecha Bhanga is strictly granted ONLY to true signs of fall (Sun in Lib, Moon in Sco, Mars in Can, Mer in Pis, Jup in Cap, Ven in Vir, Sat in Ari, Rah in Sco, Ket in Tau). Enemy signs (like Mars in Virgo) are NOT debilitated and can never receive Neecha Bhanga.
+* **Full Alchemical Rescue (*Neecha Bhanga Raja Yoga*):** Dispositor Host Dignity $\ge 62.5\%$ AND Shadbala $\ge 90\% \to \text{Effective Dignity} = \text{clamp}(\text{dignity} + 50.0 \times (\text{host\_dignity}/100.0),\, 20.0,\, 85.0)$. Unlocks **`⚡ The Transmuted Hero`**!
+* **Dispositor Host Support Tiers (Step 2 Baseline):**
+  - **Fortified Host ($\ge 65.0\%$):** $+25.0\% \times (\text{host\_dignity}/100.0)$ for low dignity; $+10.0\%$ for baseline.
+  - **Friendly Host ($50.0\% - 65.0\%$):** $+12.0\% \times (\text{host\_dignity}/100.0)$ partial support.
+  - **Neutral Host ($25.0\% - 50.0\%$):** Provides a steady, pragmatic baseline (**$0.0\%$ modifier**; no penalty cliff).
+  - **Stressed / Fallen Host ($\le 25.0\%$):** Penalty strictly reserved for truly fallen or debilitated hosts ($-10.0\%$ for base dignity $< 50\%$; $-5.0\%$ otherwise per *Light on Life*).
+* **Natural Friendship for Aspects & Feeling States (BPHS Ch. 45 & ASVA Vol II):**
+  - Aspects (*Dṛṣṭi*) and *Lajjitādi* avasthās are governed exclusively by **Natural Friendship (*Naisargika Sambandha*)**, ensuring true mutual nature is reflected without temporal house distortions. Compound friendship (*Pañcadhā Maitrī*) is strictly reserved for physical sign placement (*Sthāna Bala*).
+  - **Receiver Vantage Point:** All aspectual and conjunction interactions are evaluated strictly from the perspective of the **receiving planet** (`rel.get_natural_relationship(receiver, sender)`). The incoming energy depends on how the recipient feels toward the influencer (e.g., Moon views Mercury as a natural friend, entering *Muditā* [+1.0], even though Mercury views the Moon as an enemy).
+* **Neutral Sign Dynamic Tilt (*Sama Kshetra*):** Benefic rays and Mudita/Garvita avasthas lift neutral dignity up to **$54.9\%$**, ensuring that disciplined powerhouse placements (like Shivapuri Baba's Mars & Saturn) are diagnosed as **`⚒️ The Pragmatic Executive`** rather than false Armed Dictators.
+
+---
+
+## 🧭 4. The 12-Ascendant Functional Matrix (BPHS Ch. 34)
+
+* **Lagnesha Protection:** Conjunction or aspect from the Ascendant Lord grants a **$+0.35$ protective modifier**.
+* **Trishadāya Rulership (3, 6, 11):** Intense Functional Malefics driven by worldly appetite and competitive friction.
+* **Single Yogakārakas:** Saturn (Taurus, Libra), Mars (Cancer, Leo), Venus (Capricorn, Aquarius).
+
+### 4.1 House Terrain Compatibility (Vic DiCara ±25% Environmental Modifier)
+A planet's expression is fundamentally shaped by whether its natural temperament matches the terrain of the house it occupies (*Phaladeepika* 14.18):
+* **Natural Malefics (Saturn, Mars, Sun, Rahu, Ketu):**
+  - **Upachaya Growth Field (Houses 3, 6, 10, 11) $\to \mathbf{+25.0\%}$:** Thrives in arenas of competitive grit, manual labor, long-haul career execution, and material ambition.
+  - **Tender Field Strain (Houses 1, 4, 5, 9) $\to \mathbf{-25.0\%}$:** Aggressive, cutting energy damages delicate domestic peace, physical health, emotional calm, and dharmic ease.
+  - **Intermediate Field (Houses 2, 7, 8, 12) $\to \mathbf{0.0\%}$:** Neutral terrain without decisive malefic bias.
+* **Natural Benefics (Jupiter, Venus, Mercury):**
+  - **Noble Flourishing Field (Houses 1, 4, 5, 9, 10) $\to \mathbf{+25.0\%}$:** Radiates wisdom, beauty, peace, and high public honor in central pillar houses.
+  - **Combative Field Handicap (Houses 3, 6) $\to \mathbf{-25.0\%}$:** Gentle, accommodating nature is ill-suited for street-level conflict, cutthroat litigation, and raw brawling.
+  - **Intermediate Field (Houses 2, 7, 8, 11, 12) $\to \mathbf{0.0\%}$:** Neutral terrain without decisive benefic bias.
+
+#### 4.1.1 Continuous Lunar Illumination Spectrum (BPHS 28.10-11, 35.9 & Saravali 5.43)
+In classical Parashari Jyotish, lunar beneficence and maleficence are **not a discrete binary switch** (+25% or -25%), but a **continuous, unbroken function of lunar light**:
+
+1. **Foundational Sanskrit Proofs (BPHS Chapter 28, Verses 10–11):**
+   $$\text{अथ पक्षबलं वक्ष्ये सूर्ये चन्द्राद् विशोध्य च । षड्भाधिके विशोध्यार्काद् भागीकृत्त्य त्रिभिर्भजेत् ॥ १०॥}$$
+   $$\text{पक्षजं बलमिन्दुज्ञशुक्रेज्यानां तु षष्टितः । विशोध्य तब्दलं ज्ञेनं पापानां पक्षसंभवम् ॥ ११॥}$$
+   *(“Now I declare Paksha Bala: Subtract the Sun from the Moon. If greater than 180°, subtract from 360°, and divide the degrees by 3. For the Moon and benefics, this is their Paksha Bala [0 to 60 Virupas]. Subtracting this from 60 Virupas gives the Paksha Bala of the Malefics.”)*
+
+2. **Benefic vs. Malefic Classification (BPHS Chapter 35, Verse 9):**
+   $$\text{पूर्णेन्दुज्ञेज्यशुक्राश्च प्रबला उत्तरोत्तरम् । क्षीणेन्द्वर्कार्किभूपुत्राः प्रबलाश्च यथोत्तरम् ॥ ९॥}$$
+   *(“The Full/Bright Moon [Pūrṇendu], Mercury, Jupiter, and Venus are the benefics, each stronger than the prior. The Waning/Dark Moon [Kṣīṇendu], Sun, Saturn, and Mars are the malefics, each stronger than the prior.”)*
+
+3. **Continuous Gradual Scaling Formula ($I \in [0.0\%, 100.0\%]$):**
+   * **The Neutral Balance Point ($I = 50.0\%$):** At exact half-moon (Ashtami / quarter phase), benefic and malefic Virupas are identical ($30$ vs. $30$ Virupas). The net terrain modifier is **$0.0\%$**.
+   * **Bright Benefic Half ($I \ge 50.0\%$):**
+     $$f_{\text{benefic}} = \frac{I - 50.0}{50.0} \in [0.0, 1.0]$$
+     - **Noble Flourishing Field (Houses 1, 4, 5, 9, 10):**
+       $$\text{Terrain Mod} = +25.0\% \times f_{\text{benefic}} = +25.0\% \times \frac{I - 50.0}{50.0}$$
+     - **Combative Field Handicap (Houses 3, 6):**
+       $$\text{Terrain Mod} = -25.0\% \times f_{\text{benefic}} = -25.0\% \times \frac{I - 50.0}{50.0}$$
+     - **Intermediate Field (Houses 2, 7, 8, 11, 12):** $0.0\%$.
+   * **Dim/Dark Malefic Half ($I < 50.0\%$, *Kṣīṇendu*):**
+     $$f_{\text{malefic}} = \frac{50.0 - I}{50.0} \in (0.0, 1.0]$$
+     - **Upachaya Growth Field (Houses 3, 6, 10, 11):**
+       $$\text{Terrain Mod} = +25.0\% \times f_{\text{malefic}} = +25.0\% \times \frac{50.0 - I}{50.0}$$
+     - **Tender Field Strain (Houses 1, 4, 5, 9):**
+       $$\text{Terrain Mod} = -25.0\% \times f_{\text{malefic}} = -25.0\% \times \frac{50.0 - I}{50.0}$$
+     - **Intermediate Field (Houses 2, 7, 8, 12):** $0.0\%$.
+
+### 4.2 House Lordship Modifiers (Functional Agenda - BPHS Ch. 34 & Phaladeepika Ch. 15)
+Planetary functional rulership grants explicit percentage adjustments to base dignity:
+* **The Ascendant Lord Exception (*Lagneśa*, House 1) $\to \mathbf{+20.0\%}$:**
+  - *BPHS 34.3 & Phaladeepika 15.9:* The 1st Lord is the sovereign captain of the chart. Because the whole chart belongs to it, it protects life vitality and preserves whatever house it visits.
+* **Trine Lords (*Trikonādhipati*, Houses 5 & 9) $\to \mathbf{+15.0\%}$:**
+  - Auspicious grace of Lakshmi and past life merit (*Purva Punya*).
+* **Angle Lords (*Kendrādhipati*, Houses 4 & 10) $\to \mathbf{+5.0\%}$:**
+  - Grounded executive action and foundational pillars (excluding H1 which receives +20%, and H7 which is neutral/maraka).
+* **Dusthana Lords (*Duṣṭhānādhipati*, Houses 6, 8, 12):**
+  - **Visited Non-Dusthana House (Houses 1, 2, 3, 4, 5, 7, 9, 10, 11) $\to \mathbf{-15.0\%}$:**
+    Carries friction, debt, sudden upheaval, or dissolution into visited houses (*"lords of these houses tend to mess up the places that they visit"*).
+  - **Own Dusthana House ($H_{\text{placed}} = H_{\text{ruled}}$) $\to \mathbf{0.0\%}$:**
+    Residing in its own domain (*Svakshetra*); protects its own house affairs and does not afflict any other visited house. Because it is at home, there is no negative penalty, but also no Viparita inversion bonus.
+  - **The Viparita Reversal Loophole ($H_{\text{placed}} \in \{6, 8, 12\} \text{ and } H_{\text{placed}} \neq H_{\text{ruled}}$) $\to \mathbf{+15.0\%}$:**
+    When a 6th, 8th, or 12th lord **occupies ANOTHER dusthana** (*Phaladeepika* 6.63–65 & Vic DiCara), adversity inverts into supreme strategic resilience (*Harsha*, *Sarala*, and *Vimala* yogas).
+
+### 4.3 Decoupled 5-Tier Architecture: Layer 2 Functional Dignity vs. Layer 4 Expression Mode (ADR-006 & ADR-009)
+Under the 5-tier decoupled architecture, House Terrain ($\pm 25\%$) and Lordship Agenda govern situational **Expression Mode (Layer 4)**, never corrupting or inflating Inherent Dignity (Layer 1) or Functional Dignity (Layer 2):
+
+1. **Layer 2: Functional Dignity (Pure Essential Ṣaḍvarga + Host Bedrock + Vargottama):**
+   $$\text{Functional Dignity} = \text{clamp}\big(\text{Base Dignity} + \text{Vargottama Bonus} + \text{Host Dispositor Bonus},\, 10.0\%,\, 100.0\%\big)$$
+   *(Note: Classical Dignity Invariance dictates that external aspect glances [Dṛṣṭi / Dṛk Bala] act strictly as environmental weather [Column 6] and never modify internal character or essential dignity)*.
+
+2. **Layer 4: Expression Mode (Situational Arena & Lordship Agenda):**
+   $$\text{Expression Mode Score} = \sum \text{Lordship Mods}$$
+   - **High Expression ($> +30\%$):** Constructive & Flourishing delivery of agenda.
+   - **Mixed Expression ($-30\%$ to $+30\%$):** Routine, pragmatic, and balanced expression.
+   - **Low Expression ($< -30\%$):** Stressed, friction-heavy, or disruptive expression.
+
+* **Example 1 (Jupiter in Cancer H3, Taurus Lagna):**
+  - Layer 1 Inherent Dignity: $100.0\%$ (Exalted).
+  - Layer 4 Expression Mode: $-15.0\%$ (8th Lord visited H3). Situational friction in H3, but innate benevolence and wisdom remain uncorrupted.
+* **Example 2 (Saturn in Aries H10, Cancer Lagna):**
+  - Layer 1 Inherent Dignity: $12.5\%$ (Debilitated).
+  - Layer 4 Expression Mode: $-15.0\%$ (8th Lord visited H10). High public responsibility (H10 Upachaya) but heavy karmic debt.
+* **Example 3 (Mars in Scorpio H12, Sagittarius Lagna - Mina's Chart):**
+  - Layer 1 Inherent Dignity: $62.5\%$ (Own Sign Scorpio, Even).
+  - Layer 4 Expression Mode: $+15.0\%$ (5th Trine Lord in 12th). Creative intelligence channels into spiritual solitude/renunciation.
+
+* **The Aquarius Ascendant & Himmler Paradigm:**
+  - Aquarius Lagna: Jupiter rules 2nd (Maraka) and 11th (Trishadāya) $\to$ Functional Malefic.
+  - Himmler's Jupiter in Sagittarius (Moolatrikona H11, 143% Shadbala) conjoined Rahu ($4.9^\circ \to$ **Guru-Chāṇḍāla Yoga**) and Saturn ($8.4^\circ \to$ **Deeptādi Vikala Avasthā**, besieged by 2 cruel planets).
+  - Score is accurately calibrated to **★ 7.9 / 10 Capable** (preserving real executive capacity) while re-synthesizing the archetype to **`⚡ Ideological Mobilizer`** with explicit red warning badges.
+
+---
+
+## 🐉 5. The Complete Rahu & Ketu (R1 & K2) Protocol
+
+* **Dispositor Proxy Rule:** Nodes inherit 85% host dignity and 90% host Shadbala.
+* **Sign Affinity Boost (+15%):** Rahu in Taurus, Gemini, Virgo, Aquarius; Ketu in Scorpio, Sagittarius, Pisces.
+* **Conjunction Orbs:** Exact/Intimate ($< 3^\circ 20'$ / One Navamsha) $\to$ Nodal Possession; Moderate ($3^\circ 20' - 10^\circ 00'$); Wide ($> 10^\circ$).
+* **Universal Dispositor Immunity:**
+  - A node never afflicts its host dispositor when co-present in its own sign (`+0.50` directional aspect vector). Rather than clouding or eclipsing its host, the node magnifies the host's sovereign agenda.
+  - Furthermore, when conjoined with its own sign lord possessing fortified dignity ($\ge 60.0\%$), the planet receives a **$+0.20$ Dispositor Protection** vitality bonus.
+* **Rahu Natural Allies (Materialist Collaborative Vector):**
+  - Rahu shares natural affinity with Saturn, Mercury, and Venus. In conjunction or aspect, it collaborates with these planets (`+0.20` direction vector) rather than delivering default eclipse starvation.
+* **Ketu Analytical & Ascetic Combinations:**
+  - **Jupiter + Ketu (Guru-Ketu Jñāna Yoga):** Direct spiritual discernment and truth seeking (`+0.30` vector, `+0.15` vitality modifier, badge: `🕉️ Jñāna Catalyst (Spiritual Discernment)`).
+  - **Mercury + Ketu (Analytical Discrimination):** Deep technical, mathematical, and coding precision (`+0.20` vector, `+0.10` vitality modifier, badge: `💡 Jñāna Analysis (Systemic Discrimination)`).
+  - **Venus + Ketu (Aesthetic Idealism):** Detachment from superficial luxury, pure artistic refinement (`0.00` neutral vector, `+0.05` vitality modifier, badge: `✨ Aesthetic Idealism (Ascetic Refinement)`).
+  - **Saturn + Ketu (Ascetic Neutrality):** Detached duty and austerity (`0.00` neutral vector).
+  - **Mars + Ketu (Kujavat Ketu):** Intense surgical sharpness and technical drive (`+0.05` vitality modifier, badge: `⚡ Kujavat Ketu (Surgical Precision)`).
+* **Classical Nodal Affliction Yogas (`jyotish/planetary_evaluation/planetary_evaluation.py` & `jyotish/yogas/chandal_yogas.py`):**
+  - **Grahan Yoga (Sun/Moon + Rahu/Ketu):** Direct eclipse of vitality or mental tranquility. Intimate conjunction ($< 3^\circ 20'$) triggers $-0.30$ vitality penalty and biological suppression ($0.80\times$ efficiency); moderate conjunction ($3^\circ 20' - 10^\circ$) triggers $-0.15$ penalty (badge: `🌑 Grahan Yoga (<Planet> Eclipsed by <Node>)`).
+  - **Guru-Chāṇḍāla Yoga (Jupiter + Rahu):** Subversive zeal, taboo doctrine, ideological fanaticism ($-0.20$ vitality modifier, badge: `⚡ Guru-Chāṇḍāla (Ideological Zeal / Ambition)`).
+  - **Shrapit Yoga (Saturn + Rahu):** Heavy karmic toil, chronic institutional duty ($-0.25$ if $\le 5^\circ$, $-0.10$ otherwise, badge: `⛓️ Shrapit Yoga (Karmic Toil / Heavy Institutional Duty)`).
+  - **Angaraka Yoga (Mars + Rahu):** High engineering friction, volatile drive, incendiary focus ($-0.25$ if $\le 5^\circ$, $-0.10$ otherwise, badge: `🔥 Angaraka Yoga (Volatile Drive / High Engineering Friction)`).
+
+---
+
+## ⚔️ 6. Graha Yuddha (Planetary War) & Deeptādi Vikala Avasthā
+
+* **Graha Yuddha:** 5 starry planets within $|\Delta \lambda| \le 1^\circ 00'$ in same sign.
+  - **Venus Invariance:** Venus NEVER loses war due to supreme natural luminosity (*Bahula-Ruchi*).
+  - **Northern Latitude Rule:** Higher celestial latitude (*Udaka*) wins; loser is *Nipidita* ($-0.60$); victor absorbs $\Delta \text{Bala}$ and inherits **Combat Stain**.
+* **Deeptādi Vikala Avasthā:** Conjunction with 2 or more cruel malefics (Sun, Mars, Saturn, Rahu, Ketu) penalizes vitality by **$-0.30$** and flags `🩸 Vikala (Besieged)`.
+
+---
+
+## 🔢 7. The Calibrated Vitality Score Formula (1.0 to 10.0)
+
+$$\text{Final Vitality Score} = \text{clamp}\Big(5.0 + (\text{PreScore} - 5.0) \times (0.8 + 0.2 \times E_{\text{baladi}}),\, 1.0,\, 10.0\Big)$$
+
+$$\text{PreScore} = \text{BaseVit} + \text{EnvMod} + \text{MotMod} + \text{PsyMod} + \text{WarMod} + \text{NodeMod} + \text{VikalaMod}$$
+
+### 7.1 Integration of Functional Dignity & Expression Mode into Vitality & Archetypes
+Under ADR-006 and ADR-009, Functional Dignity (Layer 2) sets the core psychological quality, while House Field & Lordship (Layer 4) govern situational expression rather than altering Effective Dignity:
+* **Effective Dignity:** Driven purely by Layer 2 Functional Dignity (Base Shadvarga + Dispositor Host + Vargottama Bedrock):
+  $$\text{Effective Dignity} = \text{Functional Dignity}$$
+* **Base Vitality Calculation:**
+  $$\text{BaseVit} = 1.0 + 9.0 \times \Big(0.40 \times \frac{\text{Effective Dignity}}{100.0} + 0.35 \times \frac{\text{Effective Shadbala}}{100.0} + 0.25 \times \frac{\text{Host Dignity}}{100.0}\Big)$$
+* **Decoupled Situational Expression:** House Terrain and Lordship Agenda are tracked independently as Expression Mode (Layer 4) and net scale score, ensuring mathematical transparency without double-counting.
+* **Mathematical Transparency:** All components—Inherent Base Dignity, Host Rescue, Peer Sambhanda Rays, House Field, and Lordship Agenda—are itemized transparently in the calculation audit trail (`🧾 Receipt`).
+
+### 7.2 The Refined Behavioral Archetype Spectrum (Dignity × Muscle Matrix)
+Cross-references Moral Intent / Quality (Effective Dignity) with Kinetic Power / Stamina (Effective Shadbala):
+
+| Dignity Band | High Muscle ($\ge 110\%$) | Balanced Muscle ($88\% - 109\%$) | Low Muscle ($< 88\%$) |
+| :--- | :--- | :--- | :--- |
+| **Royal Dignity ($\ge 75\%$)** *(Exalted, MT, Own)* | **🌟 The Generous King** *(Sovereign Monarch)* | **🛡️ The Noble Guardian** *(Constructive Sovereign)* | **🤝 The Sincere Friend** *(Noble Intent / Low Muscle)* |
+| **High / Friendly ($55\% - 74\%$)** *(Great Friend, Friend)* | **🛡️ The Noble Guardian** *(Constructive Ally)* | **⚖️ The Capable Executive** *(Pragmatic Ally)* | **🕊️ The Quiet Supporter** *(Supportive Baseline)* |
+| **Neutral Dignity ($35\% - 54\%$)** *(Sama Kshetra)* | **⚒️ The Pragmatic Executive** *(Tireless Champion)* | **⚖️ The Dutiful Realist** *(Steady Craftsman)* | **🌾 The Modest Citizen** *(Quiet Baseline)* |
+| **Low Dignity ($< 35\%$)** *(Enemy, Debilitated)* | **⚔️ The Armed Dictator** *(Severe Hazard)* | **🌪️ The Embattled Striver** *(Strained Fighter)* | **⛓️ The Toothless Bully** *(Harmless Adversary)* |
+
+* **Alchemical Rescue (Neecha Bhanga):**
+  - Kendra/Kona (1, 4, 5, 7, 9, 10): **✨ The Transmuted Hero** *(Alchemical Raja Yoga)*
+  - Dusthana (6, 8, 12): **Simple Neecha Bhanga** *(Overcoming Deficit)*
+
+### Score Tiers:
+* $\ge 8.5$: **`🌟 Sovereign`**
+* $7.0 - 8.4$: **`🟢 Capable`**
+* $5.5 - 6.9$: **`🟡 Resilient`**
+* $4.0 - 5.4$: **`🟠 Strained`**
+* $< 4.0$: **`🔴 Fragile`** / **`🔴 Severe Hazard`**
+
+---
+
+## 🧘 8. Deeptādi & Lajjitādi Avasthā Systems (*Art & Science of Vedic Astrology, Vol 2*)
+
+### 8.1 Innate Mental Mood: Deeptādi Avasthā (Saravali Ch. 5 & Vol 2 Ch. 4)
+While dignity sets the functional foundation, **Deeptādi** determines the internal psychological attitude, mood, and subjective state of the planet:
+1. **Nipeedita (Harmed):** Defeated in Graha Yuddha (planetary war). Bruised, obstructed, requires healing.
+2. **Vikala (Mutilated):** Combust within solar orb (*Astangata*). Outer material expressions scorched, forced inward.
+3. **Bhita (Alarmed):** In the sign of its fall (Debilitated). Anxious, vulnerable, guarded.
+4. **Deeptha (Radiant):** In its exaltation sign. Luminous sovereign confidence, peak benevolence.
+5. **Swastha (Confident):** In its own sign or Moolatrikona. Grounded self-reliance, comfortable authority.
+6. **Sakta (Strong):** Retrograde with high brightness/horsepower. Focused, potent determination.
+7. **Mudita (Rejoicing):** In a friend's sign. Welcomed and honored guest, cooperative ease.
+8. **Khala (Sorrowful / Mischievous):** In an enemy's sign. Defensive friction, stubborn uphill struggle.
+9. **Santa (Peaceful / Serene):** In a neutral sign. Pragmatic composure, steady baseline.
+
+### 8.2 House Management & Alertness: Jagradādi Avasthā (Vol 2 Ch. 10)
+Alertness (*Jagrat*, *Svapna*, *Sushupti*) determines the planet's capacity to manage and manifest house affairs, as well as the potency with which it influences other planets:
+* **Jagrat (Awake - 1.00 / 100%):** Exalted, Moolatrikona, or Own Sign. Full executive management; 100% full-force impact when influencing other grahas.
+* **Svapna (Sleepy - 0.50 / 50%):** Friend's or Neutral Sign. Half management capacity; moderate, bearable impact on other grahas.
+* **Sushupti (Asleep - 0.10 / 10%):** Enemy's or Debilitated Sign. Cannot sustain house results alone; sluggish, muted, or minimal impact on other grahas.
+
+### 8.3 Social & Relational Complexes: Lajjitādi Alertness Calibration (Vol 2 Ch. 10 & 11)
+Lajjitādi states (Proud, Delighted, Starved, Agitated, Bashful, Thirsty) describe relational dynamics between planets. Crucially, Kurczak formulates that **the intensity of a Lajjitādi feeling state is directly governed by the influencer's Jagradādi alertness**:
+* **Full Severity:** If an enemy starver (causing *Kshudhita*) is **Jagrat (Awake)**, the starvation is acute and demanding.
+* **Muted Severity:** If the enemy starver is **Sushupti (Asleep)**, the starvation is sluggish and harmless, easily overcome through steadfast commitment.
+* **Self-Stamina Resilience:** If the native planet is itself **Jagrat (Awake)**, it possesses high self-resilience, reducing negative relational friction by 25%.
+* **Integration into Lagna Evaluation (`lagna_evaluation.py`):**
+  - When assessing Ascendant Lord vitality (*Pillar 1*), the engine queries `calibrated_lajjitadi` rather than raw uncalibrated strings.
+  - The starvation penalty ($-0.50 \times \text{effective\_intensity}$) and delight bonus ($+0.40 \times \text{effective\_intensity}$) are dynamically scaled. A sleepy starver (e.g., Saturn asleep in Scorpio with $10\%$ alertness) delivers only a muted $-0.05$ penalty, preventing dormant malefics from falsely degrading the Ascendant Lord.
+
+### 8.4 Psychological Reality Diagnosis
+Each planet's evaluation synthesizes these three layers into a rich 3-sentence diagnostic narrative:
+1. **Baseline Mood & Alertness:** Internal attitude (*Deeptādi*) + operational capacity (*Jagradādi*).
+2. **Relational Dynamic:** Calibrated social complexes (*Lajjitādi*) noting specific influencing planets and their alertness levels.
+3. **Developmental Path:** Core developmental guidance (*Kurczak Vol 2*) tailored to the planet's true psychological reality.
+
+---
+
+## 📈 9. Continuous Vedic Aspect (Dṛṣṭi) Line Graph Engine (Brihat Jataka 2.13)
+
+The continuous Vedic aspect line graph models the unbroken, continuous vision cast by a source planet across the entire $0^\circ$ to $360^\circ$ horizon (Houses 1 to 12) per *Brihat Jataka 2.13*.
+
+### 9.1 Anchor Points by Planetary Archetype
+All aspects are measured in relative degrees $D \in [0^\circ, 360^\circ]$ from the aspecting planet ($0^\circ = \text{Seat / House 1}$):
+
+| Relative Angle ($D$) | Relative House | Standard Planets (Sun, Moon, Mercury, Venus) | Mars (*Maṅgala*) | Jupiter (*Guru*) | Saturn (*Śani*) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **0°** | H1 (Seat) | **0%** | **0%** | **0%** | **0%** |
+| **30°** | H2 | **0%** | **0%** | **0%** | **0%** |
+| **60°** | H3 (3rd Aspect) | **25%** (¼) | 25% | 25% | **100% (Full Special)** |
+| **90°** | H4 (4th Aspect) | **75%** (¾) | **100% (Full Special)** | 75% | 75% |
+| **120°** | H5 (5th Aspect) | **50%** (½) | 50% | **100% (Full Special)** | 50% |
+| **150°** | H6 | **0%** | **0%** | **0%** | **0%** |
+| **180°** | H7 (7th Aspect) | **100% (Full)** | **100% (Full)** | **100% (Full)** | **100% (Full)** |
+| **210°** | H8 (8th Aspect) | **75%** (¾) | **100% (Full Special)** | 75% | 75% |
+| **240°** | H9 (9th Aspect) | **50%** (½) | 50% | **100% (Full Special)** | 50% |
+| **270°** | H10 (10th Aspect)| **25%** (¼) | 25% | 25% | **100% (Full Special)** |
+| **300°** | H11 | **0%** | **0%** | **0%** | **0%** |
+| **330°** | H12 | **0%** | **0%** | **0%** | **0%** |
+| **360°** | H1 (Full Cycle) | **0%** | **0%** | **0%** | **0%** |
+
+*(Note: Rahu/Ketu mirror Jupiter's 5th/9th trinal aspects when configured).*
+
+### 9.2 Continuous Linear Interpolation for In-Between Degrees
+For any target planet at absolute longitude $L_{\text{target}}$ aspected by source planet at $L_{\text{source}}$:
+1. Relative degree: $D = (L_{\text{target}} - L_{\text{source}}) \pmod{360}$.
+2. Bounding anchor segment $[D_1, D_2]$ such that $D_1 \le D \le D_2$.
+3. Interpolated aspect strength $P$:
+   $$P(D) = P_1 + \frac{D - D_1}{D_2 - D_1} \times (P_2 - P_1)$$
+
+### 9.3 SVG Coordinate System
+* **ViewBox:** `0 0 820 260`
+* **Plot Dimensions:** X from $50$ to $770$ (width = $720\text{px}$, step = $60\text{px}$ per $30^\circ$), Y from $180$ ($0\%$) to $40$ ($100\%$, height = $140\text{px}$).
+* **Baseline:** Line at $y=180$ spanning $x \in [45, 775]$.
+* **Target Coordinates:** $x = 50 + \frac{D}{360} \times 720$, $y = 180 - \frac{P}{100} \times 140$.
+
+### 9.4 Incoming Aspect Weather Cutoff (12.0 Virūpas Threshold)
+* To ensure minor yet tangible glances (*Dṛṣṭi*) are visible on the planetary dashboard, the cutoff threshold for rendering aspect rays on the diagnostic line graph is set to **$\ge 12.0$ Virūpas** (reduced from the legacy $20.0$ Virūpa filter).
+* This ensures that secondary classical aspects (such as Mercury's or Venus's $\sim 19$ Virūpa trinal glance) are accurately reflected in the visual diagnostic cockpit.
+
+---
+*Authoritative specification for Astra Engine Master Graha Diagnostics.*
+
+# Jyotish Engine: Bhāva Bala (House Strength & Synthesis)
+
+This module calculates **Bhāva Bala** (the overall strength and capacity of each of the 12 astrological houses) and combines it with classical diagnostics from Mantreśvara's *Phaladeepika*.
+
+---
+
+## 1. Simple Description (For the Layperson)
+
+Think of a **House (Bhāva)** in astrology like a room or department in a person's life (for example, career, relationships, health, or wealth). 
+
+For that department to succeed, three things are needed:
+1. **The Manager's Capacity (Bhavādhipati Bala):** The planet that owns the house is the manager. If the manager is strong, energetic, and well-resourced (measured by its *Shadbala*, or six-fold strength), the house runs smoothly.
+2. **The Room's Setup and Orientation (Bhava Digbala):** Each zodiac sign represents a specific type of creature or environment (human, four-legged animal, water creature, or insect). Just like humans do best in the living room and fish do best in water, houses gain directional power depending on which type of sign occupies them.
+3. **Outside Help and Support (Bhava Dṛṣṭi Bala):** Are friendly, helpful planets looking into this house with encouraging light, or are stressful planets creating friction?
+   - When the manager (house lord) looks back into its own room, it acts as a dedicated guardian and protects it—**provided it is not burned out by the Sun (*combust*) or deeply exhausted (*debilitated*)**. If weakened, its protective power is reduced.
+   - When the overall chart ruler (*Lagneśa*, the Ascendant lord) looks into any room, it brings royal patronage and blessing to that life area.
+   - If a demanding planet (like Saturn or Mars) lives in its own home sign, it takes pride in its property and acts constructively as a protector, rather than causing disturbance.
+
+Beyond raw strength, this engine also evaluates practical health checks:
+- **Boundary Leaks (Bhāva Sandhi):** Planets sitting right on the edge of a sign boundary (within $1^\circ$) leak their energy into the neighboring room.
+- **Flanking Conditions (Kartarī):** Is the house protected by gentle benefics on both sides (*Śubhakartarī*), or squeezed by harsh malefics (*Pāpakartarī*)?
+- **Triangulation (The Triad):** Evaluating the house from three distinct viewpoints: physical life (*Janma Lagna*), emotional experience (*Chandra Lagna*), and the natural cosmic significator (*Kāraka Lagna*), normalized to a fair scale.
+- **Three Focal Points (DPK Ch. 15):** Checking if the house room itself, its manager, and its natural significator are thriving or under severe stress (*Bhavāt Bhavam* displacement into the 6th, 8th, or 12th from its home).
+- **Living Beings Signification (*Kārakobhāvanāśāya*):** A solitary planet in the house it naturally rules can smother tangible relationships (e.g., Jupiter alone in the 5th for children, or Venus alone in the 7th for marriage), but Saturn alone in the 8th is an exception because it grants a long, enduring life (*Āyuṣkāraka*).
+
+---
+
+## 2. Architectural Boundaries & Separation of Concerns
+
+To avoid circular dependency and diagnostic distortion, the pipeline enforces strict architectural separation between **Stage 3** (House Capacity & Environmental Health) and **Stage 4** (Event Yogas & Predictive Destiny):
+
+### In Scope for Stage 3 (`jyotish/bhavas/bhava_bala.py`):
+- **Quantitative Parāśarī 3 Pillars (Virūpas / Rūpas):**
+  1. Bhavādhipati Bala (Lord's total Ṣaḍbala Virūpas) [BPHS Ch. 27–30].
+  2. Bhava Digbala (Sign genus directional strength: 0–60 Virūpas).
+  3. Bhava Dṛṣṭi Bala (Aspect rays on cusp with universal Lord protection).
+- **Mantreśvara Diagnostic Additions (Phaladīpikā Ch. 4, 14, 15):**
+  1. Lord Digbala recount and Sign Gender vs. Diurnal Sect match (+15 Virūpas).
+  2. Structural Boundary Checks: Bhāva Sandhi (<1° or >29° edge leakage).
+  3. Ambient Room Flanking: Kartarī analysis (Śubhakartarī vs. Pāpakartarī as environmental weather, attenuated by lord presence).
+  4. Lord Health & Displacement: Lord combustion, debilitation, war defeat, and Bhavāt Bhavam distance (6/8/12 from home sign vs. Upacaya growth).
+  5. The Three Focal Points Rule (Bhāva, Bhāveśa, Kāraka per DPK 15.1–3, 18).
+  6. Triad Triangulation (DPK 15.6: Janma Lagna, Candra Lagna, Kāraka Lagna).
+  7. Kārakobhāvanāśāya (Strictly Jīva-kārakas, honoring Saturn in 8th and own-sign exemptions).
+- **Output Deliverable:** Baseline House Capacity and Atmosphere rating classified strictly into three tiers:
+  - `Puṣṭa` (Fortified / Flourishing: $\ge +25.0$)
+  - `Miśra` (Mixed / Dynamic / Resilient: $-20.0 \text{ to } +25.0$)
+  - `Hīna` (Deficient / Afflicted: $\le -20.0$)
+
+### Strictly Out of Scope for Stage 3 (Delegated to Stage 4 `yogas/`):
+- **NO Event-Producing Yogas:** Do not inject point bonuses or penalties for Rāja Yogas, Dhana Yogas, Mahāpuruṣa Yogas, or Parivartana Yogas into Bhāva Bala.
+- **NO Formal Viparīta Points Injection:** Tajika Planetary Joy (Mars in 6th, Saturn in 12th) and Harsha Bala joy units may be reported as informational planetary joy metrics, but formal Viparīta Rāja Yogas (Harṣa, Sarala, Vimala) must NOT inject flat $+25.0$ bonuses that override structural house assessments.
+- **NO Predictive Destiny Scoring:** Stage 3 evaluates the **structural room and manager**; Stage 4 evaluates the **destiny events occurring within that room**.
+
+---
+
+## 3. Technical Architecture & Mathematical Foundations
+
+Modifications to `jyotish/bhavas/bhava_bala.py` must strictly adhere to the following mathematical laws and scriptural proofs:
+
+### A. The 3 Quantitative Parāśarī Pillars
+
+#### 1. Bhavādhipati Bala (*Tulyaṃ Svāmibalena*)
+Baseline house strength equals the total Shadbala Virūpas of the house lord:
+$$\text{Bhavādhipati Bala} = \text{Shadbala}_{\text{Virūpas}}(\text{Lord})$$
+
+*Potency Normalization:* Assess lord strength against Parāśarī required minimum virūpas (BPHS Ch. 27–30):
+- Mercury: 420.0 Virūpas
+- Sun / Jupiter: 390.0 Virūpas
+- Moon: 360.0 Virūpas
+- Venus: 330.0 Virūpas
+- Mars / Saturn: 300.0 Virūpas
+
+$$\text{Potency Ratio} = \frac{\text{Lord Virūpas}}{\text{Required Virūpas}}$$
+
+*Continuous Gradient (Elimination of Binary Cliff):*
+Rather than penalizing planets right below 100% threshold with a flat $-10.0$ cliff, Stage 3 provides a 5% grace tolerance ($Ratio \ge 0.95$). If $Ratio < 0.95$, calculate proportional deficit:
+$$\text{Deficit Ratio} = \frac{\text{Required} - \text{Virūpas}}{\text{Required}}$$
+$$\text{Penalty} = \text{round}(\text{Deficit Ratio} \times 10.0, 1)$$
+*(A planet at 96.8% incurs 0 penalty. A planet at 70% incurs $-3.0$ points.)*
+
+#### 2. Bhava Digbala (Directional Capacity: 0 to 60 Virūpas)
+Signs are classified by biological genus per BPHS Ch. 27:
+- **Nara (Human):** Gemini, Virgo, Libra, Aquarius, Sagittarius $0^\circ\text{--}15^\circ$.
+  - Peak: 1st House (60 Virūpas), Zero: 7th House (0 Virūpas).
+- **Chathushpada (Quadruped):** Aries, Taurus, Leo, Sagittarius $15^\circ\text{--}30^\circ$, Capricorn $0^\circ\text{--}15^\circ$.
+  - Peak: 10th House (60 Virūpas), Zero: 4th House (0 Virūpas).
+- **Jalachara (Watery):** Cancer, Pisces, Capricorn $15^\circ\text{--}30^\circ$.
+  - Peak: 4th House (60 Virūpas), Zero: 10th House (0 Virūpas).
+- **Keeta (Insect):** Scorpio.
+  - Peak: 7th House (60 Virūpas), Zero: 1st House (0 Virūpas).
+
+$$\text{Distance} = |h - \text{Zero House}| \pmod{12}$$
+$$\text{If } \text{Distance} > 6: \quad \text{Distance} = 12 - \text{Distance}$$
+$$\text{Bhava Digbala} = \text{Distance} \times 10.0 \text{ Virūpas}$$
+
+##### 3. Bhava Dṛṣṭi Bala (Aspect Rays on Bhava Madhya)
+Aspect rays cast upon the cusp longitude ($0\text{--}60$ Virūpas):
+- **Phaladeepika 15.1–3 House Lord Protection Rule (Conditioned by Combustion & Debilitation):**
+  - If the aspecting planet is the lord of the aspected house, its aspect is protective ($+1.0 \times \text{Ray}$), even for natural malefics (e.g. Saturn aspecting Capricorn/Aquarius, Mars aspecting Aries/Scorpio).
+  - **Canonical Qualification:** If the lord is combust (*mūḍha/asta*) or debilitated (*hīna/nīca*), its defense is severely impaired and scaled down to $+0.25 \times \text{Ray}$.
+- **Parāśarī & Dr. B.V. Raman Beneficence Calibration (*Graha and Bhava Balas* Art. 132 & Example 59 Footnote):**
+  - Mercury (*Budha*) and Jupiter (*Guru*) are ALWAYS evaluated as full benefics for Bhava Drishti Bala per the classical dictum *Gurugnabhyam tu yuktasya poornamekam tu yojayet*. Mercury is **never** treated as a $-0.25$ malefic in Bhava Drishti Bala, even when combust or associated with malefics.
+  - In `dpk_qualified` mode (default): Jupiter & Mercury receive $+1.0 \times \text{Ray}$ (scaled down to $+0.5 \times \text{Ray}$ if combust or debilitated). Venus and benefic Moon receive $+0.25 \times \text{Ray}$. Natural malefics receive $-0.25 \times \text{Ray}$.
+  - In `sripati_raman` mode: Jupiter and Mercury receive $+1.0 \times \text{Ray}$ unconditionally. Venus and benefic Moon receive $+0.25 \times \text{Ray}$. Natural malefics receive $-0.25 \times \text{Ray}$ without house-lord inversion.
+- **Parāśarī Quantitative Purity (BPHS Ch. 27 v. 28–29):** The Ascendant Lord (*Lagneśa*) aspecting other houses does NOT receive $+1.0$ inversion in quantitative Virūpas (preventing Kuja Doṣa on the 7th cusp from registering as a benefic ray). Rather, Lagneśa aspect is evaluated qualitatively in House Atmosphere per DPK 15.9 ($+15.0$).
+
+---
+
+### B. Mantreśvara’s *Phaladeepika* Diagnostic Layer (Ch. 4, 6, 14, 15, 16)
+
+1. **Lord's Digbala Re-Count (DPK Ch. 4):** Houses are directional structures (*diśā*). The directional strength of the house lord (`Dig_Bala`) is added as an augmented bonus to the house.
+2. **Sign Gender vs. Diurnal Sect (DPK Ch. 4):**
+   - Day birth + Odd (masculine) sign: $+15$ Virūpas.
+   - Night birth + Even (feminine) sign: $+15$ Virūpas.
+3. **Bhāva Sandhi, Residential Strength & Wall Leakage (*Graha and Bhava Balas* Ch. II & DPK Ch. 14):**
+   - **Residential Strength:** Evaluated for all occupants from $0.0$ at sign/bhava borders (*Arambha/Virama Sandhi*) to $1.0$ at the house midpoint (*Bhavamadhya* at $15^\circ$) per Dr. B.V. Raman Art. 14–16.
+   - **Wall Leakage:** Occupants within $1.0^\circ$ of a sign border ($<1^\circ$ or $>29^\circ$) exhibit cross-border energy leakage with a proportional leakage ratio, penalizing the house in Atmosphere.
+   - **Whole-Sign Cusp Isolation:** In `whole_sign` mode, an Ascendant degree near borders ($<1^\circ$ or $>29^\circ$) isolates `cusp_in_sandhi` strictly to House 1 rather than broadcasting a blanket penalty across all 12 houses.
+4. **Neutralization of Malefics in Own Sign & Upacaya Dynamics (DPK 15.1, 4.23):** 
+   - When a natural malefic occupies its own sign (*svakṣetra*), it functions as a supportive house lord (*svakṣetre śubhakṛt*), routing to benefics and receiving $+15.0$ atmospheric bonus rather than malefic non-upacaya penalties.
+   - In Upacaya houses (3, 6, 10, 11), a malefic lord in its own sign also empowers growth ($+10.0$) and activates the `satruhanta_active` flag in House 6 (conqueror of enemies/obstacles).
+   - When any house lord occupies an Upacaya house (3, 6, 10, 11) from Janma Lagna without dusthāna corruption, it experiences steady expansion and growth per DPK 4.23 (`is_in_upacaya_from_lagna`).
+5. **Ambient Room Flanking (Kartarī) & Resident Lord Dampening:**
+   - **Śubhakartarī:** House flanked by benefics on both sides ($+20.0$).
+   - **Pāpakartarī:** House besieged between malefics ($-20.0$).
+   - Dynamic classification of Moon (by Paksha Bala) and Mercury (combustion/malefic conjunction) is strictly unified across Kartari and Focal Point diagnostics.
+   - **50% Dampening Rule:** When `lord_resident_unblemished` is True, the scissor siege constricts worldly ease but cannot demolish the internal room; the penalty is dampened by 50% (from $-20.0$ to $-10.0$).
+6. **Context-Sensitive Dispositor Modulation for Lunar Nodes (*Yad Yad Bhāvagatāvapi...*):**
+   - In *Phaladīpikā* Ch. 14 & 20, Rahu and Ketu reflect their dispositor and conjunctions.
+   - Conjoined an unblemished domicile lord in non-upacaya houses (e.g. Ketu with Jupiter in 5th Sagittarius), node penalty is attenuated from $-15.0$ to $-3.0$ reflecting ascetic renunciation (*Jñāna*), spiritual intellect (*Dhī*), and *Mantra Siddhi*.
+7. **Lagneśa Flourishing Rule & Major Ray Threshold (DPK 15.9):** 
+   - Presence of the Ascendant lord in houses $h \neq 1$ confers an automatic $+15.0$ flourishing bonus (in House 1, the bonus is cleanly awarded once under resident lord).
+   - An aspect from the Ascendant lord must carry at least a palpable half-glance ($\ge 30.0$ Virūpas) to trigger the $+15.0$ flourishing bonus, preventing sub-perceptual non-zero aspects from artificially inflating the chart.
+8. **Bhavāt Bhavam Upacayas vs. Lagna Dusthāna & Displaced Lord Penalties (DPK 15.1, 15.3, 15.5 & 15.29):**
+   - **Enemy Sign (Ari-kṣetra):** Per DPK 15.1 (*nīcamūḍhārihīnaiḥ*) and DPK 15.3 (*nīcārātigṛhaṃ gato*), a house lord in an enemy sign cannot be classified as strong (`is_strong = False`) and incurs a $-10.0$ penalty in Atmosphere.
+   - **Lagna Dusthāna Placement (DPK 15.5):** When a house lord is placed in the 6th, 8th, or 12th from Lagna without own-sign or exaltation status, it suffers dusthāna corruption ($-15.0$ in Atmosphere), even if its Bhavāt Bhavam distance is not 6, 8, or 12.
+   - **Incoming Dusthāna Lords (DPK 15.5 & 15.29):** An incoming 6th, 8th, or 12th lord occupying another house incurs $-10.0$ per unexempted lord. Per DPK 15.29 (*duḥsthānapastaditarasvagṛhasthitaścet*), if a dusthāna lord occupies its own other sign, it produces only the auspicious results of its own sign and incurs zero dusthāna blemish.
+   - **Bhavāt Bhavam Upacayas:** Uncorrupted growth from the evaluated house is fostered strictly by Upacayas **3, 10, and 11** from that house ($+10.0$).
+9. **Kārakobhāvanāśāya (Restricted to Living Significations / Jīva-Kārakas per BPHS & DPK Ch. 15–16):**
+   Evaluated strictly across the six living relationship houses:
+   - House 3: Mars (Younger siblings)
+   - House 4: Moon (Mother)
+   - House 5: Jupiter (Progeny)
+   - House 7: Venus (Spouse/Partner)
+   - House 9: Sun (Father)
+   - House 11: Jupiter (Elder siblings)
+   - **Affliction & Relief Rules:**
+     - The affliction triggers when the natural significator occupies the house without another dynamic benefic.
+     - Co-occupancy by another dynamic benefic relieves the affliction.
+     - **Canonical Exceptions:**
+       - House 8 with solitary Saturn is explicitly protected (*Āyuṣkāraka* promotes longevity).
+       - **DPK 16.1–3 Exemption:** A kāraka occupying its own sign (*svabhavana*) or sign of exaltation (*svoccha*) is fortified and exempt from Kārakobhāvanāśāya.
+   - Non-living houses (1, 2, 6, 10, 12) never trigger Kārakobhāvanāśāya.
+10. **Normalized DPK Triad Triangulation (DPK Ch. 15 Text 6):**
+    Evaluated from Janma Lagna (Weight 1.0), Chandra Lagna (Weight 0.5), and Kāraka Lagna (Weight 0.25), normalized by total weight ($1.75$):
+    Per DPK 15.6, the Kāraka Lagna evaluation averages both the potency of the house dispositor counted from the Kāraka and the natural Kāraka planet(s) (averaging all primary karakas for multi-karaka houses like House 9):
+    $$p_{\text{karaka}} = \frac{p_{\text{karaka\_house\_lord}} + p_{\text{karaka\_graha}}}{2.0}$$
+    $$\text{composite\_potency} = \frac{(1.0 \times p_{\text{asc}}) + (0.5 \times p_{\text{chandra}}) + (0.25 \times p_{\text{karaka}})}{1.75}$$
+11. **3-Focal-Point Rule (DPK Ch. 15 Texts 1–3, 6, 18) & Sva-kṣetra Veto Floor:**
+    - **Point 1 (The Bhāva):** Afflicted if strictly besieged between malefics (*Pāpakartarī* without benefic relief) or occupied by $\ge 2$ malefics (excluding its lord). Dusthāna houses (6, 8, 12) are not self-ruining.
+    - **Point 2 (The Lord / Bhāveśa):** Afflicted if placed in the 6th, 8th, or 12th from its own sign or in Lagna Dusthāna (without own/exaltation sign), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated (*Hīna*), combust (*Mūḍha*), or in enemy sign (*Ari-kṣetra* per DPK 15.1/15.3).
+    - **Point 3 (The Kāraka):** Afflicted if placed in a dusthāna from Lagna (except Saturn in the 8th), strictly besieged, depleted in Ṣaḍbala ($< 90\%$), debilitated, or combust. Missing kārakas are safely handled without defaulting to $0.0^\circ$ Aries.
+    - **Ruination Verdict & Sva-kṣetra Veto Floor:** Total ruin (*vad-bhāva*) requires $\ge 2$ focal points afflicted per DPK 15.6 (*dvitrisaṃvādabhāvāt*). When an unblemished house lord is resident at home (`lord_resident_unblemished`), Bhāva and Bhāveśa are anchored:
+      - Vad-Bhāva ruination penalty is vetoed.
+      - An unconditional mathematical floor is enforced: house score cannot drop below $-10.0$.
+      - The house CANNOT be classified as `Hīna` under any circumstances.
+12. **Single Source of Truth Synthesis:** Root `classification` and `summary_verdict` are synchronized directly from the continuous 12-House Atmosphere model:
+    - **Puṣṭa** (Fortified / Flourishing: $\ge +25.0$)
+    - **Miśra** (Mixed / Dynamic / Resilient: $-20.0 \text{ to } +25.0$)
+    - **Hīna** (Deficient / Afflicted: $\le -20.0$)
+
+---
+
+### C. Harsha Bala (P.V.R. Narasimha Rao Ch. 28.3 & Informational Planetary Joy)
+
+Harsha Bala ("Strength of Cheerfulness") measures the inner joy, comfort, and natural resilience of the seven classical planets:
+1. **Sthāna Bala (Joy House):** Sun in 9th, Moon in 3rd, Mars in 6th, Mercury in 1st, Jupiter in 11th, Venus in 5th, Saturn in 12th ($+5$ units). Missing planets do not default to $0.0^\circ$ Aries.
+2. **Uccha / Sva Kṣetra (Exaltation or Own Sign):** $+5$ units.
+3. **Strī / Puruṣa Bhāva (Gender & House Match):** Feminine planets (Moon, Mercury, Venus, Saturn) in houses 1, 2, 3, 7, 8, 9; Masculine planets (Sun, Mars, Jupiter) in houses 4, 5, 6, 10, 11, 12 ($+5$ units).
+4. **Dina / Rātri Bala (Diurnal / Nocturnal Sect Match):** Day birth rewards masculine planets ($+5$ units); Night birth rewards feminine planets ($+5$ units).
+
+**Dusthana Reversals: Informational Diagnostics vs. Stage 4 Event Yogas:**
+- **Harsha, Sarala, and Vimala Yogas:**
+  Reported strictly as informational metrics in Stage 3 (`bhava_results[h]["harsha_bala"]`). Formal Viparīta Rāja Yogas do NOT inject flat $+25.0$ bonuses into Stage 3 atmosphere, allowing dusthāna houses (6, 8, 12) to be evaluated cleanly on their actual structural capacity.
+- **Tajika Planetary Joy:**
+  - **Mars in 6th House:** Planetary joy and Upacaya courage (*Śatruhantā*).
+  - **Saturn in 12th House:** Planetary joy and ascetic detachment.
+
+---
+
+### D. Unified House Atmosphere & Environmental Weather Model
+
+Synthesizes the net constructive vs friction forces acting on each house into a continuous score ($-100.0$ to $+100.0$):
+- **Baseline Capacity:** Ingests `augmented_virupas` (incorporating Parāśarī capacity, lord Digbala re-count, and sign/sect bonuses per DPK Ch. 4).
+- **Positive Forces:**
+  - Fortified lord ($\ge 1.0\times$ without debilitation, combustion, or war defeat): $+15.0$.
+  - Dynamic benefic occupants (including bright Moon and unafflicted Mercury): $+10.0$.
+  - Resident house lord: $+15.0$.
+  - Ascetic node moderation (Rahu/Ketu with unblemished resident lord): $-3.0$ (attenuated from $-15.0$).
+  - Lagneśa presence or major aspect ray ($\ge 30$v): $+15.0$.
+  - Net supportive drishti rays ($\text{drishti} > 10.0$v): up to $+25.0$.
+  - Śubhakartarī (flanked by benefics): $+20.0$.
+  - Lord in Lagna Upacaya growth (DPK 4.23): $+10.0$.
+  - Constructive malefic lord in own Upacaya sign (3, 6, 10, 11) (Śatruhantā active in H6): $+10.0$.
+  - Constructive malefic in Upacaya (3, 6, 10, 11): $+10.0$.
+  - Exceptional Triad concordance: $+10.0$.
+- **Negative Forces:**
+  - Debilitated lord (DPK 15.1 *Hīna*): $-20.0$.
+  - Combust lord (DPK 15.1 *Mūḍha*): $-20.0$.
+  - Defeated lord in planetary war (*Nīpīḍita*): $-15.0$.
+  - Lord in enemy sign (Ari-kṣetra per DPK 15.1/15.3): $-10.0$.
+  - Lord in Lagna Dusthāna (6, 8, 12 per DPK 15.5): $-15.0$ (when not already penalized by Bhavat Bhavam).
+  - Incoming Dusthāna lord occupying (DPK 15.5, excluding Lagna lord and own-sign per DPK 15.29): $-10.0$.
+  - Proportional Ṣaḍbala deficit ($Ratio < 0.95$): up to $-10.0$ gradient ($0.0$ penalty if $Ratio \ge 0.95$).
+  - Dynamic malefic occupants in non-upacaya houses: $-15.0$.
+  - Net confronting drishti rays ($\text{drishti} < -10.0$v): up to $-25.0$.
+  - Pāpakartarī siege: $-20.0$ (dampened to $-10.0$ if lord is resident unblemished).
+  - Bhāva Sandhi border leakage ($<1^\circ$ or $>29^\circ$): $-15.0$.
+  - Wall leakage: up to $-10.0$ (scaled to occupant boundary proximity ratio $\text{round}(10.0 \times \text{max\_ratio}, 1)$).
+  - Bhavāt Bhavam dusthāna displacement ($+6, +8, +12$ for non-dusthāna houses): $-15.0$.
+  - Afflicted Kārakobhāvanāśāya (living significations only): $-15.0$.
+  - Latent Triad concordance: $-10.0$.
+  - Vad-Bhāva ruination under 3 Focal Points (DPK 15.18): $-25.0$ (vetoed if lord is resident unblemished).
+- **Sva-kṣetra Veto Floor:**
+  - If `lord_resident_unblemished`, score cannot drop below $-10.0$.
+- **Classifications:**
+  - `Puṣṭa` ($\ge +25.0$): Radiant & Unopposed ($\ge 40.0$) or Supportive & Productive ($\ge 20.0$).
+  - `Miśra` ($-20.0 \text{ to } +25.0$): Tempered & Resilient ($\ge 0.0$) or Frictional & Demanding ($< 0.0$).
+  - `Hīna` ($\le -20.0$): Turbulent & Obstructed.
+
+---
+
+### E. Hemisphere A Pure Return Schemas & Dictionary Signatures
+
+In strict accordance with the Two-Hemisphere Architectural Law in `GEMINI.md`, `jyotish/bhavas/bhava_bala.py` is certified Hemisphere A (Foundational Calculus). It produces pure mathematical primitives (floats, ints, bools, string enums) and zero UI HTML or Hemisphere B psychological archetypes:
+
+#### 1. `calculate_bhava_bala` Return Schema (`Dict[int, Dict[str, Any]]`)
+For each house $h \in [1..12]$:
+```python
+{
+    "house": int,                     # 1 to 12
+    "lord": str,                      # Sanskrit planet name (e.g., "Mars", "Jupiter")
+    "bhava_madhya": float,            # Cusp longitude in degrees [0.0, 360.0)
+    "bhavadhipathi_bala": float,      # Total Shadbala Virupas of house lord
+    "bhava_digbala": float,           # Directional Virupas (0.0 to 60.0)
+    "bhava_drishti_bala": float,      # Net aspect rays on cusp (Virupas)
+    "total_virupas": float,           # Adhipati + Digbala + Drishti
+    "total_rupas": float,             # total_virupas / 60.0
+    "augmented_virupas": float,       # Virupas + Lord Digbala + Sect bonus
+    "lord_dig_bala_bonus": float,     # DPK Ch. 4 Lord Digbala Virupas
+    "sect_bonus": float,              # DPK Ch. 4 Day/Night Sign Sect Virupas (0.0 or 15.0)
+    "sign": str,                      # Zodiac sign name (e.g., "Aries")
+    "sign_genus": str,                # "Nara", "Chathushpada", "Jalachara", "Keeta"
+    "occupants": list,                # Raw list of occupant records
+    "occupant_diagnostics": {
+        "benefics": list[str],
+        "malefics": list[str],
+        "is_upacaya": bool,
+        "upacaya_empowered": bool,
+        "satruhanta_active": bool,
+        "lagnesha_present": bool,
+        "dusthana_lords_occupying": list[str]
+    },
+    "sandhi_analysis": {
+        "cusp_in_sandhi": bool,
+        "cusp_dist_to_border": float,
+        "wall_leakages": list[dict],
+        "residential_strengths": dict[str, float]
+    },
+    "kartari_yoga": {
+        "type": str,                  # "neutral", "shubhakartari", "papakartari", "mixed"
+        "flanking_12th": dict,
+        "flanking_2nd": dict
+    },
+    "lord_status": {
+        "lord": str,
+        "placed_house": int,
+        "placed_sign": str,
+        "bhavat_bhavam_distance": int,
+        "is_in_kendra": bool,
+        "is_in_trikona": bool,
+        "is_in_dusthana": bool,
+        "is_in_upacaya_from_bhava": bool,
+        "is_in_upacaya_from_lagna": bool,
+        "is_debilitated": bool,
+        "is_combust": bool,
+        "in_war": bool,
+        "is_defeated": bool,
+        "is_in_enemy_sign": bool,
+        "is_strong": bool,
+        "potency_ratio": float
+    },
+    "karaka_analysis": {
+        "primary_karakas": list[str],
+        "is_afflicted": bool,
+        "details": str
+    },
+    "dpk_triad": {
+        "from_janma_lagna": dict,
+        "from_chandra_lagna": dict,
+        "from_karaka_lagna": dict,
+        "concordance": str,
+        "concordance_score": float,
+        "weighted_triad_potency": float
+    },
+    "three_focal_points": {
+        "afflicted_points_count": int,
+        "is_ruined": bool,
+        "details": str
+    },
+    "lagnesha_aspecting": bool,
+    "classification": str,            # "Puṣṭa", "Miśra", or "Hīna" (synchronized with Atmosphere)
+    "summary_verdict": str,
+    "harsha_bala": dict,              # Dusthana joy diagnostic entry for this house
+    "atmosphere": dict                # Complete House Atmosphere payload
+}
+```
+
+#### 2. `calculate_harsha_bala` Return Schema (`Dict[str, Any]`)
+```python
+{
+    "planets": {
+        "<PlanetName>": {
+            "planet": str,
+            "placed_house": int,
+            "placed_sign": str,
+            "sthana_bala_units": float,       # 0.0 or 5.0
+            "uccha_swakshetra_units": float,  # 0.0 or 5.0
+            "stree_purusha_units": float,     # 0.0 or 5.0
+            "dina_ratri_units": float,        # 0.0 or 5.0
+            "total_units": float,             # 0.0 to 20.0
+            "max_units": 20.0,
+            "strength_category": str,         # Sanskrit classification
+            "is_in_joy_house": bool
+        }
+    },
+    "dusthana_joy": {
+        6: {
+            "house": 6,
+            "yoga_name": "Harsha",
+            "is_active": bool,
+            "lord_in_house": bool,
+            "viparita_active": bool,
+            "karaka_joy_in_house": bool,
+            "planetary_joy_active": bool,
+            "bonus_units": float,
+            "effect": str
+        },
+        8: { ... },
+        12: { ... }
+    }
+}
+```
+
+#### 3. `calculate_house_atmosphere` Return Schema (`Dict[int, Dict[str, Any]]`)
+```python
+{
+    "house": int,
+    "sign": str,
+    "lord": str,
+    "net_atmosphere_score": float,       # Continuous score between -100.0 and +100.0
+    "base_virupas": float,
+    "augmented_virupas": float,
+    "classification": str,               # "Puṣṭa (Fortified / Flourishing)", "Miśra (Mixed / Dynamic / Resilient)", or "Hīna (Deficient / Afflicted)"
+    "environmental_weather": str,        # "Radiant & Unopposed", "Supportive & Productive", "Tempered & Resilient", "Frictional & Demanding", or "Turbulent & Obstructed"
+    "auspicious_influences": list[str],  # Itemized positive factors
+    "inauspicious_influences": list[str],# Itemized negative factors
+    "harsha_bala_active": bool,
+    "verdict": str
+}
+```
+
+
+"""
+jyotish/planetary_evaluation/lagna_evaluation.py
+
+Precision diagnostic engine for evaluating the strength, vitality, and yoga-actualization
+capacity of the Ascendant (Lagna / Tanū Bhāva).
+
+Epistemological Foundations:
+- Ryan Kurczak (The Art and Science of Vedic Astrology Ch. 7 & 9, Lessons 25 & 39):
+  The "Invalid in a Palace" & "Million-Dollar Grant" principles: even if a chart promises
+  immense wealth or power through yogas, an afflicted Lagna cannot manifest or sustain it.
+- Vic DiCara (Foundations of Phaladeepika Lessons 10 & 13):
+  The Lagna Lord (Lagneśa / Lagna-isha) dictates holistic life mastery and fortune (Bhagyavān Prabhu).
+- Classical Vedic Sourcing:
+  Brihat Jataka 1.19: "The Ascendant becomes strong and powerful only if aspected or occupied
+  by its lord, Jupiter or Mercury, but not by other planets."
+  Phaladeepika 15.9: "Whichever house is occupied by the lord of the Ascendant, the well-being
+  of that house is assured."
+  BPHS Chapters 11-14, 28 (Bhava Evaluation & Bhava Bala).
+
+5 Classical Diagnostic Pillars:
+1. The Captain (Lagneśa Dignity, Shadbala Muscle, and Avasthā Mood)
+2. The Field (Lagneśa House Placement: Kendra/Trikona vs. Dusthāna)
+3. The Horizon Occupants (Benefics as protective armor vs. Malefics as stress/grit)
+4. The Sky-Light (Net Graha Dṛṣṭi on Cusp 1, Jupiter's healing ray, own lord's aspect)
+5. The Enclosure (Śubha Kartarī vs. Pāpa Kartarī hemming of House 1)
+"""
+
+from typing import Dict, List, Any, Optional
+import jyotish.relationships.relationships as rel
+
+ZODIAC_SIGNS = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
+
+SIGN_LORDS = {
+    "Aries": "Mars", "Taurus": "Venus", "Gemini": "Mercury", "Cancer": "Moon",
+    "Leo": "Sun", "Virgo": "Mercury", "Libra": "Venus", "Scorpio": "Mars",
+    "Sagittarius": "Jupiter", "Capricorn": "Saturn", "Aquarius": "Saturn", "Pisces": "Jupiter"
+}
+
+NATURAL_BENEFICS = {"Jupiter", "Venus", "Mercury", "Moon"}
+NATURAL_MALEFICS = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+
+def clamp(val: float, min_val: float, max_val: float) -> float:
+    return max(min_val, min(max_val, val))
+
+def calculate_occupant_proximity(planet_deg: float, lagna_deg: float) -> float:
+    """
+    Calculates linear proximity across the 30° Whole Sign field
+    with an explicit 0.15 baseline floor (Phaladipika 8.34-35).
+    """
+    deg_diff = abs(planet_deg - lagna_deg)
+    return max(0.15, 1.0 - (deg_diff / 30.0))
+
+def evaluate_lagna_vitality(
+    vargas_data: Dict[str, Any],
+    shadbala_data: Optional[Dict[str, Any]] = None,
+    advanced_aspects: Optional[Dict[str, Any]] = None,
+    varga: str = "D1"
+) -> Dict[str, Any]:
+    """
+    Evaluates the vitality of the Ascendant (Lagna) across 5 classical diagnostic pillars.
+    Returns a composite vitality score (1.0 to 10.0), classification tier, archetype,
+    and a granular pedagogical audit trail.
+    """
+    if not vargas_data:
+        return {}
+
+    v_data = vargas_data.get(varga) or vargas_data.get("D1", {})
+    if not v_data:
+        return {}
+
+    lagna_info = v_data.get("lagna", {})
+    lagna_sign = lagna_info.get("sign", "Aries")
+    lagna_deg = float(lagna_info.get("degree_0_to_30", 0.0))
+    lagna_nak = lagna_info.get("nakshatra", "")
+    lagna_pada = lagna_info.get("pada", 1)
+
+    l_idx = ZODIAC_SIGNS.index(lagna_sign) if lagna_sign in ZODIAC_SIGNS else 0
+    lord = SIGN_LORDS.get(lagna_sign, "Mars")
+
+    grahas = v_data.get("grahas", {})
+    lord_data = grahas.get(lord, {})
+    lord_sign = lord_data.get("sign", "")
+    lord_deg = float(lord_data.get("degree_0_to_30", 0.0))
+
+    # Whole sign house calculation
+    def get_w_house(sign_name: str) -> int:
+        if sign_name in ZODIAC_SIGNS:
+            p_idx = ZODIAC_SIGNS.index(sign_name)
+            return (p_idx - l_idx) % 12 + 1
+        return 1
+
+    lord_house = get_w_house(lord_sign) if lord_sign else 1
+
+    # Base starting score is 5.0 (Neutral baseline)
+    base_score = 5.0
+    p1_score = 0.0
+    p2_score = 0.0
+    p3_score = 0.0
+    p4_score = 0.0
+    p5_score = 0.0
+
+    p1_notes = []
+    p2_notes = []
+    p3_notes = []
+    p4_notes = []
+    p5_notes = []
+
+    # -------------------------------------------------------------------------
+    # PILLAR 1: The Lagna Lord (Lagneśa) — The Captain (Max +/- 2.5 pts)
+    # -------------------------------------------------------------------------
+    lord_dignity = lord_data.get("dignity_breakdown", {}).get("final_dignity", "Neutral's Sign")
+    dignity_lower = lord_dignity.lower()
+
+    if "exalt" in dignity_lower:
+        p1_score += 1.2
+        p1_notes.append("Lord Exalted (+1.2): Sovereign confidence and peak vitality.")
+    elif "moolatrikona" in dignity_lower:
+        p1_score += 1.0
+        p1_notes.append("Lord in Moolatrikona (+1.0): Strong sense of duty and robust health.")
+    elif "own" in dignity_lower:
+        p1_score += 0.8
+        p1_notes.append("Lord in Own Sign (+0.8): Fully self-reliant and comfortable.")
+    elif "great friend" in dignity_lower:
+        p1_score += 0.5
+        p1_notes.append("Lord in Great Friend's Sign (+0.5): Deeply supported environment.")
+    elif "friend" in dignity_lower:
+        p1_score += 0.25
+        p1_notes.append("Lord in Friend's Sign (+0.25): Favorable conditions.")
+    elif "neutral" in dignity_lower:
+        p1_notes.append("Lord in Neutral Sign (0.0): Balanced baseline.")
+    elif "great enemy" in dignity_lower:
+        p1_score -= 0.8
+        p1_notes.append("Lord in Great Enemy's Sign (-0.8): Severe environmental resistance.")
+    elif "enemy" in dignity_lower:
+        p1_score -= 0.4
+        p1_notes.append("Lord in Enemy's Sign (-0.4): Frictional surroundings.")
+    elif "debilitat" in dignity_lower:
+        p1_score -= 1.2
+        p1_notes.append("Lord Debilitated (-1.2): Low constitutional confidence or self-sabotage.")
+
+    # Sthana Bala (Positional Foundation)
+    sb_lord = shadbala_data.get(lord, {}) if shadbala_data else {}
+    sthana_pct = float(sb_lord.get("Pct_Required_Sthana", 100.0))
+    if sthana_pct >= 110.0:
+        p1_score += 0.3
+        p1_notes.append(f"Lord Solid Positional Strength (+0.3): Sthana Bala {sthana_pct:.0f}% provides firm anchorage.")
+
+    # Shadbala Muscle & Rank of Lord
+    sb_virupas = float(sb_lord.get("Total_Virupas", 0.0))
+    sb_pct = float(sb_lord.get("Pct_Required_Total", 100.0))
+    sb_rank = int(sb_lord.get("Relative_Rank", 4))
+
+    if sb_pct >= 130.0:
+        if sb_rank == 1:
+            p1_score += 1.0
+            p1_notes.append(f"Lord Shadbala Champion (+1.0): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #1) gives supreme kinetic stamina.")
+        elif sb_rank == 2:
+            p1_score += 0.8
+            p1_notes.append(f"Lord Shadbala Rank #2 (+0.8): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%) gives major kinetic horsepower.")
+        else:
+            p1_score += 0.6
+            p1_notes.append(f"Lord Shadbala Surplus (+0.6): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%) gives abundant stamina.")
+    elif sb_pct >= 110.0:
+        p1_score += 0.4
+        p1_notes.append(f"Lord Shadbala Capable (+0.4): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) provides healthy strength.")
+    elif sb_pct >= 100.0:
+        p1_score += 0.2
+        p1_notes.append(f"Lord Shadbala Adequate (+0.2): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) meets minimum requirements.")
+    elif sb_pct >= 85.0:
+        p1_score -= 0.4
+        p1_notes.append(f"Lord Shadbala Mild Deficit (-0.4): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) requires conscious energy conservation.")
+    elif sb_virupas > 0:
+        if sb_rank == 7:
+            p1_score -= 0.9
+            p1_notes.append(f"Lord Shadbala Severe Deficit (-0.9): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #7 of 7) gives an underpowered physical engine prone to fatigue.")
+        elif sb_rank == 6:
+            p1_score -= 0.7
+            p1_notes.append(f"Lord Shadbala Deficit (-0.7): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%, Rank #{sb_rank}) indicates low physical stamina.")
+        else:
+            p1_score -= 0.5
+            p1_notes.append(f"Lord Shadbala Deficit (-0.5): {sb_virupas:.1f} Virūpas ({sb_pct:.0f}%).")
+
+    # Lajjitādi Avasthā (Feeling States of the Captain)
+    lord_avasthas = lord_data.get("avasthas", {})
+    lajjitadi_list = lord_avasthas.get("calibrated_lajjitadi") or lord_avasthas.get("lajjitadi", [])
+
+    max_starved = 0.0
+    max_delighted = 0.0
+    max_proud = 0.0
+    max_ashamed = 0.0
+    max_agitated = 0.0
+    sat_lbl = ""
+
+    for item in lajjitadi_list:
+        st = item.get("state", "").lower()
+        cond = item.get("condition", "").lower()
+        badge = item.get("badge", "").lower()
+        eff_int = float(item.get("effective_intensity", 1.0))
+
+        is_sat = "saturn" in cond or "saturn" in st or "♄" in badge or any(inf.get("planet") == "Saturn" for inf in item.get("influencing_planets", []))
+
+        if "kshudhita" in st or "starved" in st:
+            pen = round((0.8 if is_sat else 0.5) * eff_int, 2)
+            if pen > max_starved:
+                max_starved = pen
+                sat_lbl = " by Saturn" if is_sat else ""
+        elif "mudita" in st or "delighted" in st:
+            bonus = round(0.4 * eff_int, 2)
+            if bonus > max_delighted:
+                max_delighted = bonus
+        elif "garvita" in st or "proud" in st:
+            bonus = round(0.6 * eff_int, 2)
+            if bonus > max_proud:
+                max_proud = bonus
+        elif "lajjita" in st or "ashamed" in st:
+            pen = round(0.8 * eff_int, 2)
+            if pen > max_ashamed:
+                max_ashamed = pen
+        elif "kshobhita" in st or "agitated" in st:
+            pen = round(0.5 * eff_int, 2)
+            if pen > max_agitated:
+                max_agitated = pen
+
+    if max_proud > 0:
+        p1_score += max_proud
+        p1_notes.append(f"Lord Proud (Garvita) (+{max_proud:.2f}): Radiant self-respect.")
+    if max_delighted > 0:
+        p1_score += max_delighted
+        p1_notes.append(f"Lord Delighted (Mudita) (+{max_delighted:.2f}): Encouraged by friendly allies.")
+    if max_starved > 0:
+        p1_score -= max_starved
+        p1_notes.append(f"Lord Starved{sat_lbl} (Kshudhita) (-{max_starved:.2f}): Critical friction.")
+    if max_ashamed > 0:
+        p1_score -= max_ashamed
+        p1_notes.append(f"Lord Ashamed (Lajjita) (-{max_ashamed:.2f}): Shamed in action.")
+    if max_agitated > 0:
+        p1_score -= max_agitated
+        p1_notes.append(f"Lord Agitated (Kshobhita) (-{max_agitated:.2f}): Agitation from cruel planets.")
+
+    # Deeptādi / Direct Conjunction with Malefics
+    deeptadi = lord_avasthas.get("deeptadi", {})
+    d_state = deeptadi.get("state", "").lower()
+    d_cond = deeptadi.get("condition", "")
+    if "vikala" in d_state or "mutilated" in d_state:
+        if "saturn" in d_cond.lower():
+            p1_score -= 0.4
+            p1_notes.append(f"Lord Conjoined Saturn (Deeptādi Vikala) (-0.4): Direct contact with the Great Taskmaster imposes heavy duties, coldness, and sober pacing.")
+        elif "rahu" in d_cond.lower() or "ketu" in d_cond.lower():
+            p1_score -= 0.2
+            p1_notes.append(f"Lord with Nodal Influence ({d_cond}) (-0.2): Restless intensity or eccentric self-projection.")
+        else:
+            p1_score -= 0.3
+            p1_notes.append(f"Lord Conjoined Malefic ({d_cond}) (-0.3).")
+
+    # Motion & Combustion
+    is_retro = bool(lord_data.get("is_retrograde", False))
+    is_combust = bool(lord_data.get("is_combust", False))
+    sun_dist = float(lord_data.get("sun_distance", 99.0)) if lord_data.get("sun_distance") is not None else 99.0
+
+    if is_retro and lord in ("Mars", "Mercury", "Jupiter", "Venus", "Saturn"):
+        p1_score += 0.3
+        p1_notes.append("Lord Retrograde (+0.3): High motional power (Cheṣṭa Bala) and unconventional resilience.")
+
+    if is_combust:
+        if sun_dist < 3.0:
+            p1_score -= 0.6
+            p1_notes.append(f"Lord Deeply Combust (-0.6): Within {sun_dist:.1f}° of Sun; ego exhausts vitality.")
+        else:
+            p1_score -= 0.3
+            p1_notes.append(f"Lord Mildly Combust (-0.3): Within {sun_dist:.1f}° of Sun; internalizes self-confidence.")
+
+    # -------------------------------------------------------------------------
+    # PILLAR 2: The Captain's Field Placement & Directional Leverage (Max +/- 2.0 pts)
+    # -------------------------------------------------------------------------
+    is_own_sign_in_house = "own" in dignity_lower
+
+    if lord_house == 1:
+        p2_score += 1.5
+        p2_notes.append("Lord in House 1 (+1.5): Supreme self-anchoring, autonomy, and vital independence.")
+    elif lord_house == 10:
+        p2_score += 1.2
+        p2_notes.append("Lord in House 10 (Karma Bhāva) (+1.2): Zenith of public action, executive honors, and social visibility.")
+    elif lord_house == 4:
+        if lord == "Sun":
+            p2_score += 0.4
+            p2_notes.append("Sun in House 4 (Sukha / Midnight Nadir) (+0.4): Deep interior peace and meditative sanctuary; vital energy is introspective rather than outward.")
+        else:
+            p2_score += 0.8
+            p2_notes.append("Lord in Kendra Bandhu (H4) (+0.8): Deep emotional security, domestic sanctuary, and supportive foundation.")
+    elif lord_house == 7:
+        p2_score += 0.7
+        p2_notes.append("Lord in Kendra Yuvati (H7) (+0.7): Societal engagement and relationship mirror.")
+    elif lord_house == 11:
+        p2_score += 1.0
+        p2_notes.append("Lord in House 11 (Lābha / Mega-gains) (+1.0): Goal actualization, massive worldly returns, and expansive network power.")
+    elif lord_house == 9:
+        p2_score += 1.2
+        p2_notes.append("Lord in House 9 (Dharma / Bhāgya) (+1.2): Divine grace, higher ethics, and natural fortune.")
+    elif lord_house == 5:
+        p2_score += 1.0
+        p2_notes.append("Lord in House 5 (Buddhi / Putra) (+1.0): Creative intelligence and past-life merit.")
+    elif lord_house == 3:
+        p2_score += 0.4
+        p2_notes.append("Lord in House 3 (Sahaja / Upachaya) (+0.4): Courage and progressive improvement through grit.")
+    elif lord_house == 6:
+        if is_own_sign_in_house:
+            p2_notes.append("Lord in House 6 in Own Sign (0.0): Conquers enemies and debts without destroying health.")
+        else:
+            p2_score -= 0.8
+            p2_notes.append("Lord in House 6 (Dusthāna) (-0.8): Vitality drawn into daily struggles, conflict, or health resistance.")
+    elif lord_house == 8:
+        if is_own_sign_in_house:
+            p2_notes.append("Lord in House 8 in Own Sign (0.0): Deep longevity and esoteric resilience.")
+        else:
+            p2_score -= 1.2
+            p2_notes.append("Lord in House 8 (Dusthāna) (-1.2): Vulnerability to sudden crises, chronic fatigue, or radical upheavals.")
+    elif lord_house == 12:
+        if is_own_sign_in_house:
+            p2_notes.append("Lord in House 12 in Own Sign (0.0): Peaceful spiritual detachment.")
+        else:
+            p2_score -= 0.8
+            p2_notes.append("Lord in House 12 (Dusthāna) (-0.8): Vitality dissipated into solitude, expenses, or detachment from worldly competition.")
+
+    # Digbala (Directional Strength) Leverage of Lord
+    sb_dig_pct = float(sb_lord.get("Pct_Required_Dig", 100.0))
+    if sb_dig_pct >= 120.0:
+        p2_score += 0.3
+        p2_notes.append(f"Lord High Directional Strength (+0.3): Digbala {sb_dig_pct:.0f}% aligns executive agency with its ideal quadrant.")
+    elif sb_dig_pct < 35.0:
+        p2_score -= 0.3
+        p2_notes.append(f"Lord Directional Deficit (-0.3): Digbala {sb_dig_pct:.0f}% places the captain away from its natural compass point.")
+
+    # -------------------------------------------------------------------------
+    # PILLAR 3: Occupants of the 1st House (Bhavastha Grahas) (Max +/- 1.8 pts)
+    # -------------------------------------------------------------------------
+    h1_occupants = [p for p in grahas if get_w_house(grahas[p].get("sign", "")) == 1]
+    
+    if not h1_occupants:
+        p3_notes.append("No planets in House 1 (0.0): Clean, unencumbered horizon reflecting pure rising sign.")
+    else:
+        for p in h1_occupants:
+            p_deg = float(grahas[p].get("degree_0_to_30", 0.0))
+            prox = calculate_occupant_proximity(p_deg, lagna_deg)
+            p_dig = grahas[p].get("dignity_breakdown", {}).get("final_dignity", "")
+            p_dig_low = p_dig.lower()
+            
+            if p == "Jupiter":
+                pts = round(1.0 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Jupiter in House 1 (+{pts:.2f}, prox {prox:.2f}): Directional strength (Digbala); bestows noble wisdom, broad optimism, and cellular immunity.")
+            elif p == "Venus":
+                pts = round(0.7 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Venus in House 1 (+{pts:.2f}, prox {prox:.2f}): Aesthetic grace, bodily contentment, charisma, and peaceful diplomacy.")
+            elif p == "Mercury":
+                pts = round(0.6 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Mercury in House 1 (+{pts:.2f}, prox {prox:.2f}): Directional strength (Digbala); rapid cognitive processing and youthful adaptability.")
+            elif p == "Moon":
+                pts = round(0.6 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Moon in House 1 (+{pts:.2f}, prox {prox:.2f}): Emotional magnetism, popularity, and deep sensitivity to surroundings.")
+            elif p == "Mars":
+                if "own" in p_dig_low or "exalt" in p_dig_low or lagna_sign in ("Leo", "Cancer"):
+                    pts = round(0.8 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Mars in House 1 (Yogakāraka / Dignified) (+{pts:.2f}, prox {prox:.2f}): Gladiator willpower, fearless leadership, and impervious physical drive.")
+                else:
+                    pts = round(-0.5 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Mars in House 1 ({pts:+.2f}, prox {prox:.2f}): Excess bodily heat (Pitta), rash impulsivity, and proneness to cuts, fevers, or injuries.")
+            elif p == "Saturn":
+                if "own" in p_dig_low or "exalt" in p_dig_low:
+                    pts = round(0.6 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Saturn in House 1 (Śaśa Mahāpuruṣa) (+{pts:.2f}, prox {prox:.2f}): Enduring iron discipline, profound realism, and grounded stamina.")
+                else:
+                    pts = round(-0.6 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Saturn in House 1 ({pts:+.2f}, prox {prox:.2f}): Bodily coldness, stiffness, Vata stress, and aloof or morose projection.")
+            elif p == "Sun":
+                if p == lord:
+                    p3_notes.append("Sun in House 1 (Lagna Lord) (evaluated in Pillar 1 & 2): Radiates sovereign solar authority.")
+                else:
+                    pts = round(-0.3 * prox, 2)
+                    p3_score += pts
+                    p3_notes.append(f"Sun in House 1 ({pts:+.2f}, prox {prox:.2f}): Intense heat and egoic friction in the personal field.")
+            elif p == "Rahu":
+                pts = round(-0.5 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Rahu in House 1 ({pts:+.2f}, prox {prox:.2f}): Identity distortion, restless ambition, and unconventional nervous tension.")
+            elif p == "Ketu":
+                pts = round(-0.5 * prox, 2)
+                p3_score += pts
+                p3_notes.append(f"Ketu in House 1 ({pts:+.2f}, prox {prox:.2f}): Dissociation from physical needs, ascetic detachment, and enigmatic self-expression.")
+
+    # -------------------------------------------------------------------------
+    # PILLAR 4: Sky-Light & The Karaka Factor (Max +/- 1.8 pts)
+    # -------------------------------------------------------------------------
+    cusp1_net = 0.0
+    cusp1_plus = 0.0
+    cusp1_minus = 0.0
+    has_jupiter_drishti = False
+    has_lord_drishti = False
+
+    if advanced_aspects and "totals" in advanced_aspects and "cusps" in advanced_aspects["totals"]:
+        cusp_totals = advanced_aspects["totals"]["cusps"]
+        c1 = cusp_totals.get(1) or cusp_totals.get("1") or {}
+        cusp1_net = float(c1.get("net", 0.0))
+        cusp1_plus = float(c1.get("plus", 0.0))
+        cusp1_minus = float(c1.get("minus", 0.0))
+
+    # Detailed aspects on cusp 1 from individual planets
+    if advanced_aspects and "cusps" in advanced_aspects:
+        c1_indiv = advanced_aspects["cusps"].get(1) or advanced_aspects["cusps"].get("1") or {}
+        if "Jupiter" in c1_indiv:
+            j_net = float(c1_indiv["Jupiter"].get("net", c1_indiv["Jupiter"].get("plus", 0.0)))
+            if j_net > 15.0:
+                has_jupiter_drishti = True
+        if lord in c1_indiv:
+            l_net = float(c1_indiv[lord].get("net", c1_indiv[lord].get("plus", 0.0)))
+            if l_net > 15.0:
+                has_lord_drishti = True
+
+    if cusp1_net >= 40.0:
+        p4_score += 0.8
+        p4_notes.append(f"Abundant Net Subha Dṛṣṭi (+0.8): +{cusp1_net:.1f} Virūpas of positive sky-light bathe the rising degree.")
+    elif cusp1_net >= 15.0:
+        p4_score += 0.4
+        p4_notes.append(f"Moderate Net Subha Dṛṣṭi (+0.4): +{cusp1_net:.1f} Virūpas of supportive rays.")
+    elif cusp1_net <= -40.0:
+        p4_score -= 0.8
+        p4_notes.append(f"Heavy Net Pāpa Dṛṣṭi (-0.8): {cusp1_net:.1f} Virūpas of malefic pressure fall on the horizon.")
+    elif cusp1_net <= -15.0:
+        p4_score -= 0.4
+        p4_notes.append(f"Moderate Net Pāpa Dṛṣṭi (-0.4): {cusp1_net:.1f} Virūpas of friction on the horizon.")
+    else:
+        p4_notes.append(f"Balanced Horizon Light (0.0): Net {cusp1_net:+.1f} Virūpas.")
+
+    if has_jupiter_drishti:
+        p4_score += 0.6
+        p4_notes.append("Jupiter's Protective Gaze (+0.6): Classical sovereign healer aspecting the Ascendant directly (Brihat Jataka 1.19).")
+
+    if has_lord_drishti:
+        p4_score += 0.6
+        p4_notes.append(f"Lagna Lord's Aspect (+0.6): {lord} gazes directly upon its own rising sign, unconditionally shielding life vitality.")
+
+    # The Karaka Factor: The Sun as Naisargika Karaka of House 1 / Vitality (Vic DiCara 3-Point Rule)
+    sun_data = grahas.get("Sun", {})
+    sb_sun = shadbala_data.get("Sun", {}) if shadbala_data else {}
+    sun_pct = float(sb_sun.get("Pct_Required_Total", 100.0))
+    sun_rank = int(sb_sun.get("Relative_Rank", 4))
+    sun_laj = sun_data.get("avasthas", {}).get("lajjitadi", [])
+    sun_starved_saturn = any("starved" in x.get("state", "").lower() and "saturn" in x.get("condition", "").lower() for x in sun_laj)
+    sun_starved = any("starved" in x.get("state", "").lower() or "kshudhita" in x.get("state", "").lower() for x in sun_laj)
+
+    if lord == "Sun":
+        # Leo Lagna: Lord IS the Karaka of Vitality
+        if sun_starved_saturn and sun_pct < 85.0:
+            p4_score -= 0.5
+            p4_notes.append(f"Double-Affliction to Lord & Karaka Sun (-0.5): For Leo Lagna, Sun is both Captain and Vitality Karaka. Starvation by Saturn and low Shadbala ({sun_pct:.0f}%, Rank #{sun_rank}) compound constitutional fatigue.")
+        elif sun_pct >= 130.0 and not sun_starved:
+            p4_score += 0.5
+            p4_notes.append(f"Double-Solar Radiance (+0.5): For Leo Lagna, Sun is both Lord and Vitality Karaka. Peak Shadbala ({sun_pct:.0f}%, Rank #1) delivers double vitality and royal charisma.")
+    else:
+        # Other Lagnas
+        if sun_starved_saturn or sun_pct < 85.0:
+            p4_score -= 0.3
+            p4_notes.append(f"Afflicted Vitality Karaka (Sun) (-0.3): Universal life force suffers from fatigue ({sun_pct:.0f}%) or starvation.")
+        elif sun_pct >= 115.0 and not sun_starved:
+            p4_score += 0.3
+            p4_notes.append(f"Healthy Vitality Karaka (Sun) (+0.3): Universal life force is strong ({sun_pct:.0f}%), supporting bodily health.")
+
+    # -------------------------------------------------------------------------
+    # PILLAR 5: Environmental Enclosure (Kartarī Yoga) (Max +/- 1.0 pt)
+    # -------------------------------------------------------------------------
+    h2_occupants = [p for p in grahas if get_w_house(grahas[p].get("sign", "")) == 2 and p not in ("Rahu", "Ketu")]
+    h12_occupants = [p for p in grahas if get_w_house(grahas[p].get("sign", "")) == 12 and p not in ("Rahu", "Ketu")]
+
+    h2_benefics = [p for p in h2_occupants if p in NATURAL_BENEFICS]
+    h2_malefics = [p for p in h2_occupants if p in NATURAL_MALEFICS]
+    h12_benefics = [p for p in h12_occupants if p in NATURAL_BENEFICS]
+    h12_malefics = [p for p in h12_occupants if p in NATURAL_MALEFICS]
+
+    kartari_type = "Neutral"
+    if h2_benefics and h12_benefics and not h2_malefics and not h12_malefics:
+        p5_score += 0.8
+        kartari_type = "Śubha Kartarī"
+        p5_notes.append(f"Śubha Kartarī Yoga (+0.8): House 1 is flanked by benefics in 2nd ({h2_benefics}) and 12th ({h12_benefics}), protecting the native like a golden cocoon.")
+    elif h2_malefics and h12_malefics and not h2_benefics and not h12_benefics:
+        p5_score -= 0.8
+        kartari_type = "Pāpa Kartarī"
+        p5_notes.append(f"Pāpa Kartarī Yoga (-0.8): House 1 is besieged by malefics in 2nd ({h2_malefics}) and 12th ({h12_malefics}), creating chronic background tension.")
+    else:
+        p5_notes.append("Unencumbered Flanks (0.0): No extreme hemming around the Ascendant.")
+
+    # -------------------------------------------------------------------------
+    # SYNTHESIS: Final Composite Score & Classification
+    # -------------------------------------------------------------------------
+    raw_score = base_score + p1_score + p2_score + p3_score + p4_score + p5_score
+    vitality_score = round(clamp(raw_score, 1.0, 10.0), 1)
+
+    if vitality_score >= 8.8:
+        tier = "Sovereign Citadel"
+        v_class = "robust"
+        archetype = "The Invincible Sovereign"
+        verdict = "Supreme constitutional vitality and iron executive agency; chart yogas manifest with maximum real-world force."
+    elif vitality_score >= 7.0:
+        tier = "Robust Horizon"
+        v_class = "robust"
+        archetype = "The Resilient Architect"
+        verdict = "High resilience, healthy self-worth, and decisive drive; overcomes obstacles and readily activates auspicious yogas."
+    elif vitality_score >= 5.5:
+        tier = "Capable Vessel"
+        v_class = "capable"
+        archetype = "The Steady Navigator"
+        verdict = "Sound, capable engine; achieves solid worldly success and actualizes yogas through continuous, deliberate effort."
+    elif vitality_score >= 4.0:
+        tier = "Strained Horizon"
+        v_class = "strained"
+        archetype = "The Contemplative Seeker"
+        verdict = "Vitality is sensitive or internalized; worldly yogas face delays or friction, requiring conscious pacing and health care."
+    else:
+        tier = "Vulnerable Horizon"
+        v_class = "fragile"
+        archetype = "The Invalid in a Palace"
+        verdict = "Compromised life engine; yogas struggle to manifest externally without significant health discipline, rest, or remedial support."
+
+    return {
+        "varga": varga,
+        "lagna_sign": lagna_sign,
+        "lagna_degree": lagna_deg,
+        "nakshatra": lagna_nak,
+        "pada": lagna_pada,
+        "lord": {
+            "name": lord,
+            "sign": lord_sign,
+            "degree": lord_deg,
+            "house": lord_house,
+            "dignity": lord_dignity,
+            "shadbala_virupas": sb_virupas,
+            "shadbala_pct": sb_pct,
+            "shadbala_rank": sb_rank,
+            "is_retrograde": is_retro,
+            "is_combust": is_combust
+        },
+        "occupants": h1_occupants,
+        "aspects": {
+            "net_virupas": cusp1_net,
+            "plus_virupas": cusp1_plus,
+            "minus_virupas": cusp1_minus,
+            "has_jupiter_drishti": has_jupiter_drishti,
+            "has_lord_drishti": has_lord_drishti
+        },
+        "kartari": {
+            "type": kartari_type,
+            "h2_occupants": h2_occupants,
+            "h12_occupants": h12_occupants
+        },
+        "vitality_score": vitality_score,
+        "vitality_tier": tier,
+        "vitality_class": v_class,
+        "archetype": archetype,
+        "verdict": verdict,
+        "pillar_scores": {
+            "pillar_1_captain": round(p1_score, 2),
+            "pillar_2_field": round(p2_score, 2),
+            "pillar_3_occupants": round(p3_score, 2),
+            "pillar_4_skylight": round(p4_score, 2),
+            "pillar_5_enclosure": round(p5_score, 2),
+            "base_score": base_score
+        },
+        "audit_trail": {
+            "p1_captain": p1_notes,
+            "p2_field": p2_notes,
+            "p3_occupants": p3_notes,
+            "p4_skylight": p4_notes,
+            "p5_enclosure": p5_notes
+        }
+    }
+# Parāśarī Planetary Prominence & Opportunity Engine (`prominence.py`)
+
+## 1. Overview & Foundational Mathematical Architecture
+
+Planetary Prominence calculates the **stage volume and opportunity** a planet possesses to express its raw kinetic strength in the native's life. While raw strength (*Bala*) reflects internal muscle, Prominence reflects whether the native's chart gives that planet a microphone, a central spotlight, and clear channels of manifestation.
+
+$$\text{Prominence Score} = \text{SBR} \times (1.0 + \sum \text{Opportunity Weights})$$
+
+### A. The Shadbala Ratio (SBR) & Uniform Normalization Baseline
+* **Formula:**
+  $$\text{SBR} = \frac{\text{Calculated Rupas}}{6.0}$$
+* **Standard Normalization Base ($6.0\text{ Rupas}$):** $6.0\text{ Rupas}$ ($360\text{ Virūpas}$) represents the classical Parāśarī standard unit of planetary potency.
+* **Deprecation of Individual Required Rupas (`SHADBALA_REQUIRED_RUPAS`):**
+  * In earlier iterations, the engine divided each planet's calculated strength by its textbook minimum requirement (e.g. Mercury: 7.0, Jupiter: 6.5, Moon: 6.0, Venus: 5.5, Sun: 5.0, Mars: 5.0, Saturn: 5.0).
+  * **The Distortion:** This division introduced severe artificial bias. For example, in Steve Jobs's chart, Jupiter has an exceptional $7.39\text{ Rupas}$, but dividing by $6.5$ slashed its ratio to $1.137\times$. Meanwhile, Mars ($8.14\text{ Rupas}$) divided by $5.0$ surged to $1.628\times$ (+43% artificial advantage over Jupiter).
+  * **The Parāśarī Resolution:** In Vic DiCara's Kala synthesis model, opportunity multiplies the raw Shadbala score directly. Using a uniform baseline of $6.0\text{ Rupas}$ ensures all planets scale naturally according to their true astronomical horsepower without penalizing high-standard benefics or artificially inflating malefics.
+
+---
+
+## 2. Classical Graha Yuddha (Planetary War) Engine
+
+Prior to computing the Shadbala Ratio, the engine resolves any planetary wars between qualifying celestial bodies:
+
+* **Eligible Contestants:** Strictly limited to the 5 true physical planets (*Tāra Grahas*): Mars ($\text{♂}$), Mercury ($\text{☿}$), Jupiter ($\text{♃}$), Venus ($\text{♀}$), and Saturn ($\text{♄}$). The luminaries (Sun, Moon) and shadow nodes (Rāhu, Ketu) do not engage in planetary wars.
+* **Orb of Engagement:** Longitudinal separation $\le 1^\circ 00'$ ($1.0^\circ$) on the $D_1$ physical wheel.
+* **Winner Determination:**
+  1. **Venusian Exception (*Bhṛgu* Immunity):** Venus never loses a planetary war under any celestial circumstance (*Asura Guru* sovereign power).
+  2. **Northern Declination (*Uttara Krānti*):** For all other pairs, celestial declination is calculated from the true obliquity of the ecliptic. The planet with the higher Northern declination (positive declination > negative declination) wins.
+* **Point Transfer & Unit Normalization:**
+  $$\Delta = |\text{Rupas}_1 - \text{Rupas}_2|$$
+  * The engine auto-detects Virūpas ($>30.0$) and scales them to Rupas before calculating $\Delta$.
+  * Winner gains $\Delta$: $\text{Rupas}_{\text{winner}} = \text{Rupas}_{\text{winner}} + \Delta$
+  * Loser is penalized by $\Delta$: $\text{Rupas}_{\text{loser}} = \max(0.0, \text{Rupas}_{\text{loser}} - \Delta)$
+
+---
+
+## 3. The 4 Parāśarī Opportunity Groups (8 Vectors)
+
+Opportunity weights represent the stage access granted to each planet across 4 hierarchical tiers:
+
+### Group 1: Core Anchors (Sudarśana Cakra & Sensitive Doors)
+The primary tripod of consciousness: the Ascendant (*Tanu* / Body), the Moon (*Manas* / Mind), and the Sun (*Ātman* / Soul).
+
+1. **Vector 1: Sudarśana Cakra Alignment & Aspects:**
+   * Evaluates bodily proximity ($\le 10^\circ$) and quantified *Sphuṭa Dṛṣṭi* aspects cast onto the three primary degrees:
+     * **Ascendant Degree ($100\%$ weight, multiplier $1.00$):** Conjunction up to $+0.35$; direct aspect up to $+0.30$.
+     * **Moon Degree ($75\%$ weight, multiplier $0.75$):** Conjunction up to $+0.26$; direct aspect up to $+0.23$.
+     * **Sun Degree ($50\%$ weight, multiplier $0.50$):** Conjunction up to $+0.18$; direct aspect up to $+0.15$.
+2. **Vector 2: Sensitive Cusp Doors (*Bhāva Madhya* Doorways):**
+   * Every house door in equal-arc resonance shares the numerical degree of the Ascendant. Degree proximity is calculated with cyclical $30^\circ$ sign-boundary wrapping (`degree_separation_in_sign(deg1, deg2)`):
+     * Proximity to Ascendant degree across any sign: up to $+0.25$.
+     * Proximity to Moon degree across any sign: up to $+0.19$.
+     * Proximity to Sun degree across any sign: up to $+0.13$.
+3. **Vector 3: Ascendant Lord Sovereign Alignment & Aspects:**
+   * **Sovereign Vehicle Self-Bonus:** The *Lagna Lord* receives a calibrated $+0.10$ sovereign bonus for piloting the physical vehicle (calibrated so House 1 ownership in Vector 5 is not double-counted).
+   * **Influence from Other Planets:** Other planets aspecting the Lagna Lord receive up to $+0.25$ scaled by aspect virūpas; conjunction within $10^\circ$ grants up to $+0.25$.
+
+### Group 2: Aspect Flow Volume (Total Sphuṭa Dṛṣṭi)
+4. **Vector 4: Total Aspect Volume (Cast & Received):**
+   * **Aspects Cast (Influence):** Sum of all quantifiable aspect units cast onto other planets and the Ascendant degree. *Safeguard: Strictly limited to the classical 7 physical planets.*
+   * **Aspects Received (Focal Point):** Sum of all aspect units received from the classical 7 planets. All 9 bodies (including Rāhu and Ketu) can receive aspectual rays.
+   * **Scaling:** Total aspect units (where 1 unit = $60\text{ Virūpas}$) contribute $+0.05$ per unit to the opportunity multiplier.
+
+### Group 3: Houses & Stage Sharing
+5. **Vector 5: House Prominence & Stage Sharing:**
+   * **Kendra Baseline:** 10th house (highest, $+0.40$), 1st house ($+0.35$), 4th house ($+0.25$), 7th house ($+0.25$).
+   * **Koṇa Baseline:** 9th house ($+0.30$), 5th house ($+0.25$).
+   * **Stage Sharing:** If a house is occupied by multiple planets, the stage points are divided equally by the number of co-occupants:
+     $$\text{Stage Score} = \frac{\text{Base House Score}}{\text{Co-occupants Count}}$$
+   * **Lordship Prominence:** Houses ruled in $D_1$ grant inherent administrative authority (H10: $+0.15$, H1: $+0.15$, H9: $+0.12$, H4/H7/H5: $+0.10$ each, H11: $+0.05$). Dual-Kendra rulers (e.g. Jupiter for Virgo/Gemini or Mercury for Sagittarius/Pisces) receive independent credit for each house ruled ($+0.20$ total).
+
+### Group 4: Miscellaneous Catalysts & Roots
+6. **Vector 6: Dispositor Tree Mechanics (Calibrated Group 4 Scaling):**
+   * Direct dispositor of Lagna Lord: $+0.10$.
+   * Direct dispositor of the Sun or Moon: $+0.05$ each.
+   * **Final Dispositor Deduplication & Ceiling:**
+     * Traces terminating dispositor chains for all active classical planets.
+     * Prevents double-counting: Planets already credited above (Lagna Lord, Sun, Moon) are removed from the per-dependent scaling.
+     * Formula:
+       $$\text{Bonus} = \min(0.15, 0.05 + 0.02 \times N_{\text{uncredited}})$$
+     * Capped at $+0.15$ maximum so a miscellaneous factor cannot outweigh a central Kendra stage ($+0.40$) or core Ascendant aspect.
+   * Solitary own-sign root anchor (*Swakṣetra*): $+0.05$.
+7. **Vector 7: Nodal Amplification & Magnetism:**
+   * **Planetary Amplification:** Any planet within $12^\circ$ of Rāhu or Ketu receives an amplification bonus up to $+0.25$.
+   * **Nodal Magnetism:** Rāhu and Ketu receive up to $+0.20$ for each physical planet they host within $12^\circ$.
+8. **Vector 8: Birth Daśā Lord:**
+   * The ruler of the starting Vimśottarī Daśā at birth receives a $+0.25$ opportunity boost, dynamically falling back to the Moon's nakshatra ruler if timeline data is absent.
+
+---
+
+## 4. Decoupling of Prominence (Volume) from Dignity (Mood)
+
+Astra enforces a strict structural decoupling between:
+
+* **Vector A: Prominence (Volume / Stage Presence):**
+  * Measures *how loud* the planet speaks, how much space it takes up, and how readily its events manifest externally.
+  * Derived purely from raw Shadbala and the 8 opportunity factors.
+* **Vector B: Dignity & Mood (Moral Quality / Attitude):**
+  * Measures *the tone, psychological contentment, and constructive vs. defensive behavior* of the planet.
+  * Ingests 20-point *Daśavarga* Viṃśopaka scores, *Dīptādi* avasthās (*Swastha*, *Mudita*, *Khala*), *Bālādi* maturity (*Yuva*, *Mṛta*), and the $-100\%$ to $+100\%$ Net Scale Score.
+* **The Golden Rule:** Prominence never distorts dignity, and dignity never distorts prominence. A debilitated planet in the 10th house has massive prominence (loud, visible) but poor dignity mood (agitated, defensive); an exalted planet in the 12th house has high dignity mood (noble, self-reliant) but subdued prominence (quiet, behind the scenes).

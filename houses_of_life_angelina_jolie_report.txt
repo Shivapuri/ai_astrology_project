@@ -1,0 +1,2423 @@
+==========================================================================================
+ASTRA PRECISION ASTROLOGICAL ENGINE — HOUSES OF LIFE DIAGNOSTIC AUDIT REPORT
+Vic DiCara Methodology (Phaladīpikā Chapter 15 Evaluation System)
+==========================================================================================
+
+1. NATIVE & COMPUTATION BASELINE
+------------------------------------------------------------------------------------------
+Name:                 Angelina Jolie
+Date of Birth:        June 4, 1975 (04/06/1975)
+Time of Birth:        09:09:00 AM (Local Time)
+Location:             Los Angeles, California, USA (34.0522° N, 118.2437° W)
+Timezone:             UTC-07:00 (Pacific Daylight Time)
+Astrological Zodiac:  Tropical Signs (Rāśis) with Whole Sign Bhāvas
+Sensitive Cusp:       Ascendant Longitude projected across all 12 signs
+House System:         Whole Sign Rāśi Bhāvas (with Campanus 3D Cusp Cross-Reference)
+Nakshatra System:     Sidereal Equatorial Dhruva Galactic Center Anchor
+Ascendant (Lagna):    Cancer at 28.8932° (Sensitive Cusp Degree in Sign: 28.8932°)
+
+EXECUTIVE SUMMARY RANKINGS:
+  Top Flourishing Houses:  H10, H1, H7
+  Most Challenged Houses:  H4, H11, H2
+  Composite House Mean:    +62.08 points
+
+==========================================================================================
+2. PHASE 1: WHOLE SIGN GEOMETRY & SENSITIVE HOUSE CUSPS
+------------------------------------------------------------------------------------------
+Bhāva   | Rāśi          | Cusp Longitude  | Cusp Deg:Min   | Lord       | Occupants           
+------------------------------------------------------------------------------------------
+H1     | Cancer        |     118.8932° | 28°54'         | Moon       | Venus, Saturn       
+H2     | Leo           |     148.8932° | 28°54'         | Sun        | None                
+H3     | Virgo         |     178.8932° | 28°54'         | Mercury    | None                
+H4     | Libra         |     208.8932° | 28°54'         | Venus      | None                
+H5     | Scorpio       |     238.8932° | 28°54'         | Mars       | None                
+H6     | Sagittarius   |     268.8932° | 28°54'         | Jupiter    | None                
+H7     | Capricorn     |     298.8932° | 28°54'         | Saturn     | None                
+H8     | Aquarius      |     328.8932° | 28°54'         | Saturn     | None                
+H9     | Pisces        |     358.8932° | 28°54'         | Jupiter    | None                
+H10    | Aries         |      28.8932° | 28°54'         | Mars       | Moon, Mars, Jupiter 
+H11    | Taurus        |      58.8932° | 28°54'         | Venus      | None                
+H12    | Gemini        |      88.8932° | 28°54'         | Mercury    | Sun, Mercury        
+
+==========================================================================================
+3. PHASE 2: PLANETARY FUNCTIONAL NATURE QUANTIFICATION (F_P)
+Phaladīpikā 15.1 Rules:
+  Rule 1: 1st House Lord -> +3 (Unconditional benefic short-circuit)
+  Rule 2: Trine Lord (5, 9) -> Mūlatrikoṇa: +2, Domicile: +1
+  Rule 3: Dusthāna Lord (6, 8, 12) -> Mūlatrikoṇa: -2, Domicile: -1
+  Rule 4: Inherent Temperament -> Benefic (Jup, Ven): +1, Malefic (Mar, Sat): -1, Neutral (Sun, Moo, Mer): 0
+------------------------------------------------------------------------------------------
+Graha     | F_P Score  | Classification  | Rules Triggered & Proof                           
+------------------------------------------------------------------------------------------
+Sun       |        +0 | Neutral         | Neutral (no trine/dusthana)                       
+Moon      |        +3 | Benefic         | Rule 1: 1st Lord (+3)                             
+Mars      |        +0 | Neutral         | Rule 2: Trine (+1), Rule 4: Inherent (-1)         
+Mercury   |        -1 | Malefic         | Rule 3: Dusthāna (-1)                             
+Jupiter   |        +0 | Neutral         | Rule 2: Trine (+1), Rule 3: Dusthāna (-2), Rule 4: Inherent (+1)
+Venus     |        +1 | Benefic         | Rule 4: Inherent (+1)                             
+Saturn    |        -3 | Malefic         | Rule 3: Dusthāna (-2), Rule 4: Inherent (-1)      
+
+==========================================================================================
+4. PHASE 3 & PHASE 5: 7-GRAHA OPERATIONAL LEDGER (PLANETARY CONDITION)
+------------------------------------------------------------------------------------------
+Graha    | Sign (House)       | D1 Dignity      | Comb Inf   | Cusp Align    | Base Avg   | Sandhi x Comb  | Final Score 
+------------------------------------------------------------------------------------------
+Sun      | Gemini (H12)       | -40% (Enemy's ) |     -112.9 |   -19 (-1.0x) |      -57.1 |  1.00x · 1.26x |       -71.87
+Moon     | Aries (H10)        | -40% (Enemy's ) |      +57.5 |    +31 (1.5x) |      +16.1 |  1.00x · 1.00x |       +16.07
+Mars     | Aries (H10)        | +90% (Moolatri) |      -30.8 |    +18 (1.5x) |      +25.8 |  1.00x · 1.00x |       +25.78
+Mercury  | Gemini (H12)       | +80% (Own Sign) |      -72.7 |   +100 (1.0x) |      +35.8 |  1.00x · 0.74x |       +26.56
+Jupiter  | Aries (H10)        | +0% (Neutral')  |     +186.2 |   +150 (1.5x) |     +112.1 |  1.00x · 1.00x |      +112.06
+Venus    | Cancer (H1)        | +0% (Neutral')  |      +37.7 |   +150 (1.5x) |      +62.6 |  0.46x · 1.00x |       +28.85
+Saturn   | Cancer (H1)        | +0% (Neutral')  |     +343.5 |    +36 (1.5x) |     +126.4 |  1.00x · 1.00x |      +126.43
+
+==========================================================================================
+5. 12-BHĀVA QUANTITATIVE SYNTHESIS MATRIX (ALL 5 LAYERS & COMPOSITE)
+------------------------------------------------------------------------------------------
+Bhāva  | Rāśi        | Lord     | Basic    | Lord/Occ  | Bhavāt   | Kartarī  | Yogas    | Composite  | Health Tier           
+------------------------------------------------------------------------------------------
+H1     | Cancer      | Moon     |   +39.1 |    +57.1 |   +37.8 |    +0.0 |  +360.0 |    +98.80 | Puṣṭa (Flourishing / Fortified)
+H2     | Leo         | Sun      |    +5.6 |    -71.9 |   +19.5 |    +0.0 |  -100.0 |    -29.35 | Hīna (Strained / Challenged)
+H3     | Virgo       | Mercury  |   +22.9 |    +26.6 |   +36.1 |    +0.0 |    +0.0 |    +17.10 | Miśra (Mixed / Resilient)
+H4     | Libra       | Venus    |   +41.9 |    +28.9 |    -4.2 |    +0.0 |  -100.0 |     -6.69 | Miśra (Mixed / Resilient)
+H5     | Scorpio     | Mars     |   +40.6 |    +25.8 |   -38.4 |    +0.0 |  +390.0 |    +83.60 | Puṣṭa (Flourishing / Fortified)
+H6     | Sagittarius | Jupiter  |    +0.8 |   +112.1 |   +37.1 |    +0.0 |  +300.0 |    +90.00 | Puṣṭa (Flourishing / Fortified)
+H7     | Capricorn   | Saturn   |   +28.4 |   +126.4 |   +23.8 |    +0.0 |  +300.0 |    +95.72 | Puṣṭa (Flourishing / Fortified)
+H8     | Aquarius    | Saturn   |   +18.1 |   +126.4 |   -29.0 |    +0.0 |  +300.0 |    +83.10 | Puṣṭa (Flourishing / Fortified)
+H9     | Pisces      | Jupiter  |    -4.0 |   +112.1 |    +1.1 |    +0.0 |  +300.0 |    +81.83 | Puṣṭa (Flourishing / Fortified)
+H10    | Aries       | Mars     |    -9.3 |    +51.3 |    +0.0 |    +0.0 |  +740.0 |   +156.40 | Puṣṭa (Exceptional / Off the Chart)
+H11    | Taurus      | Venus    |    +2.5 |    +28.9 |   +16.8 |    +0.0 |  -100.0 |    -10.37 | Miśra (Mixed / Resilient)
+H12    | Gemini      | Mercury  |   +80.5 |    -22.7 |  +100.0 |  +166.2 |  +100.0 |    +84.80 | Puṣṭa (Flourishing / Fortified)
+
+==========================================================================================
+6. DEEP DIVE: HOUSE-BY-HOUSE DETAILED MATHEMATICAL AUDIT RECEIPTS
+==========================================================================================
+
+--- [ HOUSE 1: CANCER (RULED BY MOON) ] ---
+Composite Score: +98.80 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 118.8932° (Cancer 28.89°)
+Occupants: Venus, Saturn
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +39.10
+       * Sun      :  -18.05 pts
+       * Moon     :  +98.92 pts [HOUSE LORD]
+       * Mars     : +132.41 pts
+       * Mercury  :   -3.28 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    : +135.31 pts
+       * Saturn   :  -71.62 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Moon) Final Score:       +16.07
+     Occupants Final Scores:   Venus (+28.85), Saturn (+126.43)
+     Occupants Average Score:  +77.64
+     Combined Lord/Occ Score:  +57.12
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +37.77
+     KK Group Points:          +205.50
+     Raw Dusthāna Points:      -58.00
+     Benefic Mitigation Pct:   6.2%
+     Mitigated Dusthāna:       -54.42
+     Active Planets Count:     4
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +360.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +500.00
+       - Mahāpuruṣa Points:    -40.00
+       - Daridra Points:       -100.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
+       * Rāja Yoga [Occupied by participating planet] (Moon + Saturn): +100 pts
+       * Rāja Yoga [Occupied by participating planet] (Mars + Saturn): +100 pts
+       * Rāja Yoga [Occupied by participating planet] (Jupiter + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Moon): -40 pts
+       * Mahāpuruṣa Yoga [Occupied Kendra] (Venus): +0 pts
+       * Mahāpuruṣa Yoga [Occupied Kendra] (Saturn): +0 pts
+       * Daridra Yoga [Occupied house] (Venus + Saturn): -100 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual support from Venus on Cusp (+135.3)
+     • Net Structural Yogas (+360.0)
+
+--- [ HOUSE 2: LEO (RULED BY SUN) ] ---
+Composite Score: -29.35 | Classical Tier: Hīna | Rating: Strained / Challenged
+Sensitive Cusp Degree: 148.8932° (Leo 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +5.63
+       * Sun      :  +81.26 pts [HOUSE LORD]
+       * Moon     :  +56.76 pts
+       * Mars     :  +37.41 pts
+       * Mercury  :  -21.57 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :   +0.61 pts
+       * Saturn   : -115.06 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Sun) Final Score:       -71.87
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  -71.87
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +19.47
+     KK Group Points:          +125.00
+     Raw Dusthāna Points:      -100.00
+     Benefic Mitigation Pct:   52.9%
+     Mitigated Dusthāna:       -47.12
+     Active Planets Count:     4
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         -100.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +0.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       -100.00
+     Active Structural Yogas:
+       * Daridra Yoga [Owned by participating planet] (Sun + Mercury): -100 pts
+
+  6. Synthesis & Dominant Drivers:
+     • House Lord Sun is strained (-71.9)
+     • Significant aspectual pressure from Saturn on Cusp (-115.1)
+     • Net Structural Yogas (-100.0)
+
+--- [ HOUSE 3: VIRGO (RULED BY MERCURY) ] ---
+Composite Score: +17.10 | Classical Tier: Miśra | Rating: Mixed / Resilient
+Sensitive Cusp Degree: 178.8932° (Virgo 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +22.86
+       * Sun      :  -86.95 pts
+       * Moon     : +126.47 pts
+       * Mars     : +115.18 pts
+       * Mercury  : +250.30 pts [HOUSE LORD]
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +26.23 pts
+       * Saturn   : -271.23 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Mercury) Final Score:       +26.56
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +26.56
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +36.09
+     KK Group Points:          +130.00
+     Raw Dusthāna Points:      -82.50
+     Benefic Mitigation Pct:   73.7%
+     Mitigated Dusthāna:       -21.73
+     Active Planets Count:     3
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +0.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +0.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas: None
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual pressure from Saturn on Cusp (-271.2)
+
+--- [ HOUSE 4: LIBRA (RULED BY VENUS) ] ---
+Composite Score: -6.69 | Classical Tier: Miśra | Rating: Mixed / Resilient
+Sensitive Cusp Degree: 208.8932° (Libra 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +41.94
+       * Sun      :  -33.90 pts
+       * Moon     : +208.38 pts
+       * Mars     : +190.00 pts
+       * Mercury  :  -23.43 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    : +148.77 pts [HOUSE LORD]
+       * Saturn   : -196.23 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Venus) Final Score:       +28.85
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +28.85
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           -4.25
+     KK Group Points:          -25.50
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     6
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         -100.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +0.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       -100.00
+     Active Structural Yogas:
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Venus): +0 pts
+       * Daridra Yoga [Owned by participating planet] (Venus + Saturn): -100 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual support from Moon on Cusp (+208.4)
+     • Net Structural Yogas (-100.0)
+
+--- [ HOUSE 5: SCORPIO (RULED BY MARS) ] ---
+Composite Score: +83.60 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 238.8932° (Scorpio 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +40.60
+       * Sun      :  -72.20 pts
+       * Moon     : +148.38 pts
+       * Mars     : +264.82 pts [HOUSE LORD]
+       * Mercury  :  -13.13 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +48.77 pts
+       * Saturn   :  -92.47 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Mars) Final Score:       +25.78
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +25.78
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           -38.40
+     KK Group Points:          -100.00
+     Raw Dusthāna Points:      -58.00
+     Benefic Mitigation Pct:   7.6%
+     Mitigated Dusthāna:       -53.58
+     Active Planets Count:     4
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +390.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +300.00
+       - Mahāpuruṣa Points:    +90.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Mars): +90 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual support from Mars on Cusp (+264.8)
+     • Net Structural Yogas (+390.0)
+
+--- [ HOUSE 6: SAGITTARIUS (RULED BY JUPITER) ] ---
+Composite Score: +90.00 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 268.8932° (Sagittarius 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +0.85
+       * Sun      : -121.95 pts
+       * Moon     :  +88.38 pts
+       * Mars     :  +66.21 pts
+       * Mercury  :  -56.72 pts
+       * Jupiter  : +142.66 pts [HOUSE LORD]
+       * Venus    :   +2.46 pts
+       * Saturn   : -115.06 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Jupiter) Final Score:       +112.06
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +112.06
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +37.09
+     KK Group Points:          +247.50
+     Raw Dusthāna Points:      -50.00
+     Benefic Mitigation Pct:   50.1%
+     Mitigated Dusthāna:       -24.97
+     Active Planets Count:     6
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +300.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +300.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Jupiter): +0 pts
+
+  6. Synthesis & Dominant Drivers:
+     • House Lord Jupiter is fortified (+112.1)
+     • Significant aspectual support from Jupiter on Cusp (+142.7)
+     • Net Structural Yogas (+300.0)
+
+--- [ HOUSE 7: CAPRICORN (RULED BY SATURN) ] ---
+Composite Score: +95.72 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 298.8932° (Capricorn 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +28.38
+       * Sun      :  -86.95 pts
+       * Moon     :  +28.38 pts
+       * Mars     :  +18.71 pts
+       * Mercury  :  -41.72 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +99.39 pts
+       * Saturn   : +180.82 pts [HOUSE LORD]
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Saturn) Final Score:       +126.43
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +126.43
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +23.78
+     KK Group Points:          +252.50
+     Raw Dusthāna Points:      -140.00
+     Benefic Mitigation Pct:   21.6%
+     Mitigated Dusthāna:       -109.84
+     Active Planets Count:     6
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +300.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +300.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Saturn): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Saturn): +0 pts
+
+  6. Synthesis & Dominant Drivers:
+     • House Lord Saturn is fortified (+126.4)
+     • Significant aspectual support from Saturn on Cusp (+180.8)
+     • Net Structural Yogas (+300.0)
+
+--- [ HOUSE 8: AQUARIUS (RULED BY SATURN) ] ---
+Composite Score: +83.10 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 328.8932° (Aquarius 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +18.08
+       * Sun      :  -51.95 pts
+       * Moon     :   +0.00 pts
+       * Mars     :   +0.00 pts
+       * Mercury  :  -26.72 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +74.39 pts
+       * Saturn   : +130.82 pts [HOUSE LORD]
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Saturn) Final Score:       +126.43
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +126.43
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           -29.00
+     KK Group Points:          -58.00
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     2
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +300.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +300.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Saturn): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Saturn): +0 pts
+
+  6. Synthesis & Dominant Drivers:
+     • House Lord Saturn is fortified (+126.4)
+     • Significant aspectual support from Saturn on Cusp (+130.8)
+     • Net Structural Yogas (+300.0)
+
+--- [ HOUSE 9: PISCES (RULED BY JUPITER) ] ---
+Composite Score: +81.83 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 358.8932° (Pisces 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: -3.97
+       * Sun      :  -16.95 pts
+       * Moon     :  +63.24 pts
+       * Mars     :  +57.59 pts
+       * Mercury  :  -11.72 pts
+       * Jupiter  :  +38.23 pts [HOUSE LORD]
+       * Venus    :  +49.39 pts
+       * Saturn   : -207.53 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Jupiter) Final Score:       +112.06
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +112.06
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +1.07
+     KK Group Points:          +7.50
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     7
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +300.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +300.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Owned by participating planet] (Moon + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Jupiter + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Jupiter): +0 pts
+
+  6. Synthesis & Dominant Drivers:
+     • House Lord Jupiter is fortified (+112.1)
+     • Significant aspectual pressure from Saturn on Cusp (-207.5)
+     • Net Structural Yogas (+300.0)
+
+--- [ HOUSE 10: ARIES (RULED BY MARS) ] ---
+Composite Score: +156.40 | Classical Tier: Puṣṭa | Rating: Exceptional / Off the Chart
+Sensitive Cusp Degree: 28.8932° (Aries 28.89°)
+Occupants: Moon, Mars, Jupiter
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: -9.32
+       * Sun      :   -0.00 pts
+       * Moon     :  +49.24 pts
+       * Mars     :  +46.06 pts [HOUSE LORD]
+       * Mercury  :   -0.00 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :  +24.39 pts
+       * Saturn   : -184.94 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Mars) Final Score:       +25.78
+     Occupants Final Scores:   Moon (+16.07), Mars (+25.78), Jupiter (+112.06)
+     Occupants Average Score:  +51.30
+     Combined Lord/Occ Score:  +44.92
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +0.00
+     KK Group Points:          +0.00
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     2
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +740.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +600.00
+       - Mahāpuruṣa Points:    +140.00
+       - Daridra Points:       +0.00
+     Active Structural Yogas:
+       * Rāja Yoga [Occupied by participating planet] (Moon + Mars): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Moon + Mars): +100 pts
+       * Rāja Yoga [Occupied by participating planet] (Moon + Jupiter): +100 pts
+       * Rāja Yoga [Occupied by participating planet] (Mars + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Jupiter): +100 pts
+       * Rāja Yoga [Owned by participating planet] (Mars + Saturn): +100 pts
+       * Mahāpuruṣa Yoga [Occupied Kendra] (Moon): -40 pts
+       * Mahāpuruṣa Yoga [Occupied Kendra] (Mars): +90 pts
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Mars): +90 pts
+       * Mahāpuruṣa Yoga [Occupied Kendra] (Jupiter): +0 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual pressure from Saturn on Cusp (-184.9)
+     • Net Structural Yogas (+740.0)
+
+--- [ HOUSE 11: TAURUS (RULED BY VENUS) ] ---
+Composite Score: -10.37 | Classical Tier: Miśra | Rating: Mixed / Resilient
+Sensitive Cusp Degree: 58.8932° (Taurus 28.89°)
+Occupants: None
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +2.54
+       * Sun      :  -36.10 pts
+       * Moon     :  +31.62 pts
+       * Mars     :  +28.79 pts
+       * Mercury  :   -6.57 pts
+       * Jupiter  :   +0.00 pts
+       * Venus    :   +0.00 pts [HOUSE LORD]
+       * Saturn   :   -0.00 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Venus) Final Score:       +28.85
+     Occupants Final Scores:   None
+     Combined Lord/Occ Score:  +28.85
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +16.75
+     KK Group Points:          +152.00
+     Raw Dusthāna Points:      -160.50
+     Benefic Mitigation Pct:   57.5%
+     Mitigated Dusthāna:       -68.23
+     Active Planets Count:     5
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                None
+     Wall Score:               +0.00
+     Is Flanked/Walled:        False
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         -100.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +0.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       -100.00
+     Active Structural Yogas:
+       * Mahāpuruṣa Yoga [Owned by Kendra planet] (Venus): +0 pts
+       * Daridra Yoga [Owned by participating planet] (Venus + Saturn): -100 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Net Structural Yogas (-100.0)
+
+--- [ HOUSE 12: GEMINI (RULED BY MERCURY) ] ---
+Composite Score: +84.80 | Classical Tier: Puṣṭa | Rating: Flourishing / Fortified
+Sensitive Cusp Degree: 88.8932° (Gemini 28.89°)
+Occupants: Sun, Mercury
+
+  1. Direct Cusp Rays (Phase 6):
+     Direct Basic Score: +80.53
+       * Sun      :  -25.95 pts
+       * Moon     : +123.24 pts
+       * Mars     : +133.88 pts
+       * Mercury  : +388.84 pts [HOUSE LORD]
+       * Jupiter  :   +0.00 pts
+       * Venus    :   +1.23 pts
+       * Saturn   :  -57.53 pts
+
+  2. Lord & Occupant Condition (Phase 5):
+     Lord (Mercury) Final Score:       +26.56
+     Occupants Final Scores:   Sun (-71.87), Mercury (+26.56)
+     Occupants Average Score:  -22.66
+     Combined Lord/Occ Score:  -6.25
+
+  3. Bhavāt Bhavam Neighborhood (Phase 7):
+     Relative Score:           +100.00
+     KK Group Points:          +100.00
+     Raw Dusthāna Points:      +0.00
+     Benefic Mitigation Pct:   0.0%
+     Mitigated Dusthāna:       +0.00
+     Active Planets Count:     1
+
+  4. 30° Cusp Walls / Kartarī Yoga (Phase 8):
+     Wall Type:                Mishra Kartari
+     Wall Score:               +166.15
+     Is Flanked/Walled:        True
+     Planet Before Cusp:       Mercury
+     Planet After Cusp:        Saturn
+
+  5. Structural House Yogas (Phase 9):
+     Total Yoga Score:         +100.00
+       - Parivartana Points:   +0.00
+       - Rāja Yoga Points:     +0.00
+       - Mahāpuruṣa Points:    +0.00
+       - Daridra Points:       +100.00
+     Active Structural Yogas:
+       * Daridra Yoga [Occupied house] (Sun + Mercury): +100 pts
+
+  6. Synthesis & Dominant Drivers:
+     • Significant aspectual support from Mercury on Cusp (+388.8)
+     • Net Structural Yogas (+100.0)
+     • Mishra Kartari (+166.2)
+
+==========================================================================================
+7. CROSS-SYSTEM CONCORDANCE: STAGE 3 BHĀVA BALA VS. STAGE 4 HOUSES OF LIFE
+------------------------------------------------------------------------------------------
+Bhāva  | Rāśi (Lord)        | Stage 3 Virūpas  | Stage 3 Rūpas  | Stage 3 Tier  | Stage 4 Score  | Stage 4 Tier  | Diagnosis
+------------------------------------------------------------------------------------------
+H1     | Cancer (Moon)      |          490.6v |         8.18R | Puṣṭa         |       +98.80 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H2     | Leo (Sun)          |          536.9v |         8.95R | Puṣṭa         |       -29.35 | Hīna          | Divergent: Stage 4 Strained by Cusp Pressure / Daridra
+H3     | Virgo (Mercury)    |          675.9v |        11.27R | Puṣṭa         |       +17.10 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H4     | Libra (Venus)      |          575.4v |         9.59R | Puṣṭa         |        -6.69 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H5     | Scorpio (Mars)     |          579.4v |         9.66R | Puṣṭa         |       +83.60 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H6     | Sagittarius (Jupiter) |          528.1v |         8.80R | Puṣṭa         |       +90.00 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H7     | Capricorn (Saturn) |          461.2v |         7.69R | Puṣṭa         |       +95.72 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H8     | Aquarius (Saturn)  |          412.7v |         6.88R | Puṣṭa         |       +83.10 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H9     | Pisces (Jupiter)   |          477.3v |         7.95R | Puṣṭa         |       +81.83 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H10    | Aries (Mars)       |          509.0v |         8.48R | Puṣṭa         |      +156.40 | Puṣṭa         | Harmonic Agreement (Puṣṭa)
+H11    | Taurus (Venus)     |          527.7v |         8.79R | Puṣṭa         |       -10.37 | Miśra         | Stage 3 Puṣṭa <-> Stage 4 Miśra
+H12    | Gemini (Mercury)   |          696.7v |        11.61R | Miśra         |       +84.80 | Puṣṭa         | Divergent: Stage 4 Elevated by Yogas / Kartarī Wall
+
+==========================================================================================
+8. COMPLETE MACHINE-READABLE JSON DUMP (HOUSES OF LIFE ENGINE)
+==========================================================================================
+{
+  "metadata": {
+    "report_type": "Houses of Life (Vic DiCara / Phaladeepika System)",
+    "house_system": "Whole Sign (Ascendant Degree Sensitive Cusps)",
+    "ascendant_sign": "Cancer",
+    "ascendant_degree": 28.8932,
+    "varga_evaluated": "D1"
+  },
+  "planets": {
+    "Sun": {
+      "sign": "Gemini",
+      "house": 12,
+      "degree_in_sign": 13.42,
+      "ruled_houses": [
+        2
+      ],
+      "functional_nature": {
+        "score": 0,
+        "classification": "Neutral",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 0,
+          "dusthana_score": 0,
+          "inherent_score": 0
+        }
+      },
+      "dignity": {
+        "status": "Enemy's Sign",
+        "unit_score": -0.4,
+        "pct_score": -40.0
+      },
+      "combined_influences": {
+        "net_score": -112.88,
+        "incoming_breakdown": {
+          "Moon": 0.4,
+          "Mars": 4.31,
+          "Mercury": -126.57,
+          "Jupiter": 0.0,
+          "Venus": 12.28,
+          "Saturn": -3.3
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 48.43,
+        "dominance_adjusted_pct": 18.53,
+        "capped_base_pct": 18.53,
+        "house_category": "Hidden",
+        "house_multiplier": -1.0,
+        "alignment_score": -18.53
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 13.42,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 0.0,
+        "tolerance_orb": null,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.2579,
+        "combustion_multiplier": 1.2579
+      },
+      "base_average_score": -57.14,
+      "final_assessment_score": -71.87
+    },
+    "Moon": {
+      "sign": "Aries",
+      "house": 10,
+      "degree_in_sign": 13.08,
+      "ruled_houses": [
+        1
+      ],
+      "functional_nature": {
+        "score": 3,
+        "classification": "Benefic",
+        "rule_breakdown": {
+          "is_first_lord": true,
+          "trine_score": 0,
+          "dusthana_score": 0,
+          "inherent_score": 0
+        }
+      },
+      "dignity": {
+        "status": "Enemy's Sign",
+        "unit_score": -0.4,
+        "pct_score": -40.0
+      },
+      "combined_influences": {
+        "net_score": 57.45,
+        "incoming_breakdown": {
+          "Sun": -35.79,
+          "Mars": 174.94,
+          "Mercury": -72.72,
+          "Jupiter": 0.0,
+          "Venus": 62.43,
+          "Saturn": -71.42
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 47.3,
+        "dominance_adjusted_pct": 20.51,
+        "capped_base_pct": 20.51,
+        "house_category": "Prominent",
+        "house_multiplier": 1.5,
+        "alignment_score": 30.77
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 13.08,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 60.34,
+        "tolerance_orb": 12.0,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 1.0
+      },
+      "base_average_score": 16.07,
+      "final_assessment_score": 16.07
+    },
+    "Mars": {
+      "sign": "Aries",
+      "house": 10,
+      "degree_in_sign": 10.71,
+      "ruled_houses": [
+        10,
+        5
+      ],
+      "functional_nature": {
+        "score": 0,
+        "classification": "Neutral",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 1,
+          "dusthana_score": 0,
+          "inherent_score": -1
+        }
+      },
+      "dignity": {
+        "status": "Moolatrikona",
+        "unit_score": 0.9,
+        "pct_score": 90.0
+      },
+      "combined_influences": {
+        "net_score": -30.83,
+        "incoming_breakdown": {
+          "Sun": -44.5,
+          "Moon": 128.91,
+          "Mercury": -97.29,
+          "Jupiter": 0.0,
+          "Venus": 70.92,
+          "Saturn": -88.87
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 39.38,
+        "dominance_adjusted_pct": 12.12,
+        "capped_base_pct": 12.12,
+        "house_category": "Prominent",
+        "house_multiplier": 1.5,
+        "alignment_score": 18.18
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 10.71,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 62.71,
+        "tolerance_orb": 17.0,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 1.0
+      },
+      "base_average_score": 25.78,
+      "final_assessment_score": 25.78
+    },
+    "Mercury": {
+      "sign": "Gemini",
+      "house": 12,
+      "degree_in_sign": 22.33,
+      "ruled_houses": [
+        12,
+        3
+      ],
+      "functional_nature": {
+        "score": -1,
+        "classification": "Malefic",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 0,
+          "dusthana_score": -1,
+          "inherent_score": 0
+        }
+      },
+      "dignity": {
+        "status": "Own Sign",
+        "unit_score": 0.8,
+        "pct_score": 80.0
+      },
+      "combined_influences": {
+        "net_score": -72.65,
+        "incoming_breakdown": {
+          "Sun": -98.44,
+          "Moon": 10.78,
+          "Mars": 18.4,
+          "Jupiter": 0.0,
+          "Venus": 4.85,
+          "Saturn": -8.23
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 78.11,
+        "dominance_adjusted_pct": 108.01,
+        "capped_base_pct": 100.0,
+        "house_category": "Hidden",
+        "house_multiplier": 1.0,
+        "alignment_score": 100.0
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 7.67,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": true,
+        "distance_to_sun": 8.91,
+        "tolerance_orb": 12.0,
+        "loss_ratio": 0.2579,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 0.7421
+      },
+      "base_average_score": 35.78,
+      "final_assessment_score": 26.56
+    },
+    "Jupiter": {
+      "sign": "Aries",
+      "house": 10,
+      "degree_in_sign": 17.42,
+      "ruled_houses": [
+        6,
+        9
+      ],
+      "functional_nature": {
+        "score": 0,
+        "classification": "Neutral",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 1,
+          "dusthana_score": -2,
+          "inherent_score": 1
+        }
+      },
+      "dignity": {
+        "status": "Neutral's Sign",
+        "unit_score": 0.0,
+        "pct_score": 0.0
+      },
+      "combined_influences": {
+        "net_score": 186.19,
+        "incoming_breakdown": {
+          "Sun": -30.33,
+          "Moon": 119.75,
+          "Mars": 147.46,
+          "Mercury": -59.7,
+          "Venus": 83.95,
+          "Saturn": -74.93
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 61.77,
+        "dominance_adjusted_pct": 115.82,
+        "capped_base_pct": 100.0,
+        "house_category": "Prominent",
+        "house_multiplier": 1.5,
+        "alignment_score": 150.0
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 12.58,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 56.0,
+        "tolerance_orb": 11.0,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 1.0
+      },
+      "base_average_score": 112.06,
+      "final_assessment_score": 112.06
+    },
+    "Venus": {
+      "sign": "Cancer",
+      "house": 1,
+      "degree_in_sign": 28.16,
+      "ruled_houses": [
+        11,
+        4
+      ],
+      "functional_nature": {
+        "score": 1,
+        "classification": "Benefic",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 0,
+          "dusthana_score": 0,
+          "inherent_score": 1
+        }
+      },
+      "dignity": {
+        "status": "Neutral's Sign",
+        "unit_score": 0.0,
+        "pct_score": 0.0
+      },
+      "combined_influences": {
+        "net_score": 37.67,
+        "incoming_breakdown": {
+          "Sun": -17.19,
+          "Moon": 52.59,
+          "Mars": 75.11,
+          "Mercury": -8.74,
+          "Jupiter": 0.0,
+          "Saturn": -64.1
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 97.54,
+        "dominance_adjusted_pct": 135.31,
+        "capped_base_pct": 100.0,
+        "house_category": "Prominent",
+        "house_multiplier": 1.5,
+        "alignment_score": 150.0
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 1.84,
+        "in_sandhi_zone": true,
+        "penalty_ratio": 0.5389,
+        "retention_multiplier": 0.4611
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 44.73,
+        "tolerance_orb": 10.0,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 1.0
+      },
+      "base_average_score": 62.56,
+      "final_assessment_score": 28.85
+    },
+    "Saturn": {
+      "sign": "Cancer",
+      "house": 1,
+      "degree_in_sign": 17.39,
+      "ruled_houses": [
+        7,
+        8
+      ],
+      "functional_nature": {
+        "score": -3,
+        "classification": "Malefic",
+        "rule_breakdown": {
+          "is_first_lord": false,
+          "trine_score": 0,
+          "dusthana_score": -2,
+          "inherent_score": -1
+        }
+      },
+      "dignity": {
+        "status": "Neutral's Sign",
+        "unit_score": 0.0,
+        "pct_score": 0.0
+      },
+      "combined_influences": {
+        "net_score": 343.47,
+        "incoming_breakdown": {
+          "Sun": -4.63,
+          "Moon": 129.97,
+          "Mars": 168.85,
+          "Mercury": -14.82,
+          "Jupiter": 0.0,
+          "Venus": 64.1
+        }
+      },
+      "cusp_alignment": {
+        "raw_conjunction_pct": 61.65,
+        "dominance_adjusted_pct": 23.87,
+        "capped_base_pct": 23.87,
+        "house_category": "Prominent",
+        "house_multiplier": 1.5,
+        "alignment_score": 35.81
+      },
+      "bhava_sandhi": {
+        "distance_to_border": 12.61,
+        "in_sandhi_zone": false,
+        "penalty_ratio": 0.0,
+        "retention_multiplier": 1.0
+      },
+      "combustion": {
+        "is_combust": false,
+        "distance_to_sun": 33.96,
+        "tolerance_orb": 15.0,
+        "loss_ratio": 0.0,
+        "solar_gain_ratio": 0.0,
+        "combustion_multiplier": 1.0
+      },
+      "base_average_score": 126.43,
+      "final_assessment_score": 126.43
+    }
+  },
+  "houses": {
+    "1": {
+      "house": 1,
+      "sign": "Cancer",
+      "lord": "Moon",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 118.8932,
+      "occupants": [
+        "Venus",
+        "Saturn"
+      ],
+      "components": {
+        "basic_house_condition": {
+          "score": 39.1,
+          "planet_contributions": {
+            "Sun": -18.05,
+            "Moon": 98.92,
+            "Mars": 132.41,
+            "Mercury": -3.28,
+            "Jupiter": 0.0,
+            "Venus": 135.31,
+            "Saturn": -71.62
+          }
+        },
+        "lord_assessment": {
+          "lord": "Moon",
+          "lord_final_score": 16.07,
+          "occupants_final_scores": {
+            "Venus": 28.85,
+            "Saturn": 126.43
+          },
+          "combined_score": 57.12
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 37.77,
+          "kk_group_points": 205.5,
+          "dusthana_raw_points": -58.0,
+          "benefic_mitigation_pct": 6.18,
+          "dusthana_mitigated_points": -54.42,
+          "active_planets_count": 4,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": 150.0,
+            "Mars": 45.0,
+            "Mercury": -50.0,
+            "Jupiter": 0.0,
+            "Venus": 50.0,
+            "Saturn": -150.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 360.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 500.0,
+          "mahapurusha_score": -40.0,
+          "daridra_yoga_score": -100.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Moon",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Mars",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Jupiter",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Moon"
+              ],
+              "points": -40.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra",
+              "planets": [
+                "Venus"
+              ],
+              "points": 0.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra",
+              "planets": [
+                "Saturn"
+              ],
+              "points": 0.0
+            },
+            {
+              "type": "Daridra Yoga",
+              "role": "Occupied house",
+              "planets": [
+                "Venus",
+                "Saturn"
+              ],
+              "points": -100.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 98.8,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "Significant aspectual support from Venus on Cusp (+135.3)",
+          "Net Structural Yogas (+360.0)"
+        ]
+      }
+    },
+    "2": {
+      "house": 2,
+      "sign": "Leo",
+      "lord": "Sun",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 148.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 5.63,
+          "planet_contributions": {
+            "Sun": 81.26,
+            "Moon": 56.76,
+            "Mars": 37.41,
+            "Mercury": -21.57,
+            "Jupiter": 0.0,
+            "Venus": 0.61,
+            "Saturn": -115.06
+          }
+        },
+        "lord_assessment": {
+          "lord": "Sun",
+          "lord_final_score": -71.87,
+          "occupants_final_scores": {},
+          "combined_score": -71.87
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 19.47,
+          "kk_group_points": 125.0,
+          "dusthana_raw_points": -100.0,
+          "benefic_mitigation_pct": 52.88,
+          "dusthana_mitigated_points": -47.12,
+          "active_planets_count": 4,
+          "relative_functional_natures": {
+            "Sun": 150.0,
+            "Moon": -50.0,
+            "Mars": 50.0,
+            "Mercury": 40.0,
+            "Jupiter": 100.0,
+            "Venus": 50.0,
+            "Saturn": -100.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": -100.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": -100.0,
+          "active_yogas": [
+            {
+              "type": "Daridra Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Sun",
+                "Mercury"
+              ],
+              "points": -100.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": -29.35,
+        "health_rating": "Strained / Challenged",
+        "classical_tier": "H\u012bna",
+        "dominant_drivers": [
+          "House Lord Sun is strained (-71.9)",
+          "Significant aspectual pressure from Saturn on Cusp (-115.1)",
+          "Net Structural Yogas (-100.0)"
+        ]
+      }
+    },
+    "3": {
+      "house": 3,
+      "sign": "Virgo",
+      "lord": "Mercury",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 178.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 22.86,
+          "planet_contributions": {
+            "Sun": -86.95,
+            "Moon": 126.47,
+            "Mars": 115.18,
+            "Mercury": 250.3,
+            "Jupiter": 0.0,
+            "Venus": 26.23,
+            "Saturn": -271.23
+          }
+        },
+        "lord_assessment": {
+          "lord": "Mercury",
+          "lord_final_score": 26.56,
+          "occupants_final_scores": {},
+          "combined_score": 26.56
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 36.09,
+          "kk_group_points": 130.0,
+          "dusthana_raw_points": -82.5,
+          "benefic_mitigation_pct": 73.66,
+          "dusthana_mitigated_points": -21.73,
+          "active_planets_count": 3,
+          "relative_functional_natures": {
+            "Sun": -100.0,
+            "Moon": 100.0,
+            "Mars": -150.0,
+            "Mercury": 150.0,
+            "Jupiter": 50.0,
+            "Venus": 100.0,
+            "Saturn": -100.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 0.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": []
+        }
+      },
+      "synthesis": {
+        "composite_score": 17.1,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
+        "dominant_drivers": [
+          "Significant aspectual pressure from Saturn on Cusp (-271.2)"
+        ]
+      }
+    },
+    "4": {
+      "house": 4,
+      "sign": "Libra",
+      "lord": "Venus",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 208.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 41.94,
+          "planet_contributions": {
+            "Sun": -33.9,
+            "Moon": 208.38,
+            "Mars": 190.0,
+            "Mercury": -23.43,
+            "Jupiter": 0.0,
+            "Venus": 148.77,
+            "Saturn": -196.23
+          }
+        },
+        "lord_assessment": {
+          "lord": "Venus",
+          "lord_final_score": 28.85,
+          "occupants_final_scores": {},
+          "combined_score": 28.85
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": -4.25,
+          "kk_group_points": -25.5,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 6,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": -100.0,
+            "Mars": -50.0,
+            "Mercury": -50.0,
+            "Jupiter": 0.0,
+            "Venus": 150.0,
+            "Saturn": 50.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": -100.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": -100.0,
+          "active_yogas": [
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Venus"
+              ],
+              "points": 0.0
+            },
+            {
+              "type": "Daridra Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Venus",
+                "Saturn"
+              ],
+              "points": -100.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": -6.69,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
+        "dominant_drivers": [
+          "Significant aspectual support from Moon on Cusp (+208.4)",
+          "Net Structural Yogas (-100.0)"
+        ]
+      }
+    },
+    "5": {
+      "house": 5,
+      "sign": "Scorpio",
+      "lord": "Mars",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 238.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 40.6,
+          "planet_contributions": {
+            "Sun": -72.2,
+            "Moon": 148.38,
+            "Mars": 264.82,
+            "Mercury": -13.13,
+            "Jupiter": 0.0,
+            "Venus": 48.77,
+            "Saturn": -92.47
+          }
+        },
+        "lord_assessment": {
+          "lord": "Mars",
+          "lord_final_score": 25.78,
+          "occupants_final_scores": {},
+          "combined_score": 25.78
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": -38.4,
+          "kk_group_points": -100.0,
+          "dusthana_raw_points": -58.0,
+          "benefic_mitigation_pct": 7.61,
+          "dusthana_mitigated_points": -53.58,
+          "active_planets_count": 4,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": 50.0,
+            "Mars": 150.0,
+            "Mercury": -50.0,
+            "Jupiter": 100.0,
+            "Venus": -50.0,
+            "Saturn": -50.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 390.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 300.0,
+          "mahapurusha_score": 90.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Mars"
+              ],
+              "points": 90.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 83.6,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "Significant aspectual support from Mars on Cusp (+264.8)",
+          "Net Structural Yogas (+390.0)"
+        ]
+      }
+    },
+    "6": {
+      "house": 6,
+      "sign": "Sagittarius",
+      "lord": "Jupiter",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 268.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 0.85,
+          "planet_contributions": {
+            "Sun": -121.95,
+            "Moon": 88.38,
+            "Mars": 66.21,
+            "Mercury": -56.72,
+            "Jupiter": 142.66,
+            "Venus": 2.46,
+            "Saturn": -115.06
+          }
+        },
+        "lord_assessment": {
+          "lord": "Jupiter",
+          "lord_final_score": 112.06,
+          "occupants_final_scores": {},
+          "combined_score": 112.06
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 37.09,
+          "kk_group_points": 247.5,
+          "dusthana_raw_points": -50.0,
+          "benefic_mitigation_pct": 50.07,
+          "dusthana_mitigated_points": -24.97,
+          "active_planets_count": 6,
+          "relative_functional_natures": {
+            "Sun": 100.0,
+            "Moon": -100.0,
+            "Mars": 45.0,
+            "Mercury": 40.0,
+            "Jupiter": 150.0,
+            "Venus": 0.0,
+            "Saturn": -50.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 300.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 300.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Jupiter",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 0.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 90.0,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "House Lord Jupiter is fortified (+112.1)",
+          "Significant aspectual support from Jupiter on Cusp (+142.7)",
+          "Net Structural Yogas (+300.0)"
+        ]
+      }
+    },
+    "7": {
+      "house": 7,
+      "sign": "Capricorn",
+      "lord": "Saturn",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 298.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 28.38,
+          "planet_contributions": {
+            "Sun": -86.95,
+            "Moon": 28.38,
+            "Mars": 18.71,
+            "Mercury": -41.72,
+            "Jupiter": 0.0,
+            "Venus": 99.39,
+            "Saturn": 180.82
+          }
+        },
+        "lord_assessment": {
+          "lord": "Saturn",
+          "lord_final_score": 126.43,
+          "occupants_final_scores": {},
+          "combined_score": 126.43
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 23.78,
+          "kk_group_points": 252.5,
+          "dusthana_raw_points": -140.0,
+          "benefic_mitigation_pct": 21.55,
+          "dusthana_mitigated_points": -109.84,
+          "active_planets_count": 6,
+          "relative_functional_natures": {
+            "Sun": -100.0,
+            "Moon": 100.0,
+            "Mars": -50.0,
+            "Mercury": 50.0,
+            "Jupiter": -50.0,
+            "Venus": 100.0,
+            "Saturn": 150.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 300.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 300.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Jupiter",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Saturn"
+              ],
+              "points": 0.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 95.72,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "House Lord Saturn is fortified (+126.4)",
+          "Significant aspectual support from Saturn on Cusp (+180.8)",
+          "Net Structural Yogas (+300.0)"
+        ]
+      }
+    },
+    "8": {
+      "house": 8,
+      "sign": "Aquarius",
+      "lord": "Saturn",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 328.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 18.08,
+          "planet_contributions": {
+            "Sun": -51.95,
+            "Moon": 0.0,
+            "Mars": 0.0,
+            "Mercury": -26.72,
+            "Jupiter": 0.0,
+            "Venus": 74.39,
+            "Saturn": 130.82
+          }
+        },
+        "lord_assessment": {
+          "lord": "Saturn",
+          "lord_final_score": 126.43,
+          "occupants_final_scores": {},
+          "combined_score": 126.43
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": -29.0,
+          "kk_group_points": -58.0,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 2,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": -50.0,
+            "Mars": -50.0,
+            "Mercury": -50.0,
+            "Jupiter": 50.0,
+            "Venus": 150.0,
+            "Saturn": 150.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 300.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 300.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Jupiter",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Saturn"
+              ],
+              "points": 0.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 83.1,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "House Lord Saturn is fortified (+126.4)",
+          "Significant aspectual support from Saturn on Cusp (+130.8)",
+          "Net Structural Yogas (+300.0)"
+        ]
+      }
+    },
+    "9": {
+      "house": 9,
+      "sign": "Pisces",
+      "lord": "Jupiter",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 358.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": -3.97,
+          "planet_contributions": {
+            "Sun": -16.95,
+            "Moon": 63.24,
+            "Mars": 57.59,
+            "Mercury": -11.72,
+            "Jupiter": 38.23,
+            "Venus": 49.39,
+            "Saturn": -207.53
+          }
+        },
+        "lord_assessment": {
+          "lord": "Jupiter",
+          "lord_final_score": 112.06,
+          "occupants_final_scores": {},
+          "combined_score": 112.06
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 1.07,
+          "kk_group_points": 7.5,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 7,
+          "relative_functional_natures": {
+            "Sun": -100.0,
+            "Moon": 50.0,
+            "Mars": 45.0,
+            "Mercury": 40.0,
+            "Jupiter": 150.0,
+            "Venus": -50.0,
+            "Saturn": -150.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 300.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 300.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Jupiter",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 0.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 81.83,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "House Lord Jupiter is fortified (+112.1)",
+          "Significant aspectual pressure from Saturn on Cusp (-207.5)",
+          "Net Structural Yogas (+300.0)"
+        ]
+      }
+    },
+    "10": {
+      "house": 10,
+      "sign": "Aries",
+      "lord": "Mars",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 28.8932,
+      "occupants": [
+        "Moon",
+        "Mars",
+        "Jupiter"
+      ],
+      "components": {
+        "basic_house_condition": {
+          "score": -9.32,
+          "planet_contributions": {
+            "Sun": -0.0,
+            "Moon": 49.24,
+            "Mars": 46.06,
+            "Mercury": -0.0,
+            "Jupiter": 0.0,
+            "Venus": 24.39,
+            "Saturn": -184.94
+          }
+        },
+        "lord_assessment": {
+          "lord": "Mars",
+          "lord_final_score": 25.78,
+          "occupants_final_scores": {
+            "Moon": 16.07,
+            "Mars": 25.78,
+            "Jupiter": 112.06
+          },
+          "combined_score": 51.3
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 0.0,
+          "kk_group_points": 0.0,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 2,
+          "relative_functional_natures": {
+            "Sun": 100.0,
+            "Moon": -20.0,
+            "Mars": 150.0,
+            "Mercury": -100.0,
+            "Jupiter": 100.0,
+            "Venus": 50.0,
+            "Saturn": -50.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": 740.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 600.0,
+          "mahapurusha_score": 140.0,
+          "daridra_yoga_score": 0.0,
+          "active_yogas": [
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Moon",
+                "Mars"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Moon",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Occupied by participating planet",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Jupiter"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "R\u0101ja Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Mars",
+                "Saturn"
+              ],
+              "points": 100.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra",
+              "planets": [
+                "Moon"
+              ],
+              "points": -40.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra",
+              "planets": [
+                "Mars"
+              ],
+              "points": 90.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Mars"
+              ],
+              "points": 90.0
+            },
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Occupied Kendra",
+              "planets": [
+                "Jupiter"
+              ],
+              "points": 0.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 156.4,
+        "health_rating": "Exceptional / Off the Chart",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "Significant aspectual pressure from Saturn on Cusp (-184.9)",
+          "Net Structural Yogas (+740.0)"
+        ]
+      }
+    },
+    "11": {
+      "house": 11,
+      "sign": "Taurus",
+      "lord": "Venus",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 58.8932,
+      "occupants": [],
+      "components": {
+        "basic_house_condition": {
+          "score": 2.54,
+          "planet_contributions": {
+            "Sun": -36.1,
+            "Moon": 31.62,
+            "Mars": 28.79,
+            "Mercury": -6.57,
+            "Jupiter": 0.0,
+            "Venus": 0.0,
+            "Saturn": -0.0
+          }
+        },
+        "lord_assessment": {
+          "lord": "Venus",
+          "lord_final_score": 28.85,
+          "occupants_final_scores": {},
+          "combined_score": 28.85
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 16.75,
+          "kk_group_points": 152.0,
+          "dusthana_raw_points": -160.5,
+          "benefic_mitigation_pct": 57.49,
+          "dusthana_mitigated_points": -68.23,
+          "active_planets_count": 5,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": -20.0,
+            "Mars": -150.0,
+            "Mercury": 100.0,
+            "Jupiter": -50.0,
+            "Venus": 150.0,
+            "Saturn": 0.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": false,
+          "wall_type": "None",
+          "score": 0.0,
+          "planet_before": null,
+          "planet_after": null
+        },
+        "house_yogas": {
+          "total_yoga_score": -100.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": -100.0,
+          "active_yogas": [
+            {
+              "type": "Mah\u0101puru\u1e63a Yoga",
+              "role": "Owned by Kendra planet",
+              "planets": [
+                "Venus"
+              ],
+              "points": 0.0
+            },
+            {
+              "type": "Daridra Yoga",
+              "role": "Owned by participating planet",
+              "planets": [
+                "Venus",
+                "Saturn"
+              ],
+              "points": -100.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": -10.37,
+        "health_rating": "Mixed / Resilient",
+        "classical_tier": "Mi\u015bra",
+        "dominant_drivers": [
+          "Net Structural Yogas (-100.0)"
+        ]
+      }
+    },
+    "12": {
+      "house": 12,
+      "sign": "Gemini",
+      "lord": "Mercury",
+      "cusp_degree": 28.8932,
+      "cusp_longitude": 88.8932,
+      "occupants": [
+        "Sun",
+        "Mercury"
+      ],
+      "components": {
+        "basic_house_condition": {
+          "score": 80.53,
+          "planet_contributions": {
+            "Sun": -25.95,
+            "Moon": 123.24,
+            "Mars": 133.88,
+            "Mercury": 388.84,
+            "Jupiter": 0.0,
+            "Venus": 1.23,
+            "Saturn": -57.53
+          }
+        },
+        "lord_assessment": {
+          "lord": "Mercury",
+          "lord_final_score": 26.56,
+          "occupants_final_scores": {
+            "Sun": -71.87,
+            "Mercury": 26.56
+          },
+          "combined_score": -22.66
+        },
+        "relative_house_bhavat_bhavam": {
+          "score": 100.0,
+          "kk_group_points": 100.0,
+          "dusthana_raw_points": 0.0,
+          "benefic_mitigation_pct": 0.0,
+          "dusthana_mitigated_points": 0.0,
+          "active_planets_count": 1,
+          "relative_functional_natures": {
+            "Sun": -20.0,
+            "Moon": -100.0,
+            "Mars": -100.0,
+            "Mercury": 150.0,
+            "Jupiter": 50.0,
+            "Venus": 100.0,
+            "Saturn": 0.0
+          }
+        },
+        "house_walls_kartari": {
+          "is_walled": true,
+          "wall_type": "Mishra Kartari",
+          "score": 166.15,
+          "planet_before": "Mercury",
+          "planet_after": "Saturn"
+        },
+        "house_yogas": {
+          "total_yoga_score": 100.0,
+          "parivartana_score": 0.0,
+          "raja_yoga_score": 0.0,
+          "mahapurusha_score": 0.0,
+          "daridra_yoga_score": 100.0,
+          "active_yogas": [
+            {
+              "type": "Daridra Yoga",
+              "role": "Occupied house",
+              "planets": [
+                "Sun",
+                "Mercury"
+              ],
+              "points": 100.0
+            }
+          ]
+        }
+      },
+      "synthesis": {
+        "composite_score": 84.8,
+        "health_rating": "Flourishing / Fortified",
+        "classical_tier": "Pu\u1e63\u1e6da",
+        "dominant_drivers": [
+          "Significant aspectual support from Mercury on Cusp (+388.8)",
+          "Net Structural Yogas (+100.0)",
+          "Mishra Kartari (+166.2)"
+        ]
+      }
+    }
+  },
+  "summary_rankings": {
+    "houses_by_composite_score": [
+      10,
+      1,
+      7,
+      6,
+      12,
+      5,
+      8,
+      9,
+      3,
+      4,
+      11,
+      2
+    ],
+    "planets_by_final_score": [
+      "Saturn",
+      "Jupiter",
+      "Venus",
+      "Mercury",
+      "Mars",
+      "Moon",
+      "Sun"
+    ],
+    "top_flourishing_houses": [
+      10,
+      1,
+      7
+    ],
+    "most_challenged_houses": [
+      4,
+      11,
+      2
+    ],
+    "composite_mean_score": 62.08
+  }
+}
