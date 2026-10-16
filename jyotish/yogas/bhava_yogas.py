@@ -1,7 +1,7 @@
 """
 jyotish/yogas/bhava_yogas.py
-The 12 Bhava Good (Śubha) and Converse (Aśubha) Yogas.
-Scripture: Phaladeepika Ch. 6, Verses 44–69.
+The 24 Bhava Yogas — 12 Auspicious (Śubha) and 12 Converse (Aśubha) House Yogas.
+Scripture: Phaladeepika Ch. 6, Verses 44–70.
 """
 
 from typing import List, Dict, Any
@@ -10,16 +10,24 @@ from jyotish.yogas.models import (
 )
 from jyotish.yogas.breakers import (
     get_house_of_planet, get_sign_of_planet, get_house_rulers, get_planets_data,
-    get_lagna_sign, audit_combustion, audit_dusthana_placement,
-    OWN_SIGNS, EXALTATION_SIGNS, DEBILITATION_SIGNS
+    get_lagna_sign, get_aspect_score, _first_ruler,
+    audit_combustion, audit_shadbala_muscle, audit_neecha_bhanga,
+    resolve_yoga_score_and_status,
+    OWN_SIGNS, EXALTATION_SIGNS, DEBILITATION_SIGNS,
+    ASPECT_PALPABLE_THRESHOLD
 )
 
 KENDRA_TRIKONA_HOUSES = (1, 4, 5, 7, 9, 10)
+TRIKONA_HOUSES = (1, 5, 9)
 DUSTHANA_HOUSES = (6, 8, 12)
-BENEFICS = {"Jupiter", "Venus", "Moon", "Mercury"}
-MALEFICS = {"Saturn", "Mars", "Rahu", "Ketu", "Sun"}
+BENEFICS = ("Jupiter", "Venus", "Mercury")
+MALEFICS = ("Saturn", "Mars", "Rahu", "Ketu", "Sun")
 
-# The 12 Bhava definitions from Phaladeepika 6.44-69
+# The 24 Bhava definitions from Phaladeepika 6.44-70
+# Note on Houses 6, 8, 12 Inversion Paradox (Phaladeepika 6.50, 6.52, 6.56 vs 6.63, 6.65, 6.69):
+# - For Houses 1-5, 7, 9-11: Lord in Kendra/Trikona is Auspicious; Lord in Dusthana (6,8,12) is Converse (STAINED/RESCUED).
+# - For Houses 8 & 12: Lord in Kendra/Trikona forms Asura (6.52) / Musala (6.56) (Converse/Challenging — STAINED/RESCUED, never PURE!),
+#   whereas Lord in Dusthana (6,8,12) forms Sarala (6.65) / Vimala (6.69) (Auspicious Reversal — deduplicated with viparita.py).
 BHAVA_YOGA_CONFIGS = {
     1: {
         "good": {
@@ -114,11 +122,11 @@ BHAVA_YOGA_CONFIGS = {
         }
     },
     8: {
-        "good": {
+        "converse_kendra": {
             "id": "asura_yoga",
             "name": "Asura Yoga (The Titanic Ambition)",
-            "archetype": "Fierce Volatile Ambition: 8th House Lord fortified in Kendra/Trikoṇa; highly capable but ethically fierce and passionate.",
-            "effects": ["Titanic willpower, intense esoteric curiosity, sensual desires, and ruthless competitiveness in high-stakes arenas."]
+            "archetype": "Fierce Volatile Ambition (Converse 8th Bhava Yoga): 8th House Lord occupies a Kendra/Trikoṇa, injecting crisis-driven intensity and volatile ambition into central life pillars.",
+            "effects": ["Intense competitive drive, volatile transformations, and friction when pursuing unilateral agendas (Phaladeepika 6.52)."]
         }
     },
     9: {
@@ -164,18 +172,18 @@ BHAVA_YOGA_CONFIGS = {
         }
     },
     12: {
-        "good": {
+        "converse_kendra": {
             "id": "musala_yoga",
-            "name": "Musala Yoga (The Ascetic Wand)",
-            "archetype": "Righteous Expenditure: 12th House Lord fortified in Kendra/Trikoṇa, directing resources toward spiritual liberation and charities.",
-            "effects": ["Contentment in solitude, generous philanthropic donations, peaceful sleep, and spiritual liberation (Mokṣa)."]
+            "name": "Musala Yoga (Converse 12th Bhava Dissipation)",
+            "archetype": "Worldly Detachment & Hard-Won Wealth (Converse 12th Bhava Yoga): 12th House Lord occupies a Kendra/Trikoṇa, introducing expenditure pressure and material restlessness.",
+            "effects": ["Wealth acquired through heavy effort, high overhead expenses, and periodic detachment from worldly routines (Phaladeepika 6.56)."]
         }
     }
 }
 
 
 def detect_bhava_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
-    """Scans chart for the 12 Bhava Good (Śubha) and Converse (Aśubha) Yogas."""
+    """Scans chart for the Bhava Auspicious (Śubha) and Converse (Aśubha) Yogas."""
     detected: List[YogaInstance] = []
     lagna_sign = get_lagna_sign(chart)
     planets_data = get_planets_data(chart)
@@ -185,36 +193,54 @@ def detect_bhava_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
         return detected
 
     planet_houses = {p: get_house_of_planet(chart, p) for p in planets_data}
+    trikona_lords = {
+        _first_ruler(house_rulers, th)
+        for th in TRIKONA_HOUSES
+        if _first_ruler(house_rulers, th)
+    }
 
     for h_num in range(1, 13):
-        lord = house_rulers.get(h_num, [None])[0]
+        lord = _first_ruler(house_rulers, h_num)
         if not lord or lord not in planets_data:
             continue
 
         lord_h = planet_houses.get(lord, 0)
+        if lord_h <= 0:
+            continue
+
         lord_sign = get_sign_of_planet(chart, lord)
         is_exalted = (lord_sign == EXALTATION_SIGNS.get(lord))
         is_own = (lord_sign in OWN_SIGNS.get(lord, []))
         is_debilitated = (lord_sign == DEBILITATION_SIGNS.get(lord))
         is_in_kt = lord_h in KENDRA_TRIKONA_HOUSES
+        houses_involved = [h_num] if h_num == lord_h else [h_num, lord_h]
 
         config = BHAVA_YOGA_CONFIGS.get(h_num, {})
 
-        # 1. Evaluate Good (Śubha) Yoga
-        # Condition: Lord is in own sign/exaltation OR in Kendra/Trikoṇa, not debilitated
+        # 1. Evaluate Auspicious (Śubha) Bhava Yoga (Houses 1-7, 9-11)
         good_cfg = config.get("good")
         if good_cfg:
             if (is_exalted or is_own or is_in_kt) and not is_debilitated and lord_h not in DUSTHANA_HOUSES:
-                score = 82.0
+                base_score = 82.0
                 if is_exalted or is_own:
-                    score += 8.0
+                    base_score += 8.0
 
-                breakers = []
+                breakers: List[YogaBreakerDetail] = []
                 breakers.extend(audit_combustion([lord], chart))
-                for b in breakers:
-                    score -= b.penalty
+                sb_breakers, sb_positives = audit_shadbala_muscle([lord], chart)
+                breakers.extend(sb_breakers)
+
+                # For H6 (Astra Yoga), require own/exalted dignity or Trikona co-rulership for PURE
+                if h_num == 6 and not (is_exalted or is_own or lord in trikona_lords):
+                    breakers.append(YogaBreakerDetail(
+                        factor="6th House Martial Friction",
+                        culprit_planet=lord,
+                        description=f"6th Lord ({lord}) in Kendra/Trikona without own/exalted dignity brings competitive struggle alongside resilience.",
+                        penalty=15.0
+                    ))
+
+                score, status = resolve_yoga_score_and_status(base_score, breakers)
                 score = max(30.0, score)
-                status = YogaStatus.PURE if score >= 75.0 else YogaStatus.STAINED
 
                 detected.append(YogaInstance(
                     id=good_cfg["id"],
@@ -223,42 +249,107 @@ def detect_bhava_yogas(chart: Dict[str, Any]) -> List[YogaInstance]:
                     status=status,
                     plausibility_score=round(score, 1),
                     participating_planets=[lord],
-                    participating_houses=[h_num, lord_h],
+                    participating_houses=houses_involved,
                     scripture_ref=f"Phaladeepika 6.{43 + h_num}",
                     archetype=good_cfg["archetype"],
                     manifestation_effects=good_cfg["effects"],
                     positive_factors=[
                         f"Lord of H{h_num} ({lord}) occupies {'exalted' if is_exalted else 'own sign' if is_own else 'supportive Kendra/Trikoṇa'} House {lord_h} ({lord_sign})."
-                    ],
+                    ] + sb_positives,
                     breakers=breakers
                 ))
 
-        # 2. Evaluate Bad / Converse (Aśubha) Yoga (for houses 1-5, 7, 9-11)
+        # 2. Evaluate Converse 8th & 12th Kendra/Trikona Yogas: Asura (6.52) & Musala (6.56)
+        # Affliction Status Invariant: Asura & Musala are Converse Bhava Yogas (STAINED or RESCUED, never PURE!)
+        converse_kendra_cfg = config.get("converse_kendra")
+        if converse_kendra_cfg and h_num in (8, 12):
+            if (is_exalted or is_own or is_in_kt) and lord_h not in DUSTHANA_HOUSES:
+                is_mitigated = (is_exalted or is_own or lord in trikona_lords)
+                positive_factors: List[str] = []
+                breakers = [
+                    YogaBreakerDetail(
+                        factor=f"Dusthana H{h_num} Leakage into Kendra/Trikoṇa",
+                        culprit_planet=lord,
+                        description=f"Lord of Dusthana H{h_num} ({lord}) occupies House {lord_h} ({lord_sign}), injecting H{h_num} volatility or expenditure into angular/trinal pillars.",
+                        penalty=15.0 if is_mitigated else 25.0
+                    )
+                ]
+                if is_mitigated:
+                    status = YogaStatus.RESCUED
+                    score = 72.0
+                    positive_factors.append(
+                        f"Mitigated (Bhaṅga): {lord} is fortified by {'exaltation' if is_exalted else 'own sign' if is_own else 'Trikoṇa co-rulership'}, channeling H{h_num} intensity constructively."
+                    )
+                else:
+                    status = YogaStatus.STAINED
+                    score = 65.0
+
+                detected.append(YogaInstance(
+                    id=converse_kendra_cfg["id"],
+                    name=converse_kendra_cfg["name"],
+                    category=YogaCategory.BHAVA,
+                    status=status,
+                    plausibility_score=round(score, 1),
+                    participating_planets=[lord],
+                    participating_houses=houses_involved,
+                    scripture_ref=f"Phaladeepika 6.{44 + h_num}",
+                    archetype=converse_kendra_cfg["archetype"],
+                    manifestation_effects=converse_kendra_cfg["effects"],
+                    positive_factors=positive_factors,
+                    breakers=breakers
+                ))
+
+        # 3. Evaluate Converse (Aśubha) Dusthana Bhava Yogas (for houses 1-5, 7, 9-11)
         # Condition: Lord of house sits in a Dusthana (6, 8, 12)
         bad_cfg = config.get("bad")
         if bad_cfg and h_num not in (6, 8, 12):
             if lord_h in DUSTHANA_HOUSES:
-                score = 65.0
+                benefic_aspects = [
+                    bp for bp in BENEFICS
+                    if bp != lord and get_aspect_score(chart, bp, lord) >= ASPECT_PALPABLE_THRESHOLD
+                ]
+                is_nb_rescued = False
+                if is_debilitated:
+                    is_nb_rescued, _, _ = audit_neecha_bhanga(lord, chart)
+
+                is_mitigated = bool(is_exalted or is_own or is_nb_rescued or benefic_aspects)
+                positive_factors = []
+                if is_exalted or is_own:
+                    positive_factors.append(
+                        f"Mitigated (Bhaṅga): {lord} occupies {'exalted' if is_exalted else 'own'} sign ({lord_sign}) in House {lord_h}."
+                    )
+                if is_nb_rescued:
+                    positive_factors.append(
+                        f"Mitigated (Nīcabhaṅga): {lord}'s debilitation in House {lord_h} is cancelled."
+                    )
+                if benefic_aspects:
+                    positive_factors.append(
+                        f"Mitigated (Śubha Dṛṣṭi): {lord} receives palpable benefic aspect from {', '.join(benefic_aspects)}."
+                    )
+
+                score = 55.0 if is_mitigated else 65.0
+                status = YogaStatus.RESCUED if is_mitigated else YogaStatus.STAINED
+
                 breakers = [
                     YogaBreakerDetail(
                         factor="Dusthana Placement",
                         culprit_planet=lord,
                         description=f"Lord of H{h_num} ({lord}) sits in Dusthana House {lord_h}, creating friction and delays.",
-                        penalty=25.0
+                        penalty=15.0 if is_mitigated else 25.0
                     )
                 ]
                 detected.append(YogaInstance(
                     id=bad_cfg["id"],
                     name=bad_cfg["name"],
                     category=YogaCategory.BHAVA,
-                    status=YogaStatus.STAINED,
+                    status=status,
                     plausibility_score=round(score, 1),
                     participating_planets=[lord],
-                    participating_houses=[h_num, lord_h],
-                    scripture_ref=f"Phaladeepika 6.{55 + h_num}",
+                    participating_houses=houses_involved,
+                    scripture_ref=f"Phaladeepika 6.{57 + h_num}",
                     archetype=bad_cfg["archetype"],
                     manifestation_effects=bad_cfg["effects"],
-                    positive_factors=[],
+                    positive_factors=positive_factors,
                     breakers=breakers
                 ))
 

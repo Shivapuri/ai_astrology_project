@@ -384,7 +384,7 @@ def test_guru_ketu_jnana_yoga_detection():
     yogas = detect_chandal_yogas(chart)
     gk = next((y for y in yogas if y.id == "guru_ketu_jnana_yoga"), None)
     assert gk is not None, "Must detect Guru-Ketu Jnana Yoga when Jupiter and Ketu are in the same sign"
-    assert gk.status == YogaStatus.PURE, "Guru-Ketu is a spiritual jnana combination, not an asubha dosha"
+    assert gk.status == YogaStatus.RESCUED, "Guru-Ketu is a spiritualized nodal inversion, using RESCUED per YOGA_ARCHITECTURE.md"
 
 
 def test_shrapit_and_angaraka_yoga_detection():
@@ -915,7 +915,7 @@ def test_saturn_strictly_excluded_from_four_planet_digbala():
     # Chart with 4 non-Saturn planets in Digbala: Sun (H10), Mars (H10), Jupiter (H1), Mercury (H1)
     chart_pure_dig = make_mock_chart("Aries", {
         "Sun": {"sign": "Capricorn", "longitude": 285.0, "degree_0_to_30": 15.0},      # H10 Digbala
-        "Mars": {"sign": "Capricorn", "longitude": 280.0, "degree_0_to_30": 10.0},     # H10 Digbala
+        "Mars": {"sign": "Capricorn", "longitude": 272.0, "degree_0_to_30": 2.0},       # H10 Digbala (13° from Sun, free of combustion)
         "Jupiter": {"sign": "Aries", "longitude": 15.0, "degree_0_to_30": 15.0},       # H1 Digbala
         "Mercury": {"sign": "Aries", "longitude": 20.0, "degree_0_to_30": 20.0}        # H1 Digbala
     })
