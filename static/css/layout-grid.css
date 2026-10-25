@@ -283,6 +283,33 @@
             background: #fdf5ea;
             color: #b45309;
         }
+        .btn-export-dropdown {
+            background-color: #2563eb;
+            color: #ffffff;
+            border: none;
+            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px 14px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            box-shadow: 0 1px 2px rgba(37,99,235,0.2);
+            transition: background 0.15s ease, box-shadow 0.15s ease;
+            user-select: none;
+        }
+        .btn-export-dropdown:hover,
+        .menu-item-dropdown:hover .btn-export-dropdown,
+        .menu-item-dropdown.open .btn-export-dropdown {
+            background-color: #1d4ed8;
+            color: #ffffff;
+            box-shadow: 0 2px 4px rgba(29,78,216,0.3);
+        }
+        .export-dropdown-menu {
+            right: 0 !important;
+            left: auto !important;
+        }
         .menu-dropdown-menu .menu-row.active {
             font-weight: bold;
             color: #b45309;

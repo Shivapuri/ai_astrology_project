@@ -1,0 +1,92 @@
+    <div class="modal-overlay" id="exportTextModal" onclick="closeExportTextModal(event)" style="display: none;">
+        <div class="modal-card" style="max-width: 780px; max-height: 92vh; overflow-y: auto;" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Export Chart for AI (Text &amp; Markdown)</h2>
+                <button type="button" class="modal-close-btn" onclick="closeExportTextModal()">×</button>
+            </div>
+            
+            <div class="setting-section">
+                <h4>1. Export Preset &amp; Depth</h4>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-text-full').click()">
+                    <input type="radio" id="radio-text-full" name="textExportPreset" value="full" checked onchange="onTextExportPresetChange('full')">
+                    <label for="radio-text-full" style="margin-left: 8px;">
+                        <strong>Complete AI Interpretation Dossier (Recommended)</strong>
+                        <span class="setting-chip">Master Graha Diagnostics + Soul Karakas + D9/D10 Vargas + Campanus Cusps + Vimśottarī Dashas + Yogas + AI Prompt Framing</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-text-diag').click()">
+                    <input type="radio" id="radio-text-diag" name="textExportPreset" value="diagnostics_only" onchange="onTextExportPresetChange('diagnostics_only')">
+                    <label for="radio-text-diag" style="margin-left: 8px;">
+                        <strong>Master Graha Diagnostics Table Only</strong>
+                        <span class="setting-chip">Clean 9-column Markdown matrix for the Ascendant and all 9 Grahas (Dignities, Dispositors, Ṣaḍbala, Aspects, Nakshatras &amp; Avasthās)</span>
+                    </label>
+                </div>
+                
+                <div class="setting-option-card" onclick="document.getElementById('radio-text-summary').click()">
+                    <input type="radio" id="radio-text-summary" name="textExportPreset" value="summary" onchange="onTextExportPresetChange('summary')">
+                    <label for="radio-text-summary" style="margin-left: 8px;">
+                        <strong>Concise Astrological Summary</strong>
+                        <span class="setting-chip">Factual, lightweight summary of core placements, dignities, cusps, and active timing</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section" id="exportTextSectionsToggle">
+                <h4>2. Included Sections &amp; Technical Scope</h4>
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 6px;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer; grid-column: span 2; background: #eff6ff; padding: 6px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                        <input type="checkbox" id="expTextPromptHeader" checked onchange="updateTextExportContent()"> 
+                        <span><strong>AI Interpretation Directive &amp; Prompt Header</strong> (Primes AI with Ernst Wilhelm's Kala paradigm)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextMasterDiag" checked onchange="updateTextExportContent()"> 
+                        <span><strong>D1 Master Diagnostics</strong> (9 Columns)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextArchetypes" checked onchange="updateTextExportContent()"> 
+                        <span><strong>Chara Kāraka &amp; Master Lords</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextVargas" checked onchange="updateTextExportContent()"> 
+                        <span><strong>D9 Navāṃśa &amp; D10 Daśāṃśa</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextCusps" checked onchange="updateTextExportContent()"> 
+                        <span><strong>Campanus 3D House Cusps</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextDashas" checked onchange="updateTextExportContent()"> 
+                        <span><strong>Vimśottarī Daśā Timeline</strong></span>
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; cursor: pointer;">
+                        <input type="checkbox" id="expTextYogas" checked onchange="updateTextExportContent()"> 
+                        <span><strong>Classical Yogas &amp; Breakers</strong></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="setting-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <h4 style="margin: 0;">3. Live Markdown / Text Preview</h4>
+                    <div id="exportTextStats" style="font-size: 12px; color: #64748b; font-weight: 500;">
+                        Generating preview...
+                    </div>
+                </div>
+                <textarea id="exportTextPreview" style="width: 100%; height: 200px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 12px; line-height: 1.45; background: #faf8f5; border: 1px solid #d5c8b2; border-radius: 6px; padding: 10px; resize: vertical; color: #1e293b; box-sizing: border-box; white-space: pre;" spellcheck="false"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid #D5C8B2;">
+                <div style="font-size: 12px; color: #64748b;">
+                    Compatible with Claude, ChatGPT, Gemini, and local LLMs.
+                </div>
+                <div style="display: flex; gap: 8px; margin-left: auto;">
+                    <button type="button" onclick="closeExportTextModal()" style="background-color: #f1f5f9; color: #475569; padding: 8px 16px; border-radius: 6px; font-weight: 600; border: 1px solid #cbd5e1; cursor: pointer; font-size: 12px;">Cancel</button>
+                    <button type="button" onclick="downloadTextExport('md')" style="background-color: #475569; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;" title="Download as GitHub Flavored Markdown file">Download .md</button>
+                    <button type="button" onclick="downloadTextExport('txt')" style="background-color: #475569; color: white; padding: 8px 14px; border-radius: 6px; font-weight: 600; border: none; cursor: pointer; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;" title="Download as plain text file">Download .txt</button>
+                    <button type="button" id="btnCopyExportText" onclick="copyTextToClipboard()" style="background-color: #2563eb; color: white; padding: 8px 18px; border-radius: 6px; font-weight: bold; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(37,99,235,0.2); font-size: 12px;">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+    </div>

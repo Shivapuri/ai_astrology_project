@@ -42,6 +42,9 @@
                         <div class="menu-row" onclick="openExportModal()">
                             <span>Export PDF Master Plan...</span>
                         </div>
+                        <div class="menu-row" onclick="openExportTextModal()">
+                            <span>Export Text (for AI)...</span>
+                        </div>
                         <div class="menu-separator"></div>
                         <div class="menu-row" onclick="openShodasaVargasModal()">
                             <span>ShodasaVargas (16-in-1)...</span>
@@ -269,8 +272,18 @@
             <button type="button" id="btnOpenTransit" onclick="openFloatingTransit()" style="background-color: #d35400; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(211,84,0,0.2);" title="Open Animated Transits (Gochara Bi-Wheel)">
                 🪐 Transits
             </button>
-            <button type="button" id="btnExportPdf" onclick="openExportModal()" style="background-color: #2563eb; color: white; border: none; font-weight: 600; border-radius: 6px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 5px; font-size: 12px; box-shadow: 0 1px 2px rgba(37,99,235,0.2);" title="Export Astrological Master Plan (PDF)">
-                Export PDF
-            </button>
+            <div class="menu-item-dropdown" id="exportMenuDropdown">
+                <button type="button" id="btnExportMenu" class="btn-export-dropdown" title="Export Chart Options">
+                    Export ▾
+                </button>
+                <div class="menu-dropdown-menu export-dropdown-menu" style="right: 0; left: auto; min-width: 220px;">
+                    <div class="menu-row" id="btnExportPdf" onclick="openExportModal()">
+                        <span>Export PDF Master Plan...</span>
+                    </div>
+                    <div class="menu-row" id="btnExportText" onclick="openExportTextModal()">
+                        <span>Export Text (for AI)...</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>

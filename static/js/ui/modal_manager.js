@@ -22,7 +22,7 @@ class ModalManager {
                 } else {
                     // Check if any modal is currently visible
                     const modals = [
-                        'settingsModal', 'exportPdfModal', 'maximizeModal',
+                        'settingsModal', 'exportPdfModal', 'exportTextModal', 'maximizeModal',
                         'widgetMaximizeModal', 'kalaMenuModal', 'shodasaVargasModal',
                         'openChartModal', 'addPersonModal'
                     ];
@@ -71,7 +71,7 @@ class ModalManager {
 
     closeAllModals() {
         const modals = [
-            'settingsModal', 'exportPdfModal', 'maximizeModal',
+            'settingsModal', 'exportPdfModal', 'exportTextModal', 'maximizeModal',
             'widgetMaximizeModal', 'kalaMenuModal', 'shodasaVargasModal',
             'openChartModal', 'addPersonModal'
         ];

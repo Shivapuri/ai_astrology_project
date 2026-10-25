@@ -11,6 +11,7 @@ Scopes supported:
 - 'backend': Jyotish engines + Flask application server and blueprints (tests excluded)
 - 'frontend': Split.js workspace layout, CSS design tokens, HTML partials, and JS widgets
 - 'report': Synthesis report desk (Polarity core, 4-step Nakshatra scoring, and interactive cockpit)
+- 'drekkana': Comprehensive Drekkāṇa (D3) Varga package (backend math & formulas + frontend display & UI widgets)
 - 'split': Generates both frontend and backend exports in a single command
 """
 
@@ -24,12 +25,14 @@ DEFAULT_FRONTEND_OUTPUT_FILE = "codebase_export_frontend.txt"
 DEFAULT_BACKEND_OUTPUT_FILE = "codebase_export_backend.txt"
 DEFAULT_REPORT_OUTPUT_FILE = "codebase_export_report.txt"
 DEFAULT_JYOTISH_OUTPUT_FILE = "codebase_export_jyotish.txt"
+DEFAULT_DREKKANA_OUTPUT_FILE = "codebase_export_drekkana.txt"
 
 DEFAULT_MAX_SIZE_MB = 10.0
 DEFAULT_FRONTEND_MAX_SIZE_MB = 1.2
 DEFAULT_BACKEND_MAX_SIZE_MB = 3.0
 DEFAULT_REPORT_MAX_SIZE_MB = 1.0
 DEFAULT_JYOTISH_MAX_SIZE_MB = 3.0
+DEFAULT_DREKKANA_MAX_SIZE_MB = 1.5
 
 EXCLUDED_DIRS = {
     ".git",
@@ -65,6 +68,7 @@ EXCLUDED_FILES = {
     "codebase_export_backend.txt",
     "codebase_export_report.txt",
     "codebase_export_jyotish.txt",
+    "codebase_export_drekkana.txt",
     "commits_export.txt",
     "commits_export.md",
     "package-lock.json",
@@ -359,6 +363,97 @@ def get_jyotish_sort_key(rel_path: str):
     if rel_path in JYOTISH_SORT_KEY_MAP:
         return JYOTISH_SORT_KEY_MAP[rel_path]
     return (99, 99, rel_path)
+
+
+# 8 Pedagogical Chapters for Drekkāṇa (D3) Varga Export (Backend Math & Frontend UI)
+DREKKANA_SECTIONS = [
+    (
+        "1. Core Astronomical Math & Divisional Varga Architecture",
+        [
+            "jyotish/baseline_vargas.md",
+            "jyotish/baseline_tables.py",
+            "jyotish/baseline_math.py",
+            "jyotish/baseline.py",
+            "jyotish/pipeline.py",
+        ],
+    ),
+    (
+        "2. Planetary Relationships & Aspects (Maitri & Drishti in D3)",
+        [
+            "jyotish/relationships/relationships.md",
+            "jyotish/relationships/relationships.py",
+            "jyotish/aspects/aspects.md",
+            "jyotish/aspects/aspects.py",
+        ],
+    ),
+    (
+        "3. Decanate Strengths & Divisional Weights (Drekkana Bala & Vimshopaka)",
+        [
+            "jyotish/shadbala/shadbala.md",
+            "jyotish/shadbala/shadbala.py",
+            "jyotish/vimshopaka/vimshopaka.md",
+            "jyotish/vimshopaka/vimshopaka.py",
+        ],
+    ),
+    (
+        "4. Planetary Conditions & Conjunction Separation in D3 (Avasthas)",
+        [
+            "jyotish/avasthas/quantitative.md",
+            "jyotish/avasthas/quantitative.py",
+        ],
+    ),
+    (
+        "5. The Three Master Anchors & Drekkana-Isha Evaluation",
+        [
+            "jyotish/planetary_evaluation/planetary_evaluation.md",
+            "jyotish/planetary_evaluation/planetary_evaluation.py",
+        ],
+    ),
+    (
+        "6. Dynamic Vector Chart Rendering (North, South & Circular Decans)",
+        [
+            "jyotish/draw_chart.py",
+        ],
+    ),
+    (
+        "7. Frontend UI Partials, Modals & Markup Blueprints",
+        [
+            "templates/widget_templates/tmpl_chart.html",
+            "templates/widget_templates/tmpl_dignities.html",
+            "templates/widget_templates/tmpl_planetary_evaluation.html",
+            "templates/widget_templates/tmpl_master_diagnostic.html",
+            "templates/widget_templates/tmpl_vimshopaka.html",
+            "templates/widget_templates/tmpl_shadbala_table.html",
+            "templates/partials/modals/kala_menu_modal.html",
+        ],
+    ),
+    (
+        "8. Frontend Widget Controllers & Reactive Presentation",
+        [
+            "static/js/app.js",
+            "static/js/ui/chart_interactions.js",
+            "static/js/widgets/varga_dignities.js",
+            "static/js/widgets/planetary_evaluation.js",
+            "static/js/widgets/master_diagnostic.js",
+            "static/js/widgets/vimshopaka.js",
+            "static/js/widgets/shadbala_widget.js",
+        ],
+    ),
+]
+
+DREKKANA_FILE_SECTION_MAP = {}
+DREKKANA_SORT_KEY_MAP = {}
+for _sec_idx, (_sec_title, _flist) in enumerate(DREKKANA_SECTIONS, 1):
+    for _f_idx, _fpath in enumerate(_flist, 1):
+        DREKKANA_FILE_SECTION_MAP[_fpath] = _sec_title
+        DREKKANA_SORT_KEY_MAP[_fpath] = (_sec_idx, _f_idx)
+
+
+def get_drekkana_sort_key(rel_path: str):
+    if rel_path in DREKKANA_SORT_KEY_MAP:
+        return DREKKANA_SORT_KEY_MAP[rel_path]
+    return (99, 99, rel_path)
+
 
 
 FILE_METADATA_REGISTRY = {
@@ -851,6 +946,85 @@ FILE_METADATA_REGISTRY = {
         "Ground Truth Baselines",
         "Ground-truth test fixture for Angelina Jolie chart subvalues and drishti",
     ),
+    # Foundational Divisional Math & Baseline Architecture
+    "jyotish/baseline_vargas.md": (
+        "Varga Specification",
+        "Foundational rules for the 16 divisional charts (Ṣoḍaśavarga), trinal 10° Drekkāṇa logic, whole sign houses, and display entity decoupling",
+    ),
+    "jyotish/baseline_tables.py": (
+        "Astronomical Constants",
+        "Zodiac signs, natural lords, natural friendship matrices, and vargas list",
+    ),
+    "jyotish/baseline_math.py": (
+        "Core Math Engine",
+        "Pure harmonic coordinate math (calculate_varga_longitude for D3) and decan ruler lookup (get_varga_ruler_info)",
+    ),
+    "jyotish/baseline.py": (
+        "Core Math Engine",
+        "Central baseline pipeline calculating D3 harmonic coordinates for Grahas, Lagna, MC, and cusps",
+    ),
+    "jyotish/pipeline.py": (
+        "Calculation Orchestrator",
+        "Constructs D3 Whole Sign Houses (Rāśi Bhāva), Panchadha Maitri compound dignities, Graha & Rasi aspects, and avasthas",
+    ),
+    # Drekkana & Varga Frontend Templates
+    "templates/widget_templates/tmpl_chart.html": (
+        "UI Template: Chart",
+        "Chart widget template featuring D3 Drekkāṇa selector, outer bi-wheel dropdown, and house category highlights",
+    ),
+    "templates/widget_templates/tmpl_dignities.html": (
+        "UI Template: Dignities",
+        "Varga Dignities Matrix template displaying Ṣaḍvarga (with D3 weight 1/8) and Ṣoḍaśavarga grids",
+    ),
+    "templates/widget_templates/tmpl_planetary_evaluation.html": (
+        "UI Template: Evaluation",
+        "Planetary Evaluation blueprint housing the 3 Master Anchors of Destiny (Lagna, Navamsha, Drekkana Lords)",
+    ),
+    "templates/widget_templates/tmpl_master_diagnostic.html": (
+        "UI Template: Diagnostics",
+        "Master Diagnostic 9-column grid layout displaying Master Lords and varga coordinates",
+    ),
+    "templates/widget_templates/tmpl_vimshopaka.html": (
+        "UI Template: Vimshopaka",
+        "Vimshopaka Bala 20-point harmonic strength widget template displaying D3 weights",
+    ),
+    "templates/widget_templates/tmpl_shadbala_table.html": (
+        "UI Template: Shadbala",
+        "Complete Shadbala breakdown template displaying Drekkana Bala Virūpas and Saptavarga scores",
+    ),
+    "templates/partials/modals/kala_menu_modal.html": (
+        "UI Modal: Kala Menu",
+        "Context menu modal providing 1-click assignment of D3 Drekkana chart to any grid cell",
+    ),
+    # Drekkana & Varga Frontend Controllers
+    "static/js/app.js": (
+        "Frontend Controller",
+        "Core workspace controller handling widget assignment, assignKalaChart('D3'), and dynamic chart SVG updating",
+    ),
+    "static/js/ui/chart_interactions.js": (
+        "Frontend Interactions",
+        "Chart interaction handlers, tooltips, and varga catalog metadata for D3 Drekkana",
+    ),
+    "static/js/widgets/varga_dignities.js": (
+        "Frontend Widget",
+        "Varga Dignities Matrix controller rendering the D3 column with sign glyph, compound score, and dispositor rescues",
+    ),
+    "static/js/widgets/planetary_evaluation.js": (
+        "Frontend Widget",
+        "Planetary Evaluation controller rendering the Drekkana Lord (Drekkana-Isha) worldly courage card",
+    ),
+    "static/js/widgets/master_diagnostic.js": (
+        "Frontend Widget",
+        "Master Diagnostic controller rendering 9-column metrics, including the 3 Master Lords and D3 coordinates",
+    ),
+    "static/js/widgets/vimshopaka.js": (
+        "Frontend Widget",
+        "Vimshopaka Bala controller computing and rendering 20-point divisional varga strengths including D3",
+    ),
+    "static/js/widgets/shadbala_widget.js": (
+        "Frontend Widget",
+        "Shadbala controller rendering Sthana Bala components including the 15 Virūpas Drekkana Bala row",
+    ),
 }
 
 
@@ -1014,6 +1188,15 @@ def collect_codebase_files(project_root: str, scope: str = "all", include_tests:
         ]
         return [f for f in report_files if os.path.exists(os.path.join(project_root, f))]
 
+    if scope == "drekkana":
+        drekkana_files = []
+        for _sec_title, _flist in DREKKANA_SECTIONS:
+            for _fpath in _flist:
+                if os.path.exists(os.path.join(project_root, _fpath)):
+                    drekkana_files.append(_fpath)
+        drekkana_files.sort(key=get_drekkana_sort_key)
+        return drekkana_files
+
     files_to_export = []
 
     for root, dirs, files in os.walk(project_root):
@@ -1088,6 +1271,7 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         "backend": "BACKEND CODEBASE EXPORT",
         "report": "REPORT CODEBASE EXPORT",
         "jyotish": "JYOTISH CALCULATION ENGINE EXPORT",
+        "drekkana": "DREKKĀṆA (D3) VARGA EVALUATION PACKAGE",
         "all": "CODEBASE EXPORT",
     }.get(scope, "CODEBASE EXPORT")
 
@@ -1125,6 +1309,81 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         header.append("12. **Astrological Synthesis Report Subsystem**: Polarity Core, 4-step Nakshatra scoring, Operational Axis, Macro Environmental balances, and Flowcharts.")
         header.append("13. **Scripture Databases & Native Management**: BPHS SQLite database, scripture translation tables, and chart storage.")
         header.append("14. **Publication-Grade PDF Exporter**: Publication-quality vector SVGs, A3 Master Plan, and A4 Dossier reporting.")
+        header.append("")
+    elif scope == "drekkana":
+        header.append("## 1. Executive Summary: Drekkāṇa (D3) Varga Judgment Protocol")
+        header.append("This specialized export aggregates everything required to calculate, evaluate, and visually judge")
+        header.append("the **Drekkāṇa (D3)** divisional harmonic chart in Astra, encompassing both backend computation and frontend presentation:")
+        header.append("")
+        header.append("### A. Astrological Nature & Classical Doctrine of Drekkāṇa (D3)")
+        header.append("- **Mathematical Definition**: The 3rd harmonic divisional chart. Each 30° zodiac sign (Rāśi) is divided into three equal 10° segments (*decanates*):")
+        header.append("  - **1st Drekkāṇa (0°00' – 10°00')**: Falls in the same sign (1st / self).")
+        header.append("  - **2nd Drekkāṇa (10°00' – 20°00')**: Falls in the 5th sign from it (trine / Dharma triangle).")
+        header.append("  - **3rd Drekkāṇa (20°00' – 30°00')**: Falls in the 9th sign from it (trine / Dharma triangle).")
+        header.append("- **Core Significations (3rd House / Parākrama Bhāva)**:")
+        header.append("  - **Courage & Willpower** (*Parākrama*): The inherent courage to act, physical initiative, boldness, and capacity to confront obstacles.")
+        header.append("  - **Physical Energy & Exertion**: Bodily prowess, stamina, manual skills, crafts, use of arms and implements.")
+        header.append("  - **Siblings & Comrades** (*Bhrātṛ*): Younger brothers and sisters, teammates, companions in effort.")
+        header.append("- **The Three Master Anchors of Destiny (Phaladīpikā 3.11)**:")
+        header.append("  1. **Lagna Lord (Lagne-isha)**: Rules the 1st house in D1 — governs physical body, vitality, outward personality.")
+        header.append("  2. **Navāṁśa Lord (Navāṁśa-isha)**: Rules the Navāṁśa sign of Lagna in D9 — governs spiritual destiny, inner dharma, marriage, fruition.")
+        header.append("  3. **Drekkāṇa Lord (Drekkāṇa-isha)**: Rules the Drekkāṇa sign of Lagna in D3 — governs **Worldly Courage, Decisive Action, Physical Power, and Endurance**.")
+        header.append("- **The 22nd Drekkāṇa (Khareśa / Khara-drekkāṇa)**:")
+        header.append("  - The 1st decanate of the 8th house (representing 8th house cusp decan). Its lord is a primary malefic / death-inflicting planet (*Māraka*), indicating bodily vulnerability, acute illness, accidents, or the nature of death.")
+        header.append("- **Drekkāṇa Bala in Ṣaḍbala (BPHS Ch. 27 & Phaladīpikā 4.3)**:")
+        header.append("  - Sthāna Bala (Positional Strength) awards 15 Virūpas based on planetary gender:")
+        header.append("    - **1st Segment (0°–10°)**: Male planets (**Sun, Mars, Jupiter**) receive 15 Virūpas.")
+        header.append("    - **2nd Segment (10°–20°)**: Neuter planets (**Mercury, Saturn**) receive 15 Virūpas.")
+        header.append("    - **3rd Segment (20°–30°)**: Female planets (**Moon, Venus**) receive 15 Virūpas.")
+        header.append("- **Viṁśopaka Bala (Divisional Harmonic Strength out of 20 Points)**:")
+        header.append("  - **Ṣaḍvarga (6 charts)**: D3 receives **4.0 points** (20% of total divisional strength).")
+        header.append("  - **Saptavarga (7 charts)**: D3 receives **3.0 points** (15% of total divisional strength).")
+        header.append("  - **Daśavarga (10 charts)**: D3 receives **1.5 points** (7.5% of total divisional strength).")
+        header.append("  - **Ṣoḍaśavarga (16 charts)**: D3 receives **1.0 point** (5.0% of total divisional strength).")
+        header.append("")
+        header.append("### B. Backend Calculation Engine Architecture (How D3 is Derived)")
+        header.append("1. **Pure Harmonic Coordinate Projection (`jyotish/baseline_math.py`, `jyotish/baseline.py`)**:")
+        header.append("   - `calculate_varga_longitude(longitude, 'D3')`: Multiplies the degree within the 10° segment by 3 to project a continuous harmonic position (0° to 30°) into the target trinal sign.")
+        header.append("   - Computes coordinates for all 7 classical grahas, Rahu, Ketu, Lagna, MC, and cusps.")
+        header.append("2. **Whole Sign House (Rāśi Bhāva) Scaffolding (`jyotish/pipeline.py`)**:")
+        header.append("   - Unlike D1 which uses 3D Campanus cusps, all divisional charts (including D3) use **Whole Sign Houses** anchored to the D3 Ascendant (`v_dict['lagna']['sign']`).")
+        header.append("   - Planets occupying the Ascendant sign become House 1 planets, the next sign becomes House 2, etc.")
+        header.append("3. **Compound Planetary Dignities (Pañcadhā Maitri in D3, `jyotish/pipeline.py`, `jyotish/relationships/`)**:")
+        header.append("   - Evaluates each planet's relationship with its D3 sign lord by combining natural friendship (*Naisargika Sambandha*) with temporary placement (*Tātkālika Sambandha* in D3).")
+        header.append("   - Classifies compound dignity into 7 classical grades: Exalted (Ucca), Moolatrikona, Own Sign (Svakṣetra), Great Friend (Adhi Mitra), Friend (Mitra), Neutral (Sama), Enemy (Śatru), Great Enemy (Adhi Śatru), Debilitated (Nīca).")
+        header.append("4. **Aspectual Rays in D3 (Graha & Rāśi Dṛṣṭi, `jyotish/aspects/`, `jyotish/pipeline.py`)**:")
+        header.append("   - Computes sign aspects (*Rāśi Dṛṣṭi*: movable aspect fixed except adjacent; fixed aspect movable except adjacent; dual aspect dual).")
+        header.append("   - Computes planetary ray aspects (*Graha Dṛṣṭi*: 7th house full aspect for all; special full aspects for Mars [4th/8th], Jupiter [5th/9th], Saturn [3rd/10th]).")
+        header.append("5. **Avasthas & Conjunction Separation (`jyotish/avasthas/quantitative.py`)**:")
+        header.append("   - In D3, planets closely conjunct in D1 frequently separate into different trinal signs. For example, Mercury separated from Sun in D3 sheds the -60.0 Virūpa combustion penalty, gaining back functional vitality.")
+        header.append("6. **Ṣaḍbala Drekkāṇa Bala (`jyotish/shadbala/shadbala.py`)**:")
+        header.append("   - Awarded dynamically (15 Virūpas) in Sthāna Bala based on gender and 10° decanate segment.")
+        header.append("   - Saptavarga Bala: Evaluates compound friendship in D3 against classical Virūpa weights (Moolatrikona 45, Svakṣetra 30, Mitra 15, Sama 7.5, Śatru 3.75, Adhi Śatru 1.875).")
+        header.append("7. **Master Anchor Evaluation (`jyotish/planetary_evaluation/planetary_evaluation.py`)**:")
+        header.append("   - Extracts the Drekkāṇa Lord (Drekkāṇa-isha) as the 3rd master pillar of destiny, scoring its inherent dignity, house position, and capacity for worldly courage.")
+        header.append("8. **Dynamic Vector SVG Generation (`jyotish/draw_chart.py`)**:")
+        header.append("   - Renders D3 charts in North Indian diamond format, South Indian fixed-sign box format, and Circular multi-ring charts (where D3 forms Ring 2 with interactive decanate glyphs and trine tooltips).")
+        header.append("")
+        header.append("### C. Frontend Presentation & Interactive Judgment UI (How D3 is Displayed)")
+        header.append("1. **Interactive Chart Viewport (`templates/widget_templates/tmpl_chart.html`, `static/js/app.js`)**:")
+        header.append("   - Varga dropdown select with `<option value=\"D3\">D3 - Drekkāṇa</option>`.")
+        header.append("   - 1-Click quick assignment via the Kala modal menu (`templates/partials/modals/kala_menu_modal.html`).")
+        header.append("   - Dynamic SVG rendering: North Indian diamond, South Indian box, Circular concentric ring, or Harmonic Bi-Wheel (coupling D1 root with D3 outer or vice-versa).")
+        header.append("   - Interactive house highlighting buttons: Kendra (1, 4, 7, 10), Trikona (1, 5, 9), Dusthana (6, 8, 12), Upachaya (3, 6, 10, 11).")
+        header.append("2. **Varga Dignities Matrix (`templates/widget_templates/tmpl_dignities.html`, `static/js/widgets/varga_dignities.js`)**:")
+        header.append("   - Displays D3 as a primary column in both the Ṣaḍvarga view (weight 1, divisor 8) and the Ṣoḍaśavarga view (weight 1, divisor 16).")
+        header.append("   - Renders sign glyph, exact compound score (0 to 100), color-coded tier (green exalted down to red debilitated), dispositor rescue tags, and relationship tooltips.")
+        header.append("3. **Planetary Evaluation Cockpit (`templates/widget_templates/tmpl_planetary_evaluation.html`, `static/js/widgets/planetary_evaluation.js`)**:")
+        header.append("   - Prominently showcases the **'Drekkana Lord (D3) — Worldly Courage'** anchor card.")
+        header.append("   - Shows the ruler's sign, house in D3, compound dignity, and vitality evaluation badge.")
+        header.append("4. **Master Diagnostic Table (`templates/widget_templates/tmpl_master_diagnostic.html`, `static/js/widgets/master_diagnostic.js`)**:")
+        header.append("   - Column 1 (Graha & Kāraka): Identifies the Drekkāṇa Lord alongside the Lagna and Navāṁśa lords.")
+        header.append("   - Tabulates divisional coordinates and dignity status across vargas.")
+        header.append("5. **Ṣaḍbala Breakdown Widget (`templates/widget_templates/tmpl_shadbala_table.html`, `static/js/widgets/shadbala_widget.js`)**:")
+        header.append("   - Displays the dedicated 'Drekkana Bala' row in the Sthāna Bala breakdown, showing the 15 Virūpa awards.")
+        header.append("   - Details Saptavarga Bala contribution.")
+        header.append("6. **Viṁśopaka Bala Widget (`templates/widget_templates/tmpl_vimshopaka.html`, `static/js/widgets/vimshopaka.js`)**:")
+        header.append("   - Displays 20-point harmonic score breakdown showing D3 contribution across Ṣaḍvarga, Saptavarga, Daśavarga, and Ṣoḍaśavarga.")
         header.append("")
     elif scope == "report":
         header.append("## 1. Executive Summary: Astrological Synthesis Report Subsystem")
@@ -1192,12 +1451,14 @@ def generate_executive_header(manifest, project_root, scope: str = "all"):
         header.append("")
 
     header.append("## 4. Codebase Table of Contents / File Manifest")
-    if scope == "jyotish":
+    if scope in ("jyotish", "drekkana"):
+        sec_map = JYOTISH_FILE_SECTION_MAP if scope == "jyotish" else DREKKANA_FILE_SECTION_MAP
+        default_chap = "General Jyotish" if scope == "jyotish" else "General Drekkana"
         header.append("| # | Chapter | Subsystem | Path | Lines | Size (KB) | Role & Description |")
         header.append("|---|---|---|---|---:|---:|---|")
         for i, item in enumerate(manifest, 1):
             rel = item["rel_path"]
-            chapter = JYOTISH_FILE_SECTION_MAP.get(rel, "General Jyotish")
+            chapter = sec_map.get(rel, default_chap)
             subsystem = item["subsystem"]
             lines = item["lines"]
             size_kb = item["bytes"] / 1024
@@ -1371,6 +1632,7 @@ def export_codebase(
     - 'backend': Jyotish math + Flask REST API & blueprints
     - 'frontend': UI templates, stylesheets, and widget controllers
     - 'report': Astrological synthesis report subsystem
+    - 'drekkana': Comprehensive Drekkāṇa (D3) Varga package (backend math & formulas + frontend display & UI widgets)
     - 'split': generates both frontend and backend exports in a single run
     """
     if project_root is None:
@@ -1420,6 +1682,8 @@ def export_codebase(
             output_file = DEFAULT_REPORT_OUTPUT_FILE
         elif scope == "jyotish":
             output_file = DEFAULT_JYOTISH_OUTPUT_FILE
+        elif scope == "drekkana":
+            output_file = DEFAULT_DREKKANA_OUTPUT_FILE
         else:
             output_file = DEFAULT_OUTPUT_FILE
 
@@ -1432,6 +1696,8 @@ def export_codebase(
             max_size_mb = DEFAULT_REPORT_MAX_SIZE_MB
         elif scope == "jyotish":
             max_size_mb = DEFAULT_JYOTISH_MAX_SIZE_MB
+        elif scope == "drekkana":
+            max_size_mb = DEFAULT_DREKKANA_MAX_SIZE_MB
         else:
             max_size_mb = DEFAULT_MAX_SIZE_MB
 
@@ -1481,9 +1747,11 @@ def export_codebase(
             size_kb = item["bytes"] / 1024
             desc = item["description"]
 
-            # Section header in jyotish scope
-            if scope == "jyotish":
-                sec_title = JYOTISH_FILE_SECTION_MAP.get(rel, "15. Additional Jyotish Modules")
+            # Section header in jyotish or drekkana scope
+            if scope in ("jyotish", "drekkana"):
+                sec_map = JYOTISH_FILE_SECTION_MAP if scope == "jyotish" else DREKKANA_FILE_SECTION_MAP
+                default_sec = "15. Additional Jyotish Modules" if scope == "jyotish" else "9. Additional Drekkana Modules"
+                sec_title = sec_map.get(rel, default_sec)
                 if sec_title != last_section:
                     last_section = sec_title
                     out.write("\n" + "#" * 80 + "\n")
@@ -1535,20 +1803,20 @@ def main():
         "-o",
         "--output",
         default=None,
-        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt, codebase_export_report.txt, codebase_export_jyotish.txt)",
+        help="Target output file name (defaults: codebase_export.txt, codebase_export_frontend.txt, codebase_export_backend.txt, codebase_export_report.txt, codebase_export_jyotish.txt, codebase_export_drekkana.txt)",
     )
     parser.add_argument(
         "-m",
         "--max-size-mb",
         type=float,
         default=None,
-        help="Maximum allowable output size in megabytes (defaults: 2.8 for all, 1.0 for frontend, 1.6 for backend, 0.5 for report, 2.0 for jyotish)",
+        help="Maximum allowable output size in megabytes (defaults: 10.0 for all, 1.2 for frontend, 3.0 for backend, 1.0 for report, 3.0 for jyotish, 1.5 for drekkana)",
     )
     parser.add_argument(
         "--scope",
-        choices=["all", "frontend", "backend", "report", "jyotish", "split"],
+        choices=["all", "frontend", "backend", "report", "jyotish", "drekkana", "split"],
         default="all",
-        help="Subsystem scope to export: 'all' (unified), 'jyotish' (pure calculation engine), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), 'report' (synthesis report), or 'split' (both files)",
+        help="Subsystem scope to export: 'all' (unified), 'jyotish' (pure calculation engine), 'frontend' (UI/templates/styles), 'backend' (math/API/engines), 'report' (synthesis report), 'drekkana' (D3 calculation & display package), or 'split' (both files)",
     )
     parser.add_argument(
         "--split",

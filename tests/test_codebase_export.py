@@ -9,6 +9,8 @@ from scripts.export_codebase import (
     DEFAULT_REPORT_MAX_SIZE_MB,
     DEFAULT_JYOTISH_OUTPUT_FILE,
     DEFAULT_JYOTISH_MAX_SIZE_MB,
+    DEFAULT_DREKKANA_OUTPUT_FILE,
+    DEFAULT_DREKKANA_MAX_SIZE_MB,
 )
 
 def test_collect_codebase_files():
@@ -203,3 +205,61 @@ def test_export_jyotish_scope(tmp_path):
     assert "\nFILE: jyotish/shadbala/shadbala.py\n" in content
     assert "\nFILE: app.py\n" not in content
     assert "\nFILE: templates/index.html\n" not in content
+
+
+def test_collect_codebase_files_drekkana_scope():
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    drekkana_files = collect_codebase_files(project_root, scope="drekkana")
+
+    assert len(drekkana_files) == 32, f"Expected 32 files for Drekkana scope, got {len(drekkana_files)}"
+    # Core backend math
+    assert "jyotish/baseline_vargas.md" in drekkana_files
+    assert "jyotish/baseline_math.py" in drekkana_files
+    assert "jyotish/baseline.py" in drekkana_files
+    assert "jyotish/pipeline.py" in drekkana_files
+    assert "jyotish/shadbala/shadbala.py" in drekkana_files
+    assert "jyotish/vimshopaka/vimshopaka.py" in drekkana_files
+    assert "jyotish/planetary_evaluation/planetary_evaluation.py" in drekkana_files
+    assert "jyotish/draw_chart.py" in drekkana_files
+    # Frontend templates & controllers
+    assert "templates/widget_templates/tmpl_chart.html" in drekkana_files
+    assert "templates/widget_templates/tmpl_dignities.html" in drekkana_files
+    assert "templates/widget_templates/tmpl_planetary_evaluation.html" in drekkana_files
+    assert "static/js/widgets/varga_dignities.js" in drekkana_files
+    assert "static/js/widgets/planetary_evaluation.js" in drekkana_files
+    assert "static/js/widgets/master_diagnostic.js" in drekkana_files
+    assert "static/js/widgets/shadbala_widget.js" in drekkana_files
+    # Excluded files
+    assert "jyotish/pdf_exporter.py" not in drekkana_files
+    assert "jyotish/bphs_db.py" not in drekkana_files
+
+
+def test_export_drekkana_scope(tmp_path):
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    drekkana_out = str(tmp_path / "drekkana_export.txt")
+
+    res = export_codebase(
+        output_file=drekkana_out,
+        max_size_mb=DEFAULT_DREKKANA_MAX_SIZE_MB,
+        project_root=project_root,
+        scope="drekkana",
+    )
+
+    assert os.path.exists(drekkana_out)
+    assert res["total_bytes"] <= DEFAULT_DREKKANA_MAX_SIZE_MB * 1024 * 1024
+    assert res["files_count"] == 32
+
+    with open(drekkana_out, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    assert "DREKKĀṆA (D3) VARGA EVALUATION PACKAGE" in content
+    assert "Phaladīpikā 3.11" in content
+    assert "Three Master Anchors of Destiny" in content
+    assert "Whole Sign House (Rāśi Bhāva) Scaffolding" in content
+    assert "### CHAPTER: 1. CORE ASTRONOMICAL MATH & DIVISIONAL VARGA ARCHITECTURE" in content
+    assert "### CHAPTER: 8. FRONTEND WIDGET CONTROLLERS & REACTIVE PRESENTATION" in content
+    assert "\nFILE: jyotish/baseline_math.py\n" in content
+    assert "\nFILE: static/js/widgets/varga_dignities.js\n" in content
+    assert "\nFILE: templates/widget_templates/tmpl_chart.html\n" in content
+    assert "\nFILE: jyotish/pdf_exporter.py\n" not in content
+

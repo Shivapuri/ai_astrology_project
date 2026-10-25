@@ -6,6 +6,7 @@ from jyotish import native_manager
 from jyotish import generate_jyotish
 from jyotish import draw_chart
 from jyotish import pdf_exporter
+from jyotish import text_exporter
 import geonamescache
 from timezonefinder import TimezoneFinder
 from datetime import datetime
@@ -562,6 +563,38 @@ def export_preview():
 
     html = pdf_exporter.generate_report_html(chart_data, options)
     return html, 200, {'Content-Type': 'text/html; charset=utf-8'}
+
+@app.route('/api/export_text', methods=['POST'])
+def export_text():
+    req_data = request.json or {}
+    native_id = req_data.get('native_id')
+    chart_data = req_data.get('chart_data')
+    options = req_data.get('options', {})
+
+    if not chart_data:
+        if not native_id:
+            return jsonify({"error": "No chart data or native_id provided"}), 400
+        native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+        if not native:
+            return jsonify({"error": "Native not found"}), 404
+        d10_mode = options.get('d10_mode', req_data.get('d10_mode', 'reverse'))
+        d24_mode = options.get('d24_mode', req_data.get('d24_mode', 'reverse'))
+        nakshatra_system = options.get('nakshatra_system', req_data.get('nakshatra_system', 'ERNST_DHRUVA'))
+        debilitation_mode = options.get('debilitation_mode', req_data.get('debilitation_mode', 'kala_degree'))
+        chart_data = compute_chart_data(native, d10_mode=d10_mode, d24_mode=d24_mode, nakshatra_system=nakshatra_system, debilitation_mode=debilitation_mode)
+
+    name = chart_data.get('subject_info', {}).get('name', 'Chart')
+    safe_name = "".join(c for c in name if c.isalnum() or c in (' ', '_', '-')).rstrip().replace(' ', '_')
+
+    try:
+        markdown_text = text_exporter.generate_chart_ai_markdown(chart_data, options)
+        return jsonify({
+            "text": markdown_text,
+            "filename": f"{safe_name}_Astra_Chart_AI_Prompt.md",
+            "subject_name": name
+        })
+    except Exception as e:
+        return jsonify({"error": f"Failed to generate text export: {str(e)}"}), 500
 
 @app.route('/api/natives')
 def get_natives():
