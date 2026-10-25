@@ -1172,7 +1172,45 @@
         }
     });
 
+    function openFloatingNatalChart(varga = 'D1', style = 'north') {
+        const modal = document.getElementById('widgetMaximizeModal');
+        const card = document.getElementById('widgetMaximizeCard');
+        const titleEl = document.getElementById('widgetMaximizeModalTitle');
+        const container = document.getElementById('widgetMaximizeContainer');
+        if (!modal || !titleEl || !container) return;
+
+        resetFloatingWindowPosition();
+        if (card) {
+            const w = Math.min(1050, window.innerWidth - 40);
+            const h = Math.min(860, window.innerHeight - 60);
+            card.style.width = w + 'px';
+            card.style.height = h + 'px';
+            card.style.left = Math.max(20, Math.round((window.innerWidth - w) / 2)) + 'px';
+            card.style.top = Math.max(30, Math.round((window.innerHeight - h) / 2)) + 'px';
+        }
+
+        titleEl.textContent = '⌖ Natal Chart (' + varga + ')';
+        modal.style.display = 'block';
+
+        const tmpl = document.getElementById('tmpl-chart');
+        if (tmpl) {
+            container.innerHTML = tmpl.innerHTML;
+            container.dataset.widget = 'chart';
+            const vSel = container.querySelector('.varga-select');
+            if (vSel) vSel.value = varga;
+            const btn = container.querySelector('.btn-' + style);
+            if (btn && typeof window.switchWidgetChartType === 'function') {
+                window.switchWidgetChartType(btn, style);
+            } else if (typeof window.updateWidget === 'function') {
+                window.updateWidget(container);
+            }
+        }
+
+        setActiveFloatingNav('nav-btn-chart');
+    }
+
     // Expose functions globally
+    window.openFloatingNatalChart = openFloatingNatalChart;
     window.openShodasaVargasModal = openShodasaVargasModal;
     window.closeShodasaVargasModal = closeShodasaVargasModal;
     window.switchShodasaStyle = switchShodasaStyle;

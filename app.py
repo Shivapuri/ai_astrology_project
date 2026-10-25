@@ -2,24 +2,24 @@ from flask import Flask, render_template, request, jsonify, send_file, Response
 import os
 import sys
 import io
+import re
+import json
+from datetime import datetime
+from typing import Tuple, Dict, Any
+import pytz
+import geonamescache
+from timezonefinder import TimezoneFinder
 from jyotish import native_manager
 from jyotish import generate_jyotish
 from jyotish import draw_chart
 from jyotish import pdf_exporter
 from jyotish import text_exporter
-import geonamescache
-from timezonefinder import TimezoneFinder
-from datetime import datetime
-from typing import Tuple
-import pytz
 
 gc = geonamescache.GeonamesCache()
 tf = TimezoneFinder()
 
 app = Flask(__name__)
 CHARTS_FILE = os.path.join(os.path.dirname(__file__), "database", "Charts.jsonl")
-
-import json
 
 
 def _gregorian_to_jd(year: int, month: int, day: int, hour_fraction: float) -> float:
@@ -46,6 +46,8 @@ def _jd_to_gregorian(jd: float) -> Tuple[int, int, int, float]:
     year = c - 4716 if month > 2 else c - 4715
     return year, month, day, f * 24.0
 
+
+_NATAL_CHART_CACHE: Dict[Any, Any] = {}
 
 @app.route('/')
 def index():
@@ -464,12 +466,18 @@ def get_chart_transit(native_id):
     mode = request.args.get('mode', 'symbol')
     root = request.args.get('root', 'Lagna')
     show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
+    aspect_orb_degrees = request.args.get('orb', default=3.3333, type=float)
 
-    natal_chart = compute_chart_data(
-        native,
-        nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
-    )
+    cache_key = (native_id, native.get('date'), native.get('time'), native.get('lat'), native.get('lon'), native.get('tz'), nakshatra_system, debilitation_mode)
+    if cache_key in _NATAL_CHART_CACHE:
+        natal_chart = _NATAL_CHART_CACHE[cache_key]
+    else:
+        natal_chart = compute_chart_data(
+            native,
+            nakshatra_system=nakshatra_system,
+            debilitation_mode=debilitation_mode
+        )
+        _NATAL_CHART_CACHE[cache_key] = natal_chart
 
     from jyotish.transits.transits import calculate_transits
     transit_res = calculate_transits(
@@ -484,7 +492,8 @@ def get_chart_transit(native_id):
         transit_longitude=t_lon,
         transit_timezone=t_tz,
         nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        aspect_orb_degrees=aspect_orb_degrees
     )
 
     natal_d1_items = draw_chart.parse_varga_data(natal_chart["vargas"]["D1"])
@@ -497,7 +506,8 @@ def get_chart_transit(native_id):
         mode=mode,
         root_planet=root,
         show_nakshatras=show_nakshatras,
-        debilitation_mode=debilitation_mode
+        debilitation_mode=debilitation_mode,
+        transit_time_info=transit_res["transit_time_info"]
     )
 
     return jsonify({
@@ -506,7 +516,8 @@ def get_chart_transit(native_id):
         "active_aspects": transit_res["active_aspects"],
         "transit_time_info": transit_res["transit_time_info"],
         "root": root,
-        "mode": mode
+        "mode": mode,
+        "orb": aspect_orb_degrees
     })
 
 @app.route('/api/export_pdf', methods=['POST'])

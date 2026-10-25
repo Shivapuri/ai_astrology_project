@@ -87,3 +87,28 @@ def test_transit_api_endpoint(client):
     assert "transit_planets" in data
     assert "active_aspects" in data
     assert "transit_time_info" in data
+
+
+def test_transit_custom_orbs_and_motion(client):
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    nid = native['id']
+
+    # Narrow Navamsha orb (3.3333°)
+    resp_narrow = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=3.3333')
+    assert resp_narrow.status_code == 200
+    data_narrow = resp_narrow.get_json()
+    assert data_narrow["orb"] == 3.3333
+
+    # Wide Parashari orb (10.0°) should return equal or more active aspects
+    resp_wide = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=10.0')
+    assert resp_wide.status_code == 200
+    data_wide = resp_wide.get_json()
+    assert data_wide["orb"] == 10.0
+    assert len(data_wide["active_aspects"]) >= len(data_narrow["active_aspects"])
+
+    # Check motion status fields on aspects
+    for asp in data_wide["active_aspects"]:
+        assert "motion_status" in asp
+        assert asp["motion_status"] in ("Applying", "Separating")
+        assert "is_applying" in asp

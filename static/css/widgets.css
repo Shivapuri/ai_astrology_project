@@ -2303,3 +2303,49 @@
     margin-top: 2px;
     min-height: 14px;
 }
+
+/* =========================================================================
+   Animated Transit Bi-Wheel & Gochara Drishti Triggers
+   ========================================================================= */
+.widget-transit-chart {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-surface, #fcfbf9);
+}
+
+.transit-toolbar-primary,
+.transit-toolbar-secondary {
+    user-select: none;
+}
+
+.transit-aspects-drawer {
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.transit-aspects-table th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f4eee3;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.transit-aspect-row {
+    transition: background 0.12s ease;
+}
+
+.transit-aspect-row:hover {
+    background: #f5eedb !important;
+}
+
+.transit-aspect-line {
+    transition: opacity 0.2s ease, stroke-width 0.2s ease;
+}
+
+.btn-toggle-aspects {
+    transition: all 0.15s ease;
+}

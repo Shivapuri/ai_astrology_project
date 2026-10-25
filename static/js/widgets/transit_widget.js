@@ -97,6 +97,7 @@
             cell: cell,
             currentDate: new Date(),
             interval: '1d',
+            orb: 3.3333,
             isPlaying: false,
             playTimer: null,
             root: 'Lagna',
@@ -106,7 +107,21 @@
         };
     }
 
-    function stepTime(state, direction, multiplier = 1) {
+    function pulseLiveBadge(cell) {
+        if (!cell) return;
+        const badge = cell.querySelector('.transit-live-badge');
+        if (badge) {
+            badge.style.transition = 'all 0.15s ease';
+            badge.style.borderColor = '#d35400';
+            badge.style.background = '#faede0';
+            setTimeout(() => {
+                badge.style.borderColor = '#d5c8b2';
+                badge.style.background = '#fffdfa';
+            }, 250);
+        }
+    }
+
+    function stepTime(state, direction, multiplier = 1, onComplete = null) {
         if (!state.currentDate || isNaN(state.currentDate.getTime())) {
             state.currentDate = new Date();
         }
@@ -150,8 +165,9 @@
                 state.currentDate = d;
         }
 
+        pulseLiveBadge(state.cell);
         syncInputsFromState(state);
-        fetchAndRender(state);
+        fetchAndRender(state, onComplete);
     }
 
     function syncInputsFromState(state) {
@@ -160,25 +176,48 @@
         const dateInput = cell.querySelector('.transit-date-input');
         const timeInput = cell.querySelector('.transit-time-input');
         const displayLabel = cell.querySelector('.transit-date-display-text');
+        const intervalSelect = cell.querySelector('.transit-interval-select');
+        const orbSelect = cell.querySelector('.transit-orb-select');
 
         if (dateInput) dateInput.value = formatLocalDate(state.currentDate);
         if (timeInput) timeInput.value = formatLocalTime(state.currentDate);
         if (displayLabel) displayLabel.textContent = formatFullDateTime(state.currentDate);
+        if (intervalSelect && state.interval) intervalSelect.value = state.interval;
+        if (orbSelect && state.orb) orbSelect.value = String(state.orb);
+    }
+
+    function scheduleNextPlay(state) {
+        if (!state.isPlaying) return;
+        let speedMs = 300;
+        if (state.interval === 'realtime') speedMs = 1000;
+        else if (['1w', '30d'].includes(state.interval)) speedMs = 350;
+        else if (state.interval === '365d') speedMs = 450;
+
+        state.playTimer = setTimeout(() => {
+            if (!state.isPlaying) return;
+            stepTime(state, 1, 1, () => {
+                if (state.isPlaying) {
+                    scheduleNextPlay(state);
+                }
+            });
+        }, speedMs);
     }
 
     function togglePlay(state) {
         const cell = state.cell;
         const playBtn = cell.querySelector('.btn-transit-play-pause');
+        const dot = cell.querySelector('.transit-status-dot');
 
         if (state.isPlaying) {
             // Stop
-            if (state.playTimer) clearInterval(state.playTimer);
+            if (state.playTimer) clearTimeout(state.playTimer);
             state.playTimer = null;
             state.isPlaying = false;
             if (playBtn) {
                 playBtn.innerHTML = '&#9654; Play';
                 playBtn.style.background = '#d35400';
             }
+            if (dot) dot.style.color = '#27ae60';
         } else {
             // Start
             state.isPlaying = true;
@@ -186,20 +225,17 @@
                 playBtn.innerHTML = '&#10074;&#10074; Pause';
                 playBtn.style.background = '#c0392b';
             }
-            let speedMs = 300;
-            if (state.interval === 'realtime') speedMs = 1000;
-            else if (['1w', '30d'].includes(state.interval)) speedMs = 350;
-            else if (state.interval === '365d') speedMs = 450;
-
-            state.playTimer = setInterval(() => {
-                stepTime(state, 1, 1);
-            }, speedMs);
+            if (dot) dot.style.color = '#e74c3c';
+            scheduleNextPlay(state);
         }
     }
 
-    function fetchAndRender(state) {
+    function fetchAndRender(state, onComplete = null) {
         const cell = state.cell;
-        if (!cell) return;
+        if (!cell) {
+            if (typeof onComplete === 'function') onComplete();
+            return;
+        }
 
         const natId = getActiveNativeId();
         if (!natId) {
@@ -207,14 +243,18 @@
             if (svgContainer) {
                 svgContainer.innerHTML = '<div style="font-size:13px; color:#8c7b64; padding:20px; text-align:center;">Please load or select a person from the top toolbar to view transits.</div>';
             }
+            if (typeof onComplete === 'function') onComplete();
             return;
         }
 
-        // Cancel previous pending fetch so rapid navigation never queues or freezes
-        if (state.abortController) {
+        // Cancel previous pending fetch only if NOT in play loop
+        if (!state.isPlaying && state.abortController) {
             state.abortController.abort();
+            state.abortController = null;
         }
-        state.abortController = new AbortController();
+        if (!state.abortController) {
+            state.abortController = new AbortController();
+        }
 
         const dateStr = formatLocalDate(state.currentDate);
         const timeStr = formatLocalTime(state.currentDate);
@@ -223,7 +263,8 @@
         const notation = window.currentNotation || 'symbol';
         const showNak = (typeof window.currentShowNakshatras !== 'undefined') ? window.currentShowNakshatras : false;
 
-        const url = `/api/chart/${natId}/transit?transit_date=${dateStr}&transit_time=${timeStr}&nakshatra_system=${nakSys}&debilitation_mode=${debMode}&mode=${notation}&root=${state.root}&show_nakshatras=${showNak}`;
+        const orbVal = state.orb || 3.3333;
+        const url = `/api/chart/${natId}/transit?transit_date=${dateStr}&transit_time=${timeStr}&orb=${orbVal}&nakshatra_system=${nakSys}&debilitation_mode=${debMode}&mode=${notation}&root=${state.root}&show_nakshatras=${showNak}`;
 
         fetch(url, { signal: state.abortController.signal })
             .then(res => {
@@ -248,19 +289,39 @@
                 if (tbody) {
                     tbody.innerHTML = '';
                     if (aspects.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="5" style="padding:6px; color:#8c7b64; text-align:center;">No active transit triggers within 3°20\' orb.</td></tr>';
+                        tbody.innerHTML = `<tr><td colspan="6" style="padding:6px; color:#8c7b64; text-align:center; font-size:12px;">No active transit triggers within ${orbVal === 3.3333 ? "3°20' Navāmśa" : orbVal + "°"} orb.</td></tr>`;
                     } else {
                         aspects.forEach(asp => {
                             const tr = document.createElement('tr');
+                            tr.className = 'transit-aspect-row';
                             tr.style.borderBottom = '1px solid #edece6';
+                            tr.style.cursor = 'pointer';
+                            tr.dataset.from = asp.aspecting;
+                            tr.dataset.to = asp.target;
+
                             const col = asp.is_benefic ? '#27ae60' : (asp.code === 'CONJ' ? '#8e44ad' : '#c0392b');
+                            const motionText = asp.motion_status || (asp.is_applying ? 'Applying' : 'Separating');
+                            const motionColor = asp.is_applying ? '#2e7d32' : '#795548';
+                            const motionArrow = asp.is_applying ? '→' : '←';
+
                             tr.innerHTML = `
-                                <td style="padding:4px 6px; font-weight:bold; color:${col};">${asp.aspecting}</td>
-                                <td style="padding:4px 6px;">${asp.type}</td>
-                                <td style="padding:4px 6px; font-weight:600;">Natal ${asp.target}</td>
-                                <td style="padding:4px 6px; font-variant-numeric:tabular-nums;">${asp.orb}°</td>
-                                <td style="padding:4px 6px; font-variant-numeric:tabular-nums;">${asp.virupas} V</td>
+                                <td style="padding:3px 6px; font-weight:bold; color:${col}; font-size:12px;">${asp.aspecting}</td>
+                                <td style="padding:3px 6px; font-size:12px;">${asp.type}</td>
+                                <td style="padding:3px 6px; font-weight:600; font-size:12px;">Natal ${asp.target}</td>
+                                <td style="padding:3px 6px; font-variant-numeric:tabular-nums; font-size:12px;">${asp.orb}°</td>
+                                <td style="padding:3px 6px; font-variant-numeric:tabular-nums; font-size:12px;">${asp.virupas} V</td>
+                                <td style="padding:3px 6px; font-size:12px; font-weight:600; color:${motionColor}; font-variant-numeric:tabular-nums;">${motionArrow} ${motionText}</td>
                             `;
+
+                            tr.addEventListener('mouseenter', () => {
+                                tr.style.background = '#f5eedb';
+                                highlightTransitAspect(cell, asp.aspecting, asp.target);
+                            });
+                            tr.addEventListener('mouseleave', () => {
+                                tr.style.background = 'transparent';
+                                resetTransitAspectHighlights(cell);
+                            });
+
                             tbody.appendChild(tr);
                         });
                     }
@@ -280,36 +341,118 @@
             .catch(err => {
                 if (err.name === 'AbortError') return; // Expected cancellation on fast step
                 console.error("Error fetching transit chart:", err);
+            })
+            .finally(() => {
+                if (typeof onComplete === 'function') {
+                    onComplete();
+                }
             });
+    }
+
+    function highlightTransitAspect(cell, fromPlanet, toPlanet) {
+        const svg = cell.querySelector('.transit-biwheel-svg');
+        if (!svg) return;
+
+        const lines = svg.querySelectorAll('.transit-aspect-line');
+        lines.forEach(l => {
+            const match = (l.getAttribute('data-from') === fromPlanet && l.getAttribute('data-to') === toPlanet);
+            l.style.opacity = match ? '1.0' : '0.12';
+            l.style.strokeWidth = match ? '2.4px' : '0.8px';
+        });
+
+        // Highlight matching dots
+        svg.querySelectorAll('.transit-planet-dot').forEach(d => {
+            d.style.strokeWidth = (d.getAttribute('data-planet') === fromPlanet) ? '2.0px' : '0.8px';
+            d.style.r = (d.getAttribute('data-planet') === fromPlanet) ? '4.0' : '2.8';
+        });
+        svg.querySelectorAll('.natal-planet-dot').forEach(d => {
+            d.style.strokeWidth = (d.getAttribute('data-planet') === toPlanet) ? '2.0px' : '0.8px';
+            d.style.r = (d.getAttribute('data-planet') === toPlanet) ? '4.0' : '2.8';
+        });
+    }
+
+    function resetTransitAspectHighlights(cell) {
+        const svg = cell.querySelector('.transit-biwheel-svg');
+        if (!svg) return;
+
+        svg.querySelectorAll('.transit-aspect-line').forEach(l => {
+            l.style.opacity = '0.80';
+            l.style.strokeWidth = '1.0px';
+        });
+        svg.querySelectorAll('.transit-planet-dot').forEach(d => {
+            d.style.strokeWidth = '0.8px';
+            d.style.r = '2.8';
+        });
+        svg.querySelectorAll('.natal-planet-dot').forEach(d => {
+            d.style.strokeWidth = '0.8px';
+            d.style.r = '2.8';
+        });
     }
 
     function attachSvgInteractivity(cell) {
         const svg = cell.querySelector('.transit-biwheel-svg');
         if (!svg) return;
 
-        const outerPlanets = svg.querySelectorAll('.transit-planet');
+        const outerPlanets = svg.querySelectorAll('.outer-planet, .transit-planet');
+        const innerPlanets = svg.querySelectorAll('.inner-planet, .natal-planet');
         const aspectLines = svg.querySelectorAll('.transit-aspect-line');
 
+        // 1. Hover on Outer Transiting Planet -> Highlight outbound aspects
         outerPlanets.forEach(p => {
             const pName = p.getAttribute('data-planet');
+            if (!pName) return;
+
             p.addEventListener('mouseenter', () => {
+                let hitCount = 0;
                 aspectLines.forEach(line => {
-                    const fromP = line.getAttribute('data-from');
-                    if (fromP === pName) {
+                    if (line.getAttribute('data-from') === pName) {
                         line.style.opacity = '1.0';
                         line.style.strokeWidth = '2.2px';
+                        hitCount++;
                     } else {
-                        line.style.opacity = '0.15';
+                        line.style.opacity = '0.12';
+                        line.style.strokeWidth = '0.8px';
                     }
                 });
             });
 
-            p.addEventListener('mouseleave', () => {
+            p.addEventListener('mouseleave', () => resetTransitAspectHighlights(cell));
+        });
+
+        // 2. Hover on Inner Natal Planet -> Highlight inbound aspects to this target
+        innerPlanets.forEach(p => {
+            const pName = p.getAttribute('data-planet') || p.getAttribute('data-id');
+            if (!pName) return;
+
+            p.addEventListener('mouseenter', () => {
                 aspectLines.forEach(line => {
-                    line.style.opacity = '0.75';
-                    line.style.strokeWidth = '0.9px';
+                    if (line.getAttribute('data-to') === pName) {
+                        line.style.opacity = '1.0';
+                        line.style.strokeWidth = '2.2px';
+                    } else {
+                        line.style.opacity = '0.12';
+                        line.style.strokeWidth = '0.8px';
+                    }
                 });
             });
+
+            p.addEventListener('mouseleave', () => resetTransitAspectHighlights(cell));
+        });
+
+        // 3. Hover directly on Aspect Line
+        aspectLines.forEach(line => {
+            line.addEventListener('mouseenter', () => {
+                aspectLines.forEach(l => {
+                    if (l === line) {
+                        l.style.opacity = '1.0';
+                        l.style.strokeWidth = '2.5px';
+                    } else {
+                        l.style.opacity = '0.15';
+                        l.style.strokeWidth = '0.8px';
+                    }
+                });
+            });
+            line.addEventListener('mouseleave', () => resetTransitAspectHighlights(cell));
         });
     }
 
@@ -368,6 +511,9 @@
         const btnToggleTable = cell.querySelector('.btn-transit-toggle-table');
         const drawer = cell.querySelector('.transit-aspects-drawer');
 
+        const btnSyncNatal = cell.querySelector('.btn-transit-sync-natal');
+        const orbSelect = cell.querySelector('.transit-orb-select');
+
         if (btnStepBack) btnStepBack.onclick = () => stepTime(state, -1, 1);
         if (btnStepFwd) btnStepFwd.onclick = () => stepTime(state, 1, 1);
         if (btnFastBack) btnFastBack.onclick = () => stepTime(state, -1, 5);
@@ -376,8 +522,26 @@
         if (btnNow) {
             btnNow.onclick = () => {
                 state.currentDate = new Date();
+                pulseLiveBadge(cell);
                 syncInputsFromState(state);
                 fetchAndRender(state);
+            };
+        }
+
+        if (btnSyncNatal) {
+            btnSyncNatal.onclick = () => {
+                const subj = (window.currentChartData && window.currentChartData.subject_info) || window.currentLoadedNative;
+                if (subj && subj.date) {
+                    const parsedDate = parseDateString(subj.date);
+                    if (subj.time) {
+                        const parts = subj.time.split(':');
+                        parsedDate.setHours(parseInt(parts[0], 10) || 12, parseInt(parts[1], 10) || 0, parseInt(parts[2], 10) || 0);
+                    }
+                    state.currentDate = parsedDate;
+                    pulseLiveBadge(cell);
+                    syncInputsFromState(state);
+                    fetchAndRender(state);
+                }
             };
         }
 
@@ -396,32 +560,60 @@
             };
         }
 
+        if (orbSelect) {
+            orbSelect.value = String(state.orb || 3.3333);
+            orbSelect.onchange = () => {
+                state.orb = parseFloat(orbSelect.value) || 3.3333;
+                fetchAndRender(state);
+            };
+        }
+
         const handleDateChange = () => {
             if (dateInput && dateInput.value) {
-                const parsed = parseDateString(dateInput.value);
-                state.currentDate.setFullYear(parsed.getFullYear(), parsed.getMonth(), parsed.getDate());
-                syncInputsFromState(state);
-                fetchAndRender(state);
+                const parts = dateInput.value.split('-');
+                if (parts.length === 3) {
+                    const y = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10) - 1;
+                    const d = parseInt(parts[2], 10);
+                    if (!isNaN(y) && !isNaN(m) && !isNaN(d) && y > 100 && d > 0 && d <= 31) {
+                        state.currentDate.setFullYear(y, m, d);
+                        pulseLiveBadge(cell);
+                        syncInputsFromState(state);
+                        fetchAndRender(state);
+                    }
+                }
             }
         };
 
         if (dateInput) {
             dateInput.onchange = handleDateChange;
-            dateInput.oninput = handleDateChange;
+            dateInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleDateChange();
+            });
         }
 
         const handleTimeChange = () => {
             if (timeInput && timeInput.value) {
                 const parts = timeInput.value.split(':');
-                state.currentDate.setHours(parseInt(parts[0], 10) || 0, parseInt(parts[1], 10) || 0, parseInt(parts[2], 10) || 0);
-                syncInputsFromState(state);
-                fetchAndRender(state);
+                if (parts.length >= 2) {
+                    const h = parseInt(parts[0], 10);
+                    const m = parseInt(parts[1], 10);
+                    const s = parts.length > 2 ? parseInt(parts[2], 10) : 0;
+                    if (!isNaN(h) && !isNaN(m)) {
+                        state.currentDate.setHours(h, m, isNaN(s) ? 0 : s);
+                        pulseLiveBadge(cell);
+                        syncInputsFromState(state);
+                        fetchAndRender(state);
+                    }
+                }
             }
         };
 
         if (timeInput) {
             timeInput.onchange = handleTimeChange;
-            timeInput.oninput = handleTimeChange;
+            timeInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') handleTimeChange();
+            });
         }
 
         if (btnRootLagna) btnRootLagna.onclick = () => setRootPerspective(state, 'Lagna');
@@ -454,12 +646,7 @@
                 }
             },
             onUpdate: function(cell, chartData) {
-                const state = activeInstances.get(cell);
-                if (state) {
-                    fetchAndRender(state);
-                } else {
-                    initTransitWidget(cell);
-                }
+                initTransitWidget(cell);
             }
         });
     }
@@ -498,9 +685,32 @@
         if (transitPill) transitPill.classList.add('active');
     }
 
+    // Switch from transit widget back to normal chart widget with requested style
+    function switchTransitToChart(btn, style) {
+        const cell = btn.closest('.grid-cell');
+        if (!cell) return;
+        const state = activeInstances.get(cell);
+        if (state && state.playTimer) {
+            clearInterval(state.playTimer);
+            state.playTimer = null;
+            state.isPlaying = false;
+        }
+        if (typeof window.assignWidget === 'function') {
+            window.assignWidget('chart', cell, { chart_style: style });
+        }
+    }
+
+    function maximizeTransitFromWidget(btn) {
+        if (typeof openFloatingTransit === 'function') {
+            openFloatingTransit();
+        }
+    }
+
     // Export globally for testing / manual invocation
     if (typeof window !== 'undefined') {
         window.initTransitWidget = initTransitWidget;
         window.openFloatingTransit = openFloatingTransit;
+        window.switchTransitToChart = switchTransitToChart;
+        window.maximizeTransitFromWidget = maximizeTransitFromWidget;
     }
 })();

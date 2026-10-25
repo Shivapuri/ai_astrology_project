@@ -579,6 +579,8 @@ function setupSplit_old() {
 function assignWidget(widgetType, targetCell = null, options = {}) {
     const cell = targetCell || currentActiveCell;
     if (!cell) return;
+    currentActiveCell = cell;
+    window.currentActiveCell = cell;
 
     cell.dataset.widget = widgetType;
     if (options && options.root_planet) {
@@ -675,11 +677,40 @@ function switchWidgetChartType(btn, type) {
         wheelModeBtn.style.display = (type === 'circular') ? 'inline-flex' : 'none';
     }
 
+    const aspectToggleBtn = widget.querySelector('.btn-toggle-aspects');
+    if (aspectToggleBtn) {
+        if (['circular', 'biwheel'].includes(type)) {
+            aspectToggleBtn.style.display = 'inline-flex';
+            const svg = targetView ? targetView.querySelector('svg') : null;
+            const isHidden = svg ? svg.classList.contains('aspects-hidden') : true;
+            aspectToggleBtn.textContent = isHidden ? 'Aspects: OFF' : 'Aspects: ON';
+            aspectToggleBtn.style.background = isHidden ? '#f3f4f6' : '#eff6ff';
+            aspectToggleBtn.style.color = isHidden ? '#6b7280' : '#2563eb';
+        } else {
+            aspectToggleBtn.style.display = 'none';
+        }
+    }
+
     const cell = widget.closest('.grid-cell');
     if (cell) {
         updateWidget(cell);
         if (typeof applyWidgetChartZoom === 'function') applyWidgetChartZoom(cell);
         saveLayoutState();
+    }
+}
+
+function toggleWidgetAspects(btn) {
+    const widget = btn.closest('.widget-chart');
+    if (!widget) return;
+    const activeView = widget.querySelector('.chart-view.active');
+    if (!activeView) return;
+    const svg = activeView.querySelector('svg');
+    if (svg) {
+        svg.classList.toggle('aspects-hidden');
+        const isHidden = svg.classList.contains('aspects-hidden');
+        btn.textContent = isHidden ? 'Aspects: OFF' : 'Aspects: ON';
+        btn.style.background = isHidden ? '#f3f4f6' : '#eff6ff';
+        btn.style.color = isHidden ? '#6b7280' : '#2563eb';
     }
 }
 
@@ -2031,23 +2062,50 @@ window.addEventListener('keydown', (e) => {
             stepBirthTime(3600); // +1h
         }
 
-        // Chart Type Switching Hotkeys (S = South, N = North, C = Circular, B = Bi-Wheel)
-        if (!e.ctrlKey && !e.metaKey && !e.altKey && ['s', 'n', 'c', 'b'].includes(e.key.toLowerCase())) {
+        // Chart Type Switching Hotkeys (S = South, N = North, C = Circular, B = Bi-Wheel, T = Transit Bi-Wheel)
+        if (!e.ctrlKey && !e.metaKey && !e.altKey && ['s', 'n', 'c', 'b', 't'].includes(e.key.toLowerCase())) {
             const k = e.key.toLowerCase();
-            const styleMap = { 's': 'south', 'n': 'north', 'c': 'circular', 'b': 'biwheel' };
-            const targetStyle = styleMap[k];
-            const chartCell = (currentActiveCell && currentActiveCell.dataset.widget === 'chart')
+            const targetCell = (currentActiveCell && ['chart', 'transit-chart'].includes(currentActiveCell.dataset.widget))
                 ? currentActiveCell
-                : document.querySelector('.grid-cell[data-widget="chart"]');
-            if (chartCell) {
-                const btn = chartCell.querySelector('.btn-' + targetStyle);
-                if (btn) switchWidgetChartType(btn, targetStyle);
+                : (document.querySelector('.grid-cell[data-widget="chart"]') || document.querySelector('.grid-cell[data-widget="transit-chart"]'));
+
+            if (targetCell) {
+                if (k === 't') {
+                    // Toggle between transit-chart and chart
+                    if (targetCell.dataset.widget === 'transit-chart') {
+                        assignWidget('chart', targetCell, { chart_style: window.currentChartStyle || 'north' });
+                    } else {
+                        assignWidget('transit-chart', targetCell);
+                    }
+                } else {
+                    const styleMap = { 's': 'south', 'n': 'north', 'c': 'circular', 'b': 'biwheel' };
+                    const targetStyle = styleMap[k];
+                    if (targetCell.dataset.widget === 'transit-chart') {
+                        assignWidget('chart', targetCell, { chart_style: targetStyle });
+                    } else {
+                        const btn = targetCell.querySelector('.btn-' + targetStyle);
+                        if (btn) switchWidgetChartType(btn, targetStyle);
+                        else setGlobalChartStyle(targetStyle);
+                    }
+                }
             } else {
-                setGlobalChartStyle(targetStyle);
+                if (k !== 't') {
+                    const styleMap = { 's': 'south', 'n': 'north', 'c': 'circular', 'b': 'biwheel' };
+                    setGlobalChartStyle(styleMap[k]);
+                }
             }
         }
     }
 });
+
+// Track active cell on any click or pointer interaction
+document.addEventListener('mousedown', function(e) {
+    const cell = e.target.closest('.grid-cell');
+    if (cell) {
+        currentActiveCell = cell;
+        window.currentActiveCell = cell;
+    }
+}, true);
 
 // Context Menu on Grid Cell
 document.addEventListener('contextmenu', function(e) {
@@ -2117,6 +2175,7 @@ if (typeof window !== 'undefined') {
     window.assignWidget = assignWidget;
     window.switchWidgetRootPlanet = switchWidgetRootPlanet;
     window.switchWidgetChartType = switchWidgetChartType;
+    window.toggleWidgetAspects = toggleWidgetAspects;
     window.updateWidget = updateWidget;
     window.updateAllWidgets = updateAllWidgets;
     window.assignKalaChart = assignKalaChart;

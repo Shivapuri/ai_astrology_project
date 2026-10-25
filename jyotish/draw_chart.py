@@ -3134,7 +3134,8 @@ def generate_transit_biwheel(
     mode: str = "symbol",
     root_planet: str = "Lagna",
     show_nakshatras: bool = False,
-    debilitation_mode: str = "kala_degree"
+    debilitation_mode: str = "kala_degree",
+    transit_time_info: Optional[Dict[str, Any]] = None
 ) -> str:
     """
     Generates a streamlined 2-ring Transit Bi-Wheel SVG chart (Kala style):
@@ -3259,7 +3260,7 @@ def generate_transit_biwheel(
 
     # 3. BACKGROUND LAYER: Aspect Lines connecting Outer Transit Dots to Inner Natal Dots
     # Rendered immediately on top of house colors, strictly behind all dividers, numbers, text & dots
-    svg += '<g class="transit-aspect-lines-layer" style="pointer-events: none;">\n'
+    svg += '<g class="transit-aspect-lines-layer">\n'
     if active_aspects:
         for asp in active_aspects:
             t_name = asp.get("aspecting")
@@ -3268,6 +3269,7 @@ def generate_transit_biwheel(
             orb = asp.get("orb", 0.0)
             is_ben = asp.get("is_benefic", False)
             code = asp.get("code", "")
+            motion = asp.get("motion_status", "")
 
             if t_name in outer_planets_dict and n_name in inner_planets_dict:
                 ang_t = outer_planets_dict[t_name]["true_angle"]
@@ -3306,8 +3308,9 @@ def generate_transit_biwheel(
                     marker_url = 'marker-end="url(#tr-arrow-malefic)"'
                     dash_style = "4,3"
 
-                tip = f"Transit {t_name} -> Natal {n_name} ({asp_type}, Orb: {orb}°)"
-                svg += f'  <line class="transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="0.9" stroke-dasharray="{dash_style}" opacity="0.75" {marker_url}><title>{tip}</title></line>\n'
+                motion_str = f", {motion}" if motion else ""
+                tip = f"Transit {t_name} \u2192 Natal {n_name} ({asp_type}, Orb: {orb}\u00b0{motion_str})"
+                svg += f'  <line class="interactive-aspect transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" data-orb="{orb}" data-type="{asp_type}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="1.0" stroke-dasharray="{dash_style}" opacity="0.80" {marker_url} style="cursor: pointer; pointer-events: stroke;"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
     # 4. House Dividers, Sign Glyphs, Bhava Numbers, and Ascendant Arrow
@@ -3352,10 +3355,18 @@ def generate_transit_biwheel(
     tx2, ty2 = polar_coords(r_divider_inner - 5, 182.5)
     svg += f'<polygon points="{ax2:.1f},{ay2:.1f} {tx1:.1f},{ty1:.1f} {tx2:.1f},{ty2:.1f}" fill="#C0392B"/>\n'
 
-    # 5. Center Circle Hub (Radius 30)
+    # 5. Center Circle Hub (Radius 30) - Live Dynamic Transit Readout
     svg += f'<circle class="interactive-center-circle" cx="0" cy="0" r="{r_aspect_inner}" fill="#faf7f0" fill-opacity="0.95" stroke="#5C4433" stroke-width="0.8"/>\n'
-    svg += '<text x="0" y="-4.5" font-size="6.8" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">Natal · Transit</text>\n'
-    svg += '<text x="0" y="5.5" font-size="5.5" font-weight="600" fill="#8c7b64" text-anchor="middle" pointer-events="none">Bi-Wheel</text>\n'
+    if transit_time_info and "formatted" in transit_time_info:
+        parts = transit_time_info["formatted"].split(" ")
+        date_part = parts[0] if len(parts) > 0 else ""
+        time_part = parts[1][:5] if len(parts) > 1 else ""
+        svg += '<text x="0" y="-10" font-size="5.2" font-weight="bold" fill="#8c7b64" letter-spacing="0.5" text-anchor="middle" pointer-events="none">GOCHARA</text>\n'
+        svg += f'<text x="0" y="-1.5" font-size="7.0" font-weight="bold" fill="#4a3325" font-variant-numeric="tabular-nums" text-anchor="middle" pointer-events="none">{date_part}</text>\n'
+        svg += f'<text x="0" y="7.5" font-size="6.2" font-weight="600" fill="#2980B9" font-variant-numeric="tabular-nums" text-anchor="middle" pointer-events="none">{time_part}</text>\n'
+    else:
+        svg += '<text x="0" y="-4.5" font-size="6.8" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">Natal · Transit</text>\n'
+        svg += '<text x="0" y="5.5" font-size="5.5" font-weight="600" fill="#8c7b64" text-anchor="middle" pointer-events="none">Bi-Wheel</text>\n'
 
     # 6. INNER DOTS & LEADER LINES: Exact Position of Natal Planets on the Rashi Circle (r = 136)
     svg += '<g class="natal-dots-layer">\n'
@@ -3425,7 +3436,7 @@ def generate_transit_biwheel(
         font_sz = 9.0 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
 
         tooltip = f"Natal {info.get('full_sa', p_name)}: {item['degree']}° {item['minute']:02d}' in {item['sign']}"
-        svg += f'<g class="interactive planet-glyph inner-planet" data-type="planet" data-varga="Natal" data-id="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+        svg += f'<g class="interactive planet-glyph inner-planet natal-planet" data-type="planet" data-varga="Natal" data-id="{p_name}" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
         if show_nakshatras:
             nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
@@ -3461,7 +3472,7 @@ def generate_transit_biwheel(
         is_retro = item.get("is_retrograde", False)
 
         px, py = polar_coords(r_out_pl, angle)
-        font_sz = 8.0 if p_name == "Lagna" else (11.5 if mode == "devanagari" else 11.0)
+        font_sz = 8.5 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
         s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
 
         d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
@@ -3473,18 +3484,18 @@ def generate_transit_biwheel(
             nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
             if nak_abbr:
                 nx, ny = polar_coords(r_out_nak, angle)
-                svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.0" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
+                svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
 
         mx, my = polar_coords(r_out_min, angle)
-        svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
+        svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
 
         dx, dy = polar_coords(r_out_deg, angle)
-        svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="6.2" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+        svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="7.0" font-weight="600" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
 
         svg += f'<text class="glyph-symbol outer-glyph" x="{px:.1f}" y="{py:.1f}" font-size="{font_sz}" stroke="#FAF7F0" stroke-width="2.5" paint-order="stroke fill" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
 
         sx, sy = polar_coords(r_out_sign, angle)
-        svg += f'<text class="outer-sign-glyph" x="{sx:.1f}" y="{sy:.1f}" font-size="6.5" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+        svg += f'<text class="outer-sign-glyph" x="{sx:.1f}" y="{sy:.1f}" font-size="7.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
 
         svg += '</g>\n'
     svg += '</g>\n'

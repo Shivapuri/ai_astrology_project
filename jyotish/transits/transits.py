@@ -157,10 +157,13 @@ def get_transit_aspects(
         for n_name, n_info in natal_targets.items():
             n_lon = n_info.get("longitude", 0.0)
             diff = (n_lon - t_lon) % 360.0
+            is_retro = t_info.get("is_retrograde", False)
 
             # 1. Conjunction (Yuti, 0°)
             orb_conj = diff if diff <= 180.0 else (360.0 - diff)
             if orb_conj <= orb_degrees:
+                # Direct planet applies when moving towards n_lon (diff > 0 and diff <= 180)
+                is_applying = (diff <= 180.0) if not is_retro else (diff > 180.0)
                 aspects.append({
                     "aspecting": t_name,
                     "target": n_name,
@@ -170,7 +173,9 @@ def get_transit_aspects(
                     "orb": round(orb_conj, 2),
                     "virupas": 60.0,
                     "is_benefic": t_name in ["Jupiter", "Venus", "Mercury"],
-                    "description": f"Transiting {t_name} is conjunct Natal {n_name} (orb {round(orb_conj, 1)}°)"
+                    "is_applying": is_applying,
+                    "motion_status": "Applying" if is_applying else "Separating",
+                    "description": f"Transiting {t_name} is conjunct Natal {n_name} (orb {round(orb_conj, 1)}°, {'Applying' if is_applying else 'Separating'})"
                 })
                 continue
 
@@ -186,10 +191,13 @@ def get_transit_aspects(
                 candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
 
             for glance_type, nominal_angle in candidate_aspects:
-                angle_error = abs((diff - nominal_angle + 180.0) % 360.0 - 180.0)
+                signed_diff = (diff - nominal_angle + 180.0) % 360.0 - 180.0
+                angle_error = abs(signed_diff)
                 if angle_error <= orb_degrees:
                     virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 45.0
                     is_benefic = t_name in ["Jupiter", "Venus"]
+                    # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
+                    is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
                     aspects.append({
                         "aspecting": t_name,
                         "target": n_name,
@@ -199,7 +207,9 @@ def get_transit_aspects(
                         "orb": round(angle_error, 2),
                         "virupas": round(virupas, 1),
                         "is_benefic": is_benefic,
-                        "description": f"Transiting {t_name} casts {glance_type} on Natal {n_name} (orb {round(angle_error, 1)}°)"
+                        "is_applying": is_applying,
+                        "motion_status": "Applying" if is_applying else "Separating",
+                        "description": f"Transiting {t_name} casts {glance_type} on Natal {n_name} (orb {round(angle_error, 1)}°, {'Applying' if is_applying else 'Separating'})"
                     })
 
     return aspects
