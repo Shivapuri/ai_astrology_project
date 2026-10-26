@@ -2349,3 +2349,153 @@
 .btn-toggle-aspects {
     transition: all 0.15s ease;
 }
+
+/* =========================================================================
+   Gochara Radar / Significant Transit Points Panel (German DIN Editorial Standard)
+   ========================================================================= */
+.transit-radar-panel {
+    border-left: 1px solid #e2d9c8;
+    background: #fdfbf7;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px;
+    box-shadow: -2px 0 8px rgba(74, 51, 37, 0.04);
+}
+
+.transit-radar-header {
+    background: #f8f4ec;
+    border-bottom: 1px solid #e2d9c8;
+    user-select: none;
+    padding: 6px 8px;
+}
+
+.transit-radar-title {
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #4a3325;
+}
+
+.radar-filter-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5dccb;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.radar-filter-tab,
+.radar-filter-tab:hover,
+.radar-filter-tab:focus,
+.radar-filter-tab.active {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.radar-filter-tab {
+    border-bottom: 2px solid transparent !important;
+    color: #786555 !important;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 6px;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.radar-filter-tab:hover {
+    color: #4a3325 !important;
+    border-bottom: 2px solid #c5b69f !important;
+}
+
+.radar-filter-tab.active {
+    color: #4a3325 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #4a3325 !important;
+}
+
+.transit-radar-list {
+    scrollbar-width: thin;
+    scrollbar-color: #d5c8b2 transparent;
+}
+
+.transit-radar-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.transit-radar-list::-webkit-scrollbar-thumb {
+    background: #d5c8b2;
+    border-radius: 2px;
+}
+
+/* Card Styling: Zero Background Highlighting, Crisp German Typography & Left Accent Line */
+.transit-milestone-card {
+    background: #fffdfa;
+    border: 1px solid #eae2d3;
+    border-left: 3px solid #b5a48f;
+    border-radius: 2px;
+    padding: 5px 7px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px !important;
+}
+
+.transit-milestone-card:hover {
+    background: #fbf7ef;
+    border-color: #d8cdba;
+    box-shadow: 0 1px 3px rgba(74, 51, 37, 0.06);
+}
+
+.transit-milestone-card.active-jumped {
+    background: #fcf9f2;
+    border-color: #c2410c;
+    border-left: 3.5px solid #c2410c !important;
+}
+
+/* Clean Category Font Colors with ZERO background highlighting */
+.radar-label-natal-station {
+    color: #b91c1c; /* Crimson */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-exact-aspect {
+    color: #b45309; /* Warm Bronze / Amber */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-ingress {
+    color: #0f766e; /* Forest Teal */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-sky-station {
+    color: #475569; /* Slate Umber */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.station-pin {
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.station-pin:hover {
+    filter: drop-shadow(0 0 2px rgba(220, 38, 38, 0.6));
+}

@@ -48,6 +48,7 @@ def _jd_to_gregorian(jd: float) -> Tuple[int, int, int, float]:
 
 
 _NATAL_CHART_CACHE: Dict[Any, Any] = {}
+_TRANSIT_MILESTONES_CACHE: Dict[Any, Any] = {}
 
 @app.route('/')
 def index():
@@ -501,6 +502,32 @@ def get_chart_transit(native_id):
 
     natal_d1_items = draw_chart.parse_varga_data(natal_chart["vargas"]["D1"])
     transit_d1_items = draw_chart.parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+    for it in transit_d1_items:
+        p_nm = it.get("name")
+        if p_nm in transit_res["transit_planets"]:
+            it.update(transit_res["transit_planets"][p_nm])
+
+    from jyotish.transits.milestone_scanner import scan_transit_milestones
+    m_cache_key = (native_id, t_year, nakshatra_system, debilitation_mode)
+    if m_cache_key in _TRANSIT_MILESTONES_CACHE:
+        scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
+    else:
+        scan_res = scan_transit_milestones(
+            natal_chart=natal_chart,
+            start_year=t_year,
+            start_month=t_month,
+            start_day=t_day,
+            start_hour=t_hour,
+            start_minute=t_min,
+            days_back=90,
+            days_forward=270,
+            transit_latitude=t_lat,
+            transit_longitude=t_lon,
+            transit_timezone=t_tz,
+            nakshatra_system=nakshatra_system,
+            aspect_orb_degrees=aspect_orb_degrees
+        )
+        _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
 
     svg = draw_chart.generate_transit_biwheel(
         inner_items=natal_d1_items,
@@ -510,7 +537,8 @@ def get_chart_transit(native_id):
         root_planet=root,
         show_nakshatras=show_nakshatras,
         debilitation_mode=debilitation_mode,
-        transit_time_info=transit_res["transit_time_info"]
+        transit_time_info=transit_res["transit_time_info"],
+        upcoming_stations=scan_res.get("upcoming_stations", [])
     )
 
     return jsonify({
@@ -518,10 +546,101 @@ def get_chart_transit(native_id):
         "transit_planets": transit_res["transit_planets"],
         "active_aspects": transit_res["active_aspects"],
         "transit_time_info": transit_res["transit_time_info"],
+        "milestones": scan_res.get("milestones", []),
+        "upcoming_stations": scan_res.get("upcoming_stations", []),
         "root": root,
         "mode": mode,
         "orb": aspect_orb_degrees
     })
+
+@app.route('/api/chart/<native_id>/transit/milestones')
+def get_chart_transit_milestones(native_id):
+    native = native_manager.get_native_by_id(CHARTS_FILE, native_id)
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+
+    now = datetime.now()
+    transit_date_str = request.args.get('transit_date')
+    transit_time_str = request.args.get('transit_time')
+    
+    if transit_date_str:
+        try:
+            nums = [int(n) for n in re.findall(r'\d+', str(transit_date_str))]
+            if len(nums) >= 3:
+                if nums[0] > 1000:
+                    t_year, t_month, t_day = nums[0], nums[1], nums[2]
+                else:
+                    t_day, t_month, t_year = nums[0], nums[1], nums[2]
+            else:
+                t_year, t_month, t_day = now.year, now.month, now.day
+        except Exception:
+            t_year, t_month, t_day = now.year, now.month, now.day
+    else:
+        t_year, t_month, t_day = now.year, now.month, now.day
+
+    if transit_time_str:
+        try:
+            t_nums = [int(n) for n in re.findall(r'\d+', str(transit_time_str))]
+            t_hour = t_nums[0] if len(t_nums) > 0 else now.hour
+            t_min = t_nums[1] if len(t_nums) > 1 else 0
+        except Exception:
+            t_hour, t_min = now.hour, now.minute
+    else:
+        t_hour, t_min = now.hour, now.minute
+
+    t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
+    t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
+    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
+    try:
+        t_tz = float(tz_str)
+    except ValueError:
+        try:
+            sign = -1 if tz_str.startswith('-') else 1
+            tz_parts = tz_str.lstrip('+-').split(':')
+            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
+        except Exception:
+            t_tz = 0.0
+
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
+    debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    aspect_orb_degrees = request.args.get('orb', default=3.3333, type=float)
+    days_back = request.args.get('days_back', default=90, type=int)
+    days_forward = request.args.get('days_forward', default=270, type=int)
+
+    cache_key = (native_id, native.get('date'), native.get('time'), native.get('lat'), native.get('lon'), native.get('tz'), nakshatra_system, debilitation_mode)
+    if cache_key in _NATAL_CHART_CACHE:
+        natal_chart = _NATAL_CHART_CACHE[cache_key]
+    else:
+        natal_chart = compute_chart_data(
+            native,
+            nakshatra_system=nakshatra_system,
+            debilitation_mode=debilitation_mode
+        )
+        _NATAL_CHART_CACHE[cache_key] = natal_chart
+
+    from jyotish.transits.milestone_scanner import scan_transit_milestones
+    m_cache_key = (native_id, t_year, days_back, days_forward, nakshatra_system, debilitation_mode)
+    if m_cache_key in _TRANSIT_MILESTONES_CACHE:
+        scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
+    else:
+        scan_res = scan_transit_milestones(
+            natal_chart=natal_chart,
+            start_year=t_year,
+            start_month=t_month,
+            start_day=t_day,
+            start_hour=t_hour,
+            start_minute=t_min,
+            days_back=days_back,
+            days_forward=days_forward,
+            transit_latitude=t_lat,
+            transit_longitude=t_lon,
+            transit_timezone=t_tz,
+            nakshatra_system=nakshatra_system,
+            aspect_orb_degrees=aspect_orb_degrees
+        )
+        _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
+
+    return jsonify(scan_res)
 
 @app.route('/api/export_pdf', methods=['POST'])
 def export_pdf():

@@ -102,6 +102,10 @@
             playTimer: null,
             root: 'Lagna',
             showTable: false,
+            showRadar: true,
+            radarFilter: 'all',
+            milestones: [],
+            upcomingStations: [],
             isFetching: false,
             abortController: null
         };
@@ -230,6 +234,188 @@
         }
     }
 
+    function jumpToMilestone(state, dateStr, timeStr) {
+        if (!dateStr) return;
+        const parsed = parseDateString(dateStr);
+        if (timeStr) {
+            const parts = timeStr.split(':');
+            parsed.setHours(
+                parseInt(parts[0], 10) || 0,
+                parseInt(parts[1], 10) || 0,
+                parseInt(parts[2], 10) || 0
+            );
+        }
+        state.currentDate = parsed;
+        pulseLiveBadge(state.cell);
+        syncInputsFromState(state);
+        fetchAndRender(state);
+    }
+
+    function stepMilestone(state, direction) {
+        if (!state.milestones || state.milestones.length === 0) return;
+        const curTime = state.currentDate.getTime();
+        const thresholdMs = 45 * 1000;
+
+        if (direction > 0) {
+            let nextM = state.milestones.find(m => {
+                const mDt = parseDateString(m.jump_date);
+                if (m.jump_time) {
+                    const p = m.jump_time.split(':');
+                    mDt.setHours(parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0, parseInt(p[2], 10) || 0);
+                }
+                return mDt.getTime() > curTime + thresholdMs;
+            });
+            if (!nextM) nextM = state.milestones[state.milestones.length - 1];
+            if (nextM) jumpToMilestone(state, nextM.jump_date, nextM.jump_time);
+        } else {
+            let prevM = null;
+            for (let i = state.milestones.length - 1; i >= 0; i--) {
+                const m = state.milestones[i];
+                const mDt = parseDateString(m.jump_date);
+                if (m.jump_time) {
+                    const p = m.jump_time.split(':');
+                    mDt.setHours(parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0, parseInt(p[2], 10) || 0);
+                }
+                if (mDt.getTime() < curTime - thresholdMs) {
+                    prevM = m;
+                    break;
+                }
+            }
+            if (!prevM) prevM = state.milestones[0];
+            if (prevM) jumpToMilestone(state, prevM.jump_date, prevM.jump_time);
+        }
+    }
+
+    function renderMilestones(state) {
+        const cell = state.cell;
+        if (!cell) return;
+        const listContainer = cell.querySelector('.transit-radar-list');
+        const countBadge = cell.querySelector('.transit-radar-count');
+        if (!listContainer) return;
+
+        const allMilestones = state.milestones || [];
+        if (countBadge) countBadge.textContent = allMilestones.length;
+
+        const filter = state.radarFilter || 'all';
+        let filtered = allMilestones;
+        if (filter === 'stations') {
+            filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'SKY_STATION');
+        } else if (filter === 'natal_hits') {
+            filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'EXACT_ASPECT');
+        } else if (filter === 'ingresses') {
+            filtered = allMilestones.filter(m => m.category === 'SIGN_INGRESS');
+        }
+
+        listContainer.innerHTML = '';
+        if (filtered.length === 0) {
+            listContainer.innerHTML = '<div style="font-size:12px; color:#8c7b64; text-align:center; padding:15px;">No milestones found in this filter category.</div>';
+            return;
+        }
+
+        const curTime = state.currentDate.getTime();
+        let closestDist = Infinity;
+        let closestCard = null;
+
+        filtered.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'transit-milestone-card';
+            card.dataset.category = m.category;
+            card.dataset.jumpDate = m.jump_date;
+            card.dataset.jumpTime = m.jump_time;
+
+            const mDt = parseDateString(m.jump_date);
+            if (m.jump_time) {
+                const p = m.jump_time.split(':');
+                mDt.setHours(parseInt(p[0], 10) || 0, parseInt(p[1], 10) || 0, parseInt(p[2], 10) || 0);
+            }
+            const dist = Math.abs(mDt.getTime() - curTime);
+
+            let leftAccent = '#94a3b8';
+            let labelClass = 'radar-label-sky-station';
+            let labelText = '';
+
+            if (m.category === 'NATAL_STATION') {
+                leftAccent = '#b91c1c';
+                labelClass = 'radar-label-natal-station';
+                labelText = '★ STATION ON NATAL';
+            } else if (m.category === 'EXACT_ASPECT') {
+                leftAccent = '#b45309';
+                labelClass = 'radar-label-exact-aspect';
+                const passStr = (m.total_passes && m.total_passes > 1) ? ` (Pass ${m.pass_number}/${m.total_passes})` : '';
+                labelText = `◎ EXACT HIT${passStr}`;
+            } else if (m.category === 'SIGN_INGRESS') {
+                leftAccent = '#0f766e';
+                labelClass = 'radar-label-ingress';
+                labelText = '→ INGRESS';
+            } else {
+                leftAccent = '#64748b';
+                labelClass = 'radar-label-sky-station';
+                const stStr = m.station_type ? ` · ${m.station_type}` : '';
+                labelText = `⟲ STATION${stStr}`;
+            }
+
+            const timeLabel = `${m.formatted_date} · ${String(m.hour).padStart(2, '0')}:${String(m.minute).padStart(2, '0')}`;
+
+            card.style.border = '1px solid #eae2d3';
+            card.style.borderLeft = `3px solid ${leftAccent}`;
+            card.style.background = '#fffdfa';
+            card.style.borderRadius = '2px';
+            card.style.padding = '5px 8px';
+            card.style.cursor = 'pointer';
+            card.style.display = 'flex';
+            card.style.flexDirection = 'column';
+            card.style.gap = '3px';
+            card.style.fontFamily = 'var(--font-german-din, "DIN Alternate", -apple-system, sans-serif)';
+            card.style.transition = 'background 0.12s ease, border-color 0.12s ease';
+
+            card.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:12px; font-weight:600; color:#5c4433; font-variant-numeric:tabular-nums; letter-spacing:0.3px;">${timeLabel}</span>
+                    <span class="${labelClass}" style="font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">${labelText}</span>
+                </div>
+                <div style="font-size:12.5px; font-weight:500; color:#2c221b; line-height:1.35; font-family:var(--font-german-din, 'DIN Alternate', -apple-system, sans-serif);">
+                    ${m.description}
+                </div>
+            `;
+
+            if (dist < closestDist) {
+                closestDist = dist;
+                closestCard = card;
+            }
+
+            card.addEventListener('click', () => {
+                jumpToMilestone(state, m.jump_date, m.jump_time);
+            });
+
+            card.addEventListener('mouseenter', () => {
+                card.style.background = '#fcf8ec';
+                if (m.planet && m.natal_target) {
+                    highlightTransitAspect(cell, m.planet, m.natal_target);
+                }
+            });
+
+            card.addEventListener('mouseleave', () => {
+                if (card !== closestCard) {
+                    card.style.background = '#fffdfa';
+                } else {
+                    card.style.background = '#fcf9f2';
+                }
+                resetTransitAspectHighlights(cell);
+            });
+
+            listContainer.appendChild(card);
+        });
+
+        // Highlight closest card within 24 hours
+        if (closestCard && closestDist < (24 * 3600 * 1000)) {
+            closestCard.classList.add('active-jumped');
+            closestCard.style.borderColor = '#c2410c';
+            closestCard.style.borderLeft = '3.5px solid #c2410c';
+            closestCard.style.background = '#fcf9f2';
+            closestCard.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+    }
+
     function fetchAndRender(state, onComplete = null) {
         const cell = state.cell;
         if (!cell) {
@@ -337,6 +523,11 @@
                 if (displayLabel) {
                     displayLabel.textContent = formatFullDateTime(state.currentDate);
                 }
+
+                // Update Milestones & Upcoming Stations in the Gochara Radar Panel
+                state.milestones = data.milestones || [];
+                state.upcomingStations = data.upcoming_stations || [];
+                renderMilestones(state);
             })
             .catch(err => {
                 if (err.name === 'AbortError') return; // Expected cancellation on fast step
@@ -453,6 +644,19 @@
                 });
             });
             line.addEventListener('mouseleave', () => resetTransitAspectHighlights(cell));
+        });
+
+        // 4. Station Pins on Outer Rim (Click to jump, Hover for feedback)
+        const stationPins = svg.querySelectorAll('.station-pin, .interactive-station-pin');
+        stationPins.forEach(pin => {
+            pin.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const jDate = pin.getAttribute('data-jump-date');
+                const jTime = pin.getAttribute('data-jump-time');
+                if (jDate) {
+                    jumpToMilestone(state, jDate, jTime || '12:00:00');
+                }
+            });
         });
     }
 
@@ -626,6 +830,43 @@
                 drawer.style.display = state.showTable ? 'block' : 'none';
             };
         }
+
+        // Bind Milestone Step and Radar Controls
+        const btnMilestonePrev = cell.querySelector('.btn-transit-step-milestone-prev');
+        const btnMilestoneNext = cell.querySelector('.btn-transit-step-milestone-next');
+        const btnToggleRadar = cell.querySelector('.btn-transit-toggle-radar');
+        const radarPanel = cell.querySelector('.transit-radar-panel');
+
+        if (btnMilestonePrev) btnMilestonePrev.onclick = () => stepMilestone(state, -1);
+        if (btnMilestoneNext) btnMilestoneNext.onclick = () => stepMilestone(state, 1);
+
+        if (btnToggleRadar && radarPanel) {
+            btnToggleRadar.onclick = () => {
+                state.showRadar = !state.showRadar;
+                radarPanel.style.display = state.showRadar ? 'flex' : 'none';
+                if (state.showRadar) {
+                    btnToggleRadar.classList.add('active');
+                    btnToggleRadar.style.background = '#fff8f0';
+                    btnToggleRadar.style.borderColor = '#c2410c';
+                    btnToggleRadar.style.color = '#c2410c';
+                } else {
+                    btnToggleRadar.classList.remove('active');
+                    btnToggleRadar.style.background = '#fffdfa';
+                    btnToggleRadar.style.borderColor = '#d5c8b2';
+                    btnToggleRadar.style.color = '#4a3325';
+                }
+            };
+        }
+
+        const filterTabs = cell.querySelectorAll('.radar-filter-tab, .radar-filter-pill');
+        filterTabs.forEach(tab => {
+            tab.onclick = () => {
+                filterTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                state.radarFilter = tab.getAttribute('data-filter') || 'all';
+                renderMilestones(state);
+            };
+        });
 
         fetchAndRender(state);
     }

@@ -7,6 +7,7 @@ and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
 """
 
 import copy
+import swisseph as swe
 from typing import Dict, Any, List, Optional, Tuple
 from jyotish.baseline import ChartBaseline
 from jyotish.aspects.aspects import get_graha_drishti
@@ -17,6 +18,32 @@ SIGNS_LIST = [
 ]
 
 PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 1.0000,
+    "Jupiter": 0.0831,
+    "Venus": 1.0000,
+    "Saturn": 0.0335,
+    "Rahu": 0.0530,
+    "Ketu": 0.0530
+}
+
+STATIONARY_PLANETS = {"Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
+
+SWE_PLANET_MAP = {
+    "Sun": swe.SUN,
+    "Moon": swe.MOON,
+    "Mars": swe.MARS,
+    "Mercury": swe.MERCURY,
+    "Jupiter": swe.JUPITER,
+    "Venus": swe.VENUS,
+    "Saturn": swe.SATURN,
+    "Rahu": swe.TRUE_NODE,
+    "Ketu": swe.TRUE_NODE
+}
 
 
 def calculate_transits(
@@ -35,8 +62,8 @@ def calculate_transits(
     aspect_orb_degrees: float = 3.3333
 ) -> Dict[str, Any]:
     """
-    Computes transiting planetary positions and evaluates their aspects
-    and house positions relative to the native's natal chart.
+    Computes transiting planetary positions and evaluates their aspects,
+    velocities, stationary states, and house positions relative to the native's natal chart.
     """
     # 1. Compute Transit Baseline snapshot using certified Stage 1 (zero redundant chart generation)
     transit_baseline = ChartBaseline(
@@ -51,6 +78,13 @@ def calculate_transits(
         longitude=transit_longitude,
         timezone_offset=transit_timezone,
         nakshatra_system=nakshatra_system
+    )
+
+    jd_ut = swe.julday(
+        transit_year,
+        transit_month,
+        transit_day,
+        transit_hour + transit_minute / 60.0 + transit_second / 3600.0 - transit_timezone
     )
 
     transit_d1 = copy.deepcopy(transit_baseline.vargas["D1"])
@@ -79,7 +113,7 @@ def calculate_transits(
     natal_moon_sign = natal_grahas.get("Moon", {}).get("sign", natal_lagna_sign)
     natal_moon_idx = SIGNS_LIST.index(natal_moon_sign) if natal_moon_sign in SIGNS_LIST else 0
 
-    # 2. Process Transiting Planets: House from Lagna & Moon
+    # 2. Process Transiting Planets: Velocity, Station States, House from Lagna & Moon
     processed_transit_planets = {}
     for p_name in PLANET_ORDER:
         if p_name not in transit_grahas:
@@ -92,6 +126,69 @@ def calculate_transits(
         h_from_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
         h_from_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
 
+        # Extract daily speed from coordinates or baseline
+        coord_info = transit_baseline.coordinates.get(p_name, {})
+        raw_speed = coord_info.get("speed")
+        if raw_speed is None:
+            p_id = SWE_PLANET_MAP.get(p_name)
+            if p_id is not None:
+                raw_speed = swe.calc_ut(jd_ut, p_id)[0][3]
+            else:
+                raw_speed = 0.0
+        daily_speed = float(raw_speed)
+
+        mean_speed = MEAN_DAILY_SPEEDS.get(p_name, 1.0)
+        speed_ratio = round(abs(daily_speed) / mean_speed, 3) if mean_speed > 0 else 1.0
+        is_retro = g.get("is_retrograde", False)
+
+        is_stationary = False
+        station_type: Optional[str] = None
+
+        if p_name in STATIONARY_PLANETS:
+            # Stationary threshold: <= 10% of mean speed
+            if speed_ratio <= 0.10:
+                is_stationary = True
+                p_id = SWE_PLANET_MAP.get(p_name)
+                if p_id is not None:
+                    sp_plus = swe.calc_ut(jd_ut + 0.5, p_id)[0][3]
+                    sp_minus = swe.calc_ut(jd_ut - 0.5, p_id)[0][3]
+                    accel = sp_plus - sp_minus
+                    if accel < 0:
+                        station_type = "SR"
+                    elif accel > 0:
+                        station_type = "SD"
+            else:
+                # Direction change within +/- 48h
+                p_id = SWE_PLANET_MAP.get(p_name)
+                if p_id is not None:
+                    sp_m2 = swe.calc_ut(jd_ut - 2.0, p_id)[0][3]
+                    sp_p2 = swe.calc_ut(jd_ut + 2.0, p_id)[0][3]
+                    if (sp_m2 * daily_speed <= 0) or (sp_p2 * daily_speed <= 0):
+                        is_stationary = True
+                        accel = sp_p2 - sp_m2
+                        station_type = "SR" if accel < 0 else "SD"
+
+        if is_stationary:
+            if station_type == "SR":
+                motion_state = "Stationary Retrograde"
+            elif station_type == "SD":
+                motion_state = "Stationary Direct"
+            else:
+                motion_state = "Stationary"
+            gati_sanskrit = "Stambhana"
+        elif speed_ratio <= 0.50:
+            motion_state = "Slow Retrograde" if is_retro else "Slow Direct"
+            gati_sanskrit = "Mandatara"
+        elif is_retro:
+            motion_state = "Retrograde"
+            gati_sanskrit = "Vakri"
+        elif speed_ratio >= 1.20:
+            motion_state = "Fast"
+            gati_sanskrit = "Atichara"
+        else:
+            motion_state = "Direct"
+            gati_sanskrit = "Rju"
+
         processed_transit_planets[p_name] = {
             "name": p_name,
             "sign": p_sign,
@@ -100,7 +197,13 @@ def calculate_transits(
             "degree_0_to_30": g.get("degree_0_to_30", 0.0),
             "degree": int(g.get("degree_0_to_30", 0.0)),
             "minute": int(round((g.get("degree_0_to_30", 0.0) % 1.0) * 60)),
-            "is_retrograde": g.get("is_retrograde", False),
+            "is_retrograde": is_retro,
+            "daily_speed": round(daily_speed, 6),
+            "speed_ratio": speed_ratio,
+            "is_stationary": is_stationary,
+            "station_type": station_type,
+            "motion_state": motion_state,
+            "gati_sanskrit": gati_sanskrit,
             "nakshatra": g.get("nakshatra", ""),
             "pada": g.get("pada", 1),
             "house_from_lagna": h_from_lagna,
@@ -112,7 +215,8 @@ def calculate_transits(
         transit_grahas=transit_grahas,
         natal_grahas=natal_grahas,
         natal_lagna=natal_lagna,
-        orb_degrees=aspect_orb_degrees
+        orb_degrees=aspect_orb_degrees,
+        processed_transit_planets=processed_transit_planets
     )
 
     return {
@@ -138,7 +242,8 @@ def get_transit_aspects(
     transit_grahas: Dict[str, Any],
     natal_grahas: Dict[str, Any],
     natal_lagna: Dict[str, Any],
-    orb_degrees: float = 3.3333
+    orb_degrees: float = 3.3333,
+    processed_transit_planets: Optional[Dict[str, Any]] = None
 ) -> List[Dict[str, Any]]:
     """
     Finds all active Graha Drishti aspects and conjunctions cast by
@@ -154,6 +259,11 @@ def get_transit_aspects(
             continue
         t_lon = t_info.get("longitude", 0.0)
 
+        t_proc = (processed_transit_planets or {}).get(t_name, {})
+        asp_is_stationary = bool(t_proc.get("is_stationary", False))
+        asp_station_type = t_proc.get("station_type")
+        asp_speed_ratio = float(t_proc.get("speed_ratio", 1.0))
+
         for n_name, n_info in natal_targets.items():
             n_lon = n_info.get("longitude", 0.0)
             diff = (n_lon - t_lon) % 360.0
@@ -162,8 +272,14 @@ def get_transit_aspects(
             # 1. Conjunction (Yuti, 0°)
             orb_conj = diff if diff <= 180.0 else (360.0 - diff)
             if orb_conj <= orb_degrees:
-                # Direct planet applies when moving towards n_lon (diff > 0 and diff <= 180)
+                # Direct planet applies when moving towards n_lon (diff <= 180); retro applies when diff > 180
                 is_applying = (diff <= 180.0) if not is_retro else (diff > 180.0)
+
+                orb_closeness = max(0.0, 1.0 - (orb_conj / orb_degrees))
+                virupa_factor = 60.0 / 60.0
+                speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
+                intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
+
                 aspects.append({
                     "aspecting": t_name,
                     "target": n_name,
@@ -174,6 +290,10 @@ def get_transit_aspects(
                     "virupas": 60.0,
                     "is_benefic": t_name in ["Jupiter", "Venus", "Mercury"],
                     "is_applying": is_applying,
+                    "aspecting_is_stationary": asp_is_stationary,
+                    "aspecting_station_type": asp_station_type,
+                    "aspecting_speed_ratio": asp_speed_ratio,
+                    "intensity_weight": intensity_weight,
                     "motion_status": "Applying" if is_applying else "Separating",
                     "description": f"Transiting {t_name} is conjunct Natal {n_name} (orb {round(orb_conj, 1)}°, {'Applying' if is_applying else 'Separating'})"
                 })
@@ -198,6 +318,12 @@ def get_transit_aspects(
                     is_benefic = t_name in ["Jupiter", "Venus"]
                     # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
                     is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
+
+                    orb_closeness = max(0.0, 1.0 - (angle_error / orb_degrees))
+                    virupa_factor = min(1.0, max(0.1, virupas / 60.0))
+                    speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
+                    intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
+
                     aspects.append({
                         "aspecting": t_name,
                         "target": n_name,
@@ -208,8 +334,14 @@ def get_transit_aspects(
                         "virupas": round(virupas, 1),
                         "is_benefic": is_benefic,
                         "is_applying": is_applying,
+                        "aspecting_is_stationary": asp_is_stationary,
+                        "aspecting_station_type": asp_station_type,
+                        "aspecting_speed_ratio": asp_speed_ratio,
+                        "intensity_weight": intensity_weight,
                         "motion_status": "Applying" if is_applying else "Separating",
                         "description": f"Transiting {t_name} casts {glance_type} on Natal {n_name} (orb {round(angle_error, 1)}°, {'Applying' if is_applying else 'Separating'})"
                     })
 
+    # Sort aspects by intensity weight descending so stationary / exact hits come first
+    aspects.sort(key=lambda a: a.get("intensity_weight", 0.0), reverse=True)
     return aspects

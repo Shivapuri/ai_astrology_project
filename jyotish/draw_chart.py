@@ -259,6 +259,12 @@ def parse_varga_data(varga_data):
             "degree": int(deg),
             "minute": minutes,
             "is_retrograde": p_data.get("is_retrograde", False),
+            "is_stationary": p_data.get("is_stationary", False),
+            "station_type": p_data.get("station_type"),
+            "daily_speed": p_data.get("daily_speed"),
+            "speed_ratio": p_data.get("speed_ratio"),
+            "motion_state": p_data.get("motion_state"),
+            "gati_sanskrit": p_data.get("gati_sanskrit"),
             "nakshatra": p_data.get("nakshatra", ""),
             "longitude": p_data.get("longitude", 0.0),
             "ruler": p_data.get("ruler", ""),
@@ -3305,7 +3311,8 @@ def generate_transit_biwheel(
     root_planet: str = "Lagna",
     show_nakshatras: bool = False,
     debilitation_mode: str = "kala_degree",
-    transit_time_info: Optional[Dict[str, Any]] = None
+    transit_time_info: Optional[Dict[str, Any]] = None,
+    upcoming_stations: Optional[List[Dict[str, Any]]] = None
 ) -> str:
     """
     Generates a streamlined 2-ring Transit Bi-Wheel SVG chart (Kala style):
@@ -3430,6 +3437,8 @@ def generate_transit_biwheel(
             is_ben = asp.get("is_benefic", False)
             code = asp.get("code", "")
             motion = asp.get("motion_status", "")
+            is_app = asp.get("is_applying", True)
+            is_stat = asp.get("aspecting_is_stationary", False)
 
             if t_name in outer_planets_dict and n_name in inner_planets_dict:
                 ang_t = outer_planets_dict[t_name]["true_angle"]
@@ -3440,37 +3449,41 @@ def generate_transit_biwheel(
                 x1, y1 = polar_coords(r_chart_outer, ang_t)
                 x2, y2 = polar_coords(r_divider_inner, ang_n)
 
-                dash_style = "4,3"
                 marker_url = ""
                 if code == "CONJ":
                     stroke_col = "#8E44AD"
-                    dash_style = "none"
                 elif "Trine" in asp_type or (is_ben and t_name == "Jupiter"):
-                    # Trines: clean dashed warm gold line connecting dots
                     stroke_col = "#D4AC0D"
-                    dash_style = "4,3"
                 elif t_name == "Mars":
-                    # Mars special aspects / glances: crisp red with directional arrow
                     stroke_col = "#C0392B"
                     marker_url = 'marker-end="url(#tr-arrow-malefic)"'
-                    dash_style = "3.5,2.5"
                 elif t_name == "Saturn":
-                    # Saturn special aspects: deep slate with arrow
                     stroke_col = "#2C3E50"
                     marker_url = 'marker-end="url(#tr-arrow-neutral)"'
-                    dash_style = "3.5,2.5"
                 elif is_ben:
                     stroke_col = "#27AE60"
                     marker_url = 'marker-end="url(#tr-arrow-benefic)"'
-                    dash_style = "4,3"
                 else:
                     stroke_col = "#C0392B"
                     marker_url = 'marker-end="url(#tr-arrow-malefic)"'
-                    dash_style = "4,3"
+
+                max_orb = 3.3333
+                if is_app:
+                    dash_style = "none"
+                    op_val = "0.88"
+                    if is_stat or orb < 0.5:
+                        sw_val = 2.4
+                    else:
+                        closeness = max(0.0, min(1.0, (max_orb - orb) / (max_orb - 0.5)))
+                        sw_val = round(1.0 + 1.4 * closeness, 2)
+                else:
+                    dash_style = "3,3"
+                    op_val = "0.45"
+                    sw_val = 0.95
 
                 motion_str = f", {motion}" if motion else ""
                 tip = f"Transit {t_name} \u2192 Natal {n_name} ({asp_type}, Orb: {orb}\u00b0{motion_str})"
-                svg += f'  <line class="interactive-aspect transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" data-orb="{orb}" data-type="{asp_type}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="1.0" stroke-dasharray="{dash_style}" opacity="0.80" {marker_url} style="cursor: pointer; pointer-events: stroke;"><title>{tip}</title></line>\n'
+                svg += f'  <line class="interactive-aspect transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" data-orb="{orb}" data-type="{asp_type}" data-applying="{str(is_app).lower()}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="{sw_val}" stroke-dasharray="{dash_style}" opacity="{op_val}" {marker_url} style="cursor: pointer; pointer-events: stroke;"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
     # 4. House Dividers, Sign Glyphs, Bhava Numbers, and Ascendant Arrow
@@ -3599,11 +3612,18 @@ def generate_transit_biwheel(
         ang_draw = p["draw_angle"]
         p_info = planet_notations.get(p_name, {})
         dot_col = p_info.get("color", "#4a3325")
+        st_type = p["item"].get("station_type")
 
         # Outer Dot on the chart rim (r = 206)
         dx, dy = polar_coords(r_chart_outer, ang_true)
         tip = f"Transit {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
         svg += f'  <circle class="transit-planet-dot dot-tr-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
+
+        # Subtle pulsing / double halo ring around outer rim dot when stationary
+        if st_type == "SR":
+            svg += f'  <circle class="transit-station-halo halo-sr" cx="{dx:.1f}" cy="{dy:.1f}" r="5.2" fill="none" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2.5,1.5"><title>Stationary Retrograde (SR)</title></circle>\n'
+        elif st_type == "SD":
+            svg += f'  <circle class="transit-station-halo halo-sd" cx="{dx:.1f}" cy="{dy:.1f}" r="5.2" fill="none" stroke="#16a34a" stroke-width="1.2"><title>Stationary Direct (SD)</title></circle>\n'
 
         # Subtle leader line / tick connecting transit glyph cluster out to the exact rim dot
         ang_diff = abs((ang_draw - ang_true + 180.0) % 360.0 - 180.0)
@@ -3669,13 +3689,15 @@ def generate_transit_biwheel(
         label = info.get(mode, info.get("symbol", p_name[:2]))
         color = info.get("color", "#000")
         is_retro = item.get("is_retrograde", False)
+        st_type = item.get("station_type")
 
         px, py = polar_coords(r_out_pl, angle)
         font_sz = 8.5 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
         s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
 
         d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
-        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{' [R]' if is_retro else ''} (Natal House {d1_house})"
+        st_desc = f" [{st_type}]" if st_type else (" [R]" if is_retro else "")
+        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal House {d1_house})"
 
         svg += f'<g class="interactive planet-glyph outer-planet transit-planet" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
@@ -3686,7 +3708,14 @@ def generate_transit_biwheel(
                 svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
 
         mx, my = polar_coords(r_out_min, angle)
-        svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
+        if st_type == "SR":
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="bold" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#dc2626" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' SR</text>\n'
+        elif st_type == "SD":
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="bold" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#16a34a" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' SD</text>\n'
+        elif is_retro:
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' R</text>\n'
+        else:
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'</text>\n'
 
         dx, dy = polar_coords(r_out_deg, angle)
         svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="7.0" font-weight="600" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
@@ -3698,6 +3727,37 @@ def generate_transit_biwheel(
 
         svg += '</g>\n'
     svg += '</g>\n'
+
+    # 9. UPCOMING STATIONS LAYER: Outer Rim Station Pins (r = 206)
+    if upcoming_stations:
+        svg += '<g class="upcoming-stations-layer">\n'
+        for st in upcoming_stations:
+            st_lon = st.get("longitude", 0.0)
+            st_type = st.get("station_type", "SR")
+            st_p = st.get("planet", "")
+            st_tip = st.get("tooltip", f"Upcoming {st_p} {st_type}")
+            j_date = st.get("jump_date", "")
+            j_time = st.get("jump_time", "12:00:00")
+            pin_ang = lon_to_angle(st_lon)
+            px, py = polar_coords(r_chart_outer, pin_ang)
+            pin_col = "#dc2626" if st_type == "SR" else "#16a34a"
+
+            rad = math.radians(pin_ang)
+            ux, uy = math.cos(rad), math.sin(rad)
+            tx, ty = -math.sin(rad), math.cos(rad)
+
+            # Small diamond pin nestled on outer rim pointing inwards
+            p_tip = (px - 2.5 * ux, py - 2.5 * uy)
+            p_left = (px + 2.5 * ux - 2.8 * tx, py + 2.5 * uy - 2.8 * ty)
+            p_back = (px + 6.0 * ux, py + 6.0 * uy)
+            p_right = (px + 2.5 * ux + 2.8 * tx, py + 2.5 * uy + 2.8 * ty)
+            pts = f"{p_tip[0]:.1f},{p_tip[1]:.1f} {p_left[0]:.1f},{p_left[1]:.1f} {p_back[0]:.1f},{p_back[1]:.1f} {p_right[0]:.1f},{p_right[1]:.1f}"
+
+            svg += f'  <g class="interactive-station-pin station-pin" data-planet="{st_p}" data-type="{st_type}" data-jump-date="{j_date}" data-jump-time="{j_time}" style="cursor: pointer;">\n'
+            svg += f'    <title>{st_tip} (Click to jump)</title>\n'
+            svg += f'    <polygon points="{pts}" fill="{pin_col}" stroke="#ffffff" stroke-width="0.8"/>\n'
+            svg += '  </g>\n'
+        svg += '</g>\n'
 
     svg += '</svg>\n'
     return svg
