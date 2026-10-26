@@ -177,9 +177,9 @@ def get_or_generate_varga_svgs(chart_data, v_name, modes=None, roots=None, prima
         for r in roots:
             roots_dict[r] = {
                 "circular": draw_chart.generate_circular_chart(parsed_items, mode=m, varga_name=v_name, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode, wheel_mode=wheel_mode, d10_mode=d10_m, show_campanus_cusps=show_campanus_cusps),
-                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras),
-                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras),
-                "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras, d10_mode=d10_m, d24_mode=d24_m, d2_mode=d2_m, trimsamsa_mode=trimsamsa_m)
+                "south": draw_chart.generate_south_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps),
+                "north": draw_chart.generate_north_indian(parsed_items, mode=m, varga_name=v_name, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps),
+                "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer_lbl, mode=m, ayanamsha=ayan_val, root_planet=r, debilitation_mode=deb_mode, show_nakshatras=show_nakshatras, d10_mode=d10_m, d24_mode=d24_m, d2_mode=d2_m, trimsamsa_mode=trimsamsa_m, show_campanus_cusps=show_campanus_cusps)
             }
 
         v_svg[m] = {
@@ -310,13 +310,13 @@ def get_chart_svg(native_id):
     is_svg_accept = (request.headers.get('Accept') == 'image/svg+xml') or (request.args.get('format') == 'svg')
 
     if style == 'south':
-        svg = draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras)
+        svg = draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps)
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
         return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
 
     elif style == 'north':
-        svg = draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras)
+        svg = draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps)
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
         return jsonify({"svg": svg, "varga": varga, "mode": mode, "root": root, "style": style})
@@ -330,7 +330,7 @@ def get_chart_svg(native_id):
     elif style == 'biwheel':
         svg = draw_chart.generate_biwheel_chart(
             d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras,
-            d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode
+            d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode, show_campanus_cusps=show_campanus_cusps
         )
         if is_svg_accept:
             return Response(svg, mimetype='image/svg+xml')
@@ -339,10 +339,10 @@ def get_chart_svg(native_id):
     else:
         # style == 'all'
         svgs_dict = {
-            "south": draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras),
-            "north": draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras),
+            "south": draw_chart.generate_south_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps),
+            "north": draw_chart.generate_north_indian(parsed_items, mode=mode, varga_name=varga, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, show_campanus_cusps=show_campanus_cusps),
             "circular": draw_chart.generate_circular_chart(parsed_items, mode=mode, varga_name=varga, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, wheel_mode=wheel_mode, d10_mode=d10_mode, show_campanus_cusps=show_campanus_cusps),
-            "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode)
+            "biwheel": draw_chart.generate_biwheel_chart(d1_items, outer_items, inner_name="D1", outer_name=outer, mode=mode, ayanamsha=ayan_val, root_planet=root, debilitation_mode=debilitation_mode, show_nakshatras=show_nakshatras, d10_mode=d10_mode, d24_mode=d24_mode, d2_mode=d2_mode, trimsamsa_mode=trimsamsa_mode, show_campanus_cusps=show_campanus_cusps)
         }
         return jsonify({
             "varga": varga,

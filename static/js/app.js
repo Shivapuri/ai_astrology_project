@@ -679,21 +679,13 @@ function switchWidgetChartType(btn, type) {
 
     const cuspsToggleBtn = widget.querySelector('.btn-cusps-toggle');
     if (cuspsToggleBtn) {
-        cuspsToggleBtn.style.display = (type === 'circular') ? 'inline-flex' : 'none';
+        cuspsToggleBtn.style.display = ['circular', 'south', 'north'].includes(type) ? 'inline-flex' : 'none';
     }
 
-    const aspectToggleBtn = widget.querySelector('.btn-toggle-aspects');
-    if (aspectToggleBtn) {
-        if (['circular', 'biwheel'].includes(type)) {
-            aspectToggleBtn.style.display = 'inline-flex';
-            const svg = targetView ? targetView.querySelector('svg') : null;
-            const isHidden = svg ? svg.classList.contains('aspects-hidden') : true;
-            aspectToggleBtn.textContent = isHidden ? 'Aspects: OFF' : 'Aspects: ON';
-            aspectToggleBtn.style.background = isHidden ? '#f3f4f6' : '#eff6ff';
-            aspectToggleBtn.style.color = isHidden ? '#6b7280' : '#2563eb';
-        } else {
-            aspectToggleBtn.style.display = 'none';
-        }
+    // Hide house classification highlights bar and notes button for circular/biwheel charts
+    const houseBar = widget.querySelector('.chart-house-highlights-bar');
+    if (houseBar) {
+        houseBar.style.display = ['circular', 'biwheel'].includes(type) ? 'none' : 'flex';
     }
 
     const cell = widget.closest('.grid-cell');
@@ -705,18 +697,7 @@ function switchWidgetChartType(btn, type) {
 }
 
 function toggleWidgetAspects(btn) {
-    const widget = btn.closest('.widget-chart');
-    if (!widget) return;
-    const activeView = widget.querySelector('.chart-view.active');
-    if (!activeView) return;
-    const svg = activeView.querySelector('svg');
-    if (svg) {
-        svg.classList.toggle('aspects-hidden');
-        const isHidden = svg.classList.contains('aspects-hidden');
-        btn.textContent = isHidden ? 'Aspects: OFF' : 'Aspects: ON';
-        btn.style.background = isHidden ? '#f3f4f6' : '#eff6ff';
-        btn.style.color = isHidden ? '#6b7280' : '#2563eb';
-    }
+    // Deprecated: Aspects toggle button removed per design request
 }
 
 function updateWidget(cell) {
@@ -800,10 +781,18 @@ function updateWidget(cell) {
             }
         }
 
-        // Sync Circular cusps toggle button
+        // Hide house classification highlights bar and notes for circular and bi-wheel charts
+        const isCircularOrBiwheel = cell.querySelector('.view-circular.active, .view-biwheel.active') !== null;
+        const houseBar = cell.querySelector('.chart-house-highlights-bar');
+        if (houseBar) {
+            houseBar.style.display = isCircularOrBiwheel ? 'none' : 'flex';
+        }
+
+        // Sync cusps toggle button (available for circular, south, and north charts)
+        const isSupportedActive = cell.querySelector('.view-circular.active, .view-south.active, .view-north.active') !== null;
         const cuspsToggleBtn = cell.querySelector('.btn-cusps-toggle');
         if (cuspsToggleBtn) {
-            cuspsToggleBtn.style.display = isCircularActive ? 'inline-flex' : 'none';
+            cuspsToggleBtn.style.display = isSupportedActive ? 'inline-flex' : 'none';
             const showCusps = (window.astraStore && window.astraStore.state.showCampanusCusps !== undefined)
                 ? window.astraStore.state.showCampanusCusps
                 : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
@@ -1507,8 +1496,8 @@ function syncCampanusCuspsUI() {
 
     document.querySelectorAll('.btn-cusps-toggle').forEach(btn => {
         const cell = btn.closest('.grid-cell');
-        const isCircularActive = cell ? (cell.querySelector('.view-circular.active') !== null) : false;
-        btn.style.display = isCircularActive ? 'inline-flex' : 'none';
+        const isSupportedActive = cell ? (cell.querySelector('.view-circular.active, .view-south.active, .view-north.active') !== null) : true;
+        btn.style.display = isSupportedActive ? 'inline-flex' : 'none';
         btn.innerHTML = show ? 'Cusps: ON' : 'Cusps: OFF';
         btn.title = show ? 'Campanus Cusps: ON. Click to toggle OFF.' : 'Campanus Cusps: OFF. Click to toggle ON.';
         btn.style.background = show ? '#eff6ff' : '#f3f4f6';

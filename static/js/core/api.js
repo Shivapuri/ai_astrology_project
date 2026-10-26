@@ -73,7 +73,8 @@ const AstraAPI = {
                     trimsamsaMode: trimsamsaMode,
                     nakshatraSystem: nakshatra,
                     notation: notation,
-                    showNakshatras: showNakshatras
+                    showNakshatras: showNakshatras,
+                    showCampanusCusps: showCampanusCusps
                 });
             }
 

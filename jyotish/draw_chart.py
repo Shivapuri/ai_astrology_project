@@ -771,26 +771,28 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
         for sec, sec_items in by_sector.items():
             if len(sec_items) == 1:
                 item = sec_items[0]
-                if item["is_mutual"]:
-                    item["curve_amount"] = 18.0 if is_circular else 34.0
+                if is_circular:
+                    item["curve_amount"] = 0.0
+                elif item["is_mutual"]:
+                    item["curve_amount"] = 34.0
                 else:
                     item["curve_amount"] = 0.0
             else:
                 # Multiple lines heading in this direction:
-                # Mutual aspects always curve positive (+34px) so return arrow bows away.
-                # Non-mutual aspects alternate negative and positive curvatures so all lines fan out.
                 if is_circular:
-                    non_mut_pool = [-10.0, 10.0, -18.0, 18.0, 0.0, -24.0, 24.0]
+                    for item in sec_items:
+                        item["curve_amount"] = 0.0
                 else:
+                    # Mutual aspects always curve positive (+34px) so return arrow bows away.
+                    # Non-mutual aspects alternate negative and positive curvatures so all lines fan out.
                     non_mut_pool = [-30.0, 52.0, -50.0, 0.0, 70.0, -68.0]
-                
-                nm_idx = 0
-                for item in sec_items:
-                    if item["is_mutual"]:
-                        item["curve_amount"] = 14.0 if is_circular else 34.0
-                    else:
-                        item["curve_amount"] = non_mut_pool[nm_idx % len(non_mut_pool)]
-                        nm_idx += 1
+                    nm_idx = 0
+                    for item in sec_items:
+                        if item["is_mutual"]:
+                            item["curve_amount"] = 34.0
+                        else:
+                            item["curve_amount"] = non_mut_pool[nm_idx % len(non_mut_pool)]
+                            nm_idx += 1
 
         # Also count aspects per target sign for chord staggering
         sign_counts = {}
@@ -836,20 +838,15 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
                 stroke_dash = "6,4"
                 nature_label = f"Malefic Tension ({name_from} Aśubha Dṛṣṭi — Dashed)"
                 
-            # Dynamic stroke width strongly proportional to Virupas (sleek and thin for circular charts)
+            # Aspect line stroke width: crisp uniform stroke for circular charts, proportional for traditional
             if is_circular:
-                stroke_w = f"{max(0.7, min(1.8, 0.4 + (virupas / 60.0) * 1.4)):.1f}"
+                stroke_w = "0.8"
             else:
                 stroke_w = f"{max(1.2, min(4.5, 0.6 + (virupas / 60.0) * 3.9)):.1f}"
 
             # Stagger chord fraction along arrow to distribute badges
             if is_circular:
-                if s_count == 1:
-                    t_frac = 0.40
-                elif s_count == 2:
-                    t_frac = 0.32 + s_idx * 0.16
-                else:
-                    t_frac = 0.26 + s_idx * 0.14
+                t_frac = 0.38 + (s_idx % 3) * 0.12
                 x1, y1 = polar_coords(r_inner, p_from.get("true_angle", 0))
                 x2, y2 = polar_coords(r_inner, p_to.get("true_angle", 0))
                 dx, dy = x2 - x1, y2 - y1
@@ -864,22 +861,11 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
                     ux, uy = 1.0, 0.0
                     x1_arr, y1_arr, x2_arr, y2_arr = x1, y1, x2, y2
                 
-                # Normal vector pointing to the right of travel direction
-                nx, ny = -uy, ux
-                cx = (x1_arr + x2_arr) / 2.0 + nx * curve_amount
-                cy = (y1_arr + y2_arr) / 2.0 + ny * curve_amount
-                
-                # Ensure curve control point stays strictly inside r_inner
-                c_dist = math.hypot(cx, cy)
-                if c_dist > r_inner - 2.0 and c_dist > 0.001:
-                    c_scale = (r_inner - 2.0) / c_dist
-                    cx *= c_scale
-                    cy *= c_scale
+                cx = (x1_arr + x2_arr) / 2.0
+                cy = (y1_arr + y2_arr) / 2.0
 
-                t = t_frac
-                t_inv = 1.0 - t
-                badge_x = round((t_inv ** 2) * x1_arr + 2 * t_inv * t * cx + (t ** 2) * x2_arr, 1)
-                badge_y = round((t_inv ** 2) * y1_arr + 2 * t_inv * t * cy + (t ** 2) * y2_arr, 1)
+                badge_x = round((1.0 - t_frac) * x1_arr + t_frac * x2_arr, 1)
+                badge_y = round((1.0 - t_frac) * y1_arr + t_frac * y2_arr, 1)
 
                 # Ensure badge stays strictly inside r_inner
                 b_dist = math.hypot(badge_x, badge_y)
@@ -919,15 +905,19 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
                 badge_y = round((t_inv ** 2) * y1_arr + 2 * t_inv * t * cy + (t ** 2) * y2_arr, 1)
                 
             # Tangent vector into destination point (x2_arr, y2_arr)
-            tx = x2_arr - cx
-            ty = y2_arr - cy
-            t_len = math.hypot(tx, ty)
-            if t_len > 0.001:
-                aux = tx / t_len
-                auy = ty / t_len
-            else:
+            if is_circular:
                 aux = ux
                 auy = uy
+            else:
+                tx = x2_arr - cx
+                ty = y2_arr - cy
+                t_len = math.hypot(tx, ty)
+                if t_len > 0.001:
+                    aux = tx / t_len
+                    auy = ty / t_len
+                else:
+                    aux = ux
+                    auy = uy
             anx = -auy
             any_ = aux
 
@@ -949,8 +939,12 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
                 f"• Dignity: {dignity_from}"
             )
             
-            # Aspect path ends cleanly at the base of the arrowhead (bx, by)
-            lines_svg += f'    <path class="interactive-aspect" data-from="{name_from}" data-to="{name_to}" data-virupas="{vir_round}" data-deg="{deg_round}" data-rule="{rule_exp}" data-nature="{nature_label}" data-benefic="{"true" if is_benefic else "false"}" d="M {x1_arr:.1f},{y1_arr:.1f} Q {cx:.1f},{cy:.1f} {bx:.1f},{by:.1f}" fill="none" stroke="{col}" stroke-width="{stroke_w}" stroke-dasharray="{stroke_dash}" stroke-opacity="0.9"><title>{tip}</title></path>\n'
+            # Aspect path: perfectly straight line for circular charts, smooth curve for traditional
+            if is_circular:
+                aspect_path_d = f"M {x1_arr:.1f},{y1_arr:.1f} L {bx:.1f},{by:.1f}"
+            else:
+                aspect_path_d = f"M {x1_arr:.1f},{y1_arr:.1f} Q {cx:.1f},{cy:.1f} {bx:.1f},{by:.1f}"
+            lines_svg += f'    <path class="interactive-aspect" data-from="{name_from}" data-to="{name_to}" data-virupas="{vir_round}" data-deg="{deg_round}" data-rule="{rule_exp}" data-nature="{nature_label}" data-benefic="{"true" if is_benefic else "false"}" d="{aspect_path_d}" fill="none" stroke="{col}" stroke-width="{stroke_w}" stroke-dasharray="{stroke_dash}" stroke-opacity="0.9"><title>{tip}</title></path>\n'
             # Native SVG arrowhead element (works 100% reliably across all browsers including Firefox)
             lines_svg += f'    <path class="interactive-aspect aspect-arrow" data-from="{name_from}" data-to="{name_to}" data-virupas="{vir_round}" d="M {x2_arr:.1f},{y2_arr:.1f} L {w1x:.1f},{w1y:.1f} L {w2x:.1f},{w2y:.1f} Z" fill="{col}" stroke="{col}" stroke-width="0.5" stroke-linejoin="round"><title>{tip}</title></path>\n'
             
@@ -958,17 +952,23 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
             if not is_circular or virupas >= 30.0:
                 vir_str = f"{round(virupas)}v"
                 if is_circular:
-                    badge_w = 19 if len(vir_str) <= 3 else 24
-                    badge_h = 10
-                    badge_fs = "6.5"
+                    badge_w = 13 if len(vir_str) <= 3 else 16
+                    badge_h = 7.5
+                    badge_fs = "5.0"
+                    badge_rx = "1.5"
+                    badge_sw = "0.4"
+                    badge_fw = "500"
                 else:
                     badge_w = 26 if len(vir_str) <= 3 else 32
                     badge_h = 14
                     badge_fs = "8.5"
+                    badge_rx = "2.5"
+                    badge_sw = "0.8"
+                    badge_fw = "bold"
                 badges_svg += (
                     f'    <g class="interactive-aspect-badge" data-from="{name_from}" data-to="{name_to}" data-virupas="{vir_round}" data-deg="{deg_round}" style="cursor: pointer;">'
-                    f'<rect x="{badge_x - badge_w/2:.1f}" y="{badge_y - badge_h/2:.1f}" width="{badge_w}" height="{badge_h}" rx="2.5" fill="#FFFDF9" fill-opacity="0.95" stroke="{col}" stroke-width="0.8" stroke-dasharray="none"/>'
-                    f'<text x="{badge_x:.1f}" y="{badge_y + 0.5:.1f}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{badge_fs}" font-weight="bold" fill="{col}">{vir_str}</text>'
+                    f'<rect x="{badge_x - badge_w/2:.1f}" y="{badge_y - badge_h/2:.1f}" width="{badge_w}" height="{badge_h}" rx="{badge_rx}" fill="#FFFDF9" fill-opacity="0.95" stroke="{col}" stroke-width="{badge_sw}" stroke-dasharray="none"/>'
+                    f'<text x="{badge_x:.1f}" y="{badge_y + 0.3:.1f}" text-anchor="middle" dominant-baseline="central" font-family="sans-serif" font-size="{badge_fs}" font-weight="{badge_fw}" fill="{col}">{vir_str}</text>'
                     f'<title>{tip}</title>'
                     f'</g>\n'
                 )
@@ -977,7 +977,7 @@ def render_aspect_lines_group(planet_coords, dignity_map=None, is_circular=False
     lines_svg += '  </g>\n'
     return lines_svg
 
-def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
+def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False, show_campanus_cusps: bool = True):
     cell_coords = {
         "Pisces": (0, 0), "Aries": (100, 0), "Taurus": (200, 0), "Gemini": (300, 0),
         "Aquarius": (0, 100), "Cancer": (300, 100),
@@ -1114,7 +1114,7 @@ def generate_south_indian(items, mode="symbol", varga_name="D1", root_planet="La
 
         # Draw House Cusps (Opposite Cross-Diagonal Corner, pure number, no "H", 10px)
         if root_planet == "Lagna":
-            if cusps:
+            if show_campanus_cusps and cusps:
                 num_c = len(cusps)
                 for c_idx, c in enumerate(cusps):
                     c_num = c["text"]
@@ -1288,7 +1288,7 @@ def _scale_svg_path_x(d_str: str, sx: float) -> str:
             out.append(" " + " ".join(scaled_parts) + " ")
     return "".join(out).strip()
 
-def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False):
+def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="Lagna", debilitation_mode: str = "kala_degree", show_nakshatras: bool = False, show_campanus_cusps: bool = True):
     svg = f'<svg width="100%" height="100%" viewBox="0 0 {NORTH_CHART_VIEW_W} {NORTH_CHART_VIEW_H}" class="aspects-hidden" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent;">\n'
     planet_coords = {}
     # Parchment Ground
@@ -1549,7 +1549,7 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
             p_lon = s_idx * 30 + p_deg_val
             planet_coords[p["name"]] = {"x": px, "y": py, "lon": p_lon, "sign": p["sign"]}
 
-        if cusps:
+        if show_campanus_cusps and cusps:
             base_cx, base_cy = cfg["cusp"]
             num_c = len(cusps)
             spacing = 13 if is_kendra else 11
@@ -1568,10 +1568,10 @@ def generate_north_indian(items, mode="symbol", varga_name="D1", root_planet="La
                 svg += f'<g class="interactive" data-type="house" data-id="{c_num}" style="cursor: pointer;"><title>{c_tooltip}</title>\n'
                 svg += f'<text x="{c_x}" y="{c_y}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" fill="#7D3C98" text-anchor="middle" dominant-baseline="central">{c_num}</text>\n'
                 svg += '</g>\n'
-        elif root_planet != "Lagna":
+        else:
             base_cx, base_cy = cfg["cusp"]
             h_num = h + 1
-            h_tooltip = f"House {h_num} from {root_planet} in {sign}"
+            h_tooltip = f"House {h_num} from {root_planet} in {sign}" if root_planet != "Lagna" else f"House {h_num} ({sign})"
             col = "#C0392B" if is_kendra else "#7D3C98"
             svg += f'<g class="interactive" data-type="house" data-id="{h_num}" style="cursor: pointer;"><title>{h_tooltip}</title>\n'
             svg += f'<text x="{base_cx}" y="{base_cy}" font-family="sans-serif" font-size="{cusp_font_sz}" font-weight="bold" fill="{col}" text-anchor="middle" dominant-baseline="central">{h_num}</text>\n'
@@ -2646,7 +2646,8 @@ def generate_biwheel_chart(
     d10_mode: str = "reverse",
     d24_mode: str = "reverse",
     d2_mode: str = "parashari",
-    trimsamsa_mode: str = "parashari"
+    trimsamsa_mode: str = "parashari",
+    show_campanus_cusps: bool = True
 ):
     """
     Generates a concentric dual-wheel Harmonic Bi-Wheel SVG chart (Vic DiCara / Ernst Wilhelm style).
@@ -2933,7 +2934,7 @@ def generate_biwheel_chart(
     svg += f'</g>\n'
 
     # In D1, draw lines for cardinal angle stations (4: IC, 7: Dsc, 10: MC) for Lagna root
-    if root_planet == "Lagna" and inner_cusps and len(inner_cusps) >= 12:
+    if show_campanus_cusps and root_planet == "Lagna" and inner_cusps and len(inner_cusps) >= 12:
         for i in range(12):
             c = inner_cusps[i]
             house_num = i + 1

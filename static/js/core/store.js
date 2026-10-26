@@ -27,7 +27,8 @@ class Store {
             notation: localStorage.getItem('astra_notation') || 'symbol',
             showSiSigns: localStorage.getItem('astra_show_si_signs') !== 'false',
             showNakshatras: localStorage.getItem('astra_show_nakshatras') === 'true',
-            circularWheelMode: localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras'
+            circularWheelMode: localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras',
+            showCampanusCusps: localStorage.getItem('astra_show_campanus_cusps') !== 'false'
         };
     }
 
