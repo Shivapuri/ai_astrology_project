@@ -780,7 +780,7 @@
         
         if (type === 'planet') {
             if (window.currentSelectedEntity && window.currentSelectedEntity.type === 'planet' && window.currentSelectedEntity.id === id) {
-                if (window.currentSelectedEntity.aspectMode === 'outgoing') {
+                if (id !== 'Lagna' && window.currentSelectedEntity.aspectMode === 'outgoing') {
                     // Click 2 on SAME planet: switch to incoming aspects!
                     window.currentSelectedEntity.aspectMode = 'incoming';
                     highlightPlanetAspects(id, clickedVarga, 'incoming');
@@ -789,16 +789,18 @@
                     }
                     return;
                 } else {
-                    // Click 3 on SAME planet: clear selection!
+                    // Click 3 on regular planet, or click 2 on Lagna: clear selection!
                     window.clearAstrologicalEntitySelection();
                     return;
                 }
             }
 
-            // First click (or clicking a different planet): show outgoing aspects!
+            // First click (or clicking a different planet):
+            // Lagna only receives aspects (never casts outgoing drishti), so default directly to incoming
+            const initialMode = (id === 'Lagna') ? 'incoming' : 'outgoing';
             window.clearAstrologicalEntitySelection();
-            window.currentSelectedEntity = { type, id, varga: clickedVarga, aspectMode: 'outgoing' };
-            highlightPlanetAspects(id, clickedVarga, 'outgoing');
+            window.currentSelectedEntity = { type, id, varga: clickedVarga, aspectMode: initialMode };
+            highlightPlanetAspects(id, clickedVarga, initialMode);
             if (typeof window.updateContextInfoPanel === 'function') {
                 window.updateContextInfoPanel(type, id, clickedVarga);
             }
@@ -1147,6 +1149,18 @@
                     <p><strong>Influence:</strong> <span class="${isBenefic ? 'text-benefic' : 'text-malefic'}" style="font-weight:bold;">${nature}</span> (${isBenefic ? 'Continuous / Solid Line' : 'Dashed Line'})</p>
                 `;
             }
+            return;
+        }
+
+        const acBadge = e.target.closest('.angle-ac-badge');
+        if (acBadge) {
+            let clickedVarga = 'D1';
+            const cell = acBadge.closest('.grid-cell');
+            if (cell) {
+                const vSel = cell.querySelector('.varga-select');
+                if (vSel) clickedVarga = vSel.value;
+            }
+            window.selectAstrologicalEntity('planet', 'Lagna', clickedVarga);
             return;
         }
 

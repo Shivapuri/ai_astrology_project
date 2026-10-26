@@ -2486,9 +2486,11 @@ def generate_circular_chart(
         ax2, ay2 = polar_coords(r_rasi_inner, 180.0)
         svg += f'<line class="angle-line angle-ac" x1="{ax1:.1f}" y1="{ay1:.1f}" x2="{ax2:.1f}" y2="{ay2:.1f}" stroke="#C0392B" stroke-width="1.6" marker-end="url(#arrow-ac-improved)"/>\n'
         
-        # AC label (clean typography, NO box)
+        # AC label (clean typography, interactive to inspect incoming aspects)
         ac_lbl_x, ac_lbl_y = polar_coords(r_rasi_inner - 10.0, 180.0)
-        svg += f'<g class="angle-ac-badge">\n'
+        svg += f'<g class="angle-ac-badge" style="cursor: pointer;">\n'
+        svg += f'  <title>Ascendant / Lagna — Click to view incoming aspects</title>\n'
+        svg += f'  <circle class="planet-highlight-bg" fill="none" stroke="none" cx="{ac_lbl_x:.1f}" cy="{ac_lbl_y - 8.0:.1f}" r="15"/>\n'
         svg += f'  <text class="text-shield" x="{ac_lbl_x:.1f}" y="{ac_lbl_y - 8.0:.1f}" font-size="9.5" font-weight="bold" fill="#C0392B" text-anchor="middle">AC</text>\n'
         svg += f'</g>\n'
         
@@ -2929,7 +2931,9 @@ def generate_biwheel_chart(
     
     # AC label (clean typography, NO box, identical to circular chart)
     ac_lbl_x, ac_lbl_y = polar_coords(r_divider_inner - 10.0, 180.0)
-    svg += f'<g class="angle-ac-badge">\n'
+    svg += f'<g class="angle-ac-badge" style="cursor: pointer;">\n'
+    svg += f'  <title>Ascendant / Lagna — Click to view incoming aspects</title>\n'
+    svg += f'  <circle class="planet-highlight-bg" fill="none" stroke="none" cx="{ac_lbl_x:.1f}" cy="{ac_lbl_y - 8.0:.1f}" r="15"/>\n'
     svg += f'  <text class="text-shield" x="{ac_lbl_x:.1f}" y="{ac_lbl_y - 8.0:.1f}" font-size="9.5" font-weight="bold" fill="#C0392B" text-anchor="middle">AC</text>\n'
     svg += f'</g>\n'
 
@@ -3453,8 +3457,10 @@ def generate_transit_biwheel(
                 marker_url = ""
                 if code == "CONJ":
                     stroke_col = "#8E44AD"
+                    marker_url = 'marker-end="url(#tr-arrow-conj)"'
                 elif "Trine" in asp_type or (is_ben and t_name == "Jupiter"):
                     stroke_col = "#D4AC0D"
+                    marker_url = 'marker-end="url(#tr-arrow-amber)"'
                 elif t_name == "Mars":
                     stroke_col = "#C0392B"
                     marker_url = 'marker-end="url(#tr-arrow-malefic)"'
@@ -3537,7 +3543,9 @@ def generate_transit_biwheel(
 
     # AC label (clean bold red typography, NO box, identical to circular chart)
     ac_lbl_x, ac_lbl_y = polar_coords(r_divider_inner - 10.0, 180.0)
-    svg += f'<g class="angle-ac-badge">\n'
+    svg += f'<g class="angle-ac-badge" style="cursor: pointer;">\n'
+    svg += f'  <title>Ascendant / Lagna — Click to view incoming aspects</title>\n'
+    svg += f'  <circle class="planet-highlight-bg" fill="none" stroke="none" cx="{ac_lbl_x:.1f}" cy="{ac_lbl_y - 8.0:.1f}" r="15"/>\n'
     svg += f'  <text class="text-shield" x="{ac_lbl_x:.1f}" y="{ac_lbl_y - 8.0:.1f}" font-size="9.5" font-weight="bold" fill="#C0392B" text-anchor="middle">AC</text>\n'
     svg += f'</g>\n'
 
