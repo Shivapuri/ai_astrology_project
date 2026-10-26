@@ -46,6 +46,28 @@ SWE_PLANET_MAP = {
     "Ketu": swe.TRUE_NODE
 }
 
+# Classical Vedha (Obstruction) pairs from Moon (Phaladeepika Ch. 26)
+VEDHA_PAIRS: Dict[str, Dict[int, int]] = {
+    "Sun": {3: 9, 6: 12, 11: 5},
+    "Moon": {1: 5, 3: 9, 6: 12, 7: 2, 10: 4, 11: 8},
+    "Mars": {3: 12, 6: 9, 11: 5},
+    "Mercury": {2: 5, 4: 3, 6: 9, 8: 1, 10: 8, 11: 12},
+    "Jupiter": {2: 12, 5: 4, 7: 3, 9: 10, 11: 8},
+    "Venus": {1: 8, 2: 7, 3: 1, 4: 10, 5: 9, 8: 5, 9: 11, 11: 6, 12: 3},
+    "Saturn": {3: 12, 6: 9, 11: 5},
+    "Rahu": {3: 12, 6: 9, 11: 5},
+    "Ketu": {3: 12, 6: 9, 11: 5}
+}
+
+VEDHA_EXCEPTIONS: Dict[Tuple[str, str], bool] = {
+    ("Sun", "Saturn"): False,
+    ("Saturn", "Sun"): False,
+    ("Moon", "Mercury"): False,
+    ("Mercury", "Moon"): False,
+    ("Mars", "Sun"): False,
+    ("Sun", "Mars"): False
+}
+
 
 def calculate_transits(
     natal_chart: Dict[str, Any],
@@ -243,13 +265,50 @@ def calculate_transits(
             "is_favorable_from_moon": is_favorable_from_moon
         }
 
+    # 2B. Evaluate Classical Vedha (Obstruction) from Moon & Transit Vargottama (Phaladeepika Ch. 26)
+    transit_d9_grahas = transit_chart.get("vargas", {}).get("D9", {}).get("grahas", {})
+    for p_name, p_data in processed_transit_planets.items():
+        h_moon = p_data["house_from_moon"]
+        vedha_target = VEDHA_PAIRS.get(p_name, {}).get(h_moon)
+        has_vedha = False
+        obstructing = []
+        if vedha_target is not None:
+            for o_name, o_data in processed_transit_planets.items():
+                if o_name == p_name:
+                    continue
+                if o_data["house_from_moon"] == vedha_target:
+                    if VEDHA_EXCEPTIONS.get((p_name, o_name), True):
+                        has_vedha = True
+                        obstructing.append(o_name)
+        p_data["has_vedha"] = has_vedha
+        p_data["vedha_by"] = obstructing
+        p_data["is_effective_benefic_from_moon"] = bool(p_data["is_favorable_from_moon"] and not has_vedha)
+
+        d9_g = transit_d9_grahas.get(p_name, {})
+        d9_sign = d9_g.get("sign")
+        p_data["is_vargottama"] = bool(d9_sign and d9_sign == p_data["sign"])
+
+    active_dasha_lords = list(natal_chart.get("active_dasha_lords", []))
+    if not active_dasha_lords and "vimshottari_dasha" in natal_chart:
+        antardashas = natal_chart["vimshottari_dasha"].get("antardashas", [])
+        for ad in antardashas:
+            if ad.get("start_jd", 0.0) <= jd_ut < ad.get("end_jd", 0.0):
+                m_lord = ad.get("mahadasha_lord")
+                a_lord = ad.get("antardasha_lord")
+                if m_lord and m_lord not in active_dasha_lords:
+                    active_dasha_lords.append(m_lord)
+                if a_lord and a_lord not in active_dasha_lords:
+                    active_dasha_lords.append(a_lord)
+                break
+
     # 3. Detect Active Transit Aspects onto Natal Planets
     active_aspects = get_transit_aspects(
         transit_grahas=transit_grahas,
         natal_grahas=natal_grahas,
         natal_lagna=natal_lagna,
         orb_degrees=aspect_orb_degrees,
-        processed_transit_planets=processed_transit_planets
+        processed_transit_planets=processed_transit_planets,
+        active_dasha_lords=active_dasha_lords
     )
 
     return {
@@ -276,7 +335,8 @@ def get_transit_aspects(
     natal_grahas: Dict[str, Any],
     natal_lagna: Dict[str, Any],
     orb_degrees: float = 3.3333,
-    processed_transit_planets: Optional[Dict[str, Any]] = None
+    processed_transit_planets: Optional[Dict[str, Any]] = None,
+    active_dasha_lords: Optional[List[str]] = None
 ) -> List[Dict[str, Any]]:
     """
     Finds all active Graha Drishti aspects and conjunctions cast by
@@ -300,7 +360,7 @@ def get_transit_aspects(
         for n_name, n_info in natal_targets.items():
             n_lon = n_info.get("longitude", 0.0)
             diff = (n_lon - t_lon) % 360.0
-            is_retro = t_info.get("is_retrograde", False)
+            is_retro = bool(t_proc.get("is_retrograde", t_info.get("is_retrograde", False)))
 
             # 1. Conjunction (Yuti, 0°)
             orb_conj = diff if diff <= 180.0 else (360.0 - diff)
@@ -311,7 +371,11 @@ def get_transit_aspects(
                 orb_closeness = max(0.0, 1.0 - (orb_conj / orb_degrees))
                 virupa_factor = 60.0 / 60.0
                 speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
-                intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
+                is_dasha_synced = bool(active_dasha_lords and (t_name in active_dasha_lords or n_name in active_dasha_lords))
+                base_weight = orb_closeness * virupa_factor * speed_factor
+                if is_dasha_synced:
+                    base_weight *= 1.35
+                intensity_weight = round(base_weight, 3)
 
                 is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
                 if t_name == "Moon":
@@ -330,6 +394,7 @@ def get_transit_aspects(
                     "virupas": 60.0,
                     "is_benefic": is_benefic,
                     "is_applying": is_applying,
+                    "is_dasha_synchronized": is_dasha_synced,
                     "aspecting_is_stationary": asp_is_stationary,
                     "aspecting_station_type": asp_station_type,
                     "aspecting_speed_ratio": asp_speed_ratio,
@@ -369,7 +434,11 @@ def get_transit_aspects(
                     orb_closeness = max(0.0, 1.0 - (angle_error / orb_degrees))
                     virupa_factor = min(1.0, max(0.1, virupas / 60.0))
                     speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
-                    intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
+                    is_dasha_synced = bool(active_dasha_lords and (t_name in active_dasha_lords or n_name in active_dasha_lords))
+                    base_weight = orb_closeness * virupa_factor * speed_factor
+                    if is_dasha_synced:
+                        base_weight *= 1.35
+                    intensity_weight = round(base_weight, 3)
 
                     aspects.append({
                         "aspecting": t_name,
@@ -381,6 +450,7 @@ def get_transit_aspects(
                         "virupas": round(virupas, 1),
                         "is_benefic": is_benefic,
                         "is_applying": is_applying,
+                        "is_dasha_synchronized": is_dasha_synced,
                         "aspecting_is_stationary": asp_is_stationary,
                         "aspecting_station_type": asp_station_type,
                         "aspecting_speed_ratio": asp_speed_ratio,

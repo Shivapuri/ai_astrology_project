@@ -13,6 +13,7 @@ code_export.txt
 codebase_export*.txt
 commits_export.txt
 commits_export.md
+bundle_*.txt
 rag/chroma_astrology_db/
 rag/chroma_jyotish_db/
 rag/chroma_structural_db/

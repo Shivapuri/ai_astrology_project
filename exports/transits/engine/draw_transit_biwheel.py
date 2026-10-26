@@ -14,6 +14,7 @@ Standalone module for rendering the dual-ring Transit Bi-Wheel in pure SVG (Kala
 """
 
 import math
+import re
 from typing import List, Dict, Any, Optional
 
 signs_list = [
@@ -412,7 +413,18 @@ def generate_transit_biwheel(
 
         # Outer Dot on the chart rim (r = 206)
         dx, dy = polar_coords(r_chart_outer, ang_true)
-        tip = f"Transit {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
+        item_dot = p["item"]
+        d1_h = item_dot.get("house_from_lagna", ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1)
+        h_moon_dot = item_dot.get("house_from_moon")
+        if h_moon_dot is not None:
+            is_fav_dot = item_dot.get("is_effective_benefic_from_moon", item_dot.get("is_favorable_from_moon", False))
+            has_vedha_dot = item_dot.get("has_vedha", False)
+            vedha_str_dot = f" [Vedha by {', '.join(item_dot['vedha_by'])}]" if has_vedha_dot and item_dot.get("vedha_by") else (" [Vedha]" if has_vedha_dot else "")
+            chandra_str_dot = f" · Chandra H{h_moon_dot} ({'Śubha' if is_fav_dot else 'Aśubha'}{vedha_str_dot})"
+        else:
+            chandra_str_dot = ""
+        varg_str_dot = " · Vargottama" if item_dot.get("is_vargottama") else ""
+        tip = f"Transit {p_name}: {item_dot['degree']}° {item_dot['minute']:02d}' {item_dot['sign']} (Natal H{d1_h}{chandra_str_dot}{varg_str_dot})"
         svg += f'  <circle class="transit-planet-dot dot-tr-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
 
         # Subtle pulsing / double halo ring around outer rim dot when stationary
@@ -491,9 +503,18 @@ def generate_transit_biwheel(
         font_sz = 8.5 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
         s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
 
-        d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
+        d1_house = item.get("house_from_lagna", ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1)
         st_desc = f" [{st_type}]" if st_type else (" [R]" if is_retro else "")
-        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal House {d1_house})"
+        h_moon = item.get("house_from_moon")
+        if h_moon is not None:
+            is_fav = item.get("is_effective_benefic_from_moon", item.get("is_favorable_from_moon", False))
+            has_vedha = item.get("has_vedha", False)
+            vedha_str = f" [Vedha by {', '.join(item['vedha_by'])}]" if has_vedha and item.get("vedha_by") else (" [Vedha]" if has_vedha else "")
+            chandra_str = f" · Chandra H{h_moon} ({'Śubha' if is_fav else 'Aśubha'}{vedha_str})"
+        else:
+            chandra_str = ""
+        varg_str = " · Vargottama" if item.get("is_vargottama") else ""
+        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal H{d1_house}{chandra_str}{varg_str})"
 
         svg += f'<g class="interactive planet-glyph outer-planet transit-planet" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 

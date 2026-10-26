@@ -12,7 +12,7 @@ Strictly adheres to Hemisphere A (pure mathematical calculus; zero HTML, zero CS
 """
 
 import math
-from typing import Dict, Any, List, Optional, Tuple
+from typing import Dict, Any, List, Optional, Tuple, Set
 import swisseph as swe
 
 SIGNS_LIST = [
@@ -158,6 +158,23 @@ def scan_transit_milestones(
     scan_end_jd = anchor_jd + days_forward
     total_days = int(math.ceil(scan_end_jd - scan_start_jd))
 
+    active_dasha_lords_cfg = set(natal_chart.get("active_dasha_lords", []))
+    antardashas_timeline = natal_chart.get("vimshottari_dasha", {}).get("antardashas", [])
+
+    def _get_active_lords_at_jd(event_jd: float) -> Set[str]:
+        if active_dasha_lords_cfg:
+            return active_dasha_lords_cfg
+        if antardashas_timeline:
+            for ad in antardashas_timeline:
+                if ad.get("start_jd", 0.0) <= event_jd < ad.get("end_jd", 0.0):
+                    res = set()
+                    m = ad.get("mahadasha_lord")
+                    a = ad.get("antardasha_lord")
+                    if m: res.add(m)
+                    if a: res.add(a)
+                    return res
+        return set()
+
     raw_milestones: List[Dict[str, Any]] = []
 
     # 3. Step Through Ephemeris in 1-Day Increments
@@ -234,15 +251,20 @@ def scan_transit_milestones(
 
                 sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
 
+                active_lords = _get_active_lords_at_jd(station_jd)
+
                 if best_aspect_target is not None:
                     # Tier 1: Station on Natal Point
                     desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} — {best_aspect_type} Natal {best_aspect_target} ({round(best_aspect_orb, 1)}° orb)"
+                    is_dasha_synced = bool(active_lords and (p_name in active_lords or best_aspect_target in active_lords))
                     raw_milestones.append({
                         "jd": station_jd,
                         **time_dict,
                         "category": "NATAL_STATION",
                         "tier": 1,
                         "planet": p_name,
+                        "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                        "is_dasha_synchronized": is_dasha_synced,
                         "station_type": st_type,
                         "sign": sign_name,
                         "degree": deg,
@@ -260,12 +282,15 @@ def scan_transit_milestones(
                 else:
                     # Tier 3: Sky Station
                     desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
+                    is_dasha_synced = bool(active_lords and p_name in active_lords)
                     raw_milestones.append({
                         "jd": station_jd,
                         **time_dict,
                         "category": "SKY_STATION",
                         "tier": 3,
                         "planet": p_name,
+                        "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                        "is_dasha_synchronized": is_dasha_synced,
                         "station_type": st_type,
                         "sign": sign_name,
                         "degree": deg,
@@ -323,6 +348,8 @@ def scan_transit_milestones(
                 deg_display = 29 if is_retro_ingress else 0
                 min_display = 59 if is_retro_ingress else 0
 
+                active_lords = _get_active_lords_at_jd(ingress_jd)
+                is_dasha_synced = bool(active_lords and p_name in active_lords)
                 desc = f"{sym} {p_name} Ingress {new_sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
                 raw_milestones.append({
                     "jd": ingress_jd,
@@ -330,6 +357,8 @@ def scan_transit_milestones(
                     "category": "SIGN_INGRESS",
                     "tier": 3,
                     "planet": p_name,
+                    "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                    "is_dasha_synchronized": is_dasha_synced,
                     "station_type": None,
                     "sign": new_sign_name,
                     "degree": deg_display,
@@ -402,12 +431,16 @@ def scan_transit_milestones(
                         time_dict = _revjul_to_dict(hit_jd, transit_timezone)
                         is_retro = (hit_sp < 0)
 
+                        active_lords = _get_active_lords_at_jd(hit_jd)
+                        is_dasha_synced = bool(active_lords and (p_name in active_lords or n_target in active_lords))
+
                         exact_aspect_hits.append({
                             "jd": hit_jd,
                             **time_dict,
                             "category": "EXACT_ASPECT",
                             "tier": 2,
                             "planet": p_name,
+                            "is_dasha_synchronized": is_dasha_synced,
                             "station_type": None,
                             "is_retrograde_at_hit": is_retro,
                             "sign": sign_name,
@@ -424,29 +457,52 @@ def scan_transit_milestones(
 
     # Group exact hits to determine pass numbers (Pass 1, Pass 2, Pass 3)
     exact_aspect_hits.sort(key=lambda x: x["jd"])
-    groups: Dict[Tuple[str, str, str], List[Dict[str, Any]]] = {}
+    groups: Dict[Tuple[str, str, str, int], List[Dict[str, Any]]] = {}
+
+    # Separate hits occurring in distinct annual orbits (> 150 days apart)
+    last_hit_time: Dict[Tuple[str, str, str], float] = {}
+    cluster_ids: Dict[Tuple[str, str, str], int] = {}
+
     for hit in exact_aspect_hits:
-        k = hit["group_key"]
+        base_k = hit["group_key"]
+        prev_jd = last_hit_time.get(base_k)
+        if prev_jd is None or (hit["jd"] - prev_jd) > 150.0:
+            cluster_ids[base_k] = cluster_ids.get(base_k, 0) + 1
+        last_hit_time[base_k] = hit["jd"]
+        k = (base_k[0], base_k[1], base_k[2], cluster_ids[base_k])
         groups.setdefault(k, []).append(hit)
 
     for k, hit_list in groups.items():
         total_p = len(hit_list)
-        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
         p_name = hit_list[0]["planet"]
-        offset = 1 if (first_is_retro and p_name in ["Mars", "Jupiter", "Saturn"]) else 0
-        adj_total = total_p + offset
+        has_retro = any(h.get("is_retrograde_at_hit", False) for h in hit_list)
+        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
+
+        # Standard retrograde loop across a degree consists of 3 passes (Direct, Retro, Direct)
+        if has_retro and p_name in STATION_PLANETS:
+            if first_is_retro:
+                offset = 1  # Truncated window: Pass 1 occurred prior to scan_start_jd
+                adj_total = max(total_p + offset, 3)
+            else:
+                offset = 0
+                adj_total = max(total_p, 3)
+        else:
+            offset = 0
+            adj_total = total_p
+
         for idx, hit in enumerate(hit_list):
             pass_num = idx + 1 + offset
             hit["pass_number"] = pass_num
             hit["total_passes"] = adj_total
-            p_name = hit["planet"]
+            hit["is_macro_planet"] = p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"]
             n_target = hit["natal_target"]
             asp_name = hit["aspect_type"]
             sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
             pass_str = f" (Pass {pass_num}/{adj_total})" if adj_total > 1 else ""
             hit["description"] = f"{sym} {p_name} {asp_name} Natal {n_target} (0°00'){pass_str}"
             del hit["group_key"]
-            del hit["is_retrograde_at_hit"]
+            if "is_retrograde_at_hit" in hit:
+                del hit["is_retrograde_at_hit"]
             raw_milestones.append(hit)
 
     # =========================================================================
@@ -476,7 +532,9 @@ def scan_transit_milestones(
                 seen_station_keys.add(st_key)
                 sym = PLANET_SYMBOLS.get(m["planet"], m["planet"][:2])
                 upcoming_stations.append({
+                    "jd": m["jd"],
                     "planet": m["planet"],
+                    "is_dasha_synchronized": m.get("is_dasha_synchronized", False),
                     "station_type": m["station_type"],
                     "longitude": m["longitude"],
                     "sign": m["sign"],

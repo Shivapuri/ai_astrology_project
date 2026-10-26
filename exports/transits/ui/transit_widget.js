@@ -256,8 +256,22 @@
         const curTime = state.currentDate.getTime();
         const thresholdMs = 45 * 1000;
 
+        // Respect active radar filter when stepping
+        const filter = state.radarFilter || 'all';
+        let list = state.milestones;
+        if (filter === 'macro') {
+            list = state.milestones.filter(m => m.is_macro_planet !== false);
+        } else if (filter === 'stations') {
+            list = state.milestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'SKY_STATION');
+        } else if (filter === 'natal_hits') {
+            list = state.milestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'EXACT_ASPECT');
+        } else if (filter === 'ingresses') {
+            list = state.milestones.filter(m => m.category === 'SIGN_INGRESS');
+        }
+        if (list.length === 0) list = state.milestones;
+
         if (direction > 0) {
-            let nextM = state.milestones.find(m => {
+            let nextM = list.find(m => {
                 const mDt = parseDateString(m.jump_date);
                 if (m.jump_time) {
                     const p = m.jump_time.split(':');
@@ -265,12 +279,12 @@
                 }
                 return mDt.getTime() > curTime + thresholdMs;
             });
-            if (!nextM) nextM = state.milestones[state.milestones.length - 1];
+            if (!nextM) nextM = list[list.length - 1];
             if (nextM) jumpToMilestone(state, nextM.jump_date, nextM.jump_time);
         } else {
             let prevM = null;
-            for (let i = state.milestones.length - 1; i >= 0; i--) {
-                const m = state.milestones[i];
+            for (let i = list.length - 1; i >= 0; i--) {
+                const m = list[i];
                 const mDt = parseDateString(m.jump_date);
                 if (m.jump_time) {
                     const p = m.jump_time.split(':');
@@ -281,7 +295,7 @@
                     break;
                 }
             }
-            if (!prevM) prevM = state.milestones[0];
+            if (!prevM) prevM = list[0];
             if (prevM) jumpToMilestone(state, prevM.jump_date, prevM.jump_time);
         }
     }
@@ -298,7 +312,9 @@
 
         const filter = state.radarFilter || 'all';
         let filtered = allMilestones;
-        if (filter === 'stations') {
+        if (filter === 'macro') {
+            filtered = allMilestones.filter(m => m.is_macro_planet !== false);
+        } else if (filter === 'stations') {
             filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'SKY_STATION');
         } else if (filter === 'natal_hits') {
             filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'EXACT_ASPECT');
@@ -355,22 +371,15 @@
             }
 
             const timeLabel = `${m.formatted_date} · ${String(m.hour).padStart(2, '0')}:${String(m.minute).padStart(2, '0')}`;
+            const dashaTag = m.is_dasha_synchronized
+                ? `<span style="font-size:12px; font-weight:700; color:#b45309; margin-left:6px;" title="Active Dasha Lord Event (Vimshottari Synchronized)">[DASHA LORD]</span>`
+                : '';
 
-            card.style.border = '1px solid #eae2d3';
-            card.style.borderLeft = `3px solid ${leftAccent}`;
-            card.style.background = '#fffdfa';
-            card.style.borderRadius = '2px';
-            card.style.padding = '5px 8px';
-            card.style.cursor = 'pointer';
-            card.style.display = 'flex';
-            card.style.flexDirection = 'column';
-            card.style.gap = '3px';
-            card.style.fontFamily = 'var(--font-german-din, "DIN Alternate", -apple-system, sans-serif)';
-            card.style.transition = 'background 0.12s ease, border-color 0.12s ease';
+            card.style.borderLeftColor = leftAccent;
 
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:12px; font-weight:600; color:#5c4433; font-variant-numeric:tabular-nums; letter-spacing:0.3px;">${timeLabel}</span>
+                    <span style="font-size:12px; font-weight:600; color:#5c4433; font-variant-numeric:tabular-nums; letter-spacing:0.3px;">${timeLabel}${dashaTag}</span>
                     <span class="${labelClass}" style="font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">${labelText}</span>
                 </div>
                 <div style="font-size:12.5px; font-weight:500; color:#2c221b; line-height:1.35; font-family:var(--font-german-din, 'DIN Alternate', -apple-system, sans-serif);">
@@ -480,9 +489,12 @@
                             const motionText = asp.motion_status || (asp.is_applying ? 'Applying' : 'Separating');
                             const motionColor = asp.is_applying ? '#2e7d32' : '#795548';
                             const motionArrow = asp.is_applying ? '→' : '←';
+                            const dashaBadge = asp.is_dasha_synchronized
+                                ? `<span style="font-size:12px; font-weight:700; color:#b45309; margin-left:4px;" title="Active Dasha Lord Transit (1.35x Synchronization Multiplier)">[DASHA LORD]</span>`
+                                : '';
 
                             tr.innerHTML = `
-                                <td style="padding:3px 6px; font-weight:bold; color:${col}; font-size:12px;">${asp.aspecting}</td>
+                                <td style="padding:3px 6px; font-weight:bold; color:${col}; font-size:12px;">${asp.aspecting}${dashaBadge}</td>
                                 <td style="padding:3px 6px; font-size:12px;">${asp.type}</td>
                                 <td style="padding:3px 6px; font-weight:600; font-size:12px;">Natal ${asp.target}</td>
                                 <td style="padding:3px 6px; font-variant-numeric:tabular-nums; font-size:12px;">${asp.orb}°</td>

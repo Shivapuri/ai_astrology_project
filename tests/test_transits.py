@@ -275,3 +275,95 @@ def test_transit_milestones_api_endpoint(client):
     assert "upcoming_stations" in data
     assert "scan_meta" in data
     assert len(data["milestones"]) > 0
+
+def test_transit_phaladeepika_gochara_and_vedha():
+    """Verify Phaladeepika Ch. 26 Gochara favorability, Vedha obstruction, and Vargottama detection."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    t_planets = transit_res["transit_planets"]
+    for p_name, p_data in t_planets.items():
+        assert "house_from_moon" in p_data
+        assert "house_from_lagna" in p_data
+        assert "is_favorable_from_moon" in p_data
+        assert "has_vedha" in p_data
+        assert "vedha_by" in p_data
+        assert "is_effective_benefic_from_moon" in p_data
+        assert "is_vargottama" in p_data
+        assert isinstance(p_data["has_vedha"], bool)
+        assert isinstance(p_data["is_vargottama"], bool)
+
+def test_transit_dasha_synchronization():
+    """Verify active Dasha synchronization tags and 1.35x multiplier on transit aspects."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    # Explicitly test with active_dasha_lords containing Jupiter
+    natal_with_dasha = dict(natal)
+    natal_with_dasha["active_dasha_lords"] = ["Jupiter"]
+
+    transit_res = calculate_transits(
+        natal_chart=natal_with_dasha,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    aspects = transit_res["active_aspects"]
+    for asp in aspects:
+        assert "is_dasha_synchronized" in asp
+        if "Jupiter" in (asp["aspecting"], asp["target"]):
+            assert asp["is_dasha_synchronized"] is True
+
+def test_transit_biwheel_svg_chandra_tooltips():
+    """Verify that outer planet dots and glyphs in the biwheel SVG include Chandra Gochara annotations."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
+    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+    for it in transit_d1_items:
+        p_nm = it.get("name")
+        if p_nm in transit_res["transit_planets"]:
+            it.update(transit_res["transit_planets"][p_nm])
+
+    svg = generate_transit_biwheel(
+        inner_items=natal_d1_items,
+        outer_items=transit_d1_items,
+        active_aspects=transit_res["active_aspects"]
+    )
+
+    assert "Chandra H" in svg
+    assert any(q in svg for q in ["Śubha", "Aśubha"])

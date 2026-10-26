@@ -1,28 +1,31 @@
+# ==============================================================================
+# ASTRA CODEBASE FOLDER BUNDLE
+# FOLDER: /Users/hajnaljanos/PycharmProjects/astra/exports/transits
+# GENERATED: 2026-10-26 13:16:38
+# TOTAL FILES: 10
+# TOTAL LINES: 3,624
+# TOTAL SIZE: 170.1 KB
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# TABLE OF CONTENTS
+# ------------------------------------------------------------------------------
+#  1. README.md (108 lines | 7.1 KB | Markdown Document)
+#  2. api/transit_routes.py (154 lines | 5.9 KB | Python Source)
+#  3. docs/transits.md (85 lines | 7.0 KB | Markdown Document)
+#  4. engine/draw_transit_biwheel.py (580 lines | 33.6 KB | Python Source)
+#  5. engine/milestone_scanner.py (567 lines | 24.6 KB | Python Source)
+#  6. engine/transits.py (464 lines | 19.5 KB | Python Source)
+#  7. tests/test_transits.py (369 lines | 13.4 KB | Python Source)
+#  8. ui/tmpl_transit_chart.html (133 lines | 13.7 KB | HTML Template)
+#  9. ui/transit_styles.css (202 lines | 5.3 KB | CSS Stylesheet)
+# 10. ui/transit_widget.js (962 lines | 40.0 KB | JavaScript)
+# ------------------------------------------------------------------------------
+
 ================================================================================
-ASTRA TRANSIT SYSTEM (GOCHARA) - ALL-IN-ONE TEXT EXPORT BUNDLE
+FILE: README.md
+TYPE: Markdown Document | LINES: 108 | SIZE: 7.1 KB
 ================================================================================
-
-TABLE OF CONTENTS:
-   1. README.md                           - High-Level Architecture & User Guide
-   2. docs/transits.md                    - Astrological Specification, Physics & Sanskrit Rules
-   3. engine/transits.py                  - Hemisphere A Core Transit Calculus & Speed Physics
-   4. engine/milestone_scanner.py         - Ephemeris 360-Day Horizon Milestone Scanner
-   5. engine/draw_transit_biwheel.py      - Level 8 Presentation SVG Bi-Wheel Generator
-   6. api/transit_routes.py               - Flask REST API Endpoints & Caching Layer
-   7. ui/tmpl_transit_chart.html          - Jinja2 HTML Widget Template (Gochara Radar)
-   8. ui/transit_widget.js                - Interactive Frontend Controller & Stepper Handlers
-   9. ui/transit_styles.css               - German DIN Editorial Typography & CSS Styling
-  10. tests/test_transits.py              - Unit & Integration Test Suite
-
-================================================================================
-
-
-################################################################################
-### FILE 1/10: README.md
-### PURPOSE: High-Level Architecture & User Guide
-### SOURCE PATH: exports/transits/README.md
-################################################################################
-
 # Astra Transit Engine (Gochara System) Export Guide
 
 Welcome to the **Astra Transit System** export bundle. This package contains all the essential files needed to understand, calculate, and visually display astrological transits (*Gochara*—the real-time movement of planets through the sky relative to a birth chart).
@@ -133,13 +136,170 @@ Per *Phaladeepika* Chapter 26, transits are evaluated primarily from the **Natal
 - Unit Tests: [`tests/test_transits.py`](file:///Users/hajnaljanos/PycharmProjects/astra/exports/transits/tests/test_transits.py)
 
 
+================================================================================
+FILE: api/transit_routes.py
+TYPE: Python Source | LINES: 154 | SIZE: 5.9 KB
+================================================================================
+"""
+Flask API Transit Endpoints (Extracted from app.py)
+===================================================
 
-################################################################################
-### FILE 2/10: docs/transits.md
-### PURPOSE: Astrological Specification, Physics & Sanskrit Rules
-### SOURCE PATH: exports/transits/docs/transits.md
-################################################################################
+This module illustrates how the transit calculus (Hemisphere A) and 
+SVG Bi-Wheel generator (Level 8 Presentation) are exposed via REST API.
 
+Endpoints:
+1. GET /api/chart/<native_id>/transit
+   - Computes real-time or user-selected transit snapshot.
+   - Calculates planetary speeds, station states (SR/SD), and aspect intensity.
+   - Triggers the 360-day milestone scanner (-90 to +270 days).
+   - Generates and returns the Bi-Wheel SVG + JSON radar payload.
+
+2. GET /api/chart/<native_id>/transit/milestones
+   - Standalone milestone scanner endpoint with custom scanning horizons
+     (days_back, days_forward).
+"""
+
+from datetime import datetime
+import re
+from flask import Blueprint, jsonify, request
+
+transit_blueprint = Blueprint('transit_api', __name__)
+
+# In-memory LRU or dictionary caches to prevent recalculating static natal charts
+# and expensive ephemeris scans across consecutive date scrub requests.
+_NATAL_CHART_CACHE = {}
+_TRANSIT_MILESTONES_CACHE = {}
+
+@transit_blueprint.route('/api/chart/<native_id>/transit')
+def get_chart_transit(native_id):
+    """
+    Returns real-time or date-specific transit bi-wheel SVG and aspect data.
+    """
+    # 1. Retrieve natal profile
+    # (Assuming native_manager.get_native_by_id)
+    native = {"id": native_id} # mock or lookup
+    if not native:
+        return jsonify({"error": "Native not found"}), 404
+
+    now = datetime.now()
+    transit_date_str = request.args.get('transit_date')
+    transit_time_str = request.args.get('transit_time')
+    
+    # Parse transit date and time safely
+    if transit_date_str:
+        try:
+            nums = [int(n) for n in re.findall(r'\d+', str(transit_date_str))]
+            if len(nums) >= 3:
+                if nums[0] > 1000:
+                    t_year, t_month, t_day = nums[0], nums[1], nums[2]
+                else:
+                    t_day, t_month, t_year = nums[0], nums[1], nums[2]
+            else:
+                t_year, t_month, t_day = now.year, now.month, now.day
+        except Exception:
+            t_year, t_month, t_day = now.year, now.month, now.day
+    else:
+        t_year, t_month, t_day = now.year, now.month, now.day
+
+    if transit_time_str:
+        try:
+            t_nums = [int(n) for n in re.findall(r'\d+', str(transit_time_str))]
+            t_hour = t_nums[0] if len(t_nums) > 0 else now.hour
+            t_min = t_nums[1] if len(t_nums) > 1 else 0
+            t_sec = t_nums[2] if len(t_nums) > 2 else 0
+        except Exception:
+            t_hour, t_min, t_sec = now.hour, now.minute, now.second
+    else:
+        t_hour, t_min, t_sec = now.hour, now.minute, now.second
+
+    t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
+    t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
+    
+    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
+    try:
+        t_tz = float(tz_str)
+    except ValueError:
+        try:
+            sign = -1 if tz_str.startswith('-') else 1
+            tz_parts = tz_str.lstrip('+-').split(':')
+            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
+        except Exception:
+            t_tz = 0.0
+
+    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
+    debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
+    mode = request.args.get('mode', 'symbol')
+    root = request.args.get('root', 'Lagna')
+    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
+    aspect_orb_degrees = request.args.get('orb', default=3.3333, type=float)
+
+    # 2. Compute or load cached Natal Baseline
+    # (compute_chart_data calculates D1 and Divisional Vargas via Swiss Ephemeris)
+    natal_chart = {} # compute_chart_data(...)
+
+    # 3. Calculate Transits (Hemisphere A Pure Math)
+    from jyotish.transits.transits import calculate_transits
+    transit_res = calculate_transits(
+        natal_chart=natal_chart,
+        transit_year=t_year,
+        transit_month=t_month,
+        transit_day=t_day,
+        transit_hour=t_hour,
+        transit_minute=t_min,
+        transit_second=t_sec,
+        transit_latitude=t_lat,
+        transit_longitude=t_lon,
+        transit_timezone=t_tz,
+        nakshatra_system=nakshatra_system,
+        debilitation_mode=debilitation_mode,
+        aspect_orb_degrees=aspect_orb_degrees
+    )
+
+    # 4. Scan Milestones for the 360-day horizon (-90d to +270d)
+    from jyotish.transits.milestone_scanner import scan_transit_milestones
+    m_cache_key = (native_id, t_year, t_month, round(t_tz, 2), nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
+    if m_cache_key in _TRANSIT_MILESTONES_CACHE:
+        scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
+    else:
+        scan_res = scan_transit_milestones(
+            natal_chart=natal_chart,
+            start_year=t_year,
+            start_month=t_month,
+            start_day=t_day,
+            start_hour=t_hour,
+            start_minute=t_min,
+            days_back=90,
+            days_forward=270,
+            transit_latitude=t_lat,
+            transit_longitude=t_lon,
+            transit_timezone=t_tz,
+            nakshatra_system=nakshatra_system,
+            aspect_orb_degrees=aspect_orb_degrees
+        )
+        _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
+
+    # 5. Generate SVG Bi-Wheel (Level 8 Presentation)
+    # from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
+    # svg = generate_transit_biwheel(...)
+    svg = "<svg>...</svg>"
+
+    return jsonify({
+        "svg": svg,
+        "transit_planets": transit_res["transit_planets"],
+        "active_aspects": transit_res["active_aspects"],
+        "transit_time_info": transit_res["transit_time_info"],
+        "milestones": scan_res.get("milestones", []),
+        "upcoming_stations": scan_res.get("upcoming_stations", []),
+        "root": root,
+        "mode": mode,
+        "orb": aspect_orb_degrees
+    })
+
+
+================================================================================
+FILE: docs/transits.md
+TYPE: Markdown Document | LINES: 85 | SIZE: 7.0 KB
+================================================================================
 # Transit Calculation & Analysis Engine (Gochara)
 
 ## 1. Philosophical & Scriptural Grounding
@@ -227,933 +387,10 @@ To avoid manual day-by-day scrubbing, `jyotish/transits/milestone_scanner.py` pr
 4. **Output Integrity**: Pure dictionary conforming to Hemisphere A rules (floats, ints, booleans, strings; zero HTML, zero CSS styling).
 
 
-
-################################################################################
-### FILE 3/10: engine/transits.py
-### PURPOSE: Hemisphere A Core Transit Calculus & Speed Physics
-### SOURCE PATH: exports/transits/engine/transits.py
-################################################################################
-
-"""
-Transit Calculation Engine for Astra (Kala Methodology)
-
-Calculates real-time and date-specific planetary transits (Gochara) relative to 
-the native's birth chart. Supports both Ernst Wilhelm's Dhruva Equatorial Nakshatras 
-and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
-"""
-
-import copy
-import swisseph as swe
-from typing import Dict, Any, List, Optional, Tuple
-from jyotish.baseline import ChartBaseline
-from jyotish.aspects.aspects import get_graha_drishti
-
-SIGNS_LIST = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
-
-PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
-
-MEAN_DAILY_SPEEDS = {
-    "Sun": 0.9856,
-    "Moon": 13.1764,
-    "Mars": 0.5240,
-    "Mercury": 1.0000,
-    "Jupiter": 0.0831,
-    "Venus": 1.0000,
-    "Saturn": 0.0335,
-    "Rahu": 0.0530,
-    "Ketu": 0.0530
-}
-
-STATIONARY_PLANETS = {"Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
-
-SWE_PLANET_MAP = {
-    "Sun": swe.SUN,
-    "Moon": swe.MOON,
-    "Mars": swe.MARS,
-    "Mercury": swe.MERCURY,
-    "Jupiter": swe.JUPITER,
-    "Venus": swe.VENUS,
-    "Saturn": swe.SATURN,
-    "Rahu": swe.TRUE_NODE,
-    "Ketu": swe.TRUE_NODE
-}
-
-
-def calculate_transits(
-    natal_chart: Dict[str, Any],
-    transit_year: int,
-    transit_month: int,
-    transit_day: int,
-    transit_hour: int = 12,
-    transit_minute: int = 0,
-    transit_second: int = 0,
-    transit_latitude: float = 51.5074,
-    transit_longitude: float = -0.1278,
-    transit_timezone: float = 0.0,
-    nakshatra_system: str = "ERNST_DHRUVA",
-    debilitation_mode: str = "kala_degree",
-    aspect_orb_degrees: float = 3.3333
-) -> Dict[str, Any]:
-    """
-    Computes transiting planetary positions and evaluates their aspects,
-    velocities, stationary states, and house positions relative to the native's natal chart.
-    """
-    # 1. Compute Transit Baseline snapshot using certified Stage 1 (zero redundant chart generation)
-    transit_baseline = ChartBaseline(
-        name="Transit",
-        year=transit_year,
-        month=transit_month,
-        day=transit_day,
-        hour=transit_hour,
-        minute=transit_minute,
-        second=transit_second,
-        latitude=transit_latitude,
-        longitude=transit_longitude,
-        timezone_offset=transit_timezone,
-        nakshatra_system=nakshatra_system
-    )
-
-    jd_ut = swe.julday(
-        transit_year,
-        transit_month,
-        transit_day,
-        transit_hour + transit_minute / 60.0 + transit_second / 3600.0 - transit_timezone
-    )
-
-    transit_d1 = copy.deepcopy(transit_baseline.vargas["D1"])
-    t_naks = transit_baseline.nakshatras["grahas"]
-    for p_name, g in transit_d1["grahas"].items():
-        if p_name in t_naks:
-            g["nakshatra"] = t_naks[p_name]["nakshatra"]
-            g["pada"] = t_naks[p_name]["pada"]
-    if "Lagna" in t_naks and "lagna" in transit_d1:
-        transit_d1["lagna"]["nakshatra"] = t_naks["Lagna"]["nakshatra"]
-        transit_d1["lagna"]["pada"] = t_naks["Lagna"]["pada"]
-
-    transit_chart = {
-        "vargas": {"D1": transit_d1},
-        "baseline": transit_baseline.to_dict()
-    }
-    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
-    natal_grahas = natal_d1.get("grahas", {})
-    natal_lagna = natal_d1.get("lagna", {})
-    transit_grahas = transit_d1.get("grahas", {})
-    transit_lagna = transit_d1.get("lagna", {})
-
-    natal_lagna_sign = natal_lagna.get("sign", "Aries")
-    natal_lagna_idx = SIGNS_LIST.index(natal_lagna_sign) if natal_lagna_sign in SIGNS_LIST else 0
-
-    natal_moon_sign = natal_grahas.get("Moon", {}).get("sign", natal_lagna_sign)
-    natal_moon_idx = SIGNS_LIST.index(natal_moon_sign) if natal_moon_sign in SIGNS_LIST else 0
-
-    # 2. Process Transiting Planets: Velocity, Station States, House from Lagna & Moon
-    processed_transit_planets = {}
-    for p_name in PLANET_ORDER:
-        if p_name not in transit_grahas:
-            continue
-        g = transit_grahas[p_name]
-        p_sign = g.get("sign", "Aries")
-        s_idx = SIGNS_LIST.index(p_sign) if p_sign in SIGNS_LIST else 0
-
-        # Whole-sign houses (1-indexed)
-        h_from_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
-        h_from_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
-
-        # Extract daily speed from coordinates or baseline
-        coord_info = transit_baseline.coordinates.get(p_name, {})
-        raw_speed = coord_info.get("speed")
-        if raw_speed is None:
-            p_id = SWE_PLANET_MAP.get(p_name)
-            if p_id is not None:
-                raw_speed = swe.calc_ut(jd_ut, p_id)[0][3]
-            else:
-                raw_speed = 0.0
-        daily_speed = float(raw_speed)
-
-        mean_speed = MEAN_DAILY_SPEEDS.get(p_name, 1.0)
-        speed_ratio = round(abs(daily_speed) / mean_speed, 3) if mean_speed > 0 else 1.0
-
-        if p_name in ["Rahu", "Ketu"]:
-            is_retro = (daily_speed < 0)
-        else:
-            is_retro = g.get("is_retrograde", False)
-
-        is_stationary = False
-        station_type: Optional[str] = None
-
-        if p_name in STATIONARY_PLANETS:
-            # Stationary threshold: <= 10% of mean speed
-            if speed_ratio <= 0.10:
-                is_stationary = True
-                p_id = SWE_PLANET_MAP.get(p_name)
-                if p_id is not None:
-                    sp_plus = swe.calc_ut(jd_ut + 0.5, p_id)[0][3]
-                    sp_minus = swe.calc_ut(jd_ut - 0.5, p_id)[0][3]
-                    accel = sp_plus - sp_minus
-                    if accel < 0:
-                        station_type = "SR"
-                    elif accel > 0:
-                        station_type = "SD"
-            else:
-                # Direction change check:
-                # For fast star planets (Mercury, Venus), checking ±48h flags them when speed_ratio is 0.30!
-                # Restrict to ±12h for Mercury/Venus, or ±48h for Mars, Jupiter, Saturn only if speed_ratio <= 0.25.
-                p_id = SWE_PLANET_MAP.get(p_name)
-                if p_id is not None:
-                    delta_t = 0.5 if p_name in ["Mercury", "Venus"] else 2.0
-                    sp_m = swe.calc_ut(jd_ut - delta_t, p_id)[0][3]
-                    sp_p = swe.calc_ut(jd_ut + delta_t, p_id)[0][3]
-                    if ((sp_m * daily_speed <= 0) or (sp_p * daily_speed <= 0)) and speed_ratio <= 0.25:
-                        is_stationary = True
-                        accel = sp_p - sp_m
-                        station_type = "SR" if accel < 0 else "SD"
-
-        if is_stationary:
-            if station_type == "SR":
-                motion_state = "Stationary Retrograde"
-            elif station_type == "SD":
-                motion_state = "Stationary Direct"
-            else:
-                motion_state = "Stationary"
-            gati_sanskrit = "Stambhana"
-        elif speed_ratio <= 0.50:
-            motion_state = "Slow Retrograde" if is_retro else "Slow Direct"
-            gati_sanskrit = "Mandatara"
-        elif is_retro:
-            motion_state = "Retrograde"
-            gati_sanskrit = "Vakri"
-        elif speed_ratio >= 1.20:
-            motion_state = "Fast"
-            gati_sanskrit = "Atichara"
-        else:
-            motion_state = "Direct"
-            gati_sanskrit = "Rju"
-
-        deg_val = g.get("degree_0_to_30", 0.0)
-        deg = int(math.floor(deg_val))
-        minute = int(round((deg_val - deg) * 60.0))
-        if minute >= 60:
-            deg += 1
-            minute = 0
-        if deg >= 30:
-            deg = 0
-            s_idx = (s_idx + 1) % 12
-            p_sign = SIGNS_LIST[s_idx]
-
-        # Classical Gochara Quality from Moon (Phaladeepika Ch. 26)
-        is_favorable_from_moon = False
-        if p_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
-            is_favorable_from_moon = h_from_moon in [3, 6, 11]
-        elif p_name == "Jupiter":
-            is_favorable_from_moon = h_from_moon in [2, 5, 7, 9, 11]
-        elif p_name == "Venus":
-            is_favorable_from_moon = h_from_moon in [1, 2, 3, 4, 5, 8, 9, 11, 12]
-        elif p_name == "Mercury":
-            is_favorable_from_moon = h_from_moon in [2, 4, 6, 8, 10, 11]
-        elif p_name == "Moon":
-            is_favorable_from_moon = h_from_moon in [1, 3, 6, 7, 10, 11]
-
-        processed_transit_planets[p_name] = {
-            "name": p_name,
-            "sign": p_sign,
-            "sign_idx": s_idx,
-            "longitude": g.get("longitude", 0.0),
-            "degree_0_to_30": g.get("degree_0_to_30", 0.0),
-            "degree": deg,
-            "minute": minute,
-            "is_retrograde": is_retro,
-            "daily_speed": round(daily_speed, 6),
-            "speed_ratio": speed_ratio,
-            "is_stationary": is_stationary,
-            "station_type": station_type,
-            "motion_state": motion_state,
-            "gati_sanskrit": gati_sanskrit,
-            "nakshatra": g.get("nakshatra", ""),
-            "pada": g.get("pada", 1),
-            "house_from_lagna": h_from_lagna,
-            "house_from_moon": h_from_moon,
-            "is_favorable_from_moon": is_favorable_from_moon
-        }
-
-    # 3. Detect Active Transit Aspects onto Natal Planets
-    active_aspects = get_transit_aspects(
-        transit_grahas=transit_grahas,
-        natal_grahas=natal_grahas,
-        natal_lagna=natal_lagna,
-        orb_degrees=aspect_orb_degrees,
-        processed_transit_planets=processed_transit_planets
-    )
-
-    return {
-        "transit_chart": transit_chart,
-        "transit_planets": processed_transit_planets,
-        "transit_lagna": transit_lagna,
-        "natal_lagna_sign": natal_lagna_sign,
-        "natal_moon_sign": natal_moon_sign,
-        "active_aspects": active_aspects,
-        "transit_time_info": {
-            "year": transit_year,
-            "month": transit_month,
-            "day": transit_day,
-            "hour": transit_hour,
-            "minute": transit_minute,
-            "second": transit_second,
-            "formatted": f"{transit_day:02d}/{transit_month:02d}/{transit_year:04d} {transit_hour:02d}:{transit_minute:02d}:{transit_second:02d}"
-        }
-    }
-
-
-def get_transit_aspects(
-    transit_grahas: Dict[str, Any],
-    natal_grahas: Dict[str, Any],
-    natal_lagna: Dict[str, Any],
-    orb_degrees: float = 3.3333,
-    processed_transit_planets: Optional[Dict[str, Any]] = None
-) -> List[Dict[str, Any]]:
-    """
-    Finds all active Graha Drishti aspects and conjunctions cast by
-    transiting planets onto natal planets and the natal Ascendant.
-    """
-    aspects = []
-    natal_targets = dict(natal_grahas)
-    if natal_lagna:
-        natal_targets["Lagna"] = natal_lagna
-
-    for t_name, t_info in transit_grahas.items():
-        if t_name not in PLANET_ORDER:
-            continue
-        t_lon = t_info.get("longitude", 0.0)
-
-        t_proc = (processed_transit_planets or {}).get(t_name, {})
-        asp_is_stationary = bool(t_proc.get("is_stationary", False))
-        asp_station_type = t_proc.get("station_type")
-        asp_speed_ratio = float(t_proc.get("speed_ratio", 1.0))
-
-        for n_name, n_info in natal_targets.items():
-            n_lon = n_info.get("longitude", 0.0)
-            diff = (n_lon - t_lon) % 360.0
-            is_retro = t_info.get("is_retrograde", False)
-
-            # 1. Conjunction (Yuti, 0°)
-            orb_conj = diff if diff <= 180.0 else (360.0 - diff)
-            if orb_conj <= orb_degrees:
-                # Direct planet applies when moving towards n_lon (diff <= 180); retro applies when diff > 180
-                is_applying = (diff <= 180.0) if not is_retro else (diff > 180.0)
-
-                orb_closeness = max(0.0, 1.0 - (orb_conj / orb_degrees))
-                virupa_factor = 60.0 / 60.0
-                speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
-                intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
-
-                is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
-                if t_name == "Moon":
-                    sun_item = transit_grahas.get("Sun", {})
-                    s_lon = sun_item.get("longitude", 0.0)
-                    moon_elong = (t_lon - s_lon) % 360.0
-                    is_benefic = (0.0 <= moon_elong <= 180.0)
-
-                aspects.append({
-                    "aspecting": t_name,
-                    "target": n_name,
-                    "type": "Conjunction",
-                    "code": "CONJ",
-                    "angular_diff": round(diff, 2),
-                    "orb": round(orb_conj, 2),
-                    "virupas": 60.0,
-                    "is_benefic": is_benefic,
-                    "is_applying": is_applying,
-                    "aspecting_is_stationary": asp_is_stationary,
-                    "aspecting_station_type": asp_station_type,
-                    "aspecting_speed_ratio": asp_speed_ratio,
-                    "intensity_weight": intensity_weight,
-                    "motion_status": "Applying" if is_applying else "Separating",
-                    "description": f"Transiting {t_name} is conjunct Natal {n_name} (orb {round(orb_conj, 1)}°, {'Applying' if is_applying else 'Separating'})"
-                })
-                continue
-
-            # 2. Classical Graha Drishti (Glances & Special Aspects)
-            candidate_aspects = [("7th Opposition", 180.0)]
-            if t_name == "Mars":
-                candidate_aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
-            elif t_name == "Jupiter":
-                candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
-            elif t_name == "Saturn":
-                candidate_aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
-            elif t_name in ["Rahu", "Ketu"]:
-                candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
-            elif t_name in ["Sun", "Venus", "Mercury"]:
-                candidate_aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
-
-            for glance_type, nominal_angle in candidate_aspects:
-                signed_diff = (diff - nominal_angle + 180.0) % 360.0 - 180.0
-                angle_error = abs(signed_diff)
-                if angle_error <= orb_degrees:
-                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 60.0
-                    is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
-                    if t_name == "Moon":
-                        sun_item = transit_grahas.get("Sun", {})
-                        s_lon = sun_item.get("longitude", 0.0)
-                        moon_elong = (t_lon - s_lon) % 360.0
-                        is_benefic = (0.0 <= moon_elong <= 180.0)
-                    # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
-                    is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
-
-                    orb_closeness = max(0.0, 1.0 - (angle_error / orb_degrees))
-                    virupa_factor = min(1.0, max(0.1, virupas / 60.0))
-                    speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
-                    intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
-
-                    aspects.append({
-                        "aspecting": t_name,
-                        "target": n_name,
-                        "type": glance_type,
-                        "code": "DRISHTI",
-                        "angular_diff": round(diff, 2),
-                        "orb": round(angle_error, 2),
-                        "virupas": round(virupas, 1),
-                        "is_benefic": is_benefic,
-                        "is_applying": is_applying,
-                        "aspecting_is_stationary": asp_is_stationary,
-                        "aspecting_station_type": asp_station_type,
-                        "aspecting_speed_ratio": asp_speed_ratio,
-                        "intensity_weight": intensity_weight,
-                        "motion_status": "Applying" if is_applying else "Separating",
-                        "description": f"Transiting {t_name} casts {glance_type} on Natal {n_name} (orb {round(angle_error, 1)}°, {'Applying' if is_applying else 'Separating'})"
-                    })
-
-    # Sort aspects by intensity weight descending so stationary / exact hits come first
-    aspects.sort(key=lambda a: a.get("intensity_weight", 0.0), reverse=True)
-    return aspects
-
-
-
-################################################################################
-### FILE 4/10: engine/milestone_scanner.py
-### PURPOSE: Ephemeris 360-Day Horizon Milestone Scanner
-### SOURCE PATH: exports/transits/engine/milestone_scanner.py
-################################################################################
-
-"""
-Transit Milestone Scanner Engine for Astra (Kala Methodology)
-
-Performs high-speed coarse-to-fine ephemeris scans across a date horizon
-to precompute jumpable keyframes without manual day-by-day scrubbing:
-1. NATAL_STATION (Tier 1 - Critical): Stambhana on or aspecting a natal point within 3°20' Navamsha orb.
-2. EXACT_ASPECT (Tier 2 - High): Exact 0°00' Conjunction or Graha Drishti hit (Pass 1, 2, 3).
-3. SKY_STATION (Tier 3 - Medium): Stationary Retrograde (SR) / Direct (SD) pivots in the sky.
-4. SIGN_INGRESS (Tier 3 - Medium): Major slow planet crossing 0°00' into a new Tropical sign.
-
-Strictly adheres to Hemisphere A (pure mathematical calculus; zero HTML, zero CSS).
-"""
-
-import math
-from typing import Dict, Any, List, Optional, Tuple
-import swisseph as swe
-
-SIGNS_LIST = [
-    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
-    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
-]
-
-SWE_PLANET_MAP = {
-    "Mars": swe.MARS,
-    "Mercury": swe.MERCURY,
-    "Jupiter": swe.JUPITER,
-    "Venus": swe.VENUS,
-    "Saturn": swe.SATURN,
-    "Sun": swe.SUN,
-    "Moon": swe.MOON
-}
-
-STATION_PLANETS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars", "Sun", "Venus", "Mercury"]
-EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu", "Sun", "Venus", "Mercury"]
-
-PLANET_SYMBOLS = {
-    "Sun": "☉", "Moon": "☽", "Mars": "♂", "Mercury": "☿",
-    "Jupiter": "♃", "Venus": "♀", "Saturn": "♄", "Rahu": "☊", "Ketu": "☋"
-}
-
-
-def _get_planet_lon_and_speed(jd: float, p_name: str) -> Tuple[float, float]:
-    """Returns (longitude_deg_0_360, daily_speed_deg_per_day) for a planet at Julian Day."""
-    if p_name in ["Rahu", "Ketu"]:
-        # True node for Kala methodology
-        res = swe.calc_ut(jd, swe.TRUE_NODE)
-        rahu_lon = res[0][0] % 360.0
-        rahu_speed = res[0][3]
-        if p_name == "Rahu":
-            return rahu_lon, rahu_speed
-        else:
-            return (rahu_lon + 180.0) % 360.0, rahu_speed
-    else:
-        pid = SWE_PLANET_MAP.get(p_name, swe.MARS)
-        res = swe.calc_ut(jd, pid)
-        return res[0][0] % 360.0, res[0][3]
-
-
-def _revjul_to_dict(jd: float, timezone_hours: float = 0.0) -> Dict[str, Any]:
-    """
-    Converts Julian Day (in UT) to localized date parts for UI jump and display,
-    adding half a minute (0.5 / 1440.0) so Swiss Ephemeris natively handles all
-    minute, hour, day, month, and leap-year rollovers without overflow bugs.
-    """
-    local_jd = jd + (timezone_hours / 24.0) + (0.5 / 1440.0)
-    y, m, d, float_hour = swe.revjul(local_jd)
-    hour = int(float_hour)
-    minute = int((float_hour - hour) * 60.0)
-    day = int(d)
-
-    # Also record exact UTC timestamp
-    utc_jd = jd + (0.5 / 1440.0)
-    uy, um, ud, u_float_h = swe.revjul(utc_jd)
-    u_hour = int(u_float_h)
-    u_min = int((u_float_h - u_hour) * 60.0)
-
-    tz_sign = "+" if timezone_hours >= 0 else "-"
-    abs_tz = abs(timezone_hours)
-    tz_h = int(abs_tz)
-    tz_m = int(round((abs_tz - tz_h) * 60.0))
-    tz_suffix = f"{tz_sign}{tz_h:02d}:{tz_m:02d}"
-
-    return {
-        "year": int(y),
-        "month": int(m),
-        "day": day,
-        "hour": hour,
-        "minute": minute,
-        "timestamp_utc": f"{int(uy):04d}-{int(um):02d}-{int(ud):02d}T{u_hour:02d}:{u_min:02d}:00Z",
-        "timestamp_local": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00{tz_suffix}",
-        "formatted_date": f"{day:02d}/{int(m):02d}/{int(y):04d}",
-        "jump_date": f"{int(y):04d}-{int(m):02d}-{day:02d}",
-        "jump_time": f"{hour:02d}:{minute:02d}:00"
-    }
-
-
-def _get_candidate_aspects(planet: str) -> List[Tuple[str, float]]:
-    """Returns nominal glance angles for a given planet."""
-    aspects = [("Conjunction", 0.0), ("7th Opposition", 180.0)]
-    if planet == "Mars":
-        aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
-    elif planet in ["Jupiter", "Rahu", "Ketu"]:
-        aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
-    elif planet in ["Sun", "Venus", "Mercury"]:
-        aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
-    elif planet == "Saturn":
-        aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
-    return aspects
-
-
-def scan_transit_milestones(
-    natal_chart: Dict[str, Any],
-    start_year: int,
-    start_month: int,
-    start_day: int,
-    start_hour: int = 12,
-    start_minute: int = 0,
-    days_back: int = 90,
-    days_forward: int = 270,
-    transit_latitude: float = 51.5074,
-    transit_longitude: float = -0.1278,
-    transit_timezone: float = 0.0,
-    nakshatra_system: str = "ERNST_DHRUVA",
-    aspect_orb_degrees: float = 3.3333
-) -> Dict[str, Any]:
-    """
-    Scans a configurable date window around the target transit date and identifies:
-    - NATAL_STATION: Planetary stations within 3°20' of natal planets or Lagna
-    - EXACT_ASPECT: 0°00' exact degree aspect hits tagged with retrograde loop passes
-    - SKY_STATION: General planetary stations in the sky
-    - SIGN_INGRESS: Slow planet sign ingress into 0°00' of a new Tropical sign
-    """
-    # 1. Extract Natal Targets (Grahas + Lagna)
-    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
-    natal_grahas = natal_d1.get("grahas", {})
-    natal_lagna = natal_d1.get("lagna", {})
-
-    natal_targets = {}
-    for p_name, g in natal_grahas.items():
-        natal_targets[p_name] = g.get("longitude", 0.0)
-    if natal_lagna:
-        natal_targets["Lagna"] = natal_lagna.get("longitude", 0.0)
-
-    natal_lagna_sign = natal_lagna.get("sign", "Aries")
-    natal_lagna_idx = SIGNS_LIST.index(natal_lagna_sign) if natal_lagna_sign in SIGNS_LIST else 0
-    natal_moon_sign = natal_grahas.get("Moon", {}).get("sign", natal_lagna_sign)
-    natal_moon_idx = SIGNS_LIST.index(natal_moon_sign) if natal_moon_sign in SIGNS_LIST else 0
-
-    # 2. Time Window Definition
-    anchor_jd = swe.julday(
-        start_year,
-        start_month,
-        start_day,
-        start_hour + start_minute / 60.0 - transit_timezone
-    )
-    scan_start_jd = anchor_jd - days_back
-    scan_end_jd = anchor_jd + days_forward
-    total_days = int(math.ceil(scan_end_jd - scan_start_jd))
-
-    raw_milestones: List[Dict[str, Any]] = []
-
-    # 3. Step Through Ephemeris in 1-Day Increments
-    # Pre-sample longitudes and speeds for all bodies at d and d+1
-    # Day 0 to total_days
-    sample_grid: Dict[str, List[Tuple[float, float]]] = {
-        p: [] for p in set(STATION_PLANETS + INGRESS_PLANETS + EXACT_ASPECT_PLANETS)
-    }
-
-    for day_i in range(total_days + 1):
-        cur_jd = scan_start_jd + day_i
-        for p_name in sample_grid.keys():
-            lon, sp = _get_planet_lon_and_speed(cur_jd, p_name)
-            sample_grid[p_name].append((lon, sp))
-
-    # =========================================================================
-    # A. PLANETARY STATIONS (SR / SD)
-    # =========================================================================
-    for p_name in STATION_PLANETS:
-        data_series = sample_grid[p_name]
-        for day_i in range(total_days):
-            sp1 = data_series[day_i][1]
-            sp2 = data_series[day_i + 1][1]
-
-            # Detect sign change of speed (direction reversal)
-            if sp1 * sp2 <= 0.0 and sp1 != sp2:
-                # Bisection to refine the exact moment speed == 0.0
-                jd_a = scan_start_jd + day_i
-                jd_b = scan_start_jd + day_i + 1.0
-                st_type = "SR" if sp1 > 0 else "SD"
-
-                for _ in range(16):  # 16 iterations gives ~1.3 seconds precision
-                    jd_mid = (jd_a + jd_b) / 2.0
-                    _, sp_mid = _get_planet_lon_and_speed(jd_mid, p_name)
-                    if sp1 * sp_mid <= 0.0:
-                        jd_b = jd_mid
-                    else:
-                        jd_a = jd_mid
-
-                station_jd = (jd_a + jd_b) / 2.0
-                station_lon, _ = _get_planet_lon_and_speed(station_jd, p_name)
-
-                # Find if within 3°20' Navamsha orb of any natal target
-                best_aspect_target: Optional[str] = None
-                best_aspect_type: Optional[str] = None
-                best_aspect_orb = 999.0
-
-                candidate_glances = _get_candidate_aspects(p_name)
-                for n_target, n_lon in natal_targets.items():
-                    diff = (n_lon - station_lon) % 360.0
-                    for asp_name, nominal_ang in candidate_glances:
-                        signed_err = (diff - nominal_ang + 180.0) % 360.0 - 180.0
-                        err = abs(signed_err)
-                        if err <= aspect_orb_degrees and err < best_aspect_orb:
-                            best_aspect_orb = err
-                            best_aspect_target = n_target
-                            best_aspect_type = asp_name
-
-                time_dict = _revjul_to_dict(station_jd, transit_timezone)
-                s_idx = int(station_lon // 30) % 12
-                deg_in_sign = station_lon % 30.0
-                deg = int(math.floor(deg_in_sign))
-                minute = int(round((deg_in_sign - deg) * 60.0))
-                if minute >= 60:
-                    deg += 1
-                    minute = 0
-                if deg >= 30:
-                    deg = 0
-                    s_idx = (s_idx + 1) % 12
-                sign_name = SIGNS_LIST[s_idx]
-
-                h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
-                h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
-
-                sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
-
-                if best_aspect_target is not None:
-                    # Tier 1: Station on Natal Point
-                    desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} — {best_aspect_type} Natal {best_aspect_target} ({round(best_aspect_orb, 1)}° orb)"
-                    raw_milestones.append({
-                        "jd": station_jd,
-                        **time_dict,
-                        "category": "NATAL_STATION",
-                        "tier": 1,
-                        "planet": p_name,
-                        "station_type": st_type,
-                        "sign": sign_name,
-                        "degree": deg,
-                        "minute_arc": minute,
-                        "longitude": round(station_lon, 4),
-                        "house_from_lagna": h_lagna,
-                        "house_from_moon": h_moon,
-                        "natal_target": best_aspect_target,
-                        "aspect_type": best_aspect_type,
-                        "orb_at_event": round(best_aspect_orb, 2),
-                        "pass_number": None,
-                        "total_passes": None,
-                        "description": desc
-                    })
-                else:
-                    # Tier 3: Sky Station
-                    desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
-                    raw_milestones.append({
-                        "jd": station_jd,
-                        **time_dict,
-                        "category": "SKY_STATION",
-                        "tier": 3,
-                        "planet": p_name,
-                        "station_type": st_type,
-                        "sign": sign_name,
-                        "degree": deg,
-                        "minute_arc": minute,
-                        "longitude": round(station_lon, 4),
-                        "house_from_lagna": h_lagna,
-                        "house_from_moon": h_moon,
-                        "natal_target": None,
-                        "aspect_type": None,
-                        "orb_at_event": None,
-                        "pass_number": None,
-                        "total_passes": None,
-                        "description": desc
-                    })
-
-    # =========================================================================
-    # B. SIGN INGRESSES (Pravesha) FOR SLOW PLANETS
-    # =========================================================================
-    for p_name in INGRESS_PLANETS:
-        data_series = sample_grid[p_name]
-        for day_i in range(total_days):
-            lon1 = data_series[day_i][0]
-            lon2 = data_series[day_i + 1][0]
-            sign1 = int(lon1 // 30) % 12
-            sign2 = int(lon2 // 30) % 12
-
-            if sign1 != sign2:
-                # Sign boundary crossed
-                jd_a = scan_start_jd + day_i
-                jd_b = scan_start_jd + day_i + 1.0
-
-                # Target boundary longitude
-                target_boundary = (sign2 * 30.0) if ((sign2 - sign1) % 12 == 1) else (sign1 * 30.0)
-
-                for _ in range(16):
-                    jd_mid = (jd_a + jd_b) / 2.0
-                    lon_mid, _ = _get_planet_lon_and_speed(jd_mid, p_name)
-                    sign_mid = int(lon_mid // 30) % 12
-                    if sign_mid == sign1:
-                        jd_a = jd_mid
-                    else:
-                        jd_b = jd_mid
-
-                ingress_jd = (jd_a + jd_b) / 2.0
-                new_sign_idx = sign2
-                new_sign_name = SIGNS_LIST[new_sign_idx]
-                time_dict = _revjul_to_dict(ingress_jd, transit_timezone)
-
-                h_lagna = ((new_sign_idx - natal_lagna_idx + 12) % 12) + 1
-                h_moon = ((new_sign_idx - natal_moon_idx + 12) % 12) + 1
-                sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
-
-                is_retro_ingress = ((sign1 - sign2) % 12 == 1)
-                boundary_lon = (sign1 * 30.0) if is_retro_ingress else (sign2 * 30.0)
-                deg_display = 29 if is_retro_ingress else 0
-                min_display = 59 if is_retro_ingress else 0
-
-                desc = f"{sym} {p_name} Ingress {new_sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
-                raw_milestones.append({
-                    "jd": ingress_jd,
-                    **time_dict,
-                    "category": "SIGN_INGRESS",
-                    "tier": 3,
-                    "planet": p_name,
-                    "station_type": None,
-                    "sign": new_sign_name,
-                    "degree": deg_display,
-                    "minute_arc": min_display,
-                    "longitude": float(boundary_lon % 360.0),
-                    "house_from_lagna": h_lagna,
-                    "house_from_moon": h_moon,
-                    "natal_target": None,
-                    "aspect_type": "Ingress",
-                    "orb_at_event": 0.0,
-                    "pass_number": None,
-                    "total_passes": None,
-                    "description": desc
-                })
-
-    # =========================================================================
-    # C. EXACT 0°00' ASPECT HITS & RETROGRADE LOOPS
-    # =========================================================================
-    exact_aspect_hits: List[Dict[str, Any]] = []
-
-    for p_name in EXACT_ASPECT_PLANETS:
-        candidate_glances = _get_candidate_aspects(p_name)
-        data_series = sample_grid[p_name]
-
-        for n_target, n_lon in natal_targets.items():
-            for asp_name, nominal_ang in candidate_glances:
-                # Target exact longitude that triggers this aspect
-                target_transit_lon = (n_lon - nominal_ang) % 360.0
-
-                for day_i in range(total_days):
-                    l1 = data_series[day_i][0]
-                    l2 = data_series[day_i + 1][0]
-
-                    # Signed shortest difference to the target longitude
-                    d1 = (l1 - target_transit_lon + 180.0) % 360.0 - 180.0
-                    d2 = (l2 - target_transit_lon + 180.0) % 360.0 - 180.0
-
-                    # Check for zero crossing without wrapping across 180 deg
-                    if d1 * d2 <= 0.0 and abs(d1) < 15.0 and abs(d2) < 15.0 and d1 != d2:
-                        jd_a = scan_start_jd + day_i
-                        jd_b = scan_start_jd + day_i + 1.0
-
-                        for _ in range(16):
-                            jd_mid = (jd_a + jd_b) / 2.0
-                            lon_mid, _ = _get_planet_lon_and_speed(jd_mid, p_name)
-                            d_mid = (lon_mid - target_transit_lon + 180.0) % 360.0 - 180.0
-                            if d1 * d_mid <= 0.0:
-                                jd_b = jd_mid
-                            else:
-                                jd_a = jd_mid
-
-                        hit_jd = (jd_a + jd_b) / 2.0
-                        hit_lon, hit_sp = _get_planet_lon_and_speed(hit_jd, p_name)
-
-                        s_idx = int(hit_lon // 30) % 12
-                        deg_in_sign = hit_lon % 30.0
-                        deg = int(math.floor(deg_in_sign))
-                        minute = int(round((deg_in_sign - deg) * 60.0))
-                        if minute >= 60:
-                            deg += 1
-                            minute = 0
-                        if deg >= 30:
-                            deg = 0
-                            s_idx = (s_idx + 1) % 12
-                        sign_name = SIGNS_LIST[s_idx]
-
-                        h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
-                        h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
-
-                        time_dict = _revjul_to_dict(hit_jd, transit_timezone)
-                        is_retro = (hit_sp < 0)
-
-                        exact_aspect_hits.append({
-                            "jd": hit_jd,
-                            **time_dict,
-                            "category": "EXACT_ASPECT",
-                            "tier": 2,
-                            "planet": p_name,
-                            "station_type": None,
-                            "is_retrograde_at_hit": is_retro,
-                            "sign": sign_name,
-                            "degree": deg,
-                            "minute_arc": minute,
-                            "longitude": round(hit_lon, 4),
-                            "house_from_lagna": h_lagna,
-                            "house_from_moon": h_moon,
-                            "natal_target": n_target,
-                            "aspect_type": asp_name,
-                            "orb_at_event": 0.0,
-                            "group_key": (p_name, n_target, asp_name)
-                        })
-
-    # Group exact hits to determine pass numbers (Pass 1, Pass 2, Pass 3)
-    exact_aspect_hits.sort(key=lambda x: x["jd"])
-    groups: Dict[Tuple[str, str, str], List[Dict[str, Any]]] = {}
-    for hit in exact_aspect_hits:
-        k = hit["group_key"]
-        groups.setdefault(k, []).append(hit)
-
-    for k, hit_list in groups.items():
-        total_p = len(hit_list)
-        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
-        p_name = hit_list[0]["planet"]
-        offset = 1 if (first_is_retro and p_name in ["Mars", "Jupiter", "Saturn"]) else 0
-        adj_total = total_p + offset
-        for idx, hit in enumerate(hit_list):
-            pass_num = idx + 1 + offset
-            hit["pass_number"] = pass_num
-            hit["total_passes"] = adj_total
-            p_name = hit["planet"]
-            n_target = hit["natal_target"]
-            asp_name = hit["aspect_type"]
-            sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
-            pass_str = f" (Pass {pass_num}/{adj_total})" if adj_total > 1 else ""
-            hit["description"] = f"{sym} {p_name} {asp_name} Natal {n_target} (0°00'){pass_str}"
-            del hit["group_key"]
-            del hit["is_retrograde_at_hit"]
-            raw_milestones.append(hit)
-
-    # =========================================================================
-    # D. Deduplication and Chronological Assembly
-    # =========================================================================
-    raw_milestones.sort(key=lambda x: x["jd"])
-
-    # Remove near-duplicate roots (events within 15 minutes of same planet & category)
-    cleaned_milestones: List[Dict[str, Any]] = []
-    seen_events = set()
-
-    for m in raw_milestones:
-        sig = (m["category"], m["planet"], m["year"], m["month"], m["day"], m["hour"], m["minute"] // 15)
-        if sig in seen_events:
-            continue
-        seen_events.add(sig)
-        cleaned_milestones.append(m)
-
-    # Compile upcoming stations for outer rim SVG pins
-    upcoming_stations: List[Dict[str, Any]] = []
-    seen_station_keys = set()
-
-    for m in cleaned_milestones:
-        if m["category"] in ["NATAL_STATION", "SKY_STATION"] and m["jd"] >= (anchor_jd - 0.5):
-            st_key = (m["planet"], m["station_type"], m["sign"], m["degree"])
-            if st_key not in seen_station_keys:
-                seen_station_keys.add(st_key)
-                sym = PLANET_SYMBOLS.get(m["planet"], m["planet"][:2])
-                upcoming_stations.append({
-                    "planet": m["planet"],
-                    "station_type": m["station_type"],
-                    "longitude": m["longitude"],
-                    "sign": m["sign"],
-                    "degree": m["degree"],
-                    "minute": m["minute_arc"],
-                    "year": m["year"],
-                    "month": m["month"],
-                    "day": m["day"],
-                    "hour": m["hour"],
-                    "minute_arc": m["minute"],
-                    "formatted_date": m["formatted_date"],
-                    "tooltip": f"Upcoming {m['planet']} {m['station_type']} at {m['degree']}°{m['minute_arc']:02d}' {m['sign']} on {m['formatted_date']}",
-                    "jump_date": m["jump_date"],
-                    "jump_time": m["jump_time"]
-                })
-
-    return {
-        "milestones": cleaned_milestones,
-        "upcoming_stations": upcoming_stations,
-        "scan_meta": {
-            "start_year": start_year,
-            "start_month": start_month,
-            "start_day": start_day,
-            "days_back": days_back,
-            "days_forward": days_forward,
-            "total_milestones": len(cleaned_milestones),
-            "natal_lagna_sign": natal_lagna_sign,
-            "natal_moon_sign": natal_moon_sign
-        }
-    }
-
-
-
-################################################################################
-### FILE 5/10: engine/draw_transit_biwheel.py
-### PURPOSE: Level 8 Presentation SVG Bi-Wheel Generator
-### SOURCE PATH: exports/transits/engine/draw_transit_biwheel.py
-################################################################################
-
+================================================================================
+FILE: engine/draw_transit_biwheel.py
+TYPE: Python Source | LINES: 580 | SIZE: 33.6 KB
+================================================================================
 """
 Transit Bi-Wheel SVG Generation (Level 8 Presentation)
 =====================================================
@@ -1170,6 +407,7 @@ Standalone module for rendering the dual-ring Transit Bi-Wheel in pure SVG (Kala
 """
 
 import math
+import re
 from typing import List, Dict, Any, Optional
 
 signs_list = [
@@ -1568,7 +806,18 @@ def generate_transit_biwheel(
 
         # Outer Dot on the chart rim (r = 206)
         dx, dy = polar_coords(r_chart_outer, ang_true)
-        tip = f"Transit {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
+        item_dot = p["item"]
+        d1_h = item_dot.get("house_from_lagna", ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1)
+        h_moon_dot = item_dot.get("house_from_moon")
+        if h_moon_dot is not None:
+            is_fav_dot = item_dot.get("is_effective_benefic_from_moon", item_dot.get("is_favorable_from_moon", False))
+            has_vedha_dot = item_dot.get("has_vedha", False)
+            vedha_str_dot = f" [Vedha by {', '.join(item_dot['vedha_by'])}]" if has_vedha_dot and item_dot.get("vedha_by") else (" [Vedha]" if has_vedha_dot else "")
+            chandra_str_dot = f" · Chandra H{h_moon_dot} ({'Śubha' if is_fav_dot else 'Aśubha'}{vedha_str_dot})"
+        else:
+            chandra_str_dot = ""
+        varg_str_dot = " · Vargottama" if item_dot.get("is_vargottama") else ""
+        tip = f"Transit {p_name}: {item_dot['degree']}° {item_dot['minute']:02d}' {item_dot['sign']} (Natal H{d1_h}{chandra_str_dot}{varg_str_dot})"
         svg += f'  <circle class="transit-planet-dot dot-tr-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
 
         # Subtle pulsing / double halo ring around outer rim dot when stationary
@@ -1647,9 +896,18 @@ def generate_transit_biwheel(
         font_sz = 8.5 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
         s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
 
-        d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
+        d1_house = item.get("house_from_lagna", ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1)
         st_desc = f" [{st_type}]" if st_type else (" [R]" if is_retro else "")
-        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal House {d1_house})"
+        h_moon = item.get("house_from_moon")
+        if h_moon is not None:
+            is_fav = item.get("is_effective_benefic_from_moon", item.get("is_favorable_from_moon", False))
+            has_vedha = item.get("has_vedha", False)
+            vedha_str = f" [Vedha by {', '.join(item['vedha_by'])}]" if has_vedha and item.get("vedha_by") else (" [Vedha]" if has_vedha else "")
+            chandra_str = f" · Chandra H{h_moon} ({'Śubha' if is_fav else 'Aśubha'}{vedha_str})"
+        else:
+            chandra_str = ""
+        varg_str = " · Vargottama" if item.get("is_vargottama") else ""
+        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal H{d1_house}{chandra_str}{varg_str})"
 
         svg += f'<g class="interactive planet-glyph outer-planet transit-planet" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
 
@@ -1715,176 +973,1428 @@ def generate_transit_biwheel(
     return svg
 
 
-
-################################################################################
-### FILE 6/10: api/transit_routes.py
-### PURPOSE: Flask REST API Endpoints & Caching Layer
-### SOURCE PATH: exports/transits/api/transit_routes.py
-################################################################################
-
+================================================================================
+FILE: engine/milestone_scanner.py
+TYPE: Python Source | LINES: 567 | SIZE: 24.6 KB
+================================================================================
 """
-Flask API Transit Endpoints (Extracted from app.py)
-===================================================
+Transit Milestone Scanner Engine for Astra (Kala Methodology)
 
-This module illustrates how the transit calculus (Hemisphere A) and 
-SVG Bi-Wheel generator (Level 8 Presentation) are exposed via REST API.
+Performs high-speed coarse-to-fine ephemeris scans across a date horizon
+to precompute jumpable keyframes without manual day-by-day scrubbing:
+1. NATAL_STATION (Tier 1 - Critical): Stambhana on or aspecting a natal point within 3°20' Navamsha orb.
+2. EXACT_ASPECT (Tier 2 - High): Exact 0°00' Conjunction or Graha Drishti hit (Pass 1, 2, 3).
+3. SKY_STATION (Tier 3 - Medium): Stationary Retrograde (SR) / Direct (SD) pivots in the sky.
+4. SIGN_INGRESS (Tier 3 - Medium): Major slow planet crossing 0°00' into a new Tropical sign.
 
-Endpoints:
-1. GET /api/chart/<native_id>/transit
-   - Computes real-time or user-selected transit snapshot.
-   - Calculates planetary speeds, station states (SR/SD), and aspect intensity.
-   - Triggers the 360-day milestone scanner (-90 to +270 days).
-   - Generates and returns the Bi-Wheel SVG + JSON radar payload.
-
-2. GET /api/chart/<native_id>/transit/milestones
-   - Standalone milestone scanner endpoint with custom scanning horizons
-     (days_back, days_forward).
+Strictly adheres to Hemisphere A (pure mathematical calculus; zero HTML, zero CSS).
 """
 
-from datetime import datetime
-import re
-from flask import Blueprint, jsonify, request
+import math
+from typing import Dict, Any, List, Optional, Tuple, Set
+import swisseph as swe
 
-transit_blueprint = Blueprint('transit_api', __name__)
+SIGNS_LIST = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
 
-# In-memory LRU or dictionary caches to prevent recalculating static natal charts
-# and expensive ephemeris scans across consecutive date scrub requests.
-_NATAL_CHART_CACHE = {}
-_TRANSIT_MILESTONES_CACHE = {}
+SWE_PLANET_MAP = {
+    "Mars": swe.MARS,
+    "Mercury": swe.MERCURY,
+    "Jupiter": swe.JUPITER,
+    "Venus": swe.VENUS,
+    "Saturn": swe.SATURN,
+    "Sun": swe.SUN,
+    "Moon": swe.MOON
+}
 
-@transit_blueprint.route('/api/chart/<native_id>/transit')
-def get_chart_transit(native_id):
+STATION_PLANETS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars", "Sun", "Venus", "Mercury"]
+EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu", "Sun", "Venus", "Mercury"]
+
+PLANET_SYMBOLS = {
+    "Sun": "☉", "Moon": "☽", "Mars": "♂", "Mercury": "☿",
+    "Jupiter": "♃", "Venus": "♀", "Saturn": "♄", "Rahu": "☊", "Ketu": "☋"
+}
+
+
+def _get_planet_lon_and_speed(jd: float, p_name: str) -> Tuple[float, float]:
+    """Returns (longitude_deg_0_360, daily_speed_deg_per_day) for a planet at Julian Day."""
+    if p_name in ["Rahu", "Ketu"]:
+        # True node for Kala methodology
+        res = swe.calc_ut(jd, swe.TRUE_NODE)
+        rahu_lon = res[0][0] % 360.0
+        rahu_speed = res[0][3]
+        if p_name == "Rahu":
+            return rahu_lon, rahu_speed
+        else:
+            return (rahu_lon + 180.0) % 360.0, rahu_speed
+    else:
+        pid = SWE_PLANET_MAP.get(p_name, swe.MARS)
+        res = swe.calc_ut(jd, pid)
+        return res[0][0] % 360.0, res[0][3]
+
+
+def _revjul_to_dict(jd: float, timezone_hours: float = 0.0) -> Dict[str, Any]:
     """
-    Returns real-time or date-specific transit bi-wheel SVG and aspect data.
+    Converts Julian Day (in UT) to localized date parts for UI jump and display,
+    adding half a minute (0.5 / 1440.0) so Swiss Ephemeris natively handles all
+    minute, hour, day, month, and leap-year rollovers without overflow bugs.
     """
-    # 1. Retrieve natal profile
-    # (Assuming native_manager.get_native_by_id)
-    native = {"id": native_id} # mock or lookup
-    if not native:
-        return jsonify({"error": "Native not found"}), 404
+    local_jd = jd + (timezone_hours / 24.0) + (0.5 / 1440.0)
+    y, m, d, float_hour = swe.revjul(local_jd)
+    hour = int(float_hour)
+    minute = int((float_hour - hour) * 60.0)
+    day = int(d)
 
-    now = datetime.now()
-    transit_date_str = request.args.get('transit_date')
-    transit_time_str = request.args.get('transit_time')
-    
-    # Parse transit date and time safely
-    if transit_date_str:
-        try:
-            nums = [int(n) for n in re.findall(r'\d+', str(transit_date_str))]
-            if len(nums) >= 3:
-                if nums[0] > 1000:
-                    t_year, t_month, t_day = nums[0], nums[1], nums[2]
+    # Also record exact UTC timestamp
+    utc_jd = jd + (0.5 / 1440.0)
+    uy, um, ud, u_float_h = swe.revjul(utc_jd)
+    u_hour = int(u_float_h)
+    u_min = int((u_float_h - u_hour) * 60.0)
+
+    tz_sign = "+" if timezone_hours >= 0 else "-"
+    abs_tz = abs(timezone_hours)
+    tz_h = int(abs_tz)
+    tz_m = int(round((abs_tz - tz_h) * 60.0))
+    tz_suffix = f"{tz_sign}{tz_h:02d}:{tz_m:02d}"
+
+    return {
+        "year": int(y),
+        "month": int(m),
+        "day": day,
+        "hour": hour,
+        "minute": minute,
+        "timestamp_utc": f"{int(uy):04d}-{int(um):02d}-{int(ud):02d}T{u_hour:02d}:{u_min:02d}:00Z",
+        "timestamp_local": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00{tz_suffix}",
+        "formatted_date": f"{day:02d}/{int(m):02d}/{int(y):04d}",
+        "jump_date": f"{int(y):04d}-{int(m):02d}-{day:02d}",
+        "jump_time": f"{hour:02d}:{minute:02d}:00"
+    }
+
+
+def _get_candidate_aspects(planet: str) -> List[Tuple[str, float]]:
+    """Returns nominal glance angles for a given planet."""
+    aspects = [("Conjunction", 0.0), ("7th Opposition", 180.0)]
+    if planet == "Mars":
+        aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
+    elif planet in ["Jupiter", "Rahu", "Ketu"]:
+        aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+    elif planet in ["Sun", "Venus", "Mercury"]:
+        aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
+    elif planet == "Saturn":
+        aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
+    return aspects
+
+
+def scan_transit_milestones(
+    natal_chart: Dict[str, Any],
+    start_year: int,
+    start_month: int,
+    start_day: int,
+    start_hour: int = 12,
+    start_minute: int = 0,
+    days_back: int = 90,
+    days_forward: int = 270,
+    transit_latitude: float = 51.5074,
+    transit_longitude: float = -0.1278,
+    transit_timezone: float = 0.0,
+    nakshatra_system: str = "ERNST_DHRUVA",
+    aspect_orb_degrees: float = 3.3333
+) -> Dict[str, Any]:
+    """
+    Scans a configurable date window around the target transit date and identifies:
+    - NATAL_STATION: Planetary stations within 3°20' of natal planets or Lagna
+    - EXACT_ASPECT: 0°00' exact degree aspect hits tagged with retrograde loop passes
+    - SKY_STATION: General planetary stations in the sky
+    - SIGN_INGRESS: Slow planet sign ingress into 0°00' of a new Tropical sign
+    """
+    # 1. Extract Natal Targets (Grahas + Lagna)
+    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
+    natal_grahas = natal_d1.get("grahas", {})
+    natal_lagna = natal_d1.get("lagna", {})
+
+    natal_targets = {}
+    for p_name, g in natal_grahas.items():
+        natal_targets[p_name] = g.get("longitude", 0.0)
+    if natal_lagna:
+        natal_targets["Lagna"] = natal_lagna.get("longitude", 0.0)
+
+    natal_lagna_sign = natal_lagna.get("sign", "Aries")
+    natal_lagna_idx = SIGNS_LIST.index(natal_lagna_sign) if natal_lagna_sign in SIGNS_LIST else 0
+    natal_moon_sign = natal_grahas.get("Moon", {}).get("sign", natal_lagna_sign)
+    natal_moon_idx = SIGNS_LIST.index(natal_moon_sign) if natal_moon_sign in SIGNS_LIST else 0
+
+    # 2. Time Window Definition
+    anchor_jd = swe.julday(
+        start_year,
+        start_month,
+        start_day,
+        start_hour + start_minute / 60.0 - transit_timezone
+    )
+    scan_start_jd = anchor_jd - days_back
+    scan_end_jd = anchor_jd + days_forward
+    total_days = int(math.ceil(scan_end_jd - scan_start_jd))
+
+    active_dasha_lords_cfg = set(natal_chart.get("active_dasha_lords", []))
+    antardashas_timeline = natal_chart.get("vimshottari_dasha", {}).get("antardashas", [])
+
+    def _get_active_lords_at_jd(event_jd: float) -> Set[str]:
+        if active_dasha_lords_cfg:
+            return active_dasha_lords_cfg
+        if antardashas_timeline:
+            for ad in antardashas_timeline:
+                if ad.get("start_jd", 0.0) <= event_jd < ad.get("end_jd", 0.0):
+                    res = set()
+                    m = ad.get("mahadasha_lord")
+                    a = ad.get("antardasha_lord")
+                    if m: res.add(m)
+                    if a: res.add(a)
+                    return res
+        return set()
+
+    raw_milestones: List[Dict[str, Any]] = []
+
+    # 3. Step Through Ephemeris in 1-Day Increments
+    # Pre-sample longitudes and speeds for all bodies at d and d+1
+    # Day 0 to total_days
+    sample_grid: Dict[str, List[Tuple[float, float]]] = {
+        p: [] for p in set(STATION_PLANETS + INGRESS_PLANETS + EXACT_ASPECT_PLANETS)
+    }
+
+    for day_i in range(total_days + 1):
+        cur_jd = scan_start_jd + day_i
+        for p_name in sample_grid.keys():
+            lon, sp = _get_planet_lon_and_speed(cur_jd, p_name)
+            sample_grid[p_name].append((lon, sp))
+
+    # =========================================================================
+    # A. PLANETARY STATIONS (SR / SD)
+    # =========================================================================
+    for p_name in STATION_PLANETS:
+        data_series = sample_grid[p_name]
+        for day_i in range(total_days):
+            sp1 = data_series[day_i][1]
+            sp2 = data_series[day_i + 1][1]
+
+            # Detect sign change of speed (direction reversal)
+            if sp1 * sp2 <= 0.0 and sp1 != sp2:
+                # Bisection to refine the exact moment speed == 0.0
+                jd_a = scan_start_jd + day_i
+                jd_b = scan_start_jd + day_i + 1.0
+                st_type = "SR" if sp1 > 0 else "SD"
+
+                for _ in range(16):  # 16 iterations gives ~1.3 seconds precision
+                    jd_mid = (jd_a + jd_b) / 2.0
+                    _, sp_mid = _get_planet_lon_and_speed(jd_mid, p_name)
+                    if sp1 * sp_mid <= 0.0:
+                        jd_b = jd_mid
+                    else:
+                        jd_a = jd_mid
+
+                station_jd = (jd_a + jd_b) / 2.0
+                station_lon, _ = _get_planet_lon_and_speed(station_jd, p_name)
+
+                # Find if within 3°20' Navamsha orb of any natal target
+                best_aspect_target: Optional[str] = None
+                best_aspect_type: Optional[str] = None
+                best_aspect_orb = 999.0
+
+                candidate_glances = _get_candidate_aspects(p_name)
+                for n_target, n_lon in natal_targets.items():
+                    diff = (n_lon - station_lon) % 360.0
+                    for asp_name, nominal_ang in candidate_glances:
+                        signed_err = (diff - nominal_ang + 180.0) % 360.0 - 180.0
+                        err = abs(signed_err)
+                        if err <= aspect_orb_degrees and err < best_aspect_orb:
+                            best_aspect_orb = err
+                            best_aspect_target = n_target
+                            best_aspect_type = asp_name
+
+                time_dict = _revjul_to_dict(station_jd, transit_timezone)
+                s_idx = int(station_lon // 30) % 12
+                deg_in_sign = station_lon % 30.0
+                deg = int(math.floor(deg_in_sign))
+                minute = int(round((deg_in_sign - deg) * 60.0))
+                if minute >= 60:
+                    deg += 1
+                    minute = 0
+                if deg >= 30:
+                    deg = 0
+                    s_idx = (s_idx + 1) % 12
+                sign_name = SIGNS_LIST[s_idx]
+
+                h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
+                h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
+
+                sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
+
+                active_lords = _get_active_lords_at_jd(station_jd)
+
+                if best_aspect_target is not None:
+                    # Tier 1: Station on Natal Point
+                    desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} — {best_aspect_type} Natal {best_aspect_target} ({round(best_aspect_orb, 1)}° orb)"
+                    is_dasha_synced = bool(active_lords and (p_name in active_lords or best_aspect_target in active_lords))
+                    raw_milestones.append({
+                        "jd": station_jd,
+                        **time_dict,
+                        "category": "NATAL_STATION",
+                        "tier": 1,
+                        "planet": p_name,
+                        "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                        "is_dasha_synchronized": is_dasha_synced,
+                        "station_type": st_type,
+                        "sign": sign_name,
+                        "degree": deg,
+                        "minute_arc": minute,
+                        "longitude": round(station_lon, 4),
+                        "house_from_lagna": h_lagna,
+                        "house_from_moon": h_moon,
+                        "natal_target": best_aspect_target,
+                        "aspect_type": best_aspect_type,
+                        "orb_at_event": round(best_aspect_orb, 2),
+                        "pass_number": None,
+                        "total_passes": None,
+                        "description": desc
+                    })
                 else:
-                    t_day, t_month, t_year = nums[0], nums[1], nums[2]
+                    # Tier 3: Sky Station
+                    desc = f"{sym} {p_name} {st_type} at {deg}°{minute:02d}' {sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
+                    is_dasha_synced = bool(active_lords and p_name in active_lords)
+                    raw_milestones.append({
+                        "jd": station_jd,
+                        **time_dict,
+                        "category": "SKY_STATION",
+                        "tier": 3,
+                        "planet": p_name,
+                        "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                        "is_dasha_synchronized": is_dasha_synced,
+                        "station_type": st_type,
+                        "sign": sign_name,
+                        "degree": deg,
+                        "minute_arc": minute,
+                        "longitude": round(station_lon, 4),
+                        "house_from_lagna": h_lagna,
+                        "house_from_moon": h_moon,
+                        "natal_target": None,
+                        "aspect_type": None,
+                        "orb_at_event": None,
+                        "pass_number": None,
+                        "total_passes": None,
+                        "description": desc
+                    })
+
+    # =========================================================================
+    # B. SIGN INGRESSES (Pravesha) FOR SLOW PLANETS
+    # =========================================================================
+    for p_name in INGRESS_PLANETS:
+        data_series = sample_grid[p_name]
+        for day_i in range(total_days):
+            lon1 = data_series[day_i][0]
+            lon2 = data_series[day_i + 1][0]
+            sign1 = int(lon1 // 30) % 12
+            sign2 = int(lon2 // 30) % 12
+
+            if sign1 != sign2:
+                # Sign boundary crossed
+                jd_a = scan_start_jd + day_i
+                jd_b = scan_start_jd + day_i + 1.0
+
+                # Target boundary longitude
+                target_boundary = (sign2 * 30.0) if ((sign2 - sign1) % 12 == 1) else (sign1 * 30.0)
+
+                for _ in range(16):
+                    jd_mid = (jd_a + jd_b) / 2.0
+                    lon_mid, _ = _get_planet_lon_and_speed(jd_mid, p_name)
+                    sign_mid = int(lon_mid // 30) % 12
+                    if sign_mid == sign1:
+                        jd_a = jd_mid
+                    else:
+                        jd_b = jd_mid
+
+                ingress_jd = (jd_a + jd_b) / 2.0
+                new_sign_idx = sign2
+                new_sign_name = SIGNS_LIST[new_sign_idx]
+                time_dict = _revjul_to_dict(ingress_jd, transit_timezone)
+
+                h_lagna = ((new_sign_idx - natal_lagna_idx + 12) % 12) + 1
+                h_moon = ((new_sign_idx - natal_moon_idx + 12) % 12) + 1
+                sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
+
+                is_retro_ingress = ((sign1 - sign2) % 12 == 1)
+                boundary_lon = (sign1 * 30.0) if is_retro_ingress else (sign2 * 30.0)
+                deg_display = 29 if is_retro_ingress else 0
+                min_display = 59 if is_retro_ingress else 0
+
+                active_lords = _get_active_lords_at_jd(ingress_jd)
+                is_dasha_synced = bool(active_lords and p_name in active_lords)
+                desc = f"{sym} {p_name} Ingress {new_sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
+                raw_milestones.append({
+                    "jd": ingress_jd,
+                    **time_dict,
+                    "category": "SIGN_INGRESS",
+                    "tier": 3,
+                    "planet": p_name,
+                    "is_macro_planet": p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"],
+                    "is_dasha_synchronized": is_dasha_synced,
+                    "station_type": None,
+                    "sign": new_sign_name,
+                    "degree": deg_display,
+                    "minute_arc": min_display,
+                    "longitude": float(boundary_lon % 360.0),
+                    "house_from_lagna": h_lagna,
+                    "house_from_moon": h_moon,
+                    "natal_target": None,
+                    "aspect_type": "Ingress",
+                    "orb_at_event": 0.0,
+                    "pass_number": None,
+                    "total_passes": None,
+                    "description": desc
+                })
+
+    # =========================================================================
+    # C. EXACT 0°00' ASPECT HITS & RETROGRADE LOOPS
+    # =========================================================================
+    exact_aspect_hits: List[Dict[str, Any]] = []
+
+    for p_name in EXACT_ASPECT_PLANETS:
+        candidate_glances = _get_candidate_aspects(p_name)
+        data_series = sample_grid[p_name]
+
+        for n_target, n_lon in natal_targets.items():
+            for asp_name, nominal_ang in candidate_glances:
+                # Target exact longitude that triggers this aspect
+                target_transit_lon = (n_lon - nominal_ang) % 360.0
+
+                for day_i in range(total_days):
+                    l1 = data_series[day_i][0]
+                    l2 = data_series[day_i + 1][0]
+
+                    # Signed shortest difference to the target longitude
+                    d1 = (l1 - target_transit_lon + 180.0) % 360.0 - 180.0
+                    d2 = (l2 - target_transit_lon + 180.0) % 360.0 - 180.0
+
+                    # Check for zero crossing without wrapping across 180 deg
+                    if d1 * d2 <= 0.0 and abs(d1) < 15.0 and abs(d2) < 15.0 and d1 != d2:
+                        jd_a = scan_start_jd + day_i
+                        jd_b = scan_start_jd + day_i + 1.0
+
+                        for _ in range(16):
+                            jd_mid = (jd_a + jd_b) / 2.0
+                            lon_mid, _ = _get_planet_lon_and_speed(jd_mid, p_name)
+                            d_mid = (lon_mid - target_transit_lon + 180.0) % 360.0 - 180.0
+                            if d1 * d_mid <= 0.0:
+                                jd_b = jd_mid
+                            else:
+                                jd_a = jd_mid
+
+                        hit_jd = (jd_a + jd_b) / 2.0
+                        hit_lon, hit_sp = _get_planet_lon_and_speed(hit_jd, p_name)
+
+                        s_idx = int(hit_lon // 30) % 12
+                        deg_in_sign = hit_lon % 30.0
+                        deg = int(math.floor(deg_in_sign))
+                        minute = int(round((deg_in_sign - deg) * 60.0))
+                        if minute >= 60:
+                            deg += 1
+                            minute = 0
+                        if deg >= 30:
+                            deg = 0
+                            s_idx = (s_idx + 1) % 12
+                        sign_name = SIGNS_LIST[s_idx]
+
+                        h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
+                        h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
+
+                        time_dict = _revjul_to_dict(hit_jd, transit_timezone)
+                        is_retro = (hit_sp < 0)
+
+                        active_lords = _get_active_lords_at_jd(hit_jd)
+                        is_dasha_synced = bool(active_lords and (p_name in active_lords or n_target in active_lords))
+
+                        exact_aspect_hits.append({
+                            "jd": hit_jd,
+                            **time_dict,
+                            "category": "EXACT_ASPECT",
+                            "tier": 2,
+                            "planet": p_name,
+                            "is_dasha_synchronized": is_dasha_synced,
+                            "station_type": None,
+                            "is_retrograde_at_hit": is_retro,
+                            "sign": sign_name,
+                            "degree": deg,
+                            "minute_arc": minute,
+                            "longitude": round(hit_lon, 4),
+                            "house_from_lagna": h_lagna,
+                            "house_from_moon": h_moon,
+                            "natal_target": n_target,
+                            "aspect_type": asp_name,
+                            "orb_at_event": 0.0,
+                            "group_key": (p_name, n_target, asp_name)
+                        })
+
+    # Group exact hits to determine pass numbers (Pass 1, Pass 2, Pass 3)
+    exact_aspect_hits.sort(key=lambda x: x["jd"])
+    groups: Dict[Tuple[str, str, str, int], List[Dict[str, Any]]] = {}
+
+    # Separate hits occurring in distinct annual orbits (> 150 days apart)
+    last_hit_time: Dict[Tuple[str, str, str], float] = {}
+    cluster_ids: Dict[Tuple[str, str, str], int] = {}
+
+    for hit in exact_aspect_hits:
+        base_k = hit["group_key"]
+        prev_jd = last_hit_time.get(base_k)
+        if prev_jd is None or (hit["jd"] - prev_jd) > 150.0:
+            cluster_ids[base_k] = cluster_ids.get(base_k, 0) + 1
+        last_hit_time[base_k] = hit["jd"]
+        k = (base_k[0], base_k[1], base_k[2], cluster_ids[base_k])
+        groups.setdefault(k, []).append(hit)
+
+    for k, hit_list in groups.items():
+        total_p = len(hit_list)
+        p_name = hit_list[0]["planet"]
+        has_retro = any(h.get("is_retrograde_at_hit", False) for h in hit_list)
+        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
+
+        # Standard retrograde loop across a degree consists of 3 passes (Direct, Retro, Direct)
+        if has_retro and p_name in STATION_PLANETS:
+            if first_is_retro:
+                offset = 1  # Truncated window: Pass 1 occurred prior to scan_start_jd
+                adj_total = max(total_p + offset, 3)
             else:
-                t_year, t_month, t_day = now.year, now.month, now.day
-        except Exception:
-            t_year, t_month, t_day = now.year, now.month, now.day
-    else:
-        t_year, t_month, t_day = now.year, now.month, now.day
+                offset = 0
+                adj_total = max(total_p, 3)
+        else:
+            offset = 0
+            adj_total = total_p
 
-    if transit_time_str:
-        try:
-            t_nums = [int(n) for n in re.findall(r'\d+', str(transit_time_str))]
-            t_hour = t_nums[0] if len(t_nums) > 0 else now.hour
-            t_min = t_nums[1] if len(t_nums) > 1 else 0
-            t_sec = t_nums[2] if len(t_nums) > 2 else 0
-        except Exception:
-            t_hour, t_min, t_sec = now.hour, now.minute, now.second
-    else:
-        t_hour, t_min, t_sec = now.hour, now.minute, now.second
+        for idx, hit in enumerate(hit_list):
+            pass_num = idx + 1 + offset
+            hit["pass_number"] = pass_num
+            hit["total_passes"] = adj_total
+            hit["is_macro_planet"] = p_name in ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"]
+            n_target = hit["natal_target"]
+            asp_name = hit["aspect_type"]
+            sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
+            pass_str = f" (Pass {pass_num}/{adj_total})" if adj_total > 1 else ""
+            hit["description"] = f"{sym} {p_name} {asp_name} Natal {n_target} (0°00'){pass_str}"
+            del hit["group_key"]
+            if "is_retrograde_at_hit" in hit:
+                del hit["is_retrograde_at_hit"]
+            raw_milestones.append(hit)
 
-    t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
-    t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
-    
-    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
-    try:
-        t_tz = float(tz_str)
-    except ValueError:
-        try:
-            sign = -1 if tz_str.startswith('-') else 1
-            tz_parts = tz_str.lstrip('+-').split(':')
-            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
-        except Exception:
-            t_tz = 0.0
+    # =========================================================================
+    # D. Deduplication and Chronological Assembly
+    # =========================================================================
+    raw_milestones.sort(key=lambda x: x["jd"])
 
-    nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
-    debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
-    mode = request.args.get('mode', 'symbol')
-    root = request.args.get('root', 'Lagna')
-    show_nakshatras = request.args.get('show_nakshatras', 'false').lower() == 'true'
-    aspect_orb_degrees = request.args.get('orb', default=3.3333, type=float)
+    # Remove near-duplicate roots (events within 15 minutes of same planet & category)
+    cleaned_milestones: List[Dict[str, Any]] = []
+    seen_events = set()
 
-    # 2. Compute or load cached Natal Baseline
-    # (compute_chart_data calculates D1 and Divisional Vargas via Swiss Ephemeris)
-    natal_chart = {} # compute_chart_data(...)
+    for m in raw_milestones:
+        sig = (m["category"], m["planet"], m["year"], m["month"], m["day"], m["hour"], m["minute"] // 15)
+        if sig in seen_events:
+            continue
+        seen_events.add(sig)
+        cleaned_milestones.append(m)
 
-    # 3. Calculate Transits (Hemisphere A Pure Math)
-    from jyotish.transits.transits import calculate_transits
-    transit_res = calculate_transits(
-        natal_chart=natal_chart,
-        transit_year=t_year,
-        transit_month=t_month,
-        transit_day=t_day,
-        transit_hour=t_hour,
-        transit_minute=t_min,
-        transit_second=t_sec,
-        transit_latitude=t_lat,
-        transit_longitude=t_lon,
-        transit_timezone=t_tz,
-        nakshatra_system=nakshatra_system,
-        debilitation_mode=debilitation_mode,
-        aspect_orb_degrees=aspect_orb_degrees
+    # Compile upcoming stations for outer rim SVG pins
+    upcoming_stations: List[Dict[str, Any]] = []
+    seen_station_keys = set()
+
+    for m in cleaned_milestones:
+        if m["category"] in ["NATAL_STATION", "SKY_STATION"] and m["jd"] >= (anchor_jd - 0.5):
+            st_key = (m["planet"], m["station_type"], m["sign"], m["degree"])
+            if st_key not in seen_station_keys:
+                seen_station_keys.add(st_key)
+                sym = PLANET_SYMBOLS.get(m["planet"], m["planet"][:2])
+                upcoming_stations.append({
+                    "jd": m["jd"],
+                    "planet": m["planet"],
+                    "is_dasha_synchronized": m.get("is_dasha_synchronized", False),
+                    "station_type": m["station_type"],
+                    "longitude": m["longitude"],
+                    "sign": m["sign"],
+                    "degree": m["degree"],
+                    "minute": m["minute_arc"],
+                    "year": m["year"],
+                    "month": m["month"],
+                    "day": m["day"],
+                    "hour": m["hour"],
+                    "minute_arc": m["minute"],
+                    "formatted_date": m["formatted_date"],
+                    "tooltip": f"Upcoming {m['planet']} {m['station_type']} at {m['degree']}°{m['minute_arc']:02d}' {m['sign']} on {m['formatted_date']}",
+                    "jump_date": m["jump_date"],
+                    "jump_time": m["jump_time"]
+                })
+
+    return {
+        "milestones": cleaned_milestones,
+        "upcoming_stations": upcoming_stations,
+        "scan_meta": {
+            "start_year": start_year,
+            "start_month": start_month,
+            "start_day": start_day,
+            "days_back": days_back,
+            "days_forward": days_forward,
+            "total_milestones": len(cleaned_milestones),
+            "natal_lagna_sign": natal_lagna_sign,
+            "natal_moon_sign": natal_moon_sign
+        }
+    }
+
+
+================================================================================
+FILE: engine/transits.py
+TYPE: Python Source | LINES: 464 | SIZE: 19.5 KB
+================================================================================
+"""
+Transit Calculation Engine for Astra (Kala Methodology)
+
+Calculates real-time and date-specific planetary transits (Gochara) relative to 
+the native's birth chart. Supports both Ernst Wilhelm's Dhruva Equatorial Nakshatras 
+and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
+"""
+
+import copy
+import math
+import swisseph as swe
+from typing import Dict, Any, List, Optional, Tuple
+from jyotish.baseline import ChartBaseline
+from jyotish.aspects.aspects import get_graha_drishti
+
+SIGNS_LIST = [
+    "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
+    "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces"
+]
+
+PLANET_ORDER = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+MEAN_DAILY_SPEEDS = {
+    "Sun": 0.9856,
+    "Moon": 13.1764,
+    "Mars": 0.5240,
+    "Mercury": 1.0000,
+    "Jupiter": 0.0831,
+    "Venus": 1.0000,
+    "Saturn": 0.0335,
+    "Rahu": 0.0530,
+    "Ketu": 0.0530
+}
+
+STATIONARY_PLANETS = {"Mars", "Mercury", "Jupiter", "Venus", "Saturn"}
+
+SWE_PLANET_MAP = {
+    "Sun": swe.SUN,
+    "Moon": swe.MOON,
+    "Mars": swe.MARS,
+    "Mercury": swe.MERCURY,
+    "Jupiter": swe.JUPITER,
+    "Venus": swe.VENUS,
+    "Saturn": swe.SATURN,
+    "Rahu": swe.TRUE_NODE,
+    "Ketu": swe.TRUE_NODE
+}
+
+# Classical Vedha (Obstruction) pairs from Moon (Phaladeepika Ch. 26)
+VEDHA_PAIRS: Dict[str, Dict[int, int]] = {
+    "Sun": {3: 9, 6: 12, 11: 5},
+    "Moon": {1: 5, 3: 9, 6: 12, 7: 2, 10: 4, 11: 8},
+    "Mars": {3: 12, 6: 9, 11: 5},
+    "Mercury": {2: 5, 4: 3, 6: 9, 8: 1, 10: 8, 11: 12},
+    "Jupiter": {2: 12, 5: 4, 7: 3, 9: 10, 11: 8},
+    "Venus": {1: 8, 2: 7, 3: 1, 4: 10, 5: 9, 8: 5, 9: 11, 11: 6, 12: 3},
+    "Saturn": {3: 12, 6: 9, 11: 5},
+    "Rahu": {3: 12, 6: 9, 11: 5},
+    "Ketu": {3: 12, 6: 9, 11: 5}
+}
+
+VEDHA_EXCEPTIONS: Dict[Tuple[str, str], bool] = {
+    ("Sun", "Saturn"): False,
+    ("Saturn", "Sun"): False,
+    ("Moon", "Mercury"): False,
+    ("Mercury", "Moon"): False,
+    ("Mars", "Sun"): False,
+    ("Sun", "Mars"): False
+}
+
+
+def calculate_transits(
+    natal_chart: Dict[str, Any],
+    transit_year: int,
+    transit_month: int,
+    transit_day: int,
+    transit_hour: int = 12,
+    transit_minute: int = 0,
+    transit_second: int = 0,
+    transit_latitude: float = 51.5074,
+    transit_longitude: float = -0.1278,
+    transit_timezone: float = 0.0,
+    nakshatra_system: str = "ERNST_DHRUVA",
+    debilitation_mode: str = "kala_degree",
+    aspect_orb_degrees: float = 3.3333
+) -> Dict[str, Any]:
+    """
+    Computes transiting planetary positions and evaluates their aspects,
+    velocities, stationary states, and house positions relative to the native's natal chart.
+    """
+    # 1. Compute Transit Baseline snapshot using certified Stage 1 (zero redundant chart generation)
+    transit_baseline = ChartBaseline(
+        name="Transit",
+        year=transit_year,
+        month=transit_month,
+        day=transit_day,
+        hour=transit_hour,
+        minute=transit_minute,
+        second=transit_second,
+        latitude=transit_latitude,
+        longitude=transit_longitude,
+        timezone_offset=transit_timezone,
+        nakshatra_system=nakshatra_system
     )
 
-    # 4. Scan Milestones for the 360-day horizon (-90d to +270d)
+    jd_ut = swe.julday(
+        transit_year,
+        transit_month,
+        transit_day,
+        transit_hour + transit_minute / 60.0 + transit_second / 3600.0 - transit_timezone
+    )
+
+    transit_d1 = copy.deepcopy(transit_baseline.vargas["D1"])
+    t_naks = transit_baseline.nakshatras["grahas"]
+    for p_name, g in transit_d1["grahas"].items():
+        if p_name in t_naks:
+            g["nakshatra"] = t_naks[p_name]["nakshatra"]
+            g["pada"] = t_naks[p_name]["pada"]
+    if "Lagna" in t_naks and "lagna" in transit_d1:
+        transit_d1["lagna"]["nakshatra"] = t_naks["Lagna"]["nakshatra"]
+        transit_d1["lagna"]["pada"] = t_naks["Lagna"]["pada"]
+
+    transit_chart = {
+        "vargas": {"D1": transit_d1},
+        "baseline": transit_baseline.to_dict()
+    }
+    natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
+    natal_grahas = natal_d1.get("grahas", {})
+    natal_lagna = natal_d1.get("lagna", {})
+    transit_grahas = transit_d1.get("grahas", {})
+    transit_lagna = transit_d1.get("lagna", {})
+
+    natal_lagna_sign = natal_lagna.get("sign", "Aries")
+    natal_lagna_idx = SIGNS_LIST.index(natal_lagna_sign) if natal_lagna_sign in SIGNS_LIST else 0
+
+    natal_moon_sign = natal_grahas.get("Moon", {}).get("sign", natal_lagna_sign)
+    natal_moon_idx = SIGNS_LIST.index(natal_moon_sign) if natal_moon_sign in SIGNS_LIST else 0
+
+    # 2. Process Transiting Planets: Velocity, Station States, House from Lagna & Moon
+    processed_transit_planets = {}
+    for p_name in PLANET_ORDER:
+        if p_name not in transit_grahas:
+            continue
+        g = transit_grahas[p_name]
+        p_sign = g.get("sign", "Aries")
+        s_idx = SIGNS_LIST.index(p_sign) if p_sign in SIGNS_LIST else 0
+
+        # Whole-sign houses (1-indexed)
+        h_from_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
+        h_from_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
+
+        # Extract daily speed from coordinates or baseline
+        coord_info = transit_baseline.coordinates.get(p_name, {})
+        raw_speed = coord_info.get("speed")
+        if raw_speed is None:
+            p_id = SWE_PLANET_MAP.get(p_name)
+            if p_id is not None:
+                raw_speed = swe.calc_ut(jd_ut, p_id)[0][3]
+            else:
+                raw_speed = 0.0
+        daily_speed = float(raw_speed)
+
+        mean_speed = MEAN_DAILY_SPEEDS.get(p_name, 1.0)
+        speed_ratio = round(abs(daily_speed) / mean_speed, 3) if mean_speed > 0 else 1.0
+
+        if p_name in ["Rahu", "Ketu"]:
+            is_retro = (daily_speed < 0)
+        else:
+            is_retro = g.get("is_retrograde", False)
+
+        is_stationary = False
+        station_type: Optional[str] = None
+
+        if p_name in STATIONARY_PLANETS:
+            # Stationary threshold: <= 10% of mean speed
+            if speed_ratio <= 0.10:
+                is_stationary = True
+                p_id = SWE_PLANET_MAP.get(p_name)
+                if p_id is not None:
+                    sp_plus = swe.calc_ut(jd_ut + 0.5, p_id)[0][3]
+                    sp_minus = swe.calc_ut(jd_ut - 0.5, p_id)[0][3]
+                    accel = sp_plus - sp_minus
+                    if accel < 0:
+                        station_type = "SR"
+                    elif accel > 0:
+                        station_type = "SD"
+            else:
+                # Direction change check:
+                # For fast star planets (Mercury, Venus), checking ±48h flags them when speed_ratio is 0.30!
+                # Restrict to ±12h for Mercury/Venus, or ±48h for Mars, Jupiter, Saturn only if speed_ratio <= 0.25.
+                p_id = SWE_PLANET_MAP.get(p_name)
+                if p_id is not None:
+                    delta_t = 0.5 if p_name in ["Mercury", "Venus"] else 2.0
+                    sp_m = swe.calc_ut(jd_ut - delta_t, p_id)[0][3]
+                    sp_p = swe.calc_ut(jd_ut + delta_t, p_id)[0][3]
+                    if ((sp_m * daily_speed <= 0) or (sp_p * daily_speed <= 0)) and speed_ratio <= 0.25:
+                        is_stationary = True
+                        accel = sp_p - sp_m
+                        station_type = "SR" if accel < 0 else "SD"
+
+        if is_stationary:
+            if station_type == "SR":
+                motion_state = "Stationary Retrograde"
+            elif station_type == "SD":
+                motion_state = "Stationary Direct"
+            else:
+                motion_state = "Stationary"
+            gati_sanskrit = "Stambhana"
+        elif speed_ratio <= 0.50:
+            motion_state = "Slow Retrograde" if is_retro else "Slow Direct"
+            gati_sanskrit = "Mandatara"
+        elif is_retro:
+            motion_state = "Retrograde"
+            gati_sanskrit = "Vakri"
+        elif speed_ratio >= 1.20:
+            motion_state = "Fast"
+            gati_sanskrit = "Atichara"
+        else:
+            motion_state = "Direct"
+            gati_sanskrit = "Rju"
+
+        deg_val = g.get("degree_0_to_30", 0.0)
+        deg = int(math.floor(deg_val))
+        minute = int(round((deg_val - deg) * 60.0))
+        if minute >= 60:
+            deg += 1
+            minute = 0
+        if deg >= 30:
+            deg = 0
+            s_idx = (s_idx + 1) % 12
+            p_sign = SIGNS_LIST[s_idx]
+
+        # Classical Gochara Quality from Moon (Phaladeepika Ch. 26)
+        is_favorable_from_moon = False
+        if p_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
+            is_favorable_from_moon = h_from_moon in [3, 6, 11]
+        elif p_name == "Jupiter":
+            is_favorable_from_moon = h_from_moon in [2, 5, 7, 9, 11]
+        elif p_name == "Venus":
+            is_favorable_from_moon = h_from_moon in [1, 2, 3, 4, 5, 8, 9, 11, 12]
+        elif p_name == "Mercury":
+            is_favorable_from_moon = h_from_moon in [2, 4, 6, 8, 10, 11]
+        elif p_name == "Moon":
+            is_favorable_from_moon = h_from_moon in [1, 3, 6, 7, 10, 11]
+
+        processed_transit_planets[p_name] = {
+            "name": p_name,
+            "sign": p_sign,
+            "sign_idx": s_idx,
+            "longitude": g.get("longitude", 0.0),
+            "degree_0_to_30": g.get("degree_0_to_30", 0.0),
+            "degree": deg,
+            "minute": minute,
+            "is_retrograde": is_retro,
+            "daily_speed": round(daily_speed, 6),
+            "speed_ratio": speed_ratio,
+            "is_stationary": is_stationary,
+            "station_type": station_type,
+            "motion_state": motion_state,
+            "gati_sanskrit": gati_sanskrit,
+            "nakshatra": g.get("nakshatra", ""),
+            "pada": g.get("pada", 1),
+            "house_from_lagna": h_from_lagna,
+            "house_from_moon": h_from_moon,
+            "is_favorable_from_moon": is_favorable_from_moon
+        }
+
+    # 2B. Evaluate Classical Vedha (Obstruction) from Moon & Transit Vargottama (Phaladeepika Ch. 26)
+    transit_d9_grahas = transit_chart.get("vargas", {}).get("D9", {}).get("grahas", {})
+    for p_name, p_data in processed_transit_planets.items():
+        h_moon = p_data["house_from_moon"]
+        vedha_target = VEDHA_PAIRS.get(p_name, {}).get(h_moon)
+        has_vedha = False
+        obstructing = []
+        if vedha_target is not None:
+            for o_name, o_data in processed_transit_planets.items():
+                if o_name == p_name:
+                    continue
+                if o_data["house_from_moon"] == vedha_target:
+                    if VEDHA_EXCEPTIONS.get((p_name, o_name), True):
+                        has_vedha = True
+                        obstructing.append(o_name)
+        p_data["has_vedha"] = has_vedha
+        p_data["vedha_by"] = obstructing
+        p_data["is_effective_benefic_from_moon"] = bool(p_data["is_favorable_from_moon"] and not has_vedha)
+
+        d9_g = transit_d9_grahas.get(p_name, {})
+        d9_sign = d9_g.get("sign")
+        p_data["is_vargottama"] = bool(d9_sign and d9_sign == p_data["sign"])
+
+    active_dasha_lords = list(natal_chart.get("active_dasha_lords", []))
+    if not active_dasha_lords and "vimshottari_dasha" in natal_chart:
+        antardashas = natal_chart["vimshottari_dasha"].get("antardashas", [])
+        for ad in antardashas:
+            if ad.get("start_jd", 0.0) <= jd_ut < ad.get("end_jd", 0.0):
+                m_lord = ad.get("mahadasha_lord")
+                a_lord = ad.get("antardasha_lord")
+                if m_lord and m_lord not in active_dasha_lords:
+                    active_dasha_lords.append(m_lord)
+                if a_lord and a_lord not in active_dasha_lords:
+                    active_dasha_lords.append(a_lord)
+                break
+
+    # 3. Detect Active Transit Aspects onto Natal Planets
+    active_aspects = get_transit_aspects(
+        transit_grahas=transit_grahas,
+        natal_grahas=natal_grahas,
+        natal_lagna=natal_lagna,
+        orb_degrees=aspect_orb_degrees,
+        processed_transit_planets=processed_transit_planets,
+        active_dasha_lords=active_dasha_lords
+    )
+
+    return {
+        "transit_chart": transit_chart,
+        "transit_planets": processed_transit_planets,
+        "transit_lagna": transit_lagna,
+        "natal_lagna_sign": natal_lagna_sign,
+        "natal_moon_sign": natal_moon_sign,
+        "active_aspects": active_aspects,
+        "transit_time_info": {
+            "year": transit_year,
+            "month": transit_month,
+            "day": transit_day,
+            "hour": transit_hour,
+            "minute": transit_minute,
+            "second": transit_second,
+            "formatted": f"{transit_day:02d}/{transit_month:02d}/{transit_year:04d} {transit_hour:02d}:{transit_minute:02d}:{transit_second:02d}"
+        }
+    }
+
+
+def get_transit_aspects(
+    transit_grahas: Dict[str, Any],
+    natal_grahas: Dict[str, Any],
+    natal_lagna: Dict[str, Any],
+    orb_degrees: float = 3.3333,
+    processed_transit_planets: Optional[Dict[str, Any]] = None,
+    active_dasha_lords: Optional[List[str]] = None
+) -> List[Dict[str, Any]]:
+    """
+    Finds all active Graha Drishti aspects and conjunctions cast by
+    transiting planets onto natal planets and the natal Ascendant.
+    """
+    aspects = []
+    natal_targets = dict(natal_grahas)
+    if natal_lagna:
+        natal_targets["Lagna"] = natal_lagna
+
+    for t_name, t_info in transit_grahas.items():
+        if t_name not in PLANET_ORDER:
+            continue
+        t_lon = t_info.get("longitude", 0.0)
+
+        t_proc = (processed_transit_planets or {}).get(t_name, {})
+        asp_is_stationary = bool(t_proc.get("is_stationary", False))
+        asp_station_type = t_proc.get("station_type")
+        asp_speed_ratio = float(t_proc.get("speed_ratio", 1.0))
+
+        for n_name, n_info in natal_targets.items():
+            n_lon = n_info.get("longitude", 0.0)
+            diff = (n_lon - t_lon) % 360.0
+            is_retro = bool(t_proc.get("is_retrograde", t_info.get("is_retrograde", False)))
+
+            # 1. Conjunction (Yuti, 0°)
+            orb_conj = diff if diff <= 180.0 else (360.0 - diff)
+            if orb_conj <= orb_degrees:
+                # Direct planet applies when moving towards n_lon (diff <= 180); retro applies when diff > 180
+                is_applying = (diff <= 180.0) if not is_retro else (diff > 180.0)
+
+                orb_closeness = max(0.0, 1.0 - (orb_conj / orb_degrees))
+                virupa_factor = 60.0 / 60.0
+                speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
+                is_dasha_synced = bool(active_dasha_lords and (t_name in active_dasha_lords or n_name in active_dasha_lords))
+                base_weight = orb_closeness * virupa_factor * speed_factor
+                if is_dasha_synced:
+                    base_weight *= 1.35
+                intensity_weight = round(base_weight, 3)
+
+                is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                if t_name == "Moon":
+                    sun_item = transit_grahas.get("Sun", {})
+                    s_lon = sun_item.get("longitude", 0.0)
+                    moon_elong = (t_lon - s_lon) % 360.0
+                    is_benefic = (0.0 <= moon_elong <= 180.0)
+
+                aspects.append({
+                    "aspecting": t_name,
+                    "target": n_name,
+                    "type": "Conjunction",
+                    "code": "CONJ",
+                    "angular_diff": round(diff, 2),
+                    "orb": round(orb_conj, 2),
+                    "virupas": 60.0,
+                    "is_benefic": is_benefic,
+                    "is_applying": is_applying,
+                    "is_dasha_synchronized": is_dasha_synced,
+                    "aspecting_is_stationary": asp_is_stationary,
+                    "aspecting_station_type": asp_station_type,
+                    "aspecting_speed_ratio": asp_speed_ratio,
+                    "intensity_weight": intensity_weight,
+                    "motion_status": "Applying" if is_applying else "Separating",
+                    "description": f"Transiting {t_name} is conjunct Natal {n_name} (orb {round(orb_conj, 1)}°, {'Applying' if is_applying else 'Separating'})"
+                })
+                continue
+
+            # 2. Classical Graha Drishti (Glances & Special Aspects)
+            candidate_aspects = [("7th Opposition", 180.0)]
+            if t_name == "Mars":
+                candidate_aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
+            elif t_name == "Jupiter":
+                candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+            elif t_name == "Saturn":
+                candidate_aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
+            elif t_name in ["Rahu", "Ketu"]:
+                candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+            elif t_name in ["Sun", "Venus", "Mercury"]:
+                candidate_aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
+
+            for glance_type, nominal_angle in candidate_aspects:
+                signed_diff = (diff - nominal_angle + 180.0) % 360.0 - 180.0
+                angle_error = abs(signed_diff)
+                if angle_error <= orb_degrees:
+                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 60.0
+                    is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                    if t_name == "Moon":
+                        sun_item = transit_grahas.get("Sun", {})
+                        s_lon = sun_item.get("longitude", 0.0)
+                        moon_elong = (t_lon - s_lon) % 360.0
+                        is_benefic = (0.0 <= moon_elong <= 180.0)
+                    # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
+                    is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
+
+                    orb_closeness = max(0.0, 1.0 - (angle_error / orb_degrees))
+                    virupa_factor = min(1.0, max(0.1, virupas / 60.0))
+                    speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
+                    is_dasha_synced = bool(active_dasha_lords and (t_name in active_dasha_lords or n_name in active_dasha_lords))
+                    base_weight = orb_closeness * virupa_factor * speed_factor
+                    if is_dasha_synced:
+                        base_weight *= 1.35
+                    intensity_weight = round(base_weight, 3)
+
+                    aspects.append({
+                        "aspecting": t_name,
+                        "target": n_name,
+                        "type": glance_type,
+                        "code": "DRISHTI",
+                        "angular_diff": round(diff, 2),
+                        "orb": round(angle_error, 2),
+                        "virupas": round(virupas, 1),
+                        "is_benefic": is_benefic,
+                        "is_applying": is_applying,
+                        "is_dasha_synchronized": is_dasha_synced,
+                        "aspecting_is_stationary": asp_is_stationary,
+                        "aspecting_station_type": asp_station_type,
+                        "aspecting_speed_ratio": asp_speed_ratio,
+                        "intensity_weight": intensity_weight,
+                        "motion_status": "Applying" if is_applying else "Separating",
+                        "description": f"Transiting {t_name} casts {glance_type} on Natal {n_name} (orb {round(angle_error, 1)}°, {'Applying' if is_applying else 'Separating'})"
+                    })
+
+    # Sort aspects by intensity weight descending so stationary / exact hits come first
+    aspects.sort(key=lambda a: a.get("intensity_weight", 0.0), reverse=True)
+    return aspects
+
+
+================================================================================
+FILE: tests/test_transits.py
+TYPE: Python Source | LINES: 369 | SIZE: 13.4 KB
+================================================================================
+import pytest
+from jyotish import native_manager
+from jyotish import generate_jyotish
+from jyotish.transits.transits import calculate_transits, get_transit_aspects
+from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
+from app import app, CHARTS_FILE
+
+@pytest.fixture
+def client():
+    app.config['TESTING'] = True
+    with app.test_client() as client:
+        yield client
+
+def test_transit_calculation():
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    assert len(all_natives) > 0
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    # Test Ernst Dhruva
+    res_dhruva = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=1,
+        transit_hour=12, transit_minute=0,
+        nakshatra_system="ERNST_DHRUVA"
+    )
+    assert "transit_planets" in res_dhruva
+    assert len(res_dhruva["transit_planets"]) == 9
+    assert "Jupiter" in res_dhruva["transit_planets"]
+    assert "house_from_lagna" in res_dhruva["transit_planets"]["Jupiter"]
+    assert "house_from_moon" in res_dhruva["transit_planets"]["Jupiter"]
+
+    # Test Vic Chitra
+    res_chitra = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=1,
+        transit_hour=12, transit_minute=0,
+        nakshatra_system="VIC_CHITRA"
+    )
+    assert "transit_planets" in res_chitra
+
+def test_transit_biwheel_svg():
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=1,
+        transit_hour=12, transit_minute=0
+    )
+
+    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
+    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+
+    svg = generate_transit_biwheel(
+        inner_items=natal_d1_items,
+        outer_items=transit_d1_items,
+        active_aspects=transit_res["active_aspects"]
+    )
+    assert "<svg" in svg
+    assert "Natal · Transit" in svg
+    assert "transit-aspect-lines" in svg
+    assert "outer-planets-group" in svg
+
+    # Redesigned Adius-style layout: unshaded canvas, expanded inner hub (r=56), flat house ring (r=72)
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="56"' in svg
+    assert '<circle cx="0" cy="0" r="72"' in svg
+    assert 'class="house-bg house-kendra"' not in svg
+    assert '<path class="house-bg"' in svg
+    assert 'fill="none"' in svg
+    assert '<g class="inner-planet-ticks">' in svg
+    assert 'angle-ac-badge' in svg
+    assert 'stroke-dasharray="1,2.5"' in svg
+
+def test_transit_api_endpoint(client):
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    nid = native['id']
+
+    resp = client.get(f'/api/chart/{nid}/transit?transit_date=01/10/2026&transit_time=12:00:00')
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "svg" in data
+    assert "transit_planets" in data
+    assert "active_aspects" in data
+    assert "transit_time_info" in data
+
+
+def test_transit_custom_orbs_and_motion(client):
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    nid = native['id']
+
+    # Narrow Navamsha orb (3.3333°)
+    resp_narrow = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=3.3333')
+    assert resp_narrow.status_code == 200
+    data_narrow = resp_narrow.get_json()
+    assert data_narrow["orb"] == 3.3333
+
+    # Wide Parashari orb (10.0°) should return equal or more active aspects
+    resp_wide = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=10.0')
+    assert resp_wide.status_code == 200
+    data_wide = resp_wide.get_json()
+    assert data_wide["orb"] == 10.0
+    assert len(data_wide["active_aspects"]) >= len(data_narrow["active_aspects"])
+
+    # Check motion status fields on aspects
+    for asp in data_wide["active_aspects"]:
+        assert "motion_status" in asp
+        assert asp["motion_status"] in ("Applying", "Separating")
+        assert "is_applying" in asp
+
+def test_transit_pure_speed_and_station_calculus():
+    """Verify Hemisphere A pure calculus: zero HTML/colors, strict types."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    planets = transit_res["transit_planets"]
+    for p_name, p_data in planets.items():
+        assert isinstance(p_data["daily_speed"], float)
+        assert isinstance(p_data["speed_ratio"], float)
+        assert isinstance(p_data["is_stationary"], bool)
+        assert p_data["station_type"] in (None, "SR", "SD")
+        assert isinstance(p_data["motion_state"], str)
+        assert isinstance(p_data["gati_sanskrit"], str)
+
+        # Zero HTML or hex leakage
+        for k, v in p_data.items():
+            if isinstance(v, str):
+                assert "<" not in v and ">" not in v
+                assert "#" not in v
+
+    # Verify enriched aspects
+    for asp in transit_res["active_aspects"]:
+        assert isinstance(asp["aspecting_is_stationary"], bool)
+        assert asp["aspecting_station_type"] in (None, "SR", "SD")
+        assert isinstance(asp["aspecting_speed_ratio"], float)
+        assert isinstance(asp["intensity_weight"], float)
+        assert asp["intensity_weight"] >= 0.0
+
+def test_milestone_scanner_detection():
+    """Verify coarse-to-fine milestone scanner detects stations, exact hits, and ingresses."""
     from jyotish.transits.milestone_scanner import scan_transit_milestones
-    m_cache_key = (native_id, t_year, t_month, nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
-    if m_cache_key in _TRANSIT_MILESTONES_CACHE:
-        scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
-    else:
-        scan_res = scan_transit_milestones(
-            natal_chart=natal_chart,
-            start_year=t_year,
-            start_month=t_month,
-            start_day=t_day,
-            start_hour=t_hour,
-            start_minute=t_min,
-            days_back=90,
-            days_forward=270,
-            transit_latitude=t_lat,
-            transit_longitude=t_lon,
-            transit_timezone=t_tz,
-            nakshatra_system=nakshatra_system,
-            aspect_orb_degrees=aspect_orb_degrees
-        )
-        _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
 
-    # 5. Generate SVG Bi-Wheel (Level 8 Presentation)
-    # from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
-    # svg = generate_transit_biwheel(...)
-    svg = "<svg>...</svg>"
+    res = scan_transit_milestones(
+        natal_chart=natal,
+        start_year=2026, start_month=10, start_day=26,
+        days_back=60, days_forward=120
+    )
 
-    return jsonify({
-        "svg": svg,
-        "transit_planets": transit_res["transit_planets"],
-        "active_aspects": transit_res["active_aspects"],
-        "transit_time_info": transit_res["transit_time_info"],
-        "milestones": scan_res.get("milestones", []),
-        "upcoming_stations": scan_res.get("upcoming_stations", []),
-        "root": root,
-        "mode": mode,
-        "orb": aspect_orb_degrees
-    })
+    assert "milestones" in res
+    assert "upcoming_stations" in res
+    assert len(res["milestones"]) > 0
+
+    categories = {m["category"] for m in res["milestones"]}
+    # Should detect at least EXACT_ASPECT and stations
+    assert "EXACT_ASPECT" in categories
+
+    for m in res["milestones"]:
+        assert m["tier"] in (1, 2, 3)
+        assert m["category"] in ("NATAL_STATION", "EXACT_ASPECT", "SKY_STATION", "SIGN_INGRESS")
+        assert "timestamp_utc" in m
+        assert "jump_date" in m
+        assert "jump_time" in m
+        assert "description" in m
+        if m["category"] == "EXACT_ASPECT":
+            assert m["orb_at_event"] == 0.0
+            assert m["pass_number"] is not None
+            assert m["total_passes"] is not None
+            assert m["pass_number"] <= m["total_passes"]
+
+    # Test upcoming stations structure
+    for st in res["upcoming_stations"]:
+        assert st["station_type"] in ("SR", "SD")
+        assert "longitude" in st
+        assert "jump_date" in st
+        assert "tooltip" in st
+
+def test_transit_biwheel_svg_upgrades():
+    """Verify applying vs separating lines, SR/SD badges, and station pins in SVG."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
+    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+    for it in transit_d1_items:
+        p_nm = it.get("name")
+        if p_nm in transit_res["transit_planets"]:
+            it.update(transit_res["transit_planets"][p_nm])
+
+    upcoming_sample = [{
+        "planet": "Saturn",
+        "station_type": "SD",
+        "longitude": 7.5,
+        "sign": "Aries",
+        "degree": 7,
+        "minute": 30,
+        "jump_date": "2026-12-10",
+        "jump_time": "12:00:00",
+        "tooltip": "Upcoming Saturn SD at 7°30' Aries"
+    }]
+
+    svg = generate_transit_biwheel(
+        inner_items=natal_d1_items,
+        outer_items=transit_d1_items,
+        active_aspects=transit_res["active_aspects"],
+        upcoming_stations=upcoming_sample
+    )
+
+    # Check station pins
+    assert "upcoming-stations-layer" in svg
+    assert "station-pin" in svg
+    assert 'data-jump-date="2026-12-10"' in svg
+
+    # Check applying/separating aspect lines
+    if transit_res["active_aspects"]:
+        assert "transit-aspect-lines-layer" in svg
+        assert 'data-applying=' in svg
+
+def test_transit_milestones_api_endpoint(client):
+    """Verify /api/chart/<native_id>/transit/milestones endpoint."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+    nid = native['id']
+
+    resp = client.get(f'/api/chart/{nid}/transit/milestones?transit_date=2026-10-26&days_back=60&days_forward=120')
+    assert resp.status_code == 200
+    data = resp.get_json()
+    assert "milestones" in data
+    assert "upcoming_stations" in data
+    assert "scan_meta" in data
+    assert len(data["milestones"]) > 0
+
+def test_transit_phaladeepika_gochara_and_vedha():
+    """Verify Phaladeepika Ch. 26 Gochara favorability, Vedha obstruction, and Vargottama detection."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    t_planets = transit_res["transit_planets"]
+    for p_name, p_data in t_planets.items():
+        assert "house_from_moon" in p_data
+        assert "house_from_lagna" in p_data
+        assert "is_favorable_from_moon" in p_data
+        assert "has_vedha" in p_data
+        assert "vedha_by" in p_data
+        assert "is_effective_benefic_from_moon" in p_data
+        assert "is_vargottama" in p_data
+        assert isinstance(p_data["has_vedha"], bool)
+        assert isinstance(p_data["is_vargottama"], bool)
+
+def test_transit_dasha_synchronization():
+    """Verify active Dasha synchronization tags and 1.35x multiplier on transit aspects."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    # Explicitly test with active_dasha_lords containing Jupiter
+    natal_with_dasha = dict(natal)
+    natal_with_dasha["active_dasha_lords"] = ["Jupiter"]
+
+    transit_res = calculate_transits(
+        natal_chart=natal_with_dasha,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    aspects = transit_res["active_aspects"]
+    for asp in aspects:
+        assert "is_dasha_synchronized" in asp
+        if "Jupiter" in (asp["aspecting"], asp["target"]):
+            assert asp["is_dasha_synchronized"] is True
+
+def test_transit_biwheel_svg_chandra_tooltips():
+    """Verify that outer planet dots and glyphs in the biwheel SVG include Chandra Gochara annotations."""
+    all_natives = native_manager.load_natives(CHARTS_FILE)
+    native = all_natives[0]
+
+    natal = generate_jyotish.generate_kala_chart(
+        name=native['name'],
+        year=1990, month=1, day=1, hour=12, minute=0,
+        latitude=float(native['lat']), longitude=float(native['lon']),
+        timezone_offset=0.0
+    )
+
+    transit_res = calculate_transits(
+        natal_chart=natal,
+        transit_year=2026, transit_month=10, transit_day=26,
+        transit_hour=12, transit_minute=0
+    )
+
+    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
+    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
+    for it in transit_d1_items:
+        p_nm = it.get("name")
+        if p_nm in transit_res["transit_planets"]:
+            it.update(transit_res["transit_planets"][p_nm])
+
+    svg = generate_transit_biwheel(
+        inner_items=natal_d1_items,
+        outer_items=transit_d1_items,
+        active_aspects=transit_res["active_aspects"]
+    )
+
+    assert "Chandra H" in svg
+    assert any(q in svg for q in ["Śubha", "Aśubha"])
 
 
-
-################################################################################
-### FILE 7/10: ui/tmpl_transit_chart.html
-### PURPOSE: Jinja2 HTML Widget Template (Gochara Radar)
-### SOURCE PATH: exports/transits/ui/tmpl_transit_chart.html
-################################################################################
-
+================================================================================
+FILE: ui/tmpl_transit_chart.html
+TYPE: HTML Template | LINES: 133 | SIZE: 13.7 KB
+================================================================================
 <template id="tmpl-transit-chart">
     <div class="widget-transit-chart" style="display:flex; flex-direction:column; height:100%; position:relative; overflow:hidden; background: var(--bg-surface, #fcfbf9);">
         <!-- Top Toolbar: Stepper, Step Interval, Aspect Orb, and Chart Mode Switchers -->
@@ -1980,8 +2490,9 @@ def get_chart_transit(native_id):
                     <!-- German DIN Filter Tabs: Clean text with underline indicator, ZERO background pill highlighting -->
                     <div class="radar-filter-tabs" style="display:flex; border-bottom:1px solid #e5dccb; gap:4px; margin-top:3px;">
                         <button type="button" class="radar-filter-tab active" data-filter="all">All</button>
-                        <button type="button" class="radar-filter-tab" data-filter="stations">Stations (SR/SD)</button>
-                        <button type="button" class="radar-filter-tab" data-filter="natal_hits">Natal Hits (0°)</button>
+                        <button type="button" class="radar-filter-tab" data-filter="macro">Macro</button>
+                        <button type="button" class="radar-filter-tab" data-filter="stations">Stations</button>
+                        <button type="button" class="radar-filter-tab" data-filter="natal_hits">Natal Hits</button>
                         <button type="button" class="radar-filter-tab" data-filter="ingresses">Ingresses</button>
                     </div>
                 </div>
@@ -2019,13 +2530,218 @@ def get_chart_transit(native_id):
 </template>
 
 
+================================================================================
+FILE: ui/transit_styles.css
+TYPE: CSS Stylesheet | LINES: 202 | SIZE: 5.3 KB
+================================================================================
+/* =========================================================================
+   Astra Transit System - CSS Styling (German DIN Editorial Standard)
+   =========================================================================
+   Design Rules:
+   1. Minimum 12px Font Floor (static/GEMINI.md Rule 1).
+   2. Zero Pill Badge Backgrounds: No heavy colored rectangular/pill blocks.
+   3. Pure Typography: Category distinction is rendered using clean German DIN
+      fonts, distinct font colors, and subtle left accent borders.
+   ========================================================================= */
 
-################################################################################
-### FILE 8/10: ui/transit_widget.js
-### PURPOSE: Interactive Frontend Controller & Stepper Handlers
-### SOURCE PATH: exports/transits/ui/transit_widget.js
-################################################################################
+:root {
+    --font-german-din: "DIN Alternate", "DIN 1451", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-astro-glyphs: "STIX Two Math", "Segoe UI Symbol", sans-serif;
+}
 
+/* Bi-Wheel SVG Container */
+.transit-biwheel-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: transparent;
+}
+
+.transit-biwheel-svg {
+    max-width: 100%;
+    max-height: 100%;
+    font-family: var(--font-astro-glyphs, "STIX Two Math", sans-serif);
+    user-select: none;
+}
+
+/* Interactive SVG Elements */
+.interactive-aspect {
+    transition: stroke-width 0.15s ease, opacity 0.15s ease;
+}
+
+.interactive-aspect:hover {
+    stroke-width: 3.0px !important;
+    opacity: 1.0 !important;
+}
+
+.transit-planet-dot {
+    transition: r 0.15s ease;
+}
+
+.transit-planet-dot:hover {
+    r: 4.2px;
+}
+
+.station-pin {
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.station-pin:hover {
+    filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.7));
+}
+
+/* =========================================================================
+   Gochara Radar / Significant Transit Points Panel
+   ========================================================================= */
+.transit-radar-panel {
+    border-left: 1px solid #e2d9c8;
+    background: #fdfbf7;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px;
+    box-shadow: -2px 0 8px rgba(74, 51, 37, 0.04);
+}
+
+.transit-radar-header {
+    background: #f8f4ec;
+    border-bottom: 1px solid #e2d9c8;
+    user-select: none;
+    padding: 6px 8px;
+}
+
+.transit-radar-title {
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #4a3325;
+}
+
+/* Filter Tabs (Flat Minimalist Tabs without Background Highlights) */
+.radar-filter-tabs {
+    display: flex;
+    border-bottom: 1px solid #e5dccb;
+    gap: 6px;
+    margin-top: 4px;
+}
+
+.radar-filter-tab,
+.radar-filter-tab:hover,
+.radar-filter-tab:focus,
+.radar-filter-tab.active {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+}
+
+.radar-filter-tab {
+    border-bottom: 2px solid transparent !important;
+    color: #786555 !important;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px !important;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 3px 6px;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.radar-filter-tab:hover {
+    color: #4a3325 !important;
+    border-bottom: 2px solid #c5b69f !important;
+}
+
+.radar-filter-tab.active {
+    color: #4a3325 !important;
+    font-weight: 700 !important;
+    border-bottom: 2px solid #4a3325 !important;
+}
+
+/* Scrollable Milestone Event List */
+.transit-radar-list {
+    scrollbar-width: thin;
+    scrollbar-color: #d5c8b2 transparent;
+}
+
+.transit-radar-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+.transit-radar-list::-webkit-scrollbar-thumb {
+    background: #d5c8b2;
+    border-radius: 2px;
+}
+
+/* Milestone Cards: Clean Left Accent Border & Zero Background Pill Highlighting */
+.transit-milestone-card {
+    background: #fffdfa;
+    border: 1px solid #eae2d3;
+    border-left: 3px solid #b5a48f;
+    border-radius: 2px;
+    padding: 5px 7px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
+    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
+    font-size: 12px !important;
+}
+
+.transit-milestone-card:hover {
+    background: #fbf7ef;
+    border-color: #d8cdba;
+    box-shadow: 0 1px 3px rgba(74, 51, 37, 0.06);
+}
+
+.transit-milestone-card.active-jumped {
+    background: #fcf9f2;
+    border-color: #c2410c;
+    border-left: 3.5px solid #c2410c !important;
+}
+
+/* Category Typography and Left Border Accents */
+.radar-label-natal-station {
+    color: #b91c1c; /* Crimson */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-exact-aspect {
+    color: #b45309; /* Warm Bronze / Amber */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-ingress {
+    color: #0f766e; /* Forest Teal */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.radar-label-sky-station {
+    color: #475569; /* Slate Umber */
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+
+================================================================================
+FILE: ui/transit_widget.js
+TYPE: JavaScript | LINES: 962 | SIZE: 40.0 KB
+================================================================================
 /**
  * Astra Transit Bi-Wheel Widget (Gochara)
  * 
@@ -2284,8 +3000,22 @@ def get_chart_transit(native_id):
         const curTime = state.currentDate.getTime();
         const thresholdMs = 45 * 1000;
 
+        // Respect active radar filter when stepping
+        const filter = state.radarFilter || 'all';
+        let list = state.milestones;
+        if (filter === 'macro') {
+            list = state.milestones.filter(m => m.is_macro_planet !== false);
+        } else if (filter === 'stations') {
+            list = state.milestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'SKY_STATION');
+        } else if (filter === 'natal_hits') {
+            list = state.milestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'EXACT_ASPECT');
+        } else if (filter === 'ingresses') {
+            list = state.milestones.filter(m => m.category === 'SIGN_INGRESS');
+        }
+        if (list.length === 0) list = state.milestones;
+
         if (direction > 0) {
-            let nextM = state.milestones.find(m => {
+            let nextM = list.find(m => {
                 const mDt = parseDateString(m.jump_date);
                 if (m.jump_time) {
                     const p = m.jump_time.split(':');
@@ -2293,12 +3023,12 @@ def get_chart_transit(native_id):
                 }
                 return mDt.getTime() > curTime + thresholdMs;
             });
-            if (!nextM) nextM = state.milestones[state.milestones.length - 1];
+            if (!nextM) nextM = list[list.length - 1];
             if (nextM) jumpToMilestone(state, nextM.jump_date, nextM.jump_time);
         } else {
             let prevM = null;
-            for (let i = state.milestones.length - 1; i >= 0; i--) {
-                const m = state.milestones[i];
+            for (let i = list.length - 1; i >= 0; i--) {
+                const m = list[i];
                 const mDt = parseDateString(m.jump_date);
                 if (m.jump_time) {
                     const p = m.jump_time.split(':');
@@ -2309,7 +3039,7 @@ def get_chart_transit(native_id):
                     break;
                 }
             }
-            if (!prevM) prevM = state.milestones[0];
+            if (!prevM) prevM = list[0];
             if (prevM) jumpToMilestone(state, prevM.jump_date, prevM.jump_time);
         }
     }
@@ -2326,7 +3056,9 @@ def get_chart_transit(native_id):
 
         const filter = state.radarFilter || 'all';
         let filtered = allMilestones;
-        if (filter === 'stations') {
+        if (filter === 'macro') {
+            filtered = allMilestones.filter(m => m.is_macro_planet !== false);
+        } else if (filter === 'stations') {
             filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'SKY_STATION');
         } else if (filter === 'natal_hits') {
             filtered = allMilestones.filter(m => m.category === 'NATAL_STATION' || m.category === 'EXACT_ASPECT');
@@ -2383,22 +3115,15 @@ def get_chart_transit(native_id):
             }
 
             const timeLabel = `${m.formatted_date} · ${String(m.hour).padStart(2, '0')}:${String(m.minute).padStart(2, '0')}`;
+            const dashaTag = m.is_dasha_synchronized
+                ? `<span style="font-size:12px; font-weight:700; color:#b45309; margin-left:6px;" title="Active Dasha Lord Event (Vimshottari Synchronized)">[DASHA LORD]</span>`
+                : '';
 
-            card.style.border = '1px solid #eae2d3';
-            card.style.borderLeft = `3px solid ${leftAccent}`;
-            card.style.background = '#fffdfa';
-            card.style.borderRadius = '2px';
-            card.style.padding = '5px 8px';
-            card.style.cursor = 'pointer';
-            card.style.display = 'flex';
-            card.style.flexDirection = 'column';
-            card.style.gap = '3px';
-            card.style.fontFamily = 'var(--font-german-din, "DIN Alternate", -apple-system, sans-serif)';
-            card.style.transition = 'background 0.12s ease, border-color 0.12s ease';
+            card.style.borderLeftColor = leftAccent;
 
             card.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:12px; font-weight:600; color:#5c4433; font-variant-numeric:tabular-nums; letter-spacing:0.3px;">${timeLabel}</span>
+                    <span style="font-size:12px; font-weight:600; color:#5c4433; font-variant-numeric:tabular-nums; letter-spacing:0.3px;">${timeLabel}${dashaTag}</span>
                     <span class="${labelClass}" style="font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase;">${labelText}</span>
                 </div>
                 <div style="font-size:12.5px; font-weight:500; color:#2c221b; line-height:1.35; font-family:var(--font-german-din, 'DIN Alternate', -apple-system, sans-serif);">
@@ -2508,9 +3233,12 @@ def get_chart_transit(native_id):
                             const motionText = asp.motion_status || (asp.is_applying ? 'Applying' : 'Separating');
                             const motionColor = asp.is_applying ? '#2e7d32' : '#795548';
                             const motionArrow = asp.is_applying ? '→' : '←';
+                            const dashaBadge = asp.is_dasha_synchronized
+                                ? `<span style="font-size:12px; font-weight:700; color:#b45309; margin-left:4px;" title="Active Dasha Lord Transit (1.35x Synchronization Multiplier)">[DASHA LORD]</span>`
+                                : '';
 
                             tr.innerHTML = `
-                                <td style="padding:3px 6px; font-weight:bold; color:${col}; font-size:12px;">${asp.aspecting}</td>
+                                <td style="padding:3px 6px; font-weight:bold; color:${col}; font-size:12px;">${asp.aspecting}${dashaBadge}</td>
                                 <td style="padding:3px 6px; font-size:12px;">${asp.type}</td>
                                 <td style="padding:3px 6px; font-weight:600; font-size:12px;">Natal ${asp.target}</td>
                                 <td style="padding:3px 6px; font-variant-numeric:tabular-nums; font-size:12px;">${asp.orb}°</td>
@@ -2976,502 +3704,5 @@ def get_chart_transit(native_id):
         window.maximizeTransitFromWidget = maximizeTransitFromWidget;
     }
 })();
-
-
-
-################################################################################
-### FILE 9/10: ui/transit_styles.css
-### PURPOSE: German DIN Editorial Typography & CSS Styling
-### SOURCE PATH: exports/transits/ui/transit_styles.css
-################################################################################
-
-/* =========================================================================
-   Astra Transit System - CSS Styling (German DIN Editorial Standard)
-   =========================================================================
-   Design Rules:
-   1. Minimum 12px Font Floor (static/GEMINI.md Rule 1).
-   2. Zero Pill Badge Backgrounds: No heavy colored rectangular/pill blocks.
-   3. Pure Typography: Category distinction is rendered using clean German DIN
-      fonts, distinct font colors, and subtle left accent borders.
-   ========================================================================= */
-
-:root {
-    --font-german-din: "DIN Alternate", "DIN 1451", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    --font-astro-glyphs: "STIX Two Math", "Segoe UI Symbol", sans-serif;
-}
-
-/* Bi-Wheel SVG Container */
-.transit-biwheel-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: transparent;
-}
-
-.transit-biwheel-svg {
-    max-width: 100%;
-    max-height: 100%;
-    font-family: var(--font-astro-glyphs, "STIX Two Math", sans-serif);
-    user-select: none;
-}
-
-/* Interactive SVG Elements */
-.interactive-aspect {
-    transition: stroke-width 0.15s ease, opacity 0.15s ease;
-}
-
-.interactive-aspect:hover {
-    stroke-width: 3.0px !important;
-    opacity: 1.0 !important;
-}
-
-.transit-planet-dot {
-    transition: r 0.15s ease;
-}
-
-.transit-planet-dot:hover {
-    r: 4.2px;
-}
-
-.station-pin {
-    transition: transform 0.15s ease, filter 0.15s ease;
-}
-
-.station-pin:hover {
-    filter: drop-shadow(0 0 3px rgba(220, 38, 38, 0.7));
-}
-
-/* =========================================================================
-   Gochara Radar / Significant Transit Points Panel
-   ========================================================================= */
-.transit-radar-panel {
-    border-left: 1px solid #e2d9c8;
-    background: #fdfbf7;
-    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
-    font-size: 12px;
-    box-shadow: -2px 0 8px rgba(74, 51, 37, 0.04);
-}
-
-.transit-radar-header {
-    background: #f8f4ec;
-    border-bottom: 1px solid #e2d9c8;
-    user-select: none;
-    padding: 6px 8px;
-}
-
-.transit-radar-title {
-    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: #4a3325;
-}
-
-/* Filter Tabs (Flat Minimalist Tabs without Background Highlights) */
-.radar-filter-tabs {
-    display: flex;
-    border-bottom: 1px solid #e5dccb;
-    gap: 6px;
-    margin-top: 4px;
-}
-
-.radar-filter-tab,
-.radar-filter-tab:hover,
-.radar-filter-tab:focus,
-.radar-filter-tab.active {
-    background-color: transparent !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    border-top: none !important;
-    border-left: none !important;
-    border-right: none !important;
-}
-
-.radar-filter-tab {
-    border-bottom: 2px solid transparent !important;
-    color: #786555 !important;
-    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
-    font-size: 12px !important;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    padding: 3px 6px;
-    cursor: pointer;
-    transition: color 0.12s ease, border-color 0.12s ease;
-}
-
-.radar-filter-tab:hover {
-    color: #4a3325 !important;
-    border-bottom: 2px solid #c5b69f !important;
-}
-
-.radar-filter-tab.active {
-    color: #4a3325 !important;
-    font-weight: 700 !important;
-    border-bottom: 2px solid #4a3325 !important;
-}
-
-/* Scrollable Milestone Event List */
-.transit-radar-list {
-    scrollbar-width: thin;
-    scrollbar-color: #d5c8b2 transparent;
-}
-
-.transit-radar-list::-webkit-scrollbar {
-    width: 5px;
-}
-
-.transit-radar-list::-webkit-scrollbar-thumb {
-    background: #d5c8b2;
-    border-radius: 2px;
-}
-
-/* Milestone Cards: Clean Left Accent Border & Zero Background Pill Highlighting */
-.transit-milestone-card {
-    background: #fffdfa;
-    border: 1px solid #eae2d3;
-    border-left: 3px solid #b5a48f;
-    border-radius: 2px;
-    padding: 5px 7px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    transition: background 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
-    font-family: var(--font-german-din, "DIN Alternate", -apple-system, sans-serif);
-    font-size: 12px !important;
-}
-
-.transit-milestone-card:hover {
-    background: #fbf7ef;
-    border-color: #d8cdba;
-    box-shadow: 0 1px 3px rgba(74, 51, 37, 0.06);
-}
-
-.transit-milestone-card.active-jumped {
-    background: #fcf9f2;
-    border-color: #c2410c;
-    border-left: 3.5px solid #c2410c !important;
-}
-
-/* Category Typography and Left Border Accents */
-.radar-label-natal-station {
-    color: #b91c1c; /* Crimson */
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.radar-label-exact-aspect {
-    color: #b45309; /* Warm Bronze / Amber */
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.radar-label-ingress {
-    color: #0f766e; /* Forest Teal */
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.radar-label-sky-station {
-    color: #475569; /* Slate Umber */
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-
-
-################################################################################
-### FILE 10/10: tests/test_transits.py
-### PURPOSE: Unit & Integration Test Suite
-### SOURCE PATH: exports/transits/tests/test_transits.py
-################################################################################
-
-import pytest
-from jyotish import native_manager
-from jyotish import generate_jyotish
-from jyotish.transits.transits import calculate_transits, get_transit_aspects
-from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
-from app import app, CHARTS_FILE
-
-@pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
-
-def test_transit_calculation():
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    assert len(all_natives) > 0
-    native = all_natives[0]
-
-    natal = generate_jyotish.generate_kala_chart(
-        name=native['name'],
-        year=1990, month=1, day=1, hour=12, minute=0,
-        latitude=float(native['lat']), longitude=float(native['lon']),
-        timezone_offset=0.0
-    )
-
-    # Test Ernst Dhruva
-    res_dhruva = calculate_transits(
-        natal_chart=natal,
-        transit_year=2026, transit_month=10, transit_day=1,
-        transit_hour=12, transit_minute=0,
-        nakshatra_system="ERNST_DHRUVA"
-    )
-    assert "transit_planets" in res_dhruva
-    assert len(res_dhruva["transit_planets"]) == 9
-    assert "Jupiter" in res_dhruva["transit_planets"]
-    assert "house_from_lagna" in res_dhruva["transit_planets"]["Jupiter"]
-    assert "house_from_moon" in res_dhruva["transit_planets"]["Jupiter"]
-
-    # Test Vic Chitra
-    res_chitra = calculate_transits(
-        natal_chart=natal,
-        transit_year=2026, transit_month=10, transit_day=1,
-        transit_hour=12, transit_minute=0,
-        nakshatra_system="VIC_CHITRA"
-    )
-    assert "transit_planets" in res_chitra
-
-def test_transit_biwheel_svg():
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-
-    natal = generate_jyotish.generate_kala_chart(
-        name=native['name'],
-        year=1990, month=1, day=1, hour=12, minute=0,
-        latitude=float(native['lat']), longitude=float(native['lon']),
-        timezone_offset=0.0
-    )
-
-    transit_res = calculate_transits(
-        natal_chart=natal,
-        transit_year=2026, transit_month=10, transit_day=1,
-        transit_hour=12, transit_minute=0
-    )
-
-    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
-    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
-
-    svg = generate_transit_biwheel(
-        inner_items=natal_d1_items,
-        outer_items=transit_d1_items,
-        active_aspects=transit_res["active_aspects"]
-    )
-    assert "<svg" in svg
-    assert "Natal · Transit" in svg
-    assert "transit-aspect-lines" in svg
-    assert "outer-planets-group" in svg
-
-    # Redesigned Adius-style layout: unshaded canvas, expanded inner hub (r=56), flat house ring (r=72)
-    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="56"' in svg
-    assert '<circle cx="0" cy="0" r="72"' in svg
-    assert 'class="house-bg house-kendra"' not in svg
-    assert '<path class="house-bg"' in svg
-    assert 'fill="none"' in svg
-    assert '<g class="inner-planet-ticks">' in svg
-    assert 'class="angle-ac-badge"' in svg
-    assert 'stroke-dasharray="1,2.5"' in svg
-
-def test_transit_api_endpoint(client):
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    nid = native['id']
-
-    resp = client.get(f'/api/chart/{nid}/transit?transit_date=01/10/2026&transit_time=12:00:00')
-    assert resp.status_code == 200
-    data = resp.get_json()
-    assert "svg" in data
-    assert "transit_planets" in data
-    assert "active_aspects" in data
-    assert "transit_time_info" in data
-
-
-def test_transit_custom_orbs_and_motion(client):
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    nid = native['id']
-
-    # Narrow Navamsha orb (3.3333°)
-    resp_narrow = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=3.3333')
-    assert resp_narrow.status_code == 200
-    data_narrow = resp_narrow.get_json()
-    assert data_narrow["orb"] == 3.3333
-
-    # Wide Parashari orb (10.0°) should return equal or more active aspects
-    resp_wide = client.get(f'/api/chart/{nid}/transit?transit_date=2026-10-15&transit_time=12:00:00&orb=10.0')
-    assert resp_wide.status_code == 200
-    data_wide = resp_wide.get_json()
-    assert data_wide["orb"] == 10.0
-    assert len(data_wide["active_aspects"]) >= len(data_narrow["active_aspects"])
-
-    # Check motion status fields on aspects
-    for asp in data_wide["active_aspects"]:
-        assert "motion_status" in asp
-        assert asp["motion_status"] in ("Applying", "Separating")
-        assert "is_applying" in asp
-
-def test_transit_pure_speed_and_station_calculus():
-    """Verify Hemisphere A pure calculus: zero HTML/colors, strict types."""
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    natal = generate_jyotish.generate_kala_chart(
-        name=native['name'],
-        year=1990, month=1, day=1, hour=12, minute=0,
-        latitude=float(native['lat']), longitude=float(native['lon']),
-        timezone_offset=0.0
-    )
-
-    transit_res = calculate_transits(
-        natal_chart=natal,
-        transit_year=2026, transit_month=10, transit_day=26,
-        transit_hour=12, transit_minute=0
-    )
-
-    planets = transit_res["transit_planets"]
-    for p_name, p_data in planets.items():
-        assert isinstance(p_data["daily_speed"], float)
-        assert isinstance(p_data["speed_ratio"], float)
-        assert isinstance(p_data["is_stationary"], bool)
-        assert p_data["station_type"] in (None, "SR", "SD")
-        assert isinstance(p_data["motion_state"], str)
-        assert isinstance(p_data["gati_sanskrit"], str)
-
-        # Zero HTML or hex leakage
-        for k, v in p_data.items():
-            if isinstance(v, str):
-                assert "<" not in v and ">" not in v
-                assert "#" not in v
-
-    # Verify enriched aspects
-    for asp in transit_res["active_aspects"]:
-        assert isinstance(asp["aspecting_is_stationary"], bool)
-        assert asp["aspecting_station_type"] in (None, "SR", "SD")
-        assert isinstance(asp["aspecting_speed_ratio"], float)
-        assert isinstance(asp["intensity_weight"], float)
-        assert asp["intensity_weight"] >= 0.0
-
-def test_milestone_scanner_detection():
-    """Verify coarse-to-fine milestone scanner detects stations, exact hits, and ingresses."""
-    from jyotish.transits.milestone_scanner import scan_transit_milestones
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    natal = generate_jyotish.generate_kala_chart(
-        name=native['name'],
-        year=1990, month=1, day=1, hour=12, minute=0,
-        latitude=float(native['lat']), longitude=float(native['lon']),
-        timezone_offset=0.0
-    )
-
-    res = scan_transit_milestones(
-        natal_chart=natal,
-        start_year=2026, start_month=10, start_day=26,
-        days_back=60, days_forward=120
-    )
-
-    assert "milestones" in res
-    assert "upcoming_stations" in res
-    assert len(res["milestones"]) > 0
-
-    categories = {m["category"] for m in res["milestones"]}
-    # Should detect at least EXACT_ASPECT and stations
-    assert "EXACT_ASPECT" in categories
-
-    for m in res["milestones"]:
-        assert m["tier"] in (1, 2, 3)
-        assert m["category"] in ("NATAL_STATION", "EXACT_ASPECT", "SKY_STATION", "SIGN_INGRESS")
-        assert "timestamp_utc" in m
-        assert "jump_date" in m
-        assert "jump_time" in m
-        assert "description" in m
-        if m["category"] == "EXACT_ASPECT":
-            assert m["orb_at_event"] == 0.0
-            assert m["pass_number"] is not None
-            assert m["total_passes"] is not None
-            assert m["pass_number"] <= m["total_passes"]
-
-    # Test upcoming stations structure
-    for st in res["upcoming_stations"]:
-        assert st["station_type"] in ("SR", "SD")
-        assert "longitude" in st
-        assert "jump_date" in st
-        assert "tooltip" in st
-
-def test_transit_biwheel_svg_upgrades():
-    """Verify applying vs separating lines, SR/SD badges, and station pins in SVG."""
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    natal = generate_jyotish.generate_kala_chart(
-        name=native['name'],
-        year=1990, month=1, day=1, hour=12, minute=0,
-        latitude=float(native['lat']), longitude=float(native['lon']),
-        timezone_offset=0.0
-    )
-
-    transit_res = calculate_transits(
-        natal_chart=natal,
-        transit_year=2026, transit_month=10, transit_day=26,
-        transit_hour=12, transit_minute=0
-    )
-
-    natal_d1_items = parse_varga_data(natal["vargas"]["D1"])
-    transit_d1_items = parse_varga_data(transit_res["transit_chart"]["vargas"]["D1"])
-    for it in transit_d1_items:
-        p_nm = it.get("name")
-        if p_nm in transit_res["transit_planets"]:
-            it.update(transit_res["transit_planets"][p_nm])
-
-    upcoming_sample = [{
-        "planet": "Saturn",
-        "station_type": "SD",
-        "longitude": 7.5,
-        "sign": "Aries",
-        "degree": 7,
-        "minute": 30,
-        "jump_date": "2026-12-10",
-        "jump_time": "12:00:00",
-        "tooltip": "Upcoming Saturn SD at 7°30' Aries"
-    }]
-
-    svg = generate_transit_biwheel(
-        inner_items=natal_d1_items,
-        outer_items=transit_d1_items,
-        active_aspects=transit_res["active_aspects"],
-        upcoming_stations=upcoming_sample
-    )
-
-    # Check station pins
-    assert "upcoming-stations-layer" in svg
-    assert "station-pin" in svg
-    assert 'data-jump-date="2026-12-10"' in svg
-
-    # Check applying/separating aspect lines
-    if transit_res["active_aspects"]:
-        assert "transit-aspect-lines-layer" in svg
-        assert 'data-applying=' in svg
-
-def test_transit_milestones_api_endpoint(client):
-    """Verify /api/chart/<native_id>/transit/milestones endpoint."""
-    all_natives = native_manager.load_natives(CHARTS_FILE)
-    native = all_natives[0]
-    nid = native['id']
-
-    resp = client.get(f'/api/chart/{nid}/transit/milestones?transit_date=2026-10-26&days_back=60&days_forward=120')
-    assert resp.status_code == 200
-    data = resp.get_json()
-    assert "milestones" in data
-    assert "upcoming_stations" in data
-    assert "scan_meta" in data
-    assert len(data["milestones"]) > 0
 
 
