@@ -72,16 +72,35 @@ def test_circular_chart_aspects_and_radii():
     ]
     svg_str = generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=19.33, root_planet="Lagna")
     
-    # Assert reduced center circle and house ring (r_inner=30, r_outer=46)
-    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="30"' in svg_str
-    assert '<circle cx="0" cy="0" r="46"' in svg_str
+    # Assert expanded center circle and flatter house ring (r_inner=56, r_outer=72)
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="56"' in svg_str
+    assert '<circle cx="0" cy="0" r="72"' in svg_str
     
-    # Assert house background color scheme sectors (Kendra / Trikona)
-    assert 'class="house-bg house-kendra"' in svg_str
-    assert 'class="house-bg house-trikona"' in svg_str
+    # Assert house background color scheme sectors are unshaded (clean white canvas)
+    assert 'class="house-bg house-kendra"' not in svg_str
+    assert 'class="house-bg house-trikona"' not in svg_str
     
-    # Assert internal aspect chords are removed from circular chart
-    assert '<g class="aspect-lines">' not in svg_str
+    # Assert 12 Whole Sign Houses are rendered
+    assert 'class="whole-sign-cusp" data-house="1"' in svg_str
+    assert 'class="whole-sign-cusp" data-house="12"' in svg_str
+    
+    # Assert inward planet ticks pointing into aspect hub
+    assert '<g class="inner-planet-ticks">' in svg_str
+    assert 'class="inner-tick" data-planet="Mars"' in svg_str
+    
+    # Assert single AC badge and degree readout at 180° (no duplicate "Asc" planet glyph)
+    assert 'class="angle-ac-badge"' in svg_str
+    assert '9° 33\'' in svg_str
+    assert 'data-id="Lagna"' not in svg_str
+    
+    # Assert Campanus cusps toggle (cardinal angles remain, intermediate cusps toggle)
+    assert 'class="angle-line angle-mc"' in svg_str
+    svg_no_cusps = generate_circular_chart(items, mode="symbol", varga_name="D1", ayanamsha=19.33, root_planet="Lagna", show_campanus_cusps=False)
+    assert 'class="angle-line angle-mc"' in svg_no_cusps
+    assert 'class="interactive cusp-number"' not in svg_no_cusps
+    
+    # Assert internal aspect chords are rendered in circular chart
+    assert '<g class="aspect-lines">' in svg_str
     
     # Assert planet highlight plate
     assert 'class="planet-highlight-bg"' in svg_str
@@ -116,16 +135,20 @@ def test_biwheel_chart_svg_structure():
     assert 'viewBox="-210 -210 420 420"' in svg_str
     assert 'background:transparent' in svg_str
     
-    # 2. Key Concentric Rings & Geometry
-    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="28"' in svg_str
-    assert '<circle cx="0" cy="0" r="44"' in svg_str # Inner house ring boundary
+    # 2. Key Concentric Rings & Geometry (widened aspect hub r=56, flatter house ring r=72)
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="56"' in svg_str
+    assert '<circle cx="0" cy="0" r="72"' in svg_str # Inner house ring boundary
     assert '<circle cx="0" cy="0" r="138"' in svg_str # Subdivision ring inner boundary (UNTOUCHED)
     assert '<circle cx="0" cy="0" r="164"' in svg_str # Subdivision ring outer boundary (UNTOUCHED)
     assert '<circle cx="0" cy="0" r="206"' in svg_str # Chart outer perimeter (UNTOUCHED)
     
-    # Assert house background color scheme sectors (Kendra / Trikona)
-    assert 'class="house-bg house-kendra"' in svg_str
-    assert 'class="house-bg house-trikona"' in svg_str
+    # Assert house background color scheme sectors are clean/unshaded
+    assert '<path class="house-bg"' in svg_str
+    assert 'fill="none"' in svg_str
+    
+    # Assert inward planet ticks in biwheel inner chart
+    assert '<g class="inner-planet-ticks">' in svg_str
+    assert 'class="inner-tick" data-planet="Sun"' in svg_str
     
     # Assert planet highlight plate
     assert 'class="planet-highlight-bg"' in svg_str

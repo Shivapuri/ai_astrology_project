@@ -27,9 +27,10 @@ const AstraAPI = {
         const notation = (store && store.state.notation) ? store.state.notation : (window.currentNotation || 'symbol');
         const showNakshatras = (store && store.state.showNakshatras !== undefined) ? store.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
         const wheelMode = (store && store.state.circularWheelMode) ? store.state.circularWheelMode : (window.currentCircularWheelMode || localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras');
+        const showCampanusCusps = (store && store.state.showCampanusCusps !== undefined) ? store.state.showCampanusCusps : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
 
         try {
-            const url = `/api/chart/${id}?mode=${notation}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&d2_mode=${d2Mode}&trimsamsa_mode=${trimsamsaMode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}&wheel_mode=${wheelMode}`;
+            const url = `/api/chart/${id}?mode=${notation}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&d2_mode=${d2Mode}&trimsamsa_mode=${trimsamsaMode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}&wheel_mode=${wheelMode}&show_campanus_cusps=${showCampanusCusps}`;
             const response = await fetch(url);
             const result = await response.json();
 
@@ -351,10 +352,11 @@ const AstraAPI = {
         const debMode = (store && store.state.debilitationMode) ? store.state.debilitationMode : (window.currentDebilitationMode || 'kala_degree');
         const showNakshatras = (store && store.state.showNakshatras !== undefined) ? store.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
         const wheelMode = (store && store.state.circularWheelMode) ? store.state.circularWheelMode : (window.currentCircularWheelMode || localStorage.getItem('astra_circular_wheel_mode') || 'nakshatras');
+        const showCampanusCusps = (store && store.state.showCampanusCusps !== undefined) ? store.state.showCampanusCusps : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
         const offsetSec = window.activePreviewOffsetSeconds || 0;
 
         try {
-            const url = `/api/chart/${nativeId}/svg?varga=${varga}&mode=${mode}&root=${root}&style=${style}&outer=${outer}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&d2_mode=${d2Mode}&trimsamsa_mode=${trimsamsaMode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}&wheel_mode=${wheelMode}&offset_seconds=${offsetSec}`;
+            const url = `/api/chart/${nativeId}/svg?varga=${varga}&mode=${mode}&root=${root}&style=${style}&outer=${outer}&d10_mode=${d10Mode}&d24_mode=${d24Mode}&d2_mode=${d2Mode}&trimsamsa_mode=${trimsamsaMode}&nakshatra_system=${nakshatra}&debilitation_mode=${debMode}&show_nakshatras=${showNakshatras}&wheel_mode=${wheelMode}&show_campanus_cusps=${showCampanusCusps}&offset_seconds=${offsetSec}`;
             const res = await fetch(url);
             return await res.json();
         } catch (e) {

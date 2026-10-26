@@ -100,6 +100,12 @@ function openSettingsModal() {
         const isNak = (window.astraStore && window.astraStore.state.showNakshatras !== undefined) ? window.astraStore.state.showNakshatras : (window.currentShowNakshatras !== undefined ? window.currentShowNakshatras : (localStorage.getItem('astra_show_nakshatras') === 'true'));
         nakCheck.checked = !!isNak;
     }
+
+    const cuspsCheck = document.getElementById('modalToggleCampanusCusps');
+    if (cuspsCheck) {
+        const isCusps = (window.astraStore && window.astraStore.state.showCampanusCusps !== undefined) ? window.astraStore.state.showCampanusCusps : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
+        cuspsCheck.checked = !!isCusps;
+    }
     
     const d10 = (window.astraStore && window.astraStore.state.d10Mode) || window.currentD10Mode || 'reverse';
     const radioRev = document.getElementById('radio-d10-reverse');

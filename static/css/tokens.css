@@ -105,6 +105,27 @@
     fill: var(--chart-other-color, #f9f5eb) !important;
 }
 
+/* Unshaded Crisp Canvas for Modern Circular & Bi-Wheel Charts */
+.astra-circular-chart .house-bg,
+.svg-circular .house-bg,
+.svg-biwheel .house-bg {
+    fill: transparent !important;
+}
+
+.text-shield {
+    paint-order: stroke fill;
+    stroke: #ffffff;
+    stroke-width: 3.5px;
+    stroke-linejoin: round;
+}
+
+.sign-shield {
+    paint-order: stroke fill;
+    stroke: #ffffff;
+    stroke-width: 4.0px;
+    stroke-linejoin: round;
+}
+
 /* ==========================================================================
    Semantic Utility Classes & Micro-Tags (Strict 12px Floor)
    ========================================================================== */

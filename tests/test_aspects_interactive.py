@@ -1,7 +1,7 @@
 import pytest
 import re
 from jyotish.aspects.aspects import get_aspect_explanation, get_graha_drishti
-from jyotish.draw_chart import generate_south_indian, generate_north_indian, generate_circular_chart
+from jyotish.draw_chart import generate_south_indian, generate_north_indian, generate_circular_chart, generate_biwheel_chart
 
 def test_get_aspect_explanation_benefic_and_malefic():
     # Jupiter (benefic) casting 5th house aspect (120 deg separation)
@@ -119,12 +119,20 @@ def test_chart_svgs_contain_interactive_aspect_elements():
     assert 'data-virupas=' in ni_svg
     assert 'data-deg=' in ni_svg
 
-    # Circular Chart (aspect lines inside center circle removed by user request)
+    # Circular Chart (Graha Drishti aspect lines inside center circle)
     circ_svg = generate_circular_chart(items)
     assert 'class="aspects-hidden"' in circ_svg
     assert '<circle class="interactive-center-circle"' in circ_svg
     assert '<circle class="planet-highlight-bg"' in circ_svg
-    assert '<g class="aspect-lines">' not in circ_svg
+    assert '<g class="aspect-lines">' in circ_svg
+    assert 'class="interactive-aspect"' in circ_svg
+
+    # Harmonic Bi-Wheel Chart (Natal aspects only in center circle)
+    bi_svg = generate_biwheel_chart(items, items, inner_name="D1", outer_name="D9")
+    assert 'class="aspects-hidden"' in bi_svg
+    assert '<circle class="interactive-center-circle"' in bi_svg
+    assert '<g class="aspect-lines">' in bi_svg
+    assert 'class="interactive-aspect"' in bi_svg
 
 def test_frontend_template_interactive_aspect_attributes():
     with open("templates/index.html", "r", encoding="utf-8") as f:

@@ -75,6 +75,16 @@ def test_transit_biwheel_svg():
     assert "transit-aspect-lines" in svg
     assert "outer-planets-group" in svg
 
+    # Redesigned Adius-style layout: unshaded canvas, expanded inner hub (r=56), flat house ring (r=72)
+    assert '<circle class="interactive-center-circle" cx="0" cy="0" r="56"' in svg
+    assert '<circle cx="0" cy="0" r="72"' in svg
+    assert 'class="house-bg house-kendra"' not in svg
+    assert '<path class="house-bg"' in svg
+    assert 'fill="none"' in svg
+    assert '<g class="inner-planet-ticks">' in svg
+    assert 'class="angle-ac-badge"' in svg
+    assert 'stroke-dasharray="1,2.5"' in svg
+
 def test_transit_api_endpoint(client):
     all_natives = native_manager.load_natives(CHARTS_FILE)
     native = all_natives[0]

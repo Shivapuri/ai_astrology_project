@@ -677,6 +677,11 @@ function switchWidgetChartType(btn, type) {
         wheelModeBtn.style.display = (type === 'circular') ? 'inline-flex' : 'none';
     }
 
+    const cuspsToggleBtn = widget.querySelector('.btn-cusps-toggle');
+    if (cuspsToggleBtn) {
+        cuspsToggleBtn.style.display = (type === 'circular') ? 'inline-flex' : 'none';
+    }
+
     const aspectToggleBtn = widget.querySelector('.btn-toggle-aspects');
     if (aspectToggleBtn) {
         if (['circular', 'biwheel'].includes(type)) {
@@ -793,6 +798,20 @@ function updateWidget(cell) {
                 circularWheelBtn.style.color = '#92400e';
                 circularWheelBtn.style.borderColor = '#fcd34d';
             }
+        }
+
+        // Sync Circular cusps toggle button
+        const cuspsToggleBtn = cell.querySelector('.btn-cusps-toggle');
+        if (cuspsToggleBtn) {
+            cuspsToggleBtn.style.display = isCircularActive ? 'inline-flex' : 'none';
+            const showCusps = (window.astraStore && window.astraStore.state.showCampanusCusps !== undefined)
+                ? window.astraStore.state.showCampanusCusps
+                : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
+            cuspsToggleBtn.innerHTML = showCusps ? 'Cusps: ON' : 'Cusps: OFF';
+            cuspsToggleBtn.title = showCusps ? 'Campanus Cusps: ON. Click to toggle OFF.' : 'Campanus Cusps: OFF. Click to toggle ON.';
+            cuspsToggleBtn.style.background = showCusps ? '#eff6ff' : '#f3f4f6';
+            cuspsToggleBtn.style.color = showCusps ? '#2563eb' : '#6b7280';
+            cuspsToggleBtn.style.borderColor = showCusps ? '#bfdbfe' : '#d1d5db';
         }
 
         const vData = svgs[varga];
@@ -1450,6 +1469,51 @@ function syncCircularWheelModeUI() {
             btn.style.color = '#92400e';
             btn.style.borderColor = '#fcd34d';
         }
+    });
+}
+
+async function setCampanusCusps(show) {
+    if (window.currentShowCampanusCusps === show && window.astraStore?.state?.showCampanusCusps === show) return;
+    window.currentShowCampanusCusps = show;
+    localStorage.setItem('astra_show_campanus_cusps', show ? 'true' : 'false');
+    if (window.astraStore) {
+        window.astraStore.setState({ showCampanusCusps: show });
+    }
+    syncCampanusCuspsUI();
+    if (window.currentSvgs) {
+        window.currentSvgs = null;
+    }
+    if (typeof window.loadChart === 'function') await window.loadChart();
+}
+
+async function toggleCampanusCusps(btn) {
+    const currentVal = (window.astraStore && window.astraStore.state.showCampanusCusps !== undefined)
+        ? window.astraStore.state.showCampanusCusps
+        : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
+    await setCampanusCusps(!currentVal);
+}
+
+async function onModalCampanusCuspsToggle(checked) {
+    await setCampanusCusps(checked);
+}
+
+function syncCampanusCuspsUI() {
+    const show = (window.astraStore && window.astraStore.state.showCampanusCusps !== undefined)
+        ? window.astraStore.state.showCampanusCusps
+        : (window.currentShowCampanusCusps !== undefined ? window.currentShowCampanusCusps : (localStorage.getItem('astra_show_campanus_cusps') !== 'false'));
+    
+    const modalCheckbox = document.getElementById('modalToggleCampanusCusps');
+    if (modalCheckbox) modalCheckbox.checked = show;
+
+    document.querySelectorAll('.btn-cusps-toggle').forEach(btn => {
+        const cell = btn.closest('.grid-cell');
+        const isCircularActive = cell ? (cell.querySelector('.view-circular.active') !== null) : false;
+        btn.style.display = isCircularActive ? 'inline-flex' : 'none';
+        btn.innerHTML = show ? 'Cusps: ON' : 'Cusps: OFF';
+        btn.title = show ? 'Campanus Cusps: ON. Click to toggle OFF.' : 'Campanus Cusps: OFF. Click to toggle ON.';
+        btn.style.background = show ? '#eff6ff' : '#f3f4f6';
+        btn.style.color = show ? '#2563eb' : '#6b7280';
+        btn.style.borderColor = show ? '#bfdbfe' : '#d1d5db';
     });
 }
 
@@ -2204,6 +2268,10 @@ if (typeof window !== 'undefined') {
     window.setCircularWheelMode = setCircularWheelMode;
     window.toggleCircularWheelMode = toggleCircularWheelMode;
     window.syncCircularWheelModeUI = syncCircularWheelModeUI;
+    window.setCampanusCusps = setCampanusCusps;
+    window.toggleCampanusCusps = toggleCampanusCusps;
+    window.onModalCampanusCuspsToggle = onModalCampanusCuspsToggle;
+    window.syncCampanusCuspsUI = syncCampanusCuspsUI;
     window.switchNotation = switchNotation;
     window.syncModalNotationUI = syncModalNotationUI;
     window.onModalNotationChange = onModalNotationChange;
