@@ -308,8 +308,6 @@
         if (!listContainer) return;
 
         const allMilestones = state.milestones || [];
-        if (countBadge) countBadge.textContent = allMilestones.length;
-
         const filter = state.radarFilter || 'all';
         let filtered = allMilestones;
         if (filter === 'macro') {
@@ -321,6 +319,8 @@
         } else if (filter === 'ingresses') {
             filtered = allMilestones.filter(m => m.category === 'SIGN_INGRESS');
         }
+
+        if (countBadge) countBadge.textContent = filtered.length;
 
         listContainer.innerHTML = '';
         if (filtered.length === 0) {

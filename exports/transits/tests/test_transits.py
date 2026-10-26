@@ -306,6 +306,11 @@ def test_transit_phaladeepika_gochara_and_vedha():
         assert isinstance(p_data["has_vedha"], bool)
         assert isinstance(p_data["is_vargottama"], bool)
 
+    # Specifically test that Vargottama evaluates True when Moon is in first navamsha of Libra (Oct 9, 2026)
+    varg_res = calculate_transits(natal, 2026, 10, 9, 12, 0)
+    assert varg_res["transit_planets"]["Moon"]["is_vargottama"] is True
+    assert varg_res["transit_planets"]["Moon"]["sign"] == "Libra"
+
 def test_transit_dasha_synchronization():
     """Verify active Dasha synchronization tags and 1.35x multiplier on transit aspects."""
     all_natives = native_manager.load_natives(CHARTS_FILE)

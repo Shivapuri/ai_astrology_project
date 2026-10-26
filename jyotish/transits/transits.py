@@ -121,7 +121,10 @@ def calculate_transits(
         transit_d1["lagna"]["pada"] = t_naks["Lagna"]["pada"]
 
     transit_chart = {
-        "vargas": {"D1": transit_d1},
+        "vargas": {
+            "D1": transit_d1,
+            "D9": transit_baseline.vargas.get("D9", {})
+        },
         "baseline": transit_baseline.to_dict()
     }
     natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
@@ -286,7 +289,10 @@ def calculate_transits(
 
         d9_g = transit_d9_grahas.get(p_name, {})
         d9_sign = d9_g.get("sign")
-        p_data["is_vargottama"] = bool(d9_sign and d9_sign == p_data["sign"])
+        if not d9_sign:
+            d9_sign_idx = int((p_data["longitude"] % 360.0) / (30.0 / 9.0)) % 12
+            d9_sign = SIGNS_LIST[d9_sign_idx]
+        p_data["is_vargottama"] = bool(d9_sign == p_data["sign"])
 
     active_dasha_lords = list(natal_chart.get("active_dasha_lords", []))
     if not active_dasha_lords and "vimshottari_dasha" in natal_chart:

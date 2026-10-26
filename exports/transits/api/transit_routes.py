@@ -136,7 +136,16 @@ def get_chart_transit(native_id):
         )
         _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
 
-    # 5. Generate SVG Bi-Wheel (Level 8 Presentation)
+    # 5. Filter upcoming stations dynamically relative to the active transit timestamp
+    cur_jd = transit_res.get("transit_chart", {}).get("baseline", {}).get("astronomical_anchors", {}).get("jd_utc", 0.0)
+    if not cur_jd:
+        cur_jd = swe.julday(t_year, t_month, t_day, t_hour + t_min / 60.0 + t_sec / 3600.0 - t_tz)
+    upcoming = [
+        st for st in scan_res.get("upcoming_stations", [])
+        if st.get("jd", 9999999.0) >= (cur_jd - 0.5)
+    ]
+
+    # 6. Generate SVG Bi-Wheel (Level 8 Presentation)
     # from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
     # svg = generate_transit_biwheel(...)
     svg = "<svg>...</svg>"
@@ -147,7 +156,7 @@ def get_chart_transit(native_id):
         "active_aspects": transit_res["active_aspects"],
         "transit_time_info": transit_res["transit_time_info"],
         "milestones": scan_res.get("milestones", []),
-        "upcoming_stations": scan_res.get("upcoming_stations", []),
+        "upcoming_stations": upcoming,
         "root": root,
         "mode": mode,
         "orb": aspect_orb_degrees

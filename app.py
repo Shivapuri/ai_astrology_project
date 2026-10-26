@@ -540,6 +540,7 @@ def get_chart_transit(native_id):
             if st_k not in seen_st_keys:
                 seen_st_keys.add(st_k)
                 active_upcoming_stations.append({
+                    "jd": m.get("jd", 0.0),
                     "planet": m["planet"],
                     "station_type": m["station_type"],
                     "longitude": m["longitude"],

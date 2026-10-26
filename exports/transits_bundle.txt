@@ -1,22 +1,22 @@
 # ==============================================================================
 # ASTRA CODEBASE FOLDER BUNDLE
 # FOLDER: /Users/hajnaljanos/PycharmProjects/astra/exports/transits
-# GENERATED: 2026-10-26 13:16:38
+# GENERATED: 2026-10-26 13:50:29
 # TOTAL FILES: 10
-# TOTAL LINES: 3,624
-# TOTAL SIZE: 170.1 KB
+# TOTAL LINES: 3,644
+# TOTAL SIZE: 171.0 KB
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
 # TABLE OF CONTENTS
 # ------------------------------------------------------------------------------
 #  1. README.md (108 lines | 7.1 KB | Markdown Document)
-#  2. api/transit_routes.py (154 lines | 5.9 KB | Python Source)
+#  2. api/transit_routes.py (163 lines | 6.3 KB | Python Source)
 #  3. docs/transits.md (85 lines | 7.0 KB | Markdown Document)
 #  4. engine/draw_transit_biwheel.py (580 lines | 33.6 KB | Python Source)
 #  5. engine/milestone_scanner.py (567 lines | 24.6 KB | Python Source)
-#  6. engine/transits.py (464 lines | 19.5 KB | Python Source)
-#  7. tests/test_transits.py (369 lines | 13.4 KB | Python Source)
+#  6. engine/transits.py (470 lines | 19.7 KB | Python Source)
+#  7. tests/test_transits.py (374 lines | 13.7 KB | Python Source)
 #  8. ui/tmpl_transit_chart.html (133 lines | 13.7 KB | HTML Template)
 #  9. ui/transit_styles.css (202 lines | 5.3 KB | CSS Stylesheet)
 # 10. ui/transit_widget.js (962 lines | 40.0 KB | JavaScript)
@@ -138,7 +138,7 @@ Per *Phaladeepika* Chapter 26, transits are evaluated primarily from the **Natal
 
 ================================================================================
 FILE: api/transit_routes.py
-TYPE: Python Source | LINES: 154 | SIZE: 5.9 KB
+TYPE: Python Source | LINES: 163 | SIZE: 6.3 KB
 ================================================================================
 """
 Flask API Transit Endpoints (Extracted from app.py)
@@ -278,7 +278,16 @@ def get_chart_transit(native_id):
         )
         _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
 
-    # 5. Generate SVG Bi-Wheel (Level 8 Presentation)
+    # 5. Filter upcoming stations dynamically relative to the active transit timestamp
+    cur_jd = transit_res.get("transit_chart", {}).get("baseline", {}).get("astronomical_anchors", {}).get("jd_utc", 0.0)
+    if not cur_jd:
+        cur_jd = swe.julday(t_year, t_month, t_day, t_hour + t_min / 60.0 + t_sec / 3600.0 - t_tz)
+    upcoming = [
+        st for st in scan_res.get("upcoming_stations", [])
+        if st.get("jd", 9999999.0) >= (cur_jd - 0.5)
+    ]
+
+    # 6. Generate SVG Bi-Wheel (Level 8 Presentation)
     # from jyotish.draw_chart import generate_transit_biwheel, parse_varga_data
     # svg = generate_transit_biwheel(...)
     svg = "<svg>...</svg>"
@@ -289,7 +298,7 @@ def get_chart_transit(native_id):
         "active_aspects": transit_res["active_aspects"],
         "transit_time_info": transit_res["transit_time_info"],
         "milestones": scan_res.get("milestones", []),
-        "upcoming_stations": scan_res.get("upcoming_stations", []),
+        "upcoming_stations": upcoming,
         "root": root,
         "mode": mode,
         "orb": aspect_orb_degrees
@@ -1548,7 +1557,7 @@ def scan_transit_milestones(
 
 ================================================================================
 FILE: engine/transits.py
-TYPE: Python Source | LINES: 464 | SIZE: 19.5 KB
+TYPE: Python Source | LINES: 470 | SIZE: 19.7 KB
 ================================================================================
 """
 Transit Calculation Engine for Astra (Kala Methodology)
@@ -1673,7 +1682,10 @@ def calculate_transits(
         transit_d1["lagna"]["pada"] = t_naks["Lagna"]["pada"]
 
     transit_chart = {
-        "vargas": {"D1": transit_d1},
+        "vargas": {
+            "D1": transit_d1,
+            "D9": transit_baseline.vargas.get("D9", {})
+        },
         "baseline": transit_baseline.to_dict()
     }
     natal_d1 = natal_chart.get("vargas", {}).get("D1", {})
@@ -1838,7 +1850,10 @@ def calculate_transits(
 
         d9_g = transit_d9_grahas.get(p_name, {})
         d9_sign = d9_g.get("sign")
-        p_data["is_vargottama"] = bool(d9_sign and d9_sign == p_data["sign"])
+        if not d9_sign:
+            d9_sign_idx = int((p_data["longitude"] % 360.0) / (30.0 / 9.0)) % 12
+            d9_sign = SIGNS_LIST[d9_sign_idx]
+        p_data["is_vargottama"] = bool(d9_sign == p_data["sign"])
 
     active_dasha_lords = list(natal_chart.get("active_dasha_lords", []))
     if not active_dasha_lords and "vimshottari_dasha" in natal_chart:
@@ -2018,7 +2033,7 @@ def get_transit_aspects(
 
 ================================================================================
 FILE: tests/test_transits.py
-TYPE: Python Source | LINES: 369 | SIZE: 13.4 KB
+TYPE: Python Source | LINES: 374 | SIZE: 13.7 KB
 ================================================================================
 import pytest
 from jyotish import native_manager
@@ -2327,6 +2342,11 @@ def test_transit_phaladeepika_gochara_and_vedha():
         assert "is_vargottama" in p_data
         assert isinstance(p_data["has_vedha"], bool)
         assert isinstance(p_data["is_vargottama"], bool)
+
+    # Specifically test that Vargottama evaluates True when Moon is in first navamsha of Libra (Oct 9, 2026)
+    varg_res = calculate_transits(natal, 2026, 10, 9, 12, 0)
+    assert varg_res["transit_planets"]["Moon"]["is_vargottama"] is True
+    assert varg_res["transit_planets"]["Moon"]["sign"] == "Libra"
 
 def test_transit_dasha_synchronization():
     """Verify active Dasha synchronization tags and 1.35x multiplier on transit aspects."""
@@ -3052,8 +3072,6 @@ TYPE: JavaScript | LINES: 962 | SIZE: 40.0 KB
         if (!listContainer) return;
 
         const allMilestones = state.milestones || [];
-        if (countBadge) countBadge.textContent = allMilestones.length;
-
         const filter = state.radarFilter || 'all';
         let filtered = allMilestones;
         if (filter === 'macro') {
@@ -3065,6 +3083,8 @@ TYPE: JavaScript | LINES: 962 | SIZE: 40.0 KB
         } else if (filter === 'ingresses') {
             filtered = allMilestones.filter(m => m.category === 'SIGN_INGRESS');
         }
+
+        if (countBadge) countBadge.textContent = filtered.length;
 
         listContainer.innerHTML = '';
         if (filtered.length === 0) {
