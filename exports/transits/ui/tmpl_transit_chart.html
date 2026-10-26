@@ -1,0 +1,157 @@
+<template id="tmpl-transit-chart">
+    <div class="widget-transit-chart" style="display:flex; flex-direction:column; height:100%; position:relative; overflow:hidden; background: var(--bg-surface, #fcfbf9);">
+        <!-- Top Toolbar: Stepper, Step Interval, Aspect Orb, and Chart Mode Switchers -->
+        <div class="transit-toolbar transit-toolbar-primary" style="padding: 3px 6px; background: #f7f3eb; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 3px; flex-wrap: wrap;">
+            <!-- Playback Controls, Step Interval & Orb -->
+            <div style="display: flex; align-items: center; gap: 3px; flex-wrap: wrap;">
+                <div class="transit-playback-group" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
+                    <button type="button" class="btn-transit-step-milestone-prev" title="Jump to Previous Milestone Point (|<< Prev)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">|&lsaquo;</button>
+                    <button type="button" class="btn-transit-step-fast-back" title="Fast Rewind (5 steps)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&laquo;</button>
+                    <button type="button" class="btn-transit-step-back" title="Step Backward" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&lsaquo;</button>
+                    <button type="button" class="btn-transit-play-pause" title="Play / Pause continuous animation" style="border:none; background:#d35400; color:#ffffff; font-size:12px; font-weight:bold; padding:2px 7px; border-radius:3px; cursor:pointer;">&#9654; Play</button>
+                    <button type="button" class="btn-transit-step-fwd" title="Step Forward" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&rsaquo;</button>
+                    <button type="button" class="btn-transit-step-fast-fwd" title="Fast Forward (5 steps)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&raquo;</button>
+                    <button type="button" class="btn-transit-step-milestone-next" title="Jump to Next Milestone Point (Next >>|)" style="border:none; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&rsaquo;|</button>
+                </div>
+
+                <!-- Step Interval Selector -->
+                <select class="transit-interval-select" style="padding: 2px 4px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;" title="Step Interval">
+                    <option value="realtime">Clock</option>
+                    <option value="1m">1m</option>
+                    <option value="10m">10m</option>
+                    <option value="1h">1h</option>
+                    <option value="1d" selected>1d</option>
+                    <option value="1w">1w</option>
+                    <option value="30d">30d</option>
+                    <option value="365d">1y</option>
+                </select>
+
+                <!-- Aspect Orb Selector -->
+                <select class="transit-orb-select" style="padding: 2px 4px; font-size: 12px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-weight: 600;" title="Gochara Drishti Orb">
+                    <option value="3.3333" selected>Orb: 3&deg;20'</option>
+                    <option value="5.0">Orb: 5&deg;00'</option>
+                    <option value="10.0">Orb: 10&deg;00'</option>
+                </select>
+            </div>
+
+            <!-- Standard Chart Mode Switchers (S, N, C, B, T, Maximize) -->
+            <div class="chart-hotkeys" style="display: flex; align-items: center; gap: 3px;">
+                <button type="button" class="hotkey-btn btn-south" onclick="switchTransitToChart(this, 'south')" title="Switch back to South Indian Chart (S)">S</button>
+                <button type="button" class="hotkey-btn btn-north" onclick="switchTransitToChart(this, 'north')" title="Switch back to North Indian Chart (N)">N</button>
+                <button type="button" class="hotkey-btn btn-circular" onclick="switchTransitToChart(this, 'circular')" title="Switch back to Circular Chart (C)">C</button>
+                <button type="button" class="hotkey-btn btn-biwheel" onclick="switchTransitToChart(this, 'biwheel')" title="Switch back to Harmonic Bi-Wheel (B)">B</button>
+                <button type="button" class="hotkey-btn active btn-transit" title="Currently viewing Animated Transit Bi-Wheel (T)" style="color:#ffffff; background:#c2410c; font-weight:bold;">T</button>
+                <button type="button" class="btn-widget-maximize" title="Maximize Transit Bi-Wheel (Full Screen)" onclick="maximizeTransitFromWidget(this)">&#x26F6;</button>
+            </div>
+        </div>
+
+        <!-- Secondary Toolbar: Snap Buttons, Date/Time Inputs, Root Perspective, Triggers Toggle -->
+        <div class="transit-toolbar transit-toolbar-secondary" style="padding: 3px 6px; background: #fdfaf3; border-bottom: 1px solid #e5dccb; display: flex; justify-content: space-between; align-items: center; gap: 3px; flex-wrap: wrap;">
+            <!-- Snap buttons & Date/Time inputs -->
+            <div style="display: flex; align-items: center; gap: 3px; flex-wrap: wrap;">
+                <button type="button" class="btn-transit-now" title="Snap Transit to Current Real Time" style="border:none; background:#27ae60; color:#ffffff; font-size:12px; font-weight:bold; padding:2px 5px; border-radius:3px; cursor:pointer;">&#x2316; Now</button>
+                <button type="button" class="btn-transit-sync-natal" title="Sync Transit to Native Birth Date & Time" style="border:1px solid #d5c8b2; background:#fffdfa; color:#4a3325; font-size:12px; font-weight:bold; padding:1px 5px; border-radius:3px; cursor:pointer;">&#x27F2; Natal</button>
+                <input type="date" class="transit-date-input" style="padding: 1px 4px; font-size: 12px; width: 112px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-variant-numeric: tabular-nums;" title="Edit Transit Date">
+                <input type="time" step="1" class="transit-time-input" style="padding: 1px 4px; font-size: 12px; width: 80px; border-radius: 4px; border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-variant-numeric: tabular-nums;" title="Edit Transit Time">
+                <div class="transit-live-badge" style="display: inline-flex; align-items: center; gap: 4px; background: #fffdfa; border: 1px solid #d5c8b2; border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: 600; color: #5c4433; font-variant-numeric: tabular-nums;" title="Active Transit Date & Time">
+                    <span class="transit-status-dot" style="color:#27ae60; font-size:12px;">●</span>
+                    <span class="transit-date-display-text">--/--/---- --:--:--</span>
+                </div>
+            </div>
+
+            <!-- Root Perspective, Triggers Button, and Radar Panel Toggle -->
+            <div style="display: flex; align-items: center; gap: 3px; flex-wrap: wrap;">
+                <div class="transit-root-group" style="display: inline-flex; background: #eae1d1; border-radius: 4px; padding: 1px; gap: 1px;">
+                    <button type="button" class="btn-transit-root-lagna active root-pill-btn" data-root="Lagna" style="border:none; background:#fffdfa; color:#4a3325; font-weight:bold; font-size:12px; padding:2px 5px; border-radius:3px; cursor:pointer;" title="From Natal Ascendant (Lagna)">Lagna</button>
+                    <button type="button" class="btn-transit-root-moon root-pill-btn" data-root="Moon" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:2px 5px; border-radius:3px; cursor:pointer;" title="From Natal Moon (Chandra Lagna / Gochara)">Moon</button>
+                    <button type="button" class="btn-transit-root-sun root-pill-btn" data-root="Sun" style="border:none; background:transparent; color:#6b5a4b; font-weight:bold; font-size:12px; padding:2px 5px; border-radius:3px; cursor:pointer;" title="From Natal Sun (Surya Lagna)">Sun</button>
+                </div>
+
+                <button type="button" class="btn-transit-toggle-table" title="Toggle Transit Aspect Triggers Table" style="border: 1px solid #d5c8b2; background: #fffdfa; color: #4a3325; font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 2px;">Triggers (<span class="transit-aspect-count">0</span>) &#x25BE;</button>
+                <button type="button" class="btn-transit-toggle-radar active" title="Toggle Significant Transit Points Radar Panel" style="border: 1px solid #c2410c; background: #fff8f0; color: #c2410c; font-size: 12px; font-weight: 600; padding: 2px 6px; border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 3px;">Radar (<span class="transit-radar-count">0</span>) &#x25ED;</button>
+            </div>
+        </div>
+
+        <!-- Main Chart Display Area with Split Radar Side Panel -->
+        <div class="transit-chart-body" style="flex:1; display:flex; flex-direction:row; align-items:stretch; justify-content:center; overflow:hidden; position:relative; min-height:180px;">
+            <!-- Left: Transit Bi-Wheel SVG Container -->
+            <div class="transit-svg-container" style="flex:1; height:100%; display:flex; align-items:center; justify-content:center; min-width:260px; overflow:hidden;">
+                <div style="font-size:13px; color:#8c7b64; padding:20px;">Loading Transit Wheel...</div>
+            </div>
+
+            <!-- Right: Interactive Gochara Radar Side Panel (German DIN Editorial Standard) -->
+            <div class="transit-radar-panel" style="width:330px; min-width:280px; max-width:45%; border-left:1px solid #e2d9c8; background:#fdfbf7; display:flex; flex-direction:column; overflow:hidden;">
+                <!-- Header with German DIN Title & Filter Tabs -->
+                <div class="transit-radar-header" style="padding:6px 8px; background:#f8f4ec; border-bottom:1px solid #e2d9c8; display:flex; flex-direction:column; gap:4px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="transit-radar-title" style="font-size:12px; font-weight:700; color:#4a3325; letter-spacing:0.8px; text-transform:uppercase;">
+                            Significant Transit Points
+                        </span>
+                        <span class="transit-radar-range-badge" style="font-size:12px; color:#8c7b64; font-variant-numeric:tabular-nums;">-90d / +270d</span>
+                    </div>
+
+                    <!-- German DIN Filter Tabs: Clean text with underline indicator, ZERO background pill highlighting -->
+                    <div class="radar-filter-tabs" style="display:flex; border-bottom:1px solid #e5dccb; gap:4px; margin-top:3px;">
+                        <button type="button" class="radar-filter-tab active" data-filter="all">All</button>
+                        <button type="button" class="radar-filter-tab" data-filter="stations">Stations (SR/SD)</button>
+                        <button type="button" class="radar-filter-tab" data-filter="natal_hits">Natal Hits (0°)</button>
+                        <button type="button" class="radar-filter-tab" data-filter="ingresses">Ingresses</button>
+                    </div>
+                </div>
+
+                <!-- Scrollable Milestones Feed -->
+                <div class="transit-radar-list" style="flex:1; overflow-y:auto; padding:6px; display:flex; flex-direction:column; gap:5px;">
+                    <div style="font-size:12px; color:#8c7b64; text-align:center; padding:20px;">Scanning transit milestones...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Collapsible Aspect Hit List Drawer -->
+        <div class="transit-aspects-drawer" style="display:none; max-height:150px; overflow-y:auto; border-top:1px solid #e5dccb; background:#faf7f0; padding:4px 6px;">
+            <div style="font-size:12px; font-weight:bold; color:#5c4433; margin-bottom:3px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Active Transit Triggers &amp; Glances (Gochara Drishti)</span>
+                <span class="transit-timestamp-badge" style="font-size:12px; font-weight:normal; color:#8c7b64; font-variant-numeric:tabular-nums;"></span>
+            </div>
+            <table class="transit-aspects-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="border-bottom:1px solid #d5c8b2; text-align:left; color:#6b5a4b; background:#f4eee3;">
+                        <th style="padding:2px 5px;">Transit Graha</th>
+                        <th style="padding:2px 5px;">Aspect / Glance</th>
+                        <th style="padding:2px 5px;">Natal Target</th>
+                        <th style="padding:2px 5px;">Exact Orb</th>
+                        <th style="padding:2px 5px;">Potency</th>
+                        <th style="padding:2px 5px;">Motion</th>
+                    </tr>
+                </thead>
+                <tbody class="transit-aspects-tbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
+        <!-- Collapsible Aspect Hit List Drawer -->
+        <div class="transit-aspects-drawer" style="display:none; max-height:150px; overflow-y:auto; border-top:1px solid #e5dccb; background:#faf7f0; padding:4px 6px;">
+            <div style="font-size:12px; font-weight:bold; color:#5c4433; margin-bottom:3px; display:flex; justify-content:space-between; align-items:center;">
+                <span>Active Transit Triggers &amp; Glances (Gochara Drishti)</span>
+                <span class="transit-timestamp-badge" style="font-size:12px; font-weight:normal; color:#8c7b64; font-variant-numeric:tabular-nums;"></span>
+            </div>
+            <table class="transit-aspects-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="border-bottom:1px solid #d5c8b2; text-align:left; color:#6b5a4b; background:#f4eee3;">
+                        <th style="padding:2px 5px;">Transit Graha</th>
+                        <th style="padding:2px 5px;">Aspect / Glance</th>
+                        <th style="padding:2px 5px;">Natal Target</th>
+                        <th style="padding:2px 5px;">Exact Orb</th>
+                        <th style="padding:2px 5px;">Potency</th>
+                        <th style="padding:2px 5px;">Motion</th>
+                    </tr>
+                </thead>
+                <tbody class="transit-aspects-tbody">
+                    <!-- Populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
