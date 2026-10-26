@@ -50,7 +50,7 @@ exports/transits/
 ├── engine/
 │   ├── transits.py                <-- Core mathematical calculations (speeds, stations, aspects)
 │   ├── milestone_scanner.py       <-- High-speed ephemeris scanner (finds major turning points)
-│   └── draw_transit_biwheel.py    <-- SVG dual-ring chart generator
+│   └── draw_transit_biwheel.py    <-- SVG dual-ring chart generator (complete standalone)
 ├── api/
 │   └── transit_routes.py          <-- Flask web server endpoints & caching logic
 ├── ui/
@@ -80,7 +80,7 @@ The system is built on a strict **Two-Hemisphere Architecture**:
 [jyotish/transits/milestone_scanner.py] ──> Scans 360 days for major turning points
              │
              ▼
-[app.py (REST API)] ──> Delivers JSON payload to browser
+[app.py (REST API)] ──> Delivers JSON payload to browser (with dynamic upcoming station pins)
              │
              ├──────────────────────────┐
              ▼                          ▼
@@ -89,28 +89,34 @@ The system is built on a strict **Two-Hemisphere Architecture**:
 
 ---
 
-## 4. Key Concepts to Understand
+## 4. Key Concepts & Classical Phaladeepika Principles
 
 ### A. Planetary Speeds & Stations (*Stambhana*)
 When planets appear to stop and reverse direction from Earth's point of view:
 - **Stationary Retrograde (`SR` / *Vakra-ārambha*):** The planet slows to a halt and begins moving backward. In the chart, it is marked with a bold crimson **`SR`** label and a dashed red halo.
 - **Stationary Direct (`SD` / *Vakra-tyāga*):** The planet finishes its backward motion, halts, and starts moving forward again. It is marked with a green **`SD`** label.
-- **Threshold:** A planet is considered stationary when its speed drops to **10% or less** of its normal average speed.
+- **Threshold:** A planet is considered stationary when its speed drops to **10% or less** of its normal average speed. Mercury and Venus use an acceleration-bounded $\pm 12\text{h}$ window to prevent false multi-day stationarity.
 
 ### B. The 4 Milestone Tiers
 Instead of scrubbing through 365 days one by one, the [`milestone_scanner.py`](file:///Users/hajnaljanos/PycharmProjects/astra/exports/transits/engine/milestone_scanner.py) finds key events automatically:
 1. **`NATAL_STATION` (Tier 1 - Critical):** A planet halts directly on top of (or in a classical glance to) one of your birth planets within a tight **3°20'** window (a *Navamsha orb*).
-2. **`EXACT_ASPECT` (Tier 2 - High):** A slow-moving planet (Mars, Jupiter, Saturn, Rahu, Ketu) reaches exact `0°00'` alignment with a natal planet. It tracks whether this is **Pass 1** (direct), **Pass 2** (retrograde), or **Pass 3** (direct).
+2. **`EXACT_ASPECT` (Tier 2 - High):** A planet (Mars, Jupiter, Saturn, Rahu, Ketu, Sun, Venus, Mercury) reaches exact `0°00'` alignment with a natal planet. It tracks retrograde loops (`Pass 1`, `Pass 2`, `Pass 3`), accounting for boundary offsets.
 3. **`SKY_STATION` (Tier 3 - Medium):** A general direction change anywhere in the zodiac.
-4. **`SIGN_INGRESS` (Tier 3 - Medium):** A planet crosses the boundary into a new zodiac sign (`0°00'`), changing house topics.
+4. **`SIGN_INGRESS` (Tier 3 - Medium):** A planet crosses the boundary into a new zodiac sign (`0°00'` direct, `29°59'` retrograde), updating whole-sign house topics.
 
-### C. The Bi-Wheel Chart Visuals
+### C. Classical Moon-Gochara House Favorability
+Per *Phaladeepika* Chapter 26, transits are evaluated primarily from the **Natal Moon (*Janma Rasi*)**:
+- **Malefics (Sun, Mars, Saturn, Rahu, Ketu)**: Favorable in **Upachaya houses (3, 6, 11)** from the Moon, conferring victory and tangible gains.
+- **Benefics (Jupiter, Venus, Mercury, waxing Moon)**: Auspicious in cardinal (*Kendra*) and trine (*Trikona*) houses.
+- Each planet in the transit payload carries an `is_favorable_from_moon` boolean readout.
+
+### D. The Bi-Wheel Chart Visuals
 - **Inner Ring:** Your permanent birth chart (*D1 Natal*).
 - **Outer Ring:** The moving transit planets on that date.
 - **Aspect Lines:** Lines connecting outer transit planets to inner birth planets:
   - **Solid Lines:** *Applying* aspects (the transit planet is moving closer to exact alignment—energy is building up).
   - **Dashed Lines:** *Separating* aspects (the transit planet is moving away—the peak moment has passed).
-- **Diamond Rim Pins:** Small clickable diamond markers on the outer circle showing where future planetary stations will occur. Clicking one instantly jumps the chart to that exact date.
+- **Diamond Rim Pins:** Small clickable diamond markers on the outer circle showing upcoming planetary stations. Clicking one instantly jumps the chart to that exact date and time in the chart's local timezone.
 
 ---
 
@@ -140,17 +146,22 @@ Instead of scrubbing through 365 days one by one, the [`milestone_scanner.py`](f
 In Vedic Astrology (Jyotish), natal horoscopy establishes the fixed karmic blueprint (*Prarabdha Karma*), while **Transits (*Gochara*)** represent the dynamic unfolding of time as planets traverse the zodiac relative to that natal blueprint.
 
 ### Scriptural References:
-* **Phaladeepika (Mantreswara), Chapter 26 (Gochara Phala):**
-  * Transits must be evaluated primarily from the **Natal Moon (*Janma Rasi / Chandra Lagna*)**, as the Moon governs the conscious mind (*Manas*) and personal experience of events.
-  * Transits are secondarily evaluated from the **Natal Ascendant (*Janma Lagna*)**, which governs bodily health, status, and physical reality.
-  * **Navamsha Orb Rule:** Significant transit triggers occur when a transiting planet occupies the same Navamsha (3°20' arc or 3.3333°) or forms exact degree aspects with natal planets.
+* **Phaladeepika (Mantreswara), Chapter 26 (Gochara Phala) & Chapters 10, 12, 13, 15, 16:**
+  * **Primary Evaluative Pivot (*Janma Rasi / Chandra Lagna*):** Transits must be evaluated primarily from the **Natal Moon**, as the Moon governs the conscious mind (*Manas*) and personal experience of events.
+  * **Secondary Evaluative Pivot (*Janma Lagna*):** Evaluated from the **Natal Ascendant**, governing bodily health, physical vitality, status, and material manifestations.
+  * **Upachaya Houses (3, 6, 11) for Malefics:** Transits of natural malefics (Sun, Mars, Saturn, Rahu, Ketu) yield courage, victory over obstacles, and tangible gains when traversing the 3rd, 6th, or 11th houses from the Moon.
+  * **Benefic Houses (1, 2, 4, 5, 7, 9, 10, 11) for Benefics:** Natural benefics (Jupiter, Venus, Mercury, and waxing Moon) confer expansion, knowledge, and harmony in cardinal, trine, and wealth houses.
+  * **Sphuta Drishti & Navamsha Orb Rule:** Significant transit triggers occur when a transiting planet occupies the same Navamsha ($3^\circ 20'$ arc or $3.3333^\circ$) or forms exact degree aspects with natal points.
+  * **Trine Glances (*Trikona Drishti*, 120° / 240°):** Trine glances are cast not only by Jupiter and Rahu/Ketu, but also serve as key house-fructification and event triggers for Sun, Venus, and Mercury (Ch. 10.11-12, 16.31).
+  * **Dasha × Transit Synchronization:** Transits act as the hands of the clock, but the active **Dasha and Antardasha Lords** determine which transits manifest major life events.
+
 * **Brihat Parashara Hora Shastra (BPHS), Chapters on Drishti:**
   * Aspect glances (*Graha Drishti*):
-    * All planets cast full aspect onto the 7th house (180° opposition).
-    * **Mars** casts special full aspects on the 4th (90°) and 8th (210°) houses.
-    * **Jupiter** casts special full aspects on the 5th (120°) and 9th (240°) houses (Dharma trines).
-    * **Saturn** casts special full aspects on the 3rd (60°) and 10th (270°) houses.
-    * **Rahu & Ketu** cast trine glances on the 5th (120°) and 9th (240°) houses.
+    * All planets cast full aspect onto the 7th house ($180^\circ$ opposition).
+    * **Mars** casts special full aspects on the 4th ($90^\circ$) and 8th ($210^\circ$) houses.
+    * **Jupiter** casts special full aspects on the 5th ($120^\circ$) and 9th ($240^\circ$) houses (Dharma trines).
+    * **Saturn** casts special full aspects on the 3rd ($60^\circ$) and 10th ($270^\circ$) houses.
+    * **Rahu & Ketu** cast trine glances on the 5th ($120^\circ$) and 9th ($240^\circ$) houses.
 
 ---
 
@@ -158,7 +169,7 @@ In Vedic Astrology (Jyotish), natal horoscopy establishes the fixed karmic bluep
 In accordance with Ernst Wilhelm's Kala configuration in Astra:
 1. **Tropical Rasis (Signs):**
    * Transiting planetary longitudes are computed in the Tropical Zodiac.
-   * A transit planet entering 0° Aries is physically at 0° Aries Tropical, perfectly overlaying the natal Tropical signs and Campanus houses.
+   * A transit planet entering $0^\circ$ Aries is physically at $0^\circ$ Aries Tropical, perfectly overlaying the natal Tropical signs and Campanus houses.
 2. **Sidereal Equatorial Nakshatras (Dhruva Galactic Center) & Vic DiCara (Chitra Paksha):**
    * The active user setting determines the nakshatra calculation:
      * `ERNST_DHRUVA`: Equatorial Right Ascension anchored to middle of Mula.
@@ -183,7 +194,9 @@ The speed of a transiting body determines the psychological depth and enduring i
 ### Station States & Classical Motion Classifications (*Gati*):
 * **Stationary Threshold (`is_stationary`)**:
   * Applies to the 5 star planets: Mars, Mercury, Jupiter, Venus, Saturn.
-  * A planet is defined as stationary when its relative speed ratio `abs(daily_speed) / mean_daily_speed <= 0.10` (moving at less than or equal to 10% of its normal daily motion), or within ±48 hours of an exact mathematical speed root (`daily_speed == 0.0`).
+  * A planet is defined as stationary when its relative speed ratio `abs(daily_speed) / mean_daily_speed <= 0.10` (moving at $\le 10\%$ of normal daily motion).
+  * Fast planets (Mercury and Venus) utilize an acceleration-bounded $\pm 12\text{h}$ direction change window ($d(\text{speed})/dt$) with `speed_ratio <= 0.25` to prevent multi-day false stationarity.
+  * Slow outer planets (Mars, Jupiter, Saturn) utilize a $\pm 48\text{h}$ direction reversal root search.
 * **Stationary Retrograde (`SR` / *Vakra-ārambha / Stambhana*)**:
   * The planet slows to a halt while transitioning from direct (positive) to retrograde (negative) motion ($d(\text{speed})/dt < 0$).
 * **Stationary Direct (`SD` / *Vakra-tyāga / Stambhana*)**:
@@ -204,12 +217,13 @@ To avoid manual day-by-day scrubbing, `jyotish/transits/milestone_scanner.py` pr
 1. **Scanning Horizon**: Scans a configurable window (default `-90` days to `+270` days, 360 days total).
 2. **Algorithmic Strategy**:
    * Evaluates daily positions and speeds via direct `swisseph` (`swe.calc_ut`) in ~30 milliseconds.
-   * Performs root-finding (bisection) to locate event timestamps down to 1-minute precision.
+   * Performs root-finding (bisection) to locate event timestamps down to 1-second precision.
+   * Localizes Julian Day root timestamps with native half-minute addition (`jd + tz/24.0 + 0.5/1440.0`) so Swiss Ephemeris handles all minute, hour, day, month, and leap-year rollovers natively without arithmetic overflow.
 3. **Four Milestone Event Tiers**:
-   * **`NATAL_STATION` (Tier 1 - Critical)**: A planet crosses `daily_speed == 0.0` (`SR` or `SD`) while within `3°20'` (Navamsha orb) of a conjunction or classical Graha Drishti to a natal planet or natal Lagna.
-   * **`EXACT_ASPECT` (Tier 2 - High)**: A major slow planet (Mars, Jupiter, Saturn, Rahu, Ketu) reaches exact `0°00'` of a conjunction or Graha Drishti with a natal planet or Lagna. Tagged with pass number (`Pass 1`, `Pass 2`, `Pass 3`) across retrograde loops.
+   * **`NATAL_STATION` (Tier 1 - Critical)**: A planet crosses `daily_speed == 0.0` (`SR` or `SD`) while within $3^\circ 20'$ (Navamsha orb) of a conjunction or classical Graha Drishti to a natal planet or natal Lagna.
+   * **`EXACT_ASPECT` (Tier 2 - High)**: A major planet (Mars, Jupiter, Saturn, Rahu, Ketu, Sun, Venus, Mercury) reaches exact $0^\circ 00'$ of a conjunction, Graha Drishti, or trine glance with a natal planet or Lagna. Tagged with pass number (`Pass 1`, `Pass 2`, `Pass 3`) across retrograde loops, accounting for loop entry offsets.
    * **`SKY_STATION` (Tier 3 - Medium)**: A planet turns `SR` or `SD` outside natal orb, shifting house energy from Lagna and Moon.
-   * **`SIGN_INGRESS` (Tier 3 - Medium)**: A major planet crosses a 30° Tropical sign boundary (`0°00'`), changing Whole-Sign house placement from Lagna and Moon.
+   * **`SIGN_INGRESS` (Tier 3 - Medium)**: A planet crosses a $30^\circ$ Tropical sign boundary ($0^\circ 00'$ for direct ingress, $29^\circ 59'$ for retrograde ingress), changing Whole-Sign house placement from Lagna and Moon.
 4. **Output Integrity**: Pure dictionary conforming to Hemisphere A rules (floats, ints, booleans, strings; zero HTML, zero CSS styling).
 
 
@@ -361,7 +375,11 @@ def calculate_transits(
 
         mean_speed = MEAN_DAILY_SPEEDS.get(p_name, 1.0)
         speed_ratio = round(abs(daily_speed) / mean_speed, 3) if mean_speed > 0 else 1.0
-        is_retro = g.get("is_retrograde", False)
+
+        if p_name in ["Rahu", "Ketu"]:
+            is_retro = (daily_speed < 0)
+        else:
+            is_retro = g.get("is_retrograde", False)
 
         is_stationary = False
         station_type: Optional[str] = None
@@ -380,14 +398,17 @@ def calculate_transits(
                     elif accel > 0:
                         station_type = "SD"
             else:
-                # Direction change within +/- 48h
+                # Direction change check:
+                # For fast star planets (Mercury, Venus), checking ±48h flags them when speed_ratio is 0.30!
+                # Restrict to ±12h for Mercury/Venus, or ±48h for Mars, Jupiter, Saturn only if speed_ratio <= 0.25.
                 p_id = SWE_PLANET_MAP.get(p_name)
                 if p_id is not None:
-                    sp_m2 = swe.calc_ut(jd_ut - 2.0, p_id)[0][3]
-                    sp_p2 = swe.calc_ut(jd_ut + 2.0, p_id)[0][3]
-                    if (sp_m2 * daily_speed <= 0) or (sp_p2 * daily_speed <= 0):
+                    delta_t = 0.5 if p_name in ["Mercury", "Venus"] else 2.0
+                    sp_m = swe.calc_ut(jd_ut - delta_t, p_id)[0][3]
+                    sp_p = swe.calc_ut(jd_ut + delta_t, p_id)[0][3]
+                    if ((sp_m * daily_speed <= 0) or (sp_p * daily_speed <= 0)) and speed_ratio <= 0.25:
                         is_stationary = True
-                        accel = sp_p2 - sp_m2
+                        accel = sp_p - sp_m
                         station_type = "SR" if accel < 0 else "SD"
 
         if is_stationary:
@@ -411,14 +432,38 @@ def calculate_transits(
             motion_state = "Direct"
             gati_sanskrit = "Rju"
 
+        deg_val = g.get("degree_0_to_30", 0.0)
+        deg = int(math.floor(deg_val))
+        minute = int(round((deg_val - deg) * 60.0))
+        if minute >= 60:
+            deg += 1
+            minute = 0
+        if deg >= 30:
+            deg = 0
+            s_idx = (s_idx + 1) % 12
+            p_sign = SIGNS_LIST[s_idx]
+
+        # Classical Gochara Quality from Moon (Phaladeepika Ch. 26)
+        is_favorable_from_moon = False
+        if p_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
+            is_favorable_from_moon = h_from_moon in [3, 6, 11]
+        elif p_name == "Jupiter":
+            is_favorable_from_moon = h_from_moon in [2, 5, 7, 9, 11]
+        elif p_name == "Venus":
+            is_favorable_from_moon = h_from_moon in [1, 2, 3, 4, 5, 8, 9, 11, 12]
+        elif p_name == "Mercury":
+            is_favorable_from_moon = h_from_moon in [2, 4, 6, 8, 10, 11]
+        elif p_name == "Moon":
+            is_favorable_from_moon = h_from_moon in [1, 3, 6, 7, 10, 11]
+
         processed_transit_planets[p_name] = {
             "name": p_name,
             "sign": p_sign,
             "sign_idx": s_idx,
             "longitude": g.get("longitude", 0.0),
             "degree_0_to_30": g.get("degree_0_to_30", 0.0),
-            "degree": int(g.get("degree_0_to_30", 0.0)),
-            "minute": int(round((g.get("degree_0_to_30", 0.0) % 1.0) * 60)),
+            "degree": deg,
+            "minute": minute,
             "is_retrograde": is_retro,
             "daily_speed": round(daily_speed, 6),
             "speed_ratio": speed_ratio,
@@ -429,7 +474,8 @@ def calculate_transits(
             "nakshatra": g.get("nakshatra", ""),
             "pada": g.get("pada", 1),
             "house_from_lagna": h_from_lagna,
-            "house_from_moon": h_from_moon
+            "house_from_moon": h_from_moon,
+            "is_favorable_from_moon": is_favorable_from_moon
         }
 
     # 3. Detect Active Transit Aspects onto Natal Planets
@@ -502,6 +548,13 @@ def get_transit_aspects(
                 speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
                 intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
 
+                is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                if t_name == "Moon":
+                    sun_item = transit_grahas.get("Sun", {})
+                    s_lon = sun_item.get("longitude", 0.0)
+                    moon_elong = (t_lon - s_lon) % 360.0
+                    is_benefic = (0.0 <= moon_elong <= 180.0)
+
                 aspects.append({
                     "aspecting": t_name,
                     "target": n_name,
@@ -510,7 +563,7 @@ def get_transit_aspects(
                     "angular_diff": round(diff, 2),
                     "orb": round(orb_conj, 2),
                     "virupas": 60.0,
-                    "is_benefic": t_name in ["Jupiter", "Venus", "Mercury"],
+                    "is_benefic": is_benefic,
                     "is_applying": is_applying,
                     "aspecting_is_stationary": asp_is_stationary,
                     "aspecting_station_type": asp_station_type,
@@ -531,13 +584,20 @@ def get_transit_aspects(
                 candidate_aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
             elif t_name in ["Rahu", "Ketu"]:
                 candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+            elif t_name in ["Sun", "Venus", "Mercury"]:
+                candidate_aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
 
             for glance_type, nominal_angle in candidate_aspects:
                 signed_diff = (diff - nominal_angle + 180.0) % 360.0 - 180.0
                 angle_error = abs(signed_diff)
                 if angle_error <= orb_degrees:
-                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 45.0
-                    is_benefic = t_name in ["Jupiter", "Venus"]
+                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 60.0
+                    is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                    if t_name == "Moon":
+                        sun_item = transit_grahas.get("Sun", {})
+                        s_lon = sun_item.get("longitude", 0.0)
+                        moon_elong = (t_lon - s_lon) % 360.0
+                        is_benefic = (0.0 <= moon_elong <= 180.0)
                     # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
                     is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
 
@@ -609,8 +669,8 @@ SWE_PLANET_MAP = {
 }
 
 STATION_PLANETS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"]
-EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu"]
+INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars", "Sun", "Venus", "Mercury"]
+EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu", "Sun", "Venus", "Mercury"]
 
 PLANET_SYMBOLS = {
     "Sun": "☉", "Moon": "☽", "Mars": "♂", "Mercury": "☿",
@@ -635,25 +695,38 @@ def _get_planet_lon_and_speed(jd: float, p_name: str) -> Tuple[float, float]:
         return res[0][0] % 360.0, res[0][3]
 
 
-def _revjul_to_dict(jd: float) -> Dict[str, Any]:
-    """Converts Julian Day to standard UTC date parts."""
-    y, m, d, float_hour = swe.revjul(jd)
+def _revjul_to_dict(jd: float, timezone_hours: float = 0.0) -> Dict[str, Any]:
+    """
+    Converts Julian Day (in UT) to localized date parts for UI jump and display,
+    adding half a minute (0.5 / 1440.0) so Swiss Ephemeris natively handles all
+    minute, hour, day, month, and leap-year rollovers without overflow bugs.
+    """
+    local_jd = jd + (timezone_hours / 24.0) + (0.5 / 1440.0)
+    y, m, d, float_hour = swe.revjul(local_jd)
     hour = int(float_hour)
-    minute = int(round((float_hour - hour) * 60.0))
-    if minute >= 60:
-        hour += 1
-        minute = 0
-    if hour >= 24:
-        d += 1
-        hour = 0
+    minute = int((float_hour - hour) * 60.0)
     day = int(d)
+
+    # Also record exact UTC timestamp
+    utc_jd = jd + (0.5 / 1440.0)
+    uy, um, ud, u_float_h = swe.revjul(utc_jd)
+    u_hour = int(u_float_h)
+    u_min = int((u_float_h - u_hour) * 60.0)
+
+    tz_sign = "+" if timezone_hours >= 0 else "-"
+    abs_tz = abs(timezone_hours)
+    tz_h = int(abs_tz)
+    tz_m = int(round((abs_tz - tz_h) * 60.0))
+    tz_suffix = f"{tz_sign}{tz_h:02d}:{tz_m:02d}"
+
     return {
         "year": int(y),
         "month": int(m),
         "day": day,
         "hour": hour,
         "minute": minute,
-        "timestamp_utc": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00Z",
+        "timestamp_utc": f"{int(uy):04d}-{int(um):02d}-{int(ud):02d}T{u_hour:02d}:{u_min:02d}:00Z",
+        "timestamp_local": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00{tz_suffix}",
         "formatted_date": f"{day:02d}/{int(m):02d}/{int(y):04d}",
         "jump_date": f"{int(y):04d}-{int(m):02d}-{day:02d}",
         "jump_time": f"{hour:02d}:{minute:02d}:00"
@@ -665,12 +738,12 @@ def _get_candidate_aspects(planet: str) -> List[Tuple[str, float]]:
     aspects = [("Conjunction", 0.0), ("7th Opposition", 180.0)]
     if planet == "Mars":
         aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
-    elif planet == "Jupiter":
+    elif planet in ["Jupiter", "Rahu", "Ketu"]:
         aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+    elif planet in ["Sun", "Venus", "Mercury"]:
+        aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
     elif planet == "Saturn":
         aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
-    elif planet in ["Rahu", "Ketu"]:
-        aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
     return aspects
 
 
@@ -781,14 +854,17 @@ def scan_transit_milestones(
                             best_aspect_target = n_target
                             best_aspect_type = asp_name
 
-                time_dict = _revjul_to_dict(station_jd)
+                time_dict = _revjul_to_dict(station_jd, transit_timezone)
                 s_idx = int(station_lon // 30) % 12
                 deg_in_sign = station_lon % 30.0
-                deg = int(deg_in_sign)
+                deg = int(math.floor(deg_in_sign))
                 minute = int(round((deg_in_sign - deg) * 60.0))
                 if minute >= 60:
                     deg += 1
                     minute = 0
+                if deg >= 30:
+                    deg = 0
+                    s_idx = (s_idx + 1) % 12
                 sign_name = SIGNS_LIST[s_idx]
 
                 h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
@@ -874,11 +950,16 @@ def scan_transit_milestones(
                 ingress_jd = (jd_a + jd_b) / 2.0
                 new_sign_idx = sign2
                 new_sign_name = SIGNS_LIST[new_sign_idx]
-                time_dict = _revjul_to_dict(ingress_jd)
+                time_dict = _revjul_to_dict(ingress_jd, transit_timezone)
 
                 h_lagna = ((new_sign_idx - natal_lagna_idx + 12) % 12) + 1
                 h_moon = ((new_sign_idx - natal_moon_idx + 12) % 12) + 1
                 sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
+
+                is_retro_ingress = ((sign1 - sign2) % 12 == 1)
+                boundary_lon = (sign1 * 30.0) if is_retro_ingress else (sign2 * 30.0)
+                deg_display = 29 if is_retro_ingress else 0
+                min_display = 59 if is_retro_ingress else 0
 
                 desc = f"{sym} {p_name} Ingress {new_sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
                 raw_milestones.append({
@@ -889,9 +970,9 @@ def scan_transit_milestones(
                     "planet": p_name,
                     "station_type": None,
                     "sign": new_sign_name,
-                    "degree": 0,
-                    "minute_arc": 0,
-                    "longitude": float(new_sign_idx * 30.0),
+                    "degree": deg_display,
+                    "minute_arc": min_display,
+                    "longitude": float(boundary_lon % 360.0),
                     "house_from_lagna": h_lagna,
                     "house_from_moon": h_moon,
                     "natal_target": None,
@@ -943,17 +1024,20 @@ def scan_transit_milestones(
 
                         s_idx = int(hit_lon // 30) % 12
                         deg_in_sign = hit_lon % 30.0
-                        deg = int(deg_in_sign)
+                        deg = int(math.floor(deg_in_sign))
                         minute = int(round((deg_in_sign - deg) * 60.0))
                         if minute >= 60:
                             deg += 1
                             minute = 0
+                        if deg >= 30:
+                            deg = 0
+                            s_idx = (s_idx + 1) % 12
                         sign_name = SIGNS_LIST[s_idx]
 
                         h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
                         h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
 
-                        time_dict = _revjul_to_dict(hit_jd)
+                        time_dict = _revjul_to_dict(hit_jd, transit_timezone)
                         is_retro = (hit_sp < 0)
 
                         exact_aspect_hits.append({
@@ -985,15 +1069,19 @@ def scan_transit_milestones(
 
     for k, hit_list in groups.items():
         total_p = len(hit_list)
+        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
+        p_name = hit_list[0]["planet"]
+        offset = 1 if (first_is_retro and p_name in ["Mars", "Jupiter", "Saturn"]) else 0
+        adj_total = total_p + offset
         for idx, hit in enumerate(hit_list):
-            pass_num = idx + 1
+            pass_num = idx + 1 + offset
             hit["pass_number"] = pass_num
-            hit["total_passes"] = total_p
+            hit["total_passes"] = adj_total
             p_name = hit["planet"]
             n_target = hit["natal_target"]
             asp_name = hit["aspect_type"]
             sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
-            pass_str = f" (Pass {pass_num}/{total_p})" if total_p > 1 else ""
+            pass_str = f" (Pass {pass_num}/{adj_total})" if adj_total > 1 else ""
             hit["description"] = f"{sym} {p_name} {asp_name} Natal {n_target} (0°00'){pass_str}"
             del hit["group_key"]
             del hit["is_retrograde_at_hit"]
@@ -1070,17 +1158,15 @@ def scan_transit_milestones(
 Transit Bi-Wheel SVG Generation (Level 8 Presentation)
 =====================================================
 
-This module renders the dual-ring Transit Bi-Wheel in pure SVG (Kala style):
-- Inner Ring (Radius ~30 to ~136): Natal Chart (Houses 1-12, Natal Planets).
+Standalone module for rendering the dual-ring Transit Bi-Wheel in pure SVG (Kala style):
+- Inner Ring (Radius ~30 to ~136): Natal Chart (Houses 1-12, Kendras/Trikonas, Natal Planets).
 - Inner Dots (Radius 136): Exact astronomical positions of natal planets on the Rashi circle.
-- Middle Zodiac Ring (Radius ~136 to ~150): Clean Tropical Rasi border without harmonic clutter.
-- Outer Ring (Radius ~150 to ~206): Date-specific transiting planets with sign and degree.
+- Middle Zodiac Ring (Radius ~136 to ~150): Clean Tropical Rasi border WITHOUT harmonic subdivisions.
+- Outer Ring (Radius ~150 to ~206): Real-time / Date-specific Transiting Planets with sign & degree.
 - Outer Dots (Radius 206): Exact astronomical positions of transiting planets on the outer rim.
 - Background Aspect Lines: Thin, clear lines connecting outer transit dots to inner natal dots.
-  * Applying aspects: solid stroke, high opacity, scaled width up to 2.4px.
-  * Separating aspects: dashed stroke (3,3), low opacity (0.45), 0.95px width.
+- Center Hub (Radius 0 to ~56): Unobstructed center hub with live dynamic transit readout.
 - Outer Rim Station Pins: Diamond markers nestled on the outer rim (r = 206) at future SR/SD points.
-- Stationary Halos & Badges: Double halos and bold 'SR' / 'SD' text for stationary planets.
 """
 
 import math
@@ -1120,15 +1206,18 @@ planet_notations = {
     "Lagna": {"symbol": "Asc", "devanagari": "\u0932", "color": "#784212", "full_sa": "Lagna"}
 }
 
-def annular_sector(r_in: float, r_out: float, start_deg: float, end_deg: float) -> str:
-    """Helper to generate an SVG path for an annular sector (pie slice band)."""
-    rad_s = math.radians(start_deg)
-    rad_e = math.radians(end_deg)
-    x1_in, y1_in = r_in * math.cos(rad_s), r_in * math.sin(rad_s)
-    x2_in, y2_in = r_in * math.cos(rad_e), r_in * math.sin(rad_e)
-    x1_out, y1_out = r_out * math.cos(rad_s), r_out * math.sin(rad_s)
-    x2_out, y2_out = r_out * math.cos(rad_e), r_out * math.sin(rad_e)
-    large_arc = 1 if ((end_deg - start_deg) % 360) > 180 else 0
+def annular_sector(r_in, r_out, a_start, a_end):
+    rad_s = math.radians(a_start)
+    rad_e = math.radians(a_end)
+    x1_in = r_in * math.cos(rad_s)
+    y1_in = r_in * math.sin(rad_s)
+    x2_in = r_in * math.cos(rad_e)
+    y2_in = r_in * math.sin(rad_e)
+    x1_out = r_out * math.cos(rad_s)
+    y1_out = r_out * math.sin(rad_s)
+    x2_out = r_out * math.cos(rad_e)
+    y2_out = r_out * math.sin(rad_e)
+    large_arc = 1 if ((a_end - a_start) % 360) > 180 else 0
     return (
         f"M {x1_in:.2f} {y1_in:.2f} "
         f"L {x1_out:.2f} {y1_out:.2f} "
@@ -1136,6 +1225,31 @@ def annular_sector(r_in: float, r_out: float, start_deg: float, end_deg: float) 
         f"L {x2_in:.2f} {y2_in:.2f} "
         f"A {r_in:.2f} {r_in:.2f} 0 {large_arc} 0 {x1_in:.2f} {y1_in:.2f} Z"
     )
+
+def get_nakshatra_abbreviation(name: str, length: int = 4) -> str:
+    if not name:
+        return ""
+    clean = re.sub(r"[^a-zA-Z]", "", name)
+    return clean[:length].capitalize()
+
+def relax_planet_angles(planets, has_ascendant_barrier=True, is_outer=False):
+    if not planets:
+        return
+    min_dist = 8.5 if not is_outer else 8.0
+    planets_sorted = sorted(planets, key=lambda p: p["true_angle"])
+    n = len(planets_sorted)
+    angles = [p["true_angle"] for p in planets_sorted]
+    for _ in range(35):
+        for i in range(n):
+            j = (i + 1) % n
+            diff = (angles[j] - angles[i]) % 360.0
+            if diff < min_dist:
+                overlap = min_dist - diff
+                angles[i] = (angles[i] - overlap * 0.5) % 360.0
+                angles[j] = (angles[j] + overlap * 0.5) % 360.0
+    for i, p in enumerate(planets_sorted):
+        p["draw_angle"] = angles[i]
+
 
 def generate_transit_biwheel(
     inner_items: List[Dict[str, Any]],
@@ -1149,11 +1263,18 @@ def generate_transit_biwheel(
     upcoming_stations: Optional[List[Dict[str, Any]]] = None
 ) -> str:
     """
-    Renders the complete 2-Ring Transit Bi-Wheel in SVG format.
+    Generates a streamlined 2-ring Transit Bi-Wheel SVG chart (Kala style):
+    - Inner Ring (Radius ~30 to ~136): Natal Chart (Houses 1-12, Kendras/Trikonas, Natal Planets).
+    - Inner Dots (Radius 136): Exact astronomical positions of natal planets on the Rashi circle.
+    - Middle Zodiac Ring (Radius ~136 to ~150): Clean Tropical Rasi border WITHOUT harmonic subdivisions.
+    - Outer Ring (Radius ~150 to ~206): Real-time / Date-specific Transiting Planets with sign & degree.
+    - Outer Dots (Radius 206): Exact astronomical positions of transiting planets on the outer rim.
+    - Background Aspect Lines: Thin, clear lines connecting outer transit dots to inner natal dots (Graha Drishti & Trines).
+    - Center Hub (Radius 0 to ~30): Unobstructed center hub with subtle branding.
     """
     svg = '<svg width="100%" height="100%" viewBox="-215 -215 430 430" class="transit-biwheel-svg" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="background:transparent; font-family: var(--font-astro-glyphs, STIX Two Math, sans-serif);">\n'
 
-    # Markers for transit aspect lines
+    # Markers for transit aspect lines (pointing cleanly towards the inner natal dots)
     svg += '<defs>\n'
     svg += '  <marker id="tr-arrow-benefic" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#27AE60"/></marker>\n'
     svg += '  <marker id="tr-arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M 0 2 L 8 5 L 0 8 z" fill="#D4AC0D"/></marker>\n'
@@ -1174,7 +1295,7 @@ def generate_transit_biwheel(
     # Outer bounding circle & tinted background for outer transit ring
     svg += f'<circle cx="0" cy="0" r="{r_chart_outer}" fill="#faf7f2" fill-opacity="0.20" stroke="#5C4433" stroke-width="1.1"/>\n'
 
-    # Middle Zodiac Sign border ring
+    # Middle Zodiac Sign border ring (clean, no harmonic subdivisions)
     svg += f'<circle cx="0" cy="0" r="{r_divider_outer}" fill="#edece6" fill-opacity="0.75" stroke="#8c7b64" stroke-width="1.1"/>\n'
     svg += f'<circle cx="0" cy="0" r="{r_divider_inner}" fill="#ffffff" fill-opacity="0.95" stroke="#8c7b64" stroke-width="1.1"/>\n'
 
@@ -1196,7 +1317,7 @@ def generate_transit_biwheel(
         rad = math.radians(angle_deg)
         return r * math.cos(rad), r * math.sin(rad)
 
-    # 1. Process Planets
+    # 1. Extract and Process Planets First (so angles and aspect endpoints are known)
     inner_planets = []
     inner_planets_dict = {}
     for item in inner_items:
@@ -1209,10 +1330,14 @@ def generate_transit_biwheel(
                 "lon": pl_lon,
                 "draw_angle": lon_to_angle(pl_lon),
                 "true_angle": lon_to_angle(pl_lon),
+                "is_lagna": (p_name == root_planet),
                 "sign_idx": s_idx,
-                "sign": item["sign"]
+                "sign": item["sign"],
+                "varga": "Natal"
             }
             inner_planets_dict[p_name] = p_data
+            if p_name == "Lagna" and root_planet == "Lagna":
+                continue
             inner_planets.append(p_data)
 
     outer_planets = []
@@ -1228,13 +1353,28 @@ def generate_transit_biwheel(
                 "lon": pl_lon,
                 "draw_angle": outer_angle,
                 "true_angle": outer_angle,
+                "is_lagna": (p_name == root_planet),
                 "sign_idx": s_idx,
-                "sign": item["sign"]
+                "sign": item["sign"],
+                "varga": "Transit"
             }
             outer_planets.append(p_data)
             outer_planets_dict[p_name] = p_data
 
-    # 2. Aspect Lines Layer (Background behind glyphs and borders)
+    # Relax angles for overlapping clusters (to prevent text collision)
+    relax_planet_angles(inner_planets, has_ascendant_barrier=True, is_outer=False)
+    relax_planet_angles(outer_planets, has_ascendant_barrier=False, is_outer=True)
+
+    # 2. Inner Natal House Background Wedges (unshaded clean canvas)
+    for i in range(12):
+        sign_start_lon = i * 30.0
+        angle_start = lon_to_angle(sign_start_lon)
+        angle_end = lon_to_angle(sign_start_lon + 30.0)
+        sec_d = annular_sector(r_aspect_inner, r_divider_inner, angle_start, angle_end)
+        svg += f'<path class="house-bg" d="{sec_d}" fill="none"/>\n'
+
+    # 3. BACKGROUND LAYER: Aspect Lines connecting Outer Transit Dots to Inner Natal Dots
+    # Rendered immediately on top of house colors, strictly behind all dividers, numbers, text & dots
     svg += '<g class="transit-aspect-lines-layer">\n'
     if active_aspects:
         for asp in active_aspects:
@@ -1252,14 +1392,18 @@ def generate_transit_biwheel(
                 ang_t = outer_planets_dict[t_name]["true_angle"]
                 ang_n = inner_planets_dict[n_name]["true_angle"]
 
+                # Start: Exact Outer transit dot on r_chart_outer (206)
+                # End: Exact Inner natal dot on r_divider_inner (136)
                 x1, y1 = polar_coords(r_chart_outer, ang_t)
                 x2, y2 = polar_coords(r_divider_inner, ang_n)
 
                 marker_url = ""
                 if code == "CONJ":
                     stroke_col = "#8E44AD"
+                    marker_url = 'marker-end="url(#tr-arrow-conj)"'
                 elif "Trine" in asp_type or (is_ben and t_name == "Jupiter"):
                     stroke_col = "#D4AC0D"
+                    marker_url = 'marker-end="url(#tr-arrow-amber)"'
                 elif t_name == "Mars":
                     stroke_col = "#C0392B"
                     marker_url = 'marker-end="url(#tr-arrow-malefic)"'
@@ -1289,29 +1433,254 @@ def generate_transit_biwheel(
 
                 motion_str = f", {motion}" if motion else ""
                 tip = f"Transit {t_name} \u2192 Natal {n_name} ({asp_type}, Orb: {orb}\u00b0{motion_str})"
-                svg += f'  <line class="interactive-aspect transit-aspect-line" data-from="{t_name}" data-to="{n_name}" data-orb="{orb}" data-type="{asp_type}" data-applying="{str(is_app).lower()}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="{sw_val}" stroke-dasharray="{dash_style}" opacity="{op_val}" {marker_url} style="cursor: pointer;"><title>{tip}</title></line>\n'
+                svg += f'  <line class="interactive-aspect transit-aspect-line aspect-tr-{t_name} aspect-nat-{n_name}" data-from="{t_name}" data-to="{n_name}" data-orb="{orb}" data-type="{asp_type}" data-applying="{str(is_app).lower()}" x1="{x1:.1f}" y1="{y1:.1f}" x2="{x2:.1f}" y2="{y2:.1f}" stroke="{stroke_col}" stroke-width="{sw_val}" stroke-dasharray="{dash_style}" opacity="{op_val}" {marker_url} style="cursor: pointer; pointer-events: stroke;"><title>{tip}</title></line>\n'
     svg += '</g>\n'
 
-    # 3. Outer Dot Halos for Stations & Rim Markers
+    # 4. House Dividers, Sign Glyphs, Bhava Numbers, and Ascendant Arrow
+    for i in range(12):
+        sign_start_lon = i * 30.0
+        angle_start = lon_to_angle(sign_start_lon)
+        angle_mid = lon_to_angle(sign_start_lon + 15.0)
+        sign_name = signs_list[i]
+        s_sym, s_col, _ = sign_symbols[sign_name]
+        bhava_num = (i - anchor_s_idx + 12) % 12 + 1
+
+        # Natal whole sign boundary extending across inner ring (Fine green dots as in Adius)
+        x_in1, y_in1 = polar_coords(r_bhava_circle, angle_start)
+        x_in2, y_in2 = polar_coords(r_divider_inner, angle_start)
+        svg += f'<line x1="{x_in1:.1f}" y1="{y_in1:.1f}" x2="{x_in2:.1f}" y2="{y_in2:.1f}" stroke="#27AE60" stroke-width="0.75" stroke-dasharray="1,2.5" stroke-linecap="round"/>\n'
+
+        # House ring radial divider
+        hx1, hy1 = polar_coords(r_aspect_inner, angle_start)
+        hx2, hy2 = polar_coords(r_bhava_circle, angle_start)
+        svg += f'<line x1="{hx1:.1f}" y1="{hy1:.1f}" x2="{hx2:.1f}" y2="{hy2:.1f}" stroke="#27AE60" stroke-width="0.75" stroke-opacity="0.8"/>\n'
+
+        # Outer sign divider extending outward across outer transit ring (r_divider_outer to r_chart_outer)
+        x_out1, y_out1 = polar_coords(r_divider_outer, angle_start)
+        x_out2, y_out2 = polar_coords(r_chart_outer, angle_start)
+        svg += f'<line x1="{x_out1:.1f}" y1="{y_out1:.1f}" x2="{x_out2:.1f}" y2="{y_out2:.1f}" stroke="#d5c8b2" stroke-width="0.8" stroke-dasharray="2,3"/>\n'
+
+        # Sign boundary tick in the border ring (r_divider_inner to r_divider_outer)
+        sx1, sy1 = polar_coords(r_divider_inner, angle_start)
+        sx2, sy2 = polar_coords(r_divider_outer, angle_start)
+        svg += f'<line x1="{sx1:.1f}" y1="{sy1:.1f}" x2="{sx2:.1f}" y2="{sy2:.1f}" stroke="#5C4433" stroke-width="1.2"/>\n'
+
+        # Sign Symbol in Border Ring (midpoint between 136 and 150 -> r=143)
+        lx_sign, ly_sign = polar_coords(143, angle_mid)
+        svg += f'<text class="interactive transit-sign-glyph" data-type="sign" data-id="{sign_name}" x="{lx_sign:.1f}" y="{ly_sign:.1f}" font-size="12" stroke="#ffffff" stroke-width="2.0" paint-order="stroke fill" fill="{s_col}" text-anchor="middle" dominant-baseline="central"><title>{sign_name} (Zodiac Sign)</title>{s_sym}</text>\n'
+
+        # Bhava number label in inner ring (Whole Sign, clean tabular numbers)
+        bx, by = polar_coords((r_aspect_inner + r_bhava_circle) / 2, angle_mid)
+        svg += f'<text class="interactive house-num" data-type="house" data-id="{bhava_num}" x="{bx:.1f}" y="{by:.1f}" font-size="8.5" font-weight="600" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="#2980B9" text-anchor="middle" dominant-baseline="central">{bhava_num}</text>\n'
+
+    # Inner D1 Bhava circle
+    svg += f'<circle cx="0" cy="0" r="{r_bhava_circle}" fill="none" stroke="#27AE60" stroke-width="0.75"/>\n'
+
+    # Ascendant arrow at 180 degrees
+    ax1, ay1 = polar_coords(r_bhava_circle, 180)
+    ax2, ay2 = polar_coords(r_divider_inner, 180)
+    svg += f'<line class="angle-line angle-ac" x1="{ax1:.1f}" y1="{ay1:.1f}" x2="{ax2:.1f}" y2="{ay2:.1f}" stroke="#C0392B" stroke-width="1.6"/>\n'
+    tx1, ty1 = polar_coords(r_divider_inner - 5, 177.5)
+    tx2, ty2 = polar_coords(r_divider_inner - 5, 182.5)
+    svg += f'<polygon points="{ax2:.1f},{ay2:.1f} {tx1:.1f},{ty1:.1f} {tx2:.1f},{ty2:.1f}" fill="#C0392B"/>\n'
+
+    # AC label (clean bold red typography, NO box, identical to circular chart)
+    ac_lbl_x, ac_lbl_y = polar_coords(r_divider_inner - 10.0, 180.0)
+    svg += f'<g class="angle-ac-badge" style="cursor: pointer;">\n'
+    svg += f'  <title>Ascendant / Lagna — Click to view incoming aspects</title>\n'
+    svg += f'  <circle class="planet-highlight-bg" fill="none" stroke="none" cx="{ac_lbl_x:.1f}" cy="{ac_lbl_y - 8.0:.1f}" r="15"/>\n'
+    svg += f'  <text class="text-shield" x="{ac_lbl_x:.1f}" y="{ac_lbl_y - 8.0:.1f}" font-size="9.5" font-weight="bold" fill="#C0392B" text-anchor="middle">AC</text>\n'
+    svg += f'</g>\n'
+
+    # Degree readout along horizontal spoke
+    if anchor_item:
+        deg_str = f"{anchor_item['degree']}°"
+        min_str = f"{anchor_item['minute']:02d}'"
+        deg_x, deg_y = polar_coords((r_bhava_circle + r_divider_inner) / 2.0, 180.0)
+        svg += f'<text class="text-shield" x="{deg_x:.1f}" y="{deg_y - 6.0:.1f}" font-size="8.0" font-weight="600" fill="#C0392B" text-anchor="middle">{deg_str} {min_str}</text>\n'
+
+    # Descendant (DC at 0°)
+    dc1, dc1_y = polar_coords(r_bhava_circle, 0.0)
+    dc2, dc2_y = polar_coords(r_divider_inner, 0.0)
+    svg += f'<line class="angle-line angle-dc" x1="{dc1:.1f}" y1="{dc1_y:.1f}" x2="{dc2:.1f}" y2="{dc2_y:.1f}" stroke="#C0392B" stroke-width="1.2"/>\n'
+
+    # 5. Center Circle Hub (Radius 56) - Live Dynamic Transit Readout
+    svg += f'<circle class="interactive-center-circle" cx="0" cy="0" r="{r_aspect_inner}" fill="#faf7f0" fill-opacity="0.95" stroke="#5C4433" stroke-width="0.8"/>\n'
+    if transit_time_info and "formatted" in transit_time_info:
+        parts = transit_time_info["formatted"].split(" ")
+        date_part = parts[0] if len(parts) > 0 else ""
+        time_part = parts[1][:5] if len(parts) > 1 else ""
+        svg += '<text class="text-shield" x="0" y="-14" font-size="6.5" font-weight="bold" fill="#8c7b64" letter-spacing="0.8" text-anchor="middle" pointer-events="none">GOCHARA</text>\n'
+        svg += f'<text class="text-shield" x="0" y="-1" font-size="9.5" font-weight="bold" fill="#4a3325" font-variant-numeric="tabular-nums" text-anchor="middle" pointer-events="none">{date_part}</text>\n'
+        svg += f'<text class="text-shield" x="0" y="13" font-size="8.5" font-weight="600" fill="#2980B9" font-variant-numeric="tabular-nums" text-anchor="middle" pointer-events="none">{time_part}</text>\n'
+    else:
+        svg += '<text class="text-shield" x="0" y="-3.5" font-size="8.5" font-weight="bold" fill="#4a3325" text-anchor="middle" pointer-events="none">Natal · Transit</text>\n'
+        svg += '<text class="text-shield" x="0" y="9" font-size="7.0" font-weight="600" fill="#8c7b64" text-anchor="middle" pointer-events="none">Bi-Wheel</text>\n'
+
+    # Inward Planetary Ticks on r_aspect_inner = 56
+    svg += '<g class="inner-planet-ticks">\n'
+    for p in inner_planets:
+        t_ang = p["true_angle"]
+        p_name = p["item"]["name"]
+        p_col = planet_notations.get(p_name, {}).get("color", "#222222")
+        tx1, ty1 = polar_coords(r_aspect_inner, t_ang)
+        tx2, ty2 = polar_coords(r_aspect_inner - 4.0, t_ang)
+        svg += f'<line class="inner-tick" data-planet="{p_name}" x1="{tx1:.1f}" y1="{ty1:.1f}" x2="{tx2:.1f}" y2="{ty2:.1f}" stroke="{p_col}" stroke-width="0.75"><title>{p_name} aspect anchor tick</title></line>\n'
+    if root_planet == "Lagna":
+        tx1, ty1 = polar_coords(r_aspect_inner, 180.0)
+        tx2, ty2 = polar_coords(r_aspect_inner - 4.0, 180.0)
+        svg += f'<line class="inner-tick" data-planet="Lagna" x1="{tx1:.1f}" y1="{ty1:.1f}" x2="{tx2:.1f}" y2="{ty2:.1f}" stroke="#C0392B" stroke-width="0.8"><title>Ascendant aspect anchor tick</title></line>\n'
+    svg += '</g>\n'
+
+    # 6. INNER DOTS & LEADER LINES: Exact Position of Natal Planets on the Rashi Circle (r = 136)
+    svg += '<g class="natal-dots-layer">\n'
+    for p in inner_planets:
+        p_name = p["item"]["name"]
+        ang_true = p["true_angle"]
+        ang_draw = p["draw_angle"]
+        p_info = planet_notations.get(p_name, {})
+        dot_col = p_info.get("color", "#4a3325")
+
+        # Inner Dot on the Rashi boundary circle (r = 136)
+        dx, dy = polar_coords(r_divider_inner, ang_true)
+        tip = f"Natal {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
+        svg += f'  <circle class="natal-planet-dot dot-natal-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
+
+        # Subtle leader line / tick connecting glyph cluster out to the exact dot
+        ang_diff = abs((ang_draw - ang_true + 180.0) % 360.0 - 180.0)
+        if ang_diff > 0.5:
+            gx, gy = polar_coords(118, ang_draw)
+            svg += f'  <line class="natal-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"/>\n'
+        else:
+            gx, gy = polar_coords(121, ang_true)
+            svg += f'  <line class="natal-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.45"/>\n'
+    svg += '</g>\n'
+
+    # 7. OUTER DOTS & LEADER LINES: Exact Position of Transit Planets on the Outer Rim (r = 206)
     svg += '<g class="transit-dots-layer">\n'
     for p in outer_planets:
         p_name = p["item"]["name"]
         ang_true = p["true_angle"]
+        ang_draw = p["draw_angle"]
         p_info = planet_notations.get(p_name, {})
         dot_col = p_info.get("color", "#4a3325")
         st_type = p["item"].get("station_type")
 
+        # Outer Dot on the chart rim (r = 206)
         dx, dy = polar_coords(r_chart_outer, ang_true)
         tip = f"Transit {p_name} exact position: {p['item']['degree']}° {p['item']['minute']:02d}' {p['sign']}"
-        svg += f'  <circle class="transit-planet-dot" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
+        svg += f'  <circle class="transit-planet-dot dot-tr-{p_name}" data-planet="{p_name}" cx="{dx:.1f}" cy="{dy:.1f}" r="2.8" fill="{dot_col}" stroke="#ffffff" stroke-width="0.8"><title>{tip}</title></circle>\n'
 
+        # Subtle pulsing / double halo ring around outer rim dot when stationary
         if st_type == "SR":
             svg += f'  <circle class="transit-station-halo halo-sr" cx="{dx:.1f}" cy="{dy:.1f}" r="5.2" fill="none" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="2.5,1.5"><title>Stationary Retrograde (SR)</title></circle>\n'
         elif st_type == "SD":
             svg += f'  <circle class="transit-station-halo halo-sd" cx="{dx:.1f}" cy="{dy:.1f}" r="5.2" fill="none" stroke="#16a34a" stroke-width="1.2"><title>Stationary Direct (SD)</title></circle>\n'
+
+        # Subtle leader line / tick connecting transit glyph cluster out to the exact rim dot
+        ang_diff = abs((ang_draw - ang_true + 180.0) % 360.0 - 180.0)
+        if ang_diff > 0.5:
+            gx, gy = polar_coords(172, ang_draw)
+            svg += f'  <line class="transit-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.55"/>\n'
+        else:
+            gx, gy = polar_coords(195, ang_true)
+            svg += f'  <line class="transit-leader-line" x1="{gx:.1f}" y1="{gy:.1f}" x2="{dx:.1f}" y2="{dy:.1f}" stroke="{dot_col}" stroke-width="0.75" stroke-dasharray="1.5,1.5" opacity="0.45"/>\n'
     svg += '</g>\n'
 
-    # 4. Upcoming Station Pins (Outer Rim Diamond Markers)
+    # 7. INNER RING: Natal Planets Text & Glyphs (Haloed for crisp readability over lines)
+    r_in_nak = 78
+    r_in_min = 89
+    r_in_deg = 101
+    r_in_pl = 118
+
+    svg += '<g class="inner-planets-group">\n'
+    for p in inner_planets:
+        item = p["item"]
+        angle = p["draw_angle"]
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        is_retro = item.get("is_retrograde", False)
+
+        px, py = polar_coords(r_in_pl, angle)
+        font_sz = 9.0 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
+
+        tooltip = f"Natal {info.get('full_sa', p_name)}: {item['degree']}° {item['minute']:02d}' in {item['sign']}"
+        svg += f'<g class="interactive planet-glyph inner-planet natal-planet" data-type="planet" data-varga="Natal" data-id="{p_name}" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+
+        if show_nakshatras:
+            nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
+            if nak_abbr:
+                nx, ny = polar_coords(r_in_nak, angle)
+                svg += f'<text class="text-shield" x="{nx:.1f}" y="{ny:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
+
+        mx, my = polar_coords(r_in_min, angle)
+        svg += f'<text class="text-shield" x="{mx:.1f}" y="{my:.1f}" font-size="5.8" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'{" R" if is_retro else ""}</text>\n'
+
+        dx, dy = polar_coords(r_in_deg, angle)
+        svg += f'<text class="text-shield" x="{dx:.1f}" y="{dy:.1f}" font-size="6.8" stroke="#FAF7F0" stroke-width="2.2" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+
+        svg += f'<text class="glyph-symbol text-shield" x="{px:.1f}" y="{py:.1f}" font-size="{font_sz}" stroke="#FAF7F0" stroke-width="2.8" paint-order="stroke fill" fill="{color}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+        svg += '</g>\n'
+    svg += '</g>\n'
+
+    # 8. OUTER RING: Transiting Planets Text & Glyphs (Haloed for crisp readability over lines)
+    r_out_nak = 163
+    r_out_pl = 172
+    r_out_deg = 181
+    r_out_min = 190
+    r_out_sign = 199
+
+    svg += '<g class="outer-planets-group transit-planets-group">\n'
+    for p in outer_planets:
+        item = p["item"]
+        angle = p["draw_angle"]
+        p_name = item["name"]
+        info = planet_notations.get(p_name, {})
+        label = info.get(mode, info.get("symbol", p_name[:2]))
+        color = info.get("color", "#000")
+        is_retro = item.get("is_retrograde", False)
+        st_type = item.get("station_type")
+
+        px, py = polar_coords(r_out_pl, angle)
+        font_sz = 8.5 if p_name == "Lagna" else (12.0 if mode == "devanagari" else 11.5)
+        s_sym, s_col, _ = sign_symbols.get(item["sign"], ("?", "#000", "?"))
+
+        d1_house = ((p["sign_idx"] - anchor_s_idx + 12) % 12) + 1
+        st_desc = f" [{st_type}]" if st_type else (" [R]" if is_retro else "")
+        tooltip = f"Transiting {info.get('full_sa', p_name)} in {item['sign']} {item['degree']}° {item['minute']:02d}'{st_desc} (Natal House {d1_house})"
+
+        svg += f'<g class="interactive planet-glyph outer-planet transit-planet" data-planet="{p_name}" style="cursor: pointer;"><title>{tooltip}</title>\n'
+
+        if show_nakshatras:
+            nak_abbr = get_nakshatra_abbreviation(item.get("nakshatra", ""), length=4)
+            if nak_abbr:
+                nx, ny = polar_coords(r_out_nak, angle)
+                svg += f'<text x="{nx:.1f}" y="{ny:.1f}" font-size="5.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#8c7b64" text-anchor="middle" dominant-baseline="central">{nak_abbr}</text>\n'
+
+        mx, my = polar_coords(r_out_min, angle)
+        if st_type == "SR":
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="bold" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#dc2626" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' SR</text>\n'
+        elif st_type == "SD":
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="bold" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="#16a34a" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' SD</text>\n'
+        elif is_retro:
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\' R</text>\n'
+        else:
+            svg += f'<text x="{mx:.1f}" y="{my:.1f}" font-size="6.0" font-weight="600" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["minute"]:02d}\'</text>\n'
+
+        dx, dy = polar_coords(r_out_deg, angle)
+        svg += f'<text x="{dx:.1f}" y="{dy:.1f}" font-size="7.0" font-weight="600" stroke="#FAF7F0" stroke-width="2.0" paint-order="stroke fill" fill="{color}" text-anchor="middle" dominant-baseline="central">{item["degree"]}°</text>\n'
+
+        svg += f'<text class="glyph-symbol outer-glyph" x="{px:.1f}" y="{py:.1f}" font-size="{font_sz}" stroke="#FAF7F0" stroke-width="2.5" paint-order="stroke fill" fill="{color}" font-weight="600" text-anchor="middle" dominant-baseline="central">{label}</text>\n'
+
+        sx, sy = polar_coords(r_out_sign, angle)
+        svg += f'<text class="outer-sign-glyph" x="{sx:.1f}" y="{sy:.1f}" font-size="7.2" stroke="#FAF7F0" stroke-width="1.8" paint-order="stroke fill" fill="{s_col}" font-weight="bold" text-anchor="middle" dominant-baseline="central">{s_sym}</text>\n'
+
+        svg += '</g>\n'
+    svg += '</g>\n'
+
+    # 9. UPCOMING STATIONS LAYER: Outer Rim Station Pins (r = 206)
     if upcoming_stations:
         svg += '<g class="upcoming-stations-layer">\n'
         for st in upcoming_stations:
@@ -1470,7 +1839,7 @@ def get_chart_transit(native_id):
 
     # 4. Scan Milestones for the 360-day horizon (-90d to +270d)
     from jyotish.transits.milestone_scanner import scan_transit_milestones
-    m_cache_key = (native_id, t_year, nakshatra_system, debilitation_mode)
+    m_cache_key = (native_id, t_year, t_month, nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
     if m_cache_key in _TRANSIT_MILESTONES_CACHE:
         scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
     else:
@@ -1623,31 +1992,6 @@ def get_chart_transit(native_id):
                 </div>
             </div>
         </div>
-
-        <!-- Collapsible Aspect Hit List Drawer -->
-        <div class="transit-aspects-drawer" style="display:none; max-height:150px; overflow-y:auto; border-top:1px solid #e5dccb; background:#faf7f0; padding:4px 6px;">
-            <div style="font-size:12px; font-weight:bold; color:#5c4433; margin-bottom:3px; display:flex; justify-content:space-between; align-items:center;">
-                <span>Active Transit Triggers &amp; Glances (Gochara Drishti)</span>
-                <span class="transit-timestamp-badge" style="font-size:12px; font-weight:normal; color:#8c7b64; font-variant-numeric:tabular-nums;"></span>
-            </div>
-            <table class="transit-aspects-table" style="width:100%; border-collapse:collapse; font-size:12px;">
-                <thead>
-                    <tr style="border-bottom:1px solid #d5c8b2; text-align:left; color:#6b5a4b; background:#f4eee3;">
-                        <th style="padding:2px 5px;">Transit Graha</th>
-                        <th style="padding:2px 5px;">Aspect / Glance</th>
-                        <th style="padding:2px 5px;">Natal Target</th>
-                        <th style="padding:2px 5px;">Exact Orb</th>
-                        <th style="padding:2px 5px;">Potency</th>
-                        <th style="padding:2px 5px;">Motion</th>
-                    </tr>
-                </thead>
-                <tbody class="transit-aspects-tbody">
-                    <!-- Populated dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</template>
 
         <!-- Collapsible Aspect Hit List Drawer -->
         <div class="transit-aspects-drawer" style="display:none; max-height:150px; overflow-y:auto; border-top:1px solid #e5dccb; background:#faf7f0; padding:4px 6px;">
@@ -2072,18 +2416,12 @@ def get_chart_transit(native_id):
             });
 
             card.addEventListener('mouseenter', () => {
-                card.style.background = '#fcf8ec';
                 if (m.planet && m.natal_target) {
                     highlightTransitAspect(cell, m.planet, m.natal_target);
                 }
             });
 
             card.addEventListener('mouseleave', () => {
-                if (card !== closestCard) {
-                    card.style.background = '#fffdfa';
-                } else {
-                    card.style.background = '#fcf9f2';
-                }
                 resetTransitAspectHighlights(cell);
             });
 
@@ -2093,9 +2431,6 @@ def get_chart_transit(native_id):
         // Highlight closest card within 24 hours
         if (closestCard && closestDist < (24 * 3600 * 1000)) {
             closestCard.classList.add('active-jumped');
-            closestCard.style.borderColor = '#c2410c';
-            closestCard.style.borderLeft = '3.5px solid #c2410c';
-            closestCard.style.background = '#fcf9f2';
             closestCard.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
     }
@@ -2251,22 +2586,24 @@ def get_chart_transit(native_id):
         if (!svg) return;
 
         svg.querySelectorAll('.transit-aspect-line').forEach(l => {
-            l.style.opacity = '0.80';
-            l.style.strokeWidth = '1.0px';
+            l.style.opacity = '';
+            l.style.strokeWidth = '';
         });
         svg.querySelectorAll('.transit-planet-dot').forEach(d => {
-            d.style.strokeWidth = '0.8px';
-            d.style.r = '2.8';
+            d.style.strokeWidth = '';
+            d.style.r = '';
         });
         svg.querySelectorAll('.natal-planet-dot').forEach(d => {
-            d.style.strokeWidth = '0.8px';
-            d.style.r = '2.8';
+            d.style.strokeWidth = '';
+            d.style.r = '';
         });
     }
 
     function attachSvgInteractivity(cell) {
         const svg = cell.querySelector('.transit-biwheel-svg');
         if (!svg) return;
+        const state = activeInstances.get(cell);
+        if (!state) return;
 
         const outerPlanets = svg.querySelectorAll('.outer-planet, .transit-planet');
         const innerPlanets = svg.querySelectorAll('.inner-planet, .natal-planet');
@@ -2372,7 +2709,7 @@ def get_chart_transit(native_id):
         let state = activeInstances.get(cell);
         if (state) {
             // Clean up any existing playback timers on re-initialization
-            if (state.playTimer) clearInterval(state.playTimer);
+            if (state.playTimer) clearTimeout(state.playTimer);
             state.playTimer = null;
             state.isPlaying = false;
             state.cell = cell;
@@ -2616,7 +2953,7 @@ def get_chart_transit(native_id):
         if (!cell) return;
         const state = activeInstances.get(cell);
         if (state && state.playTimer) {
-            clearInterval(state.playTimer);
+            clearTimeout(state.playTimer);
             state.playTimer = null;
             state.isPlaying = false;
         }

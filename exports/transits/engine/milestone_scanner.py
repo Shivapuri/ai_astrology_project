@@ -31,8 +31,8 @@ SWE_PLANET_MAP = {
 }
 
 STATION_PLANETS = ["Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
-INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars"]
-EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu"]
+INGRESS_PLANETS = ["Saturn", "Jupiter", "Rahu", "Ketu", "Mars", "Sun", "Venus", "Mercury"]
+EXACT_ASPECT_PLANETS = ["Mars", "Jupiter", "Saturn", "Rahu", "Ketu", "Sun", "Venus", "Mercury"]
 
 PLANET_SYMBOLS = {
     "Sun": "☉", "Moon": "☽", "Mars": "♂", "Mercury": "☿",
@@ -57,25 +57,38 @@ def _get_planet_lon_and_speed(jd: float, p_name: str) -> Tuple[float, float]:
         return res[0][0] % 360.0, res[0][3]
 
 
-def _revjul_to_dict(jd: float) -> Dict[str, Any]:
-    """Converts Julian Day to standard UTC date parts."""
-    y, m, d, float_hour = swe.revjul(jd)
+def _revjul_to_dict(jd: float, timezone_hours: float = 0.0) -> Dict[str, Any]:
+    """
+    Converts Julian Day (in UT) to localized date parts for UI jump and display,
+    adding half a minute (0.5 / 1440.0) so Swiss Ephemeris natively handles all
+    minute, hour, day, month, and leap-year rollovers without overflow bugs.
+    """
+    local_jd = jd + (timezone_hours / 24.0) + (0.5 / 1440.0)
+    y, m, d, float_hour = swe.revjul(local_jd)
     hour = int(float_hour)
-    minute = int(round((float_hour - hour) * 60.0))
-    if minute >= 60:
-        hour += 1
-        minute = 0
-    if hour >= 24:
-        d += 1
-        hour = 0
+    minute = int((float_hour - hour) * 60.0)
     day = int(d)
+
+    # Also record exact UTC timestamp
+    utc_jd = jd + (0.5 / 1440.0)
+    uy, um, ud, u_float_h = swe.revjul(utc_jd)
+    u_hour = int(u_float_h)
+    u_min = int((u_float_h - u_hour) * 60.0)
+
+    tz_sign = "+" if timezone_hours >= 0 else "-"
+    abs_tz = abs(timezone_hours)
+    tz_h = int(abs_tz)
+    tz_m = int(round((abs_tz - tz_h) * 60.0))
+    tz_suffix = f"{tz_sign}{tz_h:02d}:{tz_m:02d}"
+
     return {
         "year": int(y),
         "month": int(m),
         "day": day,
         "hour": hour,
         "minute": minute,
-        "timestamp_utc": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00Z",
+        "timestamp_utc": f"{int(uy):04d}-{int(um):02d}-{int(ud):02d}T{u_hour:02d}:{u_min:02d}:00Z",
+        "timestamp_local": f"{int(y):04d}-{int(m):02d}-{day:02d}T{hour:02d}:{minute:02d}:00{tz_suffix}",
         "formatted_date": f"{day:02d}/{int(m):02d}/{int(y):04d}",
         "jump_date": f"{int(y):04d}-{int(m):02d}-{day:02d}",
         "jump_time": f"{hour:02d}:{minute:02d}:00"
@@ -87,12 +100,12 @@ def _get_candidate_aspects(planet: str) -> List[Tuple[str, float]]:
     aspects = [("Conjunction", 0.0), ("7th Opposition", 180.0)]
     if planet == "Mars":
         aspects.extend([("4th Aspect", 90.0), ("8th Aspect", 210.0)])
-    elif planet == "Jupiter":
+    elif planet in ["Jupiter", "Rahu", "Ketu"]:
         aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+    elif planet in ["Sun", "Venus", "Mercury"]:
+        aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
     elif planet == "Saturn":
         aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
-    elif planet in ["Rahu", "Ketu"]:
-        aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
     return aspects
 
 
@@ -203,14 +216,17 @@ def scan_transit_milestones(
                             best_aspect_target = n_target
                             best_aspect_type = asp_name
 
-                time_dict = _revjul_to_dict(station_jd)
+                time_dict = _revjul_to_dict(station_jd, transit_timezone)
                 s_idx = int(station_lon // 30) % 12
                 deg_in_sign = station_lon % 30.0
-                deg = int(deg_in_sign)
+                deg = int(math.floor(deg_in_sign))
                 minute = int(round((deg_in_sign - deg) * 60.0))
                 if minute >= 60:
                     deg += 1
                     minute = 0
+                if deg >= 30:
+                    deg = 0
+                    s_idx = (s_idx + 1) % 12
                 sign_name = SIGNS_LIST[s_idx]
 
                 h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
@@ -296,11 +312,16 @@ def scan_transit_milestones(
                 ingress_jd = (jd_a + jd_b) / 2.0
                 new_sign_idx = sign2
                 new_sign_name = SIGNS_LIST[new_sign_idx]
-                time_dict = _revjul_to_dict(ingress_jd)
+                time_dict = _revjul_to_dict(ingress_jd, transit_timezone)
 
                 h_lagna = ((new_sign_idx - natal_lagna_idx + 12) % 12) + 1
                 h_moon = ((new_sign_idx - natal_moon_idx + 12) % 12) + 1
                 sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
+
+                is_retro_ingress = ((sign1 - sign2) % 12 == 1)
+                boundary_lon = (sign1 * 30.0) if is_retro_ingress else (sign2 * 30.0)
+                deg_display = 29 if is_retro_ingress else 0
+                min_display = 59 if is_retro_ingress else 0
 
                 desc = f"{sym} {p_name} Ingress {new_sign_name} (H{h_lagna} from Lagna, H{h_moon} from Moon)"
                 raw_milestones.append({
@@ -311,9 +332,9 @@ def scan_transit_milestones(
                     "planet": p_name,
                     "station_type": None,
                     "sign": new_sign_name,
-                    "degree": 0,
-                    "minute_arc": 0,
-                    "longitude": float(new_sign_idx * 30.0),
+                    "degree": deg_display,
+                    "minute_arc": min_display,
+                    "longitude": float(boundary_lon % 360.0),
                     "house_from_lagna": h_lagna,
                     "house_from_moon": h_moon,
                     "natal_target": None,
@@ -365,17 +386,20 @@ def scan_transit_milestones(
 
                         s_idx = int(hit_lon // 30) % 12
                         deg_in_sign = hit_lon % 30.0
-                        deg = int(deg_in_sign)
+                        deg = int(math.floor(deg_in_sign))
                         minute = int(round((deg_in_sign - deg) * 60.0))
                         if minute >= 60:
                             deg += 1
                             minute = 0
+                        if deg >= 30:
+                            deg = 0
+                            s_idx = (s_idx + 1) % 12
                         sign_name = SIGNS_LIST[s_idx]
 
                         h_lagna = ((s_idx - natal_lagna_idx + 12) % 12) + 1
                         h_moon = ((s_idx - natal_moon_idx + 12) % 12) + 1
 
-                        time_dict = _revjul_to_dict(hit_jd)
+                        time_dict = _revjul_to_dict(hit_jd, transit_timezone)
                         is_retro = (hit_sp < 0)
 
                         exact_aspect_hits.append({
@@ -407,15 +431,19 @@ def scan_transit_milestones(
 
     for k, hit_list in groups.items():
         total_p = len(hit_list)
+        first_is_retro = hit_list[0].get("is_retrograde_at_hit", False)
+        p_name = hit_list[0]["planet"]
+        offset = 1 if (first_is_retro and p_name in ["Mars", "Jupiter", "Saturn"]) else 0
+        adj_total = total_p + offset
         for idx, hit in enumerate(hit_list):
-            pass_num = idx + 1
+            pass_num = idx + 1 + offset
             hit["pass_number"] = pass_num
-            hit["total_passes"] = total_p
+            hit["total_passes"] = adj_total
             p_name = hit["planet"]
             n_target = hit["natal_target"]
             asp_name = hit["aspect_type"]
             sym = PLANET_SYMBOLS.get(p_name, p_name[:2])
-            pass_str = f" (Pass {pass_num}/{total_p})" if total_p > 1 else ""
+            pass_str = f" (Pass {pass_num}/{adj_total})" if adj_total > 1 else ""
             hit["description"] = f"{sym} {p_name} {asp_name} Natal {n_target} (0°00'){pass_str}"
             del hit["group_key"]
             del hit["is_retrograde_at_hit"]

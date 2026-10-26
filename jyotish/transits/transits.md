@@ -4,17 +4,22 @@
 In Vedic Astrology (Jyotish), natal horoscopy establishes the fixed karmic blueprint (*Prarabdha Karma*), while **Transits (*Gochara*)** represent the dynamic unfolding of time as planets traverse the zodiac relative to that natal blueprint.
 
 ### Scriptural References:
-* **Phaladeepika (Mantreswara), Chapter 26 (Gochara Phala):**
-  * Transits must be evaluated primarily from the **Natal Moon (*Janma Rasi / Chandra Lagna*)**, as the Moon governs the conscious mind (*Manas*) and personal experience of events.
-  * Transits are secondarily evaluated from the **Natal Ascendant (*Janma Lagna*)**, which governs bodily health, status, and physical reality.
-  * **Navamsha Orb Rule:** Significant transit triggers occur when a transiting planet occupies the same Navamsha (3°20' arc or 3.3333°) or forms exact degree aspects with natal planets.
+* **Phaladeepika (Mantreswara), Chapter 26 (Gochara Phala) & Chapters 10, 12, 13, 15, 16:**
+  * **Primary Evaluative Pivot (*Janma Rasi / Chandra Lagna*):** Transits must be evaluated primarily from the **Natal Moon**, as the Moon governs the conscious mind (*Manas*) and personal experience of events.
+  * **Secondary Evaluative Pivot (*Janma Lagna*):** Evaluated from the **Natal Ascendant**, governing bodily health, physical vitality, status, and material manifestations.
+  * **Upachaya Houses (3, 6, 11) for Malefics:** Transits of natural malefics (Sun, Mars, Saturn, Rahu, Ketu) yield courage, victory over obstacles, and tangible gains when traversing the 3rd, 6th, or 11th houses from the Moon.
+  * **Benefic Houses (1, 2, 4, 5, 7, 9, 10, 11) for Benefics:** Natural benefics (Jupiter, Venus, Mercury, and waxing Moon) confer expansion, knowledge, and harmony in cardinal, trine, and wealth houses.
+  * **Sphuta Drishti & Navamsha Orb Rule:** Significant transit triggers occur when a transiting planet occupies the same Navamsha ($3^\circ 20'$ arc or $3.3333^\circ$) or forms exact degree aspects with natal points.
+  * **Trine Glances (*Trikona Drishti*, 120° / 240°):** Trine glances are cast not only by Jupiter and Rahu/Ketu, but also serve as key house-fructification and event triggers for Sun, Venus, and Mercury (Ch. 10.11-12, 16.31).
+  * **Dasha × Transit Synchronization:** Transits act as the hands of the clock, but the active **Dasha and Antardasha Lords** determine which transits manifest major life events.
+
 * **Brihat Parashara Hora Shastra (BPHS), Chapters on Drishti:**
   * Aspect glances (*Graha Drishti*):
-    * All planets cast full aspect onto the 7th house (180° opposition).
-    * **Mars** casts special full aspects on the 4th (90°) and 8th (210°) houses.
-    * **Jupiter** casts special full aspects on the 5th (120°) and 9th (240°) houses (Dharma trines).
-    * **Saturn** casts special full aspects on the 3rd (60°) and 10th (270°) houses.
-    * **Rahu & Ketu** cast trine glances on the 5th (120°) and 9th (240°) houses.
+    * All planets cast full aspect onto the 7th house ($180^\circ$ opposition).
+    * **Mars** casts special full aspects on the 4th ($90^\circ$) and 8th ($210^\circ$) houses.
+    * **Jupiter** casts special full aspects on the 5th ($120^\circ$) and 9th ($240^\circ$) houses (Dharma trines).
+    * **Saturn** casts special full aspects on the 3rd ($60^\circ$) and 10th ($270^\circ$) houses.
+    * **Rahu & Ketu** cast trine glances on the 5th ($120^\circ$) and 9th ($240^\circ$) houses.
 
 ---
 
@@ -22,7 +27,7 @@ In Vedic Astrology (Jyotish), natal horoscopy establishes the fixed karmic bluep
 In accordance with Ernst Wilhelm's Kala configuration in Astra:
 1. **Tropical Rasis (Signs):**
    * Transiting planetary longitudes are computed in the Tropical Zodiac.
-   * A transit planet entering 0° Aries is physically at 0° Aries Tropical, perfectly overlaying the natal Tropical signs and Campanus houses.
+   * A transit planet entering $0^\circ$ Aries is physically at $0^\circ$ Aries Tropical, perfectly overlaying the natal Tropical signs and Campanus houses.
 2. **Sidereal Equatorial Nakshatras (Dhruva Galactic Center) & Vic DiCara (Chitra Paksha):**
    * The active user setting determines the nakshatra calculation:
      * `ERNST_DHRUVA`: Equatorial Right Ascension anchored to middle of Mula.
@@ -47,7 +52,9 @@ The speed of a transiting body determines the psychological depth and enduring i
 ### Station States & Classical Motion Classifications (*Gati*):
 * **Stationary Threshold (`is_stationary`)**:
   * Applies to the 5 star planets: Mars, Mercury, Jupiter, Venus, Saturn.
-  * A planet is defined as stationary when its relative speed ratio `abs(daily_speed) / mean_daily_speed <= 0.10` (moving at less than or equal to 10% of its normal daily motion), or within ±48 hours of an exact mathematical speed root (`daily_speed == 0.0`).
+  * A planet is defined as stationary when its relative speed ratio `abs(daily_speed) / mean_daily_speed <= 0.10` (moving at $\le 10\%$ of normal daily motion).
+  * Fast planets (Mercury and Venus) utilize an acceleration-bounded $\pm 12\text{h}$ direction change window ($d(\text{speed})/dt$) with `speed_ratio <= 0.25` to prevent multi-day false stationarity.
+  * Slow outer planets (Mars, Jupiter, Saturn) utilize a $\pm 48\text{h}$ direction reversal root search.
 * **Stationary Retrograde (`SR` / *Vakra-ārambha / Stambhana*)**:
   * The planet slows to a halt while transitioning from direct (positive) to retrograde (negative) motion ($d(\text{speed})/dt < 0$).
 * **Stationary Direct (`SD` / *Vakra-tyāga / Stambhana*)**:
@@ -68,10 +75,11 @@ To avoid manual day-by-day scrubbing, `jyotish/transits/milestone_scanner.py` pr
 1. **Scanning Horizon**: Scans a configurable window (default `-90` days to `+270` days, 360 days total).
 2. **Algorithmic Strategy**:
    * Evaluates daily positions and speeds via direct `swisseph` (`swe.calc_ut`) in ~30 milliseconds.
-   * Performs root-finding (bisection) to locate event timestamps down to 1-minute precision.
+   * Performs root-finding (bisection) to locate event timestamps down to 1-second precision.
+   * Localizes Julian Day root timestamps with native half-minute addition (`jd + tz/24.0 + 0.5/1440.0`) so Swiss Ephemeris handles all minute, hour, day, month, and leap-year rollovers natively without arithmetic overflow.
 3. **Four Milestone Event Tiers**:
-   * **`NATAL_STATION` (Tier 1 - Critical)**: A planet crosses `daily_speed == 0.0` (`SR` or `SD`) while within `3°20'` (Navamsha orb) of a conjunction or classical Graha Drishti to a natal planet or natal Lagna.
-   * **`EXACT_ASPECT` (Tier 2 - High)**: A major slow planet (Mars, Jupiter, Saturn, Rahu, Ketu) reaches exact `0°00'` of a conjunction or Graha Drishti with a natal planet or Lagna. Tagged with pass number (`Pass 1`, `Pass 2`, `Pass 3`) across retrograde loops.
+   * **`NATAL_STATION` (Tier 1 - Critical)**: A planet crosses `daily_speed == 0.0` (`SR` or `SD`) while within $3^\circ 20'$ (Navamsha orb) of a conjunction or classical Graha Drishti to a natal planet or natal Lagna.
+   * **`EXACT_ASPECT` (Tier 2 - High)**: A major planet (Mars, Jupiter, Saturn, Rahu, Ketu, Sun, Venus, Mercury) reaches exact $0^\circ 00'$ of a conjunction, Graha Drishti, or trine glance with a natal planet or Lagna. Tagged with pass number (`Pass 1`, `Pass 2`, `Pass 3`) across retrograde loops, accounting for loop entry offsets.
    * **`SKY_STATION` (Tier 3 - Medium)**: A planet turns `SR` or `SD` outside natal orb, shifting house energy from Lagna and Moon.
-   * **`SIGN_INGRESS` (Tier 3 - Medium)**: A major planet crosses a 30° Tropical sign boundary (`0°00'`), changing Whole-Sign house placement from Lagna and Moon.
+   * **`SIGN_INGRESS` (Tier 3 - Medium)**: A planet crosses a $30^\circ$ Tropical sign boundary ($0^\circ 00'$ for direct ingress, $29^\circ 59'$ for retrograde ingress), changing Whole-Sign house placement from Lagna and Moon.
 4. **Output Integrity**: Pure dictionary conforming to Hemisphere A rules (floats, ints, booleans, strings; zero HTML, zero CSS styling).

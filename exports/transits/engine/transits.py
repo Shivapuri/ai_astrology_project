@@ -7,6 +7,7 @@ and Vic DiCara's Chitra Paksha Nakshatras with Tropical Rasis.
 """
 
 import copy
+import math
 import swisseph as swe
 from typing import Dict, Any, List, Optional, Tuple
 from jyotish.baseline import ChartBaseline
@@ -139,7 +140,11 @@ def calculate_transits(
 
         mean_speed = MEAN_DAILY_SPEEDS.get(p_name, 1.0)
         speed_ratio = round(abs(daily_speed) / mean_speed, 3) if mean_speed > 0 else 1.0
-        is_retro = g.get("is_retrograde", False)
+
+        if p_name in ["Rahu", "Ketu"]:
+            is_retro = (daily_speed < 0)
+        else:
+            is_retro = g.get("is_retrograde", False)
 
         is_stationary = False
         station_type: Optional[str] = None
@@ -158,14 +163,17 @@ def calculate_transits(
                     elif accel > 0:
                         station_type = "SD"
             else:
-                # Direction change within +/- 48h
+                # Direction change check:
+                # For fast star planets (Mercury, Venus), checking ±48h flags them when speed_ratio is 0.30!
+                # Restrict to ±12h for Mercury/Venus, or ±48h for Mars, Jupiter, Saturn only if speed_ratio <= 0.25.
                 p_id = SWE_PLANET_MAP.get(p_name)
                 if p_id is not None:
-                    sp_m2 = swe.calc_ut(jd_ut - 2.0, p_id)[0][3]
-                    sp_p2 = swe.calc_ut(jd_ut + 2.0, p_id)[0][3]
-                    if (sp_m2 * daily_speed <= 0) or (sp_p2 * daily_speed <= 0):
+                    delta_t = 0.5 if p_name in ["Mercury", "Venus"] else 2.0
+                    sp_m = swe.calc_ut(jd_ut - delta_t, p_id)[0][3]
+                    sp_p = swe.calc_ut(jd_ut + delta_t, p_id)[0][3]
+                    if ((sp_m * daily_speed <= 0) or (sp_p * daily_speed <= 0)) and speed_ratio <= 0.25:
                         is_stationary = True
-                        accel = sp_p2 - sp_m2
+                        accel = sp_p - sp_m
                         station_type = "SR" if accel < 0 else "SD"
 
         if is_stationary:
@@ -189,14 +197,38 @@ def calculate_transits(
             motion_state = "Direct"
             gati_sanskrit = "Rju"
 
+        deg_val = g.get("degree_0_to_30", 0.0)
+        deg = int(math.floor(deg_val))
+        minute = int(round((deg_val - deg) * 60.0))
+        if minute >= 60:
+            deg += 1
+            minute = 0
+        if deg >= 30:
+            deg = 0
+            s_idx = (s_idx + 1) % 12
+            p_sign = SIGNS_LIST[s_idx]
+
+        # Classical Gochara Quality from Moon (Phaladeepika Ch. 26)
+        is_favorable_from_moon = False
+        if p_name in ["Sun", "Mars", "Saturn", "Rahu", "Ketu"]:
+            is_favorable_from_moon = h_from_moon in [3, 6, 11]
+        elif p_name == "Jupiter":
+            is_favorable_from_moon = h_from_moon in [2, 5, 7, 9, 11]
+        elif p_name == "Venus":
+            is_favorable_from_moon = h_from_moon in [1, 2, 3, 4, 5, 8, 9, 11, 12]
+        elif p_name == "Mercury":
+            is_favorable_from_moon = h_from_moon in [2, 4, 6, 8, 10, 11]
+        elif p_name == "Moon":
+            is_favorable_from_moon = h_from_moon in [1, 3, 6, 7, 10, 11]
+
         processed_transit_planets[p_name] = {
             "name": p_name,
             "sign": p_sign,
             "sign_idx": s_idx,
             "longitude": g.get("longitude", 0.0),
             "degree_0_to_30": g.get("degree_0_to_30", 0.0),
-            "degree": int(g.get("degree_0_to_30", 0.0)),
-            "minute": int(round((g.get("degree_0_to_30", 0.0) % 1.0) * 60)),
+            "degree": deg,
+            "minute": minute,
             "is_retrograde": is_retro,
             "daily_speed": round(daily_speed, 6),
             "speed_ratio": speed_ratio,
@@ -207,7 +239,8 @@ def calculate_transits(
             "nakshatra": g.get("nakshatra", ""),
             "pada": g.get("pada", 1),
             "house_from_lagna": h_from_lagna,
-            "house_from_moon": h_from_moon
+            "house_from_moon": h_from_moon,
+            "is_favorable_from_moon": is_favorable_from_moon
         }
 
     # 3. Detect Active Transit Aspects onto Natal Planets
@@ -280,6 +313,13 @@ def get_transit_aspects(
                 speed_factor = 2.0 if asp_is_stationary else (1.4 if asp_speed_ratio <= 0.50 else 1.0)
                 intensity_weight = round(orb_closeness * virupa_factor * speed_factor, 3)
 
+                is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                if t_name == "Moon":
+                    sun_item = transit_grahas.get("Sun", {})
+                    s_lon = sun_item.get("longitude", 0.0)
+                    moon_elong = (t_lon - s_lon) % 360.0
+                    is_benefic = (0.0 <= moon_elong <= 180.0)
+
                 aspects.append({
                     "aspecting": t_name,
                     "target": n_name,
@@ -288,7 +328,7 @@ def get_transit_aspects(
                     "angular_diff": round(diff, 2),
                     "orb": round(orb_conj, 2),
                     "virupas": 60.0,
-                    "is_benefic": t_name in ["Jupiter", "Venus", "Mercury"],
+                    "is_benefic": is_benefic,
                     "is_applying": is_applying,
                     "aspecting_is_stationary": asp_is_stationary,
                     "aspecting_station_type": asp_station_type,
@@ -309,13 +349,20 @@ def get_transit_aspects(
                 candidate_aspects.extend([("3rd Aspect", 60.0), ("10th Aspect", 270.0)])
             elif t_name in ["Rahu", "Ketu"]:
                 candidate_aspects.extend([("5th Trine Aspect", 120.0), ("9th Trine Aspect", 240.0)])
+            elif t_name in ["Sun", "Venus", "Mercury"]:
+                candidate_aspects.extend([("5th Trine Glance", 120.0), ("9th Trine Glance", 240.0)])
 
             for glance_type, nominal_angle in candidate_aspects:
                 signed_diff = (diff - nominal_angle + 180.0) % 360.0 - 180.0
                 angle_error = abs(signed_diff)
                 if angle_error <= orb_degrees:
-                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 45.0
-                    is_benefic = t_name in ["Jupiter", "Venus"]
+                    virupas = get_graha_drishti(t_name, t_lon, n_lon) if t_name not in ["Rahu", "Ketu"] else 60.0
+                    is_benefic = t_name in ["Jupiter", "Venus", "Mercury"]
+                    if t_name == "Moon":
+                        sun_item = transit_grahas.get("Sun", {})
+                        s_lon = sun_item.get("longitude", 0.0)
+                        moon_elong = (t_lon - s_lon) % 360.0
+                        is_benefic = (0.0 <= moon_elong <= 180.0)
                     # Direct planet applies when signed_diff > 0 (before exact aspect); retro applies when signed_diff < 0
                     is_applying = (signed_diff > 0) if not is_retro else (signed_diff < 0)
 

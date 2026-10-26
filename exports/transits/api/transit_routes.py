@@ -115,7 +115,7 @@ def get_chart_transit(native_id):
 
     # 4. Scan Milestones for the 360-day horizon (-90d to +270d)
     from jyotish.transits.milestone_scanner import scan_transit_milestones
-    m_cache_key = (native_id, t_year, nakshatra_system, debilitation_mode)
+    m_cache_key = (native_id, t_year, t_month, nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
     if m_cache_key in _TRANSIT_MILESTONES_CACHE:
         scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
     else:

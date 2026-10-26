@@ -4,6 +4,7 @@ import sys
 import io
 import re
 import json
+import swisseph as swe
 from datetime import datetime
 from typing import Tuple, Dict, Any
 import pytz
@@ -508,7 +509,7 @@ def get_chart_transit(native_id):
             it.update(transit_res["transit_planets"][p_nm])
 
     from jyotish.transits.milestone_scanner import scan_transit_milestones
-    m_cache_key = (native_id, t_year, nakshatra_system, debilitation_mode)
+    m_cache_key = (native_id, t_year, t_month, nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
     if m_cache_key in _TRANSIT_MILESTONES_CACHE:
         scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
     else:
@@ -529,6 +530,28 @@ def get_chart_transit(native_id):
         )
         _TRANSIT_MILESTONES_CACHE[m_cache_key] = scan_res
 
+    # Filter upcoming stations dynamically relative to the active transit timestamp
+    cur_tr_jd = swe.julday(t_year, t_month, t_day, t_hour + t_min / 60.0 + t_sec / 3600.0 - t_tz)
+    active_upcoming_stations = []
+    seen_st_keys = set()
+    for m in scan_res.get("milestones", []):
+        if m.get("category") in ["NATAL_STATION", "SKY_STATION"] and m.get("jd", 0.0) >= (cur_tr_jd - 0.5):
+            st_k = (m["planet"], m["station_type"], m["sign"], m["degree"])
+            if st_k not in seen_st_keys:
+                seen_st_keys.add(st_k)
+                active_upcoming_stations.append({
+                    "planet": m["planet"],
+                    "station_type": m["station_type"],
+                    "longitude": m["longitude"],
+                    "sign": m["sign"],
+                    "degree": m["degree"],
+                    "minute": m["minute_arc"],
+                    "formatted_date": m["formatted_date"],
+                    "tooltip": f"Upcoming {m['planet']} {m['station_type']} at {m['degree']}°{m['minute_arc']:02d}' {m['sign']} on {m['formatted_date']}",
+                    "jump_date": m["jump_date"],
+                    "jump_time": m["jump_time"]
+                })
+
     svg = draw_chart.generate_transit_biwheel(
         inner_items=natal_d1_items,
         outer_items=transit_d1_items,
@@ -538,7 +561,7 @@ def get_chart_transit(native_id):
         show_nakshatras=show_nakshatras,
         debilitation_mode=debilitation_mode,
         transit_time_info=transit_res["transit_time_info"],
-        upcoming_stations=scan_res.get("upcoming_stations", [])
+        upcoming_stations=active_upcoming_stations
     )
 
     return jsonify({
@@ -547,7 +570,7 @@ def get_chart_transit(native_id):
         "active_aspects": transit_res["active_aspects"],
         "transit_time_info": transit_res["transit_time_info"],
         "milestones": scan_res.get("milestones", []),
-        "upcoming_stations": scan_res.get("upcoming_stations", []),
+        "upcoming_stations": active_upcoming_stations,
         "root": root,
         "mode": mode,
         "orb": aspect_orb_degrees
@@ -619,7 +642,7 @@ def get_chart_transit_milestones(native_id):
         _NATAL_CHART_CACHE[cache_key] = natal_chart
 
     from jyotish.transits.milestone_scanner import scan_transit_milestones
-    m_cache_key = (native_id, t_year, days_back, days_forward, nakshatra_system, debilitation_mode)
+    m_cache_key = (native_id, t_year, t_month, days_back, days_forward, nakshatra_system, debilitation_mode, round(aspect_orb_degrees, 2))
     if m_cache_key in _TRANSIT_MILESTONES_CACHE:
         scan_res = _TRANSIT_MILESTONES_CACHE[m_cache_key]
     else:

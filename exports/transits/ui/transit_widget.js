@@ -388,18 +388,12 @@
             });
 
             card.addEventListener('mouseenter', () => {
-                card.style.background = '#fcf8ec';
                 if (m.planet && m.natal_target) {
                     highlightTransitAspect(cell, m.planet, m.natal_target);
                 }
             });
 
             card.addEventListener('mouseleave', () => {
-                if (card !== closestCard) {
-                    card.style.background = '#fffdfa';
-                } else {
-                    card.style.background = '#fcf9f2';
-                }
                 resetTransitAspectHighlights(cell);
             });
 
@@ -409,9 +403,6 @@
         // Highlight closest card within 24 hours
         if (closestCard && closestDist < (24 * 3600 * 1000)) {
             closestCard.classList.add('active-jumped');
-            closestCard.style.borderColor = '#c2410c';
-            closestCard.style.borderLeft = '3.5px solid #c2410c';
-            closestCard.style.background = '#fcf9f2';
             closestCard.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         }
     }
@@ -567,22 +558,24 @@
         if (!svg) return;
 
         svg.querySelectorAll('.transit-aspect-line').forEach(l => {
-            l.style.opacity = '0.80';
-            l.style.strokeWidth = '1.0px';
+            l.style.opacity = '';
+            l.style.strokeWidth = '';
         });
         svg.querySelectorAll('.transit-planet-dot').forEach(d => {
-            d.style.strokeWidth = '0.8px';
-            d.style.r = '2.8';
+            d.style.strokeWidth = '';
+            d.style.r = '';
         });
         svg.querySelectorAll('.natal-planet-dot').forEach(d => {
-            d.style.strokeWidth = '0.8px';
-            d.style.r = '2.8';
+            d.style.strokeWidth = '';
+            d.style.r = '';
         });
     }
 
     function attachSvgInteractivity(cell) {
         const svg = cell.querySelector('.transit-biwheel-svg');
         if (!svg) return;
+        const state = activeInstances.get(cell);
+        if (!state) return;
 
         const outerPlanets = svg.querySelectorAll('.outer-planet, .transit-planet');
         const innerPlanets = svg.querySelectorAll('.inner-planet, .natal-planet');
@@ -688,7 +681,7 @@
         let state = activeInstances.get(cell);
         if (state) {
             // Clean up any existing playback timers on re-initialization
-            if (state.playTimer) clearInterval(state.playTimer);
+            if (state.playTimer) clearTimeout(state.playTimer);
             state.playTimer = null;
             state.isPlaying = false;
             state.cell = cell;
@@ -932,7 +925,7 @@
         if (!cell) return;
         const state = activeInstances.get(cell);
         if (state && state.playTimer) {
-            clearInterval(state.playTimer);
+            clearTimeout(state.playTimer);
             state.playTimer = null;
             state.isPlaying = false;
         }

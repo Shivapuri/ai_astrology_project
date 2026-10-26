@@ -25,7 +25,7 @@ exports/transits/
 ├── engine/
 │   ├── transits.py                <-- Core mathematical calculations (speeds, stations, aspects)
 │   ├── milestone_scanner.py       <-- High-speed ephemeris scanner (finds major turning points)
-│   └── draw_transit_biwheel.py    <-- SVG dual-ring chart generator
+│   └── draw_transit_biwheel.py    <-- SVG dual-ring chart generator (complete standalone)
 ├── api/
 │   └── transit_routes.py          <-- Flask web server endpoints & caching logic
 ├── ui/
@@ -55,7 +55,7 @@ The system is built on a strict **Two-Hemisphere Architecture**:
 [jyotish/transits/milestone_scanner.py] ──> Scans 360 days for major turning points
              │
              ▼
-[app.py (REST API)] ──> Delivers JSON payload to browser
+[app.py (REST API)] ──> Delivers JSON payload to browser (with dynamic upcoming station pins)
              │
              ├──────────────────────────┐
              ▼                          ▼
@@ -64,28 +64,34 @@ The system is built on a strict **Two-Hemisphere Architecture**:
 
 ---
 
-## 4. Key Concepts to Understand
+## 4. Key Concepts & Classical Phaladeepika Principles
 
 ### A. Planetary Speeds & Stations (*Stambhana*)
 When planets appear to stop and reverse direction from Earth's point of view:
 - **Stationary Retrograde (`SR` / *Vakra-ārambha*):** The planet slows to a halt and begins moving backward. In the chart, it is marked with a bold crimson **`SR`** label and a dashed red halo.
 - **Stationary Direct (`SD` / *Vakra-tyāga*):** The planet finishes its backward motion, halts, and starts moving forward again. It is marked with a green **`SD`** label.
-- **Threshold:** A planet is considered stationary when its speed drops to **10% or less** of its normal average speed.
+- **Threshold:** A planet is considered stationary when its speed drops to **10% or less** of its normal average speed. Mercury and Venus use an acceleration-bounded $\pm 12\text{h}$ window to prevent false multi-day stationarity.
 
 ### B. The 4 Milestone Tiers
 Instead of scrubbing through 365 days one by one, the [`milestone_scanner.py`](file:///Users/hajnaljanos/PycharmProjects/astra/exports/transits/engine/milestone_scanner.py) finds key events automatically:
 1. **`NATAL_STATION` (Tier 1 - Critical):** A planet halts directly on top of (or in a classical glance to) one of your birth planets within a tight **3°20'** window (a *Navamsha orb*).
-2. **`EXACT_ASPECT` (Tier 2 - High):** A slow-moving planet (Mars, Jupiter, Saturn, Rahu, Ketu) reaches exact `0°00'` alignment with a natal planet. It tracks whether this is **Pass 1** (direct), **Pass 2** (retrograde), or **Pass 3** (direct).
+2. **`EXACT_ASPECT` (Tier 2 - High):** A planet (Mars, Jupiter, Saturn, Rahu, Ketu, Sun, Venus, Mercury) reaches exact `0°00'` alignment with a natal planet. It tracks retrograde loops (`Pass 1`, `Pass 2`, `Pass 3`), accounting for boundary offsets.
 3. **`SKY_STATION` (Tier 3 - Medium):** A general direction change anywhere in the zodiac.
-4. **`SIGN_INGRESS` (Tier 3 - Medium):** A planet crosses the boundary into a new zodiac sign (`0°00'`), changing house topics.
+4. **`SIGN_INGRESS` (Tier 3 - Medium):** A planet crosses the boundary into a new zodiac sign (`0°00'` direct, `29°59'` retrograde), updating whole-sign house topics.
 
-### C. The Bi-Wheel Chart Visuals
+### C. Classical Moon-Gochara House Favorability
+Per *Phaladeepika* Chapter 26, transits are evaluated primarily from the **Natal Moon (*Janma Rasi*)**:
+- **Malefics (Sun, Mars, Saturn, Rahu, Ketu)**: Favorable in **Upachaya houses (3, 6, 11)** from the Moon, conferring victory and tangible gains.
+- **Benefics (Jupiter, Venus, Mercury, waxing Moon)**: Auspicious in cardinal (*Kendra*) and trine (*Trikona*) houses.
+- Each planet in the transit payload carries an `is_favorable_from_moon` boolean readout.
+
+### D. The Bi-Wheel Chart Visuals
 - **Inner Ring:** Your permanent birth chart (*D1 Natal*).
 - **Outer Ring:** The moving transit planets on that date.
 - **Aspect Lines:** Lines connecting outer transit planets to inner birth planets:
   - **Solid Lines:** *Applying* aspects (the transit planet is moving closer to exact alignment—energy is building up).
   - **Dashed Lines:** *Separating* aspects (the transit planet is moving away—the peak moment has passed).
-- **Diamond Rim Pins:** Small clickable diamond markers on the outer circle showing where future planetary stations will occur. Clicking one instantly jumps the chart to that exact date.
+- **Diamond Rim Pins:** Small clickable diamond markers on the outer circle showing upcoming planetary stations. Clicking one instantly jumps the chart to that exact date and time in the chart's local timezone.
 
 ---
 

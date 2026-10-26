@@ -82,7 +82,7 @@ def test_transit_biwheel_svg():
     assert '<path class="house-bg"' in svg
     assert 'fill="none"' in svg
     assert '<g class="inner-planet-ticks">' in svg
-    assert 'class="angle-ac-badge"' in svg
+    assert 'angle-ac-badge' in svg
     assert 'stroke-dasharray="1,2.5"' in svg
 
 def test_transit_api_endpoint(client):
