@@ -105,11 +105,62 @@ def test_date_standardization_helpers():
     assert to_standard_date("-3255-08-28") == "28/08/-3255"
     assert parse_date_to_parts("28/08/-3255") == (-3255, 8, 28)
     assert to_standard_date("28/08/-3255") == "28/08/-3255"
+    assert parse_date_to_parts("28-08--3255") == (-3255, 8, 28)
+    assert to_standard_date("28-08--3255") == "28/08/-3255"
+    assert parse_date_to_parts("28/08/3256 BCE") == (-3255, 8, 28)
+    assert to_standard_date("28/08/3256 BCE") == "28/08/-3255"
+
+def test_timezone_parsing_and_lmt(client):
+    from app import _parse_tz_offset
+
+    # 1. High precision with seconds
+    assert abs(_parse_tz_offset("+05:10:42") - (5.0 + 10.0/60.0 + 42.0/3600.0)) < 1e-6
+    assert abs(_parse_tz_offset("-07:00:30") - (-7.0 - 30.0/3600.0)) < 1e-6
+    assert _parse_tz_offset("+05:30") == 5.5
+    assert _parse_tz_offset("Z") == 0.0
+    assert _parse_tz_offset("UTC") == 0.0
+
+    # 2. Historical BCE LMT endpoint
+    res_bce = client.post('/api/timezone', json={
+        'lat': 27.4924,
+        'lon': 77.6737,
+        'date': '28/08/-3255',
+        'time': '23:50:00'
+    })
+    assert res_bce.status_code == 200
+    data_bce = json.loads(res_bce.data)
+    assert data_bce.get('is_lmt') is True
+    assert data_bce.get('offset') == '+05:10:42'
+    assert data_bce.get('tz_name') == 'LMT'
+
+    # 3. Post-1880 territory before local standard time adoption (India 1895)
+    res_india_1895 = client.post('/api/timezone', json={
+        'lat': 27.4924,
+        'lon': 77.6737,
+        'date': '15/05/1895',
+        'time': '12:00:00'
+    })
+    assert res_india_1895.status_code == 200
+    data_in_1895 = json.loads(res_india_1895.data)
+    assert data_in_1895.get('is_lmt') is True
+    assert data_in_1895.get('offset') == '+05:10:42'
+
+    # 4. Modern standard time (India 1910)
+    res_india_1910 = client.post('/api/timezone', json={
+        'lat': 27.4924,
+        'lon': 77.6737,
+        'date': '15/05/1910',
+        'time': '12:00:00'
+    })
+    assert res_india_1910.status_code == 200
+    data_in_1910 = json.loads(res_india_1910.data)
+    assert data_in_1910.get('offset') == '+05:30'
 
 def test_native_crud_api(client):
     # 1. Add new native with standard DD/MM/YYYY date
     payload = {
         "name": "Unit Test Native",
+        "male": False,
         "date": "25/12/1990",
         "time": "14:30:00",
         "lat": 28.6139,
@@ -125,6 +176,7 @@ def test_native_crud_api(client):
     added = json.loads(res_add.data)
     assert added["name"] == "Unit Test Native"
     assert added["date"] == "25/12/1990"
+    assert added["male"] is False
     native_id = added["id"]
     
     try:

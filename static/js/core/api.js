@@ -106,6 +106,8 @@ const AstraAPI = {
                 if (editIdEl) editIdEl.value = result.native.id;
                 const newNameEl = document.getElementById('newName');
                 if (newNameEl) newNameEl.value = result.native.name;
+                const genderEl = document.getElementById('newGender');
+                if (genderEl) genderEl.value = (result.native.male !== false) ? 'male' : 'female';
                 const newDateEl = document.getElementById('newDate');
                 if (newDateEl && typeof window.formatToDDMMYYYY === 'function') {
                     newDateEl.value = window.formatToDDMMYYYY(result.native.date);
@@ -196,8 +198,12 @@ const AstraAPI = {
         const rawDate = document.getElementById('newDate')?.value.trim() || '';
         const formattedDate = typeof window.formatToDDMMYYYY === 'function' ? window.formatToDDMMYYYY(rawDate) : rawDate;
         
+        const genderSelect = document.getElementById('newGender');
+        const isMale = genderSelect ? (genderSelect.value !== 'female') : true;
+
         const payload = {
             name: document.getElementById('newName')?.value.trim() || '',
+            male: isMale,
             date: formattedDate,
             time: document.getElementById('newTime')?.value.trim() || '',
             lat: document.getElementById('newLat')?.value.trim() || '',

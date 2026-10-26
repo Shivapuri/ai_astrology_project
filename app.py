@@ -23,29 +23,34 @@ app = Flask(__name__)
 CHARTS_FILE = os.path.join(os.path.dirname(__file__), "database", "Charts.jsonl")
 
 
-def _gregorian_to_jd(year: int, month: int, day: int, hour_fraction: float) -> float:
-    if month <= 2:
-        year -= 1
-        month += 12
-    a = int(year / 100)
-    b = 2 - a + int(a / 4)
-    jd = int(365.25 * (year + 4716)) + int(30.6001 * (month + 1)) + day + b - 1524.5
-    return jd + (hour_fraction / 24.0)
+def _get_cal_flag(year: int, month: int, day: int) -> int:
+    """Returns swe.JUL_CAL prior to Gregorian reform (1582-10-15) and swe.GREG_CAL thereafter."""
+    if year < 1582 or (year == 1582 and month < 10) or (year == 1582 and month == 10 and day < 15):
+        return swe.JUL_CAL
+    return swe.GREG_CAL
 
 
-def _jd_to_gregorian(jd: float) -> Tuple[int, int, int, float]:
-    z = int(jd + 0.5)
-    f = (jd + 0.5) - z
-    alpha = int((z - 1867216.25) / 36524.25)
-    a = z + 1 + alpha - int(alpha / 4)
-    b = a + 1524
-    c = int((b - 122.1) / 365.25)
-    d = int(365.25 * c)
-    e = int((b - d) / 30.6001)
-    day = b - d - int(30.6001 * e)
-    month = e - 1 if e < 14 else e - 13
-    year = c - 4716 if month > 2 else c - 4715
-    return year, month, day, f * 24.0
+def _parse_tz_offset(tz_str: Any) -> float:
+    """
+    Parses timezone offset string into decimal hours with sub-second precision.
+    Supports formats:
+      - ±HH:MM:SS (e.g. '+05:10:42' for precise historical LMT)
+      - ±HH:MM (e.g. '+05:30', '-07:00')
+      - Decimal float strings (e.g. '5.5', '-7.0')
+      - 'Z' / 'UTC' (0.0)
+    """
+    tz_str = str(tz_str or '+00:00').strip()
+    try:
+        return float(tz_str)
+    except ValueError:
+        if tz_str.upper() in ('Z', 'UTC'):
+            return 0.0
+        sign = -1.0 if tz_str.startswith('-') else 1.0
+        tz_parts = tz_str.lstrip('+-').split(':')
+        hours = float(tz_parts[0]) if len(tz_parts) > 0 and tz_parts[0] else 0.0
+        minutes = float(tz_parts[1]) if len(tz_parts) > 1 and tz_parts[1] else 0.0
+        seconds = float(tz_parts[2]) if len(tz_parts) > 2 and tz_parts[2] else 0.0
+        return sign * (hours + (minutes / 60.0) + (seconds / 3600.0))
 
 
 _NATAL_CHART_CACHE: Dict[Any, Any] = {}
@@ -78,24 +83,20 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
         year, month, day = 2000, 1, 1
         hour, minute, second = 12, 0, 0
     
-    # Handle continuous astronomical time offset via pure calendar conversions
+    # Handle continuous astronomical time offset via Swiss Ephemeris calendar conversions
     is_preview = bool(offset_seconds != 0 or time_override or date_override)
     if offset_seconds != 0:
+        cal_flag = _get_cal_flag(year, month, day)
         local_hf = hour + (minute / 60.0) + (second / 3600.0)
-        jd_base = _gregorian_to_jd(year, month, day, local_hf)
-        jd_shifted = jd_base + (float(offset_seconds) / 86400.0)
-        s_year, s_month, s_day, s_hf = _jd_to_gregorian(jd_shifted)
-        s_hour = int(s_hf)
-        rem_m = (s_hf - s_hour) * 60.0
-        s_minute = int(rem_m)
-        s_sec = int(round((rem_m - s_minute) * 60.0))
-        if s_sec >= 60:
-            s_sec -= 60
-            s_minute += 1
-        if s_minute >= 60:
-            s_minute -= 60
-            s_hour += 1
-        year, month, day, hour, minute, second = s_year, s_month, s_day, s_hour, s_minute, s_sec
+        jd_base = swe.julday(year, month, day, local_hf, cal_flag)
+        # Snap to integer second and bias by +0.5s so swe.revjul cleanly evaluates the interior of the second bin
+        jd_shifted_biased = (round(jd_base * 86400.0) + round(float(offset_seconds)) + 0.5) / 86400.0
+        s_year, s_month, s_day, s_hf = swe.revjul(jd_shifted_biased, cal_flag)
+        total_secs = int(s_hf * 3600.0)  # Clean floor (0..86399), guaranteed strictly aligned with s_day
+        hour = total_secs // 3600
+        minute = (total_secs % 3600) // 60
+        second = total_secs % 60
+        year, month, day = s_year, s_month, s_day
 
     preview_time_str = f"{hour:02d}:{minute:02d}:{second:02d}"
     if year < 0:
@@ -103,21 +104,7 @@ def compute_chart_data(native, d10_mode="reverse", d24_mode="reverse", date_over
     else:
         preview_date_str = f"{day:02d}/{month:02d}/{year:04d}"
 
-    tz_str = str(native.get('tz', '+00:00'))
-    try:
-        tz_offset = float(tz_str)
-    except ValueError:
-        try:
-            if tz_str.upper() == 'Z':
-                tz_offset = 0.0
-            else:
-                sign = -1 if tz_str.startswith('-') else 1
-                tz_parts = tz_str.lstrip('+-').split(':')
-                hours = float(tz_parts[0])
-                minutes = float(tz_parts[1]) if len(tz_parts) > 1 else 0.0
-                tz_offset = sign * (hours + minutes / 60.0)
-        except Exception:
-            tz_offset = 0.0
+    tz_offset = _parse_tz_offset(native.get('tz', '+00:00'))
 
     chart = generate_jyotish.generate_kala_chart(
         name=native['name'],
@@ -454,17 +441,7 @@ def get_chart_transit(native_id):
 
     t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
     t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
-    
-    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
-    try:
-        t_tz = float(tz_str)
-    except ValueError:
-        try:
-            sign = -1 if tz_str.startswith('-') else 1
-            tz_parts = tz_str.lstrip('+-').split(':')
-            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
-        except Exception:
-            t_tz = 0.0
+    t_tz = _parse_tz_offset(request.args.get('tz', native.get('tz', '+00:00')))
 
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
@@ -614,16 +591,7 @@ def get_chart_transit_milestones(native_id):
 
     t_lat = request.args.get('lat', default=float(native.get('lat', 51.5074)), type=float)
     t_lon = request.args.get('lon', default=float(native.get('lon', -0.1278)), type=float)
-    tz_str = str(request.args.get('tz', native.get('tz', '+00:00')))
-    try:
-        t_tz = float(tz_str)
-    except ValueError:
-        try:
-            sign = -1 if tz_str.startswith('-') else 1
-            tz_parts = tz_str.lstrip('+-').split(':')
-            t_tz = sign * (float(tz_parts[0]) + float(tz_parts[1]) / 60.0)
-        except Exception:
-            t_tz = 0.0
+    t_tz = _parse_tz_offset(request.args.get('tz', native.get('tz', '+00:00')))
 
     nakshatra_system = request.args.get('nakshatra_system', 'ERNST_DHRUVA')
     debilitation_mode = request.args.get('debilitation_mode', 'kala_degree')
@@ -761,6 +729,12 @@ def get_natives():
 @app.route('/api/add_native', methods=['POST'])
 def add_native():
     data = request.json
+    raw_male = data.get('male', True)
+    if isinstance(raw_male, str):
+        is_male = raw_male.lower() in ('true', '1', 'male', 'm', 'yes')
+    else:
+        is_male = bool(raw_male)
+
     new_native = native_manager.save_native(
         CHARTS_FILE,
         data['name'],
@@ -775,7 +749,7 @@ def add_native():
         notes=data.get('notes', ''),
         category=data.get('category', 'General'),
         in_dropdown=data.get('in_dropdown', True),
-        male=data.get('male', True)
+        male=is_male
     )
     return jsonify(new_native)
 
@@ -796,8 +770,21 @@ def toggle_native_dropdown(native_id):
 @app.route('/api/update_native/<native_id>', methods=['POST'])
 def update_native(native_id):
     data = request.json
+    if 'male' in data:
+        raw_male = data['male']
+        if isinstance(raw_male, str):
+            data['male'] = raw_male.lower() in ('true', '1', 'male', 'm', 'yes')
+        else:
+            data['male'] = bool(raw_male)
+
     updated = native_manager.update_native(CHARTS_FILE, native_id, data)
     if updated:
+        to_del_milestones = [k for k in _TRANSIT_MILESTONES_CACHE.keys() if isinstance(k, tuple) and k[0] == native_id]
+        for k in to_del_milestones:
+            _TRANSIT_MILESTONES_CACHE.pop(k, None)
+        to_del_natal = [k for k in _NATAL_CHART_CACHE.keys() if isinstance(k, tuple) and k[0] == native_id]
+        for k in to_del_natal:
+            _NATAL_CHART_CACHE.pop(k, None)
         return jsonify(updated)
     else:
         return jsonify({"error": "Native not found"}), 404
@@ -844,6 +831,12 @@ def save_native_notes(native_id):
 def delete_native(native_id):
     success = native_manager.delete_native(CHARTS_FILE, native_id)
     if success:
+        to_del_milestones = [k for k in _TRANSIT_MILESTONES_CACHE.keys() if isinstance(k, tuple) and k[0] == native_id]
+        for k in to_del_milestones:
+            _TRANSIT_MILESTONES_CACHE.pop(k, None)
+        to_del_natal = [k for k in _NATAL_CHART_CACHE.keys() if isinstance(k, tuple) and k[0] == native_id]
+        for k in to_del_natal:
+            _NATAL_CHART_CACHE.pop(k, None)
         return jsonify({"success": True, "id": native_id})
     else:
         return jsonify({"error": "Native not found or could not be deleted"}), 404
@@ -885,34 +878,55 @@ def get_timezone():
         time_str = str(data.get('time', '12:00:00')).strip()
     except (KeyError, ValueError, TypeError) as e:
         return jsonify({"offset": "+00:00", "tz_name": "UTC", "error": f"Invalid input: {e}"})
-        
-    # Try to find timezone name
-    tz_name = tf.timezone_at(lng=lon, lat=lat)
-    if not tz_name:
-        return jsonify({"offset": "+00:00", "tz_name": "UTC"})
-        
+
     try:
         year, month, day = native_manager.parse_date_to_parts(date_str)
-        if year < 1:
-            # Historical BCE offsets were purely LMT anyway, use modern date to avoid DST
-            dt = datetime(2000, 1, 1, 12, 0)
-        else:
-            t_parts = time_str.split(':')
-            h = int(t_parts[0]) if len(t_parts) > 0 else 12
-            m = int(t_parts[1]) if len(t_parts) > 1 else 0
-            s = int(t_parts[2]) if len(t_parts) > 2 else 0
-            dt = datetime(year, month, day, h, m, s)
-            
+        
+        # Before international standard time zones (~1880) or for BCE dates,
+        # true astronomical Local Mean Time (LMT) is strictly determined by longitude:
+        # 1 degree of longitude = 4 minutes of time (240 seconds).
+        tz_name = tf.timezone_at(lng=lon, lat=lat) if year >= 1880 else None
+        if not tz_name or year < 1880:
+            lmt_seconds = int(round(lon * 240.0))
+            sign = "+" if lmt_seconds >= 0 else "-"
+            abs_sec = abs(lmt_seconds)
+            h = abs_sec // 3600
+            m = (abs_sec % 3600) // 60
+            s = abs_sec % 60
+            offset_str = f"{sign}{h:02d}:{m:02d}:{s:02d}" if s else f"{sign}{h:02d}:{m:02d}"
+            return jsonify({"offset": offset_str, "tz_name": "LMT", "is_lmt": True})
+
+        t_parts = time_str.split(':')
+        h = int(t_parts[0]) if len(t_parts) > 0 and t_parts[0] else 12
+        m = int(t_parts[1]) if len(t_parts) > 1 and t_parts[1] else 0
+        s = int(float(t_parts[2])) if len(t_parts) > 2 and t_parts[2] else 0
+        dt = datetime(year, month, day, h, m, s)
+
         tz = pytz.timezone(tz_name)
         localized = tz.localize(dt)
+
+        # If pytz itself indicates that standard time was not yet active in this region
+        # on this date (e.g. Germany pre-1893/1901, India pre-1906, France pre-1911),
+        # return true astronomical LMT for the native's exact longitude:
+        if localized.tzname() == 'LMT':
+            lmt_seconds = int(round(lon * 240.0))
+            sign = "+" if lmt_seconds >= 0 else "-"
+            abs_sec = abs(lmt_seconds)
+            h = abs_sec // 3600
+            m = (abs_sec % 3600) // 60
+            s = abs_sec % 60
+            offset_str = f"{sign}{h:02d}:{m:02d}:{s:02d}" if s else f"{sign}{h:02d}:{m:02d}"
+            return jsonify({"offset": offset_str, "tz_name": "LMT", "is_lmt": True})
         offset_total_seconds = localized.utcoffset().total_seconds()
-        
-        # Format offset as +HH:MM or -HH:MM
-        hours = int(abs(offset_total_seconds) // 3600)
-        minutes = int((abs(offset_total_seconds) % 3600) // 60)
+
+        # Format offset as ±HH:MM or ±HH:MM:SS
         sign = "+" if offset_total_seconds >= 0 else "-"
-        offset_str = f"{sign}{hours:02d}:{minutes:02d}"
-        
+        abs_sec = int(round(abs(offset_total_seconds)))
+        hours = abs_sec // 3600
+        minutes = (abs_sec % 3600) // 60
+        seconds = abs_sec % 60
+        offset_str = f"{sign}{hours:02d}:{minutes:02d}:{seconds:02d}" if seconds else f"{sign}{hours:02d}:{minutes:02d}"
+
         return jsonify({"offset": offset_str, "tz_name": tz_name})
     except Exception as e:
         return jsonify({"offset": "+00:00", "tz_name": "UTC", "error": str(e)})

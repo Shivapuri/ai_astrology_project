@@ -70,6 +70,31 @@ from jyotish.baseline_math import (
 )
 
 
+def _find_preceding_sunrise(jd_utc: float, rsmi: int, geopos: Tuple[float, float, float]) -> float:
+    """
+    Finds the most recent sunrise <= jd_utc without 24h +/- 4m boundary drift.
+    Raises ValueError if the Sun is circumpolar (res_code < 0 or tret[0] <= 0.0).
+    """
+    # Start 1.25 days before jd_utc and step forward across sunrises until the last one <= jd_utc
+    res_code, tret = swe.rise_trans(jd_utc - 1.25, swe.SUN, rsmi, geopos)
+    if res_code < 0 or tret[0] <= 0.0:
+        raise ValueError("Circumpolar sun: no sunrise found")
+    sr_jd = tret[0]
+    for _ in range(4):
+        res_next, tret_next = swe.rise_trans(sr_jd + 0.01, swe.SUN, rsmi, geopos)
+        if res_next >= 0 and 0.0 < tret_next[0] <= jd_utc:
+            sr_jd = tret_next[0]
+        else:
+            break
+    if sr_jd > jd_utc:
+        res_prev, tret_prev = swe.rise_trans(jd_utc - 2.25, swe.SUN, rsmi, geopos)
+        if res_prev >= 0 and 0.0 < tret_prev[0] <= jd_utc:
+            sr_jd = tret_prev[0]
+        else:
+            raise ValueError("Circumpolar sun: no preceding sunrise found")
+    return sr_jd
+
+
 class ChartBaseline:
     """
     Immutable Stage 1 Coordinate Container.
@@ -139,22 +164,29 @@ class ChartBaseline:
         # 2. Precision Sunrise / Sunset via Center of Solar Disc (BIT_DISC_CENTER)
         geopos = (self.longitude, self.latitude, 0.0)
         rsmi = swe.CALC_RISE | swe.BIT_DISC_CENTER
+        rsmi_set = swe.CALC_SET | swe.BIT_DISC_CENTER
         try:
-            _, tret_rise = swe.rise_trans(jd_utc, swe.SUN, rsmi, geopos)
-            sunrise_jd = tret_rise[0]
-            if sunrise_jd > jd_utc:
-                _, tret_prev = swe.rise_trans(jd_utc - 1.0, swe.SUN, rsmi, geopos)
-                sunrise_jd = tret_prev[0]
-            _, tret_set = swe.rise_trans(sunrise_jd, swe.SUN, swe.CALC_SET | swe.BIT_DISC_CENTER, geopos)
+            sunrise_jd = _find_preceding_sunrise(jd_utc, rsmi, geopos)
+            res_set, tret_set = swe.rise_trans(sunrise_jd, swe.SUN, rsmi_set, geopos)
+            if res_set < 0 or tret_set[0] <= 0.0:
+                raise ValueError("Circumpolar sun: no sunset found")
             sunset_jd = tret_set[0]
-            _, tret_next_rise = swe.rise_trans(sunset_jd, swe.SUN, rsmi, geopos)
+            res_next, tret_next_rise = swe.rise_trans(sunset_jd, swe.SUN, rsmi, geopos)
+            if res_next < 0 or tret_next_rise[0] <= 0.0:
+                raise ValueError("Circumpolar sun: no next sunrise found")
             next_sunrise_jd = tret_next_rise[0]
             is_day_birth = (sunrise_jd <= jd_utc <= sunset_jd)
         except Exception:
-            sunrise_jd = int(jd_utc) + 0.25
-            sunset_jd = int(jd_utc) + 0.75
+            # LMT 06:00 AM / 06:00 PM fallback guaranteeing sunrise_jd <= jd_utc < next_sunrise_jd
+            lmt_jd = jd_utc + (self.longitude / 360.0)
+            lmt_midnight = math.floor(lmt_jd - 0.5) + 0.5
+            sr_lmt = lmt_midnight + 0.25
+            if sr_lmt > lmt_jd:
+                sr_lmt -= 1.0
+            sunrise_jd = sr_lmt - (self.longitude / 360.0)
+            sunset_jd = sunrise_jd + 0.5
             next_sunrise_jd = sunrise_jd + 1.0
-            is_day_birth = True
+            is_day_birth = (sunrise_jd <= jd_utc <= sunset_jd)
 
         # 3. Temporal Lords for Kala Bala (Vāra, Horā, Māsa, Varṣa)
         # Kala & Surya Siddhanta ancient prime meridian: Yamakoti (165° 46' E, 0° N)
@@ -165,15 +197,13 @@ class ChartBaseline:
         hora_sequence = ["Saturn", "Jupiter", "Mars", "Sun", "Venus", "Mercury", "Moon"]
 
         try:
-            _, tret_curr = swe.rise_trans(jd_utc, swe.SUN, rsmi, geopos_yamakoti)
-            sr_curr = tret_curr[0]
-            if sr_curr <= jd_utc:
-                recent_sunrise_yamakoti = sr_curr
-            else:
-                _, tret_prev = swe.rise_trans(jd_utc - 1.0, swe.SUN, rsmi, geopos_yamakoti)
-                recent_sunrise_yamakoti = tret_prev[0]
+            recent_sunrise_yamakoti = _find_preceding_sunrise(jd_utc, rsmi, geopos_yamakoti)
         except Exception:
-            recent_sunrise_yamakoti = int(jd_utc) + 0.25
+            lmt_yamakoti = jd_utc + (yamakoti_lon / 360.0)
+            sr_yam_lmt = math.floor(lmt_yamakoti - 0.5) + 0.25
+            if sr_yam_lmt > lmt_yamakoti:
+                sr_yam_lmt -= 1.0
+            recent_sunrise_yamakoti = sr_yam_lmt - (yamakoti_lon / 360.0)
 
         lmt_sunrise_yamakoti = recent_sunrise_yamakoti + (yamakoti_lon / 360.0)
         vara_idx = int(lmt_sunrise_yamakoti + 1.5) % 7
@@ -466,6 +496,11 @@ class ChartBaseline:
         yoga_num = max(1, min(27, yoga_num))
         yoga_name = NITYA_YOGAS[yoga_num - 1]
 
+        planets_by_weekday = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"]
+        local_sr = self.astronomical_anchors["sunrise_jd"]
+        local_weekday_idx = int(local_sr + (self.longitude / 360.0) + 1.5) % 7
+        local_vara = planets_by_weekday[local_weekday_idx]
+
         return {
             "tithi": {
                 "number": tithi_num,
@@ -485,7 +520,8 @@ class ChartBaseline:
                 "arc_degrees": round(yoga_arc, 4),
                 "traversal_pct": round((yoga_arc % (360.0 / 27.0)) / (360.0 / 27.0) * 100.0, 2)
             },
-            "vara": self.astronomical_anchors["temporal_lords"]["Vara"]
+            "vara": local_vara,
+            "yamakoti_vara": self.astronomical_anchors["temporal_lords"]["Vara"]
         }
 
     @cached_property
@@ -808,8 +844,16 @@ class ChartBaseline:
                 res_gc_ecl, _, _ = swe.fixstar2_ut("Galactic Center", jd_utc, swe.FLG_SWIEPH)
                 lon_gc = res_gc_ecl[0]
             except Exception:
-                ra_gc = 266.0371
-                lon_gc = 266.5179
+                # Precession-aware fallback using built-in Swiss Ephemeris ayanamsa + 3D spherical conversion
+                swe.set_sid_mode(swe.SIDM_LAHIRI)
+                lahiri_ay = swe.get_ayanamsa_ut(jd_utc)
+                lon_gc = (242.9801 + lahiri_ay) % 360.0
+                beta_gc_rad = math.radians(-5.6077)
+                eps_rad = math.radians(self.astronomical_anchors.get("true_eps", 23.4392911))
+                lam_rad = math.radians(lon_gc)
+                y_eq = math.sin(lam_rad) * math.cos(eps_rad) - math.tan(beta_gc_rad) * math.sin(eps_rad)
+                x_eq = math.cos(lam_rad)
+                ra_gc = math.degrees(math.atan2(y_eq, x_eq)) % 360.0
 
             ayanamsa_eq = ra_gc - 246.6667
             ayanamsa_ecl = lon_gc - 246.6667

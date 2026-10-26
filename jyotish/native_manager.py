@@ -136,30 +136,36 @@ def parse_date_to_parts(date_str: Any) -> tuple:
 
     # 3. Dashes: YYYY-MM-DD, -YYYY-MM-DD, DD-MM-YYYY, DD-MM--YYYY
     if '-' in s:
-        if s.startswith('-'):
-            # e.g. -3255-08-28
-            clean = s[1:]
-            parts = [p.strip() for p in clean.split('-')]
-            if len(parts) == 3:
-                year = -int(parts[0])
+        is_leading_neg = s.startswith('-')
+        clean = s.lstrip('-')
+        if '--' in clean:
+            # Handle DD-MM--YYYY format with negative year
+            subparts = clean.split('--')
+            if len(subparts) == 2:
+                dm_parts = [p.strip() for p in subparts[0].split('-')]
+                if len(dm_parts) == 2:
+                    day = int(dm_parts[0])
+                    month = int(dm_parts[1])
+                    year = -int(subparts[1])
+                    if is_bce_text and year > 0:
+                        year = -(year - 1)
+                    return year, month, day
+        parts = [p.strip() for p in clean.split('-')]
+        if len(parts) == 3:
+            p0 = parts[0]
+            if len(p0) == 4 or abs(int(float(p0))) > 31:
+                year = -int(p0) if is_leading_neg else int(p0)
                 month = int(parts[1])
                 day = int(parts[2])
-                return year, month, day
-        else:
-            parts = [p.strip() for p in s.split('-')]
-            if len(parts) == 3:
-                p0 = parts[0]
-                if len(p0) == 4 or int(float(p0)) > 31:
-                    year = int(p0)
-                    month = int(parts[1])
-                    day = int(parts[2])
-                else:
-                    day = int(parts[0])
-                    month = int(parts[1])
-                    year = int(parts[2])
-                if is_bce_text and year > 0:
-                    year = -(year - 1)
-                return year, month, day
+            else:
+                day = int(parts[0])
+                month = int(parts[1])
+                year = int(parts[2])
+                if is_leading_neg:
+                    year = -year
+            if is_bce_text and year > 0:
+                year = -(year - 1)
+            return year, month, day
 
     return 2000, 1, 1
 
@@ -206,21 +212,31 @@ def load_natives(filepath: str) -> List[Dict[str, Any]]:
 
 def get_native_by_id(filepath: str, native_id: str) -> Optional[Dict[str, Any]]:
     natives = load_natives(filepath)
-    # 1. Exact ID match
+    # Pass 1: Exact ID match
     for n in natives:
         if n.get("id") == native_id:
             return n
-    
-    # 2. Case-insensitive slug / name match (e.g. 'goebbels', 'shri-krishna', 'krishna')
+
     clean_target = str(native_id).lower().replace("-", " ").replace("_", " ").strip()
+    # Pass 2: Exact Name or ID match (case-insensitive)
     for n in natives:
         n_name = n.get("name", "").lower().strip()
         n_id = str(n.get("id", "")).lower().strip()
         if n_name == clean_target or n_id == clean_target:
             return n
-        # Also check substring / word matches (e.g. 'deep-narayan-mahaprabhuji' matches 'Bhagwan Sri Deep Narayan Mahaprabhuji')
-        words = [w for w in n_name.replace("-", " ").split()]
-        if clean_target in words or clean_target in n_name or clean_target == "".join(words):
+
+    # Pass 3: Exact whole-word matches (e.g. 'krishna' matches 'Shri Krishna')
+    for n in natives:
+        n_name = n.get("name", "").lower().strip()
+        words = [w for w in n_name.replace("-", " ").replace("_", " ").split()]
+        if clean_target in words:
+            return n
+
+    # Pass 4: Substring / joined-word matches (e.g. 'deep-narayan-mahaprabhuji' matches 'Bhagwan Sri Deep Narayan Mahaprabhuji')
+    for n in natives:
+        n_name = n.get("name", "").lower().strip()
+        words = [w for w in n_name.replace("-", " ").replace("_", " ").split()]
+        if clean_target in n_name or clean_target == "".join(words):
             return n
 
     return None
@@ -320,6 +336,8 @@ def update_native(filepath: str, native_id: str, updated_fields: Dict[str, Any])
                         n[k] = int(v)
                     elif k == 'date':
                         n[k] = to_standard_date(v)
+                    elif k == 'male':
+                        n[k] = bool(v)
                     elif k == 'in_dropdown':
                         n[k] = bool(v)
                     elif k == 'category':

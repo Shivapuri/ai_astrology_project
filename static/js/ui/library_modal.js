@@ -43,10 +43,19 @@
             }
         }
         
-        // 3. Dashes: YYYY-MM-DD, -YYYY-MM-DD, DD-MM-YYYY
+        // 3. Dashes: YYYY-MM-DD, -YYYY-MM-DD, DD-MM-YYYY, DD-MM--YYYY
         if (dateStr.includes('-')) {
             const isBCE = dateStr.startsWith('-');
             const clean = isBCE ? dateStr.substring(1) : dateStr;
+            if (clean.includes('--')) {
+                const subparts = clean.split('--');
+                if (subparts.length === 2) {
+                    const dm = subparts[0].split('-');
+                    if (dm.length === 2) {
+                        return `${dm[0].padStart(2, '0')}/${dm[1].padStart(2, '0')}/-${subparts[1]}`;
+                    }
+                }
+            }
             const parts = clean.split('-');
             if (parts.length === 3) {
                 if (parts[0].length === 4 || parseInt(parts[0], 10) > 31) {
@@ -385,6 +394,9 @@
     async function populateNativeForm(native) {
         document.getElementById('editNativeId').value = native.id;
         document.getElementById('newName').value = native.name;
+        if (document.getElementById('newGender')) {
+            document.getElementById('newGender').value = (native.male !== false) ? 'male' : 'female';
+        }
         document.getElementById('newDate').value = formatToDDMMYYYY(native.date);
         
         let tStr = native.time || '12:00:00';
@@ -469,6 +481,9 @@
         document.getElementById('nativeModalTitle').innerText = "+ Add New Person";
         document.getElementById('editNativeId').value = '';
         document.getElementById('newName').value = '';
+        if (document.getElementById('newGender')) {
+            document.getElementById('newGender').value = 'male';
+        }
         document.getElementById('newDate').value = '';
         document.getElementById('newTime').value = '12:00:00';
         document.getElementById('newLat').value = '';
@@ -576,11 +591,11 @@
         }
     }
 
-    async function detectTimezoneFromCoords() {
+    async function detectTimezoneFromCoords(silent = false) {
         const lat = document.getElementById('newLat')?.value.trim();
         const lon = document.getElementById('newLon')?.value.trim();
         if (!lat || !lon) {
-            alert("Please enter Latitude and Longitude first.");
+            if (!silent) alert("Please enter Latitude and Longitude first.");
             return;
         }
         const dateStr = document.getElementById('newDate')?.value || '01/01/2000';
@@ -597,8 +612,32 @@
             }
         } catch (e) {
             console.error("Failed to detect timezone", e);
-            alert("Could not detect timezone.");
+            if (!silent) alert("Could not detect timezone.");
         }
+    }
+
+    // Auto-update timezone when birth date, time, latitude, or longitude is modified
+    function attachTimezoneAutoTriggers() {
+        const dateInput = document.getElementById('newDate');
+        const timeInput = document.getElementById('newTime');
+        const latInput = document.getElementById('newLat');
+        const lonInput = document.getElementById('newLon');
+        const handleAutoTz = () => {
+            const lat = document.getElementById('newLat')?.value.trim();
+            const lon = document.getElementById('newLon')?.value.trim();
+            if (lat && lon) {
+                detectTimezoneFromCoords(true);
+            }
+        };
+        if (dateInput) dateInput.addEventListener('change', handleAutoTz);
+        if (timeInput) timeInput.addEventListener('change', handleAutoTz);
+        if (latInput) latInput.addEventListener('change', handleAutoTz);
+        if (lonInput) lonInput.addEventListener('change', handleAutoTz);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attachTimezoneAutoTriggers);
+    } else {
+        attachTimezoneAutoTriggers();
     }
 
     document.addEventListener('keydown', function(e) {

@@ -558,7 +558,10 @@ class ChartPipeline:
             n_info["tara"] = tara_idx
             n_info["tara_number"] = tara_idx
             
-            pos = n_info.get("sidereal_longitude") if ent_name == "Lagna" else n_info.get("sidereal_ra", 0.0)
+            if self.nakshatra_system == "VIC_CHITRA" or ent_name in ("Lagna", "MC"):
+                pos = n_info.get("sidereal_longitude", 0.0)
+            else:
+                pos = n_info.get("sidereal_ra", 0.0)
             nak_fraction = (pos % (360.0 / 27.0)) / (360.0 / 27.0)
             nak_lord = VIMSHOTTARI_SEQUENCE[t_nak_idx % 9]
             sub_lord = calculate_sub_lord(nak_fraction, nak_lord)
@@ -808,8 +811,10 @@ class ChartPipeline:
         jd = anchors["jd_utc"]
         ayanamsa_eq = self.baseline.nakshatras["equatorial_ayanamsa"]
         ayanamsa_ecl = self.baseline.nakshatras["ecliptic_ayanamsa"]
-        ra_gc = 266.0371
-        lon_gc = 266.5179
+        # Middle of Mula anchor: 246°40' (246.6667°)
+        mula_mid = 246.0 + 40.0 / 60.0
+        ra_gc = round((ayanamsa_eq + mula_mid) % 360.0, 4)
+        lon_gc = round((ayanamsa_ecl + mula_mid) % 360.0, 4)
 
         sec_int = int(round(self.second))
         if self.year < 0:

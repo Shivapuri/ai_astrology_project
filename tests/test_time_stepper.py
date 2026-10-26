@@ -66,6 +66,31 @@ def test_compute_chart_data_offsets_and_rollover():
     assert info_fwd["preview_date"] == "01/01/2000"
     assert info_fwd["offset_seconds"] == 3600
 
+def test_time_stepper_bce_and_julian_rollover():
+    krishna = {
+        "id": "krishna-bce-test",
+        "name": "Shri Krishna Test",
+        "date": "28/08/-3255",
+        "time": "23:50:00",
+        "lat": 27.4924,
+        "lon": 77.6737,
+        "tz": "+05:30"
+    }
+
+    # Step forward 10 minutes (+600 seconds) -> should roll smoothly across midnight to 29/08/-3255 00:00:00
+    res_step = app.compute_chart_data(krishna, offset_seconds=600)
+    info_step = res_step["preview_info"]
+    assert info_step["is_preview"] is True
+    assert info_step["preview_time"] == "00:00:00"
+    assert info_step["preview_date"] == "29/08/-3255"
+
+    # Step backward 60 seconds (-60 seconds) -> should be 28/08/-3255 23:49:00
+    res_back = app.compute_chart_data(krishna, offset_seconds=-60)
+    info_back = res_back["preview_info"]
+    assert info_back["is_preview"] is True
+    assert info_back["preview_time"] == "23:49:00"
+    assert info_back["preview_date"] == "28/08/-3255"
+
 def test_api_chart_preview_route():
     client = app.app.test_client()
     natives = native_manager.load_natives("database/Charts.jsonl")

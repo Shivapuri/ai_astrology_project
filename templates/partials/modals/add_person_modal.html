@@ -6,9 +6,18 @@
             </div>
             <div class="setting-section">
                 <input type="hidden" id="editNativeId" value="">
-                <div>
-                    <label style="font-size:12px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Full Name</label>
-                    <input type="text" id="newName" placeholder="e.g. Swami Shivapuri" required style="width:100%; box-sizing:border-box;">
+                <div style="display:flex; gap:10px;">
+                    <div style="flex:2;">
+                        <label style="font-size:12px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Full Name</label>
+                        <input type="text" id="newName" placeholder="e.g. Swami Shivapuri" required style="width:100%; box-sizing:border-box;">
+                    </div>
+                    <div style="flex:1;">
+                        <label style="font-size:12px; font-weight:600; color:#4b5563; display:block; margin-bottom:3px;">Gender</label>
+                        <select id="newGender" style="width:100%; box-sizing:border-box;">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                        </select>
+                    </div>
                 </div>
                 <div style="display:flex; gap:10px; margin-top:10px;">
                     <div style="flex:1;">

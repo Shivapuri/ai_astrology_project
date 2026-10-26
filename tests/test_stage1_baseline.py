@@ -531,4 +531,58 @@ def test_nakshatra_coordinate_keys_differentiation():
         assert abs(entry["sidereal_ra"] - round(expected_sid_ra, 4)) < 0.05
 
 
+def test_sunrise_near_boundary_and_polar_guard():
+    """
+    Verifies:
+    1. A spring birth ~1.5 minutes after sunrise is accurately classified as a Day Birth
+       with today's sunrise (not yesterday's sunrise via jd_utc - 1.0 drift).
+    2. A polar birth (circumpolar sun) falls back cleanly with sunrise_jd <= jd_utc < next_sunrise_jd.
+    """
+    import swisseph as swe
+    # Find exact sunrise in London on 2024-03-25 (rapidly lengthening spring days)
+    jd_noon = swe.julday(2024, 3, 25, 12.0, swe.GREG_CAL)
+    _, tret = swe.rise_trans(jd_noon - 0.5, swe.SUN, swe.CALC_RISE | swe.BIT_DISC_CENTER, (-0.1278, 51.5074, 0.0))
+    exact_sr_jd = tret[0]
+
+    # Birth 90 seconds after sunrise
+    y, m, d, hf = swe.revjul(exact_sr_jd + (90.0 / 86400.0), swe.GREG_CAL)
+    total_sec = int(round(hf * 3600.0))
+    hr, mn, sc = total_sec // 3600, (total_sec % 3600) // 60, total_sec % 60
+
+    chart_after = ChartBaseline(
+        name="JustAfterSunrise",
+        year=y, month=m, day=d, hour=hr, minute=mn, second=sc,
+        latitude=51.5074, longitude=-0.1278, timezone_offset=0.0
+    )
+    anc = chart_after.astronomical_anchors
+    assert anc["is_day_birth"] is True
+    assert 0.0 <= (anc["jd_utc"] - anc["sunrise_jd"]) < 0.005
+
+    # Polar summer birth (Tromsø, Norway, 69.65° N in June — Midnight Sun)
+    chart_polar = ChartBaseline(
+        name="PolarMidnightSun",
+        year=2024, month=6, day=21, hour=2, minute=0, second=0,
+        latitude=69.6492, longitude=18.9553, timezone_offset=2.0
+    )
+    anc_polar = chart_polar.astronomical_anchors
+    assert anc_polar["sunrise_jd"] > 0.0
+    assert anc_polar["sunrise_jd"] <= anc_polar["jd_utc"] < anc_polar["next_sunrise_jd"]
+
+
+def test_local_vara_vs_yamakoti_vara_shivapuri():
+    """
+    Verifies that Shivapuri (born Thursday 10/11/1983 22:20 local in Germany)
+    has local pancanga['vara'] == 'Jupiter' (Thursday), matching upagrahas,
+    while preserving temporal_lords['Vara'] == 'Venus' (Yamakoti) for Kala Bala.
+    """
+    chart = ChartBaseline(
+        name="Shivapuri",
+        year=1983, month=11, day=10,
+        hour=22, minute=20, second=0,
+        latitude=52.20296, longitude=8.0448, timezone_offset=1.0
+    )
+    assert chart.pancanga["vara"] == "Jupiter"
+    assert chart.astronomical_anchors["temporal_lords"]["Vara"] == "Venus"
+
+
 
