@@ -1,0 +1,814 @@
+===============================================================================================
+                     ASTRA PRECISION HOUSES OF LIFE EVALUATION
+             Mantreśvara's Phaladīpikā (Chapters 3, 4, 6, and 15) Engine
+                  Vic DiCara Quantitative Astrological Framework
+===============================================================================================
+Native Name   : Donald Trump
+Birth Data    : 14/06/1946 at 10:54:00 (TZ: -04:00)
+Coordinates   : Jamaica, Queens, NY (Lat: 40.6833, Lon: -73.8)
+Ascendant     : Leo 29°58' | Lagneśa (Ascendant Lord): Sun
+Zodiac Frame  : Tropical Signs (Sāyana) | Campanus 3D Bhāvas | Dhruva Galactic Nakshatras
+Composite Mean: 32.17 / 100.0
+===============================================================================================
+
+===============================================================================================
+1. EXECUTIVE SUMMARY & GLOBAL RANKINGS
+===============================================================================================
+Houses Ranked by Composite Score (Descending):
+  Rank  1 | House  1 (Leo         - Lord: Sun     | Occupants: Mars            ) :  69.99 [Flourishing / Fortified • Puṣṭa]
+  Rank  2 | House  9 (Aries       - Lord: Mars    | Occupants: None            ) :  54.42 [Flourishing / Fortified • Puṣṭa]
+  Rank  3 | House 11 (Gemini      - Lord: Mercury | Occupants: Sun             ) :  52.63 [Flourishing / Fortified • Puṣṭa]
+  Rank  4 | House  5 (Sagittarius - Lord: Jupiter | Occupants: Moon            ) :  50.77 [Flourishing / Fortified • Puṣṭa]
+  Rank  5 | House  4 (Scorpio     - Lord: Mars    | Occupants: None            ) :  46.01 [Flourishing / Fortified • Puṣṭa]
+  Rank  6 | House  6 (Capricorn   - Lord: Saturn  | Occupants: None            ) :  39.95 [Flourishing / Fortified • Puṣṭa]
+  Rank  7 | House  7 (Aquarius    - Lord: Saturn  | Occupants: None            ) :  28.81 [Flourishing / Fortified • Puṣṭa]
+  Rank  8 | House  2 (Virgo       - Lord: Mercury | Occupants: None            ) :  18.89 [Mixed / Resilient • Miśra]
+  Rank  9 | House  3 (Libra       - Lord: Venus   | Occupants: Jupiter         ) :  16.96 [Mixed / Resilient • Miśra]
+  Rank 10 | House  8 (Pisces      - Lord: Jupiter | Occupants: None            ) :   9.78 [Mixed / Resilient • Miśra]
+  Rank 11 | House 12 (Cancer      - Lord: Moon    | Occupants: Mercury, Venus, Saturn) :   1.07 [Mixed / Resilient • Miśra]
+  Rank 12 | House 10 (Taurus      - Lord: Venus   | Occupants: None            ) :  -3.29 [Mixed / Resilient • Miśra]
+
+Planets Ranked by Final Assessment Score (Descending):
+  Rank  1 | Sun      in Gemini       (House 11 • Dignity: Friend's Sign       ) :  55.20
+  Rank  2 | Moon     in Sagittarius  (House  5 • Dignity: Friend's Sign       ) :  51.64
+  Rank  3 | Mars     in Leo          (House  1 • Dignity: Great Friend's Sign ) :  46.54
+  Rank  4 | Jupiter  in Libra        (House  3 • Dignity: Neutral's Sign      ) :  39.80
+  Rank  5 | Saturn   in Cancer       (House 12 • Dignity: Great Enemy's Sign  ) :  12.77
+  Rank  6 | Mercury  in Cancer       (House 12 • Dignity: Great Enemy's Sign  ) :   9.08
+  Rank  7 | Venus    in Cancer       (House 12 • Dignity: Great Enemy's Sign  ) : -35.79
+
+===============================================================================================
+2. PLANETARY EVALUATIONS — INTRINSIC QUALITY VS. PROMINENCE
+===============================================================================================
+Planet   | Sign        | H  | Dignity Status      | D_Unit | Aspects | DigBala | Quality | CuspProx | H_Mult | Combust | Sandhi | Eclipse | Final 
+-------------------------------------------------------------------------------------------------------------------------------------------------
+Sun      | Gemini      | 11 | Friend's Sign       |   0.61 |    59.5 |    13.3 |    53.3 |     1.11 |   1.11 |    0.00 |   0.00 |    0.06 |   55.2
+Moon     | Sagittarius |  5 | Friend's Sign       |   0.12 |   104.7 |    13.3 |    44.7 |     1.08 |   1.35 |    0.00 |   0.00 |    0.15 |   51.6
+Mars     | Leo         |  1 | Great Friend's Sign |   0.60 |    16.1 |     0.0 |    35.6 |     1.16 |   1.45 |    0.00 |   0.19 |    0.00 |   46.5
+Mercury  | Cancer      | 12 | Great Enemy's Sign  |  -0.10 |    61.9 |    13.3 |    18.4 |     0.94 |   0.49 |    0.00 |   0.00 |    0.00 |    9.1
+Jupiter  | Libra       |  3 | Neutral's Sign      |   0.28 |   103.9 |     6.7 |    51.4 |     1.03 |   0.77 |    0.00 |   0.00 |    0.00 |   39.8
+Venus    | Cancer      | 12 | Great Enemy's Sign  |  -0.45 |    -3.2 |    -6.7 |   -24.9 |     1.20 |   0.76 |    0.00 |   0.00 |    0.00 |  -35.8
+Saturn   | Cancer      | 12 | Great Enemy's Sign  |  -0.14 |    79.2 |   -13.3 |    18.7 |     0.97 |   0.68 |    0.00 |   0.00 |    0.00 |   12.8
+
+===============================================================================================
+3. DETAILED 12 HOUSES OF LIFE EVALUATION BREAKDOWN
+===============================================================================================
+-----------------------------------------------------------------------------------------------
+HOUSE  1 : LEO (Leo 29.97° | Longitude: 149.97°)
+Lord: Sun | Physical Occupants: ['Mars']
+SYNTHESIS SCORE: 69.99 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • House Lord Sun is fortified (+55.2)
+  • Significant aspectual support from Mars on Cusp (+129.1)
+  • Net Structural Yogas (+88.4)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 96.68
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +97.58
+      - Moon   : +63.36
+      - Mars   : +129.11
+      - Mercury:  +0.00
+      - Jupiter:  +0.00
+      - Venus  :  +0.00
+      - Saturn :  -0.00
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 47.17
+    House Lord                : Sun (Lord Final Assessment Score: 55.20)
+    Immediate Dispositor      : Mercury
+    Final Dispositor          : Moon
+    Effective Lord Score      : 47.44 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {'Mars': 46.54}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 45.87
+    Kendra/Trine/2nd/11th Pts : +297.95
+    Dusthāna Raw Penalty      : -114.00
+    Benefic Mitigation Pct    : 39.83%
+    Mitigated Dusthāna Pts    : -68.59
+    Active Count              : 5
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 59.87
+    Primary Kārakas           : Sun
+    Individual Kāraka Scores  : {'Sun': 55.2}
+    Kāraka Lagna House & Sc   : House {'Sun': 11} -> Score 90.85
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 100.14
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 5
+    Chandra House Score       : 100.14
+    Combined Relative+Chandra : 56.72
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 88.36
+    Sub-Scores                : Rāja=192.23, Daridra=-25.20, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 8
+      * [Occupied by participating planet (PURE & EMINENT)] Pāśa Yoga (Ties of Duty):   +9.4 pts (Planets: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'])
+      * [Occupied by participating planet (PURE & EMINENT)] Rāja Yogakāraka (Mars):  +54.0 pts (Planets: ['Mars'])
+      * [Occupied by participating planet (PURE & EMINENT)] Bhāgya Yoga (Divine Grace):  +49.2 pts (Planets: ['Mars'])
+      * [Occupied by participating planet (PURE & EMINENT)] Jaladhi Yoga (The Ocean Estate):  +49.2 pts (Planets: ['Mars'])
+      * [Participating yoga house (STAINED / CHALLENGED)] Mahābhāgya Yoga (Supreme Fortune - Male Configuration):  +16.9 pts (Planets: ['Sun', 'Moon'])
+      * [Occupied house (STAINED / CHALLENGED)] Solitary Mars in 1st House (Aśubha Fortitude):  -25.2 pts (Planets: ['Mars'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +5.2 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Occupied by participating planet (STAINED / CHALLENGED)] Candra-Maṅgala Yoga:   +8.2 pts (Planets: ['Moon', 'Mars'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  2 : VIRGO (Virgo 29.97° | Longitude: 179.97°)
+Lord: Mercury | Physical Occupants: []
+SYNTHESIS SCORE: 18.89 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+Dominant Astrological Drivers:
+  • Significant aspectual pressure from Saturn on Cusp (-143.3)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 5.29
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +111.31
+      - Moon   :  +0.00
+      - Mars   :  +0.00
+      - Mercury: +37.68
+      - Jupiter:  +0.00
+      - Venus  : +13.96
+      - Saturn : -143.31
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 25.98
+    House Lord                : Mercury (Lord Final Assessment Score: 9.08)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Moon
+    Effective Lord Score      : 25.98 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 15.48
+    Kendra/Trine/2nd/11th Pts : +189.12
+    Dusthāna Raw Penalty      : -105.00
+    Benefic Mitigation Pct    : 23.08%
+    Mitigated Dusthāna Pts    : -80.77
+    Active Count              : 7
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 39.27
+    Primary Kārakas           : Jupiter
+    Individual Kāraka Scores  : {'Jupiter': 39.8}
+    Kāraka Lagna House & Sc   : House {'Jupiter': 4} -> Score 50.42
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 76.50
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 6
+    Chandra House Score       : 76.50
+    Combined Relative+Chandra : 27.68
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 4.87
+    Sub-Scores                : Rāja=29.25, Daridra=-23.40, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 3
+      * [Owned by participating planet (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +24.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +5.2 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Niḥsva Yoga (Depleted Treasury):  -23.4 pts (Planets: ['Mercury'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  3 : LIBRA (Libra 29.97° | Longitude: 209.97°)
+Lord: Venus | Physical Occupants: ['Jupiter']
+SYNTHESIS SCORE: 16.96 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+Dominant Astrological Drivers:
+  • Significant aspectual pressure from Saturn on Cusp (-105.5)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 22.12
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +41.59
+      - Moon   :  +0.00
+      - Mars   : +32.16
+      - Mercury: +25.33
+      - Jupiter: +98.85
+      - Venus  : +31.13
+      - Saturn : -105.54
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = -1.57
+    House Lord                : Venus (Lord Final Assessment Score: -35.79)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Venus
+    Effective Lord Score      : -19.30 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {'Jupiter': 39.8}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 23.38
+    Kendra/Trine/2nd/11th Pts : +163.68
+    Dusthāna Raw Penalty      :  +0.00
+    Benefic Mitigation Pct    : 0.00%
+    Mitigated Dusthāna Pts    :  +0.00
+    Active Count              : 7
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 34.48
+    Primary Kārakas           : Mars
+    Individual Kāraka Scores  : {'Mars': 46.54}
+    Kāraka Lagna House & Sc   : House {'Mars': 3} -> Score 22.12
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 81.05
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 7
+    Chandra House Score       : 81.05
+    Combined Relative+Chandra : 34.91
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 12.68
+    Sub-Scores                : Rāja=38.70, Daridra=-23.40, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 4
+      * [Occupied by participating planet (PURE & EMINENT)] Pāśa Yoga (Ties of Duty):   +9.4 pts (Planets: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'])
+      * [Owned by participating planet (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +24.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +5.2 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Mṛti Yoga (Broken Initiatives):  -23.4 pts (Planets: ['Venus'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  4 : SCORPIO (Scorpio 29.97° | Longitude: 239.97°)
+Lord: Mars | Physical Occupants: []
+SYNTHESIS SCORE: 46.01 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Mars on Cusp (+225.7)
+  • Net Structural Yogas (+64.8)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 50.42
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   :  +0.00
+      - Mars   : +225.71
+      - Mercury:  +0.00
+      - Jupiter:  +0.00
+      - Venus  : +15.02
+      - Saturn : -89.49
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 49.04
+    House Lord                : Mars (Lord Final Assessment Score: 46.54)
+    Immediate Dispositor      : Sun
+    Final Dispositor          : Moon
+    Effective Lord Score      : 49.04 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 33.05
+    Kendra/Trine/2nd/11th Pts : +205.21
+    Dusthāna Raw Penalty      : -17.38
+    Benefic Mitigation Pct    : 60.08%
+    Mitigated Dusthāna Pts    :  -6.94
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 26.27
+    Primary Kārakas           : Moon, Mercury
+    Individual Kāraka Scores  : {'Moon': 51.64, 'Mercury': 9.08}
+    Kāraka Lagna House & Sc   : House {'Moon': 8, 'Mercury': 3} -> Score 24.39
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 26.66
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 8
+    Chandra House Score       : 26.66
+    Combined Relative+Chandra : 31.77
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 64.80
+    Sub-Scores                : Rāja=92.62, Daridra=0.00, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 4
+      * [Owned by participating planet (PURE & EMINENT)] Rāja Yogakāraka (Mars):  +27.0 pts (Planets: ['Mars'])
+      * [Owned by participating planet (PURE & EMINENT)] Bhāgya Yoga (Divine Grace):  +24.6 pts (Planets: ['Mars'])
+      * [Participating yoga house (PURE & EMINENT)] Jaladhi Yoga (The Ocean Estate):  +36.9 pts (Planets: ['Mars'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Candra-Maṅgala Yoga:   +4.1 pts (Planets: ['Moon', 'Mars'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  5 : SAGITTARIUS (Sagittarius 29.97° | Longitude: 269.97°)
+Lord: Jupiter | Physical Occupants: ['Moon']
+SYNTHESIS SCORE: 50.77 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Sun on Cusp (+200.8)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 100.14
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +200.81
+      - Moon   : +79.28
+      - Mars   : +64.56
+      - Mercury:  +0.00
+      - Jupiter: +96.85
+      - Venus  :  +0.00
+      - Saturn :  -0.00
+      - Ketu   : -41.67
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 21.85
+    House Lord                : Jupiter (Lord Final Assessment Score: 39.80)
+    Immediate Dispositor      : Venus
+    Final Dispositor          : Jupiter
+    Effective Lord Score      : 25.68 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {'Moon': 51.64}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 26.13
+    Kendra/Trine/2nd/11th Pts : +211.50
+    Dusthāna Raw Penalty      : -79.50
+    Benefic Mitigation Pct    : 31.15%
+    Mitigated Dusthāna Pts    : -54.74
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 48.45
+    Primary Kārakas           : Jupiter
+    Individual Kāraka Scores  : {'Jupiter': 39.8}
+    Kāraka Lagna House & Sc   : House {'Jupiter': 7} -> Score 81.05
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 52.81
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 9
+    Chandra House Score       : 52.81
+    Combined Relative+Chandra : 31.47
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 20.70
+    Sub-Scores                : Rāja=88.20, Daridra=-63.00, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 7
+      * [Occupied by participating planet (PURE & EMINENT)] Pāśa Yoga (Ties of Duty):   +9.4 pts (Planets: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'])
+      * [Occupied by participating planet (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +48.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Occupied house (STAINED / CHALLENGED)] Kemadruma Yoga:  -28.8 pts (Planets: ['Moon'])
+      * [Occupied by participating planet (STAINED / CHALLENGED)] Mahābhāgya Yoga (Supreme Fortune - Male Configuration):  +22.5 pts (Planets: ['Sun', 'Moon'])
+      * [Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))] Adhama Yoga (Kendra Solar-Lunar Scope):  -10.8 pts (Planets: ['Sun', 'Moon'])
+      * [Occupied house (STAINED / CHALLENGED)] Musala Yoga (Converse 12th Bhava Dissipation):  -23.4 pts (Planets: ['Moon'])
+      * [Occupied by participating planet (STAINED / CHALLENGED)] Candra-Maṅgala Yoga:   +8.2 pts (Planets: ['Moon', 'Mars'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  6 : CAPRICORN (Capricorn 29.97° | Longitude: 299.97°)
+Lord: Saturn | Physical Occupants: []
+SYNTHESIS SCORE: 39.95 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Jupiter on Cusp (+180.4)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 76.50
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   :  +0.00
+      - Mars   :  +0.00
+      - Mercury: +26.19
+      - Jupiter: +180.43
+      - Venus  : +42.02
+      - Saturn : +57.34
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 24.37
+    House Lord                : Saturn (Lord Final Assessment Score: 12.77)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Moon
+    Effective Lord Score      : 24.37 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 28.41
+    Kendra/Trine/2nd/11th Pts : +260.97
+    Dusthāna Raw Penalty      : -121.88
+    Benefic Mitigation Pct    : 25.71%
+    Mitigated Dusthāna Pts    : -90.54
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 42.81
+    Primary Kārakas           : Saturn, Mars
+    Individual Kāraka Scores  : {'Saturn': 12.77, 'Mars': 46.54}
+    Kāraka Lagna House & Sc   : House {'Saturn': 5, 'Mars': 6} -> Score 88.32
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 0.00
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 10
+    Chandra House Score       : 0.00
+    Combined Relative+Chandra : 22.73
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 0.00
+    Sub-Scores                : Rāja=0.00, Daridra=0.00, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 0
+
+-----------------------------------------------------------------------------------------------
+HOUSE  7 : AQUARIUS (Aquarius 29.97° | Longitude: 329.97°)
+Lord: Saturn | Physical Occupants: []
+SYNTHESIS SCORE: 28.81 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Jupiter on Cusp (+123.1)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 81.05
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +47.96
+      - Moon   : +44.36
+      - Mars   : +97.52
+      - Mercury:  +0.00
+      - Jupiter: +123.10
+      - Venus  :  +0.00
+      - Saturn :  +0.00
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 8.37
+    House Lord                : Saturn (Lord Final Assessment Score: 12.77)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Moon
+    Effective Lord Score      : 8.37 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -6.50
+    Kendra/Trine/2nd/11th Pts : +14.62
+    Dusthāna Raw Penalty      : -102.40
+    Benefic Mitigation Pct    : 47.64%
+    Mitigated Dusthāna Pts    : -53.62
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 1.02
+    Primary Kārakas           : Venus
+    Individual Kāraka Scores  : {'Venus': -35.79}
+    Kāraka Lagna House & Sc   : House {'Venus': 6} -> Score 76.5
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 90.85
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 11
+    Chandra House Score       : 90.85
+    Combined Relative+Chandra : 12.97
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = -15.01
+    Sub-Scores                : Rāja=5.25, Daridra=-23.40, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 2
+      * [Owned by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +5.2 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Śatru Yoga (Marital Friction):  -23.4 pts (Planets: ['Saturn'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE  8 : PISCES (Pisces 29.97° | Longitude: 359.97°)
+Lord: Jupiter | Physical Occupants: []
+SYNTHESIS SCORE: 9.78 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+Dominant Astrological Drivers:
+  • Significant aspectual support from Mars on Cusp (+136.8)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 26.66
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   : +75.82
+      - Mars   : +136.80
+      - Mercury: +10.30
+      - Jupiter:  +0.00
+      - Venus  : +16.26
+      - Saturn : -113.33
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 13.68
+    House Lord                : Jupiter (Lord Final Assessment Score: 39.80)
+    Immediate Dispositor      : Venus
+    Final Dispositor          : Jupiter
+    Effective Lord Score      : 13.68 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -46.54
+    Kendra/Trine/2nd/11th Pts : -195.38
+    Dusthāna Raw Penalty      : -110.00
+    Benefic Mitigation Pct    : 23.74%
+    Mitigated Dusthāna Pts    : -83.89
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 33.59
+    Primary Kārakas           : Saturn
+    Individual Kāraka Scores  : {'Saturn': 12.77}
+    Kāraka Lagna House & Sc   : House {'Saturn': 7} -> Score 81.05
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = -19.65
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 12
+    Chandra House Score       : -19.65
+    Combined Relative+Chandra : -41.16
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 0.00
+    Sub-Scores                : Rāja=0.00, Daridra=0.00, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 0
+
+-----------------------------------------------------------------------------------------------
+HOUSE  9 : ARIES (Aries 29.97° | Longitude: 29.97°)
+Lord: Mars | Physical Occupants: []
+SYNTHESIS SCORE: 54.42 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Jupiter on Cusp (+226.4)
+  • Net Structural Yogas (+64.8)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 52.81
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   : +39.64
+      - Mars   : +112.86
+      - Mercury:  +0.00
+      - Jupiter: +226.44
+      - Venus  :  +0.00
+      - Saturn : -178.98
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 49.04
+    House Lord                : Mars (Lord Final Assessment Score: 46.54)
+    Immediate Dispositor      : Sun
+    Final Dispositor          : Moon
+    Effective Lord Score      : 49.04 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 53.57
+    Kendra/Trine/2nd/11th Pts : +375.01
+    Dusthāna Raw Penalty      :  +0.00
+    Benefic Mitigation Pct    : 0.00%
+    Mitigated Dusthāna Pts    :  +0.00
+    Active Count              : 7
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 53.41
+    Primary Kārakas           : Jupiter, Sun
+    Individual Kāraka Scores  : {'Jupiter': 39.8, 'Sun': 55.2}
+    Kāraka Lagna House & Sc   : House {'Jupiter': 11, 'Sun': 7} -> Score 85.95
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 96.68
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 1
+    Chandra House Score       : 96.68
+    Combined Relative+Chandra : 62.19
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 64.80
+    Sub-Scores                : Rāja=92.62, Daridra=0.00, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 4
+      * [Owned by participating planet (PURE & EMINENT)] Rāja Yogakāraka (Mars):  +27.0 pts (Planets: ['Mars'])
+      * [Participating yoga house (PURE & EMINENT)] Bhāgya Yoga (Divine Grace):  +36.9 pts (Planets: ['Mars'])
+      * [Owned by participating planet (PURE & EMINENT)] Jaladhi Yoga (The Ocean Estate):  +24.6 pts (Planets: ['Mars'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Candra-Maṅgala Yoga:   +4.1 pts (Planets: ['Moon', 'Mars'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE 10 : TAURUS (Taurus 29.97° | Longitude: 59.97°)
+Lord: Venus | Physical Occupants: []
+SYNTHESIS SCORE: -3.29 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+Dominant Astrological Drivers:
+  • Balanced, moderate planetary configurations
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 0.00
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   :  +0.00
+      - Mars   :  +0.00
+      - Mercury:  +0.00
+      - Jupiter:  +0.00
+      - Venus  :  +0.00
+      - Saturn :  -0.00
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = -19.30
+    House Lord                : Venus (Lord Final Assessment Score: -35.79)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Venus
+    Effective Lord Score      : -19.30 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -3.91
+    Kendra/Trine/2nd/11th Pts :  +7.14
+    Dusthāna Raw Penalty      : -43.00
+    Benefic Mitigation Pct    : 28.88%
+    Mitigated Dusthāna Pts    : -30.58
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 24.89
+    Primary Kārakas           : Mercury, Sun, Jupiter, Saturn
+    Individual Kāraka Scores  : {'Mercury': 9.08, 'Sun': 55.2, 'Jupiter': 39.8, 'Saturn': 12.77}
+    Kāraka Lagna House & Sc   : House {'Mercury': 9, 'Sun': 8, 'Jupiter': 12, 'Saturn': 9} -> Score 28.16
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 5.29
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 2
+    Chandra House Score       : 5.29
+    Combined Relative+Chandra : -2.07
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 4.87
+    Sub-Scores                : Rāja=29.25, Daridra=-23.40, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 3
+      * [Owned by participating planet (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +24.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Owned by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +5.2 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Duṣkṛti Yoga (Disgraced Vocation):  -23.4 pts (Planets: ['Venus'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE 11 : GEMINI (Gemini 29.97° | Longitude: 89.97°)
+Lord: Mercury | Physical Occupants: ['Sun']
+SYNTHESIS SCORE: 52.63 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+Dominant Astrological Drivers:
+  • Significant aspectual support from Moon on Cusp (+137.6)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 90.85
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    : +43.13
+      - Moon   : +137.56
+      - Mars   :  +0.00
+      - Mercury: +22.03
+      - Jupiter: +116.54
+      - Venus  :  +0.00
+      - Saturn :  -0.00
+      - Rahu   : +24.31
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 34.74
+    House Lord                : Mercury (Lord Final Assessment Score: 9.08)
+    Immediate Dispositor      : Moon
+    Final Dispositor          : Moon
+    Effective Lord Score      : 25.98 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {'Sun': 55.2}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 30.94
+    Kendra/Trine/2nd/11th Pts : +185.66
+    Dusthāna Raw Penalty      :  +0.00
+    Benefic Mitigation Pct    : 0.00%
+    Mitigated Dusthāna Pts    :  +0.00
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 53.14
+    Primary Kārakas           : Jupiter
+    Individual Kāraka Scores  : {'Jupiter': 39.8}
+    Kāraka Lagna House & Sc   : House {'Jupiter': 1} -> Score 96.68
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 22.12
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 3
+    Chandra House Score       : 22.12
+    Combined Relative+Chandra : 29.18
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = 26.25
+    Sub-Scores                : Rāja=66.45, Daridra=-34.20, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 6
+      * [Occupied by participating planet (PURE & EMINENT)] Pāśa Yoga (Ties of Duty):   +9.4 pts (Planets: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'])
+      * [Owned by participating planet (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +24.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Occupied by participating planet (STAINED / CHALLENGED)] Mahābhāgya Yoga (Supreme Fortune - Male Configuration):  +22.5 pts (Planets: ['Sun', 'Moon'])
+      * [Occupied house (RESCUED (NEECHA BHANGA / REVERSAL))] Adhama Yoga (Kendra Solar-Lunar Scope):  -10.8 pts (Planets: ['Sun', 'Moon'])
+      * [Occupied by participating planet (STAINED / CHALLENGED)] Miśra-Veśi Yoga:  +10.5 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Daridra Yoga (11th House Stagnation):  -23.4 pts (Planets: ['Mercury'])
+
+-----------------------------------------------------------------------------------------------
+HOUSE 12 : CANCER (Cancer 29.97° | Longitude: 119.97°)
+Lord: Moon | Physical Occupants: ['Mercury', 'Venus', 'Saturn']
+SYNTHESIS SCORE: 1.07 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+Dominant Astrological Drivers:
+  • House Lord Moon is fortified (+51.6)
+  • Significant aspectual pressure from Saturn on Cusp (-97.9)
+  • Net Structural Yogas (-50.5)
+
+  [Component 1] Basic House Condition (Weight: 30%) : Score = -19.65
+    Planet Cusp Contributions (Direct Rays & Dominance):
+      - Sun    :  +0.00
+      - Moon   :  +0.00
+      - Mars   :  +0.00
+      - Mercury:  +6.81
+      - Jupiter:  +0.00
+      - Venus  : +32.18
+      - Saturn : -97.94
+  [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 23.41
+    House Lord                : Moon (Lord Final Assessment Score: 51.64)
+    Immediate Dispositor      : Jupiter
+    Final Dispositor          : Moon
+    Effective Lord Score      : 43.27 (buffered via Dispositor Chain & Digbala bonus)
+    Occupants Final Scores    : {'Mercury': 9.08, 'Venus': -35.79, 'Saturn': 12.77}
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -1.89
+    Kendra/Trine/2nd/11th Pts : +41.12
+    Dusthāna Raw Penalty      : -87.38
+    Benefic Mitigation Pct    : 37.78%
+    Mitigated Dusthāna Pts    : -54.36
+    Active Count              : 7
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 36.53
+    Primary Kārakas           : Saturn
+    Individual Kāraka Scores  : {'Saturn': 12.77}
+    Kāraka Lagna House & Sc   : House {'Saturn': 11} -> Score 90.85
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 50.42
+    Moon's Occupied House     : House 5
+    Chandra House Number      : House 4
+    Chandra House Score       : 50.42
+    Combined Relative+Chandra : 8.57
+  [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
+    Is Walled (Both Flanks)   : False
+  [Component 7] Certified House Yogas (Weight: 10%) : Score = -50.53
+    Sub-Scores                : Rāja=37.45, Daridra=-104.22, Parivartana=0.00, Mahāpuruṣa=0.00
+    Total Active Yogas Count  : 12
+      * [Occupied Dusthāna spillover (PURE & EMINENT)] Pāśa Yoga (Ties of Duty):   +2.4 pts (Planets: ['Sun', 'Moon', 'Mars', 'Mercury', 'Jupiter', 'Venus', 'Saturn'])
+      * [Occupied Dusthāna spillover (PURE & EMINENT)] Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus)):  +12.0 pts (Planets: ['Moon', 'Mercury', 'Venus'])
+      * [Occupied Dusthāna spillover (STAINED / CHALLENGED)] Miśra-Veśi Yoga:   +2.6 pts (Planets: ['Sun', 'Mercury', 'Venus', 'Saturn'])
+      * [Occupied house (STAINED / CHALLENGED)] Daridra Yoga (11th House Stagnation):  -11.7 pts (Planets: ['Mercury'])
+      * [Occupied house (STAINED / CHALLENGED)] Duṣkṛti Yoga (Disgraced Vocation):  -11.7 pts (Planets: ['Venus'])
+      * [Occupied house (STAINED / CHALLENGED)] Mṛti Yoga (Broken Initiatives):  -11.7 pts (Planets: ['Venus'])
+      * [Afflicted house axis (STAINED / CHALLENGED)] Musala Yoga (Converse 12th Bhava Dissipation):  -23.4 pts (Planets: ['Moon'])
+      * [Occupied house (STAINED / CHALLENGED)] Niḥsva Yoga (Depleted Treasury):  -11.7 pts (Planets: ['Mercury'])
+      * [Occupied house (STAINED / CHALLENGED)] Śatru Yoga (Marital Friction):  -11.7 pts (Planets: ['Saturn'])
+      * [Occupied house (STAINED / CHALLENGED)] Dāridrya Yoga (H11 Lord Mercury in H12):  -11.2 pts (Planets: ['Mercury'])
+      * [Occupied house (STAINED / CHALLENGED)] Dāridrya Yoga (H2 Lord Mercury in H12):  -11.2 pts (Planets: ['Mercury'])
+      * [Occupied by participating planet (RESCUED (NEECHA BHANGA / REVERSAL))] Harṣa Viparīta Rāja Yoga:  +20.5 pts (Planets: ['Saturn'])
+
+===============================================================================================
+4. COMPLETE RAW ASTRA EXPORT DOSSIER (FRONTEND 'EXPORT TEXT FORALL')
+===============================================================================================
+# Astrological Master Dossier: Donald Trump
+**Engine**: Astra Precision Kala Computation (`swisseph`)
+
+### Astrological Calculation Framework
+- **Zodiac**: **Tropical Signs (Sāyana)** for Rasi and all Divisional Vargas (BPHS / Ernst Wilhelm Kala methodology).
+- **House System**: **Campanus 3D House System** (true spatial horizon cusps).
+- **Nakshatras**: **Sidereal Equatorial Nakshatras** anchored to the **Dhruva Galactic Center** (0°00' Mūla).
+
+### Birth & Chart Coordinates
+- **Native**: Donald Trump
+- **Birth Date & Time**: 14/06/1946 at 10:54:00 (Local Time)
+- **Location**: Jamaica, Queens, NY (Lat: 40.6833, Lon: -73.8, TZ: -4.0)
+- **Ascendant (Lagna)**: **Leo 29°58'** | Nakshatra: **Magha** (Pada 4) | Captain (Lagneśa): **Sun**
+
+
+---
+
+## 0. AI Interpretation Directive & Prompt Header
+> **Role**: You are an enlightened, compassionate, and precise Vedic astrologer evaluating this natal horoscope.
+> **Critical Technical Context**: This chart is calculated using **Ernst Wilhelm's Kala integrated paradigm**:
+> 1. Signs are **Tropical** (the solstices define 0° Cancer/Capricorn; signs describe psychological seasons & physical vehicles).
+> 2. House Cusps are **Campanus 3D** (the true physical horizon and prime vertical).
+> 3. Nakshatras are **Sidereal Equatorial** (the cosmic background star field anchored to the Galactic Center).
+> *Do not convert these Tropical placements back into sidereal signs; analyze the signs, houses, and nakshatras exactly as given below.*
+>
+> **Interpretation Protocol**:
+> - **Core Horizon Vitality**: First analyze the Ascendant, its Lord (Lagneśa), and the Moon to evaluate mental temperament, biological vitality, and emotional baseline.
+> - **Soul Purpose & Swāṃśa**: Interpret the Ātmakāraka (Soul significator) and its placement in D1 and D9 (Kārakāṃśa/Svāṃśa).
+> - **Career & Worldly Karma**: Synthesize the 10th house, D10 Daśāṃśa, and Amātyakāraka (career intellect).
+> - **Relationships & Partnerships**: Evaluate the 7th house, Venus, D9 Navāṃśa, and Dārākāraka.
+> - **Timing of Life Cycles**: Synthesize the active Vimśottarī Daśā climate to identify currently triggered karmic lessons.
+> - **Constructive Remediation**: Conclude with grounded, practical lifestyle guidance to harmonize challenged planets.
+
+
+---
+
+## 1. Master Graha Diagnostics (D1 Root Chart)
+The table below synthesizes the complete 9-column Master Diagnostic matrix for the Ascendant and all 9 Grahas:
+
+| Graha & Role | Longitude & Bhāva | Dignity & Sambandha | Dispositor (Rāśi Lord) | Ṣaḍbala Strength | Dṛṣṭi & Yuti (Aspects) | Nakṣatra & Overlord | Avasthās (State) | Archetype & Vitality |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Lagna (Ascendant)** | Leo 29°58'<br>House 1 (Tanū Bhāva) | Captain: **Sun** in Gemini (Friend 60%) | Host: **Mercury** | Captain: 596.5v (153% • Rank #1) | Net: +48.0v Śubha<br>Occupants: Mars | **Magha** (Pada 4)<br>Ruler: Ketu • Deity: Pitris | Age: Mrita (0%)<br>Lord in H11 | **The Invincible Sovereign**<br>★ 10.0 / 10 (Sovereign Citadel) |
+| **Sun** (MK) [LL] | Gemini 22°56'<br>House 11 | **Friend** (60% / Shadvarga: 66.2%)<br>Nat: Neu • Tmp: Fri | **Mercury** in Cancer (20%)<br>Strained Host | 596.5v (153% req • #1)<br>Ishta: 45.9 / Kashta: 4.8 | Yuti: Rahu<br>Net: +109.0v Śubha<br>Gaze: Moon (+59v), Jupiter (+52v) | **Mrigashira** (Pada 4)<br>Lord: Mars • Deity: Soma | Age: Vriddha (10%)<br>Alertness: Svapna (Dreaming)<br>Mood: Vikala (Mutilated / Agitated)<br>Social: Mudita (Delighted) | **Dutiful Realist**<br>★ 6.3 / 10 (🟡 Resilient)<br>(⚠️ Strained Host) |
+| **Moon** (PK) | Sagittarius 21°12'<br>House 5 | **Friend** (60% / Shadvarga: 50.0%)<br>Nat: Neu • Tmp: Fri | **Jupiter** in Libra (50%)<br>Neutral Host | 428.7v (119% req • #5)<br>Ishta: 30.9 / Kashta: 5.0 | Yuti: Ketu<br>Net: -46.8v Aśubha<br>Gaze: Sun (-57v), Mars (-36v), Mercury (+25v) | **Mula** (Pada 1)<br>Lord: Ketu • Deity: Nirriti | Age: Vriddha (10%)<br>Alertness: Svapna (Dreaming)<br>Mood: Vikala (Mutilated / Agitated)<br>Social: Mudita (Delighted) | **Dutiful Realist**<br>★ 5.8 / 10 (🟡 Resilient)<br>(⚖️ Neutral Host) |
+| **Mars** (AK) [D3L] | Leo 26°47'<br>House 1 | **Great Friend** (80% / Shadvarga: 71.2%)<br>Nat: Fri • Tmp: Fri | **Sun** in Gemini (60%)<br>Neutral Host | 421.8v (141% req • #6)<br>Ishta: 16.4 / Kashta: 40.2 | No Yuti<br>Net: +11.9v Śubha<br>Gaze: Sun (-19v), Moon (+27v) | **Magha** (Pada 4)<br>Lord: Ketu • Deity: Pitris | Age: Mrita (0%)<br>Alertness: Svapna (Dreaming)<br>Mood: Mudita (Rejoicing)<br>Social: Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 7.9 / 10 (🟢 Capable)<br>(🛡️ Fortified Host) |
+| **Mercury** (DK) | Cancer 08°52'<br>House 12 → Chalita H11 | **Great Enemy** (20% / Shadvarga: 62.5%)<br>Nat: Ene • Tmp: Ene | **Moon** in Sagittarius (60%)<br>Neutral Host | 486.6v (116% req • #3)<br>Ishta: 30.1 / Kashta: 28.2 | Yuti: Venus, Saturn<br>Net: +79.1v Śubha<br>Gaze: Moon (+51v), Jupiter (+28v) | **Punarvasu** (Pada 1)<br>Lord: Jupiter • Deity: Aditi | Age: Vriddha (10%)<br>Alertness: Sushupti (Sleeping/Slumbering)<br>Mood: Vikala (Mutilated / Agitated)<br>Social: Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 3.1 / 10 (🔴 Severe Hazard)<br>(🛡️ Fortified Host) |
+| **Jupiter** [R] (GK) [D9L] | Libra 17°27'<br>House 3 | **Neutral** (50% / Shadvarga: 70.0%)<br>Nat: Ene • Tmp: Fri | **Venus** in Cancer (20%)<br>Strained Host | 527.5v (135% req • #2)<br>Ishta: 32.2 / Kashta: 26.0 | No Yuti<br>Net: -12.0v Aśubha<br>Gaze: Sun (-33v), Mercury (+41v), Venus (+37v) | **Chitra** (Pada 2)<br>Lord: Mars • Deity: Tvashtar | Age: Yuva (100%)<br>Alertness: Sushupti (Sleeping/Slumbering)<br>Mood: Sakta (Powerful / Driven)<br>Social: Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 6.2 / 10 (🟡 Resilient)<br>(⚠️ Strained Host) |
+| **Venus** (AmK) | Cancer 25°44'<br>House 12 | **Great Enemy** (20% / Shadvarga: 50.0%)<br>Nat: Ene • Tmp: Ene | **Moon** in Sagittarius (60%)<br>Neutral Host | 461.4v (140% req • #4)<br>Ishta: 21.3 / Kashta: 38.6 | Yuti: Mercury, Saturn<br>Net: +52.2v Śubha<br>Gaze: Moon (+43v) | **Pushya** (Pada 2)<br>Lord: Saturn • Deity: Brihaspati | Age: Bala (25%)<br>Alertness: Sushupti (Sleeping/Slumbering)<br>Mood: Vikala (Mutilated / Agitated)<br>Social: Kshobhita (Agitated), Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 2.8 / 10 (🔴 Severe Hazard)<br>(🛡️ Fortified Host) |
+| **Saturn** (BK) | Cancer 23°49'<br>House 12 | **Great Enemy** (20% / Shadvarga: 53.8%)<br>Nat: Ene • Tmp: Ene | **Moon** in Sagittarius (60%)<br>Neutral Host | 234.6v (78% req • #7)<br>Ishta: 18.3 / Kashta: 37.6 | Yuti: Mercury, Venus<br>Net: +55.1v Śubha<br>Gaze: Moon (+44v) | **Pushya** (Pada 2)<br>Lord: Saturn • Deity: Brihaspati | Age: Kumara (50%)<br>Alertness: Sushupti (Sleeping/Slumbering)<br>Mood: Khala (Cruel)<br>Social: Kshobhita (Agitated), Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 3.1 / 10 (🔴 Fragile)<br>(🛡️ Fortified Host) |
+| **Rahu** [R] (—) | Gemini 20°48'<br>House 11 | **Moolatrikona** (95% / Shadvarga: 71.2%)<br>via Mercury | **Mercury** in Cancer (20%)<br>Strained Host | Proxy (Mercury): 116% req | Yuti: Sun<br>Net: +111.2v Śubha<br>Gaze: Moon (+59v), Jupiter (+55v) | **Mrigashira** (Pada 3)<br>Lord: Mars • Deity: Soma | Age: Vriddha (10%)<br>Alertness: Jagrat (Awake)<br>Mood: Sakta (Powerful / Driven)<br>Social: Garvita (Proud), Kshobhita (Agitated), Kshudhita (Starved) | **Dutiful Realist**<br>★ 3.3 / 10 (🔴 Fragile)<br>(Reflects Mercury) |
+| **Ketu** [R] (—) | Sagittarius 20°48'<br>House 5 | **Moolatrikona** (95% / Shadvarga: 55.0%)<br>via Jupiter | **Jupiter** in Libra (50%)<br>Neutral Host | Proxy (Jupiter): 135% req | Yuti: Moon<br>Net: -47.6v Aśubha<br>Gaze: Sun (-56v), Mars (-36v), Mercury (+24v) | **Mula** (Pada 1)<br>Lord: Ketu • Deity: Nirriti | Age: Vriddha (10%)<br>Alertness: Jagrat (Awake)<br>Mood: Sakta (Powerful / Driven)<br>Social: Garvita (Proud), Kshudhita (Starved), Mudita (Delighted) | **Dutiful Realist**<br>★ 5.6 / 10 (🟡 Resilient)<br>(Reflects Jupiter) |
+
+
+---
+
+## 2. Core Archetypes & Functional Authority
+### Soul Signifiers (Chara Kāraka System - BPHS Chapter 32)
+The Chara Karakas reveal the evolutionary priorities of the soul ranked by descending degree in sign:
+- **AK • Ātmakāraka (Soul Purpose & Core Evolution)**: **Mars** at Leo 26°47'
+- **AmK • Amātyakāraka (Career, Intellect & Executive Capacity)**: **Venus** at Cancer 25°44'
+- **BK • Bhrātṛkāraka (Guru, Mentors, Dharma & Siblings)**: **Saturn** at Cancer 23°49'
+- **MK • Mātṛkāraka (Mother, Emotional Sustenance & Mind)**: **Sun** at Gemini 22°56'
+- **PK • Pitṛkāraka (Father, Intelligence, Children & Lineage)**: **Moon** at Sagittarius 21°12'
+- **GK • Jñātikāraka (Obstacles, Competition, Debts & Resilience)**: **Jupiter** at Libra 17°27'
+- **DK • Dārākāraka (Spouse, Long-term Partnerships & Contracts)**: **Mercury** at Cancer 08°52'
+
+### Master Pillar Lords (Phaladīpikā 3.11)
+- **Lagneśa (D1 Ascendant Lord)**: **Sun** (Physical constitution, health, stamina, overall vehicle).
+- **Navāṁśeśa (D9 Dharma Lord)**: **Jupiter** (Internal happiness, soul destiny, marital fortune).
+- **Drekkāṇeśa (D3 Courage Lord)**: **Mars** (Decisive drive, physical courage, brothers, execution).
+
+
+---
+
+## 3. Key Divisional Charts (Vargas)
+### D9 Navāṃśa (Dharma, Soul Blueprint & Partnerships)
+- **Navāṃśa Ascendant (Svāṃśa)**: **Sagittarius 29°42'** | Lord: **Jupiter**
+- **Kārakāṃśa (AK Mars in D9)**: **Sagittarius** (The primary signpost of spiritual evolution and soul vocation).
+
+| Graha | D9 Sign & Degree | D9 House | D9 Dignity | Note / Vargottama |
+| :--- | :--- | :--- | :--- | :--- |
+| **Sun** | Aries 26°21' | House 5 | Exalted | — |
+| **Moon** | Libra 10°50' | House 11 | Enemy | — |
+| **Mars** | Sagittarius 00°59' | House 1 | Great Friend | — |
+| **Mercury** | Virgo 19°44' | House 10 | Exalted | — |
+| **Jupiter** | Pisces 07°04' | House 4 | Own | — |
+| **Venus** | Aquarius 21°39' | House 3 | Neutral | — |
+| **Saturn** | Aquarius 04°20' | House 3 | Moolatrikona | — |
+| **Rahu** | Aries 07°12' | House 5 | Neutral | — |
+| **Ketu** | Libra 07°12' | House 11 | Enemy | — |
+
+### D10 Daśāṃśa (Career, Status & Executive Action)
+- **Daśāṃśa Ascendant**: **Taurus 29°40'** | Lord: **Venus**
+
+| Graha | D10 Sign & Degree | D10 House | D10 Dignity |
+| :--- | :--- | :--- | :--- |
+| **Sun** | Capricorn 19°17' | House 9 | Neutral |
+| **Moon** | Cancer 02°02' | House 3 | Own |
+| **Mars** | Aries 27°46' | House 12 | Moolatrikona |
+| **Mercury** | Capricorn 28°35' | House 9 | Enemy |
+| **Jupiter** | Pisces 24°31' | House 11 | Own |
+| **Venus** | Cancer 17°23' | House 3 | Great Enemy |
+| **Saturn** | Leo 28°09' | House 4 | Neutral |
+| **Rahu** | Sagittarius 28°00' | House 8 | Enemy |
+| **Ketu** | Gemini 28°00' | House 2 | Great Enemy |
+
+
+---
+
+## 4. Campanus 3D Bhava Chalita Cusps
+Campanus houses divide the prime vertical into 30° spatial wedges, reflecting the exact physical horizon of the birth location:
+
+| Bhāva | Cusp Sign & Degree | Cusp Lord | Occupants (In-House Grahas) | Life Significations |
+| :---: | :--- | :--- | :--- | :--- |
+| **House 1** | Leo 29°58' | **Sun** | Asc, Mars | Tanu (Self, physical vitality, constitution, overall life direction) |
+| **House 2** | Virgo 29°24' | **Mercury** | — | Dhana (Wealth, earned assets, family lineage, speech, truthfulness) |
+| **House 3** | Libra 26°42' | **Venus** | Jupiter | Sahaja (Courage, initiatives, younger siblings, fine skills, effort) |
+| **House 4** | Scorpio 24°22' | **Mars** | — | Bandhu (Home, emotional peace, mother, landed property, conveyances) |
+| **House 5** | Sagittarius 24°40' | **Jupiter** | Moon, Ketu | Putra (Creativity, intelligence, children, past life merit, devotion) |
+| **House 6** | Capricorn 27°35' | **Saturn** | — | Ari (Daily work, service, obstacles, debts, health management, debts) |
+| **House 7** | Aquarius 29°58' | **Saturn** | — | Yuvati (Partnership, marriage, contracts, interpersonal diplomacy) |
+| **House 8** | Pisces 29°24' | **Jupiter** | — | Randhra (Longevity, transformations, shared assets, occult research) |
+| **House 9** | Aries 26°42' | **Mars** | — | Dharma (Higher wisdom, father/guru, spiritual purpose, fortune) |
+| **House 10** | Taurus 24°22' | **Venus** | — | Karma (Career, public status, executive leadership, visible contribution) |
+| **House 11** | Gemini 24°40' | **Mercury** | Sun, Mercury, Rahu | Labha (Gains, aspirations, professional network, elder siblings, income) |
+| **House 12** | Cancer 27°35' | **Moon** | Venus, Saturn | Vyaya (Liberation, foreign lands, expenditure, solitude, subconscious) |
+
+
+---
+
+## 5. Vimśottarī Daśā Timeline (120-Year Cycle)
+- **Balance at Birth**: **Ketu** Mahādaśā with **6.20 years** remaining.
+- **Current Active Operating Climate**: **Jupiter / Ju/Ma** (Active Antardaśā: 2026-04-26 to 2027-04-02)
+
+### Chronological Mahādaśā Cycles
+| Planet | Start Date | End Date | Duration | Status |
+| :--- | :--- | :--- | :--- | :--- |
+| **Ketu** | 1945-08-26 | 1952-08-26 | 7 years | Completed |
+| **Venus** | 1952-08-26 | 1972-08-25 | 20 years | Completed |
+| **Sun** | 1972-08-25 | 1978-08-26 | 6 years | Completed |
+| **Moon** | 1978-08-26 | 1988-08-25 | 10 years | Completed |
+| **Mars** | 1988-08-25 | 1995-08-26 | 7 years | Completed |
+| **Rahu** | 1995-08-26 | 2013-08-25 | 18 years | Completed |
+| **Jupiter** | 2013-08-25 | 2029-08-25 | 16 years | **ACTIVE NOW** |
+| **Saturn** | 2029-08-25 | 2048-08-25 | 19 years | Future |
+| **Mercury** | 2048-08-25 | 2065-08-25 | 17 years | Future |
+
+
+---
+
+## 6. Classical Yogas & Breakers (Yoga Bhaṅga Audit)
+Classical planetary combinations evaluated with rigorous Parashari breaker mechanics:
+
+| Yoga Name | Status | Participating Grahas | Houses | Manifesting Archetype & Mechanics | Breakers (Bhaṅga) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Pāśa Yoga (Ties of Duty)** | Pure & Eminent | Sun, Moon, Mars, Mercury, Jupiter, Venus, Saturn | H1, H3, H5, H11, H12 | Strong bonds to family, duty, and community. Skilled in worldly negotiations, administration, and social webs. | None (Pristine) |
+| **Rāja Yogakāraka (Mars)** | Pure & Eminent | Mars | H1 | The Natural Sovereign: Mars embodies both divine grace (Trikona) and executive horsepower (Kendra) within a single body. | None (Pristine) |
+| **Bhāgya Yoga (Divine Grace)** | Pure & Eminent | Mars | H9, H1 | The Fortunate Heir: 9th House Lord fortified in Kendra/Trikoṇa, bestowing righteous paternal legacy and spiritual luck. | None (Pristine) |
+| **Jaladhi Yoga (The Ocean Estate)** | Pure & Eminent | Mars | H4, H1 | Vast Domestic Peace: 4th House Lord fortified in Kendra/Trikoṇa, granting palatial estates, vehicles, and maternal joy. | None (Pristine) |
+| **Candrādhi Yoga (Bhūpati (Landholder/Sovereign in H12: Mercury, Venus))** | Pure & Eminent | Moon, Mercury, Venus | H5, H12 | The Configuration of Command (Chandra (Moon)): Surrounds the Chandra (Moon) focal axis with Bhūpati (Landholder/Sovereign in H12: Mercury, Venus). | None (Pristine) |
+| **Kemadruma Yoga** | Stained / Challenged | Moon | H5 | The Solitary Mind: Moon sits without immediate 2nd/12th flanking planets. | Moon Isolation (No 2nd/12th Flanking Planets) (-50%) |
+| **Mahābhāgya Yoga (Supreme Fortune - Male Configuration)** | Stained / Challenged | Sun, Moon | H1, H5, H11 | Supreme Fortune through complete solar-masculine congruence: Day birth with Lagna, Sun, and Moon all in active Odd signs. | Unverified Biological Gender (-20%) |
+| **Adhama Yoga (Kendra Solar-Lunar Scope)** | Rescued (Neecha Bhanga / Reversal) | Sun, Moon | H5, H11 | Moon in Kendra (1, 4, 7, 10) from Sun: Angular solar-lunar friction (0.75 toning multiplier unless anchored in Lagna Kendra). | Angular Solar-Lunar Friction (Adhama) (-15%) |
+| **Solitary Mars in 1st House (Aśubha Fortitude)** | Stained / Challenged | Mars | H1 | Mars stands alone in the 1st House, imparting formidable physical grit, sharp courage, and fierce independence. | Solitary Malefic in Ascendant (-15%) |
+| **Miśra-Veśi Yoga** | Stained / Challenged | Sun, Mercury, Venus, Saturn | H11, H12 | Articulate Solar Expression: Planets in 2nd from Sun channel solar authority into speech and tangible resources. | Mixed Malefic Solar Flanking (-10%) |
+| **Daridra Yoga (11th House Stagnation)** | Stained / Challenged | Mercury | H11, H12 | Stagnant Inflow: 11th House Lord trapped in a Dusthana, delaying financial returns on social and commercial labor. | Dusthana Placement (-25%) |
+| **Duṣkṛti Yoga (Disgraced Vocation)** | Stained / Challenged | Venus | H10, H12 | Frustrated Career: 10th House Lord trapped in a Dusthana, causing vocational setbacks and unappreciated work. | Dusthana Placement (-25%) |
+| **Mṛti Yoga (Broken Initiatives)** | Stained / Challenged | Venus | H3, H12 | Faltering Courage: 3rd House Lord trapped in a Dusthana, leading to sibling friction and hesitated actions. | Dusthana Placement (-25%) |
+| **Musala Yoga (Converse 12th Bhava Dissipation)** | Stained / Challenged | Moon | H12, H5 | Worldly Detachment & Hard-Won Wealth (Converse 12th Bhava Yoga): 12th House Lord occupies a Kendra/Trikoṇa, introducing expenditure pressure and material restlessness. | Dusthana H12 Leakage into Kendra/Trikoṇa (-25%) |
+| **Niḥsva Yoga (Depleted Treasury)** | Stained / Challenged | Mercury | H2, H12 | Depleted Treasury: 2nd House Lord trapped in a Dusthana, creating financial fluctuations and harsh speech. | Dusthana Placement (-25%) |
+| **Śatru Yoga (Marital Friction)** | Stained / Challenged | Saturn | H7, H12 | Allied Friction: 7th House Lord trapped in a Dusthana, causing marital separation or business disputes. | Dusthana Placement (-25%) |
+| **Dāridrya Yoga (H11 Lord Mercury in H12)** | Stained / Challenged | Mercury | H12 | Financial Leakage: Ruler of earnings or treasury sits in a Dusthana of loss, debt, or crisis. | Lord of H11 in Dusthana H12 (-30%) |
+| **Dāridrya Yoga (H2 Lord Mercury in H12)** | Stained / Challenged | Mercury | H12 | Financial Leakage: Ruler of earnings or treasury sits in a Dusthana of loss, debt, or crisis. | Lord of H2 in Dusthana H12 (-30%) |
+| **Candra-Maṅgala Yoga** | Stained / Challenged | Moon, Mars | H1, H5 | Energetic Enterprise & Vigor: Unites the feeling mind with Martian drive, fostering commercial hustle. | Marginal Aspect Connection (-25%) |
+| **Harṣa Viparīta Rāja Yoga** | Rescued (Neecha Bhanga / Reversal) | Saturn | H12 | Cheerful Invincibility: The 6th lord trapped in a Duṣṭhāna destroys enemies and disease, granting joyful immunity. | Kendra Co-Rulership Leakage (-15%); Auspicious Lord Contaminated (-25%) |
+| **Dhana Yoga (Sun + Jupiter)** | Broken (Yoga Bhanga) | Sun, Jupiter | H11, H3 | Resource Flow: Systematic connection between wealth, earnings, intellect, and fortune. | 6th Lord Intrusion (Palpable Aspect) (-20%); 3rd Lord Intrusion (Marginal Aspect) (-5%); Host Dispositor Trapped in Dusthana (-15%); Host Dispositor Trapped in Dusthana (-15%) |
+| **Dhana Yoga (Mercury + Jupiter)** | Broken (Yoga Bhanga) | Mercury, Jupiter | H12, H3 | Resource Flow: Systematic connection between wealth, earnings, intellect, and fortune. | Marginal Aspect Connection (-25%); Dusthana Trapping (Houses 6, 8, 12) (-25%); 6th Lord Intrusion (-25%); 3rd Lord Intrusion (-15%); Host Dispositor Trapped in Dusthana (-15%) |
+| **Śaṅkha Yoga (Sun + Jupiter)** | Broken (Yoga Bhanga) | Sun, Jupiter | H3, H11 | The Royal Herald (Conch Shell): Kendra-Trikoṇa alliance between Sun (Lord of H[1]) and Jupiter (Lord of H[5]) announces status and supports worldly prosperity. | Marginal Aspect Connection (-25%); 11th Lord Intrusion (Primary Saboteur) (Marginal Aspect) (-14%); 6th Lord Intrusion (Palpable Aspect) (-20%); 3rd Lord Intrusion (Marginal Aspect) (-5%); Host Dispositor Trapped in Dusthana (-15%); Host Dispositor Trapped in Dusthana (-15%) |
+

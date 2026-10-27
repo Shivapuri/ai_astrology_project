@@ -2,13 +2,13 @@
 
 ## 1. Overview & Foundational Mathematical Architecture
 
-The **Houses of Life** system is an advanced quantitative astrological engine developed by Vic DiCara, rooted in Chapter 15 of Mantreśvara's classical authority *Phaladīpikā*. It provides a rigorous, multi-stage evaluation of the 12 houses (*Bhāvas*) and 7 classical physical planets (*Grahas*): Sun, Moon, Mars, Mercury, Jupiter, Venus, and Saturn.
+The **Houses of Life** system is an advanced quantitative astrological engine developed by Vic DiCara, rooted in Chapters 3, 4, 6, and 15 of Mantreśvara's classical authority *Phaladīpikā*. It provides a rigorous, multi-stage evaluation of the 12 houses (*Bhāvas*) and 7 classical physical planets (*Grahas*): Sun, Moon, Mars, Mercury, Jupiter, Venus, and Saturn, alongside the nodal axes (Rāhu and Ketu).
 
-Unlike qualitative traditions that rely on broad rules of thumb, Houses of Life computes continuous mathematical scores across nine distinct phases without rounding intermediate arc-minutes or arc-seconds.
+Unlike qualitative traditions that rely on broad rules of thumb, Houses of Life computes continuous mathematical scores across distinct phases without rounding intermediate arc-minutes or arc-seconds:
 
-$$\text{Composite House Score}_H = 0.30\,\text{Basic}_H + 0.25\,\text{Lord}_H + 0.25\,\text{Yoga}_H + 0.10\,\text{Relative}_H + 0.10\,\text{Wall}_H$$
+$$\text{Composite House Score}_H = 0.30\,\text{Basic}_H + 0.30\,\text{Lord}_H + 0.15\,\text{Relative}_H + 0.10\,\text{Kāraka}_H + 0.10\,\text{Yoga}_H + 0.05\,\text{Wall}_H$$
 
-*(Note: When a house is unwalled ($\text{is\_walled} = \text{False}$), the $10\%$ wall weight is redistributed proportionally across the remaining active components by dividing by $0.90$).*
+*(Note: When a house is unwalled ($\text{is\_walled} = \text{False}$), the $5\%$ wall weight is redistributed proportionally across the remaining active components by dividing by $0.95$).*
 
 ---
 
@@ -31,7 +31,7 @@ $$\text{Composite House Score}_H = 0.30\,\text{Basic}_H + 0.25\,\text{Lord}_H + 
 
 ### Phase 2: Planetary Functional Nature Quantification ($F_P$)
 
-Derived from *Phaladīpikā* Chapter 15 and *BPHS* Chapter 34, the functional nature of each planet relative to the Ascendant is quantified via sequential rules with *Yogakāraka* and *Kendrādhipatya* adjustments:
+Derived from *Phaladīpikā* Chapter 15 and *BPHS* Chapter 34, the functional nature of each planet relative to the Ascendant is quantified via sequential rules with *Yogakāraka*, *Kendrādhipatya*, and *Svakṣetra* adjustments:
 
 #### 1. Mūlatrikoṇa (Root) vs. Regular Domicile Definitions
 * Dual-ruling planets assign the **male (odd) sign** as Mūlatrikoṇa root and the **female (even) sign** as regular domicile.
@@ -55,12 +55,17 @@ Derived from *Phaladīpikā* Chapter 15 and *BPHS* Chapter 34, the functional na
   * Regular domicile sign on House 6, 8, or 12: $-1$.
   * *Simultaneous Trine & Dusthāna Ownership:* Scores are summed side-by-side (e.g., Jupiter for Aries Lagna gets $+2$ for H9 Sagittarius and $-1$ for H12 Pisces).
   * *Moon Dual-Dusthāna Exception (Sagittarius Ascendant):* When Taurus is House 6 and Cancer is House 8, the Mūlatrikoṇa root and domicile are evaluated as an **OR** condition rather than cumulative, assigning Moon $-2$ (not $-3$).
+  * *Svakṣetra Dual-Lordship Override (Phaladīpikā 15.29):* When planet $P$ physically occupies one of its own signs ($P_{\text{sign}} \in \{\text{MT}, \text{Dom}\}$) corresponding to a non-Dusthāna house ($H \notin \{6, 8, 12\}$), its secondary Dusthāna score is set to $0$ (`dusthana_score = 0`).
 * **Rule 4 (Inherent Natural Temperament & BPHS Ch. 34 Adjustments):**
-  * Extreme natural benefics (Jupiter, Venus): $+1$.
-  * Extreme natural malefics (Mars, Saturn): $-1$.
-  * Mild/neutral planets (Sun, Moon, Mercury): $0$.
+  * Natural benefics: `Jupiter` ($+1.0$), `Venus` ($+1.0$).
+  * Natural malefics: `Mars` ($-1.0$), `Saturn` ($-1.0$).
+  * `Sun`: $-0.5$ (mild *Krūra* / natural malefic so it properly triggers Upacaya rules in $3, 6, 11$).
+  * `Moon`: Evaluated via *Pakṣa Bala* (brightness elongation $\Delta_{\text{Moon-Sun}} \in [0^\circ, 180^\circ]$ per *Phaladīpikā* Ch. 4 & 15.1):
+    $$\text{PakṣaFactor} = \frac{\Delta_{\text{Moon-Sun}}}{180.0} \in [0.0, 1.0], \qquad \text{Inherent}_{\text{Moon}} = -0.5 + 1.5 \times \text{PakṣaFactor}$$
+    (ranges from $-0.5$ at New Moon to $+1.0$ at Full Moon; defaults to $+0.5$ if positions are absent).
+  * `Mercury`: Defaults to $+0.5$ (natural benefic), unless within $10^\circ$ of a natural malefic (`Mars`, `Saturn`, `Rahu`, `Ketu`) in the same sign, in which case it assumes $-0.5$.
   * **Supreme Rāja Yogakāraka Bonus (*BPHS* 34.40–43):** If a planet simultaneously owns a Kendra ($4, 7, 10$) and a Trine ($5, 9$) (e.g., Mars for Cancer/Leo Lagna, Saturn for Taurus/Libra Lagna), its natural maleficence is waived and it receives $+1$ (`inherent_score = max(0, inherent_score) + 1`).
-  * **Māraka & Triṣaḍāya Preservation:** Natural malefics owning a Kendra without a Trine (such as Saturn for Aries owning H10/H11, or Mars for Libra owning H2/H7) retain their inherent maleficence ($-1$) because their second sign is always a Māraka ($2$) or Triṣaḍāya ($3, 11$) house (*BPHS* 34.22, 34.33, 34.41–42).
+  * **Māraka & Triṣaḍāya Preservation:** Natural malefics owning a Kendra without a Trine retain their inherent maleficence ($-1.0$).
 
 #### 3. Net Functional Classification
 $$F_P = \begin{cases} +3 & \text{if } P \text{ rules House 1} \\ \text{Score}_{\text{Trine}} + \text{Score}_{\text{Dusthāna}} + \text{Score}_{\text{Inherent}} & \text{otherwise} \end{cases}$$
@@ -87,12 +92,12 @@ $$F_P = \begin{cases} +3 & \text{if } P \text{ rules House 1} \\ \text{Score}_{\
 Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature $F$:
 * **Functionally Positive ($F > 0$):**
   * $d_P \ge 0 \implies S = B \times (1.0 + d_P)$ (Up to $2\times$ intensification).
-  * $d_P < 0 \implies S = B \times (1.0 - \frac{|d_P|}{2.0})$ (Diminished by at most half; never flips negative).
+  * $d_P < 0 \implies S = B \times (1.0 - 0.80 \times |d_P|)$ (Severe debilitation retains only $0.20\times$ good results per *Phaladīpikā* 15.18).
 * **Functionally Negative ($F < 0$):**
   * $d_P \le 0 \implies S = B \times (1.0 + |d_P|)$ (Bad mood intensifies malice up to $2\times$).
   * $d_P > 0 \implies S = B \times (1.0 - \frac{d_P}{2.0})$ (Good mood mitigates malice by up to half).
-* **Functionally Neutral ($F = 0$):**
-  * $S = B \times (1.0 + |d_P|) \times \text{sgn}(d_P)$
+* **Functionally Neutral ($|F| \le 0.15$):**
+  * Proportional continuous scaling: $S = B \times d_P$ (where $d_P > 0$ yields positive support and $d_P < 0$ yields negative strain, without artificial step-jumps or double negation).
 
 ---
 
@@ -100,6 +105,9 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 
 1. **Degree-Specific Aspects (*Sphuṭa Dṛṣṭi*):**
    * Expressed on a $0\%$ to $100\%$ scale: $\frac{\text{Virūpas}}{60.0} \times 100.0$.
+   * **Classical Whole Sign Distance Gating:** Raw continuous aspect virūpas from `aspects.get_graha_drishti` are strictly gated by Whole Sign distance between the aspecting planet and the target cusp:
+     * If the planet is in the 1st (same sign), 2nd, 6th, or 12th sign from the cusp, `virupas = 0.0` (planets do not aspect adjacent or 6th signs classically).
+     * If in the 8th sign and the planet is not Mars, `virupas = 0.0` (special 8th aspect belongs strictly to Mars in Parāśara and Phaladīpikā; non-Mars planets cast zero aspect onto 8th sign).
 2. **Conjunction Proximity:**
    * Within $30^\circ$: $C_{\text{raw}} = \max\left(0.0, \left(1.0 - \frac{\Delta\lambda}{30.0}\right) \times 100.0\right)$.
 3. **Cross-Border Attenuation:**
@@ -111,42 +119,39 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 
 ---
 
-### Phase 5: Comprehensive Planetary Assessment (5 Factors)
+### Phase 5: Comprehensive Planetary Assessment (Quality vs. Prominence)
 
-1. **Dignity ($D_{\text{pct}, P}$):** D1 dignity percentage in $[-100, +100]$.
-2. **Combined Influences ($\text{Inf}_P$):**
-   * Computes incoming planetary influences using the Phase 3 `scale_by_dignity` law:
-     $$\text{scaled\_mag} = \text{scale\_by\_dignity}(I_{Q \to P}, d_Q, F_Q)$$
-     $$\text{Impact}_{Q \to P} = \begin{cases} \text{scaled\_mag} \times (1.0 + 0.20 \times (F_Q - 1)) & \text{if } F_Q > 0 \\ -\text{scaled\_mag} \times (1.0 + 0.20 \times (|F_Q| - 1)) & \text{if } F_Q < 0 \\ \text{scaled\_mag} & \text{if } F_Q = 0 \end{cases}$$
-   * Normalized by average active aspect count ($2.5$) and clamped to $[-150, +150]$:
-     $$\text{Inf}_P = \max\left(-150.0, \min\left(150.0, \frac{\sum_{Q \neq P} \text{Impact}_{Q \to P}}{2.5}\right)\right)$$
-3. **Cusp Alignment ($\text{Align}_P$):**
-   * Capped dominance-adjusted conjunction $\min(100.0, C_{P, \text{final}})$ multiplied by:
-     * Prominent houses ($1, 4, 5, 9, 10$): $\times 1.50$
-     * Regular houses ($2, 7, 11$): $\times 1.00$
-     * Hidden houses ($3, 6, 8, 12$): Differentiated by classical role:
-       * Dusthāna lord in Dusthāna ($6, 8, 12$): $\times 1.00$ (Viparīta resilience)
-       * 3rd lord or natural malefics (Sun, Mars, Saturn) in 3rd Upacaya: $\times 0.75$
-       * Other planets in 3rd: $\times 0.25$ (mild Upacaya growth)
-       * Natural malefics in 6th Upacaya: $\times 0.50$ (conquering obstacles)
-       * Venus or dignified planet ($d_P \ge 0.4$) in 12th: $\times (-0.25)$
-       * Other Dusthāna placements: $\times (-0.50)$ (moderated penalty)
-4. **Bhāva Sandhi ($\text{Sandhi}_P$):**
-   * Within $4.0^\circ$ of either sign border:
-     $$\text{SandhiPenalty}_P = \max\left(0.0, 1.0 - \frac{\Delta_{\text{border}}}{4.0}\right)$$
-5. **Combustion & Solar Gain:**
-   * For $P \neq \text{Sun}$: If $\Delta_{\text{Sun}} < \text{Orb}_P$, $\text{CombLoss}_P = 1.0 - \frac{\Delta_{\text{Sun}}}{\text{Orb}_P}$.
-   * For Sun: $\text{SolarGainRatio} = \min\left(0.50, \sum_{Q \neq \text{Sun}} \text{CombLoss}_Q \times 0.25\right)$, multiplier $= 1.0 + \text{SolarGainRatio}$.
-6. **Planetary Synthesis (Sign-Safe Application of Sandhi & Combustion):**
-   $$\text{BaseScore}_P = \frac{D_{\text{pct}, P} + \text{Inf}_P + \text{Align}_P}{3.0}$$
-   * **When $\text{BaseScore}_P \ge 0$:**
-     $$\text{FinalScore}_{\text{Sun}} = \text{BaseScore} \times (1.0 - 0.5 \times \text{SandhiPenalty}) \times (1.0 + \text{SolarGainRatio})$$
-     $$\text{FinalScore}_{P \neq \text{Sun}} = \text{BaseScore} \times (1.0 - 0.5 \times \text{SandhiPenalty}) \times (1.0 - 0.75 \times \text{CombLoss}_P)$$
-   * **When $\text{BaseScore}_P < 0$ (Adds Structural Strain):**
-     $$\text{StrainMult}_{\text{Sun}} = 1.0 + 0.25 \times \text{SandhiPenalty}$$
-     $$\text{FinalScore}_{\text{Sun}} = (\text{BaseScore} \times \text{StrainMult}) + 10.0 \times \text{SolarGainRatio}$$
-     $$\text{StrainMult}_{P \neq \text{Sun}} = 1.0 + 0.25 \times \text{SandhiPenalty} + 0.35 \times \text{CombLoss}_P$$
-     $$\text{FinalScore}_{P \neq \text{Sun}} = \text{BaseScore} \times \text{StrainMult}$$
+1. **Multi-Varga Dignity Blending ($d_P$):**
+   * Incorporates D1 and D9 (*Navāṃśa*, *Phaladīpikā* 3.4 & 3.11).
+   * **Vargottama** ($S_{\text{D1}} == S_{\text{D9}}$): Effective dignity is floored at $\max(d_{\text{D1}}, 0.80)$ (acting as own sign).
+   * Otherwise: $d_P = 0.65 \times d_{\text{D1}} + 0.35 \times d_{\text{D9}}$.
+   * *Active across all house phases:* This composite dignity unit $d_P$ is passed into and utilized across Phase 6 (Basic House Conditions), Phase 7 (Relative Houses), and Phase 8 (House Walls).
+2. **Directional Strength (*Digbala*, *Phaladīpikā* Ch. 4):**
+   * Canonical directional strength based on peak house $H_{\text{peak}}$ (Jupiter/Mercury in H1, Sun/Mars in H10, Saturn in H7, Moon/Venus in H4):
+     $$\text{DigFactor}_P = 1.0 - \frac{\text{shortest\_house\_dist}(H_P, H_{\text{peak}})}{3.0} \in [-1.0, +1.0]$$
+     $$\text{DigBalaPts}_P = 20.0 \times \text{DigFactor}_P \times \text{clamp}(\text{ShadbalaRatio}_P, 0.75, 1.25)$$
+3. **Intrinsic Quality ($\text{QualityBase}_P$):**
+   * Combines Dignity, Incoming Aspects, and Digbala without raw cusp proximity additions:
+     $$\text{QualityBase}_P = 0.50 \times D_{\text{pct}, P} + 0.35 \times \text{Inf}_P + 0.15 \times \text{DigBalaPts}_P$$
+4. **Incoming Influences & Nodal Afflictions / Eclipses (*Grahaṇa*):**
+   * **Incoming Planetary Rays:** When $|F_Q| \le 0.15$, signed impact adopts $S = B \times d_Q$ directly without double multiplication.
+   * When Rāhu or Ketu is in the same sign within $15.0^\circ$ of planet $P$:
+     * Conjunction intensity: $\text{node\_conj} = \left(1.0 - \frac{\Delta\lambda_{\text{node}}}{15.0}\right) \times 100.0$.
+     * **Luminaries (Sun, Moon):** Subtract $0.85 \times \text{node\_conj}$. An eclipse strain factor $\text{eclipse\_loss} = 0.15 \times \left(1.0 - \frac{\Delta\lambda_{\text{node}}}{15.0}\right)$ attenuates intrinsic quality when $\Delta\lambda \le 12.0^\circ$. For the Sun placed in an Upacaya house ($3, 6, 11$) with composite dignity $d_P \ge 0.4$, both $\text{node\_pen}$ and $\text{eclipse\_loss}$ are halved.
+     * **Other Planets:** Subtract $0.50 \times \text{node\_conj}$ (halved in Upacayas $3, 6, 11$).
+   * **Dusthāna Enemy Conjunction Attenuation:** Conjunctions with a Dusthāna lord ($6, 8, 12$) who is a natural enemy are attenuated by $0.50\times$.
+5. **House Placement & Cusp Proximity Prominence Multiplier:**
+   * Prominent houses ($1, 4, 5, 9, 10$): Base $1.25\times$.
+   * Regular houses ($2, 7, 11$): Base $1.00\times$.
+   * Hidden houses ($3, 6, 8, 12$): Base $0.75\times$ to $1.00\times$.
+   * **Afflicted Dusthāna Lord Penalty:** If a lord of $6, 8, 12$ sits in a Dusthāna with $d_{\text{D1}} < 0$, it receives a $0.70\times$ placement penalty.
+   * **Cusp Proximity Factor:**
+     $$\text{CuspProxFactor}_P = 0.80 + 0.40 \times \left(\frac{\text{CappedBase}_P}{100.0}\right)$$
+     $$\text{EffectiveMultiplier}_P = \text{BaseMultiplier}_P \times \text{CuspProxFactor}_P$$
+   * **Vilagna Protection (*Phaladīpikā* 3.9):** If a planet occupies House 1 with $\text{QualityBase} < 0$, its negative dignity strain is softened by $0.50 \times \text{CuspProxFactor}$.
+6. **Bhāva Sandhi ($\text{Sandhi}_P$):** Within $4.0^\circ$ of either sign border.
+7. **Combustion & Solar Gain:** Proximity to Sun within combustion orb.
+8. **Sign-Safe Synthesis:** Produces `final_assessment_score`.
 
 ---
 
@@ -154,50 +159,83 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 
 For each house $H \in \{1, \dots, 12\}$:
 1. Impact $I_{P \to H} = \max(\text{AspectPct}_{P \to \text{Cusp}_H}, \text{DominanceConjPct}_{P \to H})$.
-2. Dignity $d_P$: Extracted via `_get_dignity_status()`, strictly prioritizing compound 5-fold friendship (*Pañcadhā Maitrī*, `final_dignity`) over uncompounded sign dignity.
-3. Functional Nature $F_{P, H}$:
-   * If $P$ rules House $H$: $F_{P, H} = +2$ (House Lord override).
-   * Otherwise: $F_{P, H} = F_P$.
-4. Scaled Signed Impact with Damped Functional Multiplier:
-   $$\text{scaled\_i} = \text{scale\_by\_dignity}(I_{P \to H}, d_P, F_{P, H})$$
-   If $F_{P, H} \neq 0$:
-   $$f_{\text{mult}} = \left(1.0 + 0.65 \times (|F_{P, H}| - 1)\right) \times \text{sgn}(F_{P, H})$$
-   $$\text{Impact}_{P \to H} = \text{scaled\_i} \times f_{\text{mult}}$$
-   If $F_{P, H} = 0$:
-   $$\text{Impact}_{P \to H} = \text{scaled\_i}$$
-   *(Note: `scale_by_dignity` already incorporates the sign of $d_P$ when $F = 0$, preventing double negation).*
-5. **Upacaya (3, 6, 11) Malefic Occupant Attenuation (*BPHS* 50.5 / *Phaladīpikā* 26.2):**
-   When a natural malefic (Sun, Mars, Saturn) physically occupies an Upacaya house ($3, 6, 11$) as a non-lord occupant ($P \in \text{Occupants}_H, P \neq \text{Lord}_H$) with negative functional nature ($F_{P, H} < 0$), its negative impact on its occupied cusp is attenuated:
-   $$\text{Impact}_{P \to H} = \begin{cases} \text{Impact}_{P \to H} \times 0.35 & \text{if } H \in \{3, 6\} \\ \text{Impact}_{P \to H} \times 0.50 & \text{if } H = 11 \end{cases}$$
-   This ensures that malefics building resilience, defeating adversaries, and generating material gains in Upacaya houses do not destroy the very cusps where they classically excel.
-6. **Smooth Continuous Active Divisor:**
-   $$\text{ActiveWeights}_H = \sum_{P=1}^{7} \min\left(1.0, \frac{I_{P \to H}}{45.0}\right)$$
-   $$\text{EffDivisor}_H = \max(4.0, \text{ActiveWeights}_H)$$
-   $$\text{BasicHouseScore}_H = \frac{\sum_{P=1}^{7} \text{Impact}_{P \to H}}{\text{EffDivisor}_H}$$
-   *(Eliminates step-function cliffs at the $25\%$ threshold, keeping scores smooth and balanced in $[-100, +100]$).*
+   * Non-occupant aspects with $I_{P \to H} < 25.0$ are filtered out ($0.0$).
+2. Dignity $d_P$ and Effective Functional Nature $F_{P, H}$:
+   * **House Lord:** $F_{\text{eff}} = 2.0$.
+   * **Non-Lord Planets:** Blend $50\%$ Lagna functional nature + $50\%$ natural temperament ($\times 2.0$) $\pm 0.50$ friendship to house lord:
+     $$F_{\text{eff}} = 0.50 \times F_{\text{lagna}} + 0.50 \times (\text{NatT} \times 2.0) \pm 0.50 \text{ (friendship to lord)}$$
+3. **Condition-Gating (*Amūḍha-Hīnāḥ*, *Phaladīpikā* 15.1, 15.5):**
+   $$\text{ConditionIntegrity} = (1.0 - 0.75 \times \text{CombLoss}_P) \times (1.0 - 0.50 \times \text{SandhiPen}_P)$$
+   * Benefic impacts ($\text{signed\_impact} > 0$) are multiplied by $\text{ConditionIntegrity}$.
+   * **Dusthāna Enemy Attenuation (*Arinīca-Mūḍha*):** If a planet has negative D1 dignity ($d_{\text{D1}} < 0$), its positive cusp rays are attenuated by $0.55\times$, and by an additional $0.75\times$ if occupying a Dusthāna ($6, 8, 12$), preventing afflicted planets from projecting runaway positive points.
+   * Malefic impacts ($\text{signed\_impact} < 0$) are intensified by combustion: $(1.0 + 0.35 \times \text{CombLoss}_P) \times (1.0 - 0.30 \times \text{SandhiPen}_P)$.
+4. **Upacaya (3, 6, 11) Malefic Occupant Rule (*Phaladīpikā* 15.18):**
+   When a natural malefic (Sun, Mars, Saturn) occupies an Upacaya house as a non-lord occupant, its negative cusp impact is converted to a positive resilience boost:
+   $$\text{Impact}_{P \to H} = |\text{scaled\_i}| \times 0.35$$
+5. **Rāhu & Ketu Cusp Impact (*Phaladīpikā* 15.8):**
+   * If in the same sign as the cusp: $C_{\text{node}} = \max\left(35.0, \left(1.0 - \frac{\text{dist}}{30.0}\right) \times 100.0\right)$.
+   * If in adjacent sign within $15^\circ$ of cusp: $C_{\text{node}} = 0.50 \times \left(1.0 - \frac{\text{dist}}{30.0}\right) \times 100.0$ (halved cross-border, no $35\%$ floor).
+   * Upacaya houses ($3, 6, 11$): $+0.35 \times C_{\text{node}}$.
+   * Non-Upacaya houses: $-0.60 \times C_{\text{node}} \times \text{MitFactor}$ (where $\text{MitFactor} = 0.50$ if node is dignified or aspected/conjoined by Jupiter or Venus; $1.00$ otherwise).
+6. **Active Divisor Floor:**
+   $$\text{EffDivisor}_H = \max(3.0, \text{ActiveWeights}_H)$$
+   Scores clamped within $[-120.0, +120.0]$.
 
 ---
 
-### Phase 7: Relative House Technique — *Bhavāt Bhavam* (*Phaladīpikā* 15.2 & 15.4)
+### Phase 7: Relative House Technique — *Bhavāt Bhavam* (*Phaladīpikā* 15.2–15.5)
 
 Treats each target house $H$ as House 1:
-1. Relative house of planet $P$: $R_{P, H} = ((\text{House}_P - H) \pmod{12}) + 1$.
-   * **Core Kendra-Koṇa (KK) Group (*Phaladīpikā* 15.2):** Relative houses $2, 4, 5, 7, 9, 10$ (weight $1.0$).
-   * **Secondary Support Group:**
-     * Relative House $11$ (weight $0.50$).
-     * Relative House $1$ is included **only** when $F_{P \mid H} > 0$ (weight $0.50$), rewarding houses occupied by their own lord or relative benefics while preventing quadruple-counting of malefic occupants.
-   * **Dusthāna Group:** Relative houses $6, 8, 12$.
-2. Relative Functional Nature $F_{P \mid H}$: Re-computed with House $H$ as 1st house. If a planet has a raw relative functional score of $0$ (neutral), its dignity unit $d_P$ serves as its functional nature, scaled cleanly without double dignity squaring.
-3. KK and secondary support planets contribute their dignity-scaled score.
-4. Dusthāna relative malefics generate negative points; mitigated by average aspect percentage cast onto them by relative benefics ($\overline{\text{Mit}}$) and benefic co-occupancy ($+15\%$ per benefic). Relative benefics in Dusthānas contribute $0$ and do not increment $N_{\text{active}}$.
-5. Denominator floored at $4.0$: $\text{RelScore}_H = \frac{\text{KK\_Points} + \text{Dusthana\_Mitigated}}{\max(4.0, N_{\text{active}})}$.
+1. **House Lord Relative Placement ($R_{\text{Lord}, H}$):**
+   * **Relative 1, 2, 4, 5, 7, 9, 10 (*Kendra / Trikoṇa / 2nd*, 15.2):** Weight $1.0$, plus degree-aspect proximity bonus when close to exact $0^\circ, 90^\circ, 120^\circ, 180^\circ$ aspect angles.
+   * **Relative 3, 11 (*Upacaya*, 15.18):** Weight $0.50$.
+   * **Relative 6, 8, 12 (*Bhāva-Nāśa*, 15.3 & 15.5):**
+     * If the Lord is in its other own sign (*Svakṣetra* per 15.29), penalty is $0.0$.
+     * Otherwise, base penalty: $-110.0$ in R8, $-80.0$ in R12, $-70.0$ in R6.
+     * Halved ($0.50\times$) if the Lord is dignified ($d_P \ge 0.4$) and uncombust; amplified if debilitated or combust.
+     * Benefic aspects onto the Lord mitigate this penalty.
+2. **Non-Lord Planets in Relative Houses:**
+   * Relative 2, 4, 5, 7, 9, 10: Weight $1.0$.
+   * Relative 11: Weight $0.50$; Relative 3: Weight $0.40$ (secondary Upacaya growth support).
+   * Relative 1: $+0.50\times$ if $F_{\text{rel}} > 0$; $-0.75\times$ if $F_{\text{rel}} < 0$.
+   * Relative 6, 8, 12: Adds to raw Dusthāna penalty if $F_{\text{rel}} < 0$.
+3. **Benefic Mitigation:** Malefics in relative Dusthānas are mitigated strictly by direct aspects from relative benefics.
+4. **Denominator Floor:** $\text{denom} = \max(3.0, N_{\text{active}})$.
+
+---
+
+### Phase 7B: Bhāva Kāraka & Kāraka Lagna Engine (*Phaladīpikā* 15.5–6, 15.15–20, 15.25)
+
+Every house evaluation incorporates the condition and perspective of its natural representative (*Bhāva Kāraka*):
+* **Kāraka Directory:**
+  * House 1: Sun | House 2: Jupiter | House 3: Mars
+  * House 4: Moon, Mercury | House 5: Jupiter | House 6: Saturn, Mars
+  * House 7: Venus | House 8: Saturn | House 9: Jupiter, Sun
+  * House 10: Mercury, Sun, Jupiter, Saturn | House 11: Jupiter | House 12: Saturn
+* **Three-Factor Synthesis for each Kāraka $K$:**
+  1. Direct Planet Condition ($\text{k\_planet\_score} = \text{planets\_eval}[K]$).
+  2. Relative House Placement ($R_{K, H} = ((\text{House}_K - H) \pmod{12}) + 1$): $+15.0$ for Kendra/Trine/2nd/11th, $-15.0$ for Dusthāna ($6, 8, 12$), $+5.0$ for H3.
+  3. Kāraka Lagna Score ($\text{k\_lagna\_house\_score}$): Baseline condition of the natal house corresponding to the $H$-th sign counted forward from Kāraka $K$.
+  $$\text{Score}_K = 0.55 \times \text{k\_planet\_score} + 0.30 \times \text{k\_lagna\_house\_score} + 0.15 \times \text{k\_rel\_bonus}$$
+
+---
+
+### Phase 7C: Chandra Lagna (Lunar Reference Frame) Assessment
+
+* Computes the corresponding house counted from the Moon's occupied house:
+  $$H_{\text{Chandra}} = ((H_{\text{Moon}} - 1 + H - 1) \pmod{12}) + 1$$
+* Exposed in `components["chandra_lagna_assessment"]` with baseline score from $H_{\text{Chandra}}$.
+* **Active Mathematical Weight:** Blended directly with Relative Houses (*Bhavāt Bhavam*) before computing the house composite:
+  $$R_{\text{combined}, H} = 0.80 \times \text{Relative}_H + 0.20 \times \text{Chandra}_H$$
 
 ---
 
 ### Phase 8: Quantified House Walls — *Kartarī Yoga*
 
 * Evaluates physical planets within $(0^\circ, 30^\circ)$ before and after $\text{Cusp}_H$.
-* Flanking planets occupying the same Whole Sign house are attenuated by $0.5$ to prevent double-counting direct cusp conjunctions.
+* **True Kartarī Sign Adjacency (*Phaladīpikā* 15.6):**
+  Requires true flanking across sign borders: $P_{\text{before}}$ must sit in the immediately preceding sign ($\text{Sign}_{H-1}$) and $P_{\text{after}}$ in the house sign or immediately following sign ($\text{Sign}_H$ or $\text{Sign}_{H+1}$), or both planets in $\text{Sign}_H$. An empty preceding sign cannot form a Kartarī wall.
+* Flanking planets occupying the same Whole Sign house are attenuated by $0.50$.
 * Compressed into $[-120, +120]$ range via hyperbolic tangent:
   $$\text{WallScore}_H = 120.0 \times \tanh\left(\frac{\text{RawScore}_H}{180.0}\right)$$
 
@@ -205,66 +243,50 @@ Treats each target house $H$ as House 1:
 
 ### Phase 9: Numerical House Yoga Scoring (Certified Classical Yoga Engine)
 
-Ingests certified classical yogas directly from Astra's `jyotish/yogas/` engine (`chart_dict["yogas"]`), eliminating synthetic pairwise pseudo-yogas and respecting *Yoga Bhaṅga* status:
-1. **Broken Yogas:** Yogas marked as `BROKEN` are completely excluded.
-2. **Mitigation / Bhaṅga Multipliers:**
-   * Negative / Affliction Yogas: `RESCUED` reduces penalty to $25\%$; `STAINED` reduces penalty to $60\%$.
-   * Auspicious Yogas (Rāja, Dhana, Mahāpuruṣa, Viparīta): `PURE` $\times 1.00$, `RESCUED` $\times 0.70$, `STAINED` $\times 0.50$.
-3. **Classical Categories Evaluated:**
-   * **Negative / Affliction Yogas:** Broadened detection catches Dāridrya, Dainya, Kemadruma, Śakaṭa, Grahaṇa, Guru-Caṇḍāla, Kāla Sarpa, Viṣa, Kuja Doṣa, and all Arishta/Doṣa/Pāpa afflictions. Base penalty $-80.0 \times \text{plaus\_mult} \times \text{status\_mult}$ afflicts designated participating/owned houses and hosting Dusthānas (hosting Dusthāna receives $-50\%$ penalty, never an artificial positive reward).
-   * **Auspicious Parivartana Yogas (Mahā / Kahala):** $+95.0$ base points to exchanged houses.
-   * **Pañca Mahāpuruṣa Yogas:** $+90.0$ base points to occupied Kendra, $+67.5$ points to owned houses (excluding Dusthānas $6, 8, 12$).
-   * **Rāja, Dhana, Yogakāraka, Viparīta Yogas:**
-     * Viparīta Yogas receive $+80.0$ base points.
-     * Major Rāja and Dhana Yogas receive $+90.0$ base points.
-     * Minor solar / lunar yogas (*Sunaphā*, *Anaphā*, *Veśi*, *Vaśi*, *Budha-Āditya*, etc.) receive $+45.0$ base points.
-     * Secondary Dusthāna lordships ($6, 8, 12$) are strictly excluded from receiving Rāja/Dhana ownership points.
-     * When a non-Viparīta Rāja/Dhana yoga occurs inside a Dusthāna ($6, 8, 12$), the hosting Dusthāna receives only $25\%$ spillover ($0.25\times$) so it never outranks the owned houses.
-4. **Dispositor-Routed Ownership Attribution (Anti-Smearing):**
-   When planets with dual rulerships (Mars, Mercury, Jupiter, Venus, Saturn) participate in an auspicious yoga, their owned houses are no longer smeared with uniform credit. Instead, credit is strictly channeled through the active dispositor chain:
-   * **Occupied Houses:** Receive full intensity ($1.00\times$) where participating planets physically reside.
-   * **Yoga-Initiating / Traversed Chain Houses:** Houses whose signs initiate the yoga or form part of the direct energy chain receive $0.75\times$ (single rulers Sun and Moon also receive $0.75\times$).
-   * **Final Dispositor's Secondary Houses:** The fallback houses owned by the Final Dispositor (the planet tracked a second time) receive $0.60\times$ credit.
-   * **Unvisited Secondary Signs:** Secondary houses of non-final planets that do not participate in the active energy loop are strictly excluded ($0.0\times$).
-   * **Dusthāna Spillover:** Occupied Dusthānas receive only $0.25\times$ spillover; unoccupied Dusthānas receive $0.0\times$.
-5. **Smooth Saturation:**
-   $$\text{TotalYogaScore}_H = 150.0 \times \tanh\left(\frac{Y_{\text{raw}, H}}{150.0}\right)$$
-   Guarantees that multi-yoga clusters remain bounded within $[-150.0, +150.0]$.
+* Ingests certified classical yogas directly from Astra's `jyotish/yogas/` engine (`chart_dict["yogas"]`).
+* **Classical Affliction Detection:** Expands `is_negative_yoga` to catch all classical affliction, poverty, disgrace, and friction patterns (`Niḥsva`, `Duṣkṛti`, `Mṛti`, `Śatru`, `Adhama`, `Aśubha`, `Depleted`, `Disgraced`, `Broken Initiatives`, `Pāpakartarī`, `Bandhana`, `Apakīrti`, `Dusthāna`, `Inauspicious`, etc.).
+* **Global Nabhasa Sankhya Restriction:** Broad pattern yogas formed by $\ge 6$ planets (e.g., `Dāma`, `Pāśa`, `Kedāra`, `Śūla`, `Yuga`, `Gola`, `Vallakī`) do NOT credit all 12 owned houses; instead, their impact is focused strictly on physically occupied houses with $0.35\times$ base points.
+* **Direct Attribution (Anti-Smearing):** Credit is awarded strictly to:
+  * **Occupied Houses:** $1.00\times$ where yoga-forming planets physically sit.
+  * **Explicit Participating Houses:** $0.75\times$ (or directly owned houses at $0.50\times$).
+* **Rescaled Base Points:**
+  * Parivartana: $65.0$
+  * Mahāpuruṣa: $65.0$
+  * Major Rāja / Dhana: $60.0$
+  * Viparīta Rāja: $65.0$ (awards full points to Dusthāna houses $6, 8, 12$ per *Phaladīpikā* 6.57–70)
+  * Minor Auspicious: $30.0$
+  * Negative / Affliction: $-60.0$
+* **Smooth Saturation:**
+  $$\text{TotalYogaScore}_H = 100.0 \times \tanh\left(\frac{Y_{\text{raw}, H}}{120.0}\right)$$
 
 ---
 
 ### Phase 10: Dispositor Chain Tracking & House Lord Synthesis
 
-In astrology, a **dispositor** is simply the planetary "landlord" of the sign where another planet sits. Just as a tenant depends on their landlord for house maintenance, a planet's strength depends on the health of its dispositor.
-
 #### 1. The "Second-Time Tracked = Final Dispositor" Rule
-To find who truly holds ultimate authority over a house or planet, we follow the chain of landlords step-by-step:
-1. Start at the House Lord $P_0$. Record visit count $\text{count}[P_0] = 1$.
-2. Look at the zodiac sign where $P_0$ is located, and identify its ruler (its landlord) $P_1$.
-3. Increment $\text{count}[P_1]$.
-4. **Stopping Condition:** The exact instant any planet is visited for the **second time** ($\text{count}[P_k] = 2$), the chain halts immediately. That planet $P_k$ is declared the unique **Final Dispositor** for that starting point.
+Traverses planet $\to$ sign lord until a planet is encountered a second time.
 
-> [!NOTE]
-> **Guaranteed Finite Termination (Pigeonhole Principle):**
-> Because there are only 7 classical sign lords (Sun through Saturn), stepping along sign rulerships is mathematically guaranteed to encounter a repeat within at most 8 steps ($1 \le \text{hops} \le 7$). An infinite loop is impossible.
+#### 2. Dispositor Synthesis Archetypes
+1. **Svakṣetra Lord (1-hop):** $\text{EffectiveLordScore}_H = \text{LordScore} + 15.0$.
+2. **Loop Returning to Self (*Parivartana*):** Restricted strictly to true 2-planet mutual sign exchanges ($\text{hops\_to\_repeat} == 2$):
+   * If *Mahā Parivartana* (no Dusthāna involved): $(0.80 \times \text{LordScore} + 0.20 \times \text{PartnerScore}) + 15.0$.
+   * If *Dainya Parivartana* (Dusthāna exchange with good house): $(0.80 \times \text{LordScore} + 0.20 \times \text{PartnerScore}) - 10.0$.
+3. **Fallback to Final Dispositor (including loops with $\text{hops} \ge 3$):**
+   $$\text{EffectiveLordScore}_H = 0.65 \times \text{LordScore} + 0.20 \times \text{ImmediateDispScore} + 0.15 \times \text{FinalDispScore}$$
+4. **House Lord Digbala Bonus:** Adds $+0.15 \times \text{DigBalaPts}_{\text{Lord}}$.
+5. **Direct Lord-in-Dusthāna Structural Penalty (*Phaladīpikā* 15.18 & 6.57):**
+   * Applied when the lord is in a Dusthāna from its own house ($r_{\text{lord}} \in [6, 8, 12]$) ($-12.0$ for R8, $-8.0$ for R6/R12) or in an unmitigated 12th house placement ($-8.0$).
+   * Doubled only if $d_{\text{D1}} < 0$ and $\text{LordScore} \ge 0$ (avoiding double-counting when `LordScore` is already negative).
+   * Waived if the lord is in own/exaltation sign or forms a dignified Viparīta Rāja Yoga ($d_{\text{D1}} \ge 0.40$).
 
-#### 2. Three Structural Dispositor Archetypes
-1. **Planet in its Own Sign (*Svakṣetra*, 1-hop):**
-   * Example: Mars in Scorpio $\to$ Mars's landlord is Mars ($\text{count}[\text{Mars}] = 2 \implies \text{STOP}$).
-   * The planet is sovereign in its own home. It receives a $+20.0$ resilience protection bonus:
-     $$\text{EffectiveLordScore}_H = \text{LordScore} + 20.0$$
-2. **Mutual Exchange / Multi-Planet Loop (*Parivartana*, $\text{returns\_to\_self} = \text{True}$):**
-   * Example: Venus in Cancer $\to$ Moon in Sagittarius $\to$ Jupiter in Libra $\to$ Venus ($\text{count}[\text{Venus}] = 2 \implies \text{STOP}$).
-   * The chain loops back to the starting lord. The lord is buffered by its direct dispositor partner ($20\%$) and receives a $+15.0$ loop resonance bonus:
-     $$\text{EffectiveLordScore}_H = (0.80 \times \text{LordScore} + 0.20 \times \text{PartnerScore}) + 15.0$$
-3. **Fallback to Independent Final Dispositor ($\text{final\_dispositor} \neq \text{Lord}$):**
-   * Example: Sun in Scorpio $\to$ Mars in Virgo $\to$ Mercury in Scorpio $\to$ Mars ($\text{count}[\text{Mars}] = 2 \implies \text{STOP}$). Mars is the Final Dispositor for the Sun.
-   * The lord's baseline assessment is anchored $75\%$ on itself and $25\%$ on its Final Dispositor:
-     $$\text{EffectiveLordScore}_H = 0.75 \times \text{LordScore} + 0.25 \times \text{FinalDispositorScore}$$
-
-#### 3. House Lord & Occupants Synthesis
-To prevent passing guests (planets temporarily visiting a house) from washing out the permanent master of the house, the combined assessment anchors $70\%$ on the House Lord and $30\%$ on non-lord occupants:
-$$\text{CombinedLordScore}_H = \begin{cases} 0.70 \times \text{EffectiveLordScore}_H + 0.30 \times \overline{\text{Occupants}} & \text{if non-lord occupants exist} \\ \text{EffectiveLordScore}_H & \text{otherwise} \end{cases}$$
+#### 3. Sign-Correct Occupant Synthesis
+Each non-lord occupant is evaluated by its effective house polarity ($+1.0$ for 1st lord in non-Dusthānas, $+0.50$ for malefics in Upacayas, $-1.0$ for malefics in non-Upacayas):
+* **Deadband for Moon / Mild Benefics:** When $F \in [-0.15, +0.15]$, polarity is positive ($+1.0$) if $d_{\text{D1}} \ge 0$, and malefic ($-1.0$) only if $d_{\text{D1}} < 0$.
+* For positive polarity ($\text{polarity} > 0$): $\text{occ\_contrib} = \text{Score}_P \times \text{polarity}$.
+* For negative polarity ($\text{polarity} < 0$, non-lord malefic in non-Upacaya house per *Phaladīpikā* 15.1 & 15.18):
+  * If $\text{Score}_P \ge 0$ (dignified malefic): $\text{occ\_contrib} = -45.0 \times \left(1.0 - 0.50 \times \min\left(1.0, \frac{\text{Score}_P}{100.0}\right)\right)$ (softened bad results up to half).
+  * If $\text{Score}_P < 0$ (afflicted malefic): $\text{occ\_contrib} = -45.0 \times \left(1.0 + \min\left(1.0, \frac{|\text{Score}_P|}{100.0}\right)\right)$ (intensified bad results up to $2\times$).
+$$\text{CombinedLordScore}_H = \begin{cases} 0.70 \times \text{EffectiveLordScore}_H + 0.30 \times \overline{\text{OccupantImpacts}} & \text{if non-lord occupants exist} \\ \text{EffectiveLordScore}_H & \text{otherwise} \end{cases}$$
 
 ---
 

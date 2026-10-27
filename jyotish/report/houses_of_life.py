@@ -2,7 +2,7 @@
 jyotish/report/houses_of_life.py
 
 Stage 4 Report Engine: Vic DiCara's "Houses of Life" Quantitative House & Planetary
-Evaluation System (based on Phaladīpikā Chapter 15).
+Evaluation System (based on Phaladīpikā Chapters 3, 4, 6, and 15).
 
 Consumes the read-only serialized chart_dict from ChartPipeline.to_dict() without
 modifying any Frozen Core Calculus modules (Stages 1-3).
@@ -18,6 +18,7 @@ from jyotish.baseline import (
     COMBUSTION_ORBS,
     COMBUSTION_ORBS_RETROGRADE,
 )
+from jyotish.relationships.relationships import get_natural_relationship
 
 CLASSICAL_PLANETS: List[str] = [
     "Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn"
@@ -65,15 +66,42 @@ DICARA_D1_DIGNITY_MAP: Dict[str, float] = {
     "Deep Debilitation": -1.0,
 }
 
-# Natural temperament for Rule 4
-NATURAL_TEMPERAMENT: Dict[str, int] = {
+# Base natural temperaments for Rule 4
+NATURAL_TEMPERAMENT: Dict[str, float] = {
+    "Jupiter": 1.0,
+    "Venus": 1.0,
+    "Mars": -1.0,
+    "Saturn": -1.0,
+    "Sun": -0.5,
+    "Moon": 0.5,
+    "Mercury": 0.5,
+}
+
+# Digbala canonical peak houses per Phaladeepika Ch. 4
+DIGBALA_PEAK_HOUSES: Dict[str, int] = {
     "Jupiter": 1,
-    "Venus": 1,
-    "Mars": -1,
-    "Saturn": -1,
-    "Sun": 0,
-    "Moon": 0,
-    "Mercury": 0,
+    "Mercury": 1,
+    "Sun": 10,
+    "Mars": 10,
+    "Saturn": 7,
+    "Moon": 4,
+    "Venus": 4,
+}
+
+# Bhava Karakas per Phaladeepika Ch. 15 / DiCara disclosures
+DICARA_HOUSE_KARAKAS: Dict[int, List[str]] = {
+    1: ["Sun"],
+    2: ["Jupiter"],
+    3: ["Mars"],
+    4: ["Moon", "Mercury"],       # Phaladeepika 15.15-16 merges Moon & Mercury for 4th
+    5: ["Jupiter"],
+    6: ["Saturn", "Mars"],
+    7: ["Venus"],
+    8: ["Saturn"],
+    9: ["Jupiter", "Sun"],
+    10: ["Mercury", "Sun", "Jupiter", "Saturn"],
+    11: ["Jupiter"],
+    12: ["Saturn"],
 }
 
 
@@ -83,6 +111,12 @@ def _shortest_distance(lon1: float, lon2: float) -> float:
     return 360.0 - diff if diff > 180.0 else diff
 
 
+def _shortest_house_dist(h1: int, h2: int) -> int:
+    """Calculates the minimal house distance between two houses on a 12-house circle."""
+    diff = abs(h1 - h2) % 12
+    return 12 - diff if diff > 6 else diff
+
+
 def _get_dignity_status(p_data: Dict[str, Any]) -> str:
     """Returns compound Pancadha Maitri final_dignity if available, else base dignity."""
     bd = p_data.get("dignity_breakdown")
@@ -90,6 +124,63 @@ def _get_dignity_status(p_data: Dict[str, Any]) -> str:
         return str(bd["final_dignity"])
     return str(p_data.get("dignity") or "Neutral")
 
+
+def _get_composite_dignity_unit(
+    p_name: str,
+    chart_dict: Optional[Dict[str, Any]],
+    d1_grahas: Dict[str, Any]
+) -> float:
+    """
+    Computes multi-varga dignity blending D1 and D9 (Navāṁśa per Phaladīpikā 3.4 & 3.11).
+    Accounts for Vargottama (acting like own sign per Phaladīpikā 3.4, floored at 0.80).
+    """
+    d1_status = _get_dignity_status(d1_grahas.get(p_name, {}))
+    d_d1 = DICARA_D1_DIGNITY_MAP.get(d1_status, 0.0)
+
+    if not chart_dict:
+        return d_d1
+
+    d9_grahas = chart_dict.get("vargas", {}).get("D9", {}).get("grahas", {})
+    if p_name in d9_grahas:
+        d9_status = _get_dignity_status(d9_grahas[p_name])
+        d_d9 = DICARA_D1_DIGNITY_MAP.get(d9_status, 0.0)
+        d1_sign = d1_grahas.get(p_name, {}).get("sign")
+        d9_sign = d9_grahas[p_name].get("sign")
+        is_vargottama = (d1_sign is not None and d1_sign == d9_sign)
+
+        if is_vargottama:
+            effective_d = max(d_d1, 0.80)
+        else:
+            effective_d = 0.65 * d_d1 + 0.35 * d_d9
+        return max(-1.0, min(1.0, effective_d))
+
+    return d_d1
+
+
+def _get_bala_and_digbala_bonus(
+    p_name: str,
+    p_house: int,
+    chart_dict: Optional[Dict[str, Any]] = None
+) -> Tuple[float, float]:
+    """
+    Extracts canonical Digbala factor in [-1.0, +1.0] and returns (bala_ratio, digbala_pts).
+    Formula: DigFactor_P = 1.0 - (shortest_house_dist(H_P, H_peak) / 3.0)
+    digbala_pts = 20.0 * DigFactor_P
+    """
+    h_peak = DIGBALA_PEAK_HOUSES.get(p_name, 1)
+    dist = _shortest_house_dist(p_house, h_peak)
+    dig_factor = 1.0 - (dist / 3.0)
+    digbala_pts = 20.0 * dig_factor
+
+    bala_ratio = 1.0
+    if chart_dict and "shadbala" in chart_dict:
+        sb_entry = chart_dict["shadbala"].get(p_name, {})
+        if isinstance(sb_entry, dict) and "shadbala_ratio" in sb_entry:
+            bala_ratio = float(sb_entry["shadbala_ratio"])
+            clamped_bala = max(0.75, min(1.25, bala_ratio))
+            digbala_pts = digbala_pts * clamped_bala
+
+    return bala_ratio, digbala_pts
 
 
 def _extract_whole_sign_geometry(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -135,11 +226,14 @@ def _extract_whole_sign_geometry(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
-def calculate_functional_nature(reference_sign: str) -> Dict[str, Dict[str, Any]]:
+def calculate_functional_nature(
+    reference_sign: str,
+    d1_grahas: Optional[Dict[str, Any]] = None
+) -> Dict[str, Dict[str, Any]]:
     """
     Implements Phase 2: Planetary Functional Nature Quantification (F_P).
-    Incorporates Phaladeepika Ch. 15 Rules 1-4 and BPHS Ch. 34 Yogakaraka /
-    Kendradhipatya adjustments for any reference_sign.
+    Incorporates Phaladīpikā Ch. 15 Rules 1-4, Svakṣetra dual-lordship overrides (15.29),
+    Moon Pakṣa Bala elongation, Mercury malefic association, and BPHS Ch. 34 Yogakaraka adjustments.
     """
     ref_idx = ZODIAC_SIGNS.index(reference_sign)
 
@@ -148,6 +242,36 @@ def calculate_functional_nature(reference_sign: str) -> Dict[str, Dict[str, Any]
         return ((idx - ref_idx) % 12) + 1
 
     results: Dict[str, Dict[str, Any]] = {}
+
+    # Calculate Moon brightness (Pakṣa Bala) if chart planetary positions exist
+    moon_inherent = 0.5
+    if d1_grahas and "Moon" in d1_grahas and "Sun" in d1_grahas:
+        try:
+            m_lon = float(d1_grahas["Moon"]["longitude"])
+            s_lon = float(d1_grahas["Sun"]["longitude"])
+            delta_moon_sun = _shortest_distance(m_lon, s_lon)
+            paksa_factor = delta_moon_sun / 180.0
+            if delta_moon_sun >= 165.0:
+                moon_inherent = 1.0
+            else:
+                moon_inherent = round(-0.5 + 1.5 * paksa_factor, 4)
+        except (KeyError, TypeError, ValueError):
+            moon_inherent = 0.5
+
+    # Check Mercury condition: afflicted if within 10 deg of malefic in same sign
+    merc_inherent = 0.5
+    if d1_grahas and "Mercury" in d1_grahas:
+        try:
+            merc_sign = d1_grahas["Mercury"].get("sign")
+            merc_lon = float(d1_grahas["Mercury"]["longitude"])
+            for mal in ["Mars", "Saturn", "Rahu", "Ketu"]:
+                if mal in d1_grahas and d1_grahas[mal].get("sign") == merc_sign:
+                    mal_lon = float(d1_grahas[mal]["longitude"])
+                    if _shortest_distance(merc_lon, mal_lon) <= 10.0:
+                        merc_inherent = -0.5
+                        break
+        except (KeyError, TypeError, ValueError):
+            merc_inherent = 0.5
 
     for p in CLASSICAL_PLANETS:
         mt_sign = DICARA_MOOLATRIKONA_SIGNS[p]
@@ -164,62 +288,84 @@ def calculate_functional_nature(reference_sign: str) -> Dict[str, Dict[str, Any]
             if dom_sign:
                 owned_houses.append(house_of_sign(dom_sign))
 
-        # Rule 1: 1st House Lord check
+        # Base inherent temperament
+        if p == "Moon":
+            inherent_score = moon_inherent
+        elif p == "Mercury":
+            inherent_score = merc_inherent
+        elif p == "Sun":
+            inherent_score = -0.5
+        else:
+            inherent_score = NATURAL_TEMPERAMENT.get(p, 0.0)
+
+        # Rule 1: 1st House Lord check (unconditional flat +3)
         if 1 in owned_houses:
             results[p] = {
-                "score": 3,
+                "score": 3.0,
                 "classification": "Benefic",
                 "rule_breakdown": {
                     "is_first_lord": True,
-                    "trine_score": 0,
-                    "dusthana_score": 0,
-                    "inherent_score": 0
+                    "trine_score": 0.0,
+                    "dusthana_score": 0.0,
+                    "inherent_score": inherent_score
                 }
             }
             continue
 
-        # Rule 2 & 3: Trines (5, 9) and Dusthanas (6, 8, 12)
-        trine_score = 0
-        dusthana_score = 0
+        # Rule 2 & 3: Trines (5, 9) and Dusthānas (6, 8, 12)
+        trine_score = 0.0
+        dusthana_score = 0.0
 
         h_mt = house_of_sign(mt_sign)
         h_dom = house_of_sign(dom_sign) if dom_sign else None
 
         # Special Edge Case for Moon: Sagittarius Lagna (Taurus = H6, Cancer = H8)
         if p == "Moon" and h_mt in [6, 8, 12] and h_dom in [6, 8, 12]:
-            dusthana_score = -2
+            dusthana_score = -2.0
         else:
             if h_mt in [5, 9]:
-                trine_score += 2
+                trine_score += 2.0
             elif h_mt in [6, 8, 12]:
-                dusthana_score -= 2
+                dusthana_score -= 2.0
 
             if h_dom:
                 if h_dom in [5, 9]:
-                    trine_score += 1
+                    trine_score += 1.0
                 elif h_dom in [6, 8, 12]:
-                    dusthana_score -= 1
+                    dusthana_score -= 1.0
 
-        # Rule 4: Inherent temperament + Classical Yogakaraka adjustment (BPHS Ch. 34)
-        inherent_score = NATURAL_TEMPERAMENT.get(p, 0)
+        # Svakṣetra Dual-Lordship Override (Phaladīpikā 15.29):
+        # When a planet physically occupies one of its own signs corresponding to a non-Dusthāna house,
+        # its secondary Dusthāna lordship blemish is waived.
+        if d1_grahas and p in d1_grahas:
+            p_sign = d1_grahas[p].get("sign")
+            valid_own = [mt_sign]
+            if dom_sign:
+                valid_own.append(dom_sign)
+            if p_sign in valid_own:
+                h_occ = house_of_sign(p_sign)
+                if h_occ not in [6, 8, 12]:
+                    dusthana_score = 0.0
+
+        # Rule 4: Inherent temperament + Classical Yogakāraka adjustment (BPHS Ch. 34)
         owns_kendra = any(h in [4, 7, 10] for h in owned_houses)
         owns_trine = any(h in [5, 9] for h in owned_houses)
 
         if owns_kendra and owns_trine:
             # Supreme Raja Yogakaraka (Mars for Cancer/Leo, Saturn for Taurus/Libra)
-            inherent_score = max(0, inherent_score) + 1
+            inherent_score = max(0.0, inherent_score) + 1.0
 
         net_f = trine_score + dusthana_score + inherent_score
         classification = "Benefic" if net_f > 0 else ("Malefic" if net_f < 0 else "Neutral")
 
         results[p] = {
-            "score": net_f,
+            "score": round(net_f, 2),
             "classification": classification,
             "rule_breakdown": {
                 "is_first_lord": False,
-                "trine_score": trine_score,
-                "dusthana_score": dusthana_score,
-                "inherent_score": inherent_score
+                "trine_score": round(trine_score, 2),
+                "dusthana_score": round(dusthana_score, 2),
+                "inherent_score": round(inherent_score, 2)
             }
         }
 
@@ -231,23 +377,23 @@ def scale_by_dignity(base_val: float, dignity_unit: float, functional_score: flo
     Universal Dignity-Scaling Law (Phase 3).
     Scales a non-negative base magnitude by the planet's dignity d_P in [-1.0, +1.0]
     according to functional score F.
+    Severe debilitation (d = -1.0) retains only 0.20x of good results per Phaladīpikā 15.18.
     """
     b = abs(base_val)
     d = max(-1.0, min(1.0, float(dignity_unit)))
 
-    if functional_score > 0:
+    if abs(functional_score) <= 0.15:
+        return b * d
+    elif functional_score > 0:
         if d >= 0:
             return b * (1.0 + d)
         else:
-            return b * (1.0 - abs(d) / 2.0)
-    elif functional_score < 0:
+            return b * (1.0 - 0.80 * abs(d))
+    else:  # functional_score < 0
         if d <= 0:
             return b * (1.0 + abs(d))
         else:
             return b * (1.0 - d / 2.0)
-    else:  # functional_score == 0
-        sgn = 1.0 if d > 0 else (-1.0 if d < 0 else 0.0)
-        return b * (1.0 + abs(d)) * sgn
 
 
 def calculate_cusp_and_planet_influences(
@@ -272,7 +418,7 @@ def calculate_cusp_and_planet_influences(
             r_lon = float(d1_grahas[receiver]["longitude"])
             r_sign = d1_grahas[receiver]["sign"]
 
-            # Aspect Virupas
+            # Aspect Virūpas
             virupas = 0.0
             p_aspects = adv_aspects.get("planets", {}).get(sender, {})
             if receiver in p_aspects:
@@ -302,7 +448,6 @@ def calculate_cusp_and_planet_influences(
     # Compute raw conjunctions and aspect percentages to each house cusp
     for h, h_data in houses_dict.items():
         cusp_lon = h_data["cusp_longitude"]
-        h_sign = h_data["sign"]
         occupants = h_data["occupants"]
 
         # Raw conjunction for occupants in this sign (with 35% Whole-Sign presence floor)
@@ -357,7 +502,18 @@ def calculate_cusp_and_planet_influences(
         # Final planet_to_cusp impact
         for p in CLASSICAL_PLANETS:
             p_lon = float(d1_grahas[p]["longitude"])
+            p_sign = d1_grahas[p]["sign"]
+            p_sign_idx = ZODIAC_SIGNS.index(p_sign)
+            h_sign_idx = h_data.get("sign_index", ZODIAC_SIGNS.index(h_data["sign"]))
+            sign_dist = ((h_sign_idx - p_sign_idx) % 12) + 1
+
             virupas = aspects.get_graha_drishti(p, p_lon, cusp_lon)
+            # Gate virupas by classical sign aspect validity (Phaladīpikā Ch. 3 & 15)
+            # A planet never casts drishti onto 1st (conjunction), 2nd, 6th, or 12th sign from itself.
+            # And non-Mars planets do not cast aspect onto 8th sign (special 8th aspect belongs only to Mars).
+            if sign_dist in [1, 2, 6, 12] or (sign_dist == 8 and p != "Mars"):
+                virupas = 0.0
+
             asp_pct = (virupas / 60.0) * 100.0
             final_c = adjusted_conjunctions[p][h]
             planet_to_cusp[p][h] = max(asp_pct, final_c)
@@ -374,10 +530,14 @@ def evaluate_planets_hol(
     geometry: Dict[str, Any],
     d1_grahas: Dict[str, Any],
     func_natures: Dict[str, Any],
-    influences: Dict[str, Any]
+    influences: Dict[str, Any],
+    chart_dict: Optional[Dict[str, Any]] = None
 ) -> Dict[str, Dict[str, Any]]:
     """
     Implements Phase 5: Comprehensive Planetary Assessment across 5 factors.
+    Strictly separates Intrinsic Quality (Dignity, Aspects, Digbala) from
+    Prominence (Cusp Alignment & House Category), preventing Kendra cusps from
+    flipping debilitated planets positive. Incorporates Phaladīpikā 3.9 vilagna protection.
     """
     planet_results: Dict[str, Dict[str, Any]] = {}
     p2p = influences["planet_to_planet"]
@@ -420,7 +580,7 @@ def evaluate_planets_hol(
 
     solar_gain_sum = sum(combustion_losses.values())
 
-    # Second pass: compute full 5-factor planetary condition
+    # Second pass: compute full planetary condition
     for p in CLASSICAL_PLANETS:
         p_data = d1_grahas[p]
         p_sign = p_data["sign"]
@@ -434,66 +594,127 @@ def evaluate_planets_hol(
                 p_house = h
                 break
 
-        # 1. Dignity
-        dignity_status = _get_dignity_status(p_data)
-        d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+        # 1. Multi-Varga Composite Dignity (D1 + D9 per Phaladīpikā 3.4 & 3.11)
+        d_p = _get_composite_dignity_unit(p, chart_dict, d1_grahas)
         d_pct = d_p * 100.0
+        dignity_status = _get_dignity_status(p_data)
+        d_d1 = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
 
-        # 2. Combined Influences (using Phase 3 scale_by_dignity law)
+        # 3. Canonical Digbala & Bala Points (Phaladīpikā Ch. 4)
+        _, digbala_pts = _get_bala_and_digbala_bonus(p, p_house, chart_dict)
+
+        # 2. Combined Incoming Influences
         incoming_breakdown: Dict[str, float] = {}
         raw_net_inf = 0.0
         for q in CLASSICAL_PLANETS:
             if q == p:
                 continue
             i_val = p2p[q][p]
-            q_status = _get_dignity_status(d1_grahas[q])
-            d_q = DICARA_D1_DIGNITY_MAP.get(q_status, 0.0)
+            d_q = _get_composite_dignity_unit(q, chart_dict, d1_grahas)
             f_q = func_natures[q]["score"]
 
             scaled_mag = scale_by_dignity(i_val, d_q, f_q)
-            if f_q > 0:
-                signed_impact = scaled_mag * (1.0 + 0.20 * (f_q - 1))
-            elif f_q < 0:
-                signed_impact = -scaled_mag * (1.0 + 0.20 * (abs(f_q) - 1))
+            if abs(f_q) > 0.15:
+                if f_q > 0:
+                    signed_impact = scaled_mag * (1.0 + 0.20 * (f_q - 1))
+                else:
+                    signed_impact = -scaled_mag * (1.0 + 0.20 * (abs(f_q) - 1))
             else:
-                # scale_by_dignity already carries sign of d_q when f_q == 0
                 signed_impact = scaled_mag
+
+            # Attenuate same-house Dusthāna conjunction boosts by 0.50x if planet is in Enemy/Debility with negative Digbala
+            q_sign = d1_grahas[q]["sign"]
+            q_house = 1
+            for h_chk, h_data_chk in geometry["houses"].items():
+                if h_data_chk["sign"] == q_sign:
+                    q_house = h_chk
+                    break
+
+            if d_d1 < 0 and p_house in [6, 8, 12] and digbala_pts < 0:
+                if q_house == p_house and signed_impact > 0:
+                    signed_impact *= 0.50
 
             incoming_breakdown[q] = round(signed_impact, 2)
             raw_net_inf += signed_impact
 
-        # Normalize net_inf by average active aspect count (2.5) so it aligns with [-100, +100] scale
+        # Nodal Conjunction & Eclipse Affliction (Phaladīpikā Ch. 3 / Ch. 15)
+        eclipse_loss = 0.0
+        p_lon = float(p_data["longitude"])
+        for node in ["Rahu", "Ketu"]:
+            if node in d1_grahas and d1_grahas[node].get("sign") == p_sign:
+                n_lon = float(d1_grahas[node].get("longitude", 0.0))
+                dist_to_node = _shortest_distance(p_lon, n_lon)
+                if dist_to_node <= 15.0:
+                    node_conj = (1.0 - dist_to_node / 15.0) * 100.0
+                    if p in ["Sun", "Moon"]:
+                        node_pen = 0.85 * node_conj
+                        loss_factor = 0.15 * (1.0 - dist_to_node / 15.0)
+                        if p == "Sun" and p_house in [3, 6, 11] and d_p >= 0.4:
+                            node_pen *= 0.50
+                            loss_factor *= 0.50
+                        if dist_to_node <= 12.0:
+                            eclipse_loss = max(eclipse_loss, loss_factor)
+                    else:
+                        node_pen = 0.50 * node_conj
+                        if p_house in [3, 6, 11]:
+                            node_pen *= 0.50
+                    incoming_breakdown[node] = round(-node_pen, 2)
+                    raw_net_inf -= node_pen
+
         net_inf = max(-150.0, min(150.0, raw_net_inf / 2.5))
 
-        # 3. Cusp Alignment
+        # 4. Intrinsic Quality Base (Quality does NOT include raw cusp proximity points)
+        quality_base = 0.50 * d_pct + 0.35 * net_inf + 0.15 * digbala_pts
+
+        # 5. Cusp Alignment & House Placement Prominence
         raw_c = raw_conj[p].get(p_house, 0.0)
         adj_c = adj_conj[p].get(p_house, 0.0)
         capped_base = min(100.0, adj_c)
+        cusp_prox_factor = 0.80 + 0.40 * (capped_base / 100.0)
 
         if p_house in [1, 4, 5, 9, 10]:
             h_category = "Prominent"
-            h_multiplier = 1.50
+            base_h_mult = 1.25
         elif p_house in [2, 7, 11]:
             h_category = "Regular"
-            h_multiplier = 1.00
+            base_h_mult = 1.00
         else:  # [3, 6, 8, 12]
             h_category = "Hidden"
             if p_house in [6, 8, 12] and any(rh in [6, 8, 12] for rh in p_ruled):
-                h_multiplier = 1.00  # Dusthana lord in Dusthana (Viparita resilience)
+                base_h_mult = 1.00  # Dusthāna lord in Dusthāna (Viparīta resilience)
             elif p_house == 3 and (3 in p_ruled or p in ["Sun", "Mars", "Saturn"]):
-                h_multiplier = 0.75  # 3rd lord or natural malefics in 3rd Upacaya
+                base_h_mult = 0.90  # 3rd lord or natural malefics in 3rd Upacaya
             elif p_house == 3:
-                h_multiplier = 0.25  # Mild Upacaya house
+                base_h_mult = 0.75  # Mild Upacaya house
             elif p_house == 6 and p in ["Sun", "Mars", "Saturn"]:
-                h_multiplier = 0.50  # Natural malefics in 6th Upacaya conquer obstacles
+                base_h_mult = 0.85  # Natural malefics in 6th Upacaya conquer obstacles
             elif p_house == 12 and (p == "Venus" or d_p >= 0.4):
-                h_multiplier = -0.25  # Venus or dignified planet in 12th
+                base_h_mult = 0.90  # Venus or dignified planet in 12th
             else:
-                h_multiplier = -0.50  # Moderated Dusthana placement penalty
+                base_h_mult = 0.75  # Moderated Dusthāna expression
+            if p_house in [6, 8, 12] and d_d1 < 0:
+                base_h_mult *= 0.70
 
-        alignment_score = capped_base * h_multiplier
+        effective_h_mult = base_h_mult * cusp_prox_factor
 
-        # 4. Bhava Sandhi (4.0 deg threshold)
+        # Apply House Placement Modifier to QualityBase
+        if quality_base >= 0.0:
+            base_avg = quality_base * effective_h_mult
+        else:
+            if p_house == 1:
+                # Phaladīpikā 3.9 vilagna protection: softens negative dignity strain in 1st house by 0.5x
+                base_avg = quality_base * 0.50 * cusp_prox_factor
+            elif p_house in [4, 5, 9, 10]:
+                base_avg = quality_base * effective_h_mult
+            elif p_house in [6, 8, 12]:
+                if any(rh in [6, 8, 12] for rh in p_ruled):
+                    base_avg = quality_base * 0.90 * cusp_prox_factor
+                else:
+                    base_avg = quality_base * 1.20 * cusp_prox_factor
+            else:
+                base_avg = quality_base * effective_h_mult
+
+        # 6. Bhāva Sandhi (4.0 deg threshold)
         dist_border = min(p_deg_in_sign, 30.0 - p_deg_in_sign)
         if dist_border < 4.0:
             sandhi_penalty = max(0.0, 1.0 - (dist_border / 4.0))
@@ -503,7 +724,7 @@ def evaluate_planets_hol(
             in_sandhi = False
         retention_multiplier = 1.0 - sandhi_penalty
 
-        # 5. Combustion & Solar Transfer
+        # 7. Combustion & Solar Transfer
         if p == "Sun":
             is_combust = False
             dist_sun = 0.0
@@ -519,20 +740,18 @@ def evaluate_planets_hol(
             solar_gain_ratio = 0.0
             combustion_multiplier = 1.0 - loss_ratio
 
-        # Synthesis (Sign-Safe Application of Sandhi & Combustion)
-        base_avg = (d_pct + net_inf + alignment_score) / 3.0
+        # Synthesis (Sign-Safe Application of Sandhi, Combustion & Eclipse)
         if base_avg >= 0.0:
             if p == "Sun":
-                final_assessment = base_avg * (1.0 - 0.5 * sandhi_penalty) * combustion_multiplier
+                final_assessment = base_avg * (1.0 - 0.5 * sandhi_penalty) * combustion_multiplier * (1.0 - eclipse_loss)
             else:
-                final_assessment = base_avg * (1.0 - 0.5 * sandhi_penalty) * (1.0 - 0.75 * loss_ratio)
+                final_assessment = base_avg * (1.0 - 0.5 * sandhi_penalty) * (1.0 - 0.75 * loss_ratio) * (1.0 - eclipse_loss)
         else:
-            # When base_avg < 0, Sandhi and Combustion add structural strain rather than shrinking negativity toward 0
             if p == "Sun":
-                strain_mult = 1.0 + 0.25 * sandhi_penalty
+                strain_mult = 1.0 + 0.25 * sandhi_penalty + eclipse_loss
                 final_assessment = (base_avg * strain_mult) + (10.0 * solar_gain_ratio)
             else:
-                strain_mult = 1.0 + 0.25 * sandhi_penalty + 0.35 * loss_ratio
+                strain_mult = 1.0 + 0.25 * sandhi_penalty + 0.35 * loss_ratio + eclipse_loss
                 final_assessment = base_avg * strain_mult
 
         planet_results[p] = {
@@ -555,8 +774,9 @@ def evaluate_planets_hol(
                 "dominance_adjusted_pct": round(adj_c, 2),
                 "capped_base_pct": round(capped_base, 2),
                 "house_category": h_category,
-                "house_multiplier": h_multiplier,
-                "alignment_score": round(alignment_score, 2)
+                "house_multiplier": round(effective_h_mult, 4),
+                "alignment_score": round(capped_base * effective_h_mult, 2),
+                "digbala_points": round(digbala_pts, 2),
             },
             "bhava_sandhi": {
                 "distance_to_border": round(dist_border, 2),
@@ -572,6 +792,12 @@ def evaluate_planets_hol(
                 "solar_gain_ratio": solar_gain_ratio,
                 "combustion_multiplier": round(combustion_multiplier, 4)
             },
+            "eclipse": {
+                "is_eclipsed": eclipse_loss > 0.0,
+                "loss_ratio": round(eclipse_loss, 4)
+            },
+            "quality_base_score": round(quality_base, 2),
+            "cusp_proximity_factor": round(cusp_prox_factor, 2),
             "base_average_score": round(base_avg, 2),
             "final_assessment_score": round(final_assessment, 2)
         }
@@ -583,12 +809,15 @@ def evaluate_basic_house_conditions(
     geometry: Dict[str, Any],
     func_natures: Dict[str, Any],
     d1_grahas: Dict[str, Any],
-    influences: Dict[str, Any]
+    influences: Dict[str, Any],
+    planets_eval: Optional[Dict[str, Any]] = None
 ) -> Dict[int, Dict[str, Any]]:
     """
     Implements Phase 6: Basic House Condition — Direct Evaluation.
-    House Lord receives an unconditional +2 effective functional nature override.
-    Moderates natural malefics occupying Upacaya houses (3, 6, 11) per BPHS 50.5.
+    Condition-gates cusp influences by combustion and Bhāva Sandhi (Phaladīpikā 15.1 amūḍha-hīnāḥ).
+    Transforms natural malefics in Upacayas (3, 6, 11) into resilience boosters (15.18).
+    Evaluates Rāhu & Ketu cusp occupancy and proximity (15.8).
+    Uses a smooth continuous active divisor floored at 2.25.
     """
     house_results: Dict[int, Dict[str, Any]] = {}
     p2c = influences["planet_to_cusp"]
@@ -596,43 +825,137 @@ def evaluate_basic_house_conditions(
     for h, h_data in geometry["houses"].items():
         lord = h_data["lord"]
         occupants = set(h_data.get("occupants", []))
+        cusp_lon = float(h_data.get("cusp_longitude", 0.0))
         contributions: Dict[str, float] = {}
         total_signed = 0.0
 
         for p in CLASSICAL_PLANETS:
             i_val = p2c[p][h]
-            dignity_status = _get_dignity_status(d1_grahas[p])
-            d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+            if planets_eval and p in planets_eval and "dignity" in planets_eval[p]:
+                d_p = float(planets_eval[p]["dignity"].get("unit_score", 0.0))
+            else:
+                dignity_status = _get_dignity_status(d1_grahas[p])
+                d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
 
-            # House Lord +2 Exception
-            f_eff = 2 if p == lord else func_natures[p]["score"]
+            # House Lord vs Non-Lord on House Cusp (Phaladīpikā 15.1–15.5)
+            if p == lord:
+                f_eff = 2.0
+            else:
+                lagna_f = float(func_natures[p]["score"])
+                nat_t = NATURAL_TEMPERAMENT.get(p, 0.0)
+                if p == "Moon":
+                    nat_t = float(func_natures.get("Moon", {}).get("rule_breakdown", {}).get("inherent_score", 0.5))
+                elif p == "Mercury":
+                    nat_t = float(func_natures.get("Mercury", {}).get("rule_breakdown", {}).get("inherent_score", 0.5))
 
-            scaled_i = scale_by_dignity(i_val, d_p, f_eff)
+                blended_f = 0.50 * lagna_f + 0.50 * (nat_t * 2.0)
+                rel = get_natural_relationship(p, lord)
+                if rel == "Friend":
+                    blended_f += 0.50
+                elif rel == "Enemy":
+                    blended_f -= 0.50
 
-            if f_eff != 0:
-                # Damped functional multiplier so F=±3 does not over-explode when divided by ~4.0
+                f_eff = blended_f
+
+            # Only count non-occupant aspects with p2c >= 25.0
+            eff_i_val = i_val
+            if p not in occupants and i_val < 25.0:
+                eff_i_val = 0.0
+
+            scaled_i = scale_by_dignity(eff_i_val, d_p, f_eff)
+
+            if abs(f_eff) > 0.15:
                 f_mult = (1.0 + 0.65 * (abs(f_eff) - 1)) * (1.0 if f_eff > 0 else -1.0)
                 signed_impact = scaled_i * f_mult
 
-                # Upacaya (3, 6, 11) Malefic Occupant Rule (BPHS 50.5 / Phaladeepika 26.2):
-                # Natural malefics occupying 3, 6, 11 build resilience & material gains rather than destroying the cusp
-                if p in occupants and p != lord and f_eff < 0 and p in ["Sun", "Mars", "Saturn"]:
-                    if h in [3, 6]:
-                        signed_impact *= 0.35
-                    elif h == 11:
-                        signed_impact *= 0.50
+                # Upacaya (3, 6, 11) Malefic Occupant Rule (Phaladīpikā 15.18 & Ch. 4):
+                # Malefics occupying Upacaya houses provide a mild positive resilience boost rather than damaging the cusp
+                is_upacaya_occ = False
+                if p in occupants and p != lord and p in ["Sun", "Mars", "Saturn"] and h in [3, 6, 11]:
+                    signed_impact = abs(scaled_i) * 0.35
+                    is_upacaya_occ = True
             else:
                 signed_impact = scaled_i
+                is_upacaya_occ = False
+
+            # Condition-Gate Cusp Influences by Combustion & Bhāva Sandhi (Phaladīpikā 15.1 amūḍha-hīnāḥ)
+            # Attenuate positive rays from planets trapped in Dusthānas in enemy/debilitated D1 signs (arinīca-mūḍha)
+            d1_st = _get_dignity_status(d1_grahas[p])
+            d_d1 = DICARA_D1_DIGNITY_MAP.get(d1_st, 0.0)
+
+            p_lon_val = float(d1_grahas[p].get("longitude", 0.0))
+            p_sign = d1_grahas[p].get("sign") or ZODIAC_SIGNS[int(p_lon_val // 30) % 12]
+            p_occ_house = 1
+            if planets_eval and p in planets_eval and "house" in planets_eval[p]:
+                p_occ_house = int(planets_eval[p]["house"])
+            else:
+                for h_chk, h_data_chk in geometry["houses"].items():
+                    if h_data_chk.get("sign") == p_sign:
+                        p_occ_house = int(h_chk)
+                        break
+
+            comb_loss = 0.0
+            sandhi_pen = 0.0
+            if planets_eval and p in planets_eval:
+                comb_loss = float(planets_eval[p].get("combustion", {}).get("loss_ratio", 0.0))
+                sandhi_pen = float(planets_eval[p].get("bhava_sandhi", {}).get("penalty_ratio", 0.0))
+
+            condition_integrity = (1.0 - 0.75 * comb_loss) * (1.0 - 0.50 * sandhi_pen)
+            if signed_impact > 0:
+                if not is_upacaya_occ and d_d1 < 0.0:
+                    condition_integrity *= 0.55
+                    if p_occ_house in [6, 8, 12]:
+                        condition_integrity *= 0.75
+                signed_impact *= condition_integrity
+            elif signed_impact < 0:
+                signed_impact *= (1.0 + 0.35 * comb_loss) * (1.0 - 0.30 * sandhi_pen)
 
             contributions[p] = round(signed_impact, 2)
             total_signed += signed_impact
 
-        # Smooth continuous active divisor (no step-function cliff at 25%)
-        active_weights = sum(min(1.0, p2c[p][h] / 45.0) for p in CLASSICAL_PLANETS)
-        eff_divisor = max(4.0, active_weights)
+        # Rāhu and Ketu Cusp Occupancy / Proximity Impact (Phaladīpikā 15.8)
+        for node in ["Rahu", "Ketu"]:
+            if node in d1_grahas:
+                node_data = d1_grahas[node]
+                node_sign = node_data.get("sign")
+                node_lon = float(node_data.get("longitude", 0.0))
+                dist_node = _shortest_distance(node_lon, cusp_lon)
+                if node_sign == h_data["sign"] or dist_node <= 15.0:
+                    if node_sign == h_data["sign"]:
+                        c_node = max(35.0, (1.0 - dist_node / 30.0) * 100.0)
+                    else:
+                        c_node = 0.50 * (1.0 - dist_node / 30.0) * 100.0
+
+                    if h in [3, 6, 11]:
+                        node_impact = 0.35 * c_node
+                    else:
+                        node_dignity = _get_dignity_status(node_data)
+                        is_mitigated = ("Friend" in node_dignity or "Own" in node_dignity or "Exalt" in node_dignity)
+                        if not is_mitigated:
+                            for b in ["Jupiter", "Venus"]:
+                                if b in d1_grahas:
+                                    b_lon = float(d1_grahas[b].get("longitude", 0.0))
+                                    b_sign = d1_grahas[b].get("sign")
+                                    if b_sign == node_sign:
+                                        is_mitigated = True
+                                        break
+                                    if aspects.get_graha_drishti(b, b_lon, node_lon) >= 30.0:
+                                        is_mitigated = True
+                                        break
+
+                        mit_factor = 0.50 if is_mitigated else 1.00
+                        node_impact = -0.60 * c_node * mit_factor
+                    contributions[node] = round(node_impact, 2)
+                    total_signed += node_impact
+
+        # Smooth continuous active divisor floored at 3.0
+        active_weights = sum(min(1.0, p2c[p][h] / 45.0) for p in CLASSICAL_PLANETS if (p in occupants or p2c[p][h] >= 25.0))
+        eff_divisor = max(3.0, active_weights)
+        raw_house_score = total_signed / eff_divisor
+        bounded_score = max(-120.0, min(120.0, raw_house_score))
 
         house_results[h] = {
-            "score": round(total_signed / eff_divisor, 2),
+            "score": round(bounded_score, 2),
             "planet_contributions": contributions
         }
 
@@ -642,12 +965,15 @@ def evaluate_basic_house_conditions(
 def evaluate_relative_houses_bhavat_bhavam(
     geometry: Dict[str, Any],
     d1_grahas: Dict[str, Any],
-    influences: Dict[str, Any]
+    influences: Dict[str, Any],
+    planets_eval: Optional[Dict[str, Any]] = None
 ) -> Dict[int, Dict[str, Any]]:
     """
-    Implements Phase 7: Relative House Technique — Bhavāt Bhavam (Phaladīpikā 15.2 & 15.4).
-    Includes Relative Houses 1 and 11, prevents double dignity scaling on neutral planets,
-    and accounts for relative benefic mitigation in Dusthānas.
+    Implements Phase 7: Relative House Technique — Bhavāt Bhavam (Phaladīpikā 15.2, 15.3, 15.5).
+    Corrects the House Lord in relative 6/8/12 inversion (Bhāva-nāśa ruination).
+    Includes degree-aspect proximity bonuses for the Lord in Kendra/Trine/2nd.
+    Evaluates relative Dusthāna/Triṣaḍāya lords in Relative H1.
+    Removes unclassical b_dust_count global mitigations per Phaladīpikā 15.4.
     """
     results: Dict[int, Dict[str, Any]] = {}
     p2p = influences["planet_to_planet"]
@@ -660,15 +986,24 @@ def evaluate_relative_houses_bhavat_bhavam(
                 planet_houses[p] = h
                 break
 
+    asc_sign = geometry.get("ascendant_sign") or geometry.get("houses", {}).get(1, {}).get("sign", "Aries")
+    asc_first_lord = SIGN_LORDS.get(asc_sign, "Mars")
+
     for h, h_data in geometry["houses"].items():
-        rel_func = calculate_functional_nature(h_data["sign"])
+        lord = h_data["lord"]
+        cusp_lon = float(h_data.get("cusp_longitude", 0.0))
+        h_sign = h_data.get("sign", "Aries")
+        rel_func = calculate_functional_nature(h_sign, d1_grahas=d1_grahas)
         raw_rel_scores: Dict[str, float] = {}
         eff_rel_scores: Dict[str, float] = {}
         rel_func_pts: Dict[str, float] = {}
 
         for p in CLASSICAL_PLANETS:
-            dignity_status = _get_dignity_status(d1_grahas[p])
-            d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+            if planets_eval and p in planets_eval and "dignity" in planets_eval[p]:
+                d_p = float(planets_eval[p]["dignity"].get("unit_score", 0.0))
+            else:
+                dignity_status = _get_dignity_status(d1_grahas[p])
+                d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
             raw_f = float(rel_func[p]["score"])
             raw_rel_scores[p] = raw_f
             eff_f = raw_f if raw_f != 0.0 else d_p
@@ -678,7 +1013,6 @@ def evaluate_relative_houses_bhavat_bhavam(
         kk_points = 0.0
         dusthana_raw = 0.0
         m_dust: List[str] = []
-        b_dust_count = 0
         b_rel = [p for p in CLASSICAL_PLANETS if eff_rel_scores[p] > 0]
         active_planets_count = 0
 
@@ -690,38 +1024,83 @@ def evaluate_relative_houses_bhavat_bhavam(
             raw_f = raw_rel_scores[p]
             f_rel = eff_rel_scores[p]
 
-            dignity_status = _get_dignity_status(d1_grahas[p])
-            d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+            if planets_eval and p in planets_eval and "dignity" in planets_eval[p]:
+                d_p = float(planets_eval[p]["dignity"].get("unit_score", 0.0))
+            else:
+                dignity_status = _get_dignity_status(d1_grahas[p])
+                d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
 
-            # Single dignity scaling (fixes double d_p^2 scaling for raw_f == 0)
+            # Single dignity scaling
             if raw_f != 0.0:
                 scaled_pts = scale_by_dignity(abs(raw_f) * 50.0, d_p, raw_f)
                 signed_pts = scaled_pts if raw_f > 0 else -scaled_pts
             else:
                 signed_pts = scale_by_dignity(50.0, d_p, 0.0)
 
-            # Core KK Group (Phaladeepika 15.2): 2, 4, 5, 7, 9, 10 (weight 1.0)
+            # SPECIAL HANDLING FOR HOUSE LORD (Phaladīpikā 15.2, 15.3, 15.5)
+            if p == lord:
+                if r_ph in [1, 2, 4, 5, 7, 9, 10]:
+                    # Strongly nourishes foundation (weight 1.0 + degree proximity to major aspect angles)
+                    p_lon = float(d1_grahas[lord].get("longitude", 0.0)) if lord in d1_grahas else 0.0
+                    ang_dist = _shortest_distance(p_lon, cusp_lon)
+                    min_delta = min(abs(ang_dist - a) for a in [0.0, 90.0, 120.0, 180.0])
+                    aspect_bonus = (1.0 - min_delta / 10.0) * 15.0 if min_delta < 10.0 else 0.0
+                    active_planets_count += 1
+                    kk_points += (signed_pts + aspect_bonus)
+                elif r_ph in [3, 11]:
+                    # Upacaya growth placement (weight 0.50)
+                    active_planets_count += 1
+                    kk_points += signed_pts * 0.50
+                elif r_ph in [6, 8, 12]:
+                    # Lord in relative Dusthāna (Bhāva-nāśa ruin per Phaladīpikā 15.3 & 15.5)
+                    active_planets_count += 1
+                    p_sign = d1_grahas[lord].get("sign")
+                    valid_own = [DICARA_MOOLATRIKONA_SIGNS[lord]]
+                    if DICARA_DOMICILE_SIGNS[lord]:
+                        valid_own.append(DICARA_DOMICILE_SIGNS[lord])
+                    # If Lord occupies its other own sign, penalty is waived per 15.29
+                    if p_sign in valid_own and p_sign != h_data["sign"]:
+                        bhava_nasa_penalty = 0.0
+                    else:
+                        base_pen = -110.0 if r_ph == 8 else (-80.0 if r_ph == 12 else -70.0)
+                        comb_loss = 0.0
+                        if planets_eval and lord in planets_eval:
+                            comb_loss = float(planets_eval[lord].get("combustion", {}).get("loss_ratio", 0.0))
+                        if d_p >= 0.4 and comb_loss == 0.0:
+                            bhava_nasa_penalty = base_pen * 0.50
+                        elif d_p < 0.0 or comb_loss > 0.0:
+                            bhava_nasa_penalty = base_pen * (1.0 + 0.50 * abs(min(0.0, d_p)) + 0.40 * comb_loss)
+                        else:
+                            bhava_nasa_penalty = base_pen
+
+                    dusthana_raw += bhava_nasa_penalty
+                    if bhava_nasa_penalty < 0.0:
+                        m_dust.append(lord)
+                continue
+
+            # NON-LORD PLANETS
             if r_ph in [2, 4, 5, 7, 9, 10] and f_rel != 0:
                 active_planets_count += 1
                 kk_points += signed_pts
-            # Secondary Support Group: Relative H11 (gains) and Relative H1 (benefic/lord occupant only)
-            elif r_ph == 11 and f_rel != 0:
+            elif r_ph in [3, 11] and f_rel != 0:
                 active_planets_count += 1
-                kk_points += signed_pts * 0.50
-            elif r_ph == 1 and f_rel > 0:
-                active_planets_count += 1
-                kk_points += signed_pts * 0.50
-
-            # Dusthana Group: 6, 8, 12
+                w_upacaya = 0.40 if r_ph == 3 else 0.50
+                kk_points += signed_pts * w_upacaya
+            elif r_ph == 1:
+                if f_rel > 0:
+                    active_planets_count += 1
+                    kk_points += signed_pts * 0.50
+                elif f_rel < 0 and p != asc_first_lord:
+                    # Relative Dusthāna / Triṣaḍāya lords occupying House H (Phaladīpikā 15.5 & 15.8)
+                    active_planets_count += 1
+                    kk_points += signed_pts * 0.75
             elif r_ph in [6, 8, 12]:
                 if f_rel < 0:
                     active_planets_count += 1
                     m_dust.append(p)
-                    dusthana_raw += signed_pts  # signed_pts is negative
-                elif f_rel > 0:
-                    b_dust_count += 1
+                    dusthana_raw += signed_pts
 
-        # Benefic Aspect & Co-Occupancy Mitigation on Dusthana Malefics
+        # Benefic Aspect & Co-Occupancy Mitigation on Dusthāna Malefics (Phaladīpikā 15.3–15.4)
         if m_dust and b_rel:
             mit_ratios: List[float] = []
             for m in m_dust:
@@ -729,16 +1108,12 @@ def evaluate_relative_houses_bhavat_bhavam(
                 mit_m = aspects_sum / len(b_rel)
                 mit_ratios.append(mit_m / 100.0)
             avg_mit = sum(mit_ratios) / len(m_dust)
-            if b_dust_count > 0:
-                avg_mit += 0.15 * b_dust_count
             avg_mit = max(0.0, min(0.85, avg_mit))
         else:
             avg_mit = 0.0
 
         dusthana_mitigated = dusthana_raw * (1.0 - avg_mit)
-
-        # Floor denominator at 4.0 so 1-2 relative Dusthana planets never create -100 cliffs
-        denom = max(4.0, float(active_planets_count))
+        denom = max(3.0, float(active_planets_count))
         final_rel_score = (kk_points + dusthana_mitigated) / denom if active_planets_count > 0 else 0.0
 
         results[h] = {
@@ -754,10 +1129,76 @@ def evaluate_relative_houses_bhavat_bhavam(
     return results
 
 
+def evaluate_house_karakas_hol(
+    geometry: Dict[str, Any],
+    d1_grahas: Dict[str, Any],
+    planets_eval: Dict[str, Any],
+    basic_houses: Dict[int, Any]
+) -> Dict[int, Dict[str, Any]]:
+    """
+    Implements Phase 7B: Bhāva Kāraka & Kāraka Lagna Engine (Phaladīpikā 15.5-6, 15.15-20, 15.25).
+    Evaluates:
+      1. Direct condition of natural representative (k_planet_score).
+      2. Kāraka Lagna: Hth house counted from Kāraka's sign (k_lagna_house_score).
+      3. Relative placement between Kāraka and House H (k_rel_bonus).
+    """
+    asc_sign = geometry.get("ascendant_sign") or geometry.get("houses", {}).get(1, {}).get("sign", "Aries")
+    asc_sign_idx = ZODIAC_SIGNS.index(asc_sign)
+
+    karaka_houses: Dict[int, Dict[str, Any]] = {}
+
+    for h in range(1, 13):
+        karakas = DICARA_HOUSE_KARAKAS.get(h, ["Jupiter"])
+        k_scores: List[float] = []
+        k_planet_scores: Dict[str, float] = {}
+        k_lagna_houses: Dict[str, int] = {}
+        k_lagna_scores: Dict[str, float] = {}
+
+        for k in karakas:
+            p_eval = planets_eval.get(k, {})
+            k_p_score = float(p_eval.get("final_assessment_score", 0.0))
+            k_planet_scores[k] = round(k_p_score, 2)
+
+            k_house = int(p_eval.get("house", 1))
+            r_kh = ((k_house - h) % 12) + 1
+            if r_kh in [1, 2, 4, 5, 7, 9, 10, 11]:
+                k_rel_bonus = 15.0
+            elif r_kh in [6, 8, 12]:
+                k_rel_bonus = -15.0
+            else:  # r_kh == 3
+                k_rel_bonus = 5.0
+
+            # Kāraka Lagna target house
+            k_sign = d1_grahas.get(k, {}).get("sign", asc_sign)
+            k_sign_idx = ZODIAC_SIGNS.index(k_sign)
+            target_sign_idx = (k_sign_idx + h - 1) % 12
+            h_natal = ((target_sign_idx - asc_sign_idx) % 12) + 1
+            k_lagna_houses[k] = h_natal
+            k_l_score = float(basic_houses.get(h_natal, {}).get("score", 0.0))
+            k_lagna_scores[k] = round(k_l_score, 2)
+
+            score_k = 0.55 * k_p_score + 0.30 * k_l_score + 0.15 * k_rel_bonus
+            k_scores.append(score_k)
+
+        avg_k_score = sum(k_scores) / len(k_scores) if k_scores else 0.0
+        avg_lagna_score = sum(k_lagna_scores.values()) / len(k_lagna_scores) if k_lagna_scores else 0.0
+
+        karaka_houses[h] = {
+            "score": round(avg_k_score, 2),
+            "karakas": karakas,
+            "karaka_planet_scores": k_planet_scores,
+            "karaka_lagna_house": k_lagna_houses,
+            "karaka_lagna_score": round(avg_lagna_score, 2)
+        }
+
+    return karaka_houses
+
+
 def evaluate_house_walls_kartari(
     geometry: Dict[str, Any],
     d1_grahas: Dict[str, Any],
-    func_natures: Dict[str, Any]
+    func_natures: Dict[str, Any],
+    planets_eval: Optional[Dict[str, Any]] = None
 ) -> Dict[int, Dict[str, Any]]:
     """
     Implements Phase 8: Quantified House Walls — Kartarī Yoga.
@@ -786,55 +1227,80 @@ def evaluate_house_walls_kartari(
             p_before, dist_before = min(candidates_before, key=lambda x: x[1])
             p_after, dist_after = min(candidates_after, key=lambda x: x[1])
 
-            def planet_quality(p_name: str) -> float:
-                dignity_status = _get_dignity_status(d1_grahas[p_name])
-                d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
-                f_p = func_natures[p_name]["score"]
+            p_before_sign = d1_grahas[p_before].get("sign") or ZODIAC_SIGNS[int(float(d1_grahas[p_before]["longitude"]) // 30) % 12]
+            p_after_sign = d1_grahas[p_after].get("sign") or ZODIAC_SIGNS[int(float(d1_grahas[p_after]["longitude"]) // 30) % 12]
+            h_sign = h_data.get("sign") or ZODIAC_SIGNS[int(float(h_data.get("cusp_longitude", 0.0)) // 30) % 12]
+            h_sign_idx = ZODIAC_SIGNS.index(h_sign)
+            prev_sign = ZODIAC_SIGNS[(h_sign_idx - 1) % 12]
+            next_sign = ZODIAC_SIGNS[(h_sign_idx + 1) % 12]
 
-                if p_name == lord:
-                    base = 200.0
-                    f_eval = 2
-                elif f_p == 0:
-                    base = d_p * 100.0
-                    f_eval = 1 if base > 0 else (-1 if base < 0 else 0)
+            # True Kartari check (Phaladīpikā 15.6)
+            is_valid_kartari = False
+            if p_before_sign == prev_sign and p_after_sign in [h_sign, next_sign]:
+                is_valid_kartari = True
+            elif p_before_sign == h_sign and p_after_sign == h_sign:
+                is_valid_kartari = True
+            elif p_before_sign == prev_sign and p_after_sign == next_sign:
+                is_valid_kartari = True
+
+            if is_valid_kartari:
+                def planet_quality(p_name: str) -> float:
+                    if planets_eval and p_name in planets_eval and "dignity" in planets_eval[p_name]:
+                        d_p = float(planets_eval[p_name]["dignity"].get("unit_score", 0.0))
+                    else:
+                        dignity_status = _get_dignity_status(d1_grahas[p_name])
+                        d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+                    f_p = func_natures[p_name]["score"]
+
+                    if p_name == lord:
+                        base = 200.0
+                        f_eval = 2
+                    elif f_p == 0:
+                        base = d_p * 100.0
+                        f_eval = 1 if base > 0 else (-1 if base < 0 else 0)
+                    else:
+                        base = f_p * 100.0
+                        f_eval = f_p
+
+                    scaled = scale_by_dignity(abs(base), d_p, f_eval)
+                    sgn = 1.0 if base > 0 else (-1.0 if base < 0 else 0.0)
+                    return scaled * sgn
+
+                q_before = planet_quality(p_before)
+                q_after = planet_quality(p_after)
+
+                occ_set = set(h_data.get("occupants", []))
+                mult_before = 0.5 if p_before in occ_set else 1.0
+                mult_after = 0.5 if p_after in occ_set else 1.0
+
+                raw_score = (
+                    q_before * mult_before * (1.0 - dist_before / 30.0)
+                    + q_after * mult_after * (1.0 - dist_after / 30.0)
+                )
+                score = 120.0 * math.tanh(raw_score / 180.0)
+
+                if q_before > 0 and q_after > 0:
+                    wall_type = "Shubha Kartari"
+                elif q_before < 0 and q_after < 0:
+                    wall_type = "Papa Kartari"
                 else:
-                    base = f_p * 100.0
-                    f_eval = f_p
+                    wall_type = "Mishra Kartari"
 
-                scaled = scale_by_dignity(abs(base), d_p, f_eval)
-                sgn = 1.0 if base > 0 else (-1.0 if base < 0 else 0.0)
-                return scaled * sgn
-
-            q_before = planet_quality(p_before)
-            q_after = planet_quality(p_after)
-
-            # Attenuate by 0.5 if the flanking planet is inside the same Whole Sign house
-            # (since its direct cusp conjunction is already evaluated in Phase 6)
-            occ_set = set(h_data.get("occupants", []))
-            mult_before = 0.5 if p_before in occ_set else 1.0
-            mult_after = 0.5 if p_after in occ_set else 1.0
-
-            raw_score = (
-                q_before * mult_before * (1.0 - dist_before / 30.0)
-                + q_after * mult_after * (1.0 - dist_after / 30.0)
-            )
-            # Compress into [-120, +120] range so walls frame rather than overwhelm the house
-            score = 120.0 * math.tanh(raw_score / 180.0)
-
-            if q_before > 0 and q_after > 0:
-                wall_type = "Shubha Kartari"
-            elif q_before < 0 and q_after < 0:
-                wall_type = "Papa Kartari"
+                results[h] = {
+                    "is_walled": True,
+                    "wall_type": wall_type,
+                    "score": round(score, 2),
+                    "planet_before": p_before,
+                    "planet_after": p_after
+                }
             else:
-                wall_type = "Mishra Kartari"
-
-            results[h] = {
-                "is_walled": True,
-                "wall_type": wall_type,
-                "score": round(score, 2),
-                "planet_before": p_before,
-                "planet_after": p_after
-            }
+                results[h] = {
+                    "is_walled": False,
+                    "wall_type": "None",
+                    "score": 0.0,
+                    "planet_before": None,
+                    "planet_after": None
+                }
         else:
             results[h] = {
                 "is_walled": False,
@@ -856,7 +1322,6 @@ def _trace_dispositor_chains(
     planet -> sign lord until a planet is encountered for the SECOND time.
     That second-hit planet is the unique Final Dispositor for that starting point.
     """
-    # Check if we have standard classical planets with valid zodiac signs in SIGN_LORDS
     has_valid_classical = (
         all(p in d1_grahas for p in CLASSICAL_PLANETS)
         and all(d1_grahas[p].get("sign") in SIGN_LORDS for p in CLASSICAL_PLANETS)
@@ -924,7 +1389,6 @@ def _trace_dispositor_chains(
             chain_planets.append(next_lord)
             counts[next_lord] = counts.get(next_lord, 0) + 1
 
-            # STOP the exact moment any planet is tracked a SECOND time
             if counts[next_lord] == 2:
                 final_dispositor = next_lord
                 break
@@ -940,10 +1404,10 @@ def _trace_dispositor_chains(
 
         planet_chains[start_p] = {
             "start_planet": start_p,
-            "chain_planets": chain_planets,          # e.g. ["Sun", "Mars", "Mercury", "Mars"]
-            "traversed_houses": traversed_houses,    # e.g. [4, 2] (Scorpio -> Virgo)
-            "final_dispositor": final_dispositor,    # e.g. "Mars" (hit 2nd time)
-            "final_dispositor_houses": final_disp_houses,  # e.g. [4, 9]
+            "chain_planets": chain_planets,
+            "traversed_houses": traversed_houses,
+            "final_dispositor": final_dispositor,
+            "final_dispositor_houses": final_disp_houses,
             "hops_to_repeat": hops,
             "is_svakshetra": (hops == 1 and final_dispositor == start_p),
             "returns_to_self": (hops >= 2 and final_dispositor == start_p),
@@ -979,7 +1443,6 @@ def _extract_yoga_field(yoga_item: Any, field: str, default: Any = None) -> Any:
         val = yoga_item.get(field, default)
     else:
         val = getattr(yoga_item, field, default)
-    # Handle Enum values (.value or .name)
     if hasattr(val, "value"):
         return str(val.value)
     return val
@@ -991,10 +1454,10 @@ def evaluate_house_yogas_hol(
     yogas_input: Optional[Dict[str, Any]] = None
 ) -> Dict[int, Dict[str, Any]]:
     """
-    Implements Phase 9: Numerical House Yoga Scoring using Astra's Certified Classical
-    Yoga Engine (chart_dict["yogas"]).
-    Eliminates synthetic pseudo-Daridra and inverse-Mahapurusha artifacts and respects
-    Yoga Bhanga (PURE / RESCUED / STAINED / BROKEN status).
+    Implements Phase 9: Numerical House Yoga Scoring using Astra's Certified Classical Yoga Engine.
+    Credits yogas strictly to occupied houses (1.00x) and participating houses (0.75x) without
+    multi-hop dispositor smearing. Rescales base points and enforces smooth [-100, +100] saturation.
+    Awards full positive points to Houses 6, 8, 12 for Viparīta Rāja Yogas (Phaladīpikā 6.57–70).
     """
     house_yoga_data: Dict[int, Dict[str, Any]] = {
         h: {
@@ -1016,8 +1479,6 @@ def evaluate_house_yogas_hol(
                 if h_data["sign"] == p_sign:
                     planet_house_map[p] = h
                     break
-
-    disp_chains = _trace_dispositor_chains(geometry, d1_grahas)
 
     raw_yogas_list: List[Any] = []
     if isinstance(yogas_input, dict):
@@ -1054,15 +1515,26 @@ def evaluate_house_yogas_hol(
 
         norm_name = unicodedata.normalize("NFKD", y_name).encode("ASCII", "ignore").decode("utf-8").upper()
         norm_cat = unicodedata.normalize("NFKD", cat_raw).encode("ASCII", "ignore").decode("utf-8").upper()
-        # Broadened detection for ALL negative/affliction classical yogas
+
         is_negative_yoga = (
-            any(k in norm_cat for k in ["DARIDRYA", "DARIDRA", "ARISHTA", "DOSHA", "PAPA", "AFFLICTION", "AVAYOGA"])
+            any(k in norm_cat for k in [
+                "DARIDRYA", "DARIDRA", "ARISHTA", "DOSHA", "PAPA", "AFFLICTION", "AVAYOGA",
+                "DUSTHANA", "NEGATIVE", "INAUSPICIOUS", "PENALTY", "MALEFIC"
+            ])
             or any(k in norm_name for k in [
                 "DARIDRYA", "DARIDRA", "DAINYA", "KEMADRUMA", "SHAKATA", "GRAHANA",
                 "CHANDALA", "CANDALA", "KALA SARPA", "KALASARPA", "VISH ", "VISHA",
-                "ANGARAKA", "PAPA", "ARISHTA", "DUR YOGA", "DURYOGA", "KUJA DOSHA"
+                "ANGARAKA", "PAPA", "ARISHTA", "DUR YOGA", "DURYOGA", "KUJA DOSHA",
+                "NIHSVA", "DUSKRITI", "DUSKRTI", "MRTI", "MRITI", "SATRU", "SHATRU", "ADHAMA",
+                "ASHUBHA", "ASUBHA", "DEPLETED", "DISGRACED", "BROKEN INITIATIVES",
+                "FRICTION", "DISSIPATION", "STAGNATION", "POVERTY", " LOSS", "AFFLICT",
+                "PAPAKARTARI", "PAPA KARTARI", "BANDHANA", "APAKIRTI"
             ])
-            or any(k in y_id for k in ["daridrya", "daridra", "dainya", "kemadruma", "shakata", "grahana", "arishta"])
+            or any(k in y_id for k in [
+                "daridrya", "daridra", "dainya", "kemadruma", "shakata", "grahana", "arishta",
+                "nihsva", "duskriti", "mrti", "mriti", "satru", "shatru", "adhama", "ashubha",
+                "asubha", "duryoga", "avayoga", "papa"
+            ])
         )
         is_parivartana = "PARIVARTANA" in norm_cat or "PARIVARTANA" in norm_name or "parivartana" in y_id
         is_mahapurusha = "MAHAPURUSHA" in norm_cat or "MAHAPURUSHA" in norm_name or "mahapurusha" in y_id
@@ -1074,7 +1546,7 @@ def evaluate_house_yogas_hol(
             for k in ["RAJA", "DHANA", "LAKSHMI", "YOGAKARAKA", "GAJAKESARI", "CHANDRA MANGALA", "ADHI", "AMALA", "BHAGYA", "JALADHI"]
         )
 
-        # Status multiplier (Yoga Bhanga / Mitigation awareness)
+        # Status multiplier (Yoga Bhaṅga / Mitigation)
         if is_negative_yoga:
             if "RESCUED" in status_raw:
                 status_mult = 0.25
@@ -1092,10 +1564,14 @@ def evaluate_house_yogas_hol(
             else:
                 status_mult = 0.75
 
-        # 1. Negative / Affliction Yogas (Dāridrya, Dainya, Kemadruma, Grahaṇa, etc.)
+        # 1. Negative / Affliction Yogas (base = -60.0)
         if is_negative_yoga:
-            base_pen = -80.0 * plaus_mult * status_mult
-            afflicted_targets = part_houses if part_houses else (owned_houses + occ_houses)
+            base_pen = -60.0 * plaus_mult * status_mult
+            if len(planets) >= 6:
+                base_pen *= 0.35
+                afflicted_targets = occ_houses
+            else:
+                afflicted_targets = part_houses if part_houses else (owned_houses + occ_houses)
             for h_t in set(afflicted_targets):
                 pts = round(base_pen * 0.5 if h_t in [6, 8, 12] and h_t in occ_houses else base_pen, 2)
                 role = "Occupied house" if h_t in occ_houses else "Afflicted house axis"
@@ -1111,9 +1587,9 @@ def evaluate_house_yogas_hol(
                 })
             continue
 
-        # 2. Auspicious Parivartana Yogas (Maha / Kahala)
+        # 2. Auspicious Parivartana Yogas (base = 65.0)
         if is_parivartana:
-            base_pts = 95.0 * plaus_mult * status_mult
+            base_pts = 65.0 * plaus_mult * status_mult
             pariv_targets = part_houses if part_houses else occ_houses
             for h_t in set(pariv_targets):
                 pts = round(base_pts, 2)
@@ -1126,9 +1602,9 @@ def evaluate_house_yogas_hol(
                 })
             continue
 
-        # 3. Pañca Mahāpuruṣa Yogas
+        # 3. Pañca Mahāpuruṣa Yogas (base = 65.0)
         if is_mahapurusha:
-            base_pts = 90.0 * plaus_mult * status_mult
+            base_pts = 65.0 * plaus_mult * status_mult
             for h_occ in occ_houses:
                 pts = round(base_pts, 2)
                 house_yoga_data[h_occ]["mahapurusha_score"] += pts
@@ -1151,9 +1627,9 @@ def evaluate_house_yogas_hol(
                 })
             continue
 
-        # 4. Rāja, Dhana, Yogakāraka, Viparīta & Other Auspicious Classical Yogas
+        # 4. Viparīta Rāja Yogas (base = 65.0, full points to Dusthānas 6, 8, 12 per Phaladīpikā 6.57–70)
         if is_viparita:
-            base_pts = 80.0 * plaus_mult * status_mult
+            base_pts = 65.0 * plaus_mult * status_mult
             vip_targets = set(part_houses) | set(occ_houses)
             for h_t in sorted(vip_targets):
                 is_occ = h_t in occ_houses
@@ -1166,109 +1642,46 @@ def evaluate_house_yogas_hol(
                     "planets": planets,
                     "points": pts
                 })
+            continue
+
+        # 5. Rāja, Dhana, Yogakāraka & Auspicious Classical Yogas (Direct Attribution, no multi-hop smearing)
+        base_pts = (60.0 if is_major_auspicious else 30.0) * plaus_mult * status_mult
+        is_nabhasa_sankhya = len(planets) >= 6
+        if is_nabhasa_sankhya:
+            base_pts *= 0.35
+            candidate_houses = set(occ_houses)
         else:
-            base_pts = (90.0 if is_major_auspicious else 45.0) * plaus_mult * status_mult
+            candidate_houses = set(occ_houses) | set(part_houses) | set(owned_houses)
 
-            if disp_chains.get("is_mock", False):
-                candidate_houses = set(occ_houses) | set(owned_houses)
-                for h_t in sorted(candidate_houses):
-                    is_occ = h_t in occ_houses
-                    is_owned = h_t in owned_houses
-                    if h_t in [6, 8, 12]:
-                        scale = 0.25 if is_occ else 0.0
-                        role = "Occupied Dusthāna spillover"
-                    elif is_occ:
-                        scale = 1.00
-                        role = "Occupied by participating planet"
-                    elif is_owned:
-                        scale = 0.75
-                        role = "Owned by participating planet"
-                    else:
-                        scale = 0.0
-                        role = ""
-
-                    if scale <= 0.0:
-                        continue
-
-                    pts = round(base_pts * scale, 2)
-                    house_yoga_data[h_t]["raja_yoga_score"] += pts
-                    house_yoga_data[h_t]["active_yogas"].append({
-                        "type": y_name,
-                        "role": f"{role} ({status_raw})",
-                        "planets": planets,
-                        "points": pts
-                    })
+        for h_t in sorted(candidate_houses):
+            is_occ = h_t in occ_houses
+            is_part = h_t in part_houses
+            if h_t in [6, 8, 12]:
+                scale = 0.25 if is_occ else 0.0
+                role = "Occupied Dusthāna spillover"
+            elif is_occ:
+                scale = 1.00
+                role = "Occupied by participating planet"
+            elif is_part:
+                scale = 0.75
+                role = "Participating yoga house"
             else:
-                # Real chart: Dispositor-routed ownership logic
-                # Collect Final Dispositors (2nd-hit stop) and traversed houses for participating planets
-                final_dispositors = {
-                    disp_chains["planets"][p]["final_dispositor"]
-                    for p in planets if p in disp_chains["planets"]
-                }
-                final_disp_owned_houses = {
-                    h_fd
-                    for fd in final_dispositors
-                    for h_fd in d1_grahas[fd].get("ruled_houses", [])
-                    if int(h_fd) not in [6, 8, 12]
-                }
-                traversed_chain_houses = {
-                    h_tr
-                    for p in planets if p in disp_chains["planets"]
-                    for h_tr in disp_chains["planets"][p]["traversed_houses"]
-                    if int(h_tr) not in [6, 8, 12]
-                }
-                single_ruler_houses = {
-                    int(rh)
-                    for p in planets if p in ["Sun", "Moon"] and p in d1_grahas
-                    for rh in d1_grahas[p].get("ruled_houses", [])
-                    if int(rh) not in [6, 8, 12]
-                }
-                non_dust_part = {h for h in part_houses if h not in [6, 8, 12]}
+                scale = 0.50
+                role = "Owned by participating planet"
 
-                # Candidate houses are strictly gated by occupancy, explicit yoga axis, or Final Dispositor
-                if not is_major_auspicious:
-                    candidate_houses = set(occ_houses) | non_dust_part
-                else:
-                    candidate_houses = (
-                        set(occ_houses)
-                        | non_dust_part
-                        | single_ruler_houses
-                        | traversed_chain_houses
-                        | final_disp_owned_houses
-                    )
+            if scale <= 0.0:
+                continue
 
-                for h_t in sorted(candidate_houses):
-                    is_occ = h_t in occ_houses
-                    if h_t in [6, 8, 12]:
-                        scale = 0.25 if is_occ else 0.0
-                        role = "Occupied Dusthāna spillover"
-                    elif is_occ:
-                        scale = 1.00
-                        role = "Occupied by participating planet"
-                    elif h_t in non_dust_part or h_t in single_ruler_houses or h_t in traversed_chain_houses:
-                        scale = 0.75
-                        role = "Primary yoga / dispositor-traversed house"
-                    elif h_t in final_disp_owned_houses:
-                        # Fallback house owned by the Final Dispositor (e.g. Mars's H9 Aries)
-                        scale = 0.60
-                        role = "Owned by Final Dispositor"
-                    else:
-                        scale = 0.0
-                        role = ""
+            pts = round(base_pts * scale, 2)
+            house_yoga_data[h_t]["raja_yoga_score"] += pts
+            house_yoga_data[h_t]["active_yogas"].append({
+                "type": y_name,
+                "role": f"{role} ({status_raw})",
+                "planets": planets,
+                "points": pts
+            })
 
-                    if scale <= 0.0:
-                        continue
-
-                    pts = round(base_pts * scale, 2)
-                    house_yoga_data[h_t]["raja_yoga_score"] += pts
-                    house_yoga_data[h_t]["active_yogas"].append({
-                        "type": y_name,
-                        "role": f"{role} ({status_raw})",
-                        "planets": planets,
-                        "points": pts
-                    })
-
-    # Apply smooth hyperbolic tangent saturation so multi-yoga clusters remain bounded in [-150, +150]
+    # Apply smooth hyperbolic tangent saturation into [-100, +100] scale
     for h in range(1, 13):
         data = house_yoga_data[h]
         raw_tot = (
@@ -1277,7 +1690,7 @@ def evaluate_house_yogas_hol(
             + data["mahapurusha_score"]
             + data["daridra_yoga_score"]
         )
-        saturated_tot = 150.0 * math.tanh(raw_tot / 150.0)
+        saturated_tot = 100.0 * math.tanh(raw_tot / 120.0)
         data["total_yoga_score"] = round(saturated_tot, 2)
         data["parivartana_score"] = round(data["parivartana_score"], 2)
         data["raja_yoga_score"] = round(data["raja_yoga_score"], 2)
@@ -1289,8 +1702,9 @@ def evaluate_house_yogas_hol(
 
 def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Main Orchestrator for Vic DiCara's "Houses of Life" Evaluation System.
-    Executes Phases 1 through 9, synthesizes composite scores, and formats the output schema.
+    Main Orchestrator for Vic DiCara's "Houses of Life" Evaluation System (Phaladīpikā Ch. 15).
+    Executes Phases 1 through 10, synthesizes composite scores across 6 classical components,
+    and formats the complete output schema.
     """
     # Phase 1: Chart Geometry
     geometry = _extract_whole_sign_geometry(chart_dict)
@@ -1298,24 +1712,41 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
     adv_aspects = chart_dict.get("advanced_aspects", {})
 
     # Phase 2: Functional Nature relative to Lagna
-    func_natures = calculate_functional_nature(geometry["ascendant_sign"])
+    func_natures = calculate_functional_nature(geometry["ascendant_sign"], d1_grahas=d1_grahas)
 
     # Phase 4: Interactions & Cusp Dominance
     influences = calculate_cusp_and_planet_influences(geometry, d1_grahas, adv_aspects)
 
-    # Phase 5: Planetary Evaluation
-    planets_eval = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+    # Phase 5: Planetary Evaluation (with D9 multi-varga dignity & Digbala)
+    planets_eval = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences, chart_dict=chart_dict)
 
-    # Phase 6: Basic House Condition
-    basic_houses = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+    # Phase 6: Basic House Condition (with condition gating, Upacaya malefic boost, Rahu/Ketu)
+    basic_houses = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences, planets_eval=planets_eval)
 
-    # Phase 7: Relative Houses (Bhavat Bhavam)
-    rel_houses = evaluate_relative_houses_bhavat_bhavam(geometry, d1_grahas, influences)
+    # Phase 7: Relative Houses (Bhavāt Bhavam with Lord relative 6/8/12 Bhāva-nāśa fix)
+    rel_houses = evaluate_relative_houses_bhavat_bhavam(geometry, d1_grahas, influences, planets_eval=planets_eval)
+
+    # Phase 7B: House Karakas (Phaladīpikā Ch. 15)
+    karaka_houses = evaluate_house_karakas_hol(geometry, d1_grahas, planets_eval, basic_houses)
+
+    # Phase 7C: Chandra Lagna (Lunar Reference Frame) Assessment
+    h_moon = int(planets_eval.get("Moon", {}).get("house", 1))
+    chandra_houses: Dict[int, Dict[str, Any]] = {}
+    for h in range(1, 13):
+        h_chandra = ((h_moon - 1 + h - 1) % 12) + 1
+        chandra_houses[h] = {
+            "moon_house": h_moon,
+            "moon_occupied_house": h_moon,
+            "chandra_house_number": h_chandra,
+            "chandra_house_num": h_chandra,
+            "score": round(basic_houses[h_chandra]["score"], 2),
+            "chandra_house_score": round(basic_houses[h_chandra]["score"], 2)
+        }
 
     # Phase 8: House Walls (Kartari)
-    wall_houses = evaluate_house_walls_kartari(geometry, d1_grahas, func_natures)
+    wall_houses = evaluate_house_walls_kartari(geometry, d1_grahas, func_natures, planets_eval=planets_eval)
 
-    # Phase 9: House Yogas (Certified Classical Yoga Engine)
+    # Phase 9: House Yogas (Direct Attribution, Rescaled Base Points)
     yoga_houses = evaluate_house_yogas_hol(geometry, d1_grahas, chart_dict.get("yogas", {}))
 
     # Phase 10: Dispositor Chain Tracking for House Lord Synthesis
@@ -1333,56 +1764,145 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
         lord_score = planets_eval[lord]["final_assessment_score"]
         occ_scores = {occ: planets_eval[occ]["final_assessment_score"] for occ in occupants}
 
-        # Resolve House Lord through its Final Dispositor (planet tracked a 2nd time)
+        # Resolve House Lord through Immediate Dispositor, Final Dispositor, and Lord Digbala
         h_int = int(h) if str(h).isdigit() else 1
         h_chain = disp_chains["houses"].get(h_int, {})
         final_disp = h_chain.get("final_dispositor", lord)
         final_disp_score = planets_eval.get(final_disp, {}).get("final_assessment_score", lord_score)
 
-        if h_chain.get("is_svakshetra", False) or lord in occupants:
-            # Svakṣetra protection bonus when the House Lord is resident in its own sign/house
-            effective_lord_score = lord_score + 20.0
-        elif h_chain.get("returns_to_self", False):
-            # Parivartana or multi-planet dispositor loop returning to self
-            # 80% Lord + 20% direct dispositor partner + 15.0 loop resonance bonus
-            chain_planets = h_chain.get("chain_planets", [lord, lord])
-            partner = chain_planets[1] if len(chain_planets) > 1 else lord
-            partner_score = planets_eval.get(partner, {}).get("final_assessment_score", lord_score)
-            effective_lord_score = (0.80 * lord_score + 0.20 * partner_score) + 15.0
-        else:
-            # Fallback to Final Dispositor anchor (75% Lord + 25% Final Dispositor)
-            effective_lord_score = 0.75 * lord_score + 0.25 * final_disp_score
+        chain_planets = h_chain.get("chain_planets", [lord, lord])
+        immediate_disp = chain_planets[1] if len(chain_planets) > 1 else lord
+        immediate_disp_score = planets_eval.get(immediate_disp, {}).get("final_assessment_score", lord_score)
 
-        # Anchor 70% on the House Lord and 30% on non-lord occupants (prevents guest dilution)
-        non_lord_occ_scores = [score for occ, score in occ_scores.items() if occ != lord]
-        if non_lord_occ_scores:
-            occ_mean = sum(non_lord_occ_scores) / len(non_lord_occ_scores)
+        loop_houses = disp_chains["planets"].get(lord, {}).get("traversed_houses", [])
+        has_dusthana = any(th in [6, 8, 12] for th in loop_houses)
+        has_non_dusthana = any(th not in [6, 8, 12] for th in loop_houses)
+        is_dainya_exchange = (has_dusthana and has_non_dusthana)
+
+        if h_chain.get("is_svakshetra", False) or lord in occupants:
+            effective_lord_score = lord_score + 15.0
+        elif h_chain.get("returns_to_self", False) and h_chain.get("hops_to_repeat", 0) == 2:
+            partner = immediate_disp
+            partner_score = immediate_disp_score
+            if is_dainya_exchange:
+                # Dainya Parivartana between good house and Dusthāna
+                effective_lord_score = (0.80 * lord_score + 0.20 * partner_score) - 10.0
+            else:
+                # Mahā Parivartana or Viparīta loop
+                effective_lord_score = (0.80 * lord_score + 0.20 * partner_score) + 15.0
+        else:
+            effective_lord_score = 0.65 * lord_score + 0.20 * immediate_disp_score + 0.15 * final_disp_score
+
+        # Add House Lord's extra Digbala bonus (Phaladīpikā Ch. 4)
+        lord_house = int(planets_eval[lord]["house"])
+        _, lord_digbala_pts = _get_bala_and_digbala_bonus(lord, lord_house, chart_dict)
+        effective_lord_score += 0.15 * lord_digbala_pts
+
+        # Direct Lord-in-Dusthāna Structural Penalty (Phaladīpikā 15.18 & 6.57)
+        lord_d1_status = _get_dignity_status(d1_grahas[lord])
+        lord_d1 = DICARA_D1_DIGNITY_MAP.get(lord_d1_status, 0.0)
+        r_lord = ((lord_house - int(h)) % 12) + 1
+        is_own_exalt = (lord_d1 >= 0.8)
+        if not is_own_exalt:
+            lord_ruled = [int(rh) for rh in d1_grahas[lord].get("ruled_houses", []) if 1 <= int(rh) <= 12]
+            is_viparita_waived = any(rh in [6, 8, 12] for rh in lord_ruled) and (lord_d1 >= 0.4) and (lord_house in [6, 8, 12])
+            if not is_viparita_waived:
+                dust_pen = 0.0
+                if r_lord in [6, 8, 12]:
+                    dust_pen = -12.0 if r_lord == 8 else -8.0
+                elif lord_house in [6, 8, 12] and r_lord not in [1, 2, 3, 4, 5, 7, 9, 10, 11]:
+                    dust_pen = -8.0
+
+                if lord_d1 < 0.0 and lord_score >= 0.0:
+                    dust_pen *= 2.0
+                effective_lord_score += dust_pen
+
+        # Sign-Correct Occupant Synthesis
+        non_lord_contribs: List[float] = []
+        for occ in occupants:
+            if occ == lord:
+                continue
+            occ_final_score = planets_eval[occ]["final_assessment_score"]
+            is_first_lord = func_natures.get(occ, {}).get("rule_breakdown", {}).get("is_first_lord", False)
+            fn_sc = func_natures.get(occ, {}).get("score", 0.0)
+
+            # Check if Moon is bright waxing/full and not eclipsed
+            is_bright_moon = False
+            if occ == "Moon":
+                m_inh = float(func_natures.get("Moon", {}).get("rule_breakdown", {}).get("inherent_score", 0.5))
+                m_lon = float(d1_grahas["Moon"].get("longitude", 0.0))
+                m_sign = d1_grahas["Moon"].get("sign")
+                is_eclipsed_moon = False
+                for node in ["Rahu", "Ketu"]:
+                    if node in d1_grahas and d1_grahas[node].get("sign") == m_sign:
+                        n_lon = float(d1_grahas[node].get("longitude", 0.0))
+                        if _shortest_distance(m_lon, n_lon) <= 10.0:
+                            is_eclipsed_moon = True
+                            break
+                if m_inh >= 0.5 and not is_eclipsed_moon:
+                    is_bright_moon = True
+
+            if is_first_lord and int(h) not in [6, 8, 12]:
+                polarity = 1.0
+            elif int(h) in [3, 6, 11] and occ in ["Sun", "Mars", "Saturn"]:
+                polarity = 0.50
+            elif is_bright_moon and occ_final_score > 0:
+                polarity = 0.75
+            elif fn_sc > 0.15:
+                polarity = 1.0
+            elif fn_sc <= -0.50 or (occ in ["Mars", "Saturn", "Sun"] and int(h) not in [3, 6, 11] and not is_first_lord):
+                polarity = -1.0
+            else:
+                polarity = 0.0
+
+            if polarity > 0:
+                occ_contrib = occ_final_score * polarity
+            elif polarity < 0:
+                # Baseline malefic occupant pressure (-45.0), softened up to 50% if dignified (occ_final_score > 0)
+                # and intensified up to 2x (-90.0) if afflicted/debilitated (occ_final_score < 0) per Phaladīpikā 15.1 & 15.18
+                if occ_final_score >= 0.0:
+                    occ_contrib = -45.0 * (1.0 - 0.50 * min(1.0, occ_final_score / 100.0))
+                else:
+                    occ_contrib = -45.0 * (1.0 + min(1.0, abs(occ_final_score) / 100.0))
+            else:
+                occ_contrib = occ_final_score * 0.25
+
+            non_lord_contribs.append(occ_contrib)
+
+        if non_lord_contribs:
+            occ_mean = sum(non_lord_contribs) / len(non_lord_contribs)
             lord_and_occ_avg = 0.70 * effective_lord_score + 0.30 * occ_mean
         else:
             lord_and_occ_avg = effective_lord_score
 
         r_score = rel_houses[h]["score"]
+        ch_score = chandra_houses[h]["score"]
+        r_score_combined = round(0.80 * r_score + 0.20 * ch_score, 2)
+        chandra_houses[h]["combined_relative_score"] = r_score_combined
+        k_score = karaka_houses[h]["score"]
         w_score = wall_houses[h]["score"]
         is_walled = wall_houses[h]["is_walled"]
         y_score = yoga_houses[h]["total_yoga_score"]
 
-        # Weighted Composite Hierarchy (30% Basic, 25% Lord, 25% Yoga, 10% Relative, 10% Wall)
+        # Weighted Composite Hierarchy:
+        # 30% Basic, 30% Lord, 15% Relative (blended with Chandra Lagna), 10% Karaka, 10% Yoga, 5% Wall
         if is_walled:
             composite = (
                 0.30 * b_score
-                + 0.25 * lord_and_occ_avg
-                + 0.25 * y_score
-                + 0.10 * r_score
-                + 0.10 * w_score
+                + 0.30 * lord_and_occ_avg
+                + 0.15 * r_score_combined
+                + 0.10 * k_score
+                + 0.10 * y_score
+                + 0.05 * w_score
             )
         else:
-            # Redistribute the 10% wall weight proportionally when no Kartari wall exists
             composite = (
                 0.30 * b_score
-                + 0.25 * lord_and_occ_avg
-                + 0.25 * y_score
-                + 0.10 * r_score
-            ) / 0.90
+                + 0.30 * lord_and_occ_avg
+                + 0.15 * r_score_combined
+                + 0.10 * k_score
+                + 0.10 * y_score
+            ) / 0.95
 
         composite_round = round(composite, 2)
 
@@ -1409,7 +1929,6 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
             adj = "fortified" if lord_score > 0 else "strained"
             drivers.append(f"House Lord {lord} is {adj} ({lord_score:+.1f})")
 
-        # Basic cusp impact
         cusp_contribs = basic_houses[h]["planet_contributions"]
         if cusp_contribs:
             extreme_p = max(cusp_contribs.keys(), key=lambda k: abs(cusp_contribs[k]))
@@ -1418,13 +1937,11 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
                 verb = "aspectual support from" if extreme_val > 0 else "aspectual pressure from"
                 drivers.append(f"Significant {verb} {extreme_p} on Cusp ({extreme_val:+.1f})")
 
-        # Yoga driver
         if abs(y_score) >= 50.0:
             active_yogas = yoga_houses[h]["active_yogas"]
             if active_yogas:
                 drivers.append(f"Net Structural Yogas ({y_score:+.1f})")
 
-        # Wall driver
         if wall_houses[h]["is_walled"]:
             drivers.append(f"{wall_houses[h]['wall_type']} ({w_score:+.1f})")
 
@@ -1443,12 +1960,17 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
                 "lord_assessment": {
                     "lord": lord,
                     "lord_final_score": lord_score,
+                    "immediate_dispositor": immediate_disp,
                     "final_dispositor": final_disp,
                     "effective_lord_score": round(effective_lord_score, 2),
+                    "occupants_scores": occ_scores,
                     "occupants_final_scores": occ_scores,
                     "combined_score": round(lord_and_occ_avg, 2)
                 },
                 "relative_house_bhavat_bhavam": rel_houses[h],
+                "relative_houses_combined_score": r_score_combined,
+                "karaka_assessment": karaka_houses[h],
+                "chandra_lagna_assessment": chandra_houses[h],
                 "house_walls_kartari": wall_houses[h],
                 "house_yogas": yoga_houses[h]
             },
