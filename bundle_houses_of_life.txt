@@ -1,6 +1,6 @@
 ===============================================================================================
 ASTRA: HOUSES OF LIFE (PHALADĪPIKĀ CH. 15) CALCULATION & FRONTEND DISPLAY AUDIT BUNDLE
-GENERATED : 2026-10-27 18:31:28
+GENERATED : 2026-10-27 18:55:49
 FRAMEWORK : Vic DiCara Astrological System & Mantreśvara's Phaladīpikā
 ENGINE    : Swiss Ephemeris (`swisseph`) | Sāyana Tropical Signs | Campanus 3D Cusps
 UI SYSTEM : Astra Editorial Design System (ADR-006 & static/GEMINI.md)
