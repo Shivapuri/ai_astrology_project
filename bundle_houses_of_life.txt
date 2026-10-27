@@ -1,6 +1,6 @@
 ===============================================================================================
 ASTRA: HOUSES OF LIFE (PHALADĪPIKĀ CH. 15) CALCULATION & FRONTEND DISPLAY AUDIT BUNDLE
-GENERATED : 2026-10-27 18:55:49
+GENERATED : 2026-10-27 19:15:14
 FRAMEWORK : Vic DiCara Astrological System & Mantreśvara's Phaladīpikā
 ENGINE    : Swiss Ephemeris (`swisseph`) | Sāyana Tropical Signs | Campanus 3D Cusps
 UI SYSTEM : Astra Editorial Design System (ADR-006 & static/GEMINI.md)
@@ -145,10 +145,10 @@ TABLE OF CONTENTS
   3. [3. REPORT PIPELINE & API SERIALIZATION] jyotish/pipeline.py (897 lines, 41,782 bytes)
      Role: Directed Acyclic Graph (DAG) pipeline orchestrator. Executes evaluate_houses_of_life(chart_input) during Stage 4, attaches it to the Vedic context dictionary under 'houses_of_life', and exposes it through Flask endpoint /api/chart/<native_id>.
 
-  4. [4. FRONTEND HTML DOM BLUEPRINT] templates/widget_templates/tmpl_houses_of_life.html (257 lines, 24,919 bytes)
+  4. [4. FRONTEND HTML DOM BLUEPRINT] templates/widget_templates/tmpl_houses_of_life.html (257 lines, 24,943 bytes)
      Role: Reusable widget DOM blueprint (<template id="tmpl-houses-of-life">). Declares top toolbar with view switcher (12-House Matrix, Audit Receipt, 7-Graha Ledger, Concordance), Zone 1 Executive Horizon Ribbon with diverging bar container (-150 to +150), and Zone 2 multi-view containers.
 
-  5. [5. FRONTEND DISPLAY & INTERACTION CONTROLLER] static/js/widgets/houses_of_life.js (1037 lines, 55,492 bytes)
+  5. [5. FRONTEND DISPLAY & INTERACTION CONTROLLER] static/js/widgets/houses_of_life.js (1076 lines, 57,451 bytes)
      Role: Client-side JavaScript widget controller (872 lines). Manages widget lifecycle, dual-mode responsive layout (side-by-side split in wide cells vs tabbed in compact cells), diverging bar chart rendering with color interpolation, 12-House Matrix rendering, dynamic Audit Receipt with interactive 30° degree strip SVG, 7-Graha Ledger table, and Concordance view.
 
   6. [6. UI REGISTRATION & WORKSPACE DISPATCH] templates/partials/context_menu.html (31 lines, 3,615 bytes)
@@ -168,8 +168,8 @@ TABLE OF CONTENTS
 
 -----------------------------------------------------------------------------------------------
 TOTAL AUDITED FILES: 10
-TOTAL LINES OF CODE & SPECIFICATIONS: 6,862
-TOTAL UNCOMPRESSED VOLUME: 370,378 bytes (~361.7 KB)
+TOTAL LINES OF CODE & SPECIFICATIONS: 6,901
+TOTAL UNCOMPRESSED VOLUME: 372,361 bytes (~363.6 KB)
 ===============================================================================================
 
 ===============================================================================================
@@ -3546,7 +3546,7 @@ END VERBATIM CONTENTS: jyotish/pipeline.py
 FILE  4 OF 10: templates/widget_templates/tmpl_houses_of_life.html
 CATEGORY   : 4. FRONTEND HTML DOM BLUEPRINT
 ROLE       : Reusable widget DOM blueprint (<template id="tmpl-houses-of-life">). Declares top toolbar with view switcher (12-House Matrix, Audit Receipt, 7-Graha Ledger, Concordance), Zone 1 Executive Horizon Ribbon with diverging bar container (-150 to +150), and Zone 2 multi-view containers.
-METRICS    : 257 lines | 24,919 bytes
+METRICS    : 257 lines | 24,943 bytes
 ===============================================================================================
 BEGIN VERBATIM CONTENTS: templates/widget_templates/tmpl_houses_of_life.html
 -----------------------------------------------------------------------------------------------
@@ -3606,7 +3606,7 @@ BEGIN VERBATIM CONTENTS: templates/widget_templates/tmpl_houses_of_life.html
 
             <!-- Diverging Bar Chart Horizon (12-Column Vertical Diverging Skyline) -->
             <div class="hol-skyline-container" style="display: flex; flex-direction: column; gap: 2px; margin-top: 2px;">
-                <div class="hol-skyline-grid" style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; height: 68px; align-items: stretch; background: var(--bg-surface-muted, #eee5d3); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px; padding: 4px 6px;">
+                <div class="hol-skyline-grid" style="display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2px; height: 132px; max-width: 780px; align-items: stretch; background: var(--bg-surface, #fffdfa); border: 1px solid var(--border-subtle, #e5dccb); border-radius: 4px; padding: 6px 8px;">
                     <!-- Rendered dynamically -->
                 </div>
             </div>
@@ -3816,7 +3816,7 @@ END VERBATIM CONTENTS: templates/widget_templates/tmpl_houses_of_life.html
 FILE  5 OF 10: static/js/widgets/houses_of_life.js
 CATEGORY   : 5. FRONTEND DISPLAY & INTERACTION CONTROLLER
 ROLE       : Client-side JavaScript widget controller (872 lines). Manages widget lifecycle, dual-mode responsive layout (side-by-side split in wide cells vs tabbed in compact cells), diverging bar chart rendering with color interpolation, 12-House Matrix rendering, dynamic Audit Receipt with interactive 30° degree strip SVG, 7-Graha Ledger table, and Concordance view.
-METRICS    : 1,037 lines | 55,492 bytes
+METRICS    : 1,076 lines | 57,451 bytes
 ===============================================================================================
 BEGIN VERBATIM CONTENTS: static/js/widgets/houses_of_life.js
 -----------------------------------------------------------------------------------------------
@@ -4171,6 +4171,28 @@ BEGIN VERBATIM CONTENTS: static/js/widgets/houses_of_life.js
         const houses = hol.houses || {};
         const selectedHouse = _selectedHouseState.get(root) || 1;
 
+        // Collect all 12 composite scores
+        const scores = [];
+        for (let h = 1; h <= 12; h++) {
+            const hData = houses[String(h)] || {};
+            const synth = hData.synthesis || {};
+            scores.push(synth.composite_score !== undefined ? synth.composite_score : 0.0);
+        }
+
+        // Dynamic auto-scaling headroom
+        const maxPos = Math.max(35.0, ...scores.map(s => Math.max(0.0, s) * 1.08));
+        const maxNeg = Math.max(0.0, ...scores.map(s => Math.max(0.0, -s) * 1.12));
+
+        let zeroBottomPct;
+        if (maxNeg <= 0.001) {
+            zeroBottomPct = 6.0;
+        } else {
+            const totalSpan = maxPos + maxNeg;
+            zeroBottomPct = Math.max(15.0, Math.min(85.0, (maxNeg / totalSpan) * 100.0));
+        }
+
+        const pustaBottomPct = zeroBottomPct + (25.0 / maxPos) * (100.0 - zeroBottomPct);
+
         for (let h = 1; h <= 12; h++) {
             const hData = houses[String(h)] || {};
             const synth = hData.synthesis || {};
@@ -4178,32 +4200,49 @@ BEGIN VERBATIM CONTENTS: static/js/widgets/houses_of_life.js
             const sign = hData.sign || '';
             const sGlyph = getSignGlyph(sign);
 
-            // Scale height percentage from baseline (0 to 100 max)
-            const clamped = Math.max(-100, Math.min(100, score));
-            const barHeightPct = Math.max(4, (Math.abs(clamped) / 100.0) * 95);
+            // Bar color by classical tier
+            let barColor;
+            if (score >= 25.0) {
+                barColor = 'var(--status-benefic-dark, #15803d)'; // Puṣṭa (Forest Green)
+            } else if (score >= 0.0) {
+                barColor = '#8c6d46'; // Miśra positive (Warm Bronze / Ochre)
+            } else if (score > -20.1) {
+                barColor = '#c26a38'; // Miśra negative (Muted Terracotta)
+            } else {
+                barColor = 'var(--status-malefic-dark, #b91c1c)'; // Hīna (Crimson)
+            }
 
-            const isPositive = clamped >= 0;
-            const barColor = isPositive ? 'var(--status-benefic-dark, #15803d)' : 'var(--status-malefic-dark, #b91c1c)';
+            let barStyle;
+            if (score >= 0) {
+                const barHeightPct = (score / maxPos) * (100.0 - zeroBottomPct);
+                barStyle = `position: absolute; left: 2px; right: 2px; bottom: ${zeroBottomPct.toFixed(1)}%; height: ${Math.max(2.0, barHeightPct).toFixed(1)}%; background: ${barColor}; border-radius: 2px 2px 0 0; z-index: 3;`;
+            } else {
+                const barHeightPct = (Math.abs(score) / maxNeg) * zeroBottomPct;
+                barStyle = `position: absolute; left: 2px; right: 2px; top: ${(100.0 - zeroBottomPct).toFixed(1)}%; height: ${Math.max(2.0, barHeightPct).toFixed(1)}%; background: ${barColor}; border-radius: 0 0 2px 2px; z-index: 3;`;
+            }
+
             const isSelected = (h === selectedHouse);
 
             const col = document.createElement('div');
             col.className = `hol-skyline-col ${isSelected ? 'active-col' : ''}`;
             col.dataset.house = String(h);
-            col.style.cssText = `display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:100%; cursor:pointer; padding:2px 1px; border-radius:3px; position:relative; transition:background 0.15s ease; ${isSelected ? 'background:var(--bg-surface, #fffdfa); box-shadow:0 1px 3px rgba(0,0,0,0.08);' : 'background:transparent;'}`;
+            col.style.cssText = `display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; cursor: pointer; padding: 4px 1px; border-radius: 3px; position: relative; transition: background 0.15s ease; ${isSelected ? 'background: var(--bg-surface-muted, #eee5d3); box-shadow: 0 1px 3px rgba(0,0,0,0.08);' : 'background: transparent;'}`;
             col.title = `House ${h} (${sign}): ${score >= 0 ? '+' : ''}${score.toFixed(1)} (${synth.classical_tier || ''})`;
 
             col.innerHTML = `
-                <div style="font-size:12px; font-weight:700; line-height:1; color:var(--text-heading); display:flex; align-items:center; gap:2px;">
+                <div style="font-size: 12px; font-weight: 700; line-height: 1; color: var(--text-heading); display: flex; align-items: center; justify-content: center; gap: 2px;">
                     <span>H${h}</span>
-                    <span style="font-family:var(--font-astro-glyphs); font-size:12px;">${sGlyph}</span>
+                    <span style="font-family: var(--font-astro-glyphs); font-size: 12px;">${sGlyph}</span>
                 </div>
-                <div style="width:100%; max-width:28px; height:36px; position:relative; margin:2px 0;">
-                    <!-- Zero Axis Baseline across middle -->
-                    <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:var(--border-strong, #8c7b64); z-index:2;"></div>
-                    <!-- Value Bar: positive grows up, negative grows down -->
-                    <div style="position:absolute; left:5px; right:5px; ${isPositive ? `bottom:50%; height:${barHeightPct / 2}%;` : `top:50%; height:${barHeightPct / 2}%;`} background:${barColor}; border-radius:1px; z-index:1;"></div>
+                <div style="width: 100%; flex: 1; min-height: 86px; position: relative; margin: 4px 0;">
+                    <!-- Subtle +25 Puṣṭa reference dashed line -->
+                    <div style="position: absolute; left: 0; right: 0; bottom: ${pustaBottomPct.toFixed(1)}%; border-top: 1px dashed var(--border-medium, #d5c8b2); z-index: 1; pointer-events: none; opacity: 0.85;" title="+25 Puṣṭa threshold"></div>
+                    <!-- Zero Axis Baseline -->
+                    <div style="position: absolute; left: 0; right: 0; bottom: ${zeroBottomPct.toFixed(1)}%; height: 1px; background: var(--border-strong, #8c7b64); z-index: 2;"></div>
+                    <!-- Value Bar -->
+                    <div style="${barStyle}"></div>
                 </div>
-                <div style="font-size:12px; font-family:var(--font-mono); font-weight:600; line-height:1; color:${barColor};">
+                <div style="font-size: 12px; font-family: var(--font-mono); font-weight: 700; line-height: 1; color: ${barColor}; text-align: center;">
                     ${score >= 0 ? '+' : ''}${Math.round(score)}
                 </div>
             `;

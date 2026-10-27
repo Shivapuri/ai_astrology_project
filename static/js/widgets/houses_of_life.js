@@ -349,6 +349,28 @@
         const houses = hol.houses || {};
         const selectedHouse = _selectedHouseState.get(root) || 1;
 
+        // Collect all 12 composite scores
+        const scores = [];
+        for (let h = 1; h <= 12; h++) {
+            const hData = houses[String(h)] || {};
+            const synth = hData.synthesis || {};
+            scores.push(synth.composite_score !== undefined ? synth.composite_score : 0.0);
+        }
+
+        // Dynamic auto-scaling headroom
+        const maxPos = Math.max(35.0, ...scores.map(s => Math.max(0.0, s) * 1.08));
+        const maxNeg = Math.max(0.0, ...scores.map(s => Math.max(0.0, -s) * 1.12));
+
+        let zeroBottomPct;
+        if (maxNeg <= 0.001) {
+            zeroBottomPct = 6.0;
+        } else {
+            const totalSpan = maxPos + maxNeg;
+            zeroBottomPct = Math.max(15.0, Math.min(85.0, (maxNeg / totalSpan) * 100.0));
+        }
+
+        const pustaBottomPct = zeroBottomPct + (25.0 / maxPos) * (100.0 - zeroBottomPct);
+
         for (let h = 1; h <= 12; h++) {
             const hData = houses[String(h)] || {};
             const synth = hData.synthesis || {};
@@ -356,32 +378,49 @@
             const sign = hData.sign || '';
             const sGlyph = getSignGlyph(sign);
 
-            // Scale height percentage from baseline (0 to 100 max)
-            const clamped = Math.max(-100, Math.min(100, score));
-            const barHeightPct = Math.max(4, (Math.abs(clamped) / 100.0) * 95);
+            // Bar color by classical tier
+            let barColor;
+            if (score >= 25.0) {
+                barColor = 'var(--status-benefic-dark, #15803d)'; // Puṣṭa (Forest Green)
+            } else if (score >= 0.0) {
+                barColor = '#8c6d46'; // Miśra positive (Warm Bronze / Ochre)
+            } else if (score > -20.1) {
+                barColor = '#c26a38'; // Miśra negative (Muted Terracotta)
+            } else {
+                barColor = 'var(--status-malefic-dark, #b91c1c)'; // Hīna (Crimson)
+            }
 
-            const isPositive = clamped >= 0;
-            const barColor = isPositive ? 'var(--status-benefic-dark, #15803d)' : 'var(--status-malefic-dark, #b91c1c)';
+            let barStyle;
+            if (score >= 0) {
+                const barHeightPct = (score / maxPos) * (100.0 - zeroBottomPct);
+                barStyle = `position: absolute; left: 2px; right: 2px; bottom: ${zeroBottomPct.toFixed(1)}%; height: ${Math.max(2.0, barHeightPct).toFixed(1)}%; background: ${barColor}; border-radius: 2px 2px 0 0; z-index: 3;`;
+            } else {
+                const barHeightPct = (Math.abs(score) / maxNeg) * zeroBottomPct;
+                barStyle = `position: absolute; left: 2px; right: 2px; top: ${(100.0 - zeroBottomPct).toFixed(1)}%; height: ${Math.max(2.0, barHeightPct).toFixed(1)}%; background: ${barColor}; border-radius: 0 0 2px 2px; z-index: 3;`;
+            }
+
             const isSelected = (h === selectedHouse);
 
             const col = document.createElement('div');
             col.className = `hol-skyline-col ${isSelected ? 'active-col' : ''}`;
             col.dataset.house = String(h);
-            col.style.cssText = `display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:100%; cursor:pointer; padding:2px 1px; border-radius:3px; position:relative; transition:background 0.15s ease; ${isSelected ? 'background:var(--bg-surface, #fffdfa); box-shadow:0 1px 3px rgba(0,0,0,0.08);' : 'background:transparent;'}`;
+            col.style.cssText = `display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 100%; cursor: pointer; padding: 4px 1px; border-radius: 3px; position: relative; transition: background 0.15s ease; ${isSelected ? 'background: var(--bg-surface-muted, #eee5d3); box-shadow: 0 1px 3px rgba(0,0,0,0.08);' : 'background: transparent;'}`;
             col.title = `House ${h} (${sign}): ${score >= 0 ? '+' : ''}${score.toFixed(1)} (${synth.classical_tier || ''})`;
 
             col.innerHTML = `
-                <div style="font-size:12px; font-weight:700; line-height:1; color:var(--text-heading); display:flex; align-items:center; gap:2px;">
+                <div style="font-size: 12px; font-weight: 700; line-height: 1; color: var(--text-heading); display: flex; align-items: center; justify-content: center; gap: 2px;">
                     <span>H${h}</span>
-                    <span style="font-family:var(--font-astro-glyphs); font-size:12px;">${sGlyph}</span>
+                    <span style="font-family: var(--font-astro-glyphs); font-size: 12px;">${sGlyph}</span>
                 </div>
-                <div style="width:100%; max-width:28px; height:36px; position:relative; margin:2px 0;">
-                    <!-- Zero Axis Baseline across middle -->
-                    <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:var(--border-strong, #8c7b64); z-index:2;"></div>
-                    <!-- Value Bar: positive grows up, negative grows down -->
-                    <div style="position:absolute; left:5px; right:5px; ${isPositive ? `bottom:50%; height:${barHeightPct / 2}%;` : `top:50%; height:${barHeightPct / 2}%;`} background:${barColor}; border-radius:1px; z-index:1;"></div>
+                <div style="width: 100%; flex: 1; min-height: 86px; position: relative; margin: 4px 0;">
+                    <!-- Subtle +25 Puṣṭa reference dashed line -->
+                    <div style="position: absolute; left: 0; right: 0; bottom: ${pustaBottomPct.toFixed(1)}%; border-top: 1px dashed var(--border-medium, #d5c8b2); z-index: 1; pointer-events: none; opacity: 0.85;" title="+25 Puṣṭa threshold"></div>
+                    <!-- Zero Axis Baseline -->
+                    <div style="position: absolute; left: 0; right: 0; bottom: ${zeroBottomPct.toFixed(1)}%; height: 1px; background: var(--border-strong, #8c7b64); z-index: 2;"></div>
+                    <!-- Value Bar -->
+                    <div style="${barStyle}"></div>
                 </div>
-                <div style="font-size:12px; font-family:var(--font-mono); font-weight:600; line-height:1; color:${barColor};">
+                <div style="font-size: 12px; font-family: var(--font-mono); font-weight: 700; line-height: 1; color: ${barColor}; text-align: center;">
                     ${score >= 0 ? '+' : ''}${Math.round(score)}
                 </div>
             `;
