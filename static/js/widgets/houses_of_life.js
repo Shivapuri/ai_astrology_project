@@ -9,7 +9,7 @@
  * - Zero consumer emojis; semantic CSS micro-dots and square micro-tags
  * - Responsive Dual-Mode Layout: Side-by-side split in wide cells / maximized view,
  *   seamless tabbed receipt drilldown in compact cells with back button & prev/next stepper
- * - Diverging 12-Bhāva Horizon, Live Audit Receipt with SVG 30° strip,
+ * - Diverging 12-Bhāva Vertical Skyline Strip, Live Architectural Audit Sheet with SVG 30° strip,
  *   7-Graha Operational Ledger, and Stage 3 vs Stage 4 Concordance
  */
 
@@ -54,17 +54,30 @@
     function getTierDotHtml(classicalTier) {
         const tier = (classicalTier || '').toLowerCase();
         if (tier.includes('puṣṭa') || tier.includes('pusta')) {
-            return '<span class="status-indicator" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--status-benefic-dark, #15803d); margin-right:5px;"></span>';
+            return '<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--status-benefic-dark, #15803d); margin-right:5px; vertical-align:middle;"></span>';
         } else if (tier.includes('hīna') || tier.includes('hina')) {
-            return '<span class="status-indicator" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--status-malefic-dark, #b91c1c); margin-right:5px;"></span>';
+            return '<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--status-malefic-dark, #b91c1c); margin-right:5px; vertical-align:middle;"></span>';
         }
-        return '<span class="status-indicator" style="display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--text-subtle, #8c7b64); margin-right:5px;"></span>';
+        return '<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--text-subtle, #8c7b64); margin-right:5px; vertical-align:middle;"></span>';
     }
 
     function getScoreColor(val) {
         if (val >= 25.0) return 'var(--status-benefic-dark, #15803d)';
         if (val <= -20.1) return 'var(--status-malefic-dark, #b91c1c)';
         return 'var(--text-heading, #4a3325)';
+    }
+
+    function formatComponentCell(val) {
+        if (val === null || val === undefined) {
+            return '<span style="color:var(--text-subtle, #9a8a78);">—</span>';
+        }
+        if (Math.abs(val) < 0.05) {
+            return '<span style="color:var(--text-subtle, #9a8a78);">—</span>';
+        }
+        if (val < 0) {
+            return `<span style="color:var(--status-malefic-dark, #b91c1c);">${val.toFixed(1)}</span>`;
+        }
+        return `<span style="color:var(--text-primary, #3d312a);">+${val.toFixed(1)}</span>`;
     }
 
     // State per container
@@ -255,25 +268,26 @@
             });
         }
 
-        // Prev & Next Buttons in Receipt Inspector
+        // Next / Prev House Steppers in Receipt Inspector
         const prevBtn = root.querySelector('.hol-receipt-prev-btn');
+        const nextBtn = root.querySelector('.hol-receipt-next-btn');
+
         if (prevBtn && prevBtn.dataset.bound !== 'true') {
             prevBtn.dataset.bound = 'true';
             prevBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 let cur = _selectedHouseState.get(root) || 1;
-                cur = cur <= 1 ? 12 : cur - 1;
+                cur = (cur === 1) ? 12 : (cur - 1);
                 selectHouse(root, hol, cur, false);
             });
         }
 
-        const nextBtn = root.querySelector('.hol-receipt-next-btn');
         if (nextBtn && nextBtn.dataset.bound !== 'true') {
             nextBtn.dataset.bound = 'true';
             nextBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 let cur = _selectedHouseState.get(root) || 1;
-                cur = cur >= 12 ? 1 : cur + 1;
+                cur = (cur === 12) ? 1 : (cur + 1);
                 selectHouse(root, hol, cur, false);
             });
         }
@@ -308,6 +322,12 @@
         }
 
         const rankings = hol.summary_rankings || {};
+        const meanScore = rankings.composite_mean_score;
+        const meanEl = root.querySelector('.hol-mean-score');
+        if (meanEl) {
+            meanEl.textContent = meanScore !== undefined ? `${meanScore >= 0 ? '+' : ''}${meanScore.toFixed(1)}` : '--';
+        }
+
         const topH = rankings.top_flourishing_houses || [];
         const botH = rankings.most_challenged_houses || [];
 
@@ -321,12 +341,14 @@
             botEl.textContent = botH.map(h => `H${h}`).join(' · ') || '--';
         }
 
-        // Render Diverging Bar Chart Horizon
-        const barsGrid = root.querySelector('.hol-bars-grid');
-        if (!barsGrid) return;
-        barsGrid.innerHTML = '';
+        // Render 12-Column Vertical Diverging Skyline
+        const skylineGrid = root.querySelector('.hol-skyline-grid') || root.querySelector('.hol-bars-grid');
+        if (!skylineGrid) return;
+        skylineGrid.innerHTML = '';
 
         const houses = hol.houses || {};
+        const selectedHouse = _selectedHouseState.get(root) || 1;
+
         for (let h = 1; h <= 12; h++) {
             const hData = houses[String(h)] || {};
             const synth = hData.synthesis || {};
@@ -334,29 +356,32 @@
             const sign = hData.sign || '';
             const sGlyph = getSignGlyph(sign);
 
-            // Normalize score (-150 to +150) to percentage from center (50%)
-            const clamped = Math.max(-150, Math.min(150, score));
-            const barPct = (Math.abs(clamped) / 150.0) * 45; // max 45% width from center
+            // Scale height percentage from baseline (0 to 100 max)
+            const clamped = Math.max(-100, Math.min(100, score));
+            const barHeightPct = Math.max(4, (Math.abs(clamped) / 100.0) * 95);
 
             const isPositive = clamped >= 0;
             const barColor = isPositive ? 'var(--status-benefic-dark, #15803d)' : 'var(--status-malefic-dark, #b91c1c)';
+            const isSelected = (h === selectedHouse);
 
             const col = document.createElement('div');
-            col.style.cssText = 'display:flex; flex-direction:column; align-items:center; height:100%; justify-content:center; cursor:pointer; position:relative;';
-            col.title = `House ${h} (${sign}): ${score >= 0 ? '+' : ''}${score.toFixed(1)} (${synth.health_rating || ''})`;
+            col.className = `hol-skyline-col ${isSelected ? 'active-col' : ''}`;
+            col.dataset.house = String(h);
+            col.style.cssText = `display:flex; flex-direction:column; align-items:center; justify-content:space-between; height:100%; cursor:pointer; padding:2px 1px; border-radius:3px; position:relative; transition:background 0.15s ease; ${isSelected ? 'background:var(--bg-surface, #fffdfa); box-shadow:0 1px 3px rgba(0,0,0,0.08);' : 'background:transparent;'}`;
+            col.title = `House ${h} (${sign}): ${score >= 0 ? '+' : ''}${score.toFixed(1)} (${synth.classical_tier || ''})`;
 
             col.innerHTML = `
                 <div style="font-size:12px; font-weight:700; line-height:1; color:var(--text-heading); display:flex; align-items:center; gap:2px;">
                     <span>H${h}</span>
                     <span style="font-family:var(--font-astro-glyphs); font-size:12px;">${sGlyph}</span>
                 </div>
-                <div style="width:100%; height:12px; position:relative; background:#e2d7c3; border-radius:2px; margin-top:2px; overflow:hidden;">
-                    <!-- Zero Axis Line -->
-                    <div style="position:absolute; left:50%; top:0; bottom:0; width:1px; background:#8c7b64; z-index:2;"></div>
-                    <!-- Value Bar -->
-                    <div style="position:absolute; top:1px; bottom:1px; ${isPositive ? `left:50%; width:${barPct}%;` : `right:50%; width:${barPct}%;`} background:${barColor}; border-radius:1px; z-index:1;"></div>
+                <div style="width:100%; max-width:28px; height:36px; position:relative; margin:2px 0;">
+                    <!-- Zero Axis Baseline across middle -->
+                    <div style="position:absolute; left:0; right:0; top:50%; height:1px; background:var(--border-strong, #8c7b64); z-index:2;"></div>
+                    <!-- Value Bar: positive grows up, negative grows down -->
+                    <div style="position:absolute; left:5px; right:5px; ${isPositive ? `bottom:50%; height:${barHeightPct / 2}%;` : `top:50%; height:${barHeightPct / 2}%;`} background:${barColor}; border-radius:1px; z-index:1;"></div>
                 </div>
-                <div style="font-size:12px; font-family:var(--font-mono); font-weight:600; line-height:1; margin-top:2px; color:${barColor};">
+                <div style="font-size:12px; font-family:var(--font-mono); font-weight:600; line-height:1; color:${barColor};">
                     ${score >= 0 ? '+' : ''}${Math.round(score)}
                 </div>
             `;
@@ -365,7 +390,7 @@
                 selectHouse(root, hol, h, true);
             });
 
-            barsGrid.appendChild(col);
+            skylineGrid.appendChild(col);
         }
     }
 
@@ -387,16 +412,26 @@
             const lord = hData.lord || '--';
             const lGlyph = getPlanetGlyph(lord);
 
+            // 6 Classical Pillars
             const basicScore = comps.basic_house_condition ? comps.basic_house_condition.score : 0.0;
             const lordScore = comps.lord_assessment ? (comps.lord_assessment.combined_score ?? comps.lord_assessment.lord_final_score) : 0.0;
-            const bhavatScore = comps.relative_house_bhavat_bhavam ? comps.relative_house_bhavat_bhavam.score : 0.0;
-            const wallScore = comps.house_walls_kartari ? comps.house_walls_kartari.score : 0.0;
+            const relMoonScore = comps.relative_houses_combined_score !== undefined
+                ? comps.relative_houses_combined_score
+                : (comps.chandra_lagna_assessment && comps.chandra_lagna_assessment.combined_relative_score !== undefined
+                    ? comps.chandra_lagna_assessment.combined_relative_score
+                    : (comps.relative_house_bhavat_bhavam ? comps.relative_house_bhavat_bhavam.score : 0.0));
+            const karakaScore = comps.karaka_assessment ? comps.karaka_assessment.score : 0.0;
             const yogaScore = comps.house_yogas ? comps.house_yogas.total_yoga_score : 0.0;
+            const wallScore = (comps.house_walls_kartari && comps.house_walls_kartari.is_walled) ? comps.house_walls_kartari.score : null;
+
             const composite = synth.composite_score !== undefined ? synth.composite_score : 0.0;
             const tier = synth.classical_tier || 'Miśra';
             const tierDot = getTierDotHtml(tier);
 
             const isSelected = (h === selectedHouse);
+            const compColor = composite >= 25.0 
+                ? 'var(--status-benefic-dark, #15803d)' 
+                : (composite <= -25.0 ? 'var(--status-malefic-dark, #b91c1c)' : 'var(--text-heading, #4a3325)');
 
             const tr = document.createElement('tr');
             tr.className = `interactive-table-row hol-house-row ${isSelected ? 'active-row' : ''}`;
@@ -407,12 +442,13 @@
                 <td style="padding: 6px 8px; text-align: center; font-weight: 700; font-family: var(--font-mono);">${String(h).padStart(2, '0')}</td>
                 <td style="padding: 6px 8px;"><span style="font-family: var(--font-astro-glyphs); margin-right: 4px;">${sGlyph}</span>${sign}</td>
                 <td style="padding: 6px 8px;"><span style="font-family: var(--font-astro-glyphs); margin-right: 4px;">${lGlyph}</span>${lord}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(basicScore)};">${basicScore >= 0 ? '+' : ''}${basicScore.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(lordScore)};">${lordScore >= 0 ? '+' : ''}${lordScore.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(bhavatScore)};">${bhavatScore >= 0 ? '+' : ''}${bhavatScore.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(wallScore)};">${wallScore >= 0 ? '+' : ''}${wallScore.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(yogaScore)};">${yogaScore >= 0 ? '+' : ''}${yogaScore.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: ${getScoreColor(composite)};">${composite >= 0 ? '+' : ''}${composite.toFixed(2)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(basicScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(lordScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(relMoonScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(karakaScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(yogaScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(wallScore)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: ${compColor};">${composite >= 0 ? '+' : ''}${composite.toFixed(2)}</td>
                 <td style="padding: 6px 8px; text-align: center; font-size: 12px; white-space: nowrap;">${tierDot}<span>${tier}</span></td>
             `;
 
@@ -436,6 +472,21 @@
                 r.classList.remove('active-row');
                 r.style.background = '';
                 r.style.fontWeight = '';
+            }
+        });
+
+        // Also update skyline column highlight
+        const skylineCols = root.querySelectorAll('.hol-skyline-col');
+        skylineCols.forEach(col => {
+            const h = parseInt(col.dataset.house, 10);
+            if (h === activeH) {
+                col.classList.add('active-col');
+                col.style.background = 'var(--bg-surface, #fffdfa)';
+                col.style.boxShadow = '0 1px 3px rgba(0,0,0,0.08)';
+            } else {
+                col.classList.remove('active-col');
+                col.style.background = 'transparent';
+                col.style.boxShadow = 'none';
             }
         });
     }
@@ -463,7 +514,7 @@
 
         const titleEl = root.querySelector('.hol-receipt-title');
         if (titleEl) {
-            titleEl.innerHTML = `House ${houseNum} (${sign} <span style="font-family:var(--font-astro-glyphs);">${sGlyph}</span>)`;
+            titleEl.innerHTML = `House ${houseNum} · ${sign} <span style="font-family:var(--font-astro-glyphs);">${sGlyph}</span>`;
         }
 
         const subtitleEl = root.querySelector('.hol-receipt-subtitle');
@@ -474,7 +525,7 @@
         const compValEl = root.querySelector('.hol-receipt-composite-val');
         if (compValEl) {
             compValEl.textContent = `${composite >= 0 ? '+' : ''}${composite.toFixed(2)}`;
-            compValEl.style.color = getScoreColor(composite);
+            compValEl.style.color = (composite >= 25.0 ? 'var(--status-benefic-dark)' : (composite <= -25.0 ? 'var(--status-malefic-dark)' : 'var(--text-heading)'));
         }
 
         const tierTagEl = root.querySelector('.hol-receipt-tier-tag');
@@ -482,64 +533,226 @@
             tierTagEl.innerHTML = `${tierDot}<strong style="color:var(--text-heading);">${tier}</strong> (${synth.health_rating || ''})`;
         }
 
-        // 1. Direct Cusp Rays Breakdown
+        // 6 Classical Pillar Scores
+        const basicScore = comps.basic_house_condition ? comps.basic_house_condition.score : 0.0;
+        const lordScore = comps.lord_assessment ? (comps.lord_assessment.combined_score ?? comps.lord_assessment.lord_final_score) : 0.0;
+        const relMoonScore = comps.relative_houses_combined_score !== undefined
+            ? comps.relative_houses_combined_score
+            : (comps.chandra_lagna_assessment && comps.chandra_lagna_assessment.combined_relative_score !== undefined
+                ? comps.chandra_lagna_assessment.combined_relative_score
+                : (comps.relative_house_bhavat_bhavam ? comps.relative_house_bhavat_bhavam.score : 0.0));
+        const karakaScore = comps.karaka_assessment ? comps.karaka_assessment.score : 0.0;
+        const yogaScore = comps.house_yogas ? comps.house_yogas.total_yoga_score : 0.0;
+        const wallScore = (comps.house_walls_kartari && comps.house_walls_kartari.is_walled) ? comps.house_walls_kartari.score : 0.0;
+
+        // Render 6-Pillar Summary Ledger (Top of Receipt)
+        const pillarRows = root.querySelector('.hol-pillar-ledger-rows');
+        if (pillarRows) {
+            pillarRows.innerHTML = '';
+            const pillars = [
+                { name: '1. Basic Cusp Condition', weight: 30, score: basicScore },
+                { name: '2. Lord & Occupants', weight: 30, score: lordScore },
+                { name: '3. Relative & Chandra', weight: 15, score: relMoonScore },
+                { name: '4. Bhāva Kāraka', weight: 10, score: karakaScore },
+                { name: '5. Structural Yogas', weight: 10, score: yogaScore },
+                { name: '6. Kartarī House Walls', weight: 5, score: wallScore }
+            ];
+
+            pillars.forEach(p => {
+                const sc = p.score || 0.0;
+                const isPos = sc >= 0;
+                const absSc = Math.abs(sc);
+                const barWidthPct = Math.min(50, (absSc / 120.0) * 50);
+                const barColor = isPos ? 'var(--status-benefic-dark, #15803d)' : 'var(--status-malefic-dark, #b91c1c)';
+
+                const row = document.createElement('div');
+                row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:2px 0; border-bottom:1px solid var(--border-subtle, #f0e9dc);';
+                row.innerHTML = `
+                    <span style="color:var(--text-heading); font-size:12px;">${p.name} <span style="color:var(--text-muted); font-size:12px;">(${p.weight}%)</span></span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <div style="width:60px; height:6px; background:#e2d7c3; border-radius:2px; position:relative; overflow:hidden;">
+                            <div style="position:absolute; left:50%; top:0; bottom:0; width:1px; background:#8c7b64; z-index:2;"></div>
+                            <div style="position:absolute; top:0; bottom:0; ${isPos ? `left:50%; width:${barWidthPct}%;` : `right:50%; width:${barWidthPct}%;`} background:${barColor}; z-index:1;"></div>
+                        </div>
+                        <strong style="font-family:var(--font-mono); font-size:12px; min-width:44px; text-align:right; color:${isPos ? 'var(--text-primary)' : 'var(--status-malefic-dark)'};">
+                            ${sc !== 0 ? (sc >= 0 ? '+' : '') + sc.toFixed(1) : '—'}
+                        </strong>
+                    </div>
+                `;
+                pillarRows.appendChild(row);
+            });
+        }
+
+        // Section 1: Lord, Dispositor Chain & Occupants (30%)
+        const lordChainContainer = root.querySelector('.hol-lord-chain-breakdown');
+        if (lordChainContainer) {
+            lordChainContainer.innerHTML = '';
+            const lAss = comps.lord_assessment || {};
+            const rawLordSc = lAss.lord_final_score !== undefined ? lAss.lord_final_score : 0.0;
+            const effLord = lAss.effective_lord_score !== undefined ? lAss.effective_lord_score : rawLordSc;
+            const immDisp = lAss.immediate_dispositor || '--';
+            const finalDisp = lAss.final_dispositor || '--';
+
+            // Clean typographic chain
+            let chainStr = `Lord ${lord} (${rawLordSc >= 0 ? '+' : ''}${rawLordSc.toFixed(1)})`;
+            if (immDisp !== '--' && immDisp !== lord) {
+                chainStr += ` → Host ${immDisp}`;
+            }
+            if (finalDisp !== '--' && finalDisp !== immDisp) {
+                chainStr += ` → Final ${finalDisp}`;
+            }
+
+            const occs = hData.occupants || [];
+            let occsStr = 'None (Unoccupied)';
+            if (occs.length > 0) {
+                const occScores = lAss.occupants_final_scores || lAss.occupants_scores || {};
+                occsStr = occs.map(p => {
+                    const pGl = getPlanetGlyph(p);
+                    const pSc = occScores[p];
+                    const scStr = pSc !== undefined ? ` (${pSc >= 0 ? '+' : ''}${pSc.toFixed(1)})` : '';
+                    return `<span style="font-family:var(--font-astro-glyphs);">${pGl}</span><strong>${p}</strong>${scStr}`;
+                }).join(', ');
+            }
+
+            lordChainContainer.innerHTML = `
+                <div style="font-family:var(--font-mono); font-size:12px; color:var(--text-heading); padding:2px 0;">
+                    ${chainStr} &nbsp;·&nbsp; Effective Lord: <strong style="color:${effLord >= 0 ? 'var(--text-primary)' : 'var(--status-malefic-dark)'};">${effLord >= 0 ? '+' : ''}${effLord.toFixed(1)}</strong>
+                </div>
+                <div style="color:var(--text-muted); font-size:12px; padding:2px 0;">
+                    Physical Occupants: <span style="color:var(--text-primary);">${occsStr}</span>
+                </div>
+            `;
+        }
+
+        // Section 2: Direct Cusp Rays Breakdown (30%)
         const basicData = comps.basic_house_condition || {};
         const valBasic = root.querySelector('.hol-val-basic');
         if (valBasic) {
-            const bSc = basicData.score || 0.0;
-            valBasic.textContent = `${bSc >= 0 ? '+' : ''}${bSc.toFixed(1)}`;
-            valBasic.style.color = getScoreColor(bSc);
+            valBasic.textContent = `${basicScore >= 0 ? '+' : ''}${basicScore.toFixed(1)}`;
+            valBasic.style.color = getScoreColor(basicScore);
         }
 
         const raysContainer = root.querySelector('.hol-cusp-rays-breakdown');
         if (raysContainer) {
             raysContainer.innerHTML = '';
             const contribs = basicData.planet_contributions || {};
-            const planets = Object.keys(contribs);
-            if (planets.length === 0) {
-                raysContainer.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0;">No direct rays active on cusp</span>';
+            // Filter out 0.0 rays and sort descending
+            const activePlanets = Object.keys(contribs)
+                .filter(p => Math.abs(contribs[p]) >= 0.05)
+                .sort((a, b) => Math.abs(contribs[b]) - Math.abs(contribs[a]));
+
+            if (activePlanets.length === 0) {
+                raysContainer.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0;">No significant rays active on cusp</span>';
             } else {
-                planets.forEach(p => {
+                activePlanets.forEach(p => {
                     const cVal = contribs[p];
                     const pGlyph = getPlanetGlyph(p);
                     const isLord = (p === lord);
                     const item = document.createElement('div');
-                    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px dashed var(--border-subtle);';
+                    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:2px 0; border-bottom:1px dashed var(--border-subtle);';
                     item.innerHTML = `
                         <div style="display:flex; align-items:center; gap:5px;">
                             <span style="font-family:var(--font-astro-glyphs);">${pGlyph}</span>
                             <span>${p}</span>
-                            ${isLord ? '<span class="micro-tag" style="font-size:12px; background:var(--bg-surface-muted);">LORD</span>' : ''}
+                            ${isLord ? '<span style="color:var(--text-muted); font-size:12px;">(Lord)</span>' : ''}
                         </div>
-                        <strong style="color:${getScoreColor(cVal)}; font-size:12px;">${cVal >= 0 ? '+' : ''}${cVal.toFixed(1)}</strong>
+                        <strong style="color:${cVal >= 0 ? 'var(--text-primary)' : 'var(--status-malefic-dark)'}; font-size:12px;">${cVal >= 0 ? '+' : ''}${cVal.toFixed(1)}</strong>
                     `;
                     raysContainer.appendChild(item);
                 });
             }
         }
 
-        // 2. 30° Cusp Bracket & Wall Strip Visualizer
+        // Section 3: Bhavāt Bhavam & Chandra Lagna (15%)
+        const relContainer = root.querySelector('.hol-relative-lunar-breakdown');
+        if (relContainer) {
+            const rAss = comps.relative_house_bhavat_bhavam || {};
+            const chAss = comps.chandra_lagna_assessment || {};
+            const kkPts = rAss.kk_group_points || 0.0;
+            const dustRaw = rAss.dusthana_raw_points || 0.0;
+            const mitPct = (rAss.benefic_mitigation_pct || 0.0).toFixed(1);
+            const dustNet = rAss.dusthana_mitigated_points || 0.0;
+            const chNum = chAss.chandra_house_num || chAss.chandra_house_number || '--';
+            const chScore = chAss.chandra_house_score !== undefined ? chAss.chandra_house_score : chAss.score;
+            const chStr = chScore !== undefined ? `${chScore >= 0 ? '+' : ''}${chScore.toFixed(1)}` : '--';
+
+            relContainer.innerHTML = `
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:4px; font-family:var(--font-mono); font-size:12px;">
+                    <div>Kendra/Trine: <strong>${kkPts >= 0 ? '+' : ''}${kkPts.toFixed(1)}</strong></div>
+                    <div>Dusthāna: <strong style="color:${dustNet < 0 ? 'var(--status-malefic-dark)' : 'var(--text-primary)'};">${dustNet >= 0 ? '+' : ''}${dustNet.toFixed(1)}</strong> <span style="color:var(--text-muted); font-size:12px;">(${mitPct}% mit)</span></div>
+                    <div>Chandra H: <strong>H${chNum}</strong></div>
+                    <div>Chandra Score: <strong>${chStr}</strong></div>
+                </div>
+            `;
+        }
+
+        // Section 4: Bhāva Kāraka Assessment (10%)
+        const karakaContainer = root.querySelector('.hol-karaka-breakdown');
+        if (karakaContainer) {
+            const kAss = comps.karaka_assessment || {};
+            const karakas = kAss.karakas || [];
+            const kScores = kAss.karaka_planet_scores || {};
+            const kStr = karakas.map(k => {
+                const kGl = getPlanetGlyph(k);
+                const sc = kScores[k];
+                const scText = sc !== undefined ? ` (${sc >= 0 ? '+' : ''}${sc.toFixed(1)})` : '';
+                return `<span style="font-family:var(--font-astro-glyphs);">${kGl}</span><strong>${k}</strong>${scText}`;
+            }).join(', ') || 'None';
+
+            const kLagnaH = kAss.karaka_lagna_house;
+            const kLagnaSc = kAss.karaka_lagna_score;
+            const kLagnaStr = (kLagnaH && kLagnaSc !== undefined) ? `House ${kLagnaH} (${kLagnaSc >= 0 ? '+' : ''}${kLagnaSc.toFixed(1)})` : '--';
+
+            karakaContainer.innerHTML = `
+                <div style="font-size:12px; color:var(--text-primary); padding:2px 0;">
+                    Significators: ${kStr}
+                </div>
+                <div style="font-size:12px; color:var(--text-muted); padding:2px 0;">
+                    Kāraka Lagna: <span style="font-family:var(--font-mono); color:var(--text-primary);">${kLagnaStr}</span>
+                </div>
+            `;
+        }
+
+        // Section 5: Structural House Yogas (10%)
+        const yogaData = comps.house_yogas || {};
+        const yogasList = root.querySelector('.hol-active-yogas-list');
+        if (yogasList) {
+            yogasList.innerHTML = '';
+            const activeY = yogaData.active_yogas || [];
+            if (activeY.length === 0) {
+                yogasList.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0;">No structural yogas active for this house</span>';
+            } else {
+                activeY.forEach(y => {
+                    const row = document.createElement('div');
+                    row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:2px 0; border-bottom:1px dashed var(--border-subtle);';
+                    const isPos = y.points >= 0;
+                    const roleLabel = y.role ? (y.role.includes('Occupied') ? 'Occupied' : 'Owned') : 'Active';
+                    row.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:6px;">
+                            <strong>${y.type}</strong>
+                            <span style="color:var(--text-muted); font-size:12px;">· ${roleLabel}</span>
+                            <span style="color:var(--text-muted); font-size:12px;">(${y.planets.join(' + ')})</span>
+                        </div>
+                        <strong style="color:${isPos ? 'var(--text-primary)' : 'var(--status-malefic-dark)'}; font-family:var(--font-mono); font-size:12px;">${y.points >= 0 ? '+' : ''}${y.points.toFixed(0)}</strong>
+                    `;
+                    yogasList.appendChild(row);
+                });
+            }
+        }
+
+        // Section 6: 30° Cusp Bracket & Kartarī Wall (5%)
         const wallData = comps.house_walls_kartari || {};
         const valWall = root.querySelector('.hol-val-wall');
         if (valWall) {
-            const wSc = wallData.score || 0.0;
-            valWall.textContent = `${wSc >= 0 ? '+' : ''}${wSc.toFixed(1)}`;
-            valWall.style.color = getScoreColor(wSc);
+            valWall.textContent = `${wallScore >= 0 ? '+' : ''}${wallScore.toFixed(1)}`;
+            valWall.style.color = getScoreColor(wallScore);
         }
 
         const wallTypeTag = root.querySelector('.hol-wall-type-tag');
         if (wallTypeTag) {
             const wType = wallData.wall_type || 'None';
-            wallTypeTag.textContent = wType;
-            if (wType === 'Shubha Kartari') {
-                wallTypeTag.className = 'hol-wall-type-tag micro-tag tag-benefic';
-            } else if (wType === 'Papa Kartari') {
-                wallTypeTag.className = 'hol-wall-type-tag micro-tag tag-malefic';
-            } else if (wType === 'Mishra Kartari') {
-                wallTypeTag.className = 'hol-wall-type-tag micro-tag tag-neutral';
-            } else {
-                wallTypeTag.className = 'hol-wall-type-tag micro-tag';
-            }
+            wallTypeTag.textContent = wType === 'None' ? 'Open Cusp (Unwalled)' : wType;
+            wallTypeTag.style.color = wType.includes('Shubha') ? 'var(--status-benefic-dark)' : (wType.includes('Papa') ? 'var(--status-malefic-dark)' : 'var(--text-muted)');
         }
 
         const wallStrip = root.querySelector('.hol-wall-strip-visualizer');
@@ -603,76 +816,7 @@
             }
         }
 
-        // 3. Bhavāt Bhavam Neighborhood Breakdown
-        const bhavatData = comps.relative_house_bhavat_bhavam || {};
-        const valBhavat = root.querySelector('.hol-val-bhavat');
-        if (valBhavat) {
-            const bhSc = bhavatData.score || 0.0;
-            valBhavat.textContent = `${bhSc >= 0 ? '+' : ''}${bhSc.toFixed(1)}`;
-            valBhavat.style.color = getScoreColor(bhSc);
-        }
-
-        const valKk = root.querySelector('.hol-val-kk');
-        if (valKk) {
-            const v = bhavatData.kk_group_points || 0.0;
-            valKk.textContent = `${v >= 0 ? '+' : ''}${v.toFixed(1)}`;
-            valKk.style.color = getScoreColor(v);
-        }
-
-        const valDustRaw = root.querySelector('.hol-val-dust-raw');
-        if (valDustRaw) {
-            const v = bhavatData.dusthana_raw_points || 0.0;
-            valDustRaw.textContent = `${v >= 0 ? '+' : ''}${v.toFixed(1)}`;
-            valDustRaw.style.color = getScoreColor(v);
-        }
-
-        const valMitPct = root.querySelector('.hol-val-mit-pct');
-        if (valMitPct) {
-            valMitPct.textContent = `${(bhavatData.benefic_mitigation_pct || 0.0).toFixed(1)}%`;
-        }
-
-        const valDustNet = root.querySelector('.hol-val-dust-net');
-        if (valDustNet) {
-            const v = bhavatData.dusthana_mitigated_points || 0.0;
-            valDustNet.textContent = `${v >= 0 ? '+' : ''}${v.toFixed(1)}`;
-            valDustNet.style.color = getScoreColor(v);
-        }
-
-        // 4. Structural House Yogas
-        const yogaData = comps.house_yogas || {};
-        const valYoga = root.querySelector('.hol-val-yoga');
-        if (valYoga) {
-            const ySc = yogaData.total_yoga_score || 0.0;
-            valYoga.textContent = `${ySc >= 0 ? '+' : ''}${ySc.toFixed(1)}`;
-            valYoga.style.color = getScoreColor(ySc);
-        }
-
-        const yogasList = root.querySelector('.hol-active-yogas-list');
-        if (yogasList) {
-            yogasList.innerHTML = '';
-            const activeY = yogaData.active_yogas || [];
-            if (activeY.length === 0) {
-                yogasList.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0;">No structural yogas active for this house</span>';
-            } else {
-                activeY.forEach(y => {
-                    const row = document.createElement('div');
-                    row.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:3px 0; border-bottom:1px dashed var(--border-subtle);';
-                    const isPos = y.points >= 0;
-                    const roleTag = y.role.includes('Occupied') ? 'OCCUPIED' : 'OWNED';
-                    row.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <strong>${y.type}</strong>
-                            <span class="micro-tag" style="font-size:12px;">${roleTag}</span>
-                            <span style="color:var(--text-muted); font-size:12px;">(${y.planets.join(' + ')})</span>
-                        </div>
-                        <strong style="color:${isPos ? 'var(--status-benefic-dark)' : 'var(--status-malefic-dark)'}; font-family:var(--font-mono); font-size:12px;">${y.points >= 0 ? '+' : ''}${y.points.toFixed(0)}</strong>
-                    `;
-                    yogasList.appendChild(row);
-                });
-            }
-        }
-
-        // 5. Dominant Drivers
+        // Section 7: Dominant Drivers
         const driversList = root.querySelector('.hol-dominant-drivers-list');
         if (driversList) {
             driversList.innerHTML = '';
@@ -682,7 +826,7 @@
             } else {
                 drivers.forEach(d => {
                     const li = document.createElement('li');
-                    li.style.marginBottom = '4px';
+                    li.style.marginBottom = '3px';
                     li.textContent = d;
                     driversList.appendChild(li);
                 });
@@ -706,33 +850,53 @@
             const house = pData.house || '--';
             const deg = formatDegMin(pData.degree_in_sign);
 
+            // Functional Nature (clean dot + text, no background pill)
             const fn = pData.functional_nature || {};
             const fnScore = fn.score !== undefined ? fn.score : 0;
             const fnClass = fn.classification || 'Neutral';
-            let fnTagClass = 'tag-neutral';
-            if (fnClass === 'Benefic') fnTagClass = 'tag-benefic';
-            else if (fnClass === 'Malefic') fnTagClass = 'tag-malefic';
+            const fnDotColor = fnClass === 'Benefic' 
+                ? 'var(--status-benefic-dark, #15803d)' 
+                : (fnClass === 'Malefic' ? 'var(--status-malefic-dark, #b91c1c)' : 'var(--text-subtle, #8c7b64)');
+            const fnDot = `<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${fnDotColor}; margin-right:5px; vertical-align:middle;"></span>`;
 
+            // D1+D9 Dignity
             const dig = pData.dignity || {};
             const digPct = dig.pct_score !== undefined ? dig.pct_score : 0.0;
             const digStatus = dig.status || 'Neutral';
 
+            // Aspects
             const combInf = pData.combined_influences || {};
             const infNet = combInf.net_score !== undefined ? combInf.net_score : 0.0;
 
+            // Digbala
             const cuspAl = pData.cusp_alignment || {};
-            const alScore = cuspAl.alignment_score !== undefined ? cuspAl.alignment_score : 0.0;
-            const alMult = cuspAl.house_multiplier !== undefined ? cuspAl.house_multiplier : 1.0;
+            const db = cuspAl.digbala_points !== undefined ? cuspAl.digbala_points : 0.0;
 
-            const baseAvg = pData.base_average_score !== undefined ? pData.base_average_score : 0.0;
+            // Intrinsic Quality
+            const qBase = pData.quality_base_score !== undefined ? pData.quality_base_score : (pData.base_average_score || 0.0);
 
-            const sandhi = pData.bhava_sandhi || {};
-            const sandhiMult = sandhi.retention_multiplier !== undefined ? sandhi.retention_multiplier : 1.0;
+            // Prominence Mult
+            const hMult = cuspAl.house_multiplier !== undefined ? cuspAl.house_multiplier : 1.0;
+            const hCat = cuspAl.house_category || '';
 
-            const comb = pData.combustion || {};
-            const combMult = comb.combustion_multiplier !== undefined ? comb.combustion_multiplier : 1.0;
+            // Penalties (Comb / Sandhi / Ecl)
+            const combLoss = (pData.combustion && pData.combustion.loss_ratio) ? pData.combustion.loss_ratio : 0.0;
+            const sandhiPen = (pData.bhava_sandhi && pData.bhava_sandhi.penalty_ratio) ? pData.bhava_sandhi.penalty_ratio : 0.0;
+            const eclLoss = (pData.eclipse && pData.eclipse.loss_ratio) ? pData.eclipse.loss_ratio : 0.0;
 
+            const penaltyParts = [];
+            if (combLoss > 0.001) penaltyParts.push(`Comb −${Math.round(combLoss * 100)}%`);
+            if (sandhiPen > 0.001) penaltyParts.push(`Sandhi −${Math.round(sandhiPen * 100)}%`);
+            if (eclLoss > 0.001) penaltyParts.push(`Ecl −${Math.round(eclLoss * 100)}%`);
+            const penaltyText = penaltyParts.length > 0 
+                ? `<span style="color:var(--status-malefic-dark, #b91c1c);">${penaltyParts.join(' · ')}</span>`
+                : '<span style="color:var(--text-subtle, #9a8a78);">—</span>';
+
+            // Final score
             const finalScore = pData.final_assessment_score !== undefined ? pData.final_assessment_score : 0.0;
+            const finalColor = finalScore >= 25.0 
+                ? 'var(--status-benefic-dark, #15803d)' 
+                : (finalScore <= -20.0 ? 'var(--status-malefic-dark, #b91c1c)' : 'var(--text-heading, #4a3325)');
 
             const tr = document.createElement('tr');
             tr.style.cssText = 'border-bottom: 1px solid var(--border-subtle, #e5dccb);';
@@ -740,13 +904,14 @@
             tr.innerHTML = `
                 <td style="padding: 6px 8px; font-weight: 700;"><span style="font-family: var(--font-astro-glyphs); margin-right: 4px;">${pGlyph}</span>${p}</td>
                 <td style="padding: 6px 8px;">H${house} · <span style="font-family: var(--font-astro-glyphs);">${sGlyph}</span> ${sign} ${deg}</td>
-                <td style="padding: 6px 8px;"><span class="micro-tag ${fnTagClass}" style="font-size:12px;">${fnScore >= 0 ? '+' : ''}${fnScore} ${fnClass}</span></td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(digPct)};">${digPct >= 0 ? '+' : ''}${digPct.toFixed(0)}% <span style="color:var(--text-muted); font-size:12px;">(${digStatus})</span></td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); color: ${getScoreColor(infNet)};">${infNet >= 0 ? '+' : ''}${infNet.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${alScore >= 0 ? '+' : ''}${alScore.toFixed(0)} <span style="color:var(--text-muted); font-size:12px;">(${alMult.toFixed(2)}×)</span></td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${baseAvg >= 0 ? '+' : ''}${baseAvg.toFixed(1)}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-size:12px; color:var(--text-muted);">${sandhiMult.toFixed(2)}× · ${combMult.toFixed(2)}×</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: ${getScoreColor(finalScore)};">${finalScore >= 0 ? '+' : ''}${finalScore.toFixed(2)}</td>
+                <td style="padding: 6px 8px;">${fnDot}<span style="font-family: var(--font-mono); font-weight: 600;">${fnScore >= 0 ? '+' : ''}${fnScore.toFixed(1)}</span> <span style="color:var(--text-muted); font-size:12px;">(${fnClass})</span></td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${digPct >= 0 ? '+' : ''}${digPct.toFixed(0)}% <span style="color:var(--text-muted); font-size:12px;">(${digStatus})</span></td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${infNet >= 0 ? '+' : ''}${infNet.toFixed(1)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${db >= 0 ? '+' : ''}${db.toFixed(1)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 600;">${qBase >= 0 ? '+' : ''}${qBase.toFixed(1)}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${hMult.toFixed(2)}× <span style="color:var(--text-muted); font-size:12px;">(${hCat})</span></td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${penaltyText}</td>
+                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: ${finalColor};">${finalScore >= 0 ? '+' : ''}${finalScore.toFixed(1)}</td>
             `;
 
             tbody.appendChild(tr);
@@ -781,7 +946,7 @@
             const st4Tier = synth.classical_tier || 'Miśra';
             const st4Dot = getTierDotHtml(st4Tier);
 
-            // Diagnosis
+            // Diagnosis: clean editorial prose with a 6px status indicator dot
             let diagnosis = '';
             const t3 = st3Tier.toLowerCase();
             const t4 = st4Tier.toLowerCase();
@@ -789,13 +954,13 @@
             if ((t3.includes('puṣṭa') && t4.includes('puṣṭa')) ||
                 (t3.includes('hīna') && t4.includes('hīna')) ||
                 (t3.includes('miśra') && t4.includes('miśra'))) {
-                diagnosis = `<span class="micro-tag tag-benefic" style="font-size:12px;">Harmonic Agreement (${st4Tier})</span>`;
+                diagnosis = `<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--status-benefic-dark, #15803d); margin-right:5px; vertical-align:middle;"></span>Harmonic Agreement (${st4Tier})`;
             } else if (score4 >= 25.0 && !t3.includes('puṣṭa')) {
-                diagnosis = '<span class="micro-tag tag-neutral" style="font-size:12px;">Divergent: Stage 4 Elevated by Yogas / Kartarī Wall</span>';
+                diagnosis = '<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--text-subtle, #8c7b64); margin-right:5px; vertical-align:middle;"></span>Divergent: Stage 4 Elevated by Yogas / Kartarī Wall';
             } else if (score4 <= -20.1 && !t3.includes('hīna')) {
-                diagnosis = '<span class="micro-tag tag-alert" style="font-size:12px;">Divergent: Stage 4 Strained by Cusp Pressure / Daridra</span>';
+                diagnosis = '<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--status-malefic-dark, #b91c1c); margin-right:5px; vertical-align:middle;"></span>Divergent: Stage 4 Strained by Cusp Pressure / Dusthāna';
             } else {
-                diagnosis = `<span class="micro-tag" style="font-size:12px;">Stage 3 ${st3Tier} ↔ Stage 4 ${st4Tier}</span>`;
+                diagnosis = `<span class="status-indicator" style="display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--border-strong, #8c7b64); margin-right:5px; vertical-align:middle;"></span>Stage 3 ${st3Tier} ↔ Stage 4 ${st4Tier}`;
             }
 
             const tr = document.createElement('tr');
@@ -809,19 +974,19 @@
                 <td style="padding: 6px 8px; text-align: center; font-size: 12px; white-space: nowrap;">${st3Dot}<span>${st3Tier}</span></td>
                 <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; color: ${getScoreColor(score4)};">${score4 >= 0 ? '+' : ''}${score4.toFixed(2)}</td>
                 <td style="padding: 6px 8px; text-align: center; font-size: 12px; white-space: nowrap;">${st4Dot}<span>${st4Tier}</span></td>
-                <td style="padding: 6px 8px;">${diagnosis}</td>
+                <td style="padding: 6px 8px; font-size: 12px; color: var(--text-primary);">${diagnosis}</td>
             `;
 
             tbody.appendChild(tr);
         }
     }
 
-    // Register widget with WidgetRegistry
+    // Register widget with WidgetRegistry (Emoji purged: icon is empty)
     if (window.widgetRegistry) {
         window.widgetRegistry.register('houses-of-life', {
             id: 'houses-of-life',
             title: 'Houses of Life (Phaladīpikā 15)',
-            icon: '🏛\uFE0E',
+            icon: '',
             category: 'Strengths',
             templateId: 'tmpl-houses-of-life',
             isScrollable: true,
