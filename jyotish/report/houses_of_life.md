@@ -103,11 +103,9 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 
 ### Phase 4: Conjunctions, Cross-Border Halving & Cusp Dominance
 
-1. **Degree-Specific Aspects (*Sphuṭa Dṛṣṭi*):**
-   * Expressed on a $0\%$ to $100\%$ scale: $\frac{\text{Virūpas}}{60.0} \times 100.0$.
-   * **Classical Whole Sign Distance Gating:** Raw continuous aspect virūpas from `aspects.get_graha_drishti` are strictly gated by Whole Sign distance between the aspecting planet and the target cusp:
-     * If the planet is in the 1st (same sign), 2nd, 6th, or 12th sign from the cusp, `virupas = 0.0` (planets do not aspect adjacent or 6th signs classically).
-     * If in the 8th sign and the planet is not Mars, `virupas = 0.0` (special 8th aspect belongs strictly to Mars in Parāśara and Phaladīpikā; non-Mars planets cast zero aspect onto 8th sign).
+1. **Continuous Exact-Degree Aspects (*Sphuṭa Dṛṣṭi*):**
+   * Derived continuously from exact angular distance $\Delta\theta = (\lambda_{\text{cusp}} - \lambda_{\text{planet}}) \pmod{360^\circ}$ via Parāśara's exact *Sphuṭa Dṛṣṭi* formulation (`aspects.get_graha_drishti`), expressed on a $0\%$ to $100\%$ scale: $\frac{\text{Virūpas}}{60.0} \times 100.0$.
+   * Natural classical blind spots ($0^\circ\text{–}60^\circ$, exact $150^\circ$, and $300^\circ\text{–}360^\circ$) are evaluated organically through the continuous degree calculus, perfectly matching the *Sphuṭa Dṛṣṭi* aspect matrix for sensitive Whole Sign cusps.
 2. **Conjunction Proximity:**
    * Within $30^\circ$: $C_{\text{raw}} = \max\left(0.0, \left(1.0 - \frac{\Delta\lambda}{30.0}\right) \times 100.0\right)$.
 3. **Cross-Border Attenuation:**
@@ -129,7 +127,10 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 2. **Directional Strength (*Digbala*, *Phaladīpikā* Ch. 4):**
    * Canonical directional strength based on peak house $H_{\text{peak}}$ (Jupiter/Mercury in H1, Sun/Mars in H10, Saturn in H7, Moon/Venus in H4):
      $$\text{DigFactor}_P = 1.0 - \frac{\text{shortest\_house\_dist}(H_P, H_{\text{peak}})}{3.0} \in [-1.0, +1.0]$$
-     $$\text{DigBalaPts}_P = 20.0 \times \text{DigFactor}_P \times \text{clamp}(\text{ShadbalaRatio}_P, 0.75, 1.25)$$
+     $$\text{BaseDigBala}_P = 20.0 \times \text{DigFactor}_P$$
+   * **Sign-Safe Shadbala Scaling:** Clamped within $[0.75, 1.25]$:
+     * If $\text{BaseDigBala}_P \ge 0$: $\text{DigBalaPts}_P = \text{BaseDigBala}_P \times \text{ClampedBala} + (\text{ClampedBala} - 1.0) \times 20.0$
+     * If $\text{BaseDigBala}_P < 0$: $\text{DigBalaPts}_P = \frac{\text{BaseDigBala}_P}{\text{ClampedBala}} + (\text{ClampedBala} - 1.0) \times 20.0$
 3. **Intrinsic Quality ($\text{QualityBase}_P$):**
    * Combines Dignity, Incoming Aspects, and Digbala without raw cusp proximity additions:
      $$\text{QualityBase}_P = 0.50 \times D_{\text{pct}, P} + 0.35 \times \text{Inf}_P + 0.15 \times \text{DigBalaPts}_P$$
@@ -159,11 +160,15 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 
 For each house $H \in \{1, \dots, 12\}$:
 1. Impact $I_{P \to H} = \max(\text{AspectPct}_{P \to \text{Cusp}_H}, \text{DominanceConjPct}_{P \to H})$.
-   * Non-occupant aspects with $I_{P \to H} < 25.0$ are filtered out ($0.0$).
+   * All continuous aspects contribute directly and proportionally without artificial step cutoffs.
 2. Dignity $d_P$ and Effective Functional Nature $F_{P, H}$:
    * **House Lord:** $F_{\text{eff}} = 2.0$.
-   * **Non-Lord Planets:** Blend $50\%$ Lagna functional nature + $50\%$ natural temperament ($\times 2.0$) $\pm 0.50$ friendship to house lord:
-     $$F_{\text{eff}} = 0.50 \times F_{\text{lagna}} + 0.50 \times (\text{NatT} \times 2.0) \pm 0.50 \text{ (friendship to lord)}$$
+   * **Non-Lord Planets:** Bidirectional natural friendship ($P \to L$ and $L \to P$) modifies the baseline functional blend:
+     * If both are Friends: $\text{FriendMod} = +0.50$
+     * If either considers the other an Enemy: $\text{FriendMod} = -0.50$
+     * If one is Friend and the other Neutral: $\text{FriendMod} = +0.25$
+     * Otherwise: $\text{FriendMod} = 0.0$
+     $$F_{\text{eff}} = 0.40 \times F_{\text{lagna}} + 0.60 \times (\text{NatT} \times 2.0) + \text{FriendMod}$$
 3. **Condition-Gating (*Amūḍha-Hīnāḥ*, *Phaladīpikā* 15.1, 15.5):**
    $$\text{ConditionIntegrity} = (1.0 - 0.75 \times \text{CombLoss}_P) \times (1.0 - 0.50 \times \text{SandhiPen}_P)$$
    * Benefic impacts ($\text{signed\_impact} > 0$) are multiplied by $\text{ConditionIntegrity}$.
@@ -178,6 +183,7 @@ For each house $H \in \{1, \dots, 12\}$:
    * Upacaya houses ($3, 6, 11$): $+0.35 \times C_{\text{node}}$.
    * Non-Upacaya houses: $-0.60 \times C_{\text{node}} \times \text{MitFactor}$ (where $\text{MitFactor} = 0.50$ if node is dignified or aspected/conjoined by Jupiter or Venus; $1.00$ otherwise).
 6. **Active Divisor Floor:**
+   $$\text{ActiveWeights}_H = \sum_{P \in \text{Planets}} \min\left(1.0, \frac{I_{P \to H}}{45.0}\right)$$
    $$\text{EffDivisor}_H = \max(3.0, \text{ActiveWeights}_H)$$
    Scores clamped within $[-120.0, +120.0]$.
 
@@ -186,7 +192,11 @@ For each house $H \in \{1, \dots, 12\}$:
 ### Phase 7: Relative House Technique — *Bhavāt Bhavam* (*Phaladīpikā* 15.2–15.5)
 
 Treats each target house $H$ as House 1:
-1. **House Lord Relative Placement ($R_{\text{Lord}, H}$):**
+1. **Functional Nature Blending:**
+   * Relative functional nature from sign $H$ is blended with the native's natal functional nature:
+     $$F_{\text{rel}} = 0.70 \times F_{\text{relative}} + 0.30 \times F_{\text{natal}}$$
+   * The native's Ascendant Lord (Lagneśa) is protected across all relative house examinations: $\max(0.50, F_{\text{rel}})$.
+2. **House Lord Relative Placement ($R_{\text{Lord}, H}$):**
    * **Relative 1, 2, 4, 5, 7, 9, 10 (*Kendra / Trikoṇa / 2nd*, 15.2):** Weight $1.0$, plus degree-aspect proximity bonus when close to exact $0^\circ, 90^\circ, 120^\circ, 180^\circ$ aspect angles.
    * **Relative 3, 11 (*Upacaya*, 15.18):** Weight $0.50$.
    * **Relative 6, 8, 12 (*Bhāva-Nāśa*, 15.3 & 15.5):**
@@ -194,13 +204,13 @@ Treats each target house $H$ as House 1:
      * Otherwise, base penalty: $-110.0$ in R8, $-80.0$ in R12, $-70.0$ in R6.
      * Halved ($0.50\times$) if the Lord is dignified ($d_P \ge 0.4$) and uncombust; amplified if debilitated or combust.
      * Benefic aspects onto the Lord mitigate this penalty.
-2. **Non-Lord Planets in Relative Houses:**
+3. **Non-Lord Planets in Relative Houses:**
    * Relative 2, 4, 5, 7, 9, 10: Weight $1.0$.
    * Relative 11: Weight $0.50$; Relative 3: Weight $0.40$ (secondary Upacaya growth support).
    * Relative 1: $+0.50\times$ if $F_{\text{rel}} > 0$; $-0.75\times$ if $F_{\text{rel}} < 0$.
    * Relative 6, 8, 12: Adds to raw Dusthāna penalty if $F_{\text{rel}} < 0$.
-3. **Benefic Mitigation:** Malefics in relative Dusthānas are mitigated strictly by direct aspects from relative benefics.
-4. **Denominator Floor:** $\text{denom} = \max(3.0, N_{\text{active}})$.
+4. **Benefic Mitigation:** Malefics in relative Dusthānas are mitigated strictly by direct aspects from relative benefics.
+5. **Denominator Floor:** $\text{denom} = \max(3.0, N_{\text{active}})$.
 
 ---
 

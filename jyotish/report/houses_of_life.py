@@ -178,7 +178,11 @@ def _get_bala_and_digbala_bonus(
         if isinstance(sb_entry, dict) and "shadbala_ratio" in sb_entry:
             bala_ratio = float(sb_entry["shadbala_ratio"])
             clamped_bala = max(0.75, min(1.25, bala_ratio))
-            digbala_pts = digbala_pts * clamped_bala
+            if digbala_pts >= 0.0:
+                digbala_pts = digbala_pts * clamped_bala
+            else:
+                digbala_pts = digbala_pts / clamped_bala
+            digbala_pts += (clamped_bala - 1.0) * 20.0
 
     return bala_ratio, digbala_pts
 
@@ -499,21 +503,10 @@ def calculate_cusp_and_planet_influences(
             raw_conjunctions[p][h] = halved_c
             adjusted_conjunctions[p][h] = halved_c
 
-        # Final planet_to_cusp impact
+        # Final planet_to_cusp impact: pure Parāśara Sphuṭa Dṛṣṭi degree-based aspect
         for p in CLASSICAL_PLANETS:
             p_lon = float(d1_grahas[p]["longitude"])
-            p_sign = d1_grahas[p]["sign"]
-            p_sign_idx = ZODIAC_SIGNS.index(p_sign)
-            h_sign_idx = h_data.get("sign_index", ZODIAC_SIGNS.index(h_data["sign"]))
-            sign_dist = ((h_sign_idx - p_sign_idx) % 12) + 1
-
             virupas = aspects.get_graha_drishti(p, p_lon, cusp_lon)
-            # Gate virupas by classical sign aspect validity (Phaladīpikā Ch. 3 & 15)
-            # A planet never casts drishti onto 1st (conjunction), 2nd, 6th, or 12th sign from itself.
-            # And non-Mars planets do not cast aspect onto 8th sign (special 8th aspect belongs only to Mars).
-            if sign_dist in [1, 2, 6, 12] or (sign_dist == 8 and p != "Mars"):
-                virupas = 0.0
-
             asp_pct = (virupas / 60.0) * 100.0
             final_c = adjusted_conjunctions[p][h]
             planet_to_cusp[p][h] = max(asp_pct, final_c)
@@ -848,19 +841,21 @@ def evaluate_basic_house_conditions(
                 elif p == "Mercury":
                     nat_t = float(func_natures.get("Mercury", {}).get("rule_breakdown", {}).get("inherent_score", 0.5))
 
-                blended_f = 0.50 * lagna_f + 0.50 * (nat_t * 2.0)
-                rel = get_natural_relationship(p, lord)
-                if rel == "Friend":
-                    blended_f += 0.50
-                elif rel == "Enemy":
-                    blended_f -= 0.50
+                rel_p_to_l = get_natural_relationship(p, lord)
+                rel_l_to_p = get_natural_relationship(lord, p)
+                if rel_p_to_l == "Friend" and rel_l_to_p == "Friend":
+                    friend_mod = 0.50
+                elif "Enemy" in (rel_p_to_l, rel_l_to_p):
+                    friend_mod = -0.50
+                elif "Friend" in (rel_p_to_l, rel_l_to_p):
+                    friend_mod = 0.25
+                else:
+                    friend_mod = 0.0
 
+                blended_f = 0.40 * lagna_f + 0.60 * (nat_t * 2.0) + friend_mod
                 f_eff = blended_f
 
-            # Only count non-occupant aspects with p2c >= 25.0
             eff_i_val = i_val
-            if p not in occupants and i_val < 25.0:
-                eff_i_val = 0.0
 
             scaled_i = scale_by_dignity(eff_i_val, d_p, f_eff)
 
@@ -949,7 +944,7 @@ def evaluate_basic_house_conditions(
                     total_signed += node_impact
 
         # Smooth continuous active divisor floored at 3.0
-        active_weights = sum(min(1.0, p2c[p][h] / 45.0) for p in CLASSICAL_PLANETS if (p in occupants or p2c[p][h] >= 25.0))
+        active_weights = sum(min(1.0, p2c[p][h] / 45.0) for p in CLASSICAL_PLANETS)
         eff_divisor = max(3.0, active_weights)
         raw_house_score = total_signed / eff_divisor
         bounded_score = max(-120.0, min(120.0, raw_house_score))
@@ -966,7 +961,8 @@ def evaluate_relative_houses_bhavat_bhavam(
     geometry: Dict[str, Any],
     d1_grahas: Dict[str, Any],
     influences: Dict[str, Any],
-    planets_eval: Optional[Dict[str, Any]] = None
+    planets_eval: Optional[Dict[str, Any]] = None,
+    func_natures: Optional[Dict[str, Any]] = None
 ) -> Dict[int, Dict[str, Any]]:
     """
     Implements Phase 7: Relative House Technique — Bhavāt Bhavam (Phaladīpikā 15.2, 15.3, 15.5).
@@ -974,6 +970,7 @@ def evaluate_relative_houses_bhavat_bhavam(
     Includes degree-aspect proximity bonuses for the Lord in Kendra/Trine/2nd.
     Evaluates relative Dusthāna/Triṣaḍāya lords in Relative H1.
     Removes unclassical b_dust_count global mitigations per Phaladīpikā 15.4.
+    Blends relative functional nature with natal functional nature (70/30) and protects Lagna Lord.
     """
     results: Dict[int, Dict[str, Any]] = {}
     p2p = influences["planet_to_planet"]
@@ -1005,6 +1002,11 @@ def evaluate_relative_houses_bhavat_bhavam(
                 dignity_status = _get_dignity_status(d1_grahas[p])
                 d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
             raw_f = float(rel_func[p]["score"])
+            if func_natures and p in func_natures:
+                natal_f = float(func_natures[p]["score"])
+                raw_f = 0.70 * raw_f + 0.30 * natal_f
+                if p == asc_first_lord:
+                    raw_f = max(0.50, raw_f)
             raw_rel_scores[p] = raw_f
             eff_f = raw_f if raw_f != 0.0 else d_p
             eff_rel_scores[p] = eff_f
@@ -1724,7 +1726,9 @@ def evaluate_houses_of_life(chart_dict: Dict[str, Any]) -> Dict[str, Any]:
     basic_houses = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences, planets_eval=planets_eval)
 
     # Phase 7: Relative Houses (Bhavāt Bhavam with Lord relative 6/8/12 Bhāva-nāśa fix)
-    rel_houses = evaluate_relative_houses_bhavat_bhavam(geometry, d1_grahas, influences, planets_eval=planets_eval)
+    rel_houses = evaluate_relative_houses_bhavat_bhavam(
+        geometry, d1_grahas, influences, planets_eval=planets_eval, func_natures=func_natures
+    )
 
     # Phase 7B: House Karakas (Phaladīpikā Ch. 15)
     karaka_houses = evaluate_house_karakas_hol(geometry, d1_grahas, planets_eval, basic_houses)

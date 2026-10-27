@@ -270,7 +270,7 @@
             if (titleSpan) titleSpan.textContent = `${varga} - Aspects (Planets)`;
             if (table) renderKalaAspectTable(table, 'planets', planetsList, false, advData);
         } else if (widgetType === 'aspects-equal-houses') {
-            if (titleSpan) titleSpan.textContent = `${varga} - Aspects to Equal Houses`;
+            if (titleSpan) titleSpan.textContent = `${varga} - Aspects to Whole Sign Houses`;
             if (table) renderKalaAspectTable(table, 'equal_cusps', housesList, true, advData);
         } else if (widgetType === 'aspects-bhava-chalita') {
             if (titleSpan) titleSpan.textContent = `${varga} - Aspects to Bhava Chalita`;
@@ -312,7 +312,7 @@
 
         window.widgetRegistry.register('aspects-equal-houses', {
             id: 'aspects-equal-houses',
-            title: 'Aspects (Equal Houses)',
+            title: 'Aspects (Whole Sign Houses)',
             icon: '',
             category: 'Positions',
             render: function(container, chartData, options) {

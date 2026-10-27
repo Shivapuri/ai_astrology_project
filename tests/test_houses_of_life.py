@@ -383,8 +383,10 @@ class TestHousesOfLifeMathematicalAuditFixes:
         influences["planet_to_cusp"]["Mercury"][1] = 50.0  # 50% impact
 
         res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
-        # Mercury contribution should be strictly negative: 50 * -0.4 = -20.0
-        assert res[1]["planet_contributions"]["Mercury"] == -20.0
+        # Mercury contribution should be strictly negative
+        # Bidirectional friendship: Mars hates Mercury -> friend_mod = -0.50, f_eff = -0.50
+        # Scaled under negative F and negative dignity: 50 * (1 + 0.4) * -0.675 = -47.25
+        assert res[1]["planet_contributions"]["Mercury"] == -47.25
 
     def test_bhavat_bhavam_neutral_planet_dignity_fallback(self):
         # When evaluating relative houses, a planet with raw relative score 0
@@ -456,8 +458,8 @@ class TestHousesOfLifeMathematicalAuditFixes:
             "planet_to_cusp": {p: {1: 100.0 if p == "Mercury" else 0.0} for p in CLASSICAL_PLANETS}
         }
         res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
-        # 100 * -0.4 = -40.0 under continuous b * d scaling
-        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=1e-2) == -40.0
+        # 100 * (1 + 0.4) * -0.675 = -94.5 under bidirectional friendship enmity (Mars hates Mercury)
+        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=1e-2) == -94.50
 
     def test_phase7_neutral_planet_dignity_fallback(self):
         """Ensures a relative neutral planet (raw F=0) uses its dignity as its relative functional nature without double-scaling."""
@@ -636,9 +638,9 @@ class TestHousesOfLifeStep10Verification:
         assert h1["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h1["synthesis"]["composite_score"] >= 25.0
 
-        # House 10 is in Miśra tier due to Venus exiled in Dusthāna H12
+        # House 10 is in Miśra tier due to Venus exiled in Dusthāna H12, but buffered by Jupiter's aspect
         assert h10["synthesis"]["classical_tier"] == "Miśra"
-        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == -3.29
+        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 19.64
 
         assert h11["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h11["synthesis"]["composite_score"] >= 25.0
@@ -1204,8 +1206,8 @@ class TestHousesOfLifeFiveLogicFixes:
             }
         }
         _, digbala_pts = _get_bala_and_digbala_bonus("Sun", 10, chart_dict=chart_dict)
-        # Peak house for Sun is 10, dig_factor = 1.0, base digbala = 20.0, scaled by 1.20 = 24.0
-        assert pytest.approx(digbala_pts, abs=0.1) == 24.0
+        # Peak house for Sun is 10, dig_factor = 1.0, base digbala = 20.0, scaled by 1.20 = 24.0, + (1.20-1.0)*20 = 28.0
+        assert pytest.approx(digbala_pts, abs=0.1) == 28.0
 
     def test_bug3_composite_d9_dignity_used_in_house_phases(self):
         """
@@ -1292,6 +1294,60 @@ class TestHousesOfLifeFiveLogicFixes:
         # Jupiter conjoins Rahu -> is_mitigated = True -> mit_factor = 0.50
         # node_impact = -0.60 * 38.33 * 0.50 = -11.50
         assert pytest.approx(rahu_impact, abs=0.5) == -11.50
+
+
+class TestExactDegreeCuspAspectsAndSignSafeBala:
+    """
+    Tests verifying Parāśara Sphuṭa Dṛṣṭi degree aspects on sensitive cusps,
+    sign-safe Shadbala Digbala scaling, and bidirectional friendship in Phase 6.
+    """
+
+    def test_trump_house10_exact_degree_cusp_aspects(self):
+        """
+        Verifies that Jupiter (51.26 virupas, 85.4%), Moon (17.53 virupas, 29.2%),
+        and Mars (13.40 virupas, 22.3%) cast continuous aspects onto Trump's H10 cusp
+        without being suppressed by sign_dist filters or < 25% aspect cutoffs.
+        """
+        from app import app
+        client = app.test_client()
+        res = client.get("/api/chart/9bb691ba-c4fd-40f1-83eb-289b4e275ac8")
+        assert res.status_code == 200
+        hol = res.get_json()["data"]["houses_of_life"]
+
+        h10_contribs = hol["houses"]["10"]["components"]["basic_house_condition"]["planet_contributions"]
+        # Jupiter provides large positive contribution (trine ray)
+        assert h10_contribs["Jupiter"] > 100.0
+        # Moon provides positive contribution (29.2% ray)
+        assert h10_contribs["Moon"] > 20.0
+        # Mars contributes (22.3% ray) without being zeroed by < 25% cutoff
+        assert h10_contribs["Mars"] > 10.0
+        # Basic condition score is healthy and positive
+        assert hol["houses"]["10"]["components"]["basic_house_condition"]["score"] > 50.0
+
+    def test_sign_safe_negative_digbala_scaling(self):
+        """
+        Verifies that when digbala points are negative (opposite peak),
+        strong Shadbala cushions/divides the deficit, while weak Shadbala deepens it.
+        """
+        from jyotish.report.houses_of_life import _get_bala_and_digbala_bonus
+
+        # Sun peak is H10. In H4 (distance 6), dist/3 = 2, dig_factor = 1.0 - 2.0 = -1.0.
+        # Base digbala_pts = -20.0.
+        # Case A: Strong Shadbala (1.20)
+        # digbala_pts = -20.0 / 1.20 = -16.67, + (1.20 - 1.0) * 20 = +4.0 -> -12.67
+        chart_strong = {"shadbala": {"Sun": {"shadbala_ratio": 1.20}}}
+        _, pts_strong = _get_bala_and_digbala_bonus("Sun", 4, chart_dict=chart_strong)
+        assert pts_strong > -15.0  # Cushioned, less negative than -20
+
+        # Case B: Weak Shadbala (0.80)
+        # digbala_pts = -20.0 / 0.80 = -25.0, + (0.80 - 1.0) * 20 = -4.0 -> -29.0
+        chart_weak = {"shadbala": {"Sun": {"shadbala_ratio": 0.80}}}
+        _, pts_weak = _get_bala_and_digbala_bonus("Sun", 4, chart_dict=chart_weak)
+        assert pts_weak < -25.0  # Deepened, more negative than -20
+
+        # Strong Shadbala is strictly superior to Weak Shadbala
+        assert pts_strong > pts_weak
+
 
 
 

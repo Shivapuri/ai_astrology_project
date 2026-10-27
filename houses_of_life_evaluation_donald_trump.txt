@@ -8,25 +8,25 @@ Birth Data    : 14/06/1946 at 10:54:00 (TZ: -04:00)
 Coordinates   : Jamaica, Queens, NY (Lat: 40.6833, Lon: -73.8)
 Ascendant     : Leo 29°58' | Lagneśa (Ascendant Lord): Sun
 Zodiac Frame  : Tropical Signs (Sāyana) | Campanus 3D Bhāvas | Dhruva Galactic Nakshatras
-Composite Mean: 32.17 / 100.0
+Composite Mean: 32.10 / 100.0
 ===============================================================================================
 
 ===============================================================================================
 1. EXECUTIVE SUMMARY & GLOBAL RANKINGS
 ===============================================================================================
 Houses Ranked by Composite Score (Descending):
-  Rank  1 | House  1 (Leo         - Lord: Sun     | Occupants: Mars            ) :  69.99 [Flourishing / Fortified • Puṣṭa]
-  Rank  2 | House  9 (Aries       - Lord: Mars    | Occupants: None            ) :  54.42 [Flourishing / Fortified • Puṣṭa]
-  Rank  3 | House 11 (Gemini      - Lord: Mercury | Occupants: Sun             ) :  52.63 [Flourishing / Fortified • Puṣṭa]
-  Rank  4 | House  5 (Sagittarius - Lord: Jupiter | Occupants: Moon            ) :  50.77 [Flourishing / Fortified • Puṣṭa]
-  Rank  5 | House  4 (Scorpio     - Lord: Mars    | Occupants: None            ) :  46.01 [Flourishing / Fortified • Puṣṭa]
-  Rank  6 | House  6 (Capricorn   - Lord: Saturn  | Occupants: None            ) :  39.95 [Flourishing / Fortified • Puṣṭa]
-  Rank  7 | House  7 (Aquarius    - Lord: Saturn  | Occupants: None            ) :  28.81 [Flourishing / Fortified • Puṣṭa]
-  Rank  8 | House  2 (Virgo       - Lord: Mercury | Occupants: None            ) :  18.89 [Mixed / Resilient • Miśra]
-  Rank  9 | House  3 (Libra       - Lord: Venus   | Occupants: Jupiter         ) :  16.96 [Mixed / Resilient • Miśra]
-  Rank 10 | House  8 (Pisces      - Lord: Jupiter | Occupants: None            ) :   9.78 [Mixed / Resilient • Miśra]
-  Rank 11 | House 12 (Cancer      - Lord: Moon    | Occupants: Mercury, Venus, Saturn) :   1.07 [Mixed / Resilient • Miśra]
-  Rank 12 | House 10 (Taurus      - Lord: Venus   | Occupants: None            ) :  -3.29 [Mixed / Resilient • Miśra]
+  Rank  1 | House  1 (Leo         - Lord: Sun     | Occupants: Mars            ) :  55.88 [Flourishing / Fortified • Puṣṭa]
+  Rank  2 | House  9 (Aries       - Lord: Mars    | Occupants: None            ) :  51.43 [Flourishing / Fortified • Puṣṭa]
+  Rank  3 | House  4 (Scorpio     - Lord: Mars    | Occupants: None            ) :  49.74 [Flourishing / Fortified • Puṣṭa]
+  Rank  4 | House 11 (Gemini      - Lord: Mercury | Occupants: Sun             ) :  42.96 [Flourishing / Fortified • Puṣṭa]
+  Rank  5 | House  6 (Capricorn   - Lord: Saturn  | Occupants: None            ) :  40.74 [Flourishing / Fortified • Puṣṭa]
+  Rank  6 | House  5 (Sagittarius - Lord: Jupiter | Occupants: Moon            ) :  39.42 [Flourishing / Fortified • Puṣṭa]
+  Rank  7 | House  2 (Virgo       - Lord: Mercury | Occupants: None            ) :  22.15 [Mixed / Resilient • Miśra]
+  Rank  8 | House 10 (Taurus      - Lord: Venus   | Occupants: None            ) :  19.64 [Mixed / Resilient • Miśra]
+  Rank  9 | House 12 (Cancer      - Lord: Moon    | Occupants: Mercury, Venus, Saturn) :  17.05 [Mixed / Resilient • Miśra]
+  Rank 10 | House  8 (Pisces      - Lord: Jupiter | Occupants: None            ) :  16.22 [Mixed / Resilient • Miśra]
+  Rank 11 | House  7 (Aquarius    - Lord: Saturn  | Occupants: None            ) :  15.83 [Mixed / Resilient • Miśra]
+  Rank 12 | House  3 (Libra       - Lord: Venus   | Occupants: Jupiter         ) :  14.17 [Mixed / Resilient • Miśra]
 
 Planets Ranked by Final Assessment Score (Descending):
   Rank  1 | Sun      in Gemini       (House 11 • Dignity: Friend's Sign       ) :  55.20
@@ -56,21 +56,21 @@ Saturn   | Cancer      | 12 | Great Enemy's Sign  |  -0.14 |    79.2 |   -13.3 |
 -----------------------------------------------------------------------------------------------
 HOUSE  1 : LEO (Leo 29.97° | Longitude: 149.97°)
 Lord: Sun | Physical Occupants: ['Mars']
-SYNTHESIS SCORE: 69.99 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 55.88 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
   • House Lord Sun is fortified (+55.2)
-  • Significant aspectual support from Mars on Cusp (+129.1)
+  • Significant aspectual support from Sun on Cusp (+97.6)
   • Net Structural Yogas (+88.4)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 96.68
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 58.54
     Planet Cusp Contributions (Direct Rays & Dominance):
       - Sun    : +97.58
-      - Moon   : +63.36
-      - Mars   : +129.11
-      - Mercury:  +0.00
+      - Moon   : +69.58
+      - Mars   : +87.15
+      - Mercury:  +6.89
       - Jupiter:  +0.00
-      - Venus  :  +0.00
-      - Saturn :  -0.00
+      - Venus  :  +0.99
+      - Saturn : -46.17
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 47.17
     House Lord                : Sun (Lord Final Assessment Score: 55.20)
     Immediate Dispositor      : Mercury
@@ -83,15 +83,15 @@ Dominant Astrological Drivers:
     Benefic Mitigation Pct    : 39.83%
     Mitigated Dusthāna Pts    : -68.59
     Active Count              : 5
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 59.87
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 52.44
     Primary Kārakas           : Sun
     Individual Kāraka Scores  : {'Sun': 55.2}
-    Kāraka Lagna House & Sc   : House {'Sun': 11} -> Score 90.85
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 100.14
+    Kāraka Lagna House & Sc   : House {'Sun': 11} -> Score 66.1
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 59.46
     Moon's Occupied House     : House 5
     Chandra House Number      : House 5
-    Chandra House Score       : 100.14
-    Combined Relative+Chandra : 56.72
+    Chandra House Score       : 59.46
+    Combined Relative+Chandra : 48.59
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 88.36
@@ -109,40 +109,40 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  2 : VIRGO (Virgo 29.97° | Longitude: 179.97°)
 Lord: Mercury | Physical Occupants: []
-SYNTHESIS SCORE: 18.89 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+SYNTHESIS SCORE: 22.15 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
-  • Significant aspectual pressure from Saturn on Cusp (-143.3)
+  • Significant aspectual pressure from Saturn on Cusp (-160.9)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 5.29
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 9.06
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    : +111.31
-      - Moon   :  +0.00
-      - Mars   :  +0.00
+      - Sun    : +100.45
+      - Moon   : +15.96
+      - Mars   :  -1.18
       - Mercury: +37.68
-      - Jupiter:  +0.00
-      - Venus  : +13.96
-      - Saturn : -143.31
+      - Jupiter: +35.38
+      - Venus  : +14.51
+      - Saturn : -160.88
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 25.98
     House Lord                : Mercury (Lord Final Assessment Score: 9.08)
     Immediate Dispositor      : Moon
     Final Dispositor          : Moon
     Effective Lord Score      : 25.98 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 15.48
-    Kendra/Trine/2nd/11th Pts : +189.12
-    Dusthāna Raw Penalty      : -105.00
-    Benefic Mitigation Pct    : 23.08%
-    Mitigated Dusthāna Pts    : -80.77
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 32.72
+    Kendra/Trine/2nd/11th Pts : +263.00
+    Dusthāna Raw Penalty      : -42.00
+    Benefic Mitigation Pct    : 19.10%
+    Mitigated Dusthāna Pts    : -33.98
     Active Count              : 7
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 39.27
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 41.30
     Primary Kārakas           : Jupiter
     Individual Kāraka Scores  : {'Jupiter': 39.8}
-    Kāraka Lagna House & Sc   : House {'Jupiter': 4} -> Score 50.42
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 76.50
+    Kāraka Lagna House & Sc   : House {'Jupiter': 4} -> Score 57.2
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 66.27
     Moon's Occupied House     : House 5
     Chandra House Number      : House 6
-    Chandra House Score       : 76.50
-    Combined Relative+Chandra : 27.68
+    Chandra House Score       : 66.27
+    Combined Relative+Chandra : 39.43
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 4.87
@@ -155,16 +155,16 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  3 : LIBRA (Libra 29.97° | Longitude: 209.97°)
 Lord: Venus | Physical Occupants: ['Jupiter']
-SYNTHESIS SCORE: 16.96 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+SYNTHESIS SCORE: 14.17 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
   • Significant aspectual pressure from Saturn on Cusp (-105.5)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 22.12
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 16.42
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    : +41.59
+      - Sun    : +23.34
       - Moon   :  +0.00
-      - Mars   : +32.16
-      - Mercury: +25.33
+      - Mars   : +17.87
+      - Mercury: +26.04
       - Jupiter: +98.85
       - Venus  : +31.13
       - Saturn : -105.54
@@ -174,21 +174,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Venus
     Effective Lord Score      : -19.30 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {'Jupiter': 39.8}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 23.38
-    Kendra/Trine/2nd/11th Pts : +163.68
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 28.48
+    Kendra/Trine/2nd/11th Pts : +199.37
     Dusthāna Raw Penalty      :  +0.00
     Benefic Mitigation Pct    : 0.00%
     Mitigated Dusthāna Pts    :  +0.00
     Active Count              : 7
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 34.48
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 32.77
     Primary Kārakas           : Mars
     Individual Kāraka Scores  : {'Mars': 46.54}
-    Kāraka Lagna House & Sc   : House {'Mars': 3} -> Score 22.12
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 81.05
+    Kāraka Lagna House & Sc   : House {'Mars': 3} -> Score 16.42
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 34.74
     Moon's Occupied House     : House 5
     Chandra House Number      : House 7
-    Chandra House Score       : 81.05
-    Combined Relative+Chandra : 34.91
+    Chandra House Score       : 34.74
+    Combined Relative+Chandra : 29.73
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 12.68
@@ -202,19 +202,19 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  4 : SCORPIO (Scorpio 29.97° | Longitude: 239.97°)
 Lord: Mars | Physical Occupants: []
-SYNTHESIS SCORE: 46.01 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 49.74 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
   • Significant aspectual support from Mars on Cusp (+225.7)
   • Net Structural Yogas (+64.8)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 50.42
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 57.20
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    :  +0.00
-      - Moon   :  +0.00
+      - Sun    : +40.23
+      - Moon   : +21.14
       - Mars   : +225.71
-      - Mercury:  +0.00
-      - Jupiter:  +0.00
-      - Venus  : +15.02
+      - Mercury:  +3.07
+      - Jupiter: +26.36
+      - Venus  : +15.76
       - Saturn : -89.49
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 49.04
     House Lord                : Mars (Lord Final Assessment Score: 46.54)
@@ -222,21 +222,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Moon
     Effective Lord Score      : 49.04 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 33.05
-    Kendra/Trine/2nd/11th Pts : +205.21
-    Dusthāna Raw Penalty      : -17.38
-    Benefic Mitigation Pct    : 60.08%
-    Mitigated Dusthāna Pts    :  -6.94
-    Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 26.27
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 42.90
+    Kendra/Trine/2nd/11th Pts : +214.51
+    Dusthāna Raw Penalty      :  +0.00
+    Benefic Mitigation Pct    : 0.00%
+    Mitigated Dusthāna Pts    :  +0.00
+    Active Count              : 5
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 26.79
     Primary Kārakas           : Moon, Mercury
     Individual Kāraka Scores  : {'Moon': 51.64, 'Mercury': 9.08}
-    Kāraka Lagna House & Sc   : House {'Moon': 8, 'Mercury': 3} -> Score 24.39
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 26.66
+    Kāraka Lagna House & Sc   : House {'Moon': 8, 'Mercury': 3} -> Score 26.14
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 35.85
     Moon's Occupied House     : House 5
     Chandra House Number      : House 8
-    Chandra House Score       : 26.66
-    Combined Relative+Chandra : 31.77
+    Chandra House Score       : 35.85
+    Combined Relative+Chandra : 41.49
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 64.80
@@ -250,19 +250,19 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  5 : SAGITTARIUS (Sagittarius 29.97° | Longitude: 269.97°)
 Lord: Jupiter | Physical Occupants: ['Moon']
-SYNTHESIS SCORE: 50.77 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 39.42 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
-  • Significant aspectual support from Sun on Cusp (+200.8)
+  • Significant aspectual support from Sun on Cusp (+161.4)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 100.14
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 59.46
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    : +200.81
-      - Moon   : +79.28
-      - Mars   : +64.56
-      - Mercury:  +0.00
+      - Sun    : +161.41
+      - Moon   : +102.47
+      - Mars   : +43.58
+      - Mercury: +14.55
       - Jupiter: +96.85
-      - Venus  :  +0.00
-      - Saturn :  -0.00
+      - Venus  :  +3.96
+      - Saturn : -38.57
       - Ketu   : -41.67
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 21.85
     House Lord                : Jupiter (Lord Final Assessment Score: 39.80)
@@ -270,21 +270,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Jupiter
     Effective Lord Score      : 25.68 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {'Moon': 51.64}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 26.13
-    Kendra/Trine/2nd/11th Pts : +211.50
-    Dusthāna Raw Penalty      : -79.50
-    Benefic Mitigation Pct    : 31.15%
-    Mitigated Dusthāna Pts    : -54.74
-    Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 48.45
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 50.27
+    Kendra/Trine/2nd/11th Pts : +290.70
+    Dusthāna Raw Penalty      : -74.10
+    Benefic Mitigation Pct    : 46.93%
+    Mitigated Dusthāna Pts    : -39.33
+    Active Count              : 5
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 34.56
     Primary Kārakas           : Jupiter
     Individual Kāraka Scores  : {'Jupiter': 39.8}
-    Kāraka Lagna House & Sc   : House {'Jupiter': 7} -> Score 81.05
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 52.81
+    Kāraka Lagna House & Sc   : House {'Jupiter': 7} -> Score 34.74
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 49.90
     Moon's Occupied House     : House 5
     Chandra House Number      : House 9
-    Chandra House Score       : 52.81
-    Combined Relative+Chandra : 31.47
+    Chandra House Score       : 49.90
+    Combined Relative+Chandra : 50.20
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 20.70
@@ -301,18 +301,18 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  6 : CAPRICORN (Capricorn 29.97° | Longitude: 299.97°)
 Lord: Saturn | Physical Occupants: []
-SYNTHESIS SCORE: 39.95 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 40.74 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
   • Significant aspectual support from Jupiter on Cusp (+180.4)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 76.50
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 66.27
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    :  +0.00
-      - Moon   :  +0.00
-      - Mars   :  +0.00
-      - Mercury: +26.19
+      - Sun    : +42.17
+      - Moon   :  +6.58
+      - Mars   :  -4.73
+      - Mercury: +32.29
       - Jupiter: +180.43
-      - Venus  : +42.02
+      - Venus  : +43.68
       - Saturn : +57.34
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 24.37
     House Lord                : Saturn (Lord Final Assessment Score: 12.77)
@@ -320,21 +320,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Moon
     Effective Lord Score      : 24.37 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 28.41
-    Kendra/Trine/2nd/11th Pts : +260.97
-    Dusthāna Raw Penalty      : -121.88
-    Benefic Mitigation Pct    : 25.71%
-    Mitigated Dusthāna Pts    : -90.54
-    Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 42.81
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 50.74
+    Kendra/Trine/2nd/11th Pts : +202.97
+    Dusthāna Raw Penalty      :  +0.00
+    Benefic Mitigation Pct    : 0.00%
+    Mitigated Dusthāna Pts    :  +0.00
+    Active Count              : 4
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 35.17
     Primary Kārakas           : Saturn, Mars
     Individual Kāraka Scores  : {'Saturn': 12.77, 'Mars': 46.54}
-    Kāraka Lagna House & Sc   : House {'Saturn': 5, 'Mars': 6} -> Score 88.32
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 0.00
+    Kāraka Lagna House & Sc   : House {'Saturn': 5, 'Mars': 6} -> Score 62.86
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 63.49
     Moon's Occupied House     : House 5
     Chandra House Number      : House 10
-    Chandra House Score       : 0.00
-    Combined Relative+Chandra : 22.73
+    Chandra House Score       : 63.49
+    Combined Relative+Chandra : 53.29
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 0.00
@@ -344,40 +344,40 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  7 : AQUARIUS (Aquarius 29.97° | Longitude: 329.97°)
 Lord: Saturn | Physical Occupants: []
-SYNTHESIS SCORE: 28.81 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 15.83 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
   • Significant aspectual support from Jupiter on Cusp (+123.1)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 81.05
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 34.74
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    : +47.96
-      - Moon   : +44.36
-      - Mars   : +97.52
-      - Mercury:  +0.00
+      - Sun    : +26.92
+      - Moon   : +35.71
+      - Mars   : -44.50
+      - Mercury: +22.50
       - Jupiter: +123.10
-      - Venus  :  +0.00
-      - Saturn :  +0.00
+      - Venus  : +32.36
+      - Saturn : +42.23
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 8.37
     House Lord                : Saturn (Lord Final Assessment Score: 12.77)
     Immediate Dispositor      : Moon
     Final Dispositor          : Moon
     Effective Lord Score      : 8.37 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -6.50
-    Kendra/Trine/2nd/11th Pts : +14.62
-    Dusthāna Raw Penalty      : -102.40
-    Benefic Mitigation Pct    : 47.64%
-    Mitigated Dusthāna Pts    : -53.62
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 15.23
+    Kendra/Trine/2nd/11th Pts : +146.47
+    Dusthāna Raw Penalty      : -85.90
+    Benefic Mitigation Pct    : 35.84%
+    Mitigated Dusthāna Pts    : -55.11
     Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 1.02
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = -2.05
     Primary Kārakas           : Venus
     Individual Kāraka Scores  : {'Venus': -35.79}
-    Kāraka Lagna House & Sc   : House {'Venus': 6} -> Score 76.5
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 90.85
+    Kāraka Lagna House & Sc   : House {'Venus': 6} -> Score 66.27
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 66.10
     Moon's Occupied House     : House 5
     Chandra House Number      : House 11
-    Chandra House Score       : 90.85
-    Combined Relative+Chandra : 12.97
+    Chandra House Score       : 66.10
+    Combined Relative+Chandra : 25.40
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = -15.01
@@ -389,18 +389,18 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  8 : PISCES (Pisces 29.97° | Longitude: 359.97°)
 Lord: Jupiter | Physical Occupants: []
-SYNTHESIS SCORE: 9.78 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+SYNTHESIS SCORE: 16.22 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
-  • Significant aspectual support from Mars on Cusp (+136.8)
+  • Significant aspectual pressure from Saturn on Cusp (-113.3)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 26.66
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 35.85
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    :  +0.00
-      - Moon   : +75.82
-      - Mars   : +136.80
-      - Mercury: +10.30
-      - Jupiter:  +0.00
-      - Venus  : +16.26
+      - Sun    : +32.81
+      - Moon   : +98.00
+      - Mars   : +92.34
+      - Mercury:  +6.70
+      - Jupiter: +88.10
+      - Venus  : +13.07
       - Saturn : -113.33
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 13.68
     House Lord                : Jupiter (Lord Final Assessment Score: 39.80)
@@ -408,21 +408,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Jupiter
     Effective Lord Score      : 13.68 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -46.54
-    Kendra/Trine/2nd/11th Pts : -195.38
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -18.56
+    Kendra/Trine/2nd/11th Pts : -41.25
     Dusthāna Raw Penalty      : -110.00
-    Benefic Mitigation Pct    : 23.74%
-    Mitigated Dusthāna Pts    : -83.89
+    Benefic Mitigation Pct    : 36.26%
+    Mitigated Dusthāna Pts    : -70.12
     Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 33.59
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 19.70
     Primary Kārakas           : Saturn
     Individual Kāraka Scores  : {'Saturn': 12.77}
-    Kāraka Lagna House & Sc   : House {'Saturn': 7} -> Score 81.05
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = -19.65
+    Kāraka Lagna House & Sc   : House {'Saturn': 7} -> Score 34.74
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 26.98
     Moon's Occupied House     : House 5
     Chandra House Number      : House 12
-    Chandra House Score       : -19.65
-    Combined Relative+Chandra : -41.16
+    Chandra House Score       : 26.98
+    Combined Relative+Chandra : -9.45
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 0.00
@@ -432,19 +432,19 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE  9 : ARIES (Aries 29.97° | Longitude: 29.97°)
 Lord: Mars | Physical Occupants: []
-SYNTHESIS SCORE: 54.42 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 51.43 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
   • Significant aspectual support from Jupiter on Cusp (+226.4)
   • Net Structural Yogas (+64.8)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 52.81
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 49.90
     Planet Cusp Contributions (Direct Rays & Dominance):
       - Sun    :  +0.00
-      - Moon   : +39.64
+      - Moon   : +51.24
       - Mars   : +112.86
-      - Mercury:  +0.00
+      - Mercury:  +1.53
       - Jupiter: +226.44
-      - Venus  :  +0.00
+      - Venus  :  +7.88
       - Saturn : -178.98
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 49.04
     House Lord                : Mars (Lord Final Assessment Score: 46.54)
@@ -452,21 +452,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Moon
     Effective Lord Score      : 49.04 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 53.57
-    Kendra/Trine/2nd/11th Pts : +375.01
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 55.51
+    Kendra/Trine/2nd/11th Pts : +388.60
     Dusthāna Raw Penalty      :  +0.00
     Benefic Mitigation Pct    : 0.00%
     Mitigated Dusthāna Pts    :  +0.00
     Active Count              : 7
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 53.41
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 42.75
     Primary Kārakas           : Jupiter, Sun
     Individual Kāraka Scores  : {'Jupiter': 39.8, 'Sun': 55.2}
-    Kāraka Lagna House & Sc   : House {'Jupiter': 11, 'Sun': 7} -> Score 85.95
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 96.68
+    Kāraka Lagna House & Sc   : House {'Jupiter': 11, 'Sun': 7} -> Score 50.42
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 58.54
     Moon's Occupied House     : House 5
     Chandra House Number      : House 1
-    Chandra House Score       : 96.68
-    Combined Relative+Chandra : 62.19
+    Chandra House Score       : 58.54
+    Combined Relative+Chandra : 56.12
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 64.80
@@ -480,17 +480,17 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE 10 : TAURUS (Taurus 29.97° | Longitude: 59.97°)
 Lord: Venus | Physical Occupants: []
-SYNTHESIS SCORE: -3.29 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+SYNTHESIS SCORE: 19.64 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
-  • Balanced, moderate planetary configurations
+  • Significant aspectual support from Jupiter on Cusp (+144.9)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 0.00
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 63.49
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    :  +0.00
-      - Moon   :  +0.00
-      - Mars   :  +0.00
+      - Sun    :  +7.16
+      - Moon   : +26.34
+      - Mars   : +12.10
       - Mercury:  +0.00
-      - Jupiter:  +0.00
+      - Jupiter: +144.89
       - Venus  :  +0.00
       - Saturn :  -0.00
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = -19.30
@@ -499,21 +499,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Venus
     Effective Lord Score      : -19.30 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -3.91
-    Kendra/Trine/2nd/11th Pts :  +7.14
-    Dusthāna Raw Penalty      : -43.00
-    Benefic Mitigation Pct    : 28.88%
-    Mitigated Dusthāna Pts    : -30.58
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 14.83
+    Kendra/Trine/2nd/11th Pts : +89.84
+    Dusthāna Raw Penalty      :  -1.40
+    Benefic Mitigation Pct    : 40.37%
+    Mitigated Dusthāna Pts    :  -0.83
     Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 24.89
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 28.64
     Primary Kārakas           : Mercury, Sun, Jupiter, Saturn
     Individual Kāraka Scores  : {'Mercury': 9.08, 'Sun': 55.2, 'Jupiter': 39.8, 'Saturn': 12.77}
-    Kāraka Lagna House & Sc   : House {'Mercury': 9, 'Sun': 8, 'Jupiter': 12, 'Saturn': 9} -> Score 28.16
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 5.29
+    Kāraka Lagna House & Sc   : House {'Mercury': 9, 'Sun': 8, 'Jupiter': 12, 'Saturn': 9} -> Score 40.66
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 9.06
     Moon's Occupied House     : House 5
     Chandra House Number      : House 2
-    Chandra House Score       : 5.29
-    Combined Relative+Chandra : -2.07
+    Chandra House Score       : 9.06
+    Combined Relative+Chandra : 13.68
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 4.87
@@ -526,19 +526,19 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE 11 : GEMINI (Gemini 29.97° | Longitude: 89.97°)
 Lord: Mercury | Physical Occupants: ['Sun']
-SYNTHESIS SCORE: 52.63 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
+SYNTHESIS SCORE: 42.96 | Health Rating: Flourishing / Fortified | Classical Tier: Puṣṭa
 Dominant Astrological Drivers:
-  • Significant aspectual support from Moon on Cusp (+137.6)
+  • Significant aspectual support from Jupiter on Cusp (+116.5)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = 90.85
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 66.10
     Planet Cusp Contributions (Direct Rays & Dominance):
       - Sun    : +43.13
-      - Moon   : +137.56
-      - Mars   :  +0.00
+      - Moon   : +83.58
+      - Mars   :  -0.00
       - Mercury: +22.03
       - Jupiter: +116.54
-      - Venus  :  +0.00
-      - Saturn :  -0.00
+      - Venus  :  +3.19
+      - Saturn : -17.39
       - Rahu   : +24.31
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 34.74
     House Lord                : Mercury (Lord Final Assessment Score: 9.08)
@@ -546,21 +546,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Moon
     Effective Lord Score      : 25.98 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {'Sun': 55.2}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 30.94
-    Kendra/Trine/2nd/11th Pts : +185.66
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 27.26
+    Kendra/Trine/2nd/11th Pts : +190.80
     Dusthāna Raw Penalty      :  +0.00
     Benefic Mitigation Pct    : 0.00%
     Mitigated Dusthāna Pts    :  +0.00
-    Active Count              : 6
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 53.14
+    Active Count              : 7
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 41.70
     Primary Kārakas           : Jupiter
     Individual Kāraka Scores  : {'Jupiter': 39.8}
-    Kāraka Lagna House & Sc   : House {'Jupiter': 1} -> Score 96.68
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 22.12
+    Kāraka Lagna House & Sc   : House {'Jupiter': 1} -> Score 58.54
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 16.42
     Moon's Occupied House     : House 5
     Chandra House Number      : House 3
-    Chandra House Score       : 22.12
-    Combined Relative+Chandra : 29.18
+    Chandra House Score       : 16.42
+    Combined Relative+Chandra : 25.09
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = 26.25
@@ -576,20 +576,20 @@ Dominant Astrological Drivers:
 -----------------------------------------------------------------------------------------------
 HOUSE 12 : CANCER (Cancer 29.97° | Longitude: 119.97°)
 Lord: Moon | Physical Occupants: ['Mercury', 'Venus', 'Saturn']
-SYNTHESIS SCORE: 1.07 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
+SYNTHESIS SCORE: 17.05 | Health Rating: Mixed / Resilient | Classical Tier: Miśra
 Dominant Astrological Drivers:
   • House Lord Moon is fortified (+51.6)
-  • Significant aspectual pressure from Saturn on Cusp (-97.9)
+  • Significant aspectual support from Moon on Cusp (+125.1)
   • Net Structural Yogas (-50.5)
 
-  [Component 1] Basic House Condition (Weight: 30%) : Score = -19.65
+  [Component 1] Basic House Condition (Weight: 30%) : Score = 26.98
     Planet Cusp Contributions (Direct Rays & Dominance):
-      - Sun    :  +0.00
-      - Moon   :  +0.00
-      - Mars   :  +0.00
-      - Mercury:  +6.81
-      - Jupiter:  +0.00
-      - Venus  : +32.18
+      - Sun    : +10.06
+      - Moon   : +125.10
+      - Mars   :  +3.94
+      - Mercury:  +7.24
+      - Jupiter: +33.80
+      - Venus  : +34.27
       - Saturn : -97.94
   [Component 2] Lord & Occupants Assessment (Weight: 30%) : Combined Score = 23.41
     House Lord                : Moon (Lord Final Assessment Score: 51.64)
@@ -597,21 +597,21 @@ Dominant Astrological Drivers:
     Final Dispositor          : Moon
     Effective Lord Score      : 43.27 (buffered via Dispositor Chain & Digbala bonus)
     Occupants Final Scores    : {'Mercury': 9.08, 'Venus': -35.79, 'Saturn': 12.77}
-  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = -1.89
-    Kendra/Trine/2nd/11th Pts : +41.12
-    Dusthāna Raw Penalty      : -87.38
-    Benefic Mitigation Pct    : 37.78%
-    Mitigated Dusthāna Pts    : -54.36
-    Active Count              : 7
-  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 36.53
+  [Component 3] Relative Houses / Bhavāt Bhavam (Weight: 15% Base) : Score = 12.55
+    Kendra/Trine/2nd/11th Pts : +114.72
+    Dusthāna Raw Penalty      : -70.00
+    Benefic Mitigation Pct    : 43.65%
+    Mitigated Dusthāna Pts    : -39.44
+    Active Count              : 6
+  [Component 4] Bhāva Kāraka Assessment (Weight: 10%) : Score = 29.10
     Primary Kārakas           : Saturn
     Individual Kāraka Scores  : {'Saturn': 12.77}
-    Kāraka Lagna House & Sc   : House {'Saturn': 11} -> Score 90.85
-  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 50.42
+    Kāraka Lagna House & Sc   : House {'Saturn': 11} -> Score 66.1
+  [Component 5] Chandra Lagna Assessment (Blended 20% into Relative House) : Score = 57.20
     Moon's Occupied House     : House 5
     Chandra House Number      : House 4
-    Chandra House Score       : 50.42
-    Combined Relative+Chandra : 8.57
+    Chandra House Score       : 57.20
+    Combined Relative+Chandra : 21.48
   [Component 6] House Walls / Kartarī Yoga (Weight: 5% when active) : Score = 0.00
     Is Walled (Both Flanks)   : False
   [Component 7] Certified House Yogas (Weight: 10%) : Score = -50.53
