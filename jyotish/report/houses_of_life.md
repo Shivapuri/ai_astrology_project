@@ -78,26 +78,27 @@ $$F_P = \begin{cases} +3 & \text{if } P \text{ rules House 1} \\ \text{Score}_{\
 ### Phase 3: Rāśi Dignity Scale ($d_P$) & Universal Scaling Law
 
 #### 1. D1 Rāśi Dignity Scale ($d_P \in [-1.0, +1.0]$, $D_{\text{pct}} \in [-100, +100]$)
-* **Exaltation (*Uccha*):** $+1.0$ ($+100\%$)
-* **Mūlatrikoṇa:** $+0.9$ ($+90\%$)
-* **Domicile (*Svakṣetra*):** $+0.8$ ($+80\%$)
-* **Very Friendly (*Adhi Mitra*):** $+0.6$ ($+60\%$)
-* **Friendly (*Mitra*):** $+0.4$ ($+40\%$)
-* **Neutral (*Sama*):** $0.0$ ($0\%$)
-* **Inimical (*Śatru*):** $-0.4$ ($-40\%$)
-* **Very Inimical (*Adhi Śatru*):** $-0.7$ ($-70\%$)
-* **Debilitated (*Nīca*):** $-1.0$ ($-100\%$)
+* **Compound Friendship (*Pañcadhā Maitrī*):** Evaluates planetary dignity using the classical 5-Fold Compound Relationship (`dignity_breakdown["final_dignity"]`), blending eternal Natural Friendship (*Naisargika Sambandha*) with chart-specific Temporary Friendship (*Tātkālika Sambandha* based on 3-sign separation) to determine how comfortable the planet feels in its host sign:
+  * **Exaltation (*Uccha*):** $+1.0$ ($+100\%$)
+  * **Mūlatrikoṇa:** $+0.9$ ($+90\%$)
+  * **Domicile (*Svakṣetra*):** $+0.8$ ($+80\%$)
+  * **Very Friendly (*Adhi Mitra*):** $+0.6$ ($+60\%$)
+  * **Friendly (*Mitra*):** $+0.4$ ($+40\%$)
+  * **Neutral (*Sama*):** $0.0$ ($0\%$)
+  * **Inimical (*Śatru*):** $-0.4$ ($-40\%$)
+  * **Very Inimical (*Adhi Śatru*):** $-0.7$ ($-70\%$)
+  * **Debilitated (*Nīca*):** $-1.0$ ($-100\%$)
 
 #### 2. Universal Dignity-Scaling Law (`scale_by_dignity`)
 Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature $F$:
-* **Functionally Positive ($F > 0$):**
+* **Functionally Positive ($F \ge 0.25$):**
   * $d_P \ge 0 \implies S = B \times (1.0 + d_P)$ (Up to $2\times$ intensification).
   * $d_P < 0 \implies S = B \times (1.0 - 0.80 \times |d_P|)$ (Severe debilitation retains only $0.20\times$ good results per *Phaladīpikā* 15.18).
-* **Functionally Negative ($F < 0$):**
+* **Functionally Negative ($F \le -0.25$):**
   * $d_P \le 0 \implies S = B \times (1.0 + |d_P|)$ (Bad mood intensifies malice up to $2\times$).
   * $d_P > 0 \implies S = B \times (1.0 - \frac{d_P}{2.0})$ (Good mood mitigates malice by up to half).
-* **Functionally Neutral ($|F| \le 0.15$):**
-  * Proportional continuous scaling: $S = B \times d_P$ (where $d_P > 0$ yields positive support and $d_P < 0$ yields negative strain, without artificial step-jumps or double negation).
+* **Continuous Functional Transition ($-0.25 < F < 0.25$):**
+  * Continuous linear blend anchored at neutral $S = B \times d_P$ at $F = 0$, eliminating cliff edges and abrupt sign inversions.
 
 ---
 
@@ -111,9 +112,12 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 3. **Cross-Border Attenuation:**
    * If a conjunction spans across a sign boundary, potency is halved ($\times 0.5$).
 4. **Multi-Planet Cusp Dominance ("Potency Stealing"):**
-   * Co-occupants of the same Whole Sign house share cusp alignment. The closer planet $P_{\text{near}}$ absorbs conjunction points from farther co-occupants $P_{\text{far}}$:
-     $$\Delta_{\text{steal}} = C_{\text{far}} \times \frac{C_{\text{near}}}{C_{\text{near}} + C_{\text{far}}}$$
-     $$C_{\text{near, final}} = C_{\text{near}} + \Delta_{\text{steal}}, \qquad C_{\text{far, final}} = C_{\text{far}} - \Delta_{\text{steal}}$$
+   * Co-occupants of the same Whole Sign house share cusp alignment. The closer planet $P_{\text{near}}$ absorbs conjunction points from farther co-occupants $P_{\text{far}}$ when within $15^\circ$:
+     $$\Delta_{\text{steal}} = C_{\text{far}} \times \frac{C_{\text{near}}}{C_{\text{near}} + C_{\text{far}}} \times \left(1.0 - \frac{\Delta\theta_{P_1, P_2}}{15^\circ}\right)$$
+     $$C_{\text{near, final}} = \min(125.0, C_{\text{near}} + \Delta_{\text{steal}}), \qquad C_{\text{far, final}} = \max(0.0, C_{\text{far}} - \Delta_{\text{steal}})$$
+   * Equidistant co-occupants retain their respective conjunctions without arbitrary asymmetric theft.
+5. **Mutual Sign Exchange Connection (*Mitho Yoga / Parivartana*, *Phaladīpikā* 15.30):**
+   * Two planets in mutual reception / sign exchange act as connected (*yukta* / *bandha*), receiving a $50.0\%$ mutual influence floor in `planet_to_planet` ($\max(\text{AspectPct}, \text{ConjPct}, 50.0\%)$) even when separated by disparate signs without physical Graha Dṛṣṭi.
 
 ---
 
@@ -150,7 +154,11 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
      $$\text{CuspProxFactor}_P = 0.80 + 0.40 \times \left(\frac{\text{CappedBase}_P}{100.0}\right)$$
      $$\text{EffectiveMultiplier}_P = \text{BaseMultiplier}_P \times \text{CuspProxFactor}_P$$
    * **Vilagna Protection (*Phaladīpikā* 3.9):** If a planet occupies House 1 with $\text{QualityBase} < 0$, its negative dignity strain is softened by $0.50 \times \text{CuspProxFactor}$.
-6. **Bhāva Sandhi ($\text{Sandhi}_P$):** Within $4.0^\circ$ of either sign border.
+6. **Bhāva Sandhi & Cusp Proximity Relief (*Phaladīpikā* 15.14 & 8.34–35):**
+   * A planet within $4.0^\circ$ of a sign border faces junction weakness: $\text{RawSandhiPen} = \max(0.0, 1.0 - \frac{\Delta\lambda_{\text{border}}}{4.0^\circ})$.
+   * Per *Phaladīpikā* 15.14 (*bhāveṣu bhāvasphuṭatulyabhāgas tadbhāvajaṃ pūrṇaphalaṃ vidhatte*) and 8.34–35:
+     * If the sensitive house cusp itself is near the border ($< 4.0^\circ$) and the planet is inside the house between the cusp and sign center ($\Delta\lambda_{\text{border}} \ge \Delta\lambda_{\text{cusp, border}}$), or if the planet is tightly conjunct the cusp ($\Delta\lambda_{\text{cusp}} \le 5.0^\circ$), the planet is situated directly at the cusp door inside the house and is completely relieved of sandhi penalty ($\text{CuspRelief} = 0.0, \text{SandhiPenalty} = 0.0$).
+     * Otherwise, for planets drifting near the junction far from the cusp door ($> 5.0^\circ$), full sandhi penalty applies ($\text{CuspRelief} = 1.0$).
 7. **Combustion & Solar Gain:** Proximity to Sun within combustion orb.
 8. **Sign-Safe Synthesis:** Produces `final_assessment_score`.
 
@@ -163,29 +171,34 @@ For each house $H \in \{1, \dots, 12\}$:
    * All continuous aspects contribute directly and proportionally without artificial step cutoffs.
 2. Dignity $d_P$ and Effective Functional Nature $F_{P, H}$:
    * **House Lord:** $F_{\text{eff}} = 2.0$.
-   * **Non-Lord Planets:** Bidirectional natural friendship ($P \to L$ and $L \to P$) modifies the baseline functional blend:
+   * **Non-Lord Planets:** Bidirectional Natural Friendship (*Naisargika Sambandha*, $P \to \text{Lord}$ and $\text{Lord} \to P$) per *Phaladīpikā* 15.5 & 15.7 (*bhāvanātha-suhṛdo bhāvasya siddhipradāḥ*) measures eternal archetypal affinity with the house owner, modifying the baseline functional blend:
      * If both are Friends: $\text{FriendMod} = +0.50$
      * If either considers the other an Enemy: $\text{FriendMod} = -0.50$
      * If one is Friend and the other Neutral: $\text{FriendMod} = +0.25$
      * Otherwise: $\text{FriendMod} = 0.0$
-     $$F_{\text{eff}} = 0.40 \times F_{\text{lagna}} + 0.60 \times (\text{NatT} \times 2.0) + \text{FriendMod}$$
-3. **Condition-Gating (*Amūḍha-Hīnāḥ*, *Phaladīpikā* 15.1, 15.5):**
+     $$F_{\text{eff}} = F_{\text{lagna}} + \text{FriendMod}$$
+     *(Eliminates double-counting of inherent temperament in $F_{\text{lagna}}$, which already incorporates inherent temperament and Rāja Yogakāraka status).*
+3. **Continuous Scaling Across Functional Spectrum:**
+   * If $F_{\text{eff}} \ge 0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, 1.0) \times (1.0 + 0.65(F_{\text{eff}} - 1.0))$
+   * If $F_{\text{eff}} \le -0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, -1.0) \times -(1.0 + 0.65(|F_{\text{eff}}| - 1.0))$
+   * If $-0.25 < F_{\text{eff}} < 0.25$: continuous linear blend anchored at neutral $I \times d_P$.
+4. **Upacaya (3, 6, 11) Malefic Occupant Rule (*Phaladīpikā* 15.18):**
+   * Triggered **strictly when functioning as a malefic ($F_{\text{eff}} < 0$)**. Benefic 1st House Lords and Rāja Yogakārakas are never slashed by friendly fire.
+   * Scaled **positively** by dignity (exalted gives strong resilience; debilitated gives weak resilience):
+     $$\text{Impact}_{P \to H} = \text{scale\_by\_dignity}(I, d_P, 1.0) \times 0.35$$
+5. **Condition-Gating (*Amūḍha-Hīnāḥ*, *Phaladīpikā* 15.1, 15.5):**
    $$\text{ConditionIntegrity} = (1.0 - 0.75 \times \text{CombLoss}_P) \times (1.0 - 0.50 \times \text{SandhiPen}_P)$$
    * Benefic impacts ($\text{signed\_impact} > 0$) are multiplied by $\text{ConditionIntegrity}$.
-   * **Dusthāna Enemy Attenuation (*Arinīca-Mūḍha*):** If a planet has negative D1 dignity ($d_{\text{D1}} < 0$), its positive cusp rays are attenuated by $0.55\times$, and by an additional $0.75\times$ if occupying a Dusthāna ($6, 8, 12$), preventing afflicted planets from projecting runaway positive points.
+   * **Multi-Varga Negative Dignity Attenuation (*Arinīca-Mūḍha*):** Evaluated against composite multi-varga dignity ($d_P < 0$). If $d_P < 0$, positive rays are attenuated smoothly: $\text{ConditionIntegrity} \times (1.0 - 0.40 \times |d_P|)$, and by an additional $0.75\times$ if occupying a Dusthāna ($6, 8, 12$). Planets rescued by D9 or Vargottama ($d_P \ge 0$) are not penalized.
    * Malefic impacts ($\text{signed\_impact} < 0$) are intensified by combustion: $(1.0 + 0.35 \times \text{CombLoss}_P) \times (1.0 - 0.30 \times \text{SandhiPen}_P)$.
-4. **Upacaya (3, 6, 11) Malefic Occupant Rule (*Phaladīpikā* 15.18):**
-   When a natural malefic (Sun, Mars, Saturn) occupies an Upacaya house as a non-lord occupant, its negative cusp impact is converted to a positive resilience boost:
-   $$\text{Impact}_{P \to H} = |\text{scaled\_i}| \times 0.35$$
-5. **Rāhu & Ketu Cusp Impact (*Phaladīpikā* 15.8):**
-   * If in the same sign as the cusp: $C_{\text{node}} = \max\left(35.0, \left(1.0 - \frac{\text{dist}}{30.0}\right) \times 100.0\right)$.
-   * If in adjacent sign within $15^\circ$ of cusp: $C_{\text{node}} = 0.50 \times \left(1.0 - \frac{\text{dist}}{30.0}\right) \times 100.0$ (halved cross-border, no $35\%$ floor).
+6. **Rāhu & Ketu Cusp Impact (*Phaladīpikā* 15.8):**
    * Upacaya houses ($3, 6, 11$): $+0.35 \times C_{\text{node}}$.
-   * Non-Upacaya houses: $-0.60 \times C_{\text{node}} \times \text{MitFactor}$ (where $\text{MitFactor} = 0.50$ if node is dignified or aspected/conjoined by Jupiter or Venus; $1.00$ otherwise).
-6. **Active Divisor Floor:**
-   $$\text{ActiveWeights}_H = \sum_{P \in \text{Planets}} \min\left(1.0, \frac{I_{P \to H}}{45.0}\right)$$
-   $$\text{EffDivisor}_H = \max(3.0, \text{ActiveWeights}_H)$$
-   Scores clamped within $[-120.0, +120.0]$.
+   * Non-Upacaya houses: $-0.60 \times C_{\text{node}} \times \text{MitFactor}$ (where $\text{MitFactor} = 0.50$ if node is dignified or aspected/conjoined by Jupiter or Venus; $1.25$ if aggravated by Mars/Saturn; $1.00$ otherwise).
+7. **Strict Monotonicity & Cusp Score Normalization:**
+   * Fixed baseline divisor ($3.0$) with hyperbolic tangent saturation matching Phase 8 and Phase 9:
+     $$\text{RawHouseScore}_H = \frac{\sum \text{SignedImpact}}{3.0}$$
+     $$\text{BoundedScore}_H = 120.0 \times \tanh\left(\frac{\text{RawHouseScore}_H}{120.0}\right)$$
+   * Guaranteed monotonicity: every additional benefic aspect strictly increases the house score, and every additional malefic aspect strictly decreases it.
 
 ---
 
@@ -224,8 +237,13 @@ Every house evaluation incorporates the condition and perspective of its natural
   * House 10: Mercury, Sun, Jupiter, Saturn | House 11: Jupiter | House 12: Saturn
 * **Three-Factor Synthesis for each Kāraka $K$:**
   1. Direct Planet Condition ($\text{k\_planet\_score} = \text{planets\_eval}[K]$).
-  2. Relative House Placement ($R_{K, H} = ((\text{House}_K - H) \pmod{12}) + 1$): $+15.0$ for Kendra/Trine/2nd/11th, $-15.0$ for Dusthāna ($6, 8, 12$), $+5.0$ for H3.
-  3. Kāraka Lagna Score ($\text{k\_lagna\_house\_score}$): Baseline condition of the natal house corresponding to the $H$-th sign counted forward from Kāraka $K$.
+  2. Relative House Placement & Proximity ($R_{K, H} = ((\text{House}_K - H) \pmod{12}) + 1$, *Phaladīpikā* 15.25):
+     * Kendra / Trine / 2nd / 11th: $+15.0$ (`"Close / Nourishing"`)
+     * Dusthāna ($6, 8, 12$): $-15.0$ (`"Distant / Dusthāna"`)
+     * Upacaya 3rd: $+5.0$ (`"Moderate / Upacaya"`)
+     * *Phaladīpikā 15.25 Distinction:* Distinguishes relationship proximity/closeness (`karaka_relative_houses`, `karaka_proximity`) from inner happiness (*Saukhya*).
+  3. Kāraka Lagna Score ($\text{k\_lagna\_house\_score}$): Comprehensive Sign-Level Baseline condition of the natal house corresponding to the $H$-th sign counted forward from Kāraka $K$:
+     $$\text{SignBaseline}_H = 0.50 \times \text{Basic}_H + 0.30 \times \text{LordAndOccAvg}_H + 0.20 \times \text{Relative}_H$$
   $$\text{Score}_K = 0.55 \times \text{k\_planet\_score} + 0.30 \times \text{k\_lagna\_house\_score} + 0.15 \times \text{k\_rel\_bonus}$$
 
 ---
@@ -234,6 +252,7 @@ Every house evaluation incorporates the condition and perspective of its natural
 
 * Computes the corresponding house counted from the Moon's occupied house:
   $$H_{\text{Chandra}} = ((H_{\text{Moon}} - 1 + H - 1) \pmod{12}) + 1$$
+* Evaluates the lunar perspective utilizing the comprehensive Sign-Level Baseline $\text{SignBaseline}_{H_{\text{Chandra}}}$ (Cusp + Lord + Relative placement) rather than direct cusp rays alone.
 * Exposed in `components["chandra_lagna_assessment"]` with baseline score from $H_{\text{Chandra}}$.
 * **Active Mathematical Weight:** Blended directly with Relative Houses (*Bhavāt Bhavam*) before computing the house composite:
   $$R_{\text{combined}, H} = 0.80 \times \text{Relative}_H + 0.20 \times \text{Chandra}_H$$
@@ -243,8 +262,12 @@ Every house evaluation incorporates the condition and perspective of its natural
 ### Phase 8: Quantified House Walls — *Kartarī Yoga*
 
 * Evaluates physical planets within $(0^\circ, 30^\circ)$ before and after $\text{Cusp}_H$.
-* **True Kartarī Sign Adjacency (*Phaladīpikā* 15.6):**
-  Requires true flanking across sign borders: $P_{\text{before}}$ must sit in the immediately preceding sign ($\text{Sign}_{H-1}$) and $P_{\text{after}}$ in the house sign or immediately following sign ($\text{Sign}_H$ or $\text{Sign}_{H+1}$), or both planets in $\text{Sign}_H$. An empty preceding sign cannot form a Kartarī wall.
+* **Symmetric Cross-Border Kartarī Sign Adjacency (*Phaladīpikā* 15.6 & DiCara Ep. 4):**
+  Requires true flanking across sign borders:
+  * $P_{\text{before}}$ within $30^\circ$ before the cusp must sit in $\text{Sign}_{H-1}$ or $\text{Sign}_H$.
+  * $P_{\text{after}}$ within $30^\circ$ after the cusp must sit in $\text{Sign}_H$ or $\text{Sign}_{H+1}$.
+  * Both cannot sit exclusively in $\text{Sign}_{H-1}$ or exclusively in $\text{Sign}_{H+1}$.
+  * This fully supports late Ascendants/cusps ($15^\circ\text{–}30^\circ$) where $P_{\text{before}}$ sits in $\text{Sign}_H$ and $P_{\text{after}}$ sits in $\text{Sign}_{H+1}$.
 * Flanking planets occupying the same Whole Sign house are attenuated by $0.50$.
 * Compressed into $[-120, +120]$ range via hyperbolic tangent:
   $$\text{WallScore}_H = 120.0 \times \tanh\left(\frac{\text{RawScore}_H}{180.0}\right)$$

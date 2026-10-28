@@ -341,6 +341,12 @@
             botEl.textContent = botH.map(h => `H${h}`).join(' · ') || '--';
         }
 
+        const dnaEl = root.querySelector('.hol-dna-code');
+        if (dnaEl) {
+            const dnaArr = rankings.houses_by_composite_score || [];
+            dnaEl.textContent = rankings.house_dna_code || (dnaArr.length ? dnaArr.join('-') : '--');
+        }
+
         // Render 12-Column Vertical Diverging Skyline
         const skylineGrid = root.querySelector('.hol-skyline-grid') || root.querySelector('.hol-bars-grid');
         if (!skylineGrid) return;
@@ -740,7 +746,24 @@
 
             const kLagnaH = kAss.karaka_lagna_house;
             const kLagnaSc = kAss.karaka_lagna_score;
-            const kLagnaStr = (kLagnaH && kLagnaSc !== undefined) ? `House ${kLagnaH} (${kLagnaSc >= 0 ? '+' : ''}${kLagnaSc.toFixed(1)})` : '--';
+            let kLagnaStr = '--';
+            if (typeof kLagnaH === 'object' && kLagnaH !== null) {
+                const pairs = Object.entries(kLagnaH).map(([k, h]) => `${k}→H${h}`);
+                kLagnaStr = pairs.join(' · ') || '--';
+                if (kLagnaSc !== undefined && pairs.length > 0) {
+                    kLagnaStr += ` (${kLagnaSc >= 0 ? '+' : ''}${kLagnaSc.toFixed(1)})`;
+                }
+            } else if (kLagnaH && kLagnaSc !== undefined) {
+                kLagnaStr = `House ${kLagnaH} (${kLagnaSc >= 0 ? '+' : ''}${kLagnaSc.toFixed(1)})`;
+            }
+
+            const kRelH = kAss.karaka_relative_houses || {};
+            const kProx = kAss.karaka_proximity || {};
+            const proxStr = karakas.map(k => {
+                const rH = kRelH[k];
+                const pLabel = kProx[k] || '';
+                return rH ? `${k}: Rel H${rH} (${pLabel})` : '';
+            }).filter(Boolean).join(' · ');
 
             karakaContainer.innerHTML = `
                 <div style="font-size:12px; color:var(--text-primary); padding:2px 0;">
@@ -749,6 +772,11 @@
                 <div style="font-size:12px; color:var(--text-muted); padding:2px 0;">
                     Kāraka Lagna: <span style="font-family:var(--font-mono); color:var(--text-primary);">${kLagnaStr}</span>
                 </div>
+                ${proxStr ? `
+                <div style="font-size:12px; color:var(--text-muted); padding:2px 0;">
+                    15.25 Proximity: <span style="font-family:var(--font-mono); color:var(--text-primary);">${proxStr}</span>
+                </div>
+                ` : ''}
             `;
         }
 

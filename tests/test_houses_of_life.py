@@ -640,7 +640,7 @@ class TestHousesOfLifeStep10Verification:
 
         # House 10 is in Miśra tier due to Venus exiled in Dusthāna H12, but buffered by Jupiter's aspect
         assert h10["synthesis"]["classical_tier"] == "Miśra"
-        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 19.64
+        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 23.55
 
         assert h11["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h11["synthesis"]["composite_score"] >= 25.0
@@ -746,15 +746,24 @@ class TestHousesOfLifeAuditPatches:
         saturn_h6 = res[6]["planet_contributions"]["Saturn"]
         saturn_h11 = res[11]["planet_contributions"]["Saturn"]
 
-        # H4 (non-Upacaya) receives unattenuated penalty (-231.0)
+        # H4 (non-Upacaya) receives unattenuated penalty
         assert saturn_h4 < -100.0
-        # H3, H6, H11 receive mild positive resilience boost (abs(scaled_i) * 0.35 per Phaladeepika 15.18)
+        # H3, H6, H11 receive positive resilience boost scaled positively by dignity per Phaladīpikā 15.18
+        # Enemy sign (-0.4 dignity): pos_scaled = 100 * (1 - 0.8 * 0.4) = 68.0 -> 68.0 * 0.35 = 23.8
         assert saturn_h3 > 0.0
         assert saturn_h6 > 0.0
         assert saturn_h11 > 0.0
-        assert pytest.approx(saturn_h3, abs=0.5) == 49.0
-        assert pytest.approx(saturn_h6, abs=0.5) == 49.0
-        assert pytest.approx(saturn_h11, abs=0.5) == 49.0
+        assert pytest.approx(saturn_h3, abs=0.5) == 23.8
+        assert pytest.approx(saturn_h6, abs=0.5) == 23.8
+        assert pytest.approx(saturn_h11, abs=0.5) == 23.8
+
+        # Verify exalted malefic (+1.0 dignity) produces more positive points (70.0) than enemy sign (23.8),
+        # ensuring dignity is never inverted
+        d1_grahas_exalt = {p: {"dignity": "Exalted" if p == "Saturn" else "Own Sign"} for p in CLASSICAL_PLANETS}
+        res_exalt = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas_exalt, influences)
+        saturn_h3_exalt = res_exalt[3]["planet_contributions"]["Saturn"]
+        assert pytest.approx(saturn_h3_exalt, abs=0.5) == 70.0
+        assert saturn_h3_exalt > saturn_h3
 
     def test_patch3_relative_h1_and_h11_weighting(self):
         """
@@ -1238,9 +1247,10 @@ class TestHousesOfLifeFiveLogicFixes:
             geometry, func_natures, d1_grahas, influences, planets_eval=planets_eval
         )
         jup_contrib = res[1]["planet_contributions"]["Jupiter"]
-        # With d_p = 1.0, scaled_i = 100 * (1 + 1.0) = 200, f_eff = 2.0 + 0.5 (friendship to Mars) = 2.5 -> mult = 1.975 -> 395.0
-        # Attenuated by 0.55x due to D1 Enemy sign -> 217.25
-        assert pytest.approx(jup_contrib, abs=1.0) == 217.25
+        # With d_p = 1.0 (rescued by D9/multi-varga), scaled_i = 100 * (1 + 1.0) = 200,
+        # f_eff = 2.0 + 0.5 (friendship to Mars) = 2.5 -> mult = 1.975 -> 395.0.
+        # Since composite dignity d_p >= 0, it is not penalized by the negative dignity cliff.
+        assert pytest.approx(jup_contrib, abs=1.0) == 395.0
 
     def test_bug4_chandra_lagna_active_in_composite_score(self):
         """
@@ -1317,10 +1327,11 @@ class TestExactDegreeCuspAspectsAndSignSafeBala:
         h10_contribs = hol["houses"]["10"]["components"]["basic_house_condition"]["planet_contributions"]
         # Jupiter provides large positive contribution (trine ray)
         assert h10_contribs["Jupiter"] > 100.0
-        # Moon provides positive contribution (29.2% ray)
-        assert h10_contribs["Moon"] > 20.0
-        # Mars contributes (22.3% ray) without being zeroed by < 25% cutoff
-        assert h10_contribs["Mars"] > 10.0
+        # Moon casts continuous 29.2% ray (17.53 virūpas) onto H10; as 12th Lord in Scorpio against Venus-ruled H10,
+        # it contributes a continuous non-zero ray without being suppressed by artificial cutoffs
+        assert abs(h10_contribs["Moon"]) > 15.0
+        # Mars contributes strongly as Yogakāraka (22.3% ray) without being zeroed by < 25% cutoff
+        assert h10_contribs["Mars"] > 50.0
         # Basic condition score is healthy and positive
         assert hol["houses"]["10"]["components"]["basic_house_condition"]["score"] > 50.0
 
@@ -1347,6 +1358,463 @@ class TestExactDegreeCuspAspectsAndSignSafeBala:
 
         # Strong Shadbala is strictly superior to Weak Shadbala
         assert pts_strong > pts_weak
+
+
+class TestHousesOfLifeClassicalRefinements:
+    """
+    Unit tests for Classical & Mathematical Refinements (Phaladīpikā Ch. 15 / DiCara System):
+      - Step 1: Late-cusp cross-border Kartarī wall detection.
+      - Step 2: Phaladīpikā 15.14 cusp-proximity Bhāva Sandhi relief.
+      - Step 3: Phaladīpikā 15.30 Parivartana (Mitho Yoga) mutual connection floor.
+      - Step 4: Sign-level baselines, House DNA sequence, and Kāraka proximity schema.
+    """
+
+    def test_late_cusp_kartari_wall_detection(self):
+        """
+        Verifies that when a cusp is at late degrees (e.g. 29.97° Gemini, longitude 89.97°),
+        a planet within 30° before the cusp in Gemini (e.g. 22.93°, longitude 82.93°)
+        and a planet within 30° after the cusp in Cancer (e.g. 8.87°, longitude 98.87°)
+        is properly detected as is_walled is True (p_before in h_sign, p_after in next_sign).
+        """
+        geometry = {
+            "ascendant_sign": "Leo",
+            "houses": {
+                11: {
+                    "sign": "Gemini",
+                    "lord": "Mercury",
+                    "cusp_longitude": 89.97,
+                    "occupants": ["Sun"]
+                }
+            }
+        }
+        d1_grahas = {
+            p: {"sign": "Aries", "longitude": 10.0, "dignity": "Neutral"}
+            for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Sun"] = {"sign": "Gemini", "longitude": 82.93, "dignity": "Neutral"}
+        d1_grahas["Mercury"] = {"sign": "Cancer", "longitude": 98.87, "dignity": "Neutral"}
+
+        func_natures = {
+            p: {"score": 1.0, "classification": "Benefic"}
+            for p in CLASSICAL_PLANETS
+        }
+
+        res = evaluate_house_walls_kartari(geometry, d1_grahas, func_natures)
+        assert 11 in res
+        assert res[11]["is_walled"] is True
+        assert res[11]["planet_before"] == "Sun"
+        assert res[11]["planet_after"] == "Mercury"
+        assert res[11]["wall_type"] != "None"
+
+    def test_phaladeepika_15_14_cusp_proximity_sandhi_relief(self):
+        """
+        Verifies that a planet at 27.0° Leo when the Ascendant cusp is 29.5° Leo (2.5° from cusp)
+        has its sandhi_penalty attenuated by 2.5 / 5.0 = 0.50x compared to when the cusp is at 10.0° Leo.
+        """
+        func_natures = {p: {"score": 1.0, "classification": "Benefic"} for p in CLASSICAL_PLANETS}
+        influences = {
+            "planet_to_planet": {p1: {p2: 0.0 for p2 in CLASSICAL_PLANETS} for p1 in CLASSICAL_PLANETS},
+            "adjusted_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+            "raw_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+        }
+
+        # Case A: Cusp at 29.5° Leo (lon 149.5°), Mars at 27.0° Leo (lon 147.0°) -> dist_to_cusp = 2.5°
+        geom_a = {
+            "ascendant_sign": "Leo",
+            "houses": {
+                1: {"sign": "Leo", "lord": "Sun", "cusp_longitude": 149.5, "occupants": ["Mars"]}
+            }
+        }
+        for h in range(2, 13):
+            geom_a["houses"][h] = {"sign": ZODIAC_SIGNS[(4 + h - 1) % 12], "lord": "Sun", "cusp_longitude": (4 + h - 1) * 30.0 + 29.5, "occupants": []}
+
+        grahas_a = {p: {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0} for p in CLASSICAL_PLANETS}
+        grahas_a["Mars"] = {"sign": "Leo", "longitude": 147.0, "degree_0_to_30": 27.0}
+
+        eval_a = evaluate_planets_hol(geom_a, grahas_a, func_natures, influences)
+        sandhi_a = eval_a["Mars"]["bhava_sandhi"]
+
+        # Case B: Cusp at 10.0° Leo (lon 130.0°), Mars at 27.0° Leo (lon 147.0°) -> dist_to_cusp = 17.0° (> 5.0°)
+        geom_b = {
+            "ascendant_sign": "Leo",
+            "houses": {
+                1: {"sign": "Leo", "lord": "Sun", "cusp_longitude": 130.0, "occupants": ["Mars"]}
+            }
+        }
+        for h in range(2, 13):
+            geom_b["houses"][h] = {"sign": ZODIAC_SIGNS[(4 + h - 1) % 12], "lord": "Sun", "cusp_longitude": (4 + h - 1) * 30.0 + 10.0, "occupants": []}
+
+        grahas_b = {p: {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0} for p in CLASSICAL_PLANETS}
+        grahas_b["Mars"] = {"sign": "Leo", "longitude": 147.0, "degree_0_to_30": 27.0}
+
+        eval_b = evaluate_planets_hol(geom_b, grahas_b, func_natures, influences)
+        sandhi_b = eval_b["Mars"]["bhava_sandhi"]
+
+        # Raw penalty: 1.0 - (3.0 / 4.0) = 0.25
+        # In Case A: Cusp is at 29.5° Leo (border 0.5°), Mars is at 27.0° Leo (dist_to_cusp = 2.5° <= 5.0°,
+        # and sits between the cusp and sign center). Per Phaladīpikā 15.14 & 8.34-35, Mars is at the cusp door,
+        # fully inside the house, with zero sandhi penalty.
+        # In Case B: dist_to_cusp = 17.0°, relief = 1.0 -> penalty = 0.25
+        assert sandhi_b["penalty_ratio"] == pytest.approx(0.25, abs=0.001)
+        assert sandhi_a["penalty_ratio"] == 0.0
+        assert sandhi_a["in_sandhi_zone"] is False
+
+    def test_phaladeepika_15_30_parivartana_mutual_influence(self):
+        """
+        Verifies that two planets in mutual sign exchange (Parivartana / Mitho Yoga per Phaladīpikā 15.30)
+        receive a 50.0% mutual influence floor in planet_to_planet even with 0° physical Graha Dṛṣṭi.
+        """
+        geometry = {
+            "houses": {h: {"sign": ZODIAC_SIGNS[h - 1], "cusp_longitude": (h - 1) * 30.0 + 15.0, "occupants": []} for h in range(1, 13)}
+        }
+        # Sun in Aries (ruled by Mars, 10.0° lon), Mars in Leo (ruled by Sun, 130.0° lon)
+        # Angular distance = 120°. Neither casts physical aspect on the other (Sun trine aspect is 0 Virūpas).
+        d1_grahas = {
+            p: {"sign": "Pisces", "longitude": 345.0} for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Sun"] = {"sign": "Aries", "longitude": 10.0}
+        d1_grahas["Mars"] = {"sign": "Leo", "longitude": 130.0}
+
+        adv_aspects = {"planets": {}}
+        influences = calculate_cusp_and_planet_influences(geometry, d1_grahas, adv_aspects)
+        p2p = influences["planet_to_planet"]
+
+        assert p2p["Sun"]["Mars"] >= 50.0
+        assert p2p["Mars"]["Sun"] >= 50.0
+
+    def test_house_dna_code_and_karaka_proximity_schema(self):
+        """
+        Verifies summary_rankings["house_dna_code"] is a 12-part hyphen-separated string
+        and karaka_assessment exposes karaka_relative_houses and karaka_proximity.
+        """
+        from app import app
+        client = app.test_client()
+        res = client.get("/api/chart/9bb691ba-c4fd-40f1-83eb-289b4e275ac8")
+        assert res.status_code == 200
+        hol = res.get_json()["data"]["houses_of_life"]
+
+        summary = hol["summary_rankings"]
+        assert "house_dna_code" in summary
+        dna_code = summary["house_dna_code"]
+        assert isinstance(dna_code, str)
+        parts = dna_code.split("-")
+        assert len(parts) == 12
+        assert set(parts) == {str(h) for h in range(1, 13)}
+        assert parts == [str(h) for h in summary["houses_by_composite_score"]]
+
+        # Check Karaka assessment schema for all 12 houses
+        for h in range(1, 13):
+            k_ass = hol["houses"][str(h)]["components"]["karaka_assessment"]
+            assert "karaka_relative_houses" in k_ass
+            assert "karaka_proximity" in k_ass
+            assert isinstance(k_ass["karaka_relative_houses"], dict)
+            assert isinstance(k_ass["karaka_proximity"], dict)
+            for k in k_ass["karakas"]:
+                assert k in k_ass["karaka_relative_houses"]
+                assert 1 <= k_ass["karaka_relative_houses"][k] <= 12
+                assert k in k_ass["karaka_proximity"]
+                assert k_ass["karaka_proximity"][k] in [
+                    "Close / Nourishing", "Distant / Dusthāna", "Moderate / Upacaya"
+                ]
+
+
+class TestPillar1SixAdaptations:
+    """
+    Direct unit tests for the 6 architectural and mathematical adaptations in Pillar 1
+    (Basic House Condition / Cusp Rays) per Phaladīpikā Ch. 15 and Vic DiCara's Kala system.
+    """
+
+    def test_adaptation1_upacaya_no_friendly_fire_and_positive_dignity_scaling(self):
+        """
+        Adaptation 1:
+        1. When 1st Lord (benefic f_eff > 0) occupies H11/H3/H6, it retains full positive ray
+           and is NEVER slashed by 0.35x.
+        2. When a malefic (f_eff < 0) occupies H11/H3/H6, it scales positively with dignity:
+           Exalted (70.0) > Neutral (35.0) > Inimical (23.8) > Debilitated (7.0).
+        """
+        geometry = {
+            "houses": {
+                11: {"lord": "Mercury", "sign": "Gemini", "occupants": ["Sun", "Mars"]}
+            }
+        }
+        # Sun is 1st Lord (score = +3.0) -> f_eff = +3.0 + 0.25 (Mercury friendly) = +3.25 > 0
+        # Mars is malefic (score = -1.0) -> f_eff = -1.0 - 0.50 (Mercury enemy) = -1.50 < 0
+        func_natures = {
+            "Sun": {"score": 3.0, "classification": "Benefic"},
+            "Mars": {"score": -1.0, "classification": "Malefic"},
+        }
+        for p in CLASSICAL_PLANETS:
+            if p not in func_natures:
+                func_natures[p] = {"score": 0.0, "classification": "Neutral"}
+
+        d1_grahas = {
+            p: {"dignity": "Own Sign", "longitude": 75.0, "sign": "Gemini"} for p in CLASSICAL_PLANETS
+        }
+        influences = {
+            "planet_to_cusp": {
+                p: {11: 100.0 if p in ["Sun", "Mars"] else 0.0} for p in CLASSICAL_PLANETS
+            }
+        }
+
+        # Case A: Sun (1st Lord) in H11 must NOT be slashed by 0.35x
+        res_a = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        sun_contrib = res_a[11]["planet_contributions"]["Sun"]
+        # Sun: eff_i_val = 100, d_p = 0.8, f_eff = 3.25 -> scaled = 180.0, f_mult = 1.0 + 0.65*2.25 = 2.4625 -> ~443.25
+        assert sun_contrib > 300.0  # Full positive blessing, not slashed to ~60!
+
+        # Case B: Mars (malefic f_eff < 0) dignity scaling in Upacaya
+        # Exalted Mars (+1.0 dignity): pos_scaled = 100 * (1 + 1.0) = 200 -> 200 * 0.35 = 70.0
+        d1_grahas["Mars"]["dignity"] = "Exalted"
+        res_exalt = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        assert res_exalt[11]["planet_contributions"]["Mars"] == pytest.approx(70.0, abs=0.5)
+
+        # Neutral Mars (0.0 dignity): pos_scaled = 100 * 1.0 = 100 -> 100 * 0.35 = 35.0
+        d1_grahas["Mars"]["dignity"] = "Neutral Sign"
+        res_neutral = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        assert res_neutral[11]["planet_contributions"]["Mars"] == pytest.approx(35.0, abs=0.5)
+
+        # Debilitated Mars (-1.0 dignity): pos_scaled = 100 * (1 - 0.8) = 20 -> 20 * 0.35 = 7.0
+        d1_grahas["Mars"]["dignity"] = "Debilitated"
+        res_deb = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        assert res_deb[11]["planet_contributions"]["Mars"] == pytest.approx(7.0, abs=0.5)
+
+        # Strict ordering: Exalted > Neutral > Debilitated (dignity is never inverted)
+        assert (
+            res_exalt[11]["planet_contributions"]["Mars"]
+            > res_neutral[11]["planet_contributions"]["Mars"]
+            > res_deb[11]["planet_contributions"]["Mars"]
+        )
+
+    def test_adaptation2_no_double_counting_natural_temperament(self):
+        """
+        Adaptation 2:
+        Verifies that Yogakāraka Mars (+3.0 for Leo) and Yogakāraka Saturn (+2.0 for Taurus)
+        retain positive effective functional nature on house cusps, rather than having their
+        Yogakāraka status erased to 0.00 or flipped to negative malefic.
+        """
+        geometry = {
+            "houses": {
+                1: {"lord": "Sun", "sign": "Leo", "occupants": []},
+                7: {"lord": "Venus", "sign": "Taurus", "occupants": []}
+            }
+        }
+        # Leo Lagna: Mars owns 4 & 9 (Rāja Yogakāraka, score = +3.0)
+        func_natures = {
+            "Mars": {"score": 3.0, "classification": "Benefic"},
+            "Saturn": {"score": 2.0, "classification": "Benefic"}
+        }
+        for p in CLASSICAL_PLANETS:
+            if p not in func_natures:
+                func_natures[p] = {"score": 1.0, "classification": "Benefic"}
+
+        d1_grahas = {
+            p: {"dignity": "Own Sign", "longitude": 10.0, "sign": "Aries"} for p in CLASSICAL_PLANETS
+        }
+        influences = {
+            "planet_to_cusp": {
+                p: {1: 100.0 if p == "Mars" else 0.0, 7: 100.0 if p == "Saturn" else 0.0}
+                for p in CLASSICAL_PLANETS
+            }
+        }
+
+        res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        # Mars aspect on H1 (ruled by Sun, mutual friends -> friend_mod = +0.50):
+        # f_eff = +3.0 + 0.50 = +3.50 (strongly positive, NOT wiped to 0.00!)
+        mars_on_h1 = res[1]["planet_contributions"]["Mars"]
+        assert mars_on_h1 > 200.0
+
+        # Saturn aspect on H7 (ruled by Venus, mutual friends -> friend_mod = +0.50):
+        # f_eff = +2.0 + 0.50 = +2.50 (strongly positive, NOT flipped to malefic -0.40!)
+        saturn_on_h7 = res[7]["planet_contributions"]["Saturn"]
+        assert saturn_on_h7 > 200.0
+
+    def test_adaptation3_continuous_deadband_smooth_scaling(self):
+        """
+        Adaptation 3:
+        Verifies that near f_eff = 0, signed_impact transitions smoothly without cliff edges
+        or 107% sign inversions.
+        """
+        geometry = {
+            "houses": {1: {"lord": "Jupiter", "sign": "Pisces", "occupants": []}}
+        }
+        d1_grahas = {
+            p: {"dignity": "Own Sign", "longitude": 10.0, "sign": "Aries"} for p in CLASSICAL_PLANETS
+        }
+        influences = {
+            "planet_to_cusp": {p: {1: 100.0 if p == "Mercury" else 0.0} for p in CLASSICAL_PLANETS}
+        }
+
+        # Step through f_lagna near 0: from -0.20 to +0.20
+        # Mercury in Own Sign (d_p = +0.80), Jupiter to Mercury is Neutral (friend_mod = 0.0)
+        outputs = []
+        scores = [-0.20, -0.15, -0.10, -0.05, 0.0, 0.05, 0.10, 0.15, 0.20]
+        for sc in scores:
+            fn = {p: {"score": sc if p == "Mercury" else 1.0} for p in CLASSICAL_PLANETS}
+            res = evaluate_basic_house_conditions(geometry, fn, d1_grahas, influences)
+            outputs.append(res[1]["planet_contributions"]["Mercury"])
+
+        # Every successive step must be monotonically increasing with no sudden cliff jumps
+        for i in range(len(outputs) - 1):
+            assert outputs[i+1] > outputs[i]
+            # Max step jump should be smooth and reasonable (< 35 points per 0.05 change)
+            assert (outputs[i+1] - outputs[i]) < 35.0
+
+    def test_adaptation4_multi_varga_dignity_rescuing_positive_rays(self):
+        """
+        Adaptation 4:
+        Verifies that a planet with negative D1 dignity but positive composite dignity (rescued
+        by D9 / Vargottama) is not hit by the negative dignity penalty (arinīca-mūḍha).
+        """
+        geometry = {
+            "houses": {1: {"lord": "Mars", "sign": "Aries", "occupants": []}}
+        }
+        func_natures = {p: {"score": 2.0} for p in CLASSICAL_PLANETS}
+        # In D1, Jupiter is in Enemy's Sign (d_d1 = -0.40)
+        d1_grahas = {
+            p: {"dignity": "Enemy's Sign", "longitude": 10.0, "sign": "Aries"} for p in CLASSICAL_PLANETS
+        }
+        influences = {
+            "planet_to_cusp": {p: {1: 100.0 if p == "Jupiter" else 0.0} for p in CLASSICAL_PLANETS}
+        }
+
+        # Case A: Rescued in D9 to composite unit_score = +0.80 (Vargottama)
+        planets_eval_rescued = {
+            "Jupiter": {
+                "dignity": {"unit_score": 0.80},
+                "combustion": {"loss_ratio": 0.0},
+                "bhava_sandhi": {"penalty_ratio": 0.0}
+            }
+        }
+        res_rescued = evaluate_basic_house_conditions(
+            geometry, func_natures, d1_grahas, influences, planets_eval=planets_eval_rescued
+        )
+        jup_rescued = res_rescued[1]["planet_contributions"]["Jupiter"]
+
+        # Case B: Negative composite dignity unit_score = -0.40 (not rescued)
+        planets_eval_afflicted = {
+            "Jupiter": {
+                "dignity": {"unit_score": -0.40},
+                "combustion": {"loss_ratio": 0.0},
+                "bhava_sandhi": {"penalty_ratio": 0.0}
+            }
+        }
+        res_afflicted = evaluate_basic_house_conditions(
+            geometry, func_natures, d1_grahas, influences, planets_eval=planets_eval_afflicted
+        )
+        jup_afflicted = res_afflicted[1]["planet_contributions"]["Jupiter"]
+
+        # Rescued planet delivers much stronger ray than un-rescued planet
+        assert jup_rescued > jup_afflicted * 2.0
+        # Rescued planet is not penalized by condition_integrity
+        assert jup_rescued > 300.0
+
+    def test_adaptation5_late_early_cusp_sandhi_relief_trump_mars(self):
+        """
+        Adaptation 5:
+        Verifies Donald Trump's Mars geometry:
+        Ascendant cusp is at 29.97° Leo (0.03° from border).
+        Mars is at 26.78° Leo (3.19° from cusp, inside the house facing the door).
+        Mars must have 0.0 sandhi_penalty (relieved by cusp proximity per Phaladīpikā 15.14 & 8.34-35).
+        """
+        geometry = {
+            "ascendant_sign": "Leo",
+            "houses": {
+                1: {"sign": "Leo", "lord": "Sun", "cusp_longitude": 149.97, "occupants": ["Mars"]}
+            }
+        }
+        for h in range(2, 13):
+            geometry["houses"][h] = {
+                "sign": ZODIAC_SIGNS[(4 + h - 1) % 12],
+                "lord": "Sun",
+                "cusp_longitude": (4 + h - 1) * 30.0 + 29.97,
+                "occupants": []
+            }
+
+        d1_grahas = {
+            p: {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0} for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Mars"] = {"sign": "Leo", "longitude": 146.78, "degree_0_to_30": 26.78}
+        func_natures = {p: {"score": 1.0, "classification": "Benefic"} for p in CLASSICAL_PLANETS}
+        influences = {
+            "planet_to_planet": {p1: {p2: 0.0 for p2 in CLASSICAL_PLANETS} for p1 in CLASSICAL_PLANETS},
+            "adjusted_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+            "raw_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+        }
+
+        eval_res = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        mars_sandhi = eval_res["Mars"]["bhava_sandhi"]
+
+        assert mars_sandhi["in_sandhi_zone"] is False
+        assert mars_sandhi["penalty_ratio"] == 0.0
+        assert mars_sandhi["retention_multiplier"] == 1.0
+
+    def test_adaptation6_cusp_score_strict_monotonicity(self):
+        """
+        Adaptation 6:
+        Verifies that Pillar 1 normalization (total_signed / 3.0 followed by 120 * tanh)
+        is strictly monotonic:
+        Adding an additional benefic ray strictly INCREASES the house score,
+        and adding an additional malefic ray strictly DECREASES the house score.
+        """
+        geometry = {
+            "houses": {1: {"lord": "Mars", "sign": "Aries", "occupants": []}}
+        }
+        func_natures = {
+            "Jupiter": {"score": 2.0},
+            "Venus": {"score": 2.0},
+            "Sun": {"score": 2.0},
+            "Moon": {"score": 2.0},
+            "Saturn": {"score": -2.0},
+        }
+        for p in CLASSICAL_PLANETS:
+            if p not in func_natures:
+                func_natures[p] = {"score": 0.0}
+
+        d1_grahas = {
+            p: {"dignity": "Own Sign", "longitude": 10.0, "sign": "Aries"} for p in CLASSICAL_PLANETS
+        }
+
+        # Baseline: 3 strong benefic aspects
+        inf_baseline = {
+            "planet_to_cusp": {
+                "Jupiter": {1: 90.0},
+                "Venus": {1: 90.0},
+                "Sun": {1: 90.0},
+                "Moon": {1: 0.0},
+                "Saturn": {1: 0.0},
+                "Mars": {1: 0.0},
+                "Mercury": {1: 0.0},
+            }
+        }
+        res_baseline = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, inf_baseline)
+        score_baseline = res_baseline[1]["score"]
+
+        # Scenario 1: Add a 4th moderate benefic aspect (+20 ray from Moon)
+        inf_plus_benefic = {
+            "planet_to_cusp": {
+                **inf_baseline["planet_to_cusp"],
+                "Moon": {1: 45.0}  # Additional positive ray
+            }
+        }
+        res_benefic = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, inf_plus_benefic)
+        score_benefic = res_benefic[1]["score"]
+
+        # Strict monotonicity: adding a benefic aspect MUST strictly increase the house score!
+        assert score_benefic > score_baseline
+
+        # Scenario 2: Add a malefic aspect from Saturn
+        inf_plus_malefic = {
+            "planet_to_cusp": {
+                **inf_baseline["planet_to_cusp"],
+                "Saturn": {1: 45.0}  # Negative ray
+            }
+        }
+        res_malefic = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, inf_plus_malefic)
+        score_malefic = res_malefic[1]["score"]
+
+        # Strict monotonicity: adding a malefic aspect MUST strictly decrease the house score!
+        assert score_malefic < score_baseline
+
 
 
 

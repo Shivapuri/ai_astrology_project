@@ -24,7 +24,7 @@ from datetime import datetime
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_FILE = os.path.join(ROOT_DIR, "bundle_houses_of_life.txt")
-ARTIFACT_DIR = "/Users/hajnaljanos/.gemini/antigravity-cli/brain/f482521c-2352-46d5-8211-f3bc9bc5ec07"
+ARTIFACT_DIR = "/Users/hajnaljanos/.gemini/antigravity-cli/brain/3ad7be36-fa44-4b21-8b28-018fc3f5c4a3"
 
 AUDIT_FILES = [
     {
@@ -50,7 +50,7 @@ AUDIT_FILES = [
     {
         "path": "static/js/widgets/houses_of_life.js",
         "category": "5. FRONTEND DISPLAY & INTERACTION CONTROLLER",
-        "role": "Client-side JavaScript widget controller (872 lines). Manages widget lifecycle, dual-mode responsive layout (side-by-side split in wide cells vs tabbed in compact cells), diverging bar chart rendering with color interpolation, 12-House Matrix rendering, dynamic Audit Receipt with interactive 30° degree strip SVG, 7-Graha Ledger table, and Concordance view."
+        "role": "Client-side JavaScript widget controller. Manages widget lifecycle, dual-mode responsive layout (side-by-side split in wide cells vs tabbed in compact cells), diverging bar chart rendering with color interpolation, 12-House Matrix rendering, dynamic Audit Receipt with interactive 30° degree strip SVG, 7-Graha Ledger table, and Concordance view."
     },
     {
         "path": "templates/partials/context_menu.html",
@@ -70,7 +70,12 @@ AUDIT_FILES = [
     {
         "path": "tests/test_houses_of_life.py",
         "category": "8. AUTOMATED VERIFICATION TEST SUITE",
-        "role": "Pytest test suite containing 52 unit tests verifying all 10 phases, dignity fallbacks, combustion gating, Upacaya malefic conversion, Bhavāt Bhavam, Kartarī walls, Yogas, and Donald Trump real-chart regressions."
+        "role": "Pytest test suite containing 62 unit tests verifying all 10 phases, dignity fallbacks, combustion gating, Upacaya malefic conversion, Bhavāt Bhavam, Kartarī walls, Yogas, classical refinements, and Donald Trump real-chart regressions."
+    },
+    {
+        "path": "tests/test_houses_of_life_ui.py",
+        "category": "8. AUTOMATED VERIFICATION TEST SUITE",
+        "role": "Playwright end-to-end browser test suite verifying Houses of Life widget rendering, row selection, audit receipt drilldowns, tab switching, and Kala menu integration."
     },
     {
         "path": "houses_of_life_evaluation_donald_trump.txt",
@@ -278,11 +283,10 @@ def generate_bundle():
     buf.append("""{
   "summary_rankings": {
     "composite_mean_score": 32.10,
-    "top_flourishing_house": 1,
-    "most_challenged_house": 3,
-    "flourishing_count": 6,
-    "mixed_count": 6,
-    "depleted_count": 0
+    "house_dna_code": "1-9-4-11-6-5-2-10-12-8-7-3",
+    "houses_by_composite_score": [1, 9, 4, 11, 6, 5, 2, 10, 12, 8, 7, 3],
+    "top_flourishing_houses": [1, 9, 4],
+    "most_challenged_houses": [8, 7, 3]
   },
   "houses": {
     "1": {
@@ -318,8 +322,10 @@ def generate_bundle():
           "score": 55.20,
           "karakas": ["Sun"],
           "karaka_planet_scores": { "Sun": 55.20 },
-          "karaka_lagna_house": 1,
-          "karaka_lagna_score": 58.54
+          "karaka_lagna_house": { "Sun": 11 },
+          "karaka_lagna_score": 58.54,
+          "karaka_relative_houses": { "Sun": 11 },
+          "karaka_proximity": { "Sun": "Close / Nourishing" }
         },
         "chandra_lagna_assessment": {
           "moon_occupied_house": 5,
