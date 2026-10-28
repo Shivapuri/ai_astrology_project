@@ -112,10 +112,11 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
 3. **Cross-Border Attenuation:**
    * If a conjunction spans across a sign boundary, potency is halved ($\times 0.5$).
 4. **Multi-Planet Cusp Dominance ("Potency Stealing"):**
-   * Co-occupants of the same Whole Sign house share cusp alignment. The closer planet $P_{\text{near}}$ absorbs conjunction points from farther co-occupants $P_{\text{far}}$ when within $15^\circ$:
-     $$\Delta_{\text{steal}} = C_{\text{far}} \times \frac{C_{\text{near}}}{C_{\text{near}} + C_{\text{far}}} \times \left(1.0 - \frac{\Delta\theta_{P_1, P_2}}{15^\circ}\right)$$
+   * Co-occupants of the same Whole Sign house share cusp alignment. In multi-planet stelliums ($\ge 2$ co-occupants), planets are sorted descending by their initial cusp proximity ($C_{\text{raw}}$).
+   * Across all pairs, any closer co-occupant $P_{\text{near}}$ absorbs conjunction points from a farther co-occupant $P_{\text{far}}$ when $C_{\text{raw}, \text{near}} > C_{\text{raw}, \text{far}}$ and their separation is within $15^\circ$:
+     $$\Delta_{\text{steal}} = C_{\text{far}} \times \frac{C_{\text{near}}}{C_{\text{near}} + C_{\text{far}}} \times \left(1.0 - \frac{\Delta\theta_{P_{\text{near}}, P_{\text{far}}}}{15^\circ}\right)$$
      $$C_{\text{near, final}} = \min(125.0, C_{\text{near}} + \Delta_{\text{steal}}), \qquad C_{\text{far, final}} = \max(0.0, C_{\text{far}} - \Delta_{\text{steal}})$$
-   * Equidistant co-occupants retain their respective conjunctions without arbitrary asymmetric theft.
+   * Equidistant co-occupants retain their respective conjunctions without arbitrary asymmetric theft, and pairwise processing ensures order-independence across 3+ planet stelliums.
 5. **Mutual Sign Exchange Connection (*Mitho Yoga / Parivartana*, *Phaladīpikā* 15.30):**
    * Two planets in mutual reception / sign exchange act as connected (*yukta* / *bandha*), receiving a $50.0\%$ mutual influence floor in `planet_to_planet` ($\max(\text{AspectPct}, \text{ConjPct}, 50.0\%)$) even when separated by disparate signs without physical Graha Dṛṣṭi.
 
@@ -158,7 +159,10 @@ Scales any base impact $B \ge 0$ by dignity $d_P$ according to functional nature
    * A planet within $4.0^\circ$ of a sign border faces junction weakness: $\text{RawSandhiPen} = \max(0.0, 1.0 - \frac{\Delta\lambda_{\text{border}}}{4.0^\circ})$.
    * Per *Phaladīpikā* 15.14 (*bhāveṣu bhāvasphuṭatulyabhāgas tadbhāvajaṃ pūrṇaphalaṃ vidhatte*) and 8.34–35:
      * If the sensitive house cusp itself is near the border ($< 4.0^\circ$) and the planet is inside the house between the cusp and sign center ($\Delta\lambda_{\text{border}} \ge \Delta\lambda_{\text{cusp, border}}$), or if the planet is tightly conjunct the cusp ($\Delta\lambda_{\text{cusp}} \le 5.0^\circ$), the planet is situated directly at the cusp door inside the house and is completely relieved of sandhi penalty ($\text{CuspRelief} = 0.0, \text{SandhiPenalty} = 0.0$).
-     * Otherwise, for planets drifting near the junction far from the cusp door ($> 5.0^\circ$), full sandhi penalty applies ($\text{CuspRelief} = 1.0$).
+     * For distances $5.0^\circ < \Delta\lambda_{\text{cusp}} < 10.0^\circ$, relief scales smoothly via linear interpolation:
+       $$\text{CuspRelief} = \frac{\Delta\lambda_{\text{cusp}} - 5.0^\circ}{5.0^\circ}$$
+     * If $\Delta\lambda_{\text{cusp}} \ge 10.0^\circ$, full sandhi penalty applies ($\text{CuspRelief} = 1.0$).
+     * Final penalty: $\text{SandhiPenalty} = \text{RawSandhiPen} \times \text{CuspRelief}$.
 7. **Combustion & Solar Gain:** Proximity to Sun within combustion orb.
 8. **Sign-Safe Synthesis:** Produces `final_assessment_score`.
 
@@ -171,17 +175,22 @@ For each house $H \in \{1, \dots, 12\}$:
    * All continuous aspects contribute directly and proportionally without artificial step cutoffs.
 2. Dignity $d_P$ and Effective Functional Nature $F_{P, H}$:
    * **House Lord:** $F_{\text{eff}} = 2.0$.
-   * **Non-Lord Planets:** Bidirectional Natural Friendship (*Naisargika Sambandha*, $P \to \text{Lord}$ and $\text{Lord} \to P$) per *Phaladīpikā* 15.5 & 15.7 (*bhāvanātha-suhṛdo bhāvasya siddhipradāḥ*) measures eternal archetypal affinity with the house owner, modifying the baseline functional blend:
-     * If both are Friends: $\text{FriendMod} = +0.50$
-     * If either considers the other an Enemy: $\text{FriendMod} = -0.50$
-     * If one is Friend and the other Neutral: $\text{FriendMod} = +0.25$
-     * Otherwise: $\text{FriendMod} = 0.0$
-     $$F_{\text{eff}} = F_{\text{lagna}} + \text{FriendMod}$$
-     *(Eliminates double-counting of inherent temperament in $F_{\text{lagna}}$, which already incorporates inherent temperament and Rāja Yogakāraka status).*
-3. **Continuous Scaling Across Functional Spectrum:**
-   * If $F_{\text{eff}} \ge 0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, 1.0) \times (1.0 + 0.65(F_{\text{eff}} - 1.0))$
-   * If $F_{\text{eff}} \le -0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, -1.0) \times -(1.0 + 0.65(|F_{\text{eff}}| - 1.0))$
-   * If $-0.25 < F_{\text{eff}} < 0.25$: continuous linear blend anchored at neutral $I \times d_P$.
+   * **Non-Lord Planets:**
+     * **Exaltation / Mūlatrikoṇa / Domicile Sign Override:** If the target house sign $H$ is planet $P$'s Exaltation, Mūlatrikoṇa root, or regular Domicile sign (e.g., Moon on Taurus $H=10$ for Leo Lagna), the planet intrinsically harmonizes with and enriches the sign itself, setting $\text{FriendMod} = +0.50$ regardless of interpersonal friction with the house lord.
+     * **Natural Friendship Matrix (*Naisargika Sambandha*, *Phaladīpikā* 15.5 & 15.7):** For other signs, bidirectional relationship ($P \to \text{Lord}$ and $\text{Lord} \to P$) modifies the baseline:
+       * If both are Friends: $\text{FriendMod} = +0.50$
+       * If either considers the other an Enemy: $\text{FriendMod} = -0.50$
+       * If one is Friend and the other Neutral: $\text{FriendMod} = +0.25$
+       * Otherwise: $\text{FriendMod} = 0.0$
+     * **Effective Functional Formula:**
+       $$F_{\text{eff}} = F_{\text{lagna}} + 0.50 \times \text{InherentScore} + 0.35 \times \text{FriendMod}$$
+       *(Preserves Rāja Yogakāraka status and natural benefic cushions while factoring archetypal relationship with the house lord).*
+3. **Continuous Signed Ray Impact Synthesis (`_compute_signed_ray_impact`):**
+   * Eliminates deadband cliffs and sign inversions across the functional transition $[-0.25, +0.25]$:
+     * If $F_{\text{eff}} \ge 0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, 1.0) \times (1.0 + \text{slope} \times (F_{\text{eff}} - 1.0))$
+     * If $F_{\text{eff}} \le -0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, -1.0) \times -(1.0 + \text{slope} \times (|F_{\text{eff}}| - 1.0))$
+     * If $-0.25 < F_{\text{eff}} < 0.25$: continuous linear blend anchored at neutral $I \times d_P$.
+   * Utilized consistently in Phase 5 ($\text{slope} = 0.20$ for planet-to-planet aspects) and Phase 6 ($\text{slope} = 0.65$ for cusp rays).
 4. **Upacaya (3, 6, 11) Malefic Occupant Rule (*Phaladīpikā* 15.18):**
    * Triggered **strictly when functioning as a malefic ($F_{\text{eff}} < 0$)**. Benefic 1st House Lords and Rāja Yogakārakas are never slashed by friendly fire.
    * Scaled **positively** by dignity (exalted gives strong resilience; debilitated gives weak resilience):

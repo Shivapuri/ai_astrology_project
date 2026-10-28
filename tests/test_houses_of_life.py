@@ -384,9 +384,9 @@ class TestHousesOfLifeMathematicalAuditFixes:
 
         res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
         # Mercury contribution should be strictly negative
-        # Bidirectional friendship: Mars hates Mercury -> friend_mod = -0.50, f_eff = -0.50
-        # Scaled under negative F and negative dignity: 50 * (1 + 0.4) * -0.675 = -47.25
-        assert res[1]["planet_contributions"]["Mercury"] == -47.25
+        # Bidirectional friendship: Mars hates Mercury -> friend_mod = -0.50, f_eff = 0 + 0 + 0.35*(-0.50) = -0.175
+        # Scaled under smooth [-0.25, +0.25] transition: strictly negative (-31.11)
+        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=0.5) == -31.11
 
     def test_bhavat_bhavam_neutral_planet_dignity_fallback(self):
         # When evaluating relative houses, a planet with raw relative score 0
@@ -458,8 +458,8 @@ class TestHousesOfLifeMathematicalAuditFixes:
             "planet_to_cusp": {p: {1: 100.0 if p == "Mercury" else 0.0} for p in CLASSICAL_PLANETS}
         }
         res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
-        # 100 * (1 + 0.4) * -0.675 = -94.5 under bidirectional friendship enmity (Mars hates Mercury)
-        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=1e-2) == -94.50
+        # f_eff = 0 + 0 + 0.35*(-0.50) = -0.175. Scaled under smooth transition: strictly negative (-62.22)
+        assert pytest.approx(res[1]["planet_contributions"]["Mercury"], abs=0.5) == -62.22
 
     def test_phase7_neutral_planet_dignity_fallback(self):
         """Ensures a relative neutral planet (raw F=0) uses its dignity as its relative functional nature without double-scaling."""
@@ -638,9 +638,10 @@ class TestHousesOfLifeStep10Verification:
         assert h1["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h1["synthesis"]["composite_score"] >= 25.0
 
-        # House 10 is in Miśra tier due to Venus exiled in Dusthāna H12, but buffered by Jupiter's aspect
-        assert h10["synthesis"]["classical_tier"] == "Miśra"
-        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 23.55
+        # House 10 is in Puṣṭa tier (flourishing career / executive authority, buffered by Jupiter, Mars, and Moon)
+        assert h10["synthesis"]["classical_tier"] == "Puṣṭa"
+        assert h10["synthesis"]["composite_score"] >= 25.0
+        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 29.94
 
         assert h11["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h11["synthesis"]["composite_score"] >= 25.0
@@ -1248,9 +1249,9 @@ class TestHousesOfLifeFiveLogicFixes:
         )
         jup_contrib = res[1]["planet_contributions"]["Jupiter"]
         # With d_p = 1.0 (rescued by D9/multi-varga), scaled_i = 100 * (1 + 1.0) = 200,
-        # f_eff = 2.0 + 0.5 (friendship to Mars) = 2.5 -> mult = 1.975 -> 395.0.
+        # f_eff = 2.0 + 0.35 * 0.5 (friendship to Mars) = 2.175 -> mult = 1.76375 -> 352.75.
         # Since composite dignity d_p >= 0, it is not penalized by the negative dignity cliff.
-        assert pytest.approx(jup_contrib, abs=1.0) == 395.0
+        assert pytest.approx(jup_contrib, abs=1.0) == 352.75
 
     def test_bug4_chandra_lagna_active_in_composite_score(self):
         """
@@ -1814,6 +1815,158 @@ class TestPillar1SixAdaptations:
 
         # Strict monotonicity: adding a malefic aspect MUST strictly decrease the house score!
         assert score_malefic < score_baseline
+
+    def test_bug_a_phase5_slightly_negative_functional_score_is_negative(self):
+        """
+        Bug A Fix: In evaluate_planets_hol(), when a planet Q has a slightly negative
+        functional score in (-0.15, 0.0) such as f_q = -0.10 with bad dignity (d_q = -1.0),
+        its ray onto planet P must be strictly negative, NOT flipped to a +200% positive ray.
+        """
+        geometry = {
+            "houses": {h: {"sign": ZODIAC_SIGNS[h - 1], "lord": "Sun", "cusp_longitude": (h - 1) * 30.0 + 15.0, "occupants": []} for h in range(1, 13)}
+        }
+        d1_grahas = {
+            p: {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0} for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Saturn"]["dignity"] = "Debilitated"  # d_q = -1.0
+
+        func_natures = {p: {"score": 1.0, "classification": "Benefic"} for p in CLASSICAL_PLANETS}
+        func_natures["Saturn"] = {"score": -0.10, "classification": "Malefic"}
+
+        influences = {
+            "planet_to_planet": {p1: {p2: 0.0 for p2 in CLASSICAL_PLANETS} for p1 in CLASSICAL_PLANETS},
+            "adjusted_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+            "raw_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+        }
+        influences["planet_to_planet"]["Saturn"]["Sun"] = 50.0
+
+        evals = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        incoming = evals["Sun"]["combined_influences"]["incoming_breakdown"]
+        assert "Saturn" in incoming
+        # Must be strictly negative, NOT flipped positive!
+        assert incoming["Saturn"] < 0.0
+
+    def test_bug_b_exalted_root_sign_positive_ray_trump_full_moon(self):
+        """
+        Bug B Fix: A Full Moon or natural benefic aspecting its own Exaltation or Mūlatrikoṇa
+        sign (like Moon on Taurus H10 for Leo Lagna) must deliver a positive ray, rather than
+        being turned into an enemy malefic.
+        """
+        geometry = {
+            "houses": {
+                10: {"lord": "Venus", "sign": "Taurus", "cusp_longitude": 54.4, "occupants": []}
+            }
+        }
+        # Trump's Moon: Leo Lagna, Full Moon inherent = +1.0, rules H12 Cancer (-1.0) -> lagna_f = 0.0
+        func_natures = {
+            "Moon": {
+                "score": 0.0,
+                "classification": "Neutral",
+                "rule_breakdown": {"inherent_score": 1.0, "trine_score": 0.0, "dusthana_score": -1.0}
+            }
+        }
+        for p in CLASSICAL_PLANETS:
+            if p not in func_natures:
+                func_natures[p] = {"score": 1.0, "rule_breakdown": {"inherent_score": 1.0}}
+
+        d1_grahas = {
+            p: {"dignity": "Friend's Sign", "longitude": 10.0, "sign": "Aries"} for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Moon"] = {"dignity": "Friend's Sign", "longitude": 261.2, "sign": "Sagittarius"}
+
+        influences = {
+            "planet_to_cusp": {p: {10: 0.0} for p in CLASSICAL_PLANETS}
+        }
+        influences["planet_to_cusp"]["Moon"][10] = 29.2  # Trump's exact aspect onto H10 cusp
+
+        res = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
+        moon_contrib = res[10]["planet_contributions"]["Moon"]
+        # Must be positive (Full Moon aspecting its own Exaltation/Mūlatrikoṇa sign Taurus)
+        assert moon_contrib > 0.0
+
+    def test_bug_c_three_planet_stellium_pairwise_cusp_dominance(self):
+        """
+        Bug C Fix: In a 3-planet stellium where Planet 1 is at 28°, Planet 2 is at 10°,
+        and Planet 3 is at 9° near a 29° cusp:
+        Planet 2 must steal from Planet 3 because they are 1° apart, even though
+        Planet 1 is > 15° away from both of them.
+        """
+        geometry = {
+            "houses": {
+                1: {"sign": "Aries", "cusp_longitude": 29.0, "occupants": ["Mars", "Jupiter", "Venus"]}
+            }
+        }
+        # Mars at 28°, Jupiter at 10°, Venus at 9°
+        d1_grahas = {
+            p: {"sign": "Pisces", "longitude": 345.0} for p in CLASSICAL_PLANETS
+        }
+        d1_grahas["Mars"] = {"sign": "Aries", "longitude": 28.0}
+        d1_grahas["Jupiter"] = {"sign": "Aries", "longitude": 10.0}
+        d1_grahas["Venus"] = {"sign": "Aries", "longitude": 9.0}
+
+        adv_aspects = {"planets": {}}
+        influences = calculate_cusp_and_planet_influences(geometry, d1_grahas, adv_aspects)
+        adj_conj = influences["adjusted_conjunctions"]
+
+        # Jupiter (10°) and Venus (9°) are 1° apart (< 15°).
+        # Jupiter is closer to cusp (dist 19°) than Venus (dist 20°).
+        # Therefore, Jupiter must steal from Venus:
+        assert adj_conj["Jupiter"][1] > influences["raw_conjunctions"]["Jupiter"][1]
+        assert adj_conj["Venus"][1] < influences["raw_conjunctions"]["Venus"][1]
+
+    def test_minor_d_smooth_sandhi_relief_boundary(self):
+        """
+        Minor Item D: Verifies that cusp_relief smoothly ramps between 5° and 10°
+        without any step discontinuity at 5.01°.
+        """
+        geometry = {
+            "ascendant_sign": "Leo",
+            "houses": {
+                1: {"sign": "Leo", "lord": "Sun", "cusp_longitude": 140.0, "occupants": ["Mars"]}
+            }
+        }
+        for h in range(2, 13):
+            geometry["houses"][h] = {
+                "sign": ZODIAC_SIGNS[(4 + h - 1) % 12], "lord": "Sun",
+                "cusp_longitude": (4 + h - 1) * 30.0 + 20.0, "occupants": []
+            }
+
+        func_natures = {p: {"score": 1.0, "classification": "Benefic"} for p in CLASSICAL_PLANETS}
+        influences = {
+            "planet_to_planet": {p1: {p2: 0.0 for p2 in CLASSICAL_PLANETS} for p1 in CLASSICAL_PLANETS},
+            "adjusted_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+            "raw_conjunctions": {p: {h: 0.0 for h in range(1, 13)} for p in CLASSICAL_PLANETS},
+        }
+
+        # Mars at 27.0° (dist_border = 3.0° -> raw_sandhi_pen = 0.25).
+        # Test cusp distances: 4.9° (relief 0.0), 5.1° (relief ~0.02), 7.5° (relief 0.50), 10.1° (relief 1.0)
+        # At 4.9° (cusp_lon = 147.0 - 4.9 = 142.1)
+        geometry["houses"][1]["cusp_longitude"] = 142.1
+        d1_grahas = {p: {"sign": "Aries", "longitude": 10.0, "degree_0_to_30": 10.0} for p in CLASSICAL_PLANETS}
+        d1_grahas["Mars"] = {"sign": "Leo", "longitude": 147.0, "degree_0_to_30": 27.0}
+        eval_4_9 = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        pen_4_9 = eval_4_9["Mars"]["bhava_sandhi"]["penalty_ratio"]
+
+        # At 5.1° (cusp_lon = 147.0 - 5.1 = 141.9)
+        geometry["houses"][1]["cusp_longitude"] = 141.9
+        eval_5_1 = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        pen_5_1 = eval_5_1["Mars"]["bhava_sandhi"]["penalty_ratio"]
+
+        # At 7.5° (cusp_lon = 147.0 - 7.5 = 139.5)
+        geometry["houses"][1]["cusp_longitude"] = 139.5
+        eval_7_5 = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        pen_7_5 = eval_7_5["Mars"]["bhava_sandhi"]["penalty_ratio"]
+
+        # At 10.5° (cusp_lon = 147.0 - 10.5 = 136.5)
+        geometry["houses"][1]["cusp_longitude"] = 136.5
+        eval_10_5 = evaluate_planets_hol(geometry, d1_grahas, func_natures, influences)
+        pen_10_5 = eval_10_5["Mars"]["bhava_sandhi"]["penalty_ratio"]
+
+        # Penalty must be 0.0 at 4.9°, tiny (~0.005) at 5.1°, half (~0.125) at 7.5°, and full (0.25) at 10.5°
+        assert pen_4_9 == 0.0
+        assert 0.0 < pen_5_1 < 0.02
+        assert pytest.approx(pen_7_5, abs=0.01) == 0.125
+        assert pytest.approx(pen_10_5, abs=0.001) == 0.25
 
 
 

@@ -17,6 +17,7 @@ from jyotish.baseline import (
     SIGN_LORDS,
     COMBUSTION_ORBS,
     COMBUSTION_ORBS_RETROGRADE,
+    EXALTATION_SIGNS,
 )
 from jyotish.relationships.relationships import get_natural_relationship
 
@@ -400,6 +401,40 @@ def scale_by_dignity(base_val: float, dignity_unit: float, functional_score: flo
             return b * (1.0 - d / 2.0)
 
 
+def _compute_signed_ray_impact(
+    base_val: float,
+    dignity_unit: float,
+    functional_score: float,
+    slope: float = 0.65
+) -> float:
+    """
+    Computes smooth continuous signed ray impact across the functional spectrum,
+    eliminating cliff edges and deadband sign inversions across [-0.25, +0.25].
+    """
+    b = abs(base_val)
+    d = max(-1.0, min(1.0, float(dignity_unit)))
+    f = float(functional_score)
+
+    if f >= 0.25:
+        scaled_pos = scale_by_dignity(b, d, 1.0)
+        f_mult = 1.0 + slope * (f - 1.0)
+        return scaled_pos * f_mult
+    elif f <= -0.25:
+        scaled_neg = scale_by_dignity(b, d, -1.0)
+        f_mult = -(1.0 + slope * (abs(f) - 1.0))
+        return scaled_neg * f_mult
+    else:
+        signed_zero = b * d
+        if f >= 0.0:
+            w = f / 0.25
+            val_pos = scale_by_dignity(b, d, 1.0) * (1.0 + slope * (0.25 - 1.0))
+            return (1.0 - w) * signed_zero + w * val_pos
+        else:
+            w = -f / 0.25
+            val_neg = scale_by_dignity(b, d, -1.0) * -(1.0 + slope * (0.25 - 1.0))
+            return (1.0 - w) * signed_zero + w * val_neg
+
+
 def calculate_cusp_and_planet_influences(
     geometry: Dict[str, Any],
     d1_grahas: Dict[str, Any],
@@ -471,33 +506,35 @@ def calculate_cusp_and_planet_influences(
             raw_conjunctions[p][h] = raw_c
             occ_raw[p] = raw_c
 
-        # Multi-planet cusp dominance stealing within the sign (order-independent)
+        # Multi-planet cusp dominance stealing within the sign (order-independent pairwise stealing)
         if len(occupants) == 1:
             p_solo = occupants[0]
             adjusted_conjunctions[p_solo][h] = occ_raw[p_solo]
         elif len(occupants) >= 2:
             sorted_occ = sorted(occupants, key=lambda p: occ_raw[p], reverse=True)
-            lead_p = sorted_occ[0]
-            c_lead_orig = occ_raw[lead_p]
-            total_stolen = 0.0
+            cur_conjunctions = {p: occ_raw[p] for p in sorted_occ}
 
-            for far_p in sorted_occ[1:]:
-                c_far = occ_raw[far_p]
-                # Distance-gated stealing: only steal when co-occupants are within 15 deg of each other
-                # and lead_p is strictly closer to the cusp than far_p (avoid arbitrary equidistant theft)
-                dist_between = _shortest_distance(
-                    float(d1_grahas[lead_p]["longitude"]),
-                    float(d1_grahas[far_p]["longitude"])
-                )
-                if (c_lead_orig + c_far) > 0 and dist_between < 15.0 and c_lead_orig > c_far:
-                    orb_factor = 1.0 - (dist_between / 15.0)
-                    steal = c_far * (c_lead_orig / (c_lead_orig + c_far)) * orb_factor
-                else:
-                    steal = 0.0
-                adjusted_conjunctions[far_p][h] = max(0.0, c_far - steal)
-                total_stolen += steal
+            for i in range(len(sorted_occ)):
+                near_p = sorted_occ[i]
+                near_lon = float(d1_grahas[near_p]["longitude"])
+                for j in range(i + 1, len(sorted_occ)):
+                    far_p = sorted_occ[j]
+                    far_lon = float(d1_grahas[far_p]["longitude"])
+                    dist_between = _shortest_distance(near_lon, far_lon)
+                    c_near = cur_conjunctions[near_p]
+                    c_far = cur_conjunctions[far_p]
 
-            adjusted_conjunctions[lead_p][h] = min(125.0, c_lead_orig + total_stolen)
+                    if dist_between < 15.0 and occ_raw[near_p] > occ_raw[far_p] and (c_near + c_far) > 0:
+                        orb_factor = 1.0 - (dist_between / 15.0)
+                        steal = c_far * (c_near / (c_near + c_far)) * orb_factor
+                        steal = min(steal, cur_conjunctions[far_p])
+                        avail_cap = max(0.0, 125.0 - cur_conjunctions[near_p])
+                        steal = min(steal, avail_cap)
+                        cur_conjunctions[far_p] = max(0.0, cur_conjunctions[far_p] - steal)
+                        cur_conjunctions[near_p] = min(125.0, cur_conjunctions[near_p] + steal)
+
+            for p in occupants:
+                adjusted_conjunctions[p][h] = cur_conjunctions[p]
 
         # Non-occupants: cross-border conjunction (if within 30 deg) and Graha Drishti aspect
         for p in CLASSICAL_PLANETS:
@@ -615,14 +652,8 @@ def evaluate_planets_hol(
             d_q = _get_composite_dignity_unit(q, chart_dict, d1_grahas)
             f_q = func_natures[q]["score"]
 
-            scaled_mag = scale_by_dignity(i_val, d_q, f_q)
-            if abs(f_q) > 0.15:
-                if f_q > 0:
-                    signed_impact = scaled_mag * (1.0 + 0.20 * (f_q - 1))
-                else:
-                    signed_impact = -scaled_mag * (1.0 + 0.20 * (abs(f_q) - 1))
-            else:
-                signed_impact = scaled_mag
+            # Smooth continuous signed ray impact across functional spectrum (slope=0.20 for planet-to-planet)
+            signed_impact = _compute_signed_ray_impact(i_val, d_q, f_q, slope=0.20)
 
             # Attenuate same-house Dusthāna conjunction boosts by 0.50x if planet is in Enemy/Debility with negative Digbala
             q_sign = d1_grahas[q]["sign"]
@@ -731,6 +762,8 @@ def evaluate_planets_hol(
             # the cusp (dist_to_cusp <= 5.0), the planet is at the cusp door, not drifting into the junction.
             if (cusp_dist_border < 4.0 and dist_border >= cusp_dist_border) or dist_to_cusp <= 5.0:
                 cusp_relief = 0.0
+            elif dist_to_cusp < 10.0:
+                cusp_relief = (dist_to_cusp - 5.0) / 5.0
             else:
                 cusp_relief = 1.0
 
@@ -854,14 +887,28 @@ def evaluate_basic_house_conditions(
                 dignity_status = _get_dignity_status(d1_grahas[p])
                 d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
 
-            # House Lord vs Non-Lord on House Cusp (Phaladīpikā 15.1–15.5)
+            # House Lord vs Non-Lord on House Cusp (Phaladīpikā 15.1–15.5, 15.7)
             if p == lord:
                 f_eff = 2.0
             else:
                 lagna_f = float(func_natures[p]["score"])
+                inh_score = float(func_natures[p].get("rule_breakdown", {}).get("inherent_score", 0.0))
+                h_sign = h_data.get("sign")
+
+                # Check if target house sign is planet P's Exaltation or Mūlatrikoṇa / Domicile sign
+                is_exalt_or_root = (
+                    h_sign == DICARA_MOOLATRIKONA_SIGNS.get(p)
+                    or h_sign == EXALTATION_SIGNS.get(p)
+                    or SIGN_LORDS.get(h_sign) == p
+                )
+
                 rel_p_to_l = get_natural_relationship(p, lord)
                 rel_l_to_p = get_natural_relationship(lord, p)
-                if rel_p_to_l == "Friend" and rel_l_to_p == "Friend":
+                if is_exalt_or_root:
+                    # If target sign is planet's own exaltation or root sign (e.g. Moon on Taurus),
+                    # it loves that sign and never receives negative friendship
+                    friend_mod = 0.50
+                elif rel_p_to_l == "Friend" and rel_l_to_p == "Friend":
                     friend_mod = 0.50
                 elif "Enemy" in (rel_p_to_l, rel_l_to_p):
                     friend_mod = -0.50
@@ -870,32 +917,13 @@ def evaluate_basic_house_conditions(
                 else:
                     friend_mod = 0.0
 
-                # Eliminates double-counting of inherent temperament in lagna_f (which already
-                # includes inherent score and Raja Yogakaraka bonus) per Phaladīpikā 15.1 & 15.7
-                f_eff = lagna_f + friend_mod
+                # Eliminates double-counting while preserving Yogakāraka status and natural benefic cushions (15.1, 15.7):
+                f_eff = lagna_f + 0.50 * inh_score + 0.35 * friend_mod
 
             eff_i_val = i_val
 
             # Continuous scaling across functional spectrum (eliminates 0.15 deadband cliff)
-            if f_eff >= 0.25:
-                scaled_pos = scale_by_dignity(eff_i_val, d_p, 1.0)
-                f_mult = 1.0 + 0.65 * (f_eff - 1.0)
-                signed_impact = scaled_pos * f_mult
-            elif f_eff <= -0.25:
-                scaled_neg = scale_by_dignity(eff_i_val, d_p, -1.0)
-                f_mult = -(1.0 + 0.65 * (abs(f_eff) - 1.0))
-                signed_impact = scaled_neg * f_mult
-            else:
-                # Continuous linear blend across [-0.25, +0.25] centered at neutral b * d_p
-                signed_zero = eff_i_val * d_p
-                if f_eff >= 0.0:
-                    w = f_eff / 0.25
-                    val_pos = scale_by_dignity(eff_i_val, d_p, 1.0) * (1.0 + 0.65 * (0.25 - 1.0))
-                    signed_impact = (1.0 - w) * signed_zero + w * val_pos
-                else:
-                    w = -f_eff / 0.25
-                    val_neg = scale_by_dignity(eff_i_val, d_p, -1.0) * -(1.0 + 0.65 * (0.25 - 1.0))
-                    signed_impact = (1.0 - w) * signed_zero + w * val_neg
+            signed_impact = _compute_signed_ray_impact(eff_i_val, d_p, f_eff, slope=0.65)
 
             # Upacaya (3, 6, 11) Malefic Occupant Rule (Phaladīpikā 15.18 & Ch. 4):
             # Only converts when the planet is functioning as a malefic (f_eff < 0).
