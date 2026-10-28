@@ -638,10 +638,10 @@ class TestHousesOfLifeStep10Verification:
         assert h1["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h1["synthesis"]["composite_score"] >= 25.0
 
-        # House 10 is in Puṣṭa tier (flourishing career / executive authority, buffered by Jupiter, Mars, and Moon)
-        assert h10["synthesis"]["classical_tier"] == "Puṣṭa"
-        assert h10["synthesis"]["composite_score"] >= 25.0
-        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 29.94
+        # House 10 is in Miśra tier under calibrated engine (17.60, buffered by dispositor loop)
+        assert h10["synthesis"]["classical_tier"] == "Miśra"
+        assert h10["synthesis"]["composite_score"] < 25.0
+        assert pytest.approx(h10["synthesis"]["composite_score"], abs=0.5) == 17.60
 
         assert h11["synthesis"]["classical_tier"] == "Puṣṭa"
         assert h11["synthesis"]["composite_score"] >= 25.0
@@ -1249,9 +1249,9 @@ class TestHousesOfLifeFiveLogicFixes:
         )
         jup_contrib = res[1]["planet_contributions"]["Jupiter"]
         # With d_p = 1.0 (rescued by D9/multi-varga), scaled_i = 100 * (1 + 1.0) = 200,
-        # f_eff = 2.0 + 0.35 * 0.5 (friendship to Mars) = 2.175 -> mult = 1.76375 -> 352.75.
+        # With calibrated f_eff = 0.50 * 2.0 + 0.35 * 0.5 (friendship to Mars) = 1.175 -> mult = 1.11375 -> 222.75.
         # Since composite dignity d_p >= 0, it is not penalized by the negative dignity cliff.
-        assert pytest.approx(jup_contrib, abs=1.0) == 352.75
+        assert pytest.approx(jup_contrib, abs=1.0) == 222.75
 
     def test_bug4_chandra_lagna_active_in_composite_score(self):
         """
@@ -1560,8 +1560,9 @@ class TestPillar1SixAdaptations:
         # Case A: Sun (1st Lord) in H11 must NOT be slashed by 0.35x
         res_a = evaluate_basic_house_conditions(geometry, func_natures, d1_grahas, influences)
         sun_contrib = res_a[11]["planet_contributions"]["Sun"]
-        # Sun: eff_i_val = 100, d_p = 0.8, f_eff = 3.25 -> scaled = 180.0, f_mult = 1.0 + 0.65*2.25 = 2.4625 -> ~443.25
-        assert sun_contrib > 300.0  # Full positive blessing, not slashed to ~60!
+        # Sun: eff_i_val = 100, d_p = 0.8, f_eff = 0.50 * 3.0 + 0.35 * 0.25 = 1.5875 -> scaled = 180.0, f_mult = 1.0 + 0.65*0.5875 = 1.381875 -> 248.74
+        assert sun_contrib > 200.0  # Full positive blessing, not slashed to ~60!
+        assert pytest.approx(sun_contrib, abs=1.0) == 248.74
 
         # Case B: Mars (malefic f_eff < 0) dignity scaling in Upacaya
         # Exalted Mars (+1.0 dignity): pos_scaled = 100 * (1 + 1.0) = 200 -> 200 * 0.35 = 70.0
@@ -1707,7 +1708,8 @@ class TestPillar1SixAdaptations:
         # Rescued planet delivers much stronger ray than un-rescued planet
         assert jup_rescued > jup_afflicted * 2.0
         # Rescued planet is not penalized by condition_integrity
-        assert jup_rescued > 300.0
+        assert jup_rescued > 180.0
+        assert pytest.approx(jup_rescued, abs=1.0) == 200.47
 
     def test_adaptation5_late_early_cusp_sandhi_relief_trump_mars(self):
         """

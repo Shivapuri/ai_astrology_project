@@ -176,15 +176,15 @@ For each house $H \in \{1, \dots, 12\}$:
 2. Dignity $d_P$ and Effective Functional Nature $F_{P, H}$:
    * **House Lord:** $F_{\text{eff}} = 2.0$.
    * **Non-Lord Planets:**
-     * **Exaltation / Mūlatrikoṇa / Domicile Sign Override:** If the target house sign $H$ is planet $P$'s Exaltation, Mūlatrikoṇa root, or regular Domicile sign (e.g., Moon on Taurus $H=10$ for Leo Lagna), the planet intrinsically harmonizes with and enriches the sign itself, setting $\text{FriendMod} = +0.50$ regardless of interpersonal friction with the house lord.
+     * **Exaltation / Mūlatrikoṇa / Domicile Sign Override:** If the target house sign $H$ is planet $P$'s Exaltation, Mūlatrikoṇa root, or regular Domicile sign (e.g., Moon on Taurus $H=10$ for Leo Lagna), and the planet is non-malefic ($\text{InherentScore} \ge 0.0$ or $F_{\text{lagna}} \ge 0.0$), the planet intrinsically harmonizes with and enriches the sign itself, setting $\text{FriendMod} = +0.50$ regardless of interpersonal friction with the house lord.
      * **Natural Friendship Matrix (*Naisargika Sambandha*, *Phaladīpikā* 15.5 & 15.7):** For other signs, bidirectional relationship ($P \to \text{Lord}$ and $\text{Lord} \to P$) modifies the baseline:
        * If both are Friends: $\text{FriendMod} = +0.50$
        * If either considers the other an Enemy: $\text{FriendMod} = -0.50$
        * If one is Friend and the other Neutral: $\text{FriendMod} = +0.25$
        * Otherwise: $\text{FriendMod} = 0.0$
      * **Effective Functional Formula:**
-       $$F_{\text{eff}} = F_{\text{lagna}} + 0.50 \times \text{InherentScore} + 0.35 \times \text{FriendMod}$$
-       *(Preserves Rāja Yogakāraka status and natural benefic cushions while factoring archetypal relationship with the house lord).*
+       $$F_{\text{eff}} = 0.50 \times F_{\text{lagna}} + 0.50 \times \text{InherentScore} + 0.35 \times \text{FriendMod}$$
+       *(Scales $F_{\text{lagna}}$ by $0.50$ so non-lords remain bounded on the $[-2.0, +2.0]$ scale below or equal to the House Lord $2.00$, preserving Rāja Yogakāraka status and natural benefic cushions while factoring archetypal relationship with the house lord).*
 3. **Continuous Signed Ray Impact Synthesis (`_compute_signed_ray_impact`):**
    * Eliminates deadband cliffs and sign inversions across the functional transition $[-0.25, +0.25]$:
      * If $F_{\text{eff}} \ge 0.25$: $\text{signed\_impact} = \text{scale\_by\_dignity}(I, d_P, 1.0) \times (1.0 + \text{slope} \times (F_{\text{eff}} - 1.0))$
@@ -204,8 +204,8 @@ For each house $H \in \{1, \dots, 12\}$:
    * Upacaya houses ($3, 6, 11$): $+0.35 \times C_{\text{node}}$.
    * Non-Upacaya houses: $-0.60 \times C_{\text{node}} \times \text{MitFactor}$ (where $\text{MitFactor} = 0.50$ if node is dignified or aspected/conjoined by Jupiter or Venus; $1.25$ if aggravated by Mars/Saturn; $1.00$ otherwise).
 7. **Strict Monotonicity & Cusp Score Normalization:**
-   * Fixed baseline divisor ($3.0$) with hyperbolic tangent saturation matching Phase 8 and Phase 9:
-     $$\text{RawHouseScore}_H = \frac{\sum \text{SignedImpact}}{3.0}$$
+   * Fixed baseline divisor ($4.0$) matching the natural 7-planet continuous aspect density with hyperbolic tangent saturation:
+     $$\text{RawHouseScore}_H = \frac{\sum \text{SignedImpact}}{4.0}$$
      $$\text{BoundedScore}_H = 120.0 \times \tanh\left(\frac{\text{RawHouseScore}_H}{120.0}\right)$$
    * Guaranteed monotonicity: every additional benefic aspect strictly increases the house score, and every additional malefic aspect strictly decreases it.
 

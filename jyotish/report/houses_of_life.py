@@ -867,7 +867,7 @@ def evaluate_basic_house_conditions(
     Condition-gates cusp influences by combustion and Bhāva Sandhi (Phaladīpikā 15.1 amūḍha-hīnāḥ).
     Transforms natural malefics in Upacayas (3, 6, 11) into resilience boosters (15.18).
     Evaluates Rāhu & Ketu cusp occupancy, proximity, and malefic aggravation (15.8).
-    Uses a fixed baseline divisor (3.0) with hyperbolic tangent saturation guaranteeing strict monotonicity.
+    Uses a fixed baseline divisor (4.0) with hyperbolic tangent saturation guaranteeing strict monotonicity.
     """
     house_results: Dict[int, Dict[str, Any]] = {}
     p2c = influences["planet_to_cusp"]
@@ -896,10 +896,15 @@ def evaluate_basic_house_conditions(
                 h_sign = h_data.get("sign")
 
                 # Check if target house sign is planet P's Exaltation or Mūlatrikoṇa / Domicile sign
+                # Restrict to non-malefics (inh_score >= 0.0 or lagna_f >= 0.0) so functional malefics
+                # don't receive an artificial +0.50 friendship bonus when aspecting an enemy sign
                 is_exalt_or_root = (
-                    h_sign == DICARA_MOOLATRIKONA_SIGNS.get(p)
-                    or h_sign == EXALTATION_SIGNS.get(p)
-                    or SIGN_LORDS.get(h_sign) == p
+                    (
+                        h_sign == DICARA_MOOLATRIKONA_SIGNS.get(p)
+                        or h_sign == EXALTATION_SIGNS.get(p)
+                        or SIGN_LORDS.get(h_sign) == p
+                    )
+                    and (inh_score >= 0.0 or lagna_f >= 0.0)
                 )
 
                 rel_p_to_l = get_natural_relationship(p, lord)
@@ -917,8 +922,9 @@ def evaluate_basic_house_conditions(
                 else:
                     friend_mod = 0.0
 
-                # Eliminates double-counting while preserving Yogakāraka status and natural benefic cushions (15.1, 15.7):
-                f_eff = lagna_f + 0.50 * inh_score + 0.35 * friend_mod
+                # Scale lagna_f by 0.50 so non-lords stay bounded on the [-2.0, +2.0] scale
+                # below or equal to the House Lord (2.0), preserving Yogakāraka status and natural benefic cushions (15.1, 15.7):
+                f_eff = 0.50 * lagna_f + 0.50 * inh_score + 0.35 * friend_mod
 
             eff_i_val = i_val
 
@@ -1015,8 +1021,8 @@ def evaluate_basic_house_conditions(
                     contributions[node] = round(node_impact, 2)
                     total_signed += node_impact
 
-        # Fixed baseline divisor (3.0) with hyperbolic tangent saturation (monotonicity guarantee per Phase 8/9 standard)
-        raw_house_score = total_signed / 3.0
+        # Fixed baseline divisor (4.0) with hyperbolic tangent saturation (monotonicity guarantee per Phase 8/9 standard)
+        raw_house_score = total_signed / 4.0
         bounded_score = 120.0 * math.tanh(raw_house_score / 120.0)
 
         house_results[h] = {
