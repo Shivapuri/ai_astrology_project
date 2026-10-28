@@ -291,6 +291,52 @@
                 selectHouse(root, hol, cur, false);
             });
         }
+
+        // Basic (30%) Column Header Click -> Scroll to Sheet in Receipt
+        const basicHeader = root.querySelector('.hol-col-basic-header');
+        if (basicHeader && basicHeader.dataset.bound !== 'true') {
+            basicHeader.dataset.bound = 'true';
+            basicHeader.addEventListener('click', (e) => {
+                e.preventDefault();
+                const curH = _selectedHouseState.get(root) || 1;
+                selectHouse(root, hol, curH, true);
+                focusBasicSheet(root);
+            });
+        }
+
+        // Expand Sheet Toggle Button
+        const expandBtn = root.querySelector('.hol-btn-expand-basic');
+        if (expandBtn && expandBtn.dataset.bound !== 'true') {
+            expandBtn.dataset.bound = 'true';
+            expandBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const matrixLeft = root.querySelector('.hol-matrix-left');
+                const receiptRight = root.querySelector('.hol-receipt-right');
+                if (receiptRight) {
+                    const isExpanded = receiptRight.classList.toggle('hol-sheet-expanded');
+                    if (isExpanded) {
+                        if (matrixLeft) matrixLeft.style.display = 'none';
+                        receiptRight.style.flex = '1';
+                        expandBtn.textContent = '⛶ Collapse Sheet';
+                    } else {
+                        applyViewLayout(root);
+                        expandBtn.textContent = '⛶ Expand Sheet';
+                    }
+                }
+            });
+        }
+    }
+
+    function focusBasicSheet(root) {
+        const basicSection = root.querySelector('.hol-basic-sheet-section');
+        if (basicSection) {
+            basicSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            basicSection.style.transition = 'background 0.3s ease';
+            basicSection.style.background = 'var(--bg-surface-muted, #eee5d3)';
+            setTimeout(() => {
+                basicSection.style.background = '';
+            }, 1200);
+        }
     }
 
     function selectHouse(root, hol, houseNum, switchTabIfCompact = true) {
@@ -487,7 +533,7 @@
                 <td style="padding: 6px 8px; text-align: center; font-weight: 700; font-family: var(--font-mono);">${String(h).padStart(2, '0')}</td>
                 <td style="padding: 6px 8px;"><span style="font-family: var(--font-astro-glyphs); margin-right: 4px;">${sGlyph}</span>${sign}</td>
                 <td style="padding: 6px 8px;"><span style="font-family: var(--font-astro-glyphs); margin-right: 4px;">${lGlyph}</span>${lord}</td>
-                <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(basicScore)}</td>
+                <td class="hol-cell-basic" style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); cursor: pointer;" title="Inspect Pillar 1 Basic calculations for House ${h}">${formatComponentCell(basicScore)}</td>
                 <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(lordScore)}</td>
                 <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(relMoonScore)}</td>
                 <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono);">${formatComponentCell(karakaScore)}</td>
@@ -496,6 +542,15 @@
                 <td style="padding: 6px 8px; text-align: right; font-family: var(--font-mono); font-weight: 700; font-size: 13px; color: ${compColor};">${composite >= 0 ? '+' : ''}${composite.toFixed(2)}</td>
                 <td style="padding: 6px 8px; text-align: center; font-size: 12px; white-space: nowrap;">${tierDot}<span>${tier}</span></td>
             `;
+
+            const basicCell = tr.querySelector('.hol-cell-basic');
+            if (basicCell) {
+                basicCell.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectHouse(root, hol, h, true);
+                    focusBasicSheet(root);
+                });
+            }
 
             tr.addEventListener('click', () => {
                 selectHouse(root, hol, h, true);
@@ -679,33 +734,7 @@
 
         const raysContainer = root.querySelector('.hol-cusp-rays-breakdown');
         if (raysContainer) {
-            raysContainer.innerHTML = '';
-            const contribs = basicData.planet_contributions || {};
-            // Filter out 0.0 rays and sort descending
-            const activePlanets = Object.keys(contribs)
-                .filter(p => Math.abs(contribs[p]) >= 0.05)
-                .sort((a, b) => Math.abs(contribs[b]) - Math.abs(contribs[a]));
-
-            if (activePlanets.length === 0) {
-                raysContainer.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0;">No significant rays active on cusp</span>';
-            } else {
-                activePlanets.forEach(p => {
-                    const cVal = contribs[p];
-                    const pGlyph = getPlanetGlyph(p);
-                    const isLord = (p === lord);
-                    const item = document.createElement('div');
-                    item.style.cssText = 'display:flex; justify-content:space-between; align-items:center; padding:2px 0; border-bottom:1px dashed var(--border-subtle);';
-                    item.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <span style="font-family:var(--font-astro-glyphs);">${pGlyph}</span>
-                            <span>${p}</span>
-                            ${isLord ? '<span style="color:var(--text-muted); font-size:12px;">(Lord)</span>' : ''}
-                        </div>
-                        <strong style="color:${cVal >= 0 ? 'var(--text-primary)' : 'var(--status-malefic-dark)'}; font-size:12px;">${cVal >= 0 ? '+' : ''}${cVal.toFixed(1)}</strong>
-                    `;
-                    raysContainer.appendChild(item);
-                });
-            }
+            renderBasicCalculationSheet(raysContainer, basicData, hData);
         }
 
         // Section 3: Bhavāt Bhavam & Chandra Lagna (15%)
@@ -899,6 +928,167 @@
                 });
             }
         }
+    }
+
+    function renderBasicCalculationSheet(container, basicData, hData) {
+        if (!container) return;
+        const ledger = basicData ? basicData.calculation_ledger : null;
+        if (!ledger || !Array.isArray(ledger.rows) || ledger.rows.length === 0) {
+            const contribs = (basicData && basicData.planet_contributions) || {};
+            const activePlanets = Object.keys(contribs)
+                .filter(p => Math.abs(contribs[p]) >= 0.05)
+                .sort((a, b) => Math.abs(contribs[b]) - Math.abs(contribs[a]));
+
+            if (activePlanets.length === 0) {
+                container.innerHTML = '<span style="color:var(--text-muted); padding: 4px 0; font-size: 12px;">No significant rays active on cusp</span>';
+                return;
+            }
+            container.innerHTML = activePlanets.map(p => {
+                const cVal = contribs[p];
+                const pGlyph = getPlanetGlyph(p);
+                return `
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:2px 0; border-bottom:1px dashed var(--border-subtle); font-size: 12px;">
+                        <div style="display:flex; align-items:center; gap:5px;">
+                            <span style="font-family:var(--font-astro-glyphs);">${pGlyph}</span>
+                            <span>${p}</span>
+                        </div>
+                        <strong style="color:${cVal >= 0 ? 'var(--status-benefic-dark, #15803d)' : 'var(--status-malefic-dark, #b91c1c)'}; font-size: 12px;">${cVal >= 0 ? '+' : ''}${cVal.toFixed(1)}</strong>
+                    </div>
+                `;
+            }).join('');
+            return;
+        }
+
+        const rowsHtml = ledger.rows.map(r => {
+            const pGlyph = getPlanetGlyph(r.planet);
+            const sGlyph = getSignGlyph(r.sign);
+            const isZero = Math.abs(r.net_contribution) < 0.005 && Math.abs(r.base_ray_pct) < 0.005;
+            const rowStyle = isZero ? 'opacity: 0.55;' : '';
+
+            let roleLabel = r.role || 'Aspect';
+            if (r.is_upacaya_boost) {
+                roleLabel = 'Upacaya +0.35×';
+            }
+
+            const aspStr = r.aspect_pct > 0
+                ? `<span title="${r.aspect_virupas.toFixed(1)} virūpas">${r.aspect_pct.toFixed(1)}%</span>`
+                : '<span style="color:var(--text-muted); font-size: 12px;">0.0%</span>';
+
+            let conjStr = '<span style="color:var(--text-muted); font-size: 12px;">0.0%</span>';
+            if (r.adj_conj_pct > 0) {
+                if (Math.abs(r.raw_conj_pct - r.adj_conj_pct) > 0.05) {
+                    conjStr = `<span title="Raw ${r.raw_conj_pct.toFixed(0)}% adjusted to ${r.adj_conj_pct.toFixed(0)}% by cusp dominance">${r.raw_conj_pct.toFixed(0)}→${r.adj_conj_pct.toFixed(0)}%</span>`;
+                } else {
+                    conjStr = `<span>${r.adj_conj_pct.toFixed(1)}%</span>`;
+                }
+            }
+
+            const baseStr = `<strong class="font-mono" style="font-size: 12px;">${r.base_ray_pct.toFixed(1)}%</strong>`;
+
+            let fEffTooltip = '';
+            if (r.role === 'Lord') {
+                fEffTooltip = 'House Lord sovereign authority = 2.00';
+            } else if (!r.is_node) {
+                fEffTooltip = `0.50×F_lagna(${r.f_lagna >= 0 ? '+' : ''}${r.f_lagna.toFixed(1)}) + 0.50×Inh(${r.inh_score >= 0 ? '+' : ''}${r.inh_score.toFixed(1)}) + 0.35×Friend(${r.friend_mod >= 0 ? '+' : ''}${r.friend_mod.toFixed(2)}) = ${r.f_eff >= 0 ? '+' : ''}${r.f_eff.toFixed(2)}`;
+            } else {
+                fEffTooltip = r.is_upacaya_boost ? 'Upacaya Node (+0.35)' : 'Challenging Node (-0.60)';
+            }
+            const fEffStr = `<span class="font-mono" style="font-size: 12px;" title="${fEffTooltip}">${r.f_eff >= 0 ? '+' : ''}${r.f_eff.toFixed(2)}</span>`;
+
+            const dUnitStr = r.is_node
+                ? '<span style="color:var(--text-muted); font-size: 12px;">-</span>'
+                : `<span class="font-mono" style="font-size: 12px;" title="${r.dignity_status || ''}">${r.d_unit >= 0 ? '+' : ''}${r.d_unit.toFixed(2)}</span>`;
+
+            const scaledTooltip = r.is_upacaya_boost
+                ? 'Upacaya malefic occupant resilience boost (+0.35× dignity scaled)'
+                : 'Ray scaled by composite dignity and functional multiplier';
+            const scaledStr = `<span class="font-mono" style="font-size: 12px;" title="${scaledTooltip}">${r.pre_gate_ray >= 0 ? '+' : ''}${r.pre_gate_ray.toFixed(1)}</span>`;
+
+            let gateTooltip = 'Gate Multiplier = 1.00';
+            if (r.comb_loss > 0 || r.sandhi_pen > 0 || (r.d_unit < 0 && r.pre_gate_ray > 0)) {
+                gateTooltip = `Combustion: -${(r.comb_loss * 100).toFixed(0)}%, Sandhi: -${(r.sandhi_pen * 100).toFixed(0)}%`;
+            }
+            const gateStr = `<span class="font-mono" style="font-size: 12px;" title="${gateTooltip}">${r.gate_mult.toFixed(2)}×</span>`;
+
+            const netColor = r.net_contribution > 0
+                ? 'var(--status-benefic-dark, #15803d)'
+                : (r.net_contribution < 0 ? 'var(--status-malefic-dark, #b91c1c)' : 'var(--text-muted, #6b5a4b)');
+            const netStr = `<strong class="font-mono" style="color: ${netColor}; font-size: 12px;">${r.net_contribution >= 0 ? '+' : ''}${r.net_contribution.toFixed(2)}</strong>`;
+
+            return `
+                <tr style="border-bottom: 1px solid var(--border-subtle, #e5dccb); ${rowStyle}">
+                    <td style="padding: 4px 6px; white-space: nowrap; font-size: 12px;">
+                        <span style="font-family: var(--font-astro-glyphs); margin-right: 3px;">${pGlyph}</span>
+                        <span style="font-weight: 600; color: var(--text-heading); font-size: 12px;">${r.planet}</span>
+                        <span style="color: var(--text-muted); font-size: 12px; margin-left: 2px;">(${roleLabel})</span>
+                    </td>
+                    <td style="padding: 4px 6px; white-space: nowrap; font-family: var(--font-mono); font-size: 12px;">
+                        <span style="font-family: var(--font-astro-glyphs); margin-right: 2px;">${sGlyph}</span>${r.sign.slice(0, 3)} ${r.degree_in_sign.toFixed(1)}°
+                        <span style="color: var(--text-muted); font-size: 12px;" title="Shortest angular distance to cusp">(${r.dist_to_cusp.toFixed(1)}°)</span>
+                    </td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${aspStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${conjStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${baseStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${fEffStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${dUnitStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${scaledStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${gateStr}</td>
+                    <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px;">${netStr}</td>
+                </tr>
+            `;
+        }).join('');
+
+        const finalScoreColor = ledger.final_score >= 25.0
+            ? 'var(--status-benefic-dark, #15803d)'
+            : (ledger.final_score <= -25.0 ? 'var(--status-malefic-dark, #b91c1c)' : 'var(--text-heading, #4a3325)');
+
+        container.innerHTML = `
+            <table class="hol-basic-sheet-table" style="width: 100%; min-width: 680px; border-collapse: collapse; font-size: 12px; font-family: var(--font-sans);">
+                <thead>
+                    <tr style="background: var(--bg-surface-muted, #eee5d3); border-bottom: 1px solid var(--border-medium, #d5c8b2); font-size: 12px; color: var(--text-heading); text-transform: uppercase; letter-spacing: 0.3px;">
+                        <th style="padding: 4px 6px; text-align: left;" title="Planet / Graha">Graha</th>
+                        <th style="padding: 4px 6px; text-align: left;" title="D1 Sign, degree, and shortest angular distance to house cusp">Pos / Δ°</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Parāśara Sphuṭa Dṛṣṭi aspect percentage on sensitive cusp: (Virūpas / 60) × 100%">Asp %</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="30° linear conjunction proximity (raw → after cusp dominance stealing)">Conj %</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Base Ray Magnitude I = max(Aspect%, DominanceConj%)">Base I</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Effective Functional Nature: 2.0 for Lord; else 0.50×F_lagna + 0.50×Inh + 0.35×FriendMod">F_eff</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Composite D1+D9 Dignity unit score [-1.00, +1.00]">Dig d_P</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Ray after scale_by_dignity & functional multiplier (or Upacaya +0.35× malefic boost)">Scaled</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Condition integrity multiplier from Combustion, Bhāva Sandhi, and negative dignity">Gate ×</th>
+                        <th style="padding: 4px 6px; text-align: right;" title="Net signed ray contribution to sensitive cusp">Net Ray</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+                <tfoot>
+                    <tr style="border-top: 1px solid var(--border-medium, #d5c8b2); background: var(--bg-surface-muted, #eee5d3); font-size: 12px; font-weight: 600;">
+                        <td colspan="9" style="padding: 4px 6px; text-align: right; color: var(--text-heading); font-size: 12px;">
+                            ∑ Raw Signed Cusp Rays:
+                        </td>
+                        <td style="padding: 4px 6px; text-align: right; font-family: var(--font-mono); color: var(--text-heading); font-size: 12px;">
+                            ${ledger.raw_total_signed >= 0 ? '+' : ''}${ledger.raw_total_signed.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr style="background: var(--bg-surface-muted, #eee5d3); font-size: 12px; color: var(--text-muted);">
+                        <td colspan="9" style="padding: 3px 6px; text-align: right; font-size: 12px;">
+                            ÷ Fixed Baseline Divisor (${ledger.baseline_divisor.toFixed(1)}):
+                        </td>
+                        <td style="padding: 3px 6px; text-align: right; font-family: var(--font-mono); color: var(--text-heading); font-size: 12px;">
+                            ${ledger.raw_divided_score >= 0 ? '+' : ''}${ledger.raw_divided_score.toFixed(2)}
+                        </td>
+                    </tr>
+                    <tr style="border-top: 1px solid var(--border-medium, #d5c8b2); background: var(--bg-surface-alt, #fcfaf5); font-size: 12px; font-weight: 700;">
+                        <td colspan="9" style="padding: 5px 6px; text-align: right; color: var(--text-heading); font-size: 12px;">
+                            Final Basic Score (120 × tanh(Raw / 120)):
+                        </td>
+                        <td style="padding: 5px 6px; text-align: right; font-family: var(--font-mono); font-size: 12px; color: ${finalScoreColor};">
+                            ${ledger.final_score >= 0 ? '+' : ''}${ledger.final_score.toFixed(2)}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        `;
     }
 
     function renderPlanetsTable(root, hol) {

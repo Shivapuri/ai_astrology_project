@@ -123,3 +123,64 @@ def test_houses_of_life_right_click_menu_and_popup(page: Page):
     # Verify floating modal opened
     assert page.locator("#widgetMaximizeModal").is_visible()
 
+def test_houses_of_life_basic_sheet_renders(page: Page):
+    """
+    Step 4 Frontend UI Test:
+    Clicking the Basic (30%) cell for House 1 opens the receipt inspector,
+    renders the spreadsheet-grade Pillar 1 calculation ledger with 10 column headers,
+    9 planet/node rows, and 3 footer proof rows, and verifies the 12px font floor.
+    """
+    init_page(page)
+    page.evaluate("assignWidget('houses-of-life', document.querySelector('.grid-cell'))")
+    page.wait_for_timeout(600)
+
+    # Click Basic (30%) cell on House 1
+    basic_cell_h1 = page.locator(".hol-house-row[data-house='1'] .hol-cell-basic")
+    assert basic_cell_h1.count() > 0
+    basic_cell_h1.click()
+    page.wait_for_timeout(500)
+
+    # Switch to receipt tab if on compact width
+    tab_receipt = page.locator(".hol-tab-btn[data-view='receipt']")
+    if tab_receipt.is_visible():
+        tab_receipt.click()
+        page.wait_for_timeout(300)
+
+    # Verify spreadsheet table renders
+    sheet_table = page.locator(".hol-basic-sheet-table")
+    assert sheet_table.is_visible()
+
+    # Verify 10 column headers
+    headers = sheet_table.locator("thead th")
+    assert headers.count() == 10
+    header_texts = [headers.nth(i).inner_text().strip() for i in range(10)]
+    assert "GRAHA" in header_texts[0].upper()
+    assert "NET RAY" in header_texts[9].upper()
+
+    # Verify exactly 9 rows (7 classical planets + Rahu + Ketu)
+    rows = sheet_table.locator("tbody tr")
+    assert rows.count() == 9
+
+    # Verify 3 footer proof rows
+    footer_rows = sheet_table.locator("tfoot tr")
+    assert footer_rows.count() == 3
+    assert "∑ Raw Signed Cusp Rays" in footer_rows.nth(0).inner_text()
+    assert "÷ Fixed Baseline Divisor" in footer_rows.nth(1).inner_text()
+    assert "Final Basic Score" in footer_rows.nth(2).inner_text()
+
+    # Verify strict 12px font floor on headers and cells
+    for i in range(headers.count()):
+        font_size_px = float(headers.nth(i).evaluate("el => parseFloat(window.getComputedStyle(el).fontSize)"))
+        assert font_size_px >= 12.0, f"Header {i} font size {font_size_px}px is below 12px floor"
+
+    # Test toggle expand button
+    expand_btn = page.locator(".hol-btn-expand-basic")
+    assert expand_btn.count() > 0
+    expand_btn.click()
+    page.wait_for_timeout(300)
+    assert page.locator(".hol-receipt-right.hol-sheet-expanded").count() > 0
+    expand_btn.click()
+    page.wait_for_timeout(300)
+    assert page.locator(".hol-receipt-right.hol-sheet-expanded").count() == 0
+
+

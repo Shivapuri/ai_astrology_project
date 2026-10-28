@@ -208,6 +208,23 @@ For each house $H \in \{1, \dots, 12\}$:
      $$\text{RawHouseScore}_H = \frac{\sum \text{SignedImpact}}{4.0}$$
      $$\text{BoundedScore}_H = 120.0 \times \tanh\left(\frac{\text{RawHouseScore}_H}{120.0}\right)$$
    * Guaranteed monotonicity: every additional benefic aspect strictly increases the house score, and every additional malefic aspect strictly decreases it.
+8. **Spreadsheet-Grade Calculation Ledger (`calculation_ledger`):**
+   * Serializes full tabular disclosure for all 12 houses across 10 analytical columns:
+     1. `Graha`: Monochrome glyph (`\uFE0E`), planet name, and role (`Lord`, `Occupant`, `Aspect`, `Node`).
+     2. `Pos & ΔCusp`: D1 sign, degree in sign, and shortest angular distance ($\Delta\theta^\circ$) to $\text{Cusp}_H$.
+     3. `Aspect %`: Exact Parāśara *Sphuṭa Dṛṣṭi* onto $\text{Cusp}_H$: $(\text{Virūpas}/60) \times 100\%$.
+     4. `Conj %`: $30^\circ$ linear conjunction proximity ($0.5\times$ if cross-border) $\to$ after cusp dominance stealing.
+     5. `Base Ray (I)`: $I_{P \to H} = \max(\text{Aspect\%}, \text{Conj}_{\text{dom}}\%)$.
+     6. `Func (F_eff)`: Effective functional nature: $2.00$ for Lord; else $0.50\,F_{\text{lagna}} + 0.50\,\text{Inh} + 0.35\,\text{FriendMod}$.
+     7. `Dignity (d_P)`: Composite D1+D9 dignity unit $d_P \in [-1.00, +1.00]$ (or Vargottama $\ge +0.80$).
+     8. `Scaled Ray`: Ray after `scale_by_dignity` and functional multiplier $f_{\text{mult}}$ (or $+0.35\times$ Upacaya malefic boost).
+     9. `Gate Mult`: *Amūḍha-hīnāḥ* integrity multiplier from Combustion, Sandhi, and negative $d_P$.
+     10. `Net Ray`: Exact signed points contributed by this row ($\text{Scaled Ray} \times \text{Gate Mult}$).
+   * **9 Canonical Graha/Node Rows:** Always ordered `Sun`, `Moon`, `Mars`, `Mercury`, `Jupiter`, `Venus`, `Saturn`, `Rahu`, `Ketu`.
+   * **3 Summary Footer Proofs:**
+     1. $\sum \text{Raw Signed Cusp Rays}$ ($\text{raw\_total\_signed}$)
+     2. $\div \text{Fixed Baseline Divisor } 4.0$ ($\text{raw\_divided\_score}$)
+     3. $\text{Final Basic Score } (120 \times \tanh(\text{Raw} / 120))$ (matching the `Basic (30%)` column in the 12-House Matrix).
 
 ---
 

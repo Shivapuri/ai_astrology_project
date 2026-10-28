@@ -489,6 +489,8 @@ def calculate_cusp_and_planet_influences(
     raw_conjunctions: Dict[str, Dict[int, float]] = {p: {} for p in CLASSICAL_PLANETS}
     adjusted_conjunctions: Dict[str, Dict[int, float]] = {p: {} for p in CLASSICAL_PLANETS}
     planet_to_cusp: Dict[str, Dict[int, float]] = {p: {} for p in CLASSICAL_PLANETS}
+    aspect_to_cusp: Dict[str, Dict[int, float]] = {p: {} for p in CLASSICAL_PLANETS}
+    aspect_virupas_to_cusp: Dict[str, Dict[int, float]] = {p: {} for p in CLASSICAL_PLANETS}
 
     houses_dict = geometry["houses"]
 
@@ -553,12 +555,16 @@ def calculate_cusp_and_planet_influences(
             p_lon = float(d1_grahas[p]["longitude"])
             virupas = aspects.get_graha_drishti(p, p_lon, cusp_lon)
             asp_pct = (virupas / 60.0) * 100.0
+            aspect_to_cusp[p][h] = round(asp_pct, 2)
+            aspect_virupas_to_cusp[p][h] = round(virupas, 2)
             final_c = adjusted_conjunctions[p][h]
             planet_to_cusp[p][h] = max(asp_pct, final_c)
 
     return {
         "planet_to_planet": planet_to_planet,
         "planet_to_cusp": planet_to_cusp,
+        "aspect_to_cusp": aspect_to_cusp,
+        "aspect_virupas_to_cusp": aspect_virupas_to_cusp,
         "raw_conjunctions": raw_conjunctions,
         "adjusted_conjunctions": adjusted_conjunctions
     }
@@ -868,9 +874,14 @@ def evaluate_basic_house_conditions(
     Transforms natural malefics in Upacayas (3, 6, 11) into resilience boosters (15.18).
     Evaluates Rāhu & Ketu cusp occupancy, proximity, and malefic aggravation (15.8).
     Uses a fixed baseline divisor (4.0) with hyperbolic tangent saturation guaranteeing strict monotonicity.
+    Generates a spreadsheet-grade calculation_ledger documenting every row, column, and footer proof.
     """
     house_results: Dict[int, Dict[str, Any]] = {}
     p2c = influences["planet_to_cusp"]
+    asp_to_cusp_map = influences.get("aspect_to_cusp", {})
+    asp_virupas_map = influences.get("aspect_virupas_to_cusp", {})
+    raw_conj_map = influences.get("raw_conjunctions", {})
+    adj_conj_map = influences.get("adjusted_conjunctions", {})
 
     for h, h_data in geometry["houses"].items():
         lord = h_data["lord"]
@@ -878,18 +889,44 @@ def evaluate_basic_house_conditions(
         cusp_lon = float(h_data.get("cusp_longitude", 0.0))
         contributions: Dict[str, float] = {}
         total_signed = 0.0
+        rows: List[Dict[str, Any]] = []
 
         for p in CLASSICAL_PLANETS:
             i_val = p2c[p][h]
+            p_lon_val = float(d1_grahas[p].get("longitude", 0.0))
+            p_sign = d1_grahas[p].get("sign") or ZODIAC_SIGNS[int(p_lon_val // 30) % 12]
+            p_deg_in_sign = float(d1_grahas[p].get("degree_0_to_30", p_lon_val % 30.0))
+            dist_to_cusp_val = _shortest_distance(p_lon_val, cusp_lon)
+
+            # Aspect and conjunction specifics
+            if p in asp_virupas_map and h in asp_virupas_map[p]:
+                asp_virupas = float(asp_virupas_map[p][h])
+            else:
+                asp_virupas = float(aspects.get_graha_drishti(p, p_lon_val, cusp_lon))
+
+            if p in asp_to_cusp_map and h in asp_to_cusp_map[p]:
+                asp_pct = float(asp_to_cusp_map[p][h])
+            else:
+                asp_pct = (asp_virupas / 60.0) * 100.0
+
+            raw_c_pct = float(raw_conj_map.get(p, {}).get(h, 0.0))
+            adj_c_pct = float(adj_conj_map.get(p, {}).get(h, 0.0))
+            eff_i_val = i_val
+
             if planets_eval and p in planets_eval and "dignity" in planets_eval[p]:
                 d_p = float(planets_eval[p]["dignity"].get("unit_score", 0.0))
+                d_status = str(planets_eval[p]["dignity"].get("status", ""))
             else:
-                dignity_status = _get_dignity_status(d1_grahas[p])
-                d_p = DICARA_D1_DIGNITY_MAP.get(dignity_status, 0.0)
+                d_status = _get_dignity_status(d1_grahas[p])
+                d_p = DICARA_D1_DIGNITY_MAP.get(d_status, 0.0)
 
             # House Lord vs Non-Lord on House Cusp (Phaladīpikā 15.1–15.5, 15.7)
             if p == lord:
                 f_eff = 2.0
+                lagna_f = float(func_natures[p]["score"]) if p in func_natures else 3.0
+                inh_score = float(func_natures[p].get("rule_breakdown", {}).get("inherent_score", 0.0)) if p in func_natures else 0.0
+                friend_mod = 0.0
+                role = "Lord"
             else:
                 lagna_f = float(func_natures[p]["score"])
                 inh_score = float(func_natures[p].get("rule_breakdown", {}).get("inherent_score", 0.0))
@@ -910,8 +947,6 @@ def evaluate_basic_house_conditions(
                 rel_p_to_l = get_natural_relationship(p, lord)
                 rel_l_to_p = get_natural_relationship(lord, p)
                 if is_exalt_or_root:
-                    # If target sign is planet's own exaltation or root sign (e.g. Moon on Taurus),
-                    # it loves that sign and never receives negative friendship
                     friend_mod = 0.50
                 elif rel_p_to_l == "Friend" and rel_l_to_p == "Friend":
                     friend_mod = 0.50
@@ -925,8 +960,7 @@ def evaluate_basic_house_conditions(
                 # Scale lagna_f by 0.50 so non-lords stay bounded on the [-2.0, +2.0] scale
                 # below or equal to the House Lord (2.0), preserving Yogakāraka status and natural benefic cushions (15.1, 15.7):
                 f_eff = 0.50 * lagna_f + 0.50 * inh_score + 0.35 * friend_mod
-
-            eff_i_val = i_val
+                role = "Occupant" if p in occupants else "Aspect"
 
             # Continuous scaling across functional spectrum (eliminates 0.15 deadband cliff)
             signed_impact = _compute_signed_ray_impact(eff_i_val, d_p, f_eff, slope=0.65)
@@ -941,10 +975,10 @@ def evaluate_basic_house_conditions(
                 signed_impact = pos_scaled * 0.35
                 is_upacaya_occ = True
 
+            pre_gate_impact = signed_impact
+
             # Condition-Gate Cusp Influences by Combustion & Bhāva Sandhi (Phaladīpikā 15.1 amūḍha-hīnāḥ)
             # Attenuate positive rays from planets afflicted by negative multi-varga dignity (arinīca-mūḍha)
-            p_lon_val = float(d1_grahas[p].get("longitude", 0.0))
-            p_sign = d1_grahas[p].get("sign") or ZODIAC_SIGNS[int(p_lon_val // 30) % 12]
             p_occ_house = 1
             if planets_eval and p in planets_eval and "house" in planets_eval[p]:
                 p_occ_house = int(planets_eval[p]["house"])
@@ -961,19 +995,49 @@ def evaluate_basic_house_conditions(
                 sandhi_pen = float(planets_eval[p].get("bhava_sandhi", {}).get("penalty_ratio", 0.0))
 
             condition_integrity = (1.0 - 0.75 * comb_loss) * (1.0 - 0.50 * sandhi_pen)
-            if signed_impact > 0:
+            if pre_gate_impact > 0:
                 # Use composite dignity d_p (Phaladīpikā 3.4 & 3.11: D9/Vargottama rescues D1)
                 # Soften attenuation smoothly based on negative composite dignity
                 if not is_upacaya_occ and d_p < 0.0:
                     condition_integrity *= (1.0 - 0.40 * abs(d_p))
                     if p_occ_house in [6, 8, 12]:
                         condition_integrity *= 0.75
-                signed_impact *= condition_integrity
-            elif signed_impact < 0:
-                signed_impact *= (1.0 + 0.35 * comb_loss) * (1.0 - 0.30 * sandhi_pen)
+                gate_mult = condition_integrity
+                signed_impact = pre_gate_impact * gate_mult
+            elif pre_gate_impact < 0:
+                gate_mult = (1.0 + 0.35 * comb_loss) * (1.0 - 0.30 * sandhi_pen)
+                signed_impact = pre_gate_impact * gate_mult
+            else:
+                gate_mult = 1.0
 
             contributions[p] = round(signed_impact, 2)
             total_signed += signed_impact
+
+            rows.append({
+                "planet": p,
+                "is_node": False,
+                "role": role,
+                "sign": p_sign,
+                "degree_in_sign": round(p_deg_in_sign, 2),
+                "dist_to_cusp": round(dist_to_cusp_val, 2),
+                "aspect_virupas": round(asp_virupas, 2),
+                "aspect_pct": round(asp_pct, 2),
+                "raw_conj_pct": round(raw_c_pct, 2),
+                "adj_conj_pct": round(adj_c_pct, 2),
+                "base_ray_pct": round(eff_i_val, 2),
+                "f_lagna": round(lagna_f, 2),
+                "inh_score": round(inh_score, 2),
+                "friend_mod": round(friend_mod, 2),
+                "f_eff": round(f_eff, 3),
+                "dignity_status": d_status,
+                "d_unit": round(d_p, 2),
+                "is_upacaya_boost": is_upacaya_occ,
+                "pre_gate_ray": round(pre_gate_impact, 2),
+                "comb_loss": round(comb_loss, 4),
+                "sandhi_pen": round(sandhi_pen, 4),
+                "gate_mult": round(gate_mult, 4),
+                "net_contribution": round(signed_impact, 2)
+            })
 
         # Rāhu and Ketu Cusp Occupancy / Proximity Impact (Phaladīpikā 15.8)
         for node in ["Rahu", "Ketu"]:
@@ -982,31 +1046,39 @@ def evaluate_basic_house_conditions(
                 node_sign = node_data.get("sign")
                 node_lon = float(node_data.get("longitude", 0.0))
                 dist_node = _shortest_distance(node_lon, cusp_lon)
-                if node_sign == h_data["sign"] or dist_node <= 15.0:
-                    if node_sign == h_data["sign"]:
-                        c_node = max(35.0, (1.0 - dist_node / 30.0) * 100.0)
-                    else:
-                        c_node = 0.50 * (1.0 - dist_node / 30.0) * 100.0
+                node_deg = float(node_data.get("degree_0_to_30", node_lon % 30.0))
+                node_dignity = _get_dignity_status(node_data)
+                is_node_in_sign = (node_sign == h_data["sign"])
 
-                    if h in [3, 6, 11]:
+                raw_c_node = max(0.0, (1.0 - dist_node / 30.0) * 100.0)
+                if is_node_in_sign:
+                    c_node = max(35.0, raw_c_node)
+                elif dist_node <= 15.0:
+                    c_node = 0.50 * raw_c_node
+                else:
+                    c_node = 0.0
+
+                is_upacaya = (h in [3, 6, 11])
+                is_mitigated = False
+                is_aggravated = False
+                mit_factor = 1.0
+                node_impact = 0.0
+
+                if is_node_in_sign or dist_node <= 15.0:
+                    if is_upacaya:
                         node_impact = 0.35 * c_node
                     else:
-                        node_dignity = _get_dignity_status(node_data)
                         is_mitigated = ("Friend" in node_dignity or "Own" in node_dignity or "Exalt" in node_dignity)
                         if not is_mitigated:
                             for b in ["Jupiter", "Venus"]:
                                 if b in d1_grahas:
                                     b_lon = float(d1_grahas[b].get("longitude", 0.0))
                                     b_sign = d1_grahas[b].get("sign")
-                                    if b_sign == node_sign:
-                                        is_mitigated = True
-                                        break
-                                    if aspects.get_graha_drishti(b, b_lon, node_lon) >= 30.0:
+                                    if b_sign == node_sign or aspects.get_graha_drishti(b, b_lon, node_lon) >= 30.0:
                                         is_mitigated = True
                                         break
 
                         # Check malefic aggravation by Mars or Saturn (Phaladīpikā 15.8)
-                        is_aggravated = False
                         if not is_mitigated:
                             for m in ["Mars", "Saturn"]:
                                 if m in d1_grahas:
@@ -1018,17 +1090,63 @@ def evaluate_basic_house_conditions(
 
                         mit_factor = 0.50 if is_mitigated else (1.25 if is_aggravated else 1.00)
                         node_impact = -0.60 * c_node * mit_factor
+
                     contributions[node] = round(node_impact, 2)
                     total_signed += node_impact
+
+                rows.append({
+                    "planet": node,
+                    "is_node": True,
+                    "role": "Occupant" if is_node_in_sign else ("Node" if dist_node <= 15.0 else "None"),
+                    "sign": node_sign,
+                    "degree_in_sign": round(node_deg, 2),
+                    "dist_to_cusp": round(dist_node, 2),
+                    "aspect_virupas": 0.0,
+                    "aspect_pct": 0.0,
+                    "raw_conj_pct": round(raw_c_node, 2) if (is_node_in_sign or dist_node <= 15.0) else 0.0,
+                    "adj_conj_pct": round(c_node, 2),
+                    "base_ray_pct": round(c_node, 2),
+                    "f_lagna": 0.0,
+                    "inh_score": -1.0,
+                    "friend_mod": 0.0,
+                    "f_eff": -1.0 if not is_upacaya else 0.35,
+                    "dignity_status": node_dignity,
+                    "d_unit": 0.0,
+                    "is_upacaya_boost": (is_upacaya and (is_node_in_sign or dist_node <= 15.0)),
+                    "pre_gate_ray": round(node_impact, 2),
+                    "comb_loss": 0.0,
+                    "sandhi_pen": 0.0,
+                    "gate_mult": 1.0,
+                    "net_contribution": round(node_impact, 2),
+                    "mit_factor": round(mit_factor, 2),
+                    "is_mitigated": is_mitigated,
+                    "is_aggravated": is_aggravated
+                })
 
         # Fixed baseline divisor (4.0) with hyperbolic tangent saturation (monotonicity guarantee per Phase 8/9 standard)
         raw_house_score = total_signed / 4.0
         bounded_score = 120.0 * math.tanh(raw_house_score / 120.0)
 
+        calculation_ledger = {
+            "cusp_sign": h_data["sign"],
+            "cusp_degree": round(float(h_data.get("cusp_degree", cusp_lon % 30.0)), 2),
+            "cusp_longitude": round(cusp_lon, 2),
+            "lord": lord,
+            "rows": rows,
+            "raw_total_signed": round(total_signed, 2),
+            "baseline_divisor": 4.0,
+            "raw_divided_score": round(raw_house_score, 2),
+            "tanh_saturation_cap": 120.0,
+            "final_score": round(bounded_score, 2),
+        }
+
         house_results[h] = {
             "score": round(bounded_score, 2),
-            "planet_contributions": contributions
+            "planet_contributions": contributions,
+            "calculation_ledger": calculation_ledger
         }
+
+    return house_results
 
     return house_results
 

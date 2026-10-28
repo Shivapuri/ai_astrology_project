@@ -1970,6 +1970,55 @@ class TestPillar1SixAdaptations:
         assert pytest.approx(pen_7_5, abs=0.01) == 0.125
         assert pytest.approx(pen_10_5, abs=0.001) == 0.25
 
+    def test_pillar1_calculation_ledger_schema_and_math_proof(self):
+        """
+        Step 4 Backend Test:
+        Verifies that for every house H in 1..12, components['basic_house_condition']['calculation_ledger']
+        exists, contains exactly 9 rows (7 classical planets + Rahu, Ketu in canonical order),
+        and satisfies all mathematical proof equations down to the footer summary.
+        """
+        from app import app
+        import math
+        client = app.test_client()
+        res = client.get('/api/chart/9bb691ba-c4fd-40f1-83eb-289b4e275ac8')
+        assert res.status_code == 200
+        hol = res.get_json()["data"]["houses_of_life"]
+
+        expected_grahas = ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"]
+
+        for h in range(1, 13):
+            h_data = hol["houses"][str(h)]
+            bhc = h_data["components"]["basic_house_condition"]
+            assert "calculation_ledger" in bhc, f"House {h} missing calculation_ledger"
+            ledger = bhc["calculation_ledger"]
+
+            # Header metadata
+            assert ledger["cusp_sign"] == h_data["sign"]
+            assert ledger["lord"] == h_data["lord"]
+            assert ledger["baseline_divisor"] == 4.0
+            assert ledger["tanh_saturation_cap"] == 120.0
+
+            rows = ledger["rows"]
+            assert len(rows) == 9, f"House {h} ledger rows count expected 9, got {len(rows)}"
+            assert [r["planet"] for r in rows] == expected_grahas
+
+            # Verify row-level mathematical identity
+            row_sum = 0.0
+            for r in rows:
+                if not r["is_node"]:
+                    # base_ray_pct == max(aspect_pct, adj_conj_pct)
+                    assert pytest.approx(r["base_ray_pct"], abs=0.02) == max(r["aspect_pct"], r["adj_conj_pct"])
+                row_sum += r["net_contribution"]
+
+            # Footer mathematical proofs
+            assert pytest.approx(row_sum, abs=0.1) == ledger["raw_total_signed"]
+            raw_div = round(ledger["raw_total_signed"] / 4.0, 2)
+            assert pytest.approx(raw_div, abs=0.02) == ledger["raw_divided_score"]
+            expected_final = round(120.0 * math.tanh(ledger["raw_divided_score"] / 120.0), 2)
+            assert pytest.approx(expected_final, abs=0.02) == ledger["final_score"]
+            assert ledger["final_score"] == bhc["score"]
+
+
 
 
 
